@@ -933,6 +933,12 @@ internal sealed class DummyExaminerProducerTarget
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
+    public void ResultPartialSuccess(DummyGameObject actor)
+    {
+        ShowResultPopup(nameof(ResultPartialSuccess), actor);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
     public void ResultFailure(DummyGameObject actor)
     {
         ShowResultPopup(nameof(ResultFailure), actor);

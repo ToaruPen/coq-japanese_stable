@@ -95,6 +95,192 @@ public sealed class LookTooltipContentPatchTests
     }
 
     [Test]
+    public void TranslateTooltipContent_TranslatesRuntimeMasterworkDescription_FromWorldModsDictionary()
+    {
+        var localizationRoot = GetLocalizationRoot();
+        LocalizationAssetResolver.SetLocalizationRootForTests(localizationRoot);
+        Translator.SetDictionaryDirectoryForTests(Path.Combine(localizationRoot, "Dictionaries"));
+
+        const string source = "{{rules|Masterwork: This weapon scores critical hits 15% of the time instead of 5%.}}";
+        var result = LookTooltipContentPatch.TranslateTooltipContent(source);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.EqualTo("{{rules|傑作: この武器のクリティカル発生率は15%（通常は5%）。}}"));
+            Assert.That(
+                DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                    nameof(LookTooltipContentPatch),
+                    "Description.WorldMods"),
+                Is.GreaterThan(0));
+            Assert.That(
+                SinkObservation.GetHitCountForTests(
+                    nameof(UITextSkinTranslationPatch),
+                    nameof(LookTooltipContentPatch),
+                    SinkObservation.ObservationOnlyDetail,
+                    source,
+                    source),
+                Is.EqualTo(0));
+        });
+    }
+
+    [Test]
+    public void TranslateTooltipContent_TranslatesSiblingRuntimeModificationDescriptions_FromWorldModsDictionary()
+    {
+        var localizationRoot = GetLocalizationRoot();
+        LocalizationAssetResolver.SetLocalizationRootForTests(localizationRoot);
+        Translator.SetDictionaryDirectoryForTests(Path.Combine(localizationRoot, "Dictionaries"));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                LookTooltipContentPatch.TranslateTooltipContent("{{rules|Counterweighted: Adds +2 to hit.}}"),
+                Is.EqualTo("{{rules|つり合い調整: 命中に+2のボーナスを与える。}}"));
+            Assert.That(
+                LookTooltipContentPatch.TranslateTooltipContent("{{rules|Electrified: When powered, this weapon deals an additional 2-3 electrical damage on hit.}}"),
+                Is.EqualTo("{{rules|電化: 通電中、この武器は命中時に追加で2-3の電撃ダメージを与える。}}"));
+            Assert.That(
+                LookTooltipContentPatch.TranslateTooltipContent("{{rules|Scaled: This item grants the wearer +250 reputation with unshelled reptiles.}}"),
+                Is.EqualTo("{{rules|鱗状の: 装着者に甲無し爬虫類との評判+250を与える。}}"));
+            Assert.That(
+                LookTooltipContentPatch.TranslateTooltipContent("{{rules|Fitted with beamsplitter: This weapon has a 3-way spread with each shot at -1 penetration roll.}}"),
+                Is.EqualTo("{{rules|ビームスプリッタ装着: この武器は1射撃ごとに3方向へ拡散し、各射撃の貫通判定が-1される。}}"));
+            Assert.That(
+                LookTooltipContentPatch.TranslateTooltipContent("\n{{rules|Offhand Attack Chance: 15%}}"),
+                Is.EqualTo("\n{{rules|オフハンド命中率: 15%}}"));
+        });
+    }
+
+    [Test]
+    public void TranslateTooltipContent_TranslatesMissileWeaponRuntimeMultipleShotLines()
+    {
+        const string source = "Multiple ammo used per shot: 4\nMultiple projectiles per shot: 4";
+
+        var result = LookTooltipContentPatch.TranslateTooltipContent(source);
+
+        Assert.That(
+            result,
+            Is.EqualTo("1射撃あたりの消費弾薬数: 4\n1射撃あたりの発射体数: 4"));
+    }
+
+    [Test]
+    public void TranslateTooltipDisplayName_TranslatesRuntimeMasterworkScopedHeader()
+    {
+        var localizationRoot = GetLocalizationRoot();
+        LocalizationAssetResolver.SetLocalizationRootForTests(localizationRoot);
+        Translator.SetDictionaryDirectoryForTests(Path.Combine(localizationRoot, "Dictionaries"));
+
+        var result = LookTooltipInformationWrapPatch.TranslateTooltipDisplayName("masterwork scoped チェーンピストル");
+
+        Assert.That(result, Is.EqualTo("傑作 スコープ付き チェーンピストル"));
+    }
+
+    [Test]
+    public void TranslateTooltipDisplayName_TranslatesRuntimeMasterworkScopedHeaderWithWeaponStats()
+    {
+        var localizationRoot = GetLocalizationRoot();
+        LocalizationAssetResolver.SetLocalizationRootForTests(localizationRoot);
+        Translator.SetDictionaryDirectoryForTests(Path.Combine(localizationRoot, "Dictionaries"));
+
+        var result = LookTooltipInformationWrapPatch.TranslateTooltipDisplayName(
+            "masterwork scoped チェーンピストル \u001a8 \u00031d6 [空] <AD14>");
+
+        Assert.That(
+            result,
+            Is.EqualTo("傑作 スコープ付き チェーンピストル {{c|\u001a}}8 {{r|\u0003}}1d6 {{y|[空]}} {{y|<{{|{{B|A}}{{B|D}}{{g|1}}{{g|4}}}}>}}"));
+    }
+
+    [Test]
+    public void TranslateTooltipDisplayName_TranslatesLeadingWhitespaceRuntimeMasterworkScopedHeaderWithWeaponStats()
+    {
+        var localizationRoot = GetLocalizationRoot();
+        LocalizationAssetResolver.SetLocalizationRootForTests(localizationRoot);
+        Translator.SetDictionaryDirectoryForTests(Path.Combine(localizationRoot, "Dictionaries"));
+
+        var result = LookTooltipInformationWrapPatch.TranslateTooltipDisplayName(
+            " masterwork scoped チェーンピストル \u001a8 \u00031d6 [empty]");
+
+        Assert.That(
+            result,
+            Is.EqualTo(" 傑作 スコープ付き チェーンピストル {{c|\u001a}}8 {{r|\u0003}}1d6 [空]"));
+    }
+
+    [Test]
+    public void TranslateTooltipDisplayName_TranslatesThreeOrMoreRuntimeWeaponModifiersWithStats()
+    {
+        var localizationRoot = GetLocalizationRoot();
+        LocalizationAssetResolver.SetLocalizationRootForTests(localizationRoot);
+        Translator.SetDictionaryDirectoryForTests(Path.Combine(localizationRoot, "Dictionaries"));
+
+        var result = LookTooltipInformationWrapPatch.TranslateTooltipDisplayName(
+            "masterwork scoped electrified チェーンピストル \u001a8 \u00031d6 [空] <AD14>");
+
+        Assert.That(
+            result,
+            Is.EqualTo("傑作 スコープ付き {{electrical|帯電}} チェーンピストル {{c|\u001a}}8 {{r|\u0003}}1d6 {{y|[空]}} {{y|<{{|{{B|A}}{{B|D}}{{g|1}}{{g|4}}}}>}}"));
+    }
+
+    [Test]
+    public void TranslateTooltipDisplayName_TranslatesRuntimeWeaponWithClauseWithStats()
+    {
+        var localizationRoot = GetLocalizationRoot();
+        LocalizationAssetResolver.SetLocalizationRootForTests(localizationRoot);
+        Translator.SetDictionaryDirectoryForTests(Path.Combine(localizationRoot, "Dictionaries"));
+
+        var result = LookTooltipInformationWrapPatch.TranslateTooltipDisplayName(
+            "{{C|レーザー}}ライフル with {{R-R-r-r-g-g-G-G-B-B-b-b sequence|beamsplitter}} \u001a8 \u00031d12 [broken]");
+
+        Assert.That(
+            result,
+            Is.EqualTo("{{C|レーザー}}ライフル（{{R-R-r-r-g-g-G-G-B-B-b-b sequence|ビームスプリッタ装着}}） {{c|\u001a}}8 {{r|\u0003}}1d12 [{{r|破損}}]"));
+    }
+
+    [Test]
+    public void TranslateTooltipLongDescription_TranslatesMakersMarkDescriptionBeforeWrapping()
+    {
+        const string source = "{{C|: This weapon bears the mark of スパラフチーレ.}}";
+
+        var result = LookTooltipInformationWrapPatch.TranslateTooltipLongDescription(source);
+
+        Assert.That(result, Is.EqualTo("{{C|スパラフチーレの印を帯びている。}}"));
+    }
+
+    [Test]
+    public void TranslateTooltipLongDescription_TranslatesMakersMarkDescriptionWithVisibleMarkPrefix()
+    {
+        const string source = "{{R|A}}{{C|: This weapon bears the mark of スパラフチーレ.}}";
+
+        var result = LookTooltipInformationWrapPatch.TranslateTooltipLongDescription(source);
+
+        Assert.That(result, Is.EqualTo("{{R|A}}{{C|: スパラフチーレの印を帯びている。}}"));
+    }
+
+    [Test]
+    public void TranslateTooltipLongDescription_TranslatesMakersMarkDescriptionWithTextPrefix()
+    {
+        const string source = "{{C|Inspection: This weapon bears the mark of スパラフチーレ.}}";
+
+        var result = LookTooltipInformationWrapPatch.TranslateTooltipLongDescription(source);
+
+        Assert.That(result, Is.EqualTo("{{C|Inspection: スパラフチーレの印を帯びている。}}"));
+    }
+
+    [Test]
+    public void TranslateTooltipLongDescription_StripsDirectMarkerBeforeJapaneseWrap()
+    {
+        const string unmarked = "これは日本語の長い説明文で、折り返し処理を通ることを確認するための文章です。";
+        var source = MessageFrameTranslator.MarkDirectTranslation(unmarked);
+
+        var result = LookTooltipInformationWrapPatch.TranslateTooltipLongDescription(source);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.IndexOf(MessageFrameTranslator.DirectTranslationMarker, StringComparison.Ordinal), Is.EqualTo(-1));
+            Assert.That(result, Does.Contain("\n"));
+            Assert.That(result.Replace("\n", string.Empty), Is.EqualTo(unmarked));
+        });
+    }
+
+    [Test]
     public void Postfix_PreservesColorCodes_WhenPatched()
     {
         WriteDictionary(("Ancient ruin", "古代の廃墟"));

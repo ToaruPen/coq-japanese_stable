@@ -1,4 +1,7 @@
+using System;
+using System.IO;
 using System.Reflection;
+using System.Text;
 using QudJP.Patches;
 using QudJP.Tests.DummyTargets;
 
@@ -9,9 +12,18 @@ namespace QudJP.Tests.L2;
 [NonParallelizable]
 public sealed class ExaminerTranslationPatchTests
 {
+    private string tempDirectory = null!;
+
     [SetUp]
     public void SetUp()
     {
+        tempDirectory = Path.Combine(Path.GetTempPath(), "qudjp-examiner-l2", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(tempDirectory);
+
+        Translator.ResetForTests();
+        Translator.SetDictionaryDirectoryForTests(tempDirectory);
+        WriteDisplayNameDictionary();
+
         DynamicTextObservability.ResetForTests();
         SinkObservation.ResetForTests();
         DummyPopupShow.Reset();
@@ -20,8 +32,14 @@ public sealed class ExaminerTranslationPatchTests
     [TearDown]
     public void TearDown()
     {
+        Translator.ResetForTests();
         DynamicTextObservability.ResetForTests();
         SinkObservation.ResetForTests();
+
+        if (Directory.Exists(tempDirectory))
+        {
+            Directory.Delete(tempDirectory, recursive: true);
+        }
     }
 
     [TestCase(
@@ -114,6 +132,183 @@ public sealed class ExaminerTranslationPatchTests
                     Assert.That(LastPopupMessage(popupMethod), Is.EqualTo(expected));
                     Assert.That(ExaminerHitCount(detail), Is.EqualTo(1));
                 });
+            });
+    }
+
+    [TestCase(
+        "You identify your ピストル as a masterwork scoped チェーンピストル.",
+        "ピストルを傑作 スコープ付き チェーンピストルだと鑑定した。",
+        "Identify")]
+    [TestCase(
+        "You commit the distinguishing characteristics of the {{Y|奇妙な遺物}} to memory.",
+        "{{Y|奇妙な遺物}}の特徴を記憶した。",
+        "CommitMemory")]
+    [TestCase(
+        "You make some progress understanding the {{Y|奇妙な遺物}}.",
+        "{{Y|奇妙な遺物}}の理解が少し進んだ。",
+        "ProgressOnly")]
+    [TestCase(
+        "You make some progress understanding the {{Y|奇妙な遺物}}. It seems to be a masterwork scoped チェーンピストル.",
+        "{{Y|奇妙な遺物}}の理解が少し進んだ。それは傑作 スコープ付き チェーンピストルだ。",
+        "ProgressKnown")]
+    [TestCase(
+        "You make some progress understanding the {{Y|奇妙な遺物}}. It seems to be a ピストル, and you think it's probably a variety of チェーンピストル; you believe you would be able to recognize an ordinary one of those now.",
+        "{{Y|奇妙な遺物}}の理解が少し進んだ。それはピストルで、おそらくチェーンピストルの一種だ。これで普通のチェーンピストルなら見分けられるはずだ。",
+        "ProgressKnownVariety")]
+    [TestCase(
+        "You make some progress understanding the {{Y|奇妙な遺物}}. You think it's probably a variety of チェーンピストル, and you believe you would be able to recognize an ordinary one of those now.",
+        "{{Y|奇妙な遺物}}の理解が少し進んだ。おそらくチェーンピストルの一種だ。これで普通のチェーンピストルなら見分けられるはずだ。",
+        "ProgressVariety")]
+    public void Patch_TranslatesExaminerIdentificationPopups_WhenOwnerPatched(
+        string source,
+        string expected,
+        string detail)
+    {
+        OwnerPopupRouteTestHarness.WithPatchedPopupOwner(
+            typeof(ExaminerTranslationPatch),
+            RequireOwnerMethod(nameof(DummyExaminerProducerTarget.ResultPartialSuccess)),
+            () =>
+            {
+                var target = new DummyExaminerProducerTarget
+                {
+                    PopupMessageToShow = source,
+                };
+
+                target.ResultPartialSuccess(new DummyGameObject());
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(expected));
+                    Assert.That(ExaminerHitCount(detail), Is.EqualTo(1));
+                });
+            });
+    }
+
+    [Test]
+    public void Patch_TranslatesExaminerIdentify_WhenZeroWidthMarkupPrecedesPossessive()
+    {
+        OwnerPopupRouteTestHarness.WithPatchedPopupOwner(
+            typeof(ExaminerTranslationPatch),
+            RequireOwnerMethod(nameof(DummyExaminerProducerTarget.ResultPartialSuccess)),
+            () =>
+            {
+                var target = new DummyExaminerProducerTarget
+                {
+                    PopupMessageToShow = "You identify {{R|}} your ピストル as a masterwork scoped チェーンピストル.",
+                };
+
+                target.ResultPartialSuccess(new DummyGameObject());
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("ピストルを傑作 スコープ付き チェーンピストルだと鑑定した。"));
+                    Assert.That(ExaminerHitCount("Identify"), Is.EqualTo(1));
+                });
+            });
+    }
+
+    [Test]
+    public void Patch_LeavesNonMatchingPartialSuccessPopupUnchanged_WhenOwnerPatched()
+    {
+        OwnerPopupRouteTestHarness.WithPatchedPopupOwner(
+            typeof(ExaminerTranslationPatch),
+            RequireOwnerMethod(nameof(DummyExaminerProducerTarget.ResultPartialSuccess)),
+            () =>
+            {
+                const string source = "You inspect {{C|奇妙な装置}} carefully.";
+                var target = new DummyExaminerProducerTarget
+                {
+                    PopupMessageToShow = source,
+                };
+
+                target.ResultPartialSuccess(new DummyGameObject());
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(source));
+                    Assert.That(ExaminerHitCount("Identify"), Is.Zero);
+                    Assert.That(ExaminerHitCount("CommitMemory"), Is.Zero);
+                    Assert.That(ExaminerHitCount("ProgressOnly"), Is.Zero);
+                    Assert.That(ExaminerHitCount("ProgressKnown"), Is.Zero);
+                    Assert.That(ExaminerHitCount("ProgressKnownVariety"), Is.Zero);
+                });
+            });
+    }
+
+    [Test]
+    public void Patch_DoesNotRetranslateDirectMarkedPartialSuccessPopup_WhenOwnerPatched()
+    {
+        OwnerPopupRouteTestHarness.WithPatchedPopupOwner(
+            typeof(ExaminerTranslationPatch),
+            RequireOwnerMethod(nameof(DummyExaminerProducerTarget.ResultPartialSuccess)),
+            () =>
+            {
+                const string unmarked = "You make some progress understanding the {{Y|奇妙な遺物}}.";
+                var source = MessageFrameTranslator.MarkDirectTranslation(unmarked);
+                var target = new DummyExaminerProducerTarget
+                {
+                    PopupMessageToShow = source,
+                };
+
+                target.ResultPartialSuccess(new DummyGameObject());
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(unmarked));
+                    Assert.That(ExaminerHitCount("ProgressOnly"), Is.Zero);
+                });
+            });
+    }
+
+    [Test]
+    public void Patch_TranslatesExaminerPartialSuccess_WhenRuntimeGrammarPrefixLeaksBeforeSeems()
+    {
+        const string source =
+            "You make some progress understanding the {{Y|奇妙な遺物}}. ☻seemV2♥8▼♥It seems to be a ピストル, and you think it's probably a variety of チェーンピストル; you believe you would be able to recognize an ordinary one of those now.";
+
+        OwnerPopupRouteTestHarness.WithPatchedPopupOwner(
+            typeof(ExaminerTranslationPatch),
+            RequireOwnerMethod(nameof(DummyExaminerProducerTarget.ResultPartialSuccess)),
+            () =>
+            {
+                var target = new DummyExaminerProducerTarget
+                {
+                    PopupMessageToShow = source,
+                };
+
+                target.ResultPartialSuccess(new DummyGameObject());
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(
+                        DummyPopupShow.LastShowMessage,
+                        Is.EqualTo("{{Y|奇妙な遺物}}の理解が少し進んだ。それはピストルで、おそらくチェーンピストルの一種だ。これで普通のチェーンピストルなら見分けられるはずだ。"));
+                    Assert.That(ExaminerHitCount("ProgressKnownVariety"), Is.EqualTo(1));
+                });
+            });
+    }
+
+    [Test]
+    public void Patch_TranslatesExaminerPartialSuccess_UsesExplicitOrdinaryRecognitionTarget()
+    {
+        const string source =
+            "You make some progress understanding the {{Y|奇妙な遺物}}. It seems to be a ピストル, and you think it's probably a variety of チェーンピストル; you believe you would be able to recognize an ordinary ピストル of those now.";
+
+        OwnerPopupRouteTestHarness.WithPatchedPopupOwner(
+            typeof(ExaminerTranslationPatch),
+            RequireOwnerMethod(nameof(DummyExaminerProducerTarget.ResultPartialSuccess)),
+            () =>
+            {
+                var target = new DummyExaminerProducerTarget
+                {
+                    PopupMessageToShow = source,
+                };
+
+                target.ResultPartialSuccess(new DummyGameObject());
+
+                Assert.That(
+                    DummyPopupShow.LastShowMessage,
+                    Is.EqualTo("{{Y|奇妙な遺物}}の理解が少し進んだ。それはピストルで、おそらくチェーンピストルの一種だ。これで普通のピストルなら見分けられるはずだ。"));
             });
     }
 
@@ -307,5 +502,49 @@ public sealed class ExaminerTranslationPatchTests
         return popupMethod == nameof(DummyPopupShow.ShowYesNoCancel)
             ? DummyPopupShow.LastShowYesNoCancelMessage
             : DummyPopupShow.LastShowMessage;
+    }
+
+    private void WriteDisplayNameDictionary()
+    {
+        WriteDictionaryFile(
+            "ui-displayname-adjectives.ja.json",
+            ("masterwork", "GetDisplayName.Adjective", "傑作"),
+            ("scoped", "GetDisplayName.Adjective", "スコープ付き"));
+    }
+
+    private void WriteDictionaryFile(string fileName, params (string key, string? context, string text)[] entries)
+    {
+        var builder = new StringBuilder();
+        builder.Append("{\"entries\":[");
+        for (var index = 0; index < entries.Length; index++)
+        {
+            if (index > 0)
+            {
+                builder.Append(',');
+            }
+
+            builder.Append("{\"key\":\"")
+                .Append(EscapeJson(entries[index].key))
+                .Append('"');
+            if (entries[index].context is not null)
+            {
+                builder.Append(",\"context\":\"")
+                    .Append(EscapeJson(entries[index].context!))
+                    .Append('"');
+            }
+
+            builder.Append(",\"text\":\"")
+                .Append(EscapeJson(entries[index].text))
+                .Append("\"}");
+        }
+
+        builder.Append("]}");
+        File.WriteAllText(Path.Combine(tempDirectory, fileName), builder.ToString(), Encoding.UTF8);
+    }
+
+    private static string EscapeJson(string value)
+    {
+        return value.Replace("\\", "\\\\", StringComparison.Ordinal)
+            .Replace("\"", "\\\"", StringComparison.Ordinal);
     }
 }

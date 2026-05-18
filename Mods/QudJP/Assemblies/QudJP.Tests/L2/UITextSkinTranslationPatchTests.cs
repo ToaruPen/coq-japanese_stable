@@ -139,6 +139,25 @@ public sealed class UITextSkinTranslationPatchTests
         Assert.That(translated, Is.EqualTo(testCase.Expected));
     }
 
+    [Test]
+    public void TranslatePreservingColors_TranslatesDisplayNameWithClauseAtUiTextSink()
+    {
+        WriteContextDictionaryFile(
+            "ui-displayname-adjectives.ja.json",
+            ("beamsplitter", "GetDisplayName.Adjective", "{{R-R-r-r-g-g-G-G-B-B-b-b sequence|ビームスプリッタ装着}}"),
+            ("beamsplitter", null, "{{R-R-r-r-g-g-G-G-B-B-b-b sequence|ビームスプリッタ装着}}"));
+
+        var source =
+            "アイゲンライフル with {{R-R-r-r-g-g-G-G-B-B-b-b sequence|beamsplitter}} {{W|\u001a}}10 {{r|\u0003}}1d12 {{y|[{{w|フィジェット}} {{c|セル}} {{b|\u0004}}0 {{K|\t}}0 {{y|({{g|残量多}})}}]}}";
+        var translated = UITextSkinTranslationPatch.TranslatePreservingColors(
+            source,
+            nameof(UITextSkinTranslationPatch));
+
+        Assert.That(
+            translated,
+            Is.EqualTo("アイゲンライフル（{{R-R-r-r-g-g-G-G-B-B-b-b sequence|ビームスプリッタ装着}}） {{W|\u001a}}10 {{r|\u0003}}1d12 {{y|[{{w|フィジェット}} {{c|セル}} {{b|\u0004}}0 {{K|\t}}0 {{y|({{g|残量多}})}}]}}"));
+    }
+
     [TestCase("[Esc]")]
     [TestCase("[Space]")]
     [TestCase("[]")]
@@ -1057,6 +1076,45 @@ public sealed class UITextSkinTranslationPatchTests
 
         var path = Path.Combine(tempDirectory, fileName);
         File.WriteAllText(path, builder.ToString(), new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
+        ScopedDictionaryLookup.ResetForTests();
+    }
+
+    private void WriteContextDictionaryFile(
+        string fileName,
+        params (string key, string? context, string text)[] entries)
+    {
+        var builder = new StringBuilder();
+        builder.Append('{');
+        builder.Append("\"entries\":[");
+
+        for (var index = 0; index < entries.Length; index++)
+        {
+            if (index > 0)
+            {
+                builder.Append(',');
+            }
+
+            builder.Append("{\"key\":\"");
+            builder.Append(EscapeJson(entries[index].key));
+            builder.Append('"');
+            if (!string.IsNullOrWhiteSpace(entries[index].context))
+            {
+                builder.Append(",\"context\":\"");
+                builder.Append(EscapeJson(entries[index].context!));
+                builder.Append('"');
+            }
+
+            builder.Append(",\"text\":\"");
+            builder.Append(EscapeJson(entries[index].text));
+            builder.Append("\"}");
+        }
+
+        builder.Append("]}");
+        builder.AppendLine();
+
+        var path = Path.Combine(tempDirectory, fileName);
+        File.WriteAllText(path, builder.ToString(), new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
+        ScopedDictionaryLookup.ResetForTests();
     }
 
     private static string EscapeJson(string value)

@@ -47,6 +47,8 @@ internal sealed class DummyTinkeringStatusScreenTarget
 internal sealed class DummyTinkeringRecipeData
 {
     public string Type { get; set; } = "Build";
+
+    public string DisplayName { get; set; } = "build item";
 }
 
 internal sealed class DummyTinkeringModObject
@@ -67,6 +69,8 @@ internal sealed class DummyTinkeringLineDataTarget
     public int mode;
 
     public DummyTinkeringRecipeData data = new DummyTinkeringRecipeData();
+
+    public string costString = "{{R|A}}{{C|C}}";
 
     public DummyTinkeringModObject? modObject;
 }
@@ -110,7 +114,13 @@ internal sealed class DummyTinkeringLineTarget
             return;
         }
 
-        text.SetText("    translated elsewhere");
+        if (tinkeringLineData.mode == 1)
+        {
+            text.SetText("    " + tinkeringLineData.modObject!.DisplayName + " [" + tinkeringLineData.costString + "]");
+            return;
+        }
+
+        text.SetText("    " + tinkeringLineData.data.DisplayName + " [" + tinkeringLineData.costString + "]");
     }
 }
 
@@ -139,10 +149,10 @@ internal sealed class DummyTinkeringDetailsLineTarget
         gameObject.SetActive(true);
         if (tinkeringLineData.data.Type == "Mod")
         {
-            modBitCostText.SetText("{{K || Bit Cost |}}\n2 bits\n\n{{K|| Ingredients |}}\n{{G|u}} item A\n-or-\n{{R|X}} item B");
+            modBitCostText.SetText("{{K || Bit Cost |}}\n{{R|A}}{{C|C}}\n\n{{K|| Ingredients |}}\n{{G|u}} item A\n-or-\n{{R|X}} item B");
             return;
         }
 
-        modBitCostText.SetText("{{K|| Bit Cost |}}\n1 bit\n\n{{K|| Ingredients |}}\n{{G|u}} item A\n-or-\n{{R|X}} item B");
+        modBitCostText.SetText("{{K|| Bit Cost |}}\n{{R|A}}{{C|C}}\n\n{{K|| Ingredients |}}\n{{G|u}} item A\n-or-\n{{R|X}} item B");
     }
 }

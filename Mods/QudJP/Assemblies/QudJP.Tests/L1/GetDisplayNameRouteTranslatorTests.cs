@@ -186,6 +186,185 @@ public sealed class GetDisplayNameRouteTranslatorTests
     }
 
     [Test]
+    public void TranslatePreservingColors_PreservesColoredBitTagsInsideAngleCodeSuffix()
+    {
+        WriteDictionary(("worn bronze sword", "使い込まれた青銅の剣"));
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            "worn bronze sword <{{R|A}}{{C|C}}>",
+            nameof(GetDisplayNamePatch));
+
+        Assert.That(translated, Is.EqualTo("使い込まれた青銅の剣 <{{R|A}}{{C|C}}>"));
+    }
+
+    [Test]
+    public void TranslatePreservingColors_TranslatesLeadingWhitespaceModifierChainBeforeWeaponStats()
+    {
+        WriteDictionary(("チェーンピストル", "チェーンピストル"));
+        WriteDictionaryFile(
+            "ui-displayname-adjectives.ja.json",
+            ("masterwork", "傑作"),
+            ("scoped", "スコープ付き"),
+            ("[empty]", "[{{K|空}}]"));
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            " masterwork scoped チェーンピストル \u001a8 \u00031d6 [empty]",
+            nameof(GetDisplayNamePatch));
+
+        Assert.That(
+            translated,
+            Is.EqualTo(" 傑作 スコープ付き チェーンピストル {{c|\u001a}}8 {{r|\u0003}}1d6 [{{K|空}}]"));
+    }
+
+    [Test]
+    public void TranslatePreservingColors_TranslatesModifierChainAfterLeadingZeroWidthMarkup()
+    {
+        WriteDictionary(("チェーンピストル", "チェーンピストル"));
+        WriteDictionaryFile(
+            "ui-displayname-adjectives.ja.json",
+            ("masterwork", "傑作"),
+            ("scoped", "スコープ付き"));
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            "{{R|}} {{Y|masterwork}} scoped チェーンピストル",
+            nameof(GetDisplayNamePatch));
+
+        Assert.That(translated, Is.EqualTo("{{Y|傑作}} スコープ付き チェーンピストル"));
+    }
+
+    [Test]
+    public void TranslatePreservingColors_TranslatesWeaponWithClauseAndKeepsExistingNameColor()
+    {
+        WriteDictionary(("laser rifle", "レーザーライフル"));
+        WriteContextDictionaryFile(
+            "ui-displayname-adjectives.ja.json",
+            ("beamsplitter", "GetDisplayName.Adjective", "{{R-R-r-r-g-g-G-G-B-B-b-b sequence|ビームスプリッタ装着}}"),
+            ("[broken]", null, "[{{r|破損}}]"));
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            "{{C|レーザー}}ライフル with {{R-R-r-r-g-g-G-G-B-B-b-b sequence|beamsplitter}} \u001a8 \u00031d12 [broken]",
+            nameof(GetDisplayNamePatch));
+
+        Assert.That(
+            translated,
+            Is.EqualTo("{{C|レーザー}}ライフル（{{R-R-r-r-g-g-G-G-B-B-b-b sequence|ビームスプリッタ装着}}） {{c|\u001a}}8 {{r|\u0003}}1d12 [{{r|破損}}]"));
+    }
+
+    [Test]
+    public void TranslatePreservingColors_TranslatesWeaponWithClauseBeforeColoredStatsAndLoadedCell()
+    {
+        WriteContextDictionaryFile(
+            "ui-displayname-adjectives.ja.json",
+            ("beamsplitter", "GetDisplayName.Adjective", "{{R-R-r-r-g-g-G-G-B-B-b-b sequence|ビームスプリッタ装着}}"));
+
+        Assert.That(
+            GetDisplayNameRouteTranslator.TranslatePreservingColors(
+                "アイゲンライフル with beamsplitter",
+                nameof(GetDisplayNamePatch)),
+            Is.EqualTo("アイゲンライフル（{{R-R-r-r-g-g-G-G-B-B-b-b sequence|ビームスプリッタ装着}}）"));
+
+        var source =
+            "アイゲンライフル with {{R-R-r-r-g-g-G-G-B-B-b-b sequence|beamsplitter}} {{W|\u001a}}10 {{r|\u0003}}1d12 {{y|[{{w|フィジェット}} {{c|セル}} {{b|\u0004}}0 {{K|\t}}0 {{y|({{g|残量多}})}}]}}";
+        var stripped = ColorCodePreserver.Strip(source).stripped;
+        Assert.That(
+            stripped,
+            Is.EqualTo("アイゲンライフル with beamsplitter \u001a10 \u00031d12 [フィジェット セル \u00040 \t0 (残量多)]"));
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            source,
+            nameof(GetDisplayNamePatch));
+
+        Assert.That(
+            translated,
+            Is.EqualTo("アイゲンライフル（{{R-R-r-r-g-g-G-G-B-B-b-b sequence|ビームスプリッタ装着}}） {{W|\u001a}}10 {{r|\u0003}}1d12 {{y|[{{w|フィジェット}} {{c|セル}} {{b|\u0004}}0 {{K|\t}}0 {{y|({{g|残量多}})}}]}}"));
+    }
+
+    [Test]
+    public void TranslatePreservingColors_TranslatesKnownDisplayNameWithClauses()
+    {
+        WriteDictionary(("laser rifle", "レーザーライフル"));
+        WriteContextDictionaryFile(
+            "ui-displayname-adjectives.ja.json",
+            ("beamsplitter", "GetDisplayName.Adjective", "ビームスプリッタ装着"),
+            ("filters", "GetDisplayName.Adjective", "フィルター付き"),
+            ("suspensors", "GetDisplayName.Adjective", "サスペンサー付き"),
+            ("cleats", "GetDisplayName.Adjective", "スパイク付き"),
+            ("piping", "GetDisplayName.Adjective", "配管"),
+            ("electromagnetic shielding", "GetDisplayName.Adjective", "電磁シールド"),
+            ("gearbox", "GetDisplayName.Adjective", "ギアボックス"),
+            ("co-processor", "GetDisplayName.Adjective", "コプロセッサ"),
+            ("quantum reverb", "GetDisplayName.Adjective", "量子リバーブ"),
+            ("terrifying visage", "GetDisplayName.Adjective", "恐怖の顔貌"),
+            ("serene visage", "GetDisplayName.Adjective", "静穏の顔貌"));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(GetDisplayNameRouteTranslator.TranslatePreservingColors("laser rifle with beamsplitter", nameof(GetDisplayNamePatch)), Is.EqualTo("レーザーライフル（ビームスプリッタ装着）"));
+            Assert.That(GetDisplayNameRouteTranslator.TranslatePreservingColors("laser rifle with filters", nameof(GetDisplayNamePatch)), Is.EqualTo("レーザーライフル（フィルター付き）"));
+            Assert.That(GetDisplayNameRouteTranslator.TranslatePreservingColors("laser rifle with suspensors", nameof(GetDisplayNamePatch)), Is.EqualTo("レーザーライフル（サスペンサー付き）"));
+            Assert.That(GetDisplayNameRouteTranslator.TranslatePreservingColors("laser rifle with cleats", nameof(GetDisplayNamePatch)), Is.EqualTo("レーザーライフル（スパイク付き）"));
+            Assert.That(GetDisplayNameRouteTranslator.TranslatePreservingColors("laser rifle with piping", nameof(GetDisplayNamePatch)), Is.EqualTo("レーザーライフル（配管）"));
+            Assert.That(GetDisplayNameRouteTranslator.TranslatePreservingColors("laser rifle with electromagnetic shielding", nameof(GetDisplayNamePatch)), Is.EqualTo("レーザーライフル（電磁シールド）"));
+            Assert.That(GetDisplayNameRouteTranslator.TranslatePreservingColors("laser rifle with gearbox", nameof(GetDisplayNamePatch)), Is.EqualTo("レーザーライフル（ギアボックス）"));
+            Assert.That(GetDisplayNameRouteTranslator.TranslatePreservingColors("laser rifle with co-processor", nameof(GetDisplayNamePatch)), Is.EqualTo("レーザーライフル（コプロセッサ）"));
+            Assert.That(GetDisplayNameRouteTranslator.TranslatePreservingColors("laser rifle with quantum reverb", nameof(GetDisplayNamePatch)), Is.EqualTo("レーザーライフル（量子リバーブ）"));
+            Assert.That(GetDisplayNameRouteTranslator.TranslatePreservingColors("laser rifle with terrifying visage", nameof(GetDisplayNamePatch)), Is.EqualTo("レーザーライフル（恐怖の顔貌）"));
+            Assert.That(GetDisplayNameRouteTranslator.TranslatePreservingColors("laser rifle with serene visage", nameof(GetDisplayNamePatch)), Is.EqualTo("レーザーライフル（静穏の顔貌）"));
+        });
+    }
+
+    [Test]
+    public void TranslatePreservingColors_PreservesSourceColorOnPlainWithClauseTranslation()
+    {
+        WriteDictionary(("laser rifle", "レーザーライフル"));
+        WriteContextDictionaryFile(
+            "ui-displayname-adjectives.ja.json",
+            ("filters", "GetDisplayName.Adjective", "フィルター付き"),
+            ("[empty]", null, "[空]"));
+
+        Assert.That(
+            GetDisplayNameRouteTranslator.TranslatePreservingColors(
+                "laser rifle with {{Y|filters}}",
+                nameof(GetDisplayNamePatch)),
+            Is.EqualTo("レーザーライフル（{{Y|フィルター付き}}）"));
+
+        Assert.That(
+            GetDisplayNameRouteTranslator.TranslatePreservingColors(
+                "laser rifle with {{Y|filters}} {{W|\u001a}}8 {{r|\u0003}}1d12 [empty]",
+                nameof(GetDisplayNamePatch)),
+            Is.EqualTo("レーザーライフル（{{Y|フィルター付き}}） {{W|\u001a}}8 {{r|\u0003}}1d12 [空]"));
+
+        Assert.That(
+            GetDisplayNameRouteTranslator.TranslatePreservingColors(
+                "{{C|laser rifle}} with {{Y|filters}} {{W|\u001a}}8 {{r|\u0003}}1d12 [empty]",
+                nameof(GetDisplayNamePatch)),
+            Is.EqualTo("{{C|レーザーライフル}}（{{Y|フィルター付き}}） {{W|\u001a}}8 {{r|\u0003}}1d12 [空]"));
+
+        Assert.That(
+            GetDisplayNameRouteTranslator.TranslatePreservingColors(
+                "{{W|laser rifle with filters}}",
+                nameof(GetDisplayNamePatch)),
+            Is.EqualTo("{{W|レーザーライフル（フィルター付き）}}"));
+
+        Assert.That(
+            GetDisplayNameRouteTranslator.TranslatePreservingColors(
+                "laser rifle with {{Y|filters}} \u001a8 \u00031d12 [empty]",
+                nameof(GetDisplayNamePatch)),
+            Is.EqualTo("レーザーライフル（{{Y|フィルター付き}}） {{c|\u001a}}8 {{r|\u0003}}1d12 [空]"));
+
+        Assert.That(
+            GetDisplayNameRouteTranslator.TranslatePreservingColors(
+                "laser rifle with {{Y|filters}} \u001a8 \u00031d12 <AD14>",
+                nameof(GetDisplayNamePatch)),
+            Is.EqualTo("レーザーライフル（{{Y|フィルター付き}}） {{c|\u001a}}8 {{r|\u0003}}1d12 {{y|<{{|{{B|A}}{{B|D}}{{g|1}}{{g|4}}}}>}}"));
+
+        Assert.That(
+            GetDisplayNameRouteTranslator.TranslatePreservingColors(
+                "laser rifle with {{Y|filters}} {{W|\u001a}}8 {{r|\u0003}}1d12 {{y|<{{|{{B|A}}{{B|D}}{{g|1}}{{g|4}}}}>}}",
+                nameof(GetDisplayNamePatch)),
+            Is.EqualTo("レーザーライフル（{{Y|フィルター付き}}） {{W|\u001a}}8 {{r|\u0003}}1d12 {{y|<{{|{{B|A}}{{B|D}}{{g|1}}{{g|4}}}}>}}"));
+    }
+
+    [Test]
     public void TranslatePreservingColors_UsesScopedStateTemplateLookup()
     {
         WriteDictionary(
@@ -702,6 +881,84 @@ public sealed class GetDisplayNameRouteTranslatorTests
     }
 
     [Test]
+    public void TranslatePreservingColors_UsesDisplayNameAdjectiveContextForMarkupWeaponModifiers()
+    {
+        WriteContextDictionaryFile(
+            "ui-displayname-adjectives.ja.json",
+            ("{{Y|masterwork}}", "GetDisplayName.Adjective", "{{Y|接頭辞masterwork}}"),
+            ("{{electrical|electrified}}", "GetDisplayName.Adjective", "{{electrical|接頭辞electrified}}"),
+            ("{{scaled|scaled}}", "GetDisplayName.Adjective", "{{scaled|接頭辞scaled}}"),
+            ("counterweighted", "GetDisplayName.Adjective", "接頭辞counterweighted"),
+            ("masterwork", "GetDisplayName.Adjective", "接頭辞masterwork"),
+            ("scoped", "GetDisplayName.Adjective", "接頭辞scoped"),
+            ("electrified", "GetDisplayName.Adjective", "接頭辞electrified"),
+            ("steel long sword", null, "鋼のロングソード"));
+        WriteDictionaryFile(
+            "world-mods.ja.json",
+            ("{{Y|masterwork}}", "{{Y|説明masterwork}}"),
+            ("{{electrical|electrified}}", "{{electrical|説明electrified}}"),
+            ("{{scaled|scaled}}", "{{scaled|説明scaled}}"),
+            ("counterweighted", "説明counterweighted"));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                GetDisplayNameRouteTranslator.TranslatePreservingColors(
+                    "{{Y|masterwork}} steel long sword",
+                    nameof(GetDisplayNamePatch)),
+                Is.EqualTo("{{Y|接頭辞masterwork}} 鋼のロングソード"));
+            Assert.That(
+                GetDisplayNameRouteTranslator.TranslatePreservingColors(
+                    "{{electrical|electrified}} steel long sword",
+                    nameof(GetDisplayNamePatch)),
+                Is.EqualTo("{{electrical|接頭辞electrified}} 鋼のロングソード"));
+            Assert.That(
+                GetDisplayNameRouteTranslator.TranslatePreservingColors(
+                    "{{scaled|scaled}} steel long sword",
+                    nameof(GetDisplayNamePatch)),
+                Is.EqualTo("{{scaled|接頭辞scaled}} 鋼のロングソード"));
+            Assert.That(
+                GetDisplayNameRouteTranslator.TranslatePreservingColors(
+                    "counterweighted 鋼のロングソード",
+                    nameof(GetDisplayNamePatch)),
+                Is.EqualTo("接頭辞counterweighted 鋼のロングソード"));
+            Assert.That(
+                GetDisplayNameRouteTranslator.TranslatePreservingColors(
+                    "counterweighted(2) 鋼のロングソード",
+                    nameof(GetDisplayNamePatch)),
+                Is.EqualTo("接頭辞counterweighted(2) 鋼のロングソード"));
+            Assert.That(
+                GetDisplayNameRouteTranslator.TranslatePreservingColors(
+                    "masterwork scoped 鋼のロングソード",
+                    nameof(GetDisplayNamePatch)),
+                Is.EqualTo("接頭辞masterwork 接頭辞scoped 鋼のロングソード"));
+            Assert.That(
+                GetDisplayNameRouteTranslator.TranslatePreservingColors(
+                    "masterwork scoped electrified 鋼のロングソード",
+                    nameof(GetDisplayNamePatch)),
+                Is.EqualTo("接頭辞masterwork 接頭辞scoped 接頭辞electrified 鋼のロングソード"));
+        });
+    }
+
+    [Test]
+    public void TranslatePreservingColors_UsesDisplayNameAdjectiveContextForBracketedMarkupWeaponModifiers()
+    {
+        WriteContextDictionaryFile(
+            "ui-displayname-adjectives.ja.json",
+            ("{{Y|masterwork}}", "GetDisplayName.Adjective", "{{Y|接頭辞masterwork}}"),
+            ("steel long sword", null, "鋼のロングソード"));
+        WriteDictionaryFile(
+            "world-mods.ja.json",
+            ("{{Y|masterwork}}", "{{Y|説明masterwork}}"));
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            "[{{Y|masterwork}}] steel long sword",
+            nameof(GetDisplayNamePatch));
+
+        Assert.That(translated, Is.EqualTo("[{{Y|接頭辞masterwork}}] 鋼のロングソード"));
+    }
+
+    [Test]
     public void TranslatePreservingColors_SuppressesIdentityVisageMissingKeyNoise()
     {
         WriteDictionaryFile(
@@ -763,6 +1020,42 @@ public sealed class GetDisplayNameRouteTranslatorTests
             path,
             contents,
             new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
+    }
+
+    private void WriteContextDictionaryFile(
+        string fileName,
+        params (string key, string? context, string text)[] entries)
+    {
+        var builder = new StringBuilder();
+        builder.Append('{');
+        builder.Append("\"entries\":[");
+
+        for (var index = 0; index < entries.Length; index++)
+        {
+            if (index > 0)
+            {
+                builder.Append(',');
+            }
+
+            builder.Append("{\"key\":\"");
+            builder.Append(EscapeJson(entries[index].key));
+            builder.Append('"');
+            if (!string.IsNullOrWhiteSpace(entries[index].context))
+            {
+                builder.Append(",\"context\":\"");
+                builder.Append(EscapeJson(entries[index].context!));
+                builder.Append('"');
+            }
+
+            builder.Append(",\"text\":\"");
+            builder.Append(EscapeJson(entries[index].text));
+            builder.Append("\"}");
+        }
+
+        builder.Append("]}");
+        builder.AppendLine();
+
+        WriteDictionaryFile(fileName, builder.ToString());
     }
 
     private static string EscapeJson(string value)

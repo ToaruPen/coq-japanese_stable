@@ -45,6 +45,11 @@
       "text": "同時に複数方向へ拡散し、各射撃で貫通判定-1。"
     },
     {
+      "context": "XRL.World.Parts.ModBeamsplitter.GetShortDescription",
+      "key": "Fitted with beamsplitter: This weapon has a {0}-way spread with each shot at -1 penetration roll.",
+      "text": "ビームスプリッタ装着: この武器は1射撃ごとに{0}方向へ拡散し、各射撃の貫通判定が-1される。"
+    },
+    {
       "context": "XRL.World.Parts.ModBiomech.GetShortDescription",
       "key": "Biomech: Has biomechanical power transmission systems.",
       "text": "バイオメカ: 生体機械式の動力伝達機構を備える。"
@@ -238,11 +243,6 @@
       "context": "XRL.World.Parts.ModMassivelyOverloaded.GetShortDescription",
       "key": "Massively overloaded: This item has significantly increased performance but consumes a great deal of extra charge, generates considerable heat when used, and has a chance to break relative to its charge draw.",
       "text": "重過負荷: 性能が大幅に上がるが、余分な電力を大量に消費し、使用時に大きな熱を生み、消費電力量に応じて破損するおそれがある。"
-    },
-    {
-      "context": "XRL.World.Parts.ModMasterwork.GetShortDescription",
-      "key": "{{Y|masterwork}}",
-      "text": "{{Y|傑作}}"
     },
     {
       "context": "XRL.World.Parts.ModMasterwork.GetShortDescription",
@@ -1132,6 +1132,11 @@
       "context": "XRL.World.Parts.MissileWeapon.GetShortDescription",
       "key": "Projectiles fired with this weapon receive bonus penetration based on the wielder's Strength.",
       "text": "この武器から発射された投射物は、使用者の筋力に基づいて追加の貫通力を得る。"
+    },
+    {
+      "context": "XRL.World.Parts.ModMasterwork.GetShortDescription",
+      "key": "Masterwork: This weapon scores critical hits {0} of the time instead of 5%.",
+      "text": "傑作: この武器のクリティカル発生率は{0}（通常は5%）。"
     }
   ]
 }

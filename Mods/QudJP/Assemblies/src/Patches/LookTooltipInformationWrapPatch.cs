@@ -67,10 +67,8 @@ public static class LookTooltipInformationWrapPatch
     {
         try
         {
-            if (JapaneseBlockWrap.TryWrapTooltipLongDescription(__result.LongDescription, out var wrapped))
-            {
-                __result.LongDescription = wrapped;
-            }
+            __result.DisplayName = TranslateTooltipDisplayName(__result.DisplayName);
+            __result.LongDescription = TranslateTooltipLongDescription(__result.LongDescription);
         }
         catch (Exception ex)
         {
@@ -87,13 +85,20 @@ public static class LookTooltipInformationWrapPatch
                 return;
             }
 
+            var displayNameField = __result.GetType().GetField(
+                "DisplayName",
+                BindingFlags.Instance | BindingFlags.Public);
+            if (displayNameField?.GetValue(__result) is string displayName)
+            {
+                displayNameField.SetValue(__result, TranslateTooltipDisplayName(displayName));
+            }
+
             var longDescriptionField = __result.GetType().GetField(
                 "LongDescription",
                 BindingFlags.Instance | BindingFlags.Public);
-            if (longDescriptionField?.GetValue(__result) is string source
-                && JapaneseBlockWrap.TryWrapTooltipLongDescription(source, out var wrapped))
+            if (longDescriptionField?.GetValue(__result) is string source)
             {
-                longDescriptionField.SetValue(__result, wrapped);
+                longDescriptionField.SetValue(__result, TranslateTooltipLongDescription(source));
             }
         }
         catch (Exception ex)
@@ -102,4 +107,40 @@ public static class LookTooltipInformationWrapPatch
         }
     }
 #endif
+
+    internal static string TranslateTooltipDisplayName(string source)
+    {
+        return GetDisplayNameRouteTranslator.TranslatePreservingColors(source, nameof(LookTooltipInformationWrapPatch));
+    }
+
+    internal static string TranslateTooltipLongDescription(string source)
+    {
+        var normalizedSource = MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText)
+            ? markedText
+            : source;
+        if (!ContainsAsciiLetter(normalizedSource)
+            && JapaneseBlockWrap.TryWrapTooltipLongDescription(normalizedSource, out var sourceWrapped))
+        {
+            return sourceWrapped;
+        }
+
+        var translated = LookTooltipContentPatch.TranslateTooltipContent(source);
+        return JapaneseBlockWrap.TryWrapTooltipLongDescription(translated, out var wrapped)
+            ? wrapped
+            : translated;
+    }
+
+    private static bool ContainsAsciiLetter(string source)
+    {
+        for (var index = 0; index < source.Length; index++)
+        {
+            var character = source[index];
+            if ((character >= 'A' && character <= 'Z') || (character >= 'a' && character <= 'z'))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }

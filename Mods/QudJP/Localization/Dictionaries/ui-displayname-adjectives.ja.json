@@ -90,6 +90,61 @@
       "text": "スコープ付き"
     },
     {
+      "key": "beamsplitter",
+      "context": "GetDisplayName.Adjective",
+      "text": "{{R-R-r-r-g-g-G-G-B-B-b-b sequence|ビームスプリッタ装着}}"
+    },
+    {
+      "key": "filters",
+      "context": "GetDisplayName.Adjective",
+      "text": "フィルター付き"
+    },
+    {
+      "key": "suspensors",
+      "context": "GetDisplayName.Adjective",
+      "text": "サスペンサー付き"
+    },
+    {
+      "key": "cleats",
+      "context": "GetDisplayName.Adjective",
+      "text": "スパイク付き"
+    },
+    {
+      "key": "piping",
+      "context": "GetDisplayName.Adjective",
+      "text": "配管"
+    },
+    {
+      "key": "electromagnetic shielding",
+      "context": "GetDisplayName.Adjective",
+      "text": "電磁シールド"
+    },
+    {
+      "key": "gearbox",
+      "context": "GetDisplayName.Adjective",
+      "text": "ギアボックス"
+    },
+    {
+      "key": "co-processor",
+      "context": "GetDisplayName.Adjective",
+      "text": "コプロセッサ"
+    },
+    {
+      "key": "quantum reverb",
+      "context": "GetDisplayName.Adjective",
+      "text": "量子リバーブ"
+    },
+    {
+      "key": "terrifying visage",
+      "context": "GetDisplayName.Adjective",
+      "text": "恐怖の顔貌"
+    },
+    {
+      "key": "serene visage",
+      "context": "GetDisplayName.Adjective",
+      "text": "静穏の顔貌"
+    },
+    {
       "key": "padded",
       "context": "GetDisplayName.Adjective",
       "text": "パッド入り"
@@ -537,7 +592,7 @@
     {
       "key": "{{Y|masterwork}}",
       "context": "GetDisplayName.Adjective",
-      "text": "{{Y|名工品}}"
+      "text": "{{Y|傑作}}"
     },
     {
       "key": "{{Y|mercurial}}",
