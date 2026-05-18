@@ -77,9 +77,17 @@ internal static class SettlementFarmNameTranslator
 
     private static string NormalizePossessiveOwner(string source)
     {
-        return source.EndsWith("'s", StringComparison.Ordinal)
-            ? source.Substring(0, source.Length - 2)
-            : source;
+        if (source.EndsWith("'s", StringComparison.Ordinal))
+        {
+            return source.Substring(0, source.Length - 2);
+        }
+
+        if (source.EndsWith("'", StringComparison.Ordinal))
+        {
+            return source.Substring(0, source.Length - 1);
+        }
+
+        return source;
     }
 
     private static string TranslateModifier(string source)

@@ -248,7 +248,7 @@ public sealed class ColorTagAllowlistCoverageTests
             ["Mods/QudJP/Assemblies/src/Patches/WorldModsTextTranslator.cs:812:TryTranslateTemplate"] = "Audited Strip call: color ownership is restored in a downstream branch/helper or the call is predicate/observation-only.",
             ["Mods/QudJP/Assemblies/src/Patches/ZoneWindChangeTranslationPatch.cs:114:TryTranslate"] = "Audited Strip call: color ownership is restored in a downstream branch/helper or the call is predicate/observation-only.",
             ["Mods/QudJP/Assemblies/src/Translation/ColorAwareTranslationComposer.cs:30:Strip"] = "Audited Strip call: color ownership is restored in a downstream branch/helper or the call is predicate/observation-only.",
-            ["Mods/QudJP/Assemblies/src/Translation/JournalPatternTranslator.cs:85:Translate"] = "Audited Strip call: color ownership is restored in a downstream branch/helper or the call is predicate/observation-only.",
+            ["Mods/QudJP/Assemblies/src/Translation/JournalPatternTranslator.cs:87:Translate"] = "Audited Strip call: color ownership is restored in a downstream branch/helper or the call is predicate/observation-only.",
             ["Mods/QudJP/Assemblies/src/Translation/MessagePatternTranslator.cs:83:Translate"] = "Audited Strip call: color ownership is restored in a downstream branch/helper or the call is predicate/observation-only.",
             ["Mods/QudJP/Assemblies/src/UI/FontManager.cs:250:TryWarmPrimaryFontCharactersForUi"] = "Audited Strip call: color ownership is restored in a downstream branch/helper or the call is predicate/observation-only.",
         };

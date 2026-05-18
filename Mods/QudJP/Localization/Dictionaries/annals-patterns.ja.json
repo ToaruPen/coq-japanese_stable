@@ -3,12 +3,12 @@
   "patterns": [
     {
       "pattern": "^In\\ (.+?)\\ (?:BR|AR),\\ (?!Resheph,)(.+?),\\ died\\ of\\ natural\\ causes\\.\\ (.+?)\\ was\\ (.+?)\\ years\\ old\\.$",
-      "template": "{t0}年、{t1}は自然の理により身罷った。享年{t3}歳であった。",
+      "template": "{t0}年、{t1}は自然の理により身罷った。{t2}は享年{t3}歳であった。",
       "route": "annals"
     },
     {
       "pattern": "^In\\ (.+?)\\ (?:BR|AR),\\ it\\ was\\ discovered\\ that\\ (.+?)\\.\\ Despite\\ reports\\ to\\ the\\ contrary,\\ (.+?)\\ was\\ alive\\ and\\ well\\.\\ (.+?)\\ was\\ known\\ thenceforth\\ as\\ the\\ (.+?)\\.$",
-      "template": "{t0}年、{t2}の死が偽装されていたとの事実が明らかになった。相反する報告にもかかわらず、{t2}は健在だった。{t3}は以後{t4}として知られるようになった。",
+      "template": "{t0}年、{t1}との事実が明らかになった。相反する報告にもかかわらず、{t2}は健在だった。{t3}は以後{t4}として知られるようになった。",
       "route": "annals"
     },
     {
@@ -373,7 +373,7 @@
     },
     {
       "pattern": "^(.+?),\\ (.+?)\\ cemented\\ (.+?)\\ friendship\\ with\\ (.+?)\\ by\\ marrying\\ (.+?)\\.\\ (.+?),\\ the\\ (.+?)\\ bestowed\\ upon\\ (.+?)\\ a\\ wedding\\ gift\\ they\\ called\\ (.+?)\\.$",
-      "template": "{t0}、{t1}は{t4}と婚姻を結ぶことにより、{t3}との友誼を固めた。{t5}、{t6}は{t7}に、彼らが{t8}と呼ぶ婚礼の贈り物を授けた。",
+      "template": "{t0}、{t1}は{t4}と婚姻を結ぶことにより、{t2}の{t3}との友誼を固めた。{t5}、{t6}は{t7}に、彼らが{t8}と呼ぶ婚礼の贈り物を授けた。",
       "route": "annals"
     },
     {
@@ -498,7 +498,7 @@
     },
     {
       "pattern": "^(.+?),\\ (.+?)\\ cemented\\ (.+?)\\ friendship\\ with\\ (.+?)\\ by\\ marrying\\ (.+?)\\.$",
-      "template": "{t0}、{t1}は{t4}と婚姻を結ぶことにより、{t3}との友誼を固めた。",
+      "template": "{t0}、{t1}は{t4}と婚姻を結ぶことにより、{t2}の{t3}との友誼を固めた。",
       "route": "annals"
     },
     {

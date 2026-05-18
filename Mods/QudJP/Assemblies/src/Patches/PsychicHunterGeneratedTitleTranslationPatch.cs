@@ -102,7 +102,19 @@ public static class PsychicHunterGeneratedTitleTranslationPatch
         catch (Exception ex)
         {
             Trace.TraceError("QudJP: {0}.AddTranslatedTitle failed: {1}", Context, ex);
-            InvokeAddTitle(titles, title, order);
+            try
+            {
+                InvokeAddTitle(titles, title, order);
+            }
+            catch (Exception fallbackEx)
+            {
+                Trace.TraceError(
+                    "QudJP: {0}.AddTranslatedTitle fallback failed for title '{1}' order {2}: {3}",
+                    Context,
+                    title,
+                    order,
+                    fallbackEx);
+            }
         }
     }
 

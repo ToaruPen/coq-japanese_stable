@@ -3568,7 +3568,7 @@
       ],
       "status": "accepted",
       "reason": "",
-      "ja_template": "{t0}年、{t2}の死が偽装されていたとの事実が明らかになった。相反する報告にもかかわらず、{t2}は健在だった。{t3}は以後{t4}として知られるようになった。",
+      "ja_template": "{t0}年、{t1}との事実が明らかになった。相反する報告にもかかわらず、{t2}は健在だった。{t3}は以後{t4}として知られるようになった。",
       "review_notes": "manual sink-pattern registration; source event stores the already expanded gospel frame",
       "route": "annals",
       "en_template_hash": "sha256:3fe260f31f302ae88b3b948d61e1c67f1d39d376b33a8cce000435edb9ccaf9c"
@@ -4406,7 +4406,7 @@
       ],
       "status": "accepted",
       "reason": "",
-      "ja_template": "{t0}年、{t1}は自然の理により身罷った。享年{t3}歳であった。",
+      "ja_template": "{t0}年、{t1}は自然の理により身罷った。{t2}は享年{t3}歳であった。",
       "review_notes": "manual sink-pattern registration; source event stores the already expanded gospel frame",
       "route": "annals",
       "en_template_hash": "sha256:81c3bdca9fd0551052db8b71eadb6849c35b8aec524e7c5f927f0bc9d5a057fc"
@@ -5526,7 +5526,7 @@
       ],
       "status": "accepted",
       "reason": "",
-      "ja_template": "{t0}、{t1}は{t4}と婚姻を結ぶことにより、{t3}との友誼を固めた。",
+      "ja_template": "{t0}、{t1}は{t4}と婚姻を結ぶことにより、{t2}の{t3}との友誼を固めた。",
       "review_notes": "",
       "route": "annals",
       "en_template_hash": "sha256:ce29afe90ea02a33072c19a58b557c71dd15a9413973c79856cccd47ab006d37"
@@ -5597,7 +5597,7 @@
       ],
       "status": "accepted",
       "reason": "",
-      "ja_template": "{t0}、{t1}は{t4}と婚姻を結ぶことにより、{t3}との友誼を固めた。{t5}、{t6}は{t7}に、彼らが{t8}と呼ぶ婚礼の贈り物を授けた。",
+      "ja_template": "{t0}、{t1}は{t4}と婚姻を結ぶことにより、{t2}の{t3}との友誼を固めた。{t5}、{t6}は{t7}に、彼らが{t8}と呼ぶ婚礼の贈り物を授けた。",
       "review_notes": "",
       "route": "annals",
       "en_template_hash": "sha256:beb11a404551ddefab0ccec7a96775047d89865691612f445d8c2524ff48bc91"

@@ -24,9 +24,9 @@ public static class TombstoneDeathCauseTranslationPatch
 
     public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
     {
+        var originalInstructions = instructions.ToList();
         try
         {
-            var originalInstructions = instructions.ToList();
             var transformed = 0;
             var transformedInstructions = new List<CodeInstruction>(originalInstructions.Count);
             foreach (var instruction in originalInstructions)
@@ -54,7 +54,7 @@ public static class TombstoneDeathCauseTranslationPatch
         catch (Exception ex)
         {
             Trace.TraceError("QudJP: {0}.Transpiler failed; returning original instructions: {1}", Context, ex);
-            return instructions;
+            return originalInstructions;
         }
     }
 
@@ -186,8 +186,12 @@ public static class TombstoneDeathCauseTranslationPatch
             return true;
         }
 
-        var inscription = AccessTools.Field(owner.GetType(), "Inscription")?.GetValue(owner)
-            ?? AccessTools.Property(owner.GetType(), "Inscription")?.GetValue(owner);
+        var inscription = AccessTools.Field(owner.GetType(), "Inscription")?.GetValue(owner);
+        if (inscription is null)
+        {
+            inscription = AccessTools.Property(owner.GetType(), "Inscription")?.GetValue(owner);
+        }
+
         return string.IsNullOrEmpty(inscription as string);
     }
 

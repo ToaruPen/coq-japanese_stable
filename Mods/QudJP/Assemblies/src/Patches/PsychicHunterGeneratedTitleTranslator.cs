@@ -269,6 +269,12 @@ internal static class PsychicHunterGeneratedTitleTranslator
         for (var index = 0; index < words.Length; index++)
         {
             translated[index] = TranslateCommonPhrase(words[index]);
+            if (string.IsNullOrEmpty(translated[index])
+                || (string.Equals(translated[index], words[index], StringComparison.Ordinal)
+                    && IsAscii(words[index])))
+            {
+                return source;
+            }
         }
 
         if (translated.Length == 2
@@ -278,6 +284,19 @@ internal static class PsychicHunterGeneratedTitleTranslator
         }
 
         return string.Concat(translated);
+    }
+
+    private static bool IsAscii(string source)
+    {
+        for (var index = 0; index < source.Length; index++)
+        {
+            if (source[index] > '\u007f')
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private static bool ContainsTriadicSymbol(string source)

@@ -76,6 +76,14 @@ public static class AbilityManagerScreenTranslationPatch
         @"(?<value>\{\{[^{}|]+\|\d+\}\}|\d+d\d+|\d+)\s+rounds?(?![A-Za-z])",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex ToughnessPattern = new(
+        @"\bToughness\b",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex WillpowerPattern = new(
+        @"\bWillpower\b",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     private static readonly Regex TranslatableSentencePattern = new(
         @"(?<sentence>[^.\n]+\.)(?<space>\s*)",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
@@ -470,8 +478,8 @@ public static class AbilityManagerScreenTranslationPatch
         translated = PerRoundsPattern.Replace(translated, static match => match.Groups["rounds"].Value + "ラウンドにつき" + match.Groups["amount"].Value);
         translated = PerRoundPattern.Replace(translated, static match => "1ラウンドにつき" + match.Groups["amount"].Value);
         translated = RoundUnitPattern.Replace(translated, static match => match.Groups["value"].Value + "ラウンド");
-        translated = Regex.Replace(translated, @"\bToughness\b", "頑健性", RegexOptions.CultureInvariant);
-        translated = Regex.Replace(translated, @"\bWillpower\b", "意志力", RegexOptions.CultureInvariant);
+        translated = ToughnessPattern.Replace(translated, "頑健性");
+        translated = WillpowerPattern.Replace(translated, "意志力");
         return translated;
     }
 

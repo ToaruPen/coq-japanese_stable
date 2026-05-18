@@ -40,6 +40,8 @@ internal static class JournalPatternTranslator
         new Regex("^with (?<material>.+?) skin$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex PossessivePrefixPattern =
         new Regex("^(?:his|her|its|their) (?<rest>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex FakedDeathCapturePattern =
+        new Regex("^(?<name>.+?)'s death had been faked$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex JapaneseCharacterPattern =
         new Regex("[\\p{IsHiragana}\\p{IsKatakana}\\p{IsCJKUnifiedIdeographs}]", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
@@ -787,6 +789,11 @@ internal static class JournalPatternTranslator
             return possessiveCapture;
         }
 
+        if (TryTranslateFakedDeathCapture(source, out var fakedDeathCapture))
+        {
+            return fakedDeathCapture;
+        }
+
         if (TryTranslateTitlePhraseCapture(source, out var titlePhraseCapture))
         {
             return titlePhraseCapture;
@@ -897,6 +904,19 @@ internal static class JournalPatternTranslator
 
         translated = source;
         return false;
+    }
+
+    private static bool TryTranslateFakedDeathCapture(string source, out string translated)
+    {
+        var fakedDeathMatch = FakedDeathCapturePattern.Match(source);
+        if (!fakedDeathMatch.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        translated = TranslateTemplateCapture(fakedDeathMatch.Groups["name"].Value) + "の死が偽装されていた";
+        return true;
     }
 
     private static bool TryTranslateTitlePhraseCapture(string source, out string translated)

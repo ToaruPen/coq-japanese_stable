@@ -179,7 +179,7 @@
       "candidate_id": "GenericDeath#gospel",
       "event_property": "gospel",
       "input_source": "In 5597 BR, Yarad, Hammer-in-Turquoise, the Ilep Sorrow, died of natural causes. He was 216 years old.",
-      "expected_japanese_exact": "5597年、Yarad、ターコイズの槌、イレプの悲哀は自然の理により身罷った。享年216歳であった。"
+      "expected_japanese_exact": "5597年、Yarad、ターコイズの槌、イレプの悲哀は自然の理により身罷った。その者は享年216歳であった。"
     },
     {
       "candidate_id": "GenericDeath#tombInscription",
@@ -257,13 +257,13 @@
       "candidate_id": "Marry#gospel#opt:base",
       "event_property": "gospel",
       "input_source": "Under a glass eclipse, Nuntu cemented her friendship with glassblowers by marrying Arconaut's Hall.",
-      "expected_japanese_exact": "ガラスの日食の下、Nuntuはアルコノートの堂と婚姻を結ぶことにより、ガラス職人たちとの友誼を固めた。"
+      "expected_japanese_exact": "ガラスの日食の下、Nuntuはアルコノートの堂と婚姻を結ぶことにより、その者のガラス職人たちとの友誼を固めた。"
     },
     {
       "candidate_id": "Marry#gospel#opt:with1",
       "event_property": "gospel",
       "input_source": "Under a glass eclipse, Nuntu cemented her friendship with Farmers' Guild by marrying Arconaut's Hall. In celebration, the Farmers' Guild bestowed upon Nuntu a wedding gift they called the Glass Torch.",
-      "expected_japanese_exact": "ガラスの日食の下、Nuntuはアルコノートの堂と婚姻を結ぶことにより、農夫ギルドとの友誼を固めた。祝賀として、農夫ギルドはNuntuに、彼らがガラスの松明と呼ぶ婚礼の贈り物を授けた。"
+      "expected_japanese_exact": "ガラスの日食の下、Nuntuはアルコノートの堂と婚姻を結ぶことにより、その者の農夫ギルドとの友誼を固めた。祝賀として、農夫ギルドはNuntuに、彼らがガラスの松明と呼ぶ婚礼の贈り物を授けた。"
     },
     {
       "candidate_id": "Marry#tombInscription",

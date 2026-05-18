@@ -940,7 +940,7 @@ internal static class DynamicQuestConstructorConversationTextTranslator
         match = HolyItemDesecrateBlessingPattern.Match(source);
         if (match.Success)
         {
-            translated = "あなたがitを*verb*してくれれば、それは" + TranslateBlessing(match.Groups["blessing"].Value) + "となる";
+            translated = "あなたが*it*を*verb*してくれれば、それは" + TranslateBlessing(match.Groups["blessing"].Value) + "となる";
             return true;
         }
 

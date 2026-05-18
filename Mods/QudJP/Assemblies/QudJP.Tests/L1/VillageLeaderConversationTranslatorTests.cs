@@ -72,6 +72,23 @@ public sealed class VillageLeaderConversationTranslatorTests
     }
 
     [Test]
+    public void TryTranslate_PreservesMarkupOnMayorSacredProfaneCaptures()
+    {
+        const string source =
+            "friend, welcome to the village of Joppa. We are a clan who cherish {{C|the wheel}} and abhor {{R|chrome}}. Per our custom, you may drink of our freshwater and quench your thirst.";
+
+        var translated = VillageLeaderConversationTranslator.TryTranslate(source, out var result);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.True);
+            Assert.That(
+                result,
+                Is.EqualTo("友よ、Joppaの村へようこそ。われらは{{C|車輪}}を大切にし、{{R|クロム}}を忌む氏族だ。われらの習わしにより、われらの真水を飲み、渇きを癒してよい。"));
+        });
+    }
+
+    [Test]
     public void TryTranslate_PreservesWholeSourceColorWrapper()
     {
         var translated = VillageLeaderConversationTranslator.TryTranslate("{{G|Live and drink, friend.}}", out var result);

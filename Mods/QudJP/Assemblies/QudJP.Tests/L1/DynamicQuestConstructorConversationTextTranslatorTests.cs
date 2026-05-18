@@ -63,7 +63,7 @@ public sealed class DynamicQuestConstructorConversationTextTranslatorTests
     [TestCase("It would honor us if you would do the same", "あなたも同じことをしてくれれば、われらの誉れとなる")]
     [TestCase("It would be a blessing if you would do it too", "あなたもそうしてくれれば、それは祝福となる")]
     [TestCase("It would honor us greatly if you *verb* *it*", "あなたが*it*を*verb*してくれれば、われらにとって大きな誉れとなる")]
-    [TestCase("It would be a boon if you *verb* it", "あなたがitを*verb*してくれれば、それは恩恵となる")]
+    [TestCase("It would be a boon if you *verb* it", "あなたが*it*を*verb*してくれれば、それは恩恵となる")]
     [TestCase("*name* lost our *itemName*", "*name*がわれらの*itemName*を失った")]
     [TestCase("our *itemName* *were* stolen from us", "われらの*itemName*は盗まれた")]
     [TestCase("misfortune has separated us from our *itemName*", "不運により、われらは*itemName*から引き離された")]

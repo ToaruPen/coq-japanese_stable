@@ -91,7 +91,7 @@ internal static class VillageLeaderConversationTranslator
     {
         var match = pattern.Match(stripped);
         if (!match.Success
-            || !TryTranslateMayorMiddle(match.Groups["middle"].Value, out var middle)
+            || !TryTranslateMayorMiddle(match.Groups["middle"].Value, spans, match.Groups["middle"].Index, out var middle)
             || !TryTranslateMayorTail(match.Groups["tail"].Value, out var tail))
         {
             translated = source;
@@ -111,7 +111,11 @@ internal static class VillageLeaderConversationTranslator
         return true;
     }
 
-    private static bool TryTranslateMayorMiddle(string middle, out string translated)
+    private static bool TryTranslateMayorMiddle(
+        string middle,
+        IReadOnlyList<ColorSpan> spans,
+        int middleStart,
+        out string translated)
     {
         if (string.Equals(
                 middle,
@@ -129,8 +133,8 @@ internal static class VillageLeaderConversationTranslator
             return false;
         }
 
-        var sacred = TranslateCapture(match.Groups["sacred"].Value);
-        var profane = TranslateCapture(match.Groups["profane"].Value);
+        var sacred = TranslateCapture(match, spans, middleStart, "sacred");
+        var profane = TranslateCapture(match, spans, middleStart, "profane");
         translated = "われらは" + sacred + "を" + TranslateLove(match.Groups["love"].Value) + "、"
             + profane + "を" + TranslateAbhor(match.Groups["abhor"].Value) + TranslateClan(match.Groups["clan"].Value) + "だ";
         return true;
@@ -195,25 +199,41 @@ internal static class VillageLeaderConversationTranslator
         _ => source,
     };
 
-    private static string TranslateCapture(string source)
+    private static string TranslateCapture(Match match, IReadOnlyList<ColorSpan> spans, int offset, string groupName)
     {
-        var trimmed = source.Trim();
+        var group = match.Groups[groupName];
+        var trimmed = group.Value.Trim();
         var scoped = HistorySpiceComponentLookup.TranslateExactOrLowerAscii(trimmed);
         if (scoped is not null)
         {
-            return scoped;
+            return RestoreCapture(scoped, spans, offset + group.Index, group.Length).Trim();
         }
 
         var articleless = StringHelpers.StripLeadingEnglishArticle(trimmed);
         scoped = HistorySpiceComponentLookup.TranslateExactOrLowerAscii(articleless);
         if (scoped is not null)
         {
-            return scoped;
+            return RestoreCapture(scoped, spans, offset + group.Index, group.Length).Trim();
         }
 
-        return HistorySpiceComponentLookup.TryTranslateTitlePhrase(articleless, out var titlePhrase)
-            ? titlePhrase
-            : trimmed;
+        if (HistorySpiceComponentLookup.TryTranslateTitlePhrase(articleless, out var titlePhrase))
+        {
+            return RestoreCapture(titlePhrase, spans, offset + group.Index, group.Length).Trim();
+        }
+
+        return RestoreCapture(trimmed, spans, offset + group.Index, group.Length).Trim();
+    }
+
+    private static string RestoreCapture(string value, IReadOnlyList<ColorSpan> spans, int startIndex, int length)
+    {
+        if (spans.Count == 0)
+        {
+            return value;
+        }
+
+        var captureSpans = ColorCodePreserver.SliceSpans(spans, startIndex, length);
+        captureSpans.AddRange(ColorCodePreserver.SliceAdjacentCaptureBoundarySpans(spans, startIndex, length));
+        return ColorAwareTranslationComposer.Restore(value, captureSpans);
     }
 
     private static string TranslateClan(string source) => source switch

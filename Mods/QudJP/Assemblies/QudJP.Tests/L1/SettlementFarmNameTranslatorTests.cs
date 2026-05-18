@@ -10,6 +10,7 @@ public sealed class SettlementFarmNameTranslatorTests
     [TestCase("a remote starapple farm", "辺境のスターアップル農場")]
     [TestCase("Urist Farm", "Uristの農場")]
     [TestCase("Urist's Ranch", "Uristの牧場")]
+    [TestCase("Farmers' Farm", "Farmersの農場")]
     [TestCase("the Urist Shire", "Uristの村郡")]
     [TestCase("the Shire of Urist", "Uristの村郡")]
     [TestCase("Mudshire", "泥村郡")]

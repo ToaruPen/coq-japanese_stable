@@ -76,9 +76,12 @@ public static class PseudoRelicGeneratedNameTranslationPatch
 
         if (!RelicGeneratedNameTranslator.TryTranslate(source, out translated))
         {
-            if (!string.Equals(source, translated, StringComparison.Ordinal))
+            if (!string.Equals(source, translated, StringComparison.Ordinal)
+                && SetMemberValue(obj, "DisplayName", translated))
             {
-                SetMemberValue(obj, "DisplayName", translated);
+                ClearArticle(obj, "IndefiniteArticle");
+                ClearArticle(obj, "DefiniteArticle");
+                ClearCachedDisplayNameForSort(obj);
             }
 
             return false;

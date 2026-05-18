@@ -101,7 +101,7 @@ public sealed class PseudoRelicGeneratedNameTranslationPatchTests
     }
 
     [Test]
-    public void Send_StripsDirectMarkerWithoutClearingArticleOrCache_WhenPatched()
+    public void Send_StripsDirectMarkerAndClearsArticleAndCache_WhenPatched()
     {
         WithPatchedSend(() =>
         {
@@ -118,9 +118,9 @@ public sealed class PseudoRelicGeneratedNameTranslationPatchTests
             Assert.Multiple(() =>
             {
                 Assert.That(relic.DisplayName, Is.EqualTo("Edge of the Dominant Sword"));
-                Assert.That(relic.IndefiniteArticle, Is.EqualTo("the"));
-                Assert.That(relic.DefiniteArticle, Is.EqualTo("the"));
-                Assert.That(relic.GetCachedDisplayNameForSort(), Is.EqualTo("Edge of the Dominant Sword"));
+                Assert.That(relic.IndefiniteArticle, Is.Empty);
+                Assert.That(relic.DefiniteArticle, Is.Empty);
+                Assert.That(relic.GetCachedDisplayNameForSort(), Is.Null);
                 Assert.That(HitCount(), Is.Zero);
             });
         });
