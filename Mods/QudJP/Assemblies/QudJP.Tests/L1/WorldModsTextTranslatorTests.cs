@@ -116,6 +116,9 @@ public sealed class WorldModsTextTranslatorTests
         "Displacer: When powered, this weapon randomly teleports its target 1-6 tiles away on a successful hit.",
         "位相転移: 通電中、この武器は命中時に対象を無作為に1-6マス離れた場所へ転移させる。")]
     [TestCase(
+        "Fitted with beamsplitter: This weapon has a 3-way spread with each shot at -1 penetration roll.",
+        "ビームスプリッタ装着: この武器は1射撃ごとに3方向へ拡散し、各射撃の貫通判定が-1される。")]
+    [TestCase(
         "Electrified: When powered, this weapon deals an additional 2-3 electrical damage on hit.",
         "電化: 通電中、この武器は命中時に追加で2-3の電撃ダメージを与える。")]
     [TestCase(
@@ -192,6 +195,66 @@ public sealed class WorldModsTextTranslatorTests
         {
             Assert.That(ok, Is.True);
             Assert.That(translated, Is.EqualTo(expected));
+        });
+    }
+
+    [Test]
+    public void TryTranslate_TranslatesMasterworkTemplateFromScopedWorldModsDictionary()
+    {
+        WriteDictionary(
+            "world-mods.ja.json",
+            ("Masterwork: This weapon scores critical hits {0} of the time instead of 5%.", "傑作: この武器のクリティカル発生率は{0}（通常は5%）。"));
+
+        var ok = WorldModsTextTranslator.TryTranslate(
+            "{{rules|Masterwork: This weapon scores critical hits 15% of the time instead of 5%.}}",
+            "LookTooltipContentPatch",
+            "Description.WorldMods",
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(translated, Is.EqualTo("{{rules|傑作: この武器のクリティカル発生率は15%（通常は5%）。}}"));
+        });
+    }
+
+    [Test]
+    public void TryTranslate_PreservesColoredMasterworkValueWhenTemplateMovesCapture()
+    {
+        WriteDictionary(
+            "world-mods.ja.json",
+            ("Masterwork: This weapon scores critical hits {0} of the time instead of 5%.", "傑作: この武器のクリティカル発生率は{0}（通常は5%）。"));
+
+        var ok = WorldModsTextTranslator.TryTranslate(
+            "{{rules|Masterwork: This weapon scores critical hits {{W|15%}} of the time instead of 5%.}}",
+            "LookTooltipContentPatch",
+            "Description.WorldMods",
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(translated, Is.EqualTo("{{rules|傑作: この武器のクリティカル発生率は{{W|15%}}（通常は5%）。}}"));
+        });
+    }
+
+    [Test]
+    public void TryTranslate_PreservesColoredBeamsplitterCountInsideWholeSourceWrapper()
+    {
+        WriteDictionary(
+            "world-mods.ja.json",
+            ("Fitted with beamsplitter: This weapon has a {0}-way spread with each shot at -1 penetration roll.", "ビームスプリッタ装着: この武器は1射撃ごとに{0}方向へ拡散し、各射撃の貫通判定が-1される。"));
+
+        var ok = WorldModsTextTranslator.TryTranslate(
+            "{{rules|Fitted with beamsplitter: This weapon has a {{W|3}}-way spread with each shot at -1 penetration roll.}}",
+            "LookTooltipContentPatch",
+            "Description.WorldMods",
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(translated, Is.EqualTo("{{rules|ビームスプリッタ装着: この武器は1射撃ごとに{{W|3}}方向へ拡散し、各射撃の貫通判定が-1される。}}"));
         });
     }
 
@@ -591,6 +654,7 @@ public sealed class WorldModsTextTranslatorTests
             ("Counterweighted: Adds a bonus to hit.", "つり合い調整: 命中にボーナスを与える。"),
             ("Counterweighted: Adds {0} to hit.", "つり合い調整: 命中に{0}のボーナスを与える。"),
             ("Displacer: When powered, this weapon randomly teleports its target {0} tiles away on a successful hit.", "位相転移: 通電中、この武器は命中時に対象を無作為に{0}マス離れた場所へ転移させる。"),
+            ("Fitted with beamsplitter: This weapon has a {0}-way spread with each shot at -1 penetration roll.", "ビームスプリッタ装着: この武器は1射撃ごとに{0}方向へ拡散し、各射撃の貫通判定が-1される。"),
             ("Electrified: When powered, this weapon deals additional electrical damage on hit.", "電化: 通電中、この武器は命中時に追加の電撃ダメージを与える。"),
             ("Electrified: When powered, this weapon deals an additional {0} electrical damage on hit.", "電化: 通電中、この武器は命中時に追加で{0}の電撃ダメージを与える。"),
             ("Flaming: When powered, this weapon deals additional heat damage on hit.", "火炎: 通電中、この武器は命中時に追加の熱ダメージを与える。"),

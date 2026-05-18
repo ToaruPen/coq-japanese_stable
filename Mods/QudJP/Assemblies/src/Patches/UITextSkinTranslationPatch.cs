@@ -43,6 +43,20 @@ public static class UITextSkinTranslationPatch
         new Regex("(^|\\n)ù ", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex ActiveEffectsVisibleTitlePattern =
         new Regex("^発動中の効果 - (?<name>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly string[] DisplayNameWithClauseMarkers =
+    {
+        "beamsplitter",
+        "filters",
+        "suspensors",
+        "cleats",
+        "piping",
+        "electromagnetic shielding",
+        "gearbox",
+        "co-processor",
+        "quantum reverb",
+        "terrifying visage",
+        "serene visage",
+    };
 #pragma warning disable S1144, CA1823
     private static readonly string[] CharGenStackHints =
     {
@@ -279,6 +293,16 @@ public static class UITextSkinTranslationPatch
             return pickTargetTranslation;
         }
 
+        if (TryTranslateDisplayNameWithClauseUiText(source!, stripped, effectiveContext, out var displayNameTranslation))
+        {
+            DynamicTextObservability.RecordTransform(
+                nameof(UITextSkinTranslationPatch),
+                "DisplayName.WithClauseUiText",
+                source!,
+                displayNameTranslation);
+            return displayNameTranslation;
+        }
+
         var alreadyLocalized = IsAlreadyLocalizedDirectRouteText(stripped, effectiveContext);
         var shouldSkipTranslation = ShouldSkipTranslation(stripped, effectiveContext);
         if (alreadyLocalized)
@@ -345,6 +369,46 @@ public static class UITextSkinTranslationPatch
         }
 
         return PickTargetWindowTextTranslator.TryTranslateUiText(source, nameof(PickTargetWindowTextTranslator), out translated);
+    }
+
+    private static bool TryTranslateDisplayNameWithClauseUiText(
+        string source,
+        string stripped,
+        string? context,
+        out string translated)
+    {
+        translated = source;
+        if (!string.Equals(context, nameof(UITextSkinTranslationPatch), StringComparison.Ordinal)
+            || !LooksLikeKnownDisplayNameWithClause(stripped))
+        {
+            return false;
+        }
+
+        var displayNameTranslation = source;
+        if (!DisplayNameSemanticPipeline.TryTranslateResult(
+                ref displayNameTranslation,
+                ObservabilityHelpers.ComposeContext(
+                    nameof(GetDisplayNameProcessPatch),
+                    "UITextSkin.WithClauseUiText")))
+        {
+            return false;
+        }
+
+        translated = displayNameTranslation;
+        return true;
+    }
+
+    private static bool LooksLikeKnownDisplayNameWithClause(string source)
+    {
+        for (var index = 0; index < DisplayNameWithClauseMarkers.Length; index++)
+        {
+            if (StringHelpers.ContainsOrdinalIgnoreCase(source, " with " + DisplayNameWithClauseMarkers[index]))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private static bool LooksLikePickTargetCommandBar(string source)

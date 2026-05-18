@@ -1066,7 +1066,7 @@
     <tag Name="ExcludeFromDynamicEncounters" />
   </object>
   <object Name="Scrap Crystal" Inherits="Scrap" Replace="true">
-    <part Name="Render" Tile="items/bit11.bmp" DetailColor="C" ColorString="&amp;G" DisplayName="罅割れたレンズ" />
+    <part Name="Render" Tile="items/bit11.bmp" DetailColor="C" ColorString="&amp;G" DisplayName="ひび割れたレンズ" />
     <part Name="TinkerItem" Bits="G" />
   </object>
   <object Name="Scrap Electronics" Inherits="Scrap" Replace="true">
@@ -1093,7 +1093,7 @@
     <part Name="Commerce" Value="25" />
   </object>
   <object Name="Scrap 3" Inherits="Scrap" Replace="true">
-    <part Name="Render" Tile="items/bit3.bmp" DetailColor="C" ColorString="&amp;b" DisplayName="罅割れた機体ハウジング" />
+    <part Name="Render" Tile="items/bit3.bmp" DetailColor="C" ColorString="&amp;b" DisplayName="ひび割れた機体ハウジング" />
     <part Name="TinkerItem" Bits="3" />
     <part Name="Commerce" Value="35" />
   </object>
@@ -1154,7 +1154,7 @@
     <part Name="Commerce" Value="25" />
   </object>
   <object Name="Med Scrap 3" Inherits="Scrap" Replace="true">
-    <part Name="Render" ColorString="&amp;b" DisplayName="罅割れたクリスボーン" />
+    <part Name="Render" ColorString="&amp;b" DisplayName="ひび割れたクリスボーン" />
     <part Name="TinkerItem" Bits="3" />
     <part Name="Commerce" Value="35" />
   </object>

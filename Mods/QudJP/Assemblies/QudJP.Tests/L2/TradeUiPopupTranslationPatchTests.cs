@@ -557,6 +557,10 @@ public sealed class TradeUiPopupTranslationPatchTests
         target.DoVendorExamine();
         var result = DummyPopupShow.LastShowMessage;
 
+        target.PopupMessageToShow = "You identify the {{R|}} ピストル as a {{R|}} {{Y|masterwork}} scoped チェーンピストル.";
+        target.DoVendorExamine();
+        var playerResult = DummyPopupShow.LastShowMessage;
+
         target.PopupMessageToShow = "商人 doesn't have the skill to identify artifacts.";
         target.DoVendorExamine();
         var missingSkill = DummyPopupShow.LastShowMessage;
@@ -568,12 +572,13 @@ public sealed class TradeUiPopupTranslationPatchTests
             Assert.That(requiredDrams, Is.EqualTo("この品を鑑定するのに必要な{{C|7}}ドラムが足りない。"));
             Assert.That(question, Is.EqualTo("これを7ドラムの真水で鑑定できる。"));
             Assert.That(result, Is.EqualTo("商人は{{Y|laser pistol}}をレーザーピストルだと鑑定した。"));
+            Assert.That(playerResult, Is.EqualTo("あなたはピストルを{{Y|傑作}} スコープ付き チェーンピストルだと鑑定した。"));
             Assert.That(missingSkill, Is.EqualTo("商人にはアーティファクトを鑑定する技能がない。"));
             Assert.That(TradeUiPopupHitCount("TradeUiPopup.Explanation"), Is.EqualTo(1));
             Assert.That(TradeUiPopupHitCount("TradeUiPopup.IdentifyTooComplex"), Is.EqualTo(1));
             Assert.That(TradeUiPopupHitCount("TradeUiPopup.IdentifyRequiredDrams"), Is.EqualTo(1));
             Assert.That(TradeUiPopupHitCount("TradeUiPopup.IdentifyQuestion"), Is.EqualTo(1));
-            Assert.That(TradeUiPopupHitCount("TradeUiPopup.IdentifyResult"), Is.EqualTo(1));
+            Assert.That(TradeUiPopupHitCount("TradeUiPopup.IdentifyResult"), Is.EqualTo(2));
             Assert.That(TradeUiPopupHitCount("TradeUiPopup.MissingSkill"), Is.EqualTo(1));
         });
     }

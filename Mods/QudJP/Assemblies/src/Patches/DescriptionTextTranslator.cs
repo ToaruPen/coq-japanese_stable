@@ -40,6 +40,15 @@ internal static class DescriptionTextTranslator
     private static readonly Regex AddsCookingEffectsPattern =
         new Regex("^Adds (?<effect>.+?) effects to cooked meals\\.$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex MakersMarkDescriptionPattern =
+        new Regex("^(?:(?<markPrefix>.+?):\\s*|:\\s*)?(?<subject>This|These|That|Those) (?<category>.+?) (?<verb>bears|bear) the (?<mark>mark|marks) of (?<crafter>.+?)\\.$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex MultipleAmmoUsedPerShotPattern =
+        new Regex("^Multiple ammo used per shot: (?<count>\\d+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex MultipleProjectilesPerShotPattern =
+        new Regex("^Multiple projectiles per shot: (?<count>\\d+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     // Keep TranslateShortDescription and TranslateLongDescription separate even though they
     // currently delegate to TranslateDescriptionText, so short/long description routes can
     // diverge later without changing their patch call sites.
@@ -389,6 +398,16 @@ internal static class DescriptionTextTranslator
             return true;
         }
 
+        if (TryTranslateMakersMarkDescription(source, route, out translated))
+        {
+            return true;
+        }
+
+        if (TryTranslateMissileWeaponRuntimeLine(source, route, out translated))
+        {
+            return true;
+        }
+
         if (ShouldSkipExactLeafTranslation(source))
         {
             translated = source;
@@ -440,6 +459,54 @@ internal static class DescriptionTextTranslator
         translated = translatedEffect + "の効果を調理した食事に加える。";
         DynamicTextObservability.RecordTransform(route, "Description.CookingEffects", source, translated);
         return true;
+    }
+
+    private static bool TryTranslateMakersMarkDescription(string source, string route, out string translated)
+    {
+        var match = MakersMarkDescriptionPattern.Match(source);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        var rawCrafter = match.Groups["crafter"].Value;
+        var crafter = StringHelpers.TryGetTranslationExactOrLowerAscii(rawCrafter, out var translatedCrafter)
+            ? translatedCrafter
+            : rawCrafter;
+        translated = match.Groups["markPrefix"].Success
+            ? FormatMakersMarkPrefix(match.Groups["markPrefix"].Value) + crafter + "の印を帯びている。"
+            : crafter + "の印を帯びている。";
+        DynamicTextObservability.RecordTransform(route, "Description.MakersMark", source, translated);
+        return true;
+    }
+
+    private static string FormatMakersMarkPrefix(string prefix)
+    {
+        var trimmed = prefix.TrimEnd();
+        return trimmed + ": ";
+    }
+
+    private static bool TryTranslateMissileWeaponRuntimeLine(string source, string route, out string translated)
+    {
+        var ammoMatch = MultipleAmmoUsedPerShotPattern.Match(source);
+        if (ammoMatch.Success)
+        {
+            translated = "1射撃あたりの消費弾薬数: " + ammoMatch.Groups["count"].Value;
+            DynamicTextObservability.RecordTransform(route, "Description.MissileWeaponRuntime", source, translated);
+            return true;
+        }
+
+        var projectilesMatch = MultipleProjectilesPerShotPattern.Match(source);
+        if (projectilesMatch.Success)
+        {
+            translated = "1射撃あたりの発射体数: " + projectilesMatch.Groups["count"].Value;
+            DynamicTextObservability.RecordTransform(route, "Description.MissileWeaponRuntime", source, translated);
+            return true;
+        }
+
+        translated = source;
+        return false;
     }
 
     private static bool TryTranslateBrainDispositionLinePreservingColors(string source, string route, out string translated)

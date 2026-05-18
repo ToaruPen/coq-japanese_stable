@@ -62,6 +62,10 @@ public static class TradeUiPopupTranslationPatch
         "^(?<subject>.+?) (?:identify|identifies) (?<item>.+?) as (?<identified>.+?)\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex LeadingZeroWidthMarkupPrefixPattern = new(
+        "^(?:\\{\\{[^|}]+\\|\\}\\}\\s*)+(?<rest>.+)$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     private static readonly Regex RepairTooComplexPattern = new(
         "^(?<target>These items are|This item is) too complex for (?<trader>.+?) to repair\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
@@ -530,8 +534,8 @@ public static class TradeUiPopupTranslationPatch
                 match => new object[]
                 {
                     NormalizeSubject(RestoreCapture(match, spans, "subject")),
-                    RestoreCapture(match, spans, "item"),
-                    RestoreCapture(match, spans, "identified"),
+                    TranslateIdentifyDisplayNameCapture(RestoreCapture(match, spans, "item")),
+                    TranslateIdentifyDisplayNameCapture(RestoreCapture(match, spans, "identified")),
                 },
                 out translated))
         {
@@ -937,6 +941,45 @@ public static class TradeUiPopupTranslationPatch
             "one of those" => "そのうちの1つ",
             _ => value.Trim(),
         };
+    }
+
+    private static string TranslateIdentifyDisplayNameCapture(string value)
+    {
+        var trimmed = StripLeadingZeroWidthMarkupPrefix(value.Trim()).Trim();
+        trimmed = StripLeadingPossessiveOrArticle(trimmed).Trim();
+        trimmed = StripLeadingZeroWidthMarkupPrefix(trimmed).Trim();
+        return GetDisplayNameRouteTranslator.TranslatePreservingColors(trimmed, nameof(GetDisplayNamePatch));
+    }
+
+    private static string StripLeadingPossessiveOrArticle(string value)
+    {
+        var trimmed = StripLeadingArticle(value);
+        if (trimmed.StartsWith("your ", StringComparison.Ordinal))
+        {
+            return trimmed.Substring("your ".Length);
+        }
+
+        if (trimmed.StartsWith("Your ", StringComparison.Ordinal))
+        {
+            return trimmed.Substring("Your ".Length);
+        }
+
+        return trimmed;
+    }
+
+    private static string StripLeadingZeroWidthMarkupPrefix(string value)
+    {
+        var current = value;
+        while (true)
+        {
+            var match = LeadingZeroWidthMarkupPrefixPattern.Match(current);
+            if (!match.Success)
+            {
+                return current;
+            }
+
+            current = match.Groups["rest"].Value.TrimStart();
+        }
     }
 
     private static string TranslateTradeSkillAction(Group group, IReadOnlyList<ColorSpan> spans)

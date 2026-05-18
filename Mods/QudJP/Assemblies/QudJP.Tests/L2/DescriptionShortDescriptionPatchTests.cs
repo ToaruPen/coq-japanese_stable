@@ -96,9 +96,9 @@ public sealed class DescriptionShortDescriptionPatchTests
     public void DescriptionShortDescriptionPatch_TranslatesScopedWorldModsEntries_WhenPatched()
     {
         WriteScopedDictionary(
-            ("Strength Bonus Cap: no limit\nWeapon Class: Long Blades (increased penetration on critical hit)", "筋力ボーナス上限: なし\n武器カテゴリ: 長剣（クリティカル時に貫通力上昇）"));
-        WriteDictionary(
-            ("Masterwork: This weapon scores critical hits {0} of the time instead of 5%.", "名工品: この武器のクリティカル発生率は{0}（通常は5%）。"));
+            ("Strength Bonus Cap: no limit\nWeapon Class: Long Blades (increased penetration on critical hit)", "筋力ボーナス上限: なし\n武器カテゴリ: 長剣（クリティカル時に貫通力上昇）"),
+            ("Masterwork: This weapon scores critical hits {0} of the time instead of 5%.", "傑作: この武器のクリティカル発生率は{0}（通常は5%）。"),
+            ("Offhand Attack Chance: {0}%", "オフハンド命中率: {0}%"));
 
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
@@ -112,6 +112,8 @@ public sealed class DescriptionShortDescriptionPatchTests
                 "Strength Bonus Cap: no limit\nWeapon Class: Long Blades (increased penetration on critical hit)");
             var masterworkTarget = new DummyDescriptionShortDescriptionTarget(
                 "{{rules|Masterwork: This weapon scores critical hits 15% of the time instead of 5%.}}");
+            var offhandTarget = new DummyDescriptionShortDescriptionTarget(
+                "\n{{rules|Offhand Attack Chance: 15%}}");
 
             Assert.Multiple(() =>
             {
@@ -120,7 +122,10 @@ public sealed class DescriptionShortDescriptionPatchTests
                     Is.EqualTo("筋力ボーナス上限: なし\n武器カテゴリ: 長剣（クリティカル時に貫通力上昇）"));
                 Assert.That(
                     masterworkTarget.GetShortDescription(useShort: true, useLong: false, prefix: string.Empty),
-                    Is.EqualTo("{{rules|名工品: この武器のクリティカル発生率は15%（通常は5%）。}}"));
+                    Is.EqualTo("{{rules|傑作: この武器のクリティカル発生率は15%（通常は5%）。}}"));
+                Assert.That(
+                    offhandTarget.GetShortDescription(useShort: true, useLong: false, prefix: string.Empty),
+                    Is.EqualTo("\n{{rules|オフハンド命中率: 15%}}"));
             });
         }
         finally
