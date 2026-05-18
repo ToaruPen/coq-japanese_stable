@@ -200,7 +200,13 @@ internal static class DynamicQuestConstructorConversationTextTranslator
     {
         if (string.IsNullOrEmpty(source))
         {
-            translated = source ?? string.Empty;
+            if (source is null)
+            {
+                translated = string.Empty;
+                return false;
+            }
+
+            translated = source;
             return false;
         }
 
@@ -664,7 +670,7 @@ internal static class DynamicQuestConstructorConversationTextTranslator
 
         if (StrangePlanGoToPattern.IsMatch(source))
         {
-            translated = "*deliveryTarget*へ行き、そこの*itemName*に関わってくれる者が必要だ";
+            translated = "*deliveryTarget*へ行き、そこの*itemName*を*verb*してくれる者が必要だ";
             return true;
         }
 
@@ -758,8 +764,8 @@ internal static class DynamicQuestConstructorConversationTextTranslator
     {
         translated = source switch
         {
-            "Would you be willing to recover *it* for us?" => "われらのためにそれを取り戻してくれるか？",
-            "Would you seek *it* out and return *it* to us?" => "それを探し出し、われらのもとへ返してくれるか？",
+            "Would you be willing to recover *it* for us?" => "われらのために*it*を取り戻してくれるか？",
+            "Would you seek *it* out and return *it* to us?" => "*it*を探し出し、われらのもとへ返してくれるか？",
             _ => source,
         };
         if (!string.Equals(translated, source, StringComparison.Ordinal))
@@ -773,7 +779,7 @@ internal static class DynamicQuestConstructorConversationTextTranslator
             return false;
         }
 
-        translated = "それを取り戻してくれる者が必要だ、" + TranslateTraveler(match.Groups["friend"].Value) + "。引き受けてくれるか？";
+        translated = "*it*を取り戻してくれる者が必要だ、" + TranslateTraveler(match.Groups["friend"].Value) + "。引き受けてくれるか？";
         return true;
     }
 
@@ -839,7 +845,7 @@ internal static class DynamicQuestConstructorConversationTextTranslator
             return false;
         }
 
-        translated = "それを取り戻してくれれば、" + reward;
+        translated = "*it*を取り戻してくれれば、" + reward;
         return true;
     }
 
@@ -906,7 +912,7 @@ internal static class DynamicQuestConstructorConversationTextTranslator
 
         if (HolyItemWillInteractPattern.IsMatch(source))
         {
-            translated = "われらはしばしばそこへ巡礼し、*sacredThing*について思索する";
+            translated = "われらはしばしば巡礼して*it*を*verb*し、*sacredThing*について思索する";
             return true;
         }
 
@@ -927,14 +933,14 @@ internal static class DynamicQuestConstructorConversationTextTranslator
         match = HolyItemDesecrateHonorPattern.Match(source);
         if (match.Success)
         {
-            translated = "あなたがそれを冒涜してくれれば、われらにとって大きな誉れとなる";
+            translated = "あなたが*it*を*verb*してくれれば、われらにとって大きな誉れとなる";
             return true;
         }
 
         match = HolyItemDesecrateBlessingPattern.Match(source);
         if (match.Success)
         {
-            translated = "あなたがそれを冒涜してくれれば、それは" + TranslateBlessing(match.Groups["blessing"].Value) + "となる";
+            translated = "あなたがitを*verb*してくれれば、それは" + TranslateBlessing(match.Groups["blessing"].Value) + "となる";
             return true;
         }
 

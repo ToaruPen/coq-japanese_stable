@@ -58,6 +58,40 @@ public sealed class DynamicQuestExplicitConversationTranslationPatchTests
         });
     }
 
+    [Test]
+    public void CompletionPrefix_LeavesUnknownCompletionChoicesUnchanged()
+    {
+        var complete = "Something else happened.";
+        var incomplete = "Nothing else happened yet.";
+
+        DynamicQuestConversationTranslationPatch.Prefix(ref complete, ref incomplete);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(complete, Is.EqualTo("Something else happened."));
+            Assert.That(incomplete, Is.EqualTo("Nothing else happened yet."));
+            Assert.That(ConversationHitCount("CompletionChoice"), Is.Zero);
+            Assert.That(ConversationHitCount("IncompleteChoice"), Is.Zero);
+        });
+    }
+
+    [Test]
+    public void CompletionPrefix_StripsDirectMarkersWithoutObservabilityHit()
+    {
+        var complete = MessageFrameTranslator.DirectTranslationMarker + "I've found the rusted relic.";
+        var incomplete = MessageFrameTranslator.DirectTranslationMarker + "I don't have the rusted relic yet.";
+
+        DynamicQuestConversationTranslationPatch.Prefix(ref complete, ref incomplete);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(complete, Is.EqualTo("I've found the rusted relic."));
+            Assert.That(incomplete, Is.EqualTo("I don't have the rusted relic yet."));
+            Assert.That(ConversationHitCount("CompletionChoice"), Is.Zero);
+            Assert.That(ConversationHitCount("IncompleteChoice"), Is.Zero);
+        });
+    }
+
     private static int IntroHitCount() =>
         DynamicTextObservability.GetRouteFamilyHitCountForTests(
             nameof(DynamicQuestIntroChoiceTranslationPatch),

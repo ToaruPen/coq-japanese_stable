@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using HarmonyLib;
@@ -38,22 +39,42 @@ public static class BroadcastPowerOcclusionReasonTranslationPatch
 
     public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
     {
-        var transformed = 0;
-        foreach (var instruction in instructions)
+        List<CodeInstruction>? originalInstructions = null;
+        try
         {
-            yield return instruction;
-            if (IsHistoricStringExpanderCall(instruction))
+            originalInstructions = instructions.ToList();
+            var translateMethod = AccessTools.Method(
+                typeof(BroadcastPowerOcclusionReasonTranslationPatch),
+                nameof(TranslateExpandedText));
+            if (translateMethod is null)
             {
-                transformed++;
-                yield return new CodeInstruction(
-                    OpCodes.Call,
-                    AccessTools.Method(typeof(BroadcastPowerOcclusionReasonTranslationPatch), nameof(TranslateExpandedText)));
+                Trace.TraceError("QudJP: {0}.Transpiler replacement method not found.", Context);
+                return originalInstructions;
             }
-        }
 
-        if (transformed == 0)
+            var transformed = 0;
+            var transformedInstructions = new List<CodeInstruction>(originalInstructions.Count + 1);
+            foreach (var instruction in originalInstructions)
+            {
+                transformedInstructions.Add(instruction);
+                if (IsHistoricStringExpanderCall(instruction))
+                {
+                    transformed++;
+                    transformedInstructions.Add(new CodeInstruction(OpCodes.Call, translateMethod));
+                }
+            }
+
+            if (transformed == 0)
+            {
+                Trace.TraceWarning("QudJP: {0}.Transpiler found no HistoricStringExpander.ExpandString calls.", Context);
+            }
+
+            return transformedInstructions;
+        }
+        catch (Exception ex)
         {
-            Trace.TraceWarning("QudJP: {0}.Transpiler found no HistoricStringExpander.ExpandString calls.", Context);
+            Trace.TraceError("QudJP: {0}.Transpiler failed; returning original instructions: {1}", Context, ex);
+            return originalInstructions ?? instructions;
         }
     }
 
@@ -79,7 +100,15 @@ public static class BroadcastPowerOcclusionReasonTranslationPatch
     private static bool IsHistoricStringExpanderCall(CodeInstruction instruction)
     {
         return instruction.opcode == OpCodes.Call
-            && instruction.operand is MethodInfo { ReturnType: var returnType, Name: "ExpandString" }
+            && instruction.operand is MethodInfo { ReturnType: var returnType, Name: "ExpandString" } method
+            && IsHistoricStringExpanderType(method)
             && returnType == typeof(string);
+    }
+
+    private static bool IsHistoricStringExpanderType(MethodInfo method)
+    {
+        var declaringTypeName = method.DeclaringType?.FullName;
+        return string.Equals(declaringTypeName, "HistoryKit.HistoricStringExpander", StringComparison.Ordinal)
+            || string.Equals(declaringTypeName, "QudJP.Tests.DummyTargets.DummyHistoricStringExpander", StringComparison.Ordinal);
     }
 }

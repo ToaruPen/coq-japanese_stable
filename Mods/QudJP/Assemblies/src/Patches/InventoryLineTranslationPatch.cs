@@ -176,6 +176,7 @@ public static class InventoryLineTranslationPatch
     {
         if (MerchantAdvertisementTextTranslator.TryTranslateBookTitle(source, out var translatedBookTitle))
         {
+            translatedBookTitle = MessageFrameTranslator.StripAllDirectTranslationMarkers(translatedBookTitle);
             DynamicTextObservability.RecordTransform(
                 route,
                 "InventoryLine.MerchantAdvertisementTitle",

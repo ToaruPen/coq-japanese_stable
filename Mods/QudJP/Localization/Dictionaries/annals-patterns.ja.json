@@ -358,12 +358,12 @@
     },
     {
       "pattern": "^In\\ (.+?)\\ (?:BR|AR),\\ a\\ corrupt\\ administrator\\ was\\ appointed\\ minister\\ of\\ (.+?)\\.\\ (.+?)\\ outlawed\\ the\\ practice\\ of\\ (.+?),\\ and\\ (.+?)\\ was\\ forced\\ to\\ flee\\.$",
-      "template": "{0}年、腐敗した施政官が{t1}の大臣に任じられた。その者は{t3}の営みを禁じ、{t4}は逃亡を余儀なくされた。",
+      "template": "{0}年、腐敗した施政官が{t1}の大臣に任じられた。{t2}は{t3}の営みを禁じ、{t4}は逃亡を余儀なくされた。",
       "route": "annals"
     },
     {
       "pattern": "^In\\ (.+?)\\ (?:BR|AR),\\ a\\ corrupt\\ administrator\\ was\\ appointed\\ minister\\ of\\ (.+?)\\.\\ (.+?)\\ outlawed\\ association\\ with\\ (.+?),\\ and\\ (.+?)\\ was\\ forced\\ to\\ flee\\.$",
-      "template": "{0}年、腐敗した施政官が{t1}の大臣に任じられた。その者は{t3}との交わりを禁じ、{t4}は逃亡を余儀なくされた。",
+      "template": "{0}年、腐敗した施政官が{t1}の大臣に任じられた。{t2}は{t3}との交わりを禁じ、{t4}は逃亡を余儀なくされた。",
       "route": "annals"
     },
     {
@@ -418,7 +418,7 @@
     },
     {
       "pattern": "^(.+?),\\ a\\ (.+?)\\ found\\ a\\ babe\\ (.+?)\\ outside\\ (.+?)\\ (.+?)\\.\\ (.+?)\\ and\\ (.+?)\\ fellow\\ (.+?)\\ adopted\\ the\\ babe\\ and\\ named\\ (.+?)\\ (.+?)\\.$",
-      "template": "{t0}、ひとりの{t1}が、その{t4}の外でひとりの嬰児（{t2}）を見いだした。{t5}と同業の{t7}はその嬰児を養子に迎え、{t8}を{t9}と名づけた。",
+      "template": "{t0}、ひとりの{t1}が、その{t4}の外でひとりの嬰児（{t2}）を見いだした。{t5}と{t6}同業の{t7}はその嬰児を養子に迎え、{t8}を{t9}と名づけた。",
       "route": "annals"
     },
     {
@@ -517,7 +517,7 @@
       "route": "annals"
     },
     {
-      "pattern": "^construction\\ begain\\ in\\ (.+?)\\ and\\ ended\\ in\\ (.+?)$",
+      "pattern": "^construction\\ began\\ in\\ (.+?)\\ and\\ ended\\ in\\ (.+?)$",
       "template": "建造は{t0}年に始まり、{t1}年に終わった",
       "route": "annals"
     },

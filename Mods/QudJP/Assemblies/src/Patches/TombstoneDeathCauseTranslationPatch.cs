@@ -213,10 +213,18 @@ public static class TombstoneDeathCauseTranslationPatch
 
         if (parameters.Length == 2)
         {
-            replacement = AccessTools.Method(
+            var replacementMethod = AccessTools.Method(
                 typeof(TombstoneDeathCauseTranslationPatch),
                 nameof(ClipTextTranslatingDeathCause),
                 [typeof(string), typeof(int), typeof(object)]);
+            if (replacementMethod is null)
+            {
+                Trace.TraceError("QudJP: {0} replacement method not found for 2-argument ClipText.", Context);
+                replacement = null!;
+                return false;
+            }
+
+            replacement = replacementMethod;
             return true;
         }
 
@@ -225,10 +233,18 @@ public static class TombstoneDeathCauseTranslationPatch
             && parameters[3].ParameterType == typeof(bool)
             && parameters[4].ParameterType == typeof(bool))
         {
-            replacement = AccessTools.Method(
+            var replacementMethod = AccessTools.Method(
                 typeof(TombstoneDeathCauseTranslationPatch),
                 nameof(ClipTextTranslatingDeathCause),
                 [typeof(string), typeof(int), typeof(bool), typeof(bool), typeof(bool), typeof(object)]);
+            if (replacementMethod is null)
+            {
+                Trace.TraceError("QudJP: {0} replacement method not found for 5-argument ClipText.", Context);
+                replacement = null!;
+                return false;
+            }
+
+            replacement = replacementMethod;
             return true;
         }
 

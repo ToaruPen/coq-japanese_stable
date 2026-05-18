@@ -232,17 +232,24 @@ public static class AbilityManagerScreenTranslationPatch
 
     private static IEnumerable CopyMenuOptionsForRefresh(object choices, IEnumerable menuOptions)
     {
-        if (choices is IList sourceList)
+        if (choices is IList sourceList && !choices.GetType().IsArray)
         {
-            var copiedList = Activator.CreateInstance(choices.GetType());
-            if (copiedList is IList targetList)
+            try
             {
-                foreach (var option in sourceList)
+                var copiedList = Activator.CreateInstance(choices.GetType());
+                if (copiedList is IList targetList)
                 {
-                    targetList.Add(option);
-                }
+                    foreach (var option in sourceList)
+                    {
+                        targetList.Add(option);
+                    }
 
-                return targetList;
+                    return targetList;
+                }
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceWarning("QudJP: {0}.CopyMenuOptionsForRefresh could not clone '{1}': {2}", Context, choices.GetType().FullName, ex.Message);
             }
         }
 

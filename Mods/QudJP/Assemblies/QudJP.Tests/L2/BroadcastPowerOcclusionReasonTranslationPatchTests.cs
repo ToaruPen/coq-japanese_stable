@@ -23,6 +23,9 @@ public sealed class BroadcastPowerOcclusionReasonTranslationPatchTests
     {
         WithPatchedHandleEvent(() =>
         {
+            var outsideOwner = DummyHistoricStringExpander.ExpandString("acid rain");
+            Assert.That(outsideOwner, Is.EqualTo("acid rain"));
+
             DummyBroadcastPowerReceiverTarget.HandleEvent();
 
             Assert.Multiple(() =>
@@ -31,9 +34,6 @@ public sealed class BroadcastPowerOcclusionReasonTranslationPatchTests
                 Assert.That(HitCount(), Is.EqualTo(1));
             });
         });
-
-        var outsideOwner = DummyHistoricStringExpander.ExpandString("acid rain");
-        Assert.That(outsideOwner, Is.EqualTo("acid rain"));
     }
 
     [Test]

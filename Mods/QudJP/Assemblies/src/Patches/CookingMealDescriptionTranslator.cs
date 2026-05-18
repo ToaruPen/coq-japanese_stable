@@ -26,7 +26,13 @@ internal static class CookingMealDescriptionTranslator
     {
         if (string.IsNullOrEmpty(source))
         {
-            translated = source ?? string.Empty;
+            if (source is null)
+            {
+                translated = string.Empty;
+                return false;
+            }
+
+            translated = source;
             return false;
         }
 
@@ -87,7 +93,7 @@ internal static class CookingMealDescriptionTranslator
 
     private static string TranslateIngredientList(string source)
     {
-        var normalized = source.Replace(", and ", "\u001f").Replace(", ", "\u001e");
+        var normalized = source.Replace(", and ", "\u001f").Replace(" and ", "\u001f").Replace(", ", "\u001e");
         var pieces = normalized.Split(new[] { '\u001f', '\u001e' }, StringSplitOptions.None);
         if (pieces.Length == 1)
         {

@@ -3292,7 +3292,7 @@
       ],
       "status": "accepted",
       "reason": "",
-      "ja_template": "{0}年、腐敗した施政官が{t1}の大臣に任じられた。その者は{t3}の営みを禁じ、{t4}は逃亡を余儀なくされた。",
+      "ja_template": "{0}年、腐敗した施政官が{t1}の大臣に任じられた。{t2}は{t3}の営みを禁じ、{t4}は逃亡を余儀なくされた。",
       "review_notes": "",
       "route": "annals",
       "en_template_hash": "sha256:b148ec177f3e77c9d2521d4ec9786385a302537f5326096ef9533fe19d9a0993"
@@ -3392,7 +3392,7 @@
       ],
       "status": "accepted",
       "reason": "",
-      "ja_template": "{0}年、腐敗した施政官が{t1}の大臣に任じられた。その者は{t3}との交わりを禁じ、{t4}は逃亡を余儀なくされた。",
+      "ja_template": "{0}年、腐敗した施政官が{t1}の大臣に任じられた。{t2}は{t3}との交わりを禁じ、{t4}は逃亡を余儀なくされた。",
       "review_notes": "",
       "route": "annals",
       "en_template_hash": "sha256:bf84e1522b05936adc18747e2afea5045f2828cf6694f2649541e97dcc34d4a4"
@@ -3815,7 +3815,7 @@
       ],
       "status": "accepted",
       "reason": "",
-      "ja_template": "{t0}、ひとりの{t1}が、その{t4}の外でひとりの嬰児（{t2}）を見いだした。{t5}と同業の{t7}はその嬰児を養子に迎え、{t8}を{t9}と名づけた。",
+      "ja_template": "{t0}、ひとりの{t1}が、その{t4}の外でひとりの嬰児（{t2}）を見いだした。{t5}と{t6}同業の{t7}はその嬰児を養子に迎え、{t8}を{t9}と名づけた。",
       "review_notes": "",
       "route": "annals",
       "en_template_hash": "sha256:b00507f2eb74835d6e32f873d5513a9677479a6be73e54ab967ea88853f8fedc"
@@ -4953,8 +4953,8 @@
       "annal_class": "LocationConstructed",
       "switch_case": "default",
       "event_property": "gospel",
-      "sample_source": "construction begain in {0} and ended in {1}",
-      "extracted_pattern": "^construction\\ begain\\ in\\ (.+?)\\ and\\ ended\\ in\\ (.+?)$",
+      "sample_source": "construction began in {0} and ended in {1}",
+      "extracted_pattern": "^construction\\ began\\ in\\ (.+?)\\ and\\ ended\\ in\\ (.+?)$",
       "slots": [
         {
           "index": 0,

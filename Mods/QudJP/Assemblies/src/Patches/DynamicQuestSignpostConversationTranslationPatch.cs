@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using HarmonyLib;
@@ -38,22 +39,42 @@ public static class DynamicQuestSignpostConversationTranslationPatch
 
     public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
     {
-        var transformed = 0;
-        foreach (var instruction in instructions)
+        List<CodeInstruction>? originalInstructions = null;
+        try
         {
-            yield return instruction;
-            if (IsTranslatableStringProducerCall(instruction))
+            originalInstructions = instructions.ToList();
+            var translateMethod = AccessTools.Method(
+                typeof(DynamicQuestSignpostConversationTranslationPatch),
+                nameof(TranslateExpandedText));
+            if (translateMethod is null)
             {
-                transformed++;
-                yield return new CodeInstruction(
-                    OpCodes.Call,
-                    AccessTools.Method(typeof(DynamicQuestSignpostConversationTranslationPatch), nameof(TranslateExpandedText)));
+                Trace.TraceError("QudJP: {0}.Transpiler replacement method not found.", Context);
+                return originalInstructions;
             }
-        }
 
-        if (transformed == 0)
+            var transformed = 0;
+            var transformedInstructions = new List<CodeInstruction>(originalInstructions.Count + 1);
+            foreach (var instruction in originalInstructions)
+            {
+                transformedInstructions.Add(instruction);
+                if (IsTranslatableStringProducerCall(instruction))
+                {
+                    transformed++;
+                    transformedInstructions.Add(new CodeInstruction(OpCodes.Call, translateMethod));
+                }
+            }
+
+            if (transformed == 0)
+            {
+                Trace.TraceWarning("QudJP: {0}.Transpiler found no translatable string producer calls.", Context);
+            }
+
+            return transformedInstructions;
+        }
+        catch (Exception ex)
         {
-            Trace.TraceWarning("QudJP: {0}.Transpiler found no translatable string producer calls.", Context);
+            Trace.TraceError("QudJP: {0}.Transpiler failed; returning original instructions: {1}", Context, ex);
+            return originalInstructions ?? instructions;
         }
     }
 

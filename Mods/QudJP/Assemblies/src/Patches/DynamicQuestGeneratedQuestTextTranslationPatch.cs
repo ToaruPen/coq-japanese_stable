@@ -81,9 +81,10 @@ public static class DynamicQuestGeneratedQuestTextTranslationPatch
         var source = GetStringMemberValue(instance, memberName);
         if (!DynamicQuestGeneratedQuestTextTranslator.TryTranslate(source, out var translated))
         {
-            if (!string.Equals(source, translated, StringComparison.Ordinal))
+            if (!string.Equals(source, translated, StringComparison.Ordinal)
+                && SetStringMemberValue(instance, memberName, translated))
             {
-                SetStringMemberValue(instance, memberName, translated);
+                DynamicTextObservability.RecordTransform(Context, Context + "." + route, source ?? string.Empty, translated);
             }
 
             return;

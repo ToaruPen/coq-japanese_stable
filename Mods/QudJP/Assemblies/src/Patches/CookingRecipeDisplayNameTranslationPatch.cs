@@ -85,7 +85,13 @@ public static class CookingRecipeDisplayNameTranslationPatch
         actualTranslation = false;
         if (string.IsNullOrEmpty(source))
         {
-            translated = source ?? string.Empty;
+            if (source is null)
+            {
+                translated = string.Empty;
+                return false;
+            }
+
+            translated = source;
             return false;
         }
 
@@ -184,54 +190,5 @@ public static class CookingRecipeDisplayNameTranslationPatch
 
         translated = source.Substring(0, separatorIndex) + "の" + translatedDish;
         return true;
-    }
-}
-
-[HarmonyPatch]
-public static class CookingRecipeGenerateRecipeTileTranslationScopePatch
-{
-    private const string Context = nameof(CookingRecipeGenerateRecipeTileTranslationScopePatch);
-
-    [HarmonyTargetMethod]
-    private static MethodBase? TargetMethod()
-    {
-        var targetType = AccessTools.TypeByName("XRL.World.Skills.Cooking.CookingRecipe");
-        if (targetType is null)
-        {
-            Trace.TraceError("QudJP: {0} target type not found.", Context);
-            return null;
-        }
-
-        var method = AccessTools.Method(targetType, "GenerateRecipeTile", [targetType]);
-        if (method is null)
-        {
-            Trace.TraceError("QudJP: {0}.GenerateRecipeTile(CookingRecipe) target not found.", Context);
-        }
-
-        return method;
-    }
-
-    public static void Prefix(ref int __state)
-    {
-        try
-        {
-            CookingRecipeDisplayNameTranslationPatch.EnterGenerateRecipeTileScope(out __state);
-        }
-        catch (Exception ex)
-        {
-            Trace.TraceError("QudJP: {0}.Prefix failed: {1}", Context, ex);
-        }
-    }
-
-    public static void Finalizer(int __state)
-    {
-        try
-        {
-            CookingRecipeDisplayNameTranslationPatch.ExitGenerateRecipeTileScope(__state);
-        }
-        catch (Exception ex)
-        {
-            Trace.TraceError("QudJP: {0}.Finalizer failed: {1}", Context, ex);
-        }
     }
 }

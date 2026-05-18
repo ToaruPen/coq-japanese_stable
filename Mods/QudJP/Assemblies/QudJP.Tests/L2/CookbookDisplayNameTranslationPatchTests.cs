@@ -13,8 +13,17 @@ public sealed class CookbookDisplayNameTranslationPatchTests
     [SetUp]
     public void SetUp()
     {
+        Translator.ResetForTests();
+        ScopedDictionaryLookup.ResetForTests();
         DynamicTextObservability.ResetForTests();
         DummyCookbookTarget.Reset();
+    }
+
+    [TearDown]
+    public void TearDown()
+    {
+        Translator.ResetForTests();
+        ScopedDictionaryLookup.ResetForTests();
     }
 
     [Test]

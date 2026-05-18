@@ -54,7 +54,13 @@ internal static class DynamicQuestConversationTextTranslator
     {
         if (string.IsNullOrEmpty(source))
         {
-            translated = source ?? string.Empty;
+            if (source is null)
+            {
+                translated = string.Empty;
+                return false;
+            }
+
+            translated = source;
             return false;
         }
 

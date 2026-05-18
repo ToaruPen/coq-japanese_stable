@@ -69,15 +69,16 @@ public sealed class SultanRegionRevealDescriptionTranslatorTests
         });
     }
 
-    [Test]
-    public void TryTranslate_ReturnsFalse_ForEmptyInput()
+    [TestCase("")]
+    [TestCase(null)]
+    public void TryTranslate_ReturnsFalse_ForEmptyInput(string? source)
     {
-        var translated = SultanRegionRevealDescriptionTranslator.TryTranslate(null, out var result);
+        var translated = SultanRegionRevealDescriptionTranslator.TryTranslate(source, out var result);
 
         Assert.Multiple(() =>
         {
             Assert.That(translated, Is.False);
-            Assert.That(result, Is.Empty);
+            Assert.That(result, Is.EqualTo(source ?? string.Empty));
         });
     }
 

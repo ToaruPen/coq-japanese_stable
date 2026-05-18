@@ -23,6 +23,9 @@ public sealed class DynamicQuestSignpostConversationTranslationPatchTests
     {
         WithPatchedHandleEvent(() =>
         {
+            var outsideOwner = DummyHistoricStringExpander.ExpandString("Speak to ");
+            Assert.That(outsideOwner, Is.EqualTo("Speak to "));
+
             DummyDynamicQuestSignpostConversationTarget.HandleEvent();
 
             Assert.Multiple(() =>
@@ -32,9 +35,6 @@ public sealed class DynamicQuestSignpostConversationTranslationPatchTests
                 Assert.That(HitCount(), Is.EqualTo(3));
             });
         });
-
-        var outsideOwner = DummyHistoricStringExpander.ExpandString("Speak to ");
-        Assert.That(outsideOwner, Is.EqualTo("Speak to "));
     }
 
     [Test]

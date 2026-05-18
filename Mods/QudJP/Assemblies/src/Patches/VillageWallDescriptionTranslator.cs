@@ -44,7 +44,6 @@ internal static class VillageWallDescriptionTranslator
             ["glowfish"] = "グロウフィッシュ",
             ["hide"] = "皮",
             ["spirals"] = "螺旋",
-            ["Planks"] = "板材",
             ["planks"] = "板材",
             ["witchwood"] = "ウィッチウッド",
             ["layered"] = "層状",
@@ -59,11 +58,23 @@ internal static class VillageWallDescriptionTranslator
     {
         if (string.IsNullOrEmpty(source))
         {
-            translated = source ?? string.Empty;
+            if (source is null)
+            {
+                translated = string.Empty;
+                return false;
+            }
+
+            translated = source;
             return false;
         }
 
         var original = source!;
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(original, out var markedText))
+        {
+            translated = markedText;
+            return false;
+        }
+
         var (stripped, spans) = ColorAwareTranslationComposer.Strip(original);
         if (TryTranslatePattern(CanvasPattern, stripped, spans, original, match =>
                 TranslateCapture(match, spans, "creature") + "の剥がしてなめした" + TranslateCapture(match, spans, "skin")

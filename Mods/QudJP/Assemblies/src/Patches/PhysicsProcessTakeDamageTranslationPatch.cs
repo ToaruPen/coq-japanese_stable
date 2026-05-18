@@ -90,7 +90,6 @@ public static class PhysicsProcessTakeDamageTranslationPatch
         ("pyrokinesis", "熱念動"),
         ("cryokinesis", "冷気操作"),
         ("laser beam", "レーザービーム"),
-        ("lase beam", "レーザービーム"),
         ("life drain", "生命吸収"),
         ("tiny spines", "小さな棘"),
         ("scalding steam", "灼熱の蒸気"),

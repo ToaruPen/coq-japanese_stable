@@ -68,9 +68,23 @@ public static class PseudoRelicGeneratedNameTranslationPatch
         }
 
         source = displayName;
-        if (string.IsNullOrEmpty(source)
-            || !RelicGeneratedNameTranslator.TryTranslate(source, out translated)
-            || !SetMemberValue(obj, "DisplayName", translated))
+        if (string.IsNullOrEmpty(source))
+        {
+            translated = source;
+            return false;
+        }
+
+        if (!RelicGeneratedNameTranslator.TryTranslate(source, out translated))
+        {
+            if (!string.Equals(source, translated, StringComparison.Ordinal))
+            {
+                SetMemberValue(obj, "DisplayName", translated);
+            }
+
+            return false;
+        }
+
+        if (!SetMemberValue(obj, "DisplayName", translated))
         {
             translated = source;
             return false;

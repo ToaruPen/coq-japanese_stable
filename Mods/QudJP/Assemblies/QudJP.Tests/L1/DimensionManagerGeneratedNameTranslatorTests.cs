@@ -48,4 +48,58 @@ public sealed class DimensionManagerGeneratedNameTranslatorTests
             Assert.That(result, Is.EqualTo("8756"));
         });
     }
+
+    [TestCase("")]
+    [TestCase(null)]
+    [TestCase("unknown dimension frame")]
+    public void TryTranslateExpandedText_LeavesUnknownOrEmptyText(string? source)
+    {
+        var translated = DimensionManagerGeneratedNameTranslator.TryTranslateExpandedText(source, out var result);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.False);
+            Assert.That(result, Is.EqualTo(source ?? string.Empty));
+        });
+    }
+
+    [Test]
+    public void TryTranslateExpandedText_PreservesWholeSourceColorWrapper()
+    {
+        var translated = DimensionManagerGeneratedNameTranslator.TryTranslateExpandedText("{{Y|realm of crimson}}", out var result);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.True);
+            Assert.That(result, Is.EqualTo("{{Y|crimsonの領域}}"));
+        });
+    }
+
+    [Test]
+    public void TryTranslateExpandedText_StripsDirectMarkerWithoutTranslation()
+    {
+        var translated = DimensionManagerGeneratedNameTranslator.TryTranslateExpandedText(
+            MessageFrameTranslator.DirectTranslationMarker + "realm of crimson",
+            out var result);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.False);
+            Assert.That(result, Is.EqualTo("realm of crimson"));
+        });
+    }
+
+    [Test]
+    public void TryTranslateExpandedText_StripsMarkerOnlyInputToEmptyText()
+    {
+        var translated = DimensionManagerGeneratedNameTranslator.TryTranslateExpandedText(
+            MessageFrameTranslator.DirectTranslationMarker.ToString(),
+            out var result);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.False);
+            Assert.That(result, Is.Empty);
+        });
+    }
 }

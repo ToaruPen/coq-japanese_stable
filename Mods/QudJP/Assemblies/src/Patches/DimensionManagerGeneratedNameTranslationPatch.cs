@@ -158,7 +158,8 @@ public static class DimensionManagerGeneratedNameTranslationPatch
     private static bool IsHistoricStringExpanderCall(CodeInstruction instruction)
     {
         return instruction.opcode == OpCodes.Call
-            && instruction.operand is MethodInfo { ReturnType: var returnType, Name: "ExpandString" }
+            && instruction.operand is MethodInfo { ReturnType: var returnType, Name: "ExpandString" } method
+            && string.Equals(method.DeclaringType?.FullName, "HistoryKit.HistoricStringExpander", StringComparison.Ordinal)
             && returnType == typeof(string);
     }
 }

@@ -79,4 +79,35 @@ public sealed class VillageWallDescriptionTranslatorTests
             Assert.That(result, Is.EqualTo(source));
         });
     }
+
+    [Test]
+    public void TryTranslate_StripsDirectMarkerWithoutTranslation()
+    {
+        var source = MessageFrameTranslator.DirectTranslationMarker
+            + "Planks of witchwood have been cut in a layered style and bound together with asphalt and rope.";
+
+        var translated = VillageWallDescriptionTranslator.TryTranslate(source, out var result);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.False);
+            Assert.That(
+                result,
+                Is.EqualTo("Planks of witchwood have been cut in a layered style and bound together with asphalt and rope."));
+        });
+    }
+
+    [Test]
+    public void TryTranslate_StripsMarkerOnlyInputToEmptyText()
+    {
+        var translated = VillageWallDescriptionTranslator.TryTranslate(
+            MessageFrameTranslator.DirectTranslationMarker.ToString(),
+            out var result);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.False);
+            Assert.That(result, Is.Empty);
+        });
+    }
 }

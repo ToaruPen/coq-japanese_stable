@@ -34,6 +34,9 @@ public sealed class CookingMealDescriptionTranslatorTests
     [TestCase(
         "You gather some fixings: {{R|lava}}, carbide dust, and fermented starch.\n\nYou toss them in a pot and stir.",
         "いくつかの具材を集めた: {{R|溶岩}}、炭化物の粉塵と発酵デンプン\n\nそれらを鍋に放り込み、かき混ぜた。")]
+    [TestCase(
+        "You toss snapjaw haunch and a dram of oil into a pot and stir.",
+        "スナップジョーの腰肉と油1ドラムを鍋に放り込み、かき混ぜた。")]
     public void TryTranslate_TranslatesCookTemplateFrames(string source, string expected)
     {
         var ok = CookingMealDescriptionTranslator.TryTranslate(source, out var translated);

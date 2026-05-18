@@ -209,7 +209,7 @@
       "candidate_id": "FoundAsBabe#gospel#case:1",
       "event_property": "gospel",
       "input_source": "One dawn, a glassblower found a babe with silver hair outside her workshop. She and her fellow glassblowers adopted the babe and named him Nuntu.",
-      "expected_japanese_exact": "ある夜明け、ひとりのガラス職人が、その工房の外でひとりの嬰児（銀の髪をした）を見いだした。その者と同業のガラス職人たちはその嬰児を養子に迎え、その者をNuntuと名づけた。"
+      "expected_japanese_exact": "ある夜明け、ひとりのガラス職人が、その工房の外でひとりの嬰児（銀の髪をした）を見いだした。その者とその者同業のガラス職人たちはその嬰児を養子に迎え、その者をNuntuと名づけた。"
     },
     {
       "candidate_id": "FoundAsBabe#gospel#case:default#opt:base",
@@ -274,7 +274,7 @@
     {
       "candidate_id": "LocationConstructed#gospel",
       "event_property": "gospel",
-      "input_source": "construction begain in 5091 and ended in 5142",
+      "input_source": "construction began in 5091 and ended in 5142",
       "expected_japanese_exact": "建造は5091年に始まり、5142年に終わった"
     },
     {

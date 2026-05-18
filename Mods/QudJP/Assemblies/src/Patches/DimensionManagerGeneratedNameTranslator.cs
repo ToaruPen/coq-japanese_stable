@@ -29,7 +29,13 @@ internal static class DimensionManagerGeneratedNameTranslator
     {
         if (string.IsNullOrEmpty(source))
         {
-            translated = source ?? string.Empty;
+            if (source is null)
+            {
+                translated = string.Empty;
+                return false;
+            }
+
+            translated = source;
             return false;
         }
 
@@ -39,14 +45,21 @@ internal static class DimensionManagerGeneratedNameTranslator
             return false;
         }
 
-        if (TryTranslateDimensionName(source!, out translated)
-            || TryTranslateCultForm(source!, out translated)
-            || TryTranslateMutationCultForm(source!, out translated))
+        var original = source!;
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(original);
+        if (TryTranslateDimensionName(stripped, out var translatedCore)
+            || TryTranslateCultForm(stripped, out translatedCore)
+            || TryTranslateMutationCultForm(stripped, out translatedCore))
         {
+            translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+                translatedCore,
+                spans,
+                stripped.Length,
+                original);
             return true;
         }
 
-        translated = source!;
+        translated = original;
         return false;
     }
 
@@ -54,7 +67,13 @@ internal static class DimensionManagerGeneratedNameTranslator
     {
         if (string.IsNullOrEmpty(source))
         {
-            translated = source ?? string.Empty;
+            if (source is null)
+            {
+                translated = string.Empty;
+                return false;
+            }
+
+            translated = source;
             return false;
         }
 

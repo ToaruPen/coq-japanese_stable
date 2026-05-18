@@ -39,15 +39,16 @@ public sealed class CookbookDisplayNameTranslatorTests
         });
     }
 
-    [Test]
-    public void TryTranslate_ReturnsFalse_ForEmptyInput()
+    [TestCase("")]
+    [TestCase(null)]
+    public void TryTranslate_ReturnsFalse_ForEmptyInput(string? source)
     {
-        var translated = CookbookDisplayNameTranslator.TryTranslate(null, out var result);
+        var translated = CookbookDisplayNameTranslator.TryTranslate(source, out var result);
 
         Assert.Multiple(() =>
         {
             Assert.That(translated, Is.False);
-            Assert.That(result, Is.Empty);
+            Assert.That(result, Is.EqualTo(source ?? string.Empty));
         });
     }
 
@@ -62,6 +63,20 @@ public sealed class CookbookDisplayNameTranslatorTests
         {
             Assert.That(translated, Is.False);
             Assert.That(result, Is.EqualTo("&gThe Garden Of Cooking"));
+        });
+    }
+
+    [Test]
+    public void TryTranslate_StripsDirectMarkerAfterBackgroundColorPrefix()
+    {
+        var translated = CookbookDisplayNameTranslator.TryTranslate(
+            "^g" + MessageFrameTranslator.DirectTranslationMarker + "The Garden Of Cooking",
+            out var result);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.False);
+            Assert.That(result, Is.EqualTo("^gThe Garden Of Cooking"));
         });
     }
 }

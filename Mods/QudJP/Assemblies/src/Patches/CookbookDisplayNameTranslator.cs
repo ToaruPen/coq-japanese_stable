@@ -107,7 +107,13 @@ internal static class CookbookDisplayNameTranslator
     {
         if (string.IsNullOrEmpty(source))
         {
-            translated = source ?? string.Empty;
+            if (source is null)
+            {
+                translated = string.Empty;
+                return false;
+            }
+
+            translated = source;
             return false;
         }
 
@@ -217,7 +223,9 @@ internal static class CookbookDisplayNameTranslator
 
     private static bool TryStripDirectMarkerPreservingLeadingColor(string source, out string stripped)
     {
-        if (source.Length > 2 && source[0] == '&' && source[2] == MessageFrameTranslator.DirectTranslationMarker)
+        if (source.Length > 2
+            && source[0] is '&' or '^'
+            && source[2] == MessageFrameTranslator.DirectTranslationMarker)
         {
             stripped = source.Substring(0, 2) + source.Substring(3);
             return true;

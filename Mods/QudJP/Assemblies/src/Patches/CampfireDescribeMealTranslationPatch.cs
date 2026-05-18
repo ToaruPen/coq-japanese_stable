@@ -40,6 +40,12 @@ public static class CampfireDescribeMealTranslationPatch
             {
                 DynamicTextObservability.RecordTransform(Context, Context + ".CookTemplate", __result, translated);
                 __result = translated;
+                return;
+            }
+
+            if (!string.Equals(__result, translated, StringComparison.Ordinal))
+            {
+                __result = translated;
             }
         }
         catch (Exception ex)

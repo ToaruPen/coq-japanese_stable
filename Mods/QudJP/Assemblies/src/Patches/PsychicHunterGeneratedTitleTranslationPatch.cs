@@ -160,7 +160,13 @@ public static class PsychicHunterGeneratedTitleTranslationPatch
     private static void InvokeAddTitle(object titles, string title, int order)
     {
         var method = AccessTools.Method(titles.GetType(), "AddTitle", [typeof(string), typeof(int)]);
-        method?.Invoke(titles, [title, order]);
+        if (method is null)
+        {
+            Trace.TraceWarning("QudJP: {0}.InvokeAddTitle could not resolve AddTitle on '{1}'.", Context, titles.GetType().FullName);
+            return;
+        }
+
+        method.Invoke(titles, [title, order]);
     }
 
     private static bool IsHistoricStringExpanderCall(CodeInstruction instruction)

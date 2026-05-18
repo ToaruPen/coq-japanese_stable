@@ -6,7 +6,13 @@ internal static class BroadcastPowerOcclusionReasonTranslator
     {
         if (string.IsNullOrEmpty(source))
         {
-            translated = source ?? string.Empty;
+            if (source is null)
+            {
+                translated = string.Empty;
+                return false;
+            }
+
+            translated = source;
             return false;
         }
 
@@ -17,7 +23,8 @@ internal static class BroadcastPowerOcclusionReasonTranslator
             return false;
         }
 
-        translated = original switch
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(original);
+        var translatedCore = stripped switch
         {
             "orbital debris" => "軌道上の残骸",
             "a glass storm" => "ガラス嵐",
@@ -25,8 +32,19 @@ internal static class BroadcastPowerOcclusionReasonTranslator
             "acid rain" => "酸性雨",
             "drift film" => "ドリフト膜",
             "an unidentified anomaly" => "未確認の異常",
-            _ => original,
+            _ => stripped,
         };
-        return !string.Equals(translated, original, System.StringComparison.Ordinal);
+        if (string.Equals(translatedCore, stripped, System.StringComparison.Ordinal))
+        {
+            translated = original;
+            return false;
+        }
+
+        translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+            translatedCore,
+            spans,
+            stripped.Length,
+            original);
+        return true;
     }
 }

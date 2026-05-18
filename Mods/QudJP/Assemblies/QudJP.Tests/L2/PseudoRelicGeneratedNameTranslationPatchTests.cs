@@ -100,6 +100,32 @@ public sealed class PseudoRelicGeneratedNameTranslationPatchTests
         });
     }
 
+    [Test]
+    public void Send_StripsDirectMarkerWithoutClearingArticleOrCache_WhenPatched()
+    {
+        WithPatchedSend(() =>
+        {
+            var relic = new DummyPseudoRelicObject
+            {
+                DisplayName = MessageFrameTranslator.DirectTranslationMarker + "Edge of the Dominant Sword",
+                IndefiniteArticle = "the",
+                DefiniteArticle = "the",
+            };
+            relic.SetCachedDisplayNameForSort("Edge of the Dominant Sword");
+
+            DummyAfterPseudoRelicGeneratedEventTarget.Send(relic, "might", "LongBlade", "sword", 5);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(relic.DisplayName, Is.EqualTo("Edge of the Dominant Sword"));
+                Assert.That(relic.IndefiniteArticle, Is.EqualTo("the"));
+                Assert.That(relic.DefiniteArticle, Is.EqualTo("the"));
+                Assert.That(relic.GetCachedDisplayNameForSort(), Is.EqualTo("Edge of the Dominant Sword"));
+                Assert.That(HitCount(), Is.Zero);
+            });
+        });
+    }
+
     private static void WithPatchedSend(Action action)
     {
         var harmonyId = "qudjp.tests.pseudo-relic-generated-name." + Guid.NewGuid().ToString("N");

@@ -63,6 +63,24 @@ public sealed class CampfireDescribeMealTranslationPatchTests
         });
     }
 
+    [Test]
+    public void DescribeMeal_StripsDirectMarkerWithoutObservabilityHit_WhenPatched()
+    {
+        WithPatchedDescribeMeal(() =>
+        {
+            DummyCampfireDescribeMealTarget.NextResult =
+                MessageFrameTranslator.DirectTranslationMarker + "You toss snapjaw haunch into a pot and stir.";
+
+            var result = DummyCampfireDescribeMealTarget.DescribeMeal();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(result, Is.EqualTo("You toss snapjaw haunch into a pot and stir."));
+                Assert.That(HitCount(), Is.Zero);
+            });
+        });
+    }
+
     private static void WithPatchedDescribeMeal(Action action)
     {
         var harmonyId = "qudjp.tests.campfire-describe-meal." + Guid.NewGuid().ToString("N");

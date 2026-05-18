@@ -152,7 +152,13 @@ internal static class VillageTerrainRevealDescriptionTranslator
     {
         if (string.IsNullOrEmpty(source))
         {
-            translated = source ?? string.Empty;
+            if (source is null)
+            {
+                translated = string.Empty;
+                return false;
+            }
+
+            translated = source;
             return false;
         }
 
@@ -374,7 +380,7 @@ internal static class VillageTerrainRevealDescriptionTranslator
 
         return HistorySpiceComponentLookup.TryTranslateTitlePhrase(articleless, out var titlePhrase)
             ? titlePhrase
-            : articleless;
+            : trimmed;
     }
 
     private static string BuildAlternation(params string[] values)

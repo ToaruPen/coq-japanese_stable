@@ -37,6 +37,18 @@ public sealed class BroadcastPowerOcclusionReasonTranslatorTests
         });
     }
 
+    [Test]
+    public void TryTranslate_PreservesColorWrapper_WhenTranslatingKnownReason()
+    {
+        var translated = BroadcastPowerOcclusionReasonTranslator.TryTranslate("{{Y|orbital debris}}", out var result);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.True);
+            Assert.That(result, Is.EqualTo("{{Y|軌道上の残骸}}"));
+        });
+    }
+
     [TestCase("")]
     [TestCase(null)]
     [TestCase("unknown occlusion")]
