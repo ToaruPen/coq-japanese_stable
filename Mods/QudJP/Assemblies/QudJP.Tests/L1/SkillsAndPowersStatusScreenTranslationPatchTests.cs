@@ -195,6 +195,21 @@ public sealed class SkillsAndPowersStatusScreenTranslationPatchTests
     }
 
     [Test]
+    public void TryTranslateDetailText_PreservesColorsInsideGeneratedAbilityStatValues()
+    {
+        var result = SkillsAndPowersStatusScreenTranslationPatch.TryTranslateDetailText(
+            "Duration: {{G|6 rounds}}",
+            nameof(SkillsAndPowersStatusScreenTranslationPatchTests),
+            recordTransform: false);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.changed, Is.True);
+            Assert.That(result.translated, Is.EqualTo("持続時間: {{G|6 ラウンド}}"));
+        });
+    }
+
+    [Test]
     public void TryTranslateDetailText_TranslatesCooldownFloorLine()
     {
         var result = SkillsAndPowersStatusScreenTranslationPatch.TryTranslateDetailText(

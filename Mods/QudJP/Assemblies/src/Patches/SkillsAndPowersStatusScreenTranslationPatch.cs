@@ -488,7 +488,8 @@ public static class SkillsAndPowersStatusScreenTranslationPatch
 
         var label = TranslateGeneratedDetailLabel(match.Groups["label"].Value);
         var value = ColorAwareTranslationComposer.RestoreCapture(match.Groups["value"].Value, spans, match.Groups["value"]);
-        translated = label + ": " + TranslateGeneratedDetailValue(value);
+        var translatedValue = ColorAwareTranslationComposer.TranslatePreservingColors(value, TranslateGeneratedDetailValue);
+        translated = label + ": " + translatedValue;
         if (recordTransform)
         {
             DynamicTextObservability.RecordTransform(route, "SkillsAndPowers.GeneratedDetailStatLine", source, translated);
