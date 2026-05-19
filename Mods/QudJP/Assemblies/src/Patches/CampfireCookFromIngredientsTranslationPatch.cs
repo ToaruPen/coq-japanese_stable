@@ -15,6 +15,12 @@ public static class CampfireCookFromIngredientsTranslationPatch
     private static readonly Regex RecipeCreatedPattern = new(
         "^You create a new recipe for (?<recipe>.+?)!$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex SelectedIngredientsPattern = new(
+        "^Cook with the (?<count>\\d+) selected ingredients\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex RemainingIngredientsPattern = new(
+        "^\\[(?:up to (?<remaining>\\d+) remaining|0 remaining)\\]$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     [ThreadStatic]
     private static int activeDepth;
@@ -85,6 +91,18 @@ public static class CampfireCookFromIngredientsTranslationPatch
         }
 
         var ownerFamily = family + "." + Context;
+        if (CampfireCookingPopupTextTranslator.TryTranslateMealDescriptionPopup(source, out translated))
+        {
+            DynamicTextObservability.RecordTransform(route, ownerFamily + ".MealDescription", source, translated);
+            return true;
+        }
+
+        if (CampfireCookingPopupTextTranslator.TryTranslateAteMealPopup(source, out translated))
+        {
+            DynamicTextObservability.RecordTransform(route, ownerFamily + ".AteMeal", source, translated);
+            return true;
+        }
+
         if (TryTranslateRecipeCreated(source, out translated))
         {
             DynamicTextObservability.RecordTransform(route, ownerFamily + ".RecipeCreated", source, translated);
@@ -101,6 +119,27 @@ public static class CampfireCookFromIngredientsTranslationPatch
         return false;
     }
 
+    internal static bool TryTranslatePopupProducerText(string source, string route, string family, out string translated)
+    {
+        if (!OwnerTranslationScope.IsActive(activeDepth) || string.IsNullOrEmpty(source))
+        {
+            translated = source;
+            return false;
+        }
+
+        if (!TryTranslateSelectedIngredientsMenuRow(source, out translated))
+        {
+            return false;
+        }
+
+        DynamicTextObservability.RecordTransform(
+            route,
+            family + "." + Context + ".SelectedIngredientsMenuRow",
+            source,
+            translated);
+        return true;
+    }
+
     private static bool TryTranslateRecipeCreated(string source, out string translated)
     {
         var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
@@ -112,6 +151,79 @@ public static class CampfireCookFromIngredientsTranslationPatch
         }
 
         var translatedCore = RestoreCapture(match, spans, "recipe") + "の新しいレシピを作った！";
+        translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+            translatedCore,
+            spans,
+            stripped.Length,
+            source);
+        return true;
+    }
+
+    private static bool TryTranslateSelectedIngredientsMenuRow(string source, out string translated)
+    {
+        var lines = source.Split('\n');
+        if (lines.Length is < 1 or > 2)
+        {
+            translated = source;
+            return false;
+        }
+
+        if (!TryTranslateSelectedIngredientsLine(lines[0], out var selectedLine))
+        {
+            translated = source;
+            return false;
+        }
+
+        if (lines.Length == 1)
+        {
+            translated = selectedLine;
+            return true;
+        }
+
+        if (!TryTranslateRemainingIngredientsLine(lines[1], out var remainingLine))
+        {
+            translated = source;
+            return false;
+        }
+
+        translated = selectedLine + "\n" + remainingLine;
+        return true;
+    }
+
+    private static bool TryTranslateSelectedIngredientsLine(string source, out string translated)
+    {
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        var match = SelectedIngredientsPattern.Match(stripped);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        var count = RestoreCapture(match, spans, "count");
+        var translatedCore = "選択した材料" + count + "個で料理する。";
+        translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+            translatedCore,
+            spans,
+            stripped.Length,
+            source);
+        return true;
+    }
+
+    private static bool TryTranslateRemainingIngredientsLine(string source, out string translated)
+    {
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        var match = RemainingIngredientsPattern.Match(stripped);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        var remaining = match.Groups["remaining"];
+        var translatedCore = remaining.Success
+            ? "[あと" + ColorAwareTranslationComposer.MarkupAwareRestoreCapture(remaining.Value, spans, remaining).Trim() + "個まで]"
+            : "[残り0個]";
         translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
             translatedCore,
             spans,

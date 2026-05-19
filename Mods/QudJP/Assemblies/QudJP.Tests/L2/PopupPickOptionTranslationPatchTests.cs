@@ -63,6 +63,18 @@ public sealed class PopupPickOptionTranslationPatchTests
     }
 
     [Test]
+    public void Prefix_TranslatesCampfireCookingActionMenuTitle()
+    {
+        WriteDictionary(("The fire breathes its warmth on your bones.", "焚き火の温もりが骨身にしみる。"));
+
+        using var patch = PatchPickOption();
+
+        DummyPopupGenericTarget.PickOption(Title: "{{W|The fire breathes its warmth on your bones.}}");
+
+        Assert.That(DummyPopupGenericTarget.LastPickOptionTitle, Is.EqualTo("{{W|焚き火の温もりが骨身にしみる。}}"));
+    }
+
+    [Test]
     public void Prefix_DoesNotTreatOpeningSentenceAsContainerTitle()
     {
         using var patch = PatchPickOption();
@@ -167,6 +179,152 @@ public sealed class PopupPickOptionTranslationPatchTests
                 Is.EqualTo("{{W|[n]}} {{y|起爆する}}"));
         });
     }
+
+    [Test]
+    public void SelectableTextMenuItemDisplayTranslation_TranslatesCampfireCookingInventoryActionMenuRows()
+    {
+        WriteInventoryActionDictionary(
+            ("Eat fresh apple matz.", "XRL.World.IInventoryActionsEvent", "新鮮なアップルマッツァを食べる。"),
+            ("Drink mulled mushroom cider.", "XRL.World.IInventoryActionsEvent", "温めたマッシュルームサイダーを飲む。"),
+            ("Eat goat in sweet leaf.", "XRL.World.IInventoryActionsEvent", "甘葉包みのヤギ肉を食べる。"),
+            ("Eat some Tongue and Cheek.", "XRL.World.IInventoryActionsEvent", "タングアンドチークを食べる。"),
+            ("Eat bone babka.", "XRL.World.IInventoryActionsEvent", "ボーンバブカを食べる。"),
+            ("Eat some Hot and Spiny.", "XRL.World.IInventoryActionsEvent", "ホットアンドスパイニーを食べる。"),
+            ("Eat mah lah soup.", "XRL.World.IInventoryActionsEvent", "マーラースープを食べる。"),
+            ("Eat the Porridge.", "XRL.World.IInventoryActionsEvent", "粥を食べる。"),
+            ("Whip up a meal.", "XRL.World.IInventoryActionsEvent", "手早く食事を作る。"),
+            ("Choose ingredients to cook with.", "XRL.World.IInventoryActionsEvent", "料理に使う材料を選ぶ。"),
+            ("Cook from a recipe.", "XRL.World.IInventoryActionsEvent", "レシピから料理する。"),
+            ("Preserve your fresh foods.", "XRL.World.IInventoryActionsEvent", "新鮮な食材を保存食にする。"),
+            ("Preserve your exotic foods.", "XRL.World.IInventoryActionsEvent", "珍味を保存食にする。"),
+            ("Stop bleeding.", "XRL.World.IInventoryActionsEvent", "出血を止める。"),
+            ("Treat poison.", "XRL.World.IInventoryActionsEvent", "毒を治療する。"),
+            ("Treat illness.", "XRL.World.IInventoryActionsEvent", "病気を治療する。"),
+            ("Treat disease onset.", "XRL.World.IInventoryActionsEvent", "発症前の病を治療する。"));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[a]}} {{y|Eat fresh apple matz.}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[a]}} {{y|新鮮なアップルマッツァを食べる。}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[m]}} {{y|Whip up a meal.}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[m]}} {{y|手早く食事を作る。}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[a]}} {{y|Drink mulled mushroom cider.}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[a]}} {{y|温めたマッシュルームサイダーを飲む。}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[a]}} {{y|Eat goat in sweet leaf.}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[a]}} {{y|甘葉包みのヤギ肉を食べる。}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[a]}} {{y|Eat some Tongue and Cheek.}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[a]}} {{y|タングアンドチークを食べる。}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[a]}} {{y|Eat bone babka.}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[a]}} {{y|ボーンバブカを食べる。}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[a]}} {{y|Eat some Hot and Spiny.}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[a]}} {{y|ホットアンドスパイニーを食べる。}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[a]}} {{y|Eat mah lah soup.}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[a]}} {{y|マーラースープを食べる。}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[a]}} {{y|Eat the Porridge.}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[a]}} {{y|粥を食べる。}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[i]}} {{y|Choose ingredients to cook with.}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[i]}} {{y|料理に使う材料を選ぶ。}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[r]}} {{K|Cook from a recipe.}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[r]}} {{K|レシピから料理する。}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[r]}} {{y|&KCook from a recipe.}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[r]}} {{y|&Kレシピから料理する。}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[f]}} {{K|Preserve your fresh foods.}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[f]}} {{K|新鮮な食材を保存食にする。}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[f]}} {{y|&KPreserve your fresh foods.}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[f]}} {{y|&K新鮮な食材を保存食にする。}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[x]}} {{y|Preserve your exotic foods.}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[x]}} {{y|珍味を保存食にする。}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[b]}} {{y|Stop bleeding.}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[b]}} {{y|出血を止める。}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[p]}} {{y|Treat poison.}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[p]}} {{y|毒を治療する。}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[l]}} {{y|Treat illness.}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[l]}} {{y|病気を治療する。}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[d]}} {{y|Treat disease onset.}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[d]}} {{y|発症前の病を治療する。}}"));
+        });
+    }
+
+    [Test]
+    public void SelectableTextMenuItemDisplayTranslation_TranslatesDynamicEatRecipeInventoryActionMenuRows()
+    {
+        Translator.SetDictionaryDirectoryForTests(GetRepositoryDictionaryDirectory());
+        ScopedDictionaryLookup.ResetForTests();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[a]}} {{y|Eat {{Y|Velvety Porridge}}}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[a]}} {{y|なめらか粥を食べる}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[a]}} {{y|Eat {{Y|なめらか粥}}}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[a]}} {{y|なめらか粥を食べる}}"));
+        });
+    }
+
+    private static string GetRepositoryDictionaryDirectory() =>
+        Path.Combine(QudJP.Tests.L1.TestProjectPaths.GetRepositoryRoot(), "Mods", "QudJP", "Localization", "Dictionaries");
 
     [Test]
     public void SelectableTextMenuItemDisplayTranslation_DoesNotUseInventoryActionOwnerDictionaryWithoutInventoryActionMenuRoute()

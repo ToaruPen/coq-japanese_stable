@@ -98,7 +98,7 @@ public static class QudMenuBottomContextTranslationPatch
                 normalized,
                 nameof(QudMenuBottomContextTranslationPatch));
             var displayText = MessageFrameTranslator.StripAllDirectTranslationMarkers(
-                ColorAwareTranslationComposer.Strip(translated).stripped);
+                translated);
 
             if (string.Equals(displayText, current, StringComparison.Ordinal))
             {

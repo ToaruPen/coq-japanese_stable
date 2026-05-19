@@ -12,6 +12,16 @@ public static class MessageLogPatch
             _ = Color;
             _ = Capitalize;
 
+            if (CampfirePreserveTranslationPatch.TryTranslateMessageLogMessage(
+                    Message,
+                    nameof(MessageLogPatch),
+                    "MessageLog.CampfirePreserve",
+                    out var campfirePreserveTranslated))
+            {
+                Message = campfirePreserveTranslated;
+                return true;
+            }
+
             if (MessageFrameTranslator.TryStripDirectTranslationMarker(Message, out var markedText))
             {
                 FinalOutputObservability.RecordDirectMarker(

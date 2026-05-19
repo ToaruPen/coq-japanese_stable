@@ -89,6 +89,36 @@ public sealed partial class Issue201OtherUiBindingPatchTests
     }
 
     [Test]
+    public void JournalLinePrefix_TranslatesSultanHistoryCategoryHeader_WhenPatched()
+    {
+        WriteDictionary(("unused", "未使用"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyJournalLineTarget), nameof(DummyJournalLineTarget.setData)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(JournalLineTranslationPatch), nameof(JournalLineTranslationPatch.Prefix))));
+
+            var target = new DummyJournalLineTarget();
+            target.setData(new DummyJournalLineDataTarget
+            {
+                category = true,
+                categoryExpanded = false,
+                categoryName = "{{W|HISTORY OF ナレドゥクフト}}",
+                screen = new DummyJournalStatusScreenTarget(),
+            });
+
+            Assert.That(target.headerText.Text, Is.EqualTo("[+] {{W|ナレドゥクフトの歴史}}"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void JournalLinePrefix_FallsBackToOriginal_OnUnsupportedInput()
     {
         var harmonyId = CreateHarmonyId();

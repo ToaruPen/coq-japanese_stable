@@ -20,11 +20,11 @@ def _download_release_zip_recipe() -> str:
 
 def _recipe_body(name: str) -> str:
     justfile = _justfile_text()
-    marker_pattern = rf"\n{name}(?:\s+[^:\n]+)*:\n"
-    match = re.search(marker_pattern, justfile)
+    marker_pattern = rf"^{name}\b.*:\n"
+    match = re.search(marker_pattern, justfile, flags=re.MULTILINE)
     assert match, f"{name}: recipe not found in justfile"
     remainder = justfile[match.end() :]
-    next_recipe = re.search(r"^[A-Za-z0-9_-]+(?:\s+[^:\n]+)*:\n", remainder, flags=re.MULTILINE)
+    next_recipe = re.search(r"^[A-Za-z0-9_-]+\b.*:\n", remainder, flags=re.MULTILINE)
     return remainder[: next_recipe.start()] if next_recipe is not None else remainder
 
 
@@ -75,3 +75,25 @@ def test_agent_tool_recipes_have_readable_primary_names() -> None:
     assert 'sg-cs pattern path="":' in justfile
     assert "just ast-search-cs" in justfile
     assert 'lsp-diagnostics solution="Mods/QudJP/Assemblies/QudJP.sln":' in justfile
+
+
+def test_issue737_runtime_closeout_recipe_uses_dedicated_checker() -> None:
+    """Issue #737 runtime closeout should be executable without hand-copying report commands."""
+    recipe = _recipe_body("issue737-runtime-closeout")
+
+    assert "scripts/issue737_runtime_closeout.py" in recipe
+    assert "--log {{quote(log)}}" in recipe
+    assert "--min-mtime {{quote(min_mtime)}}" in recipe
+    assert "--output {{quote(output)}}" in recipe
+    assert "--require-passed" not in recipe
+
+
+def test_issue737_runtime_closeout_strict_recipe_requires_passed_status() -> None:
+    """The strict Issue #737 closeout gate should fail until runtime evidence fully passes."""
+    recipe = _recipe_body("issue737-runtime-closeout-strict")
+
+    assert "scripts/issue737_runtime_closeout.py" in recipe
+    assert "--log {{quote(log)}}" in recipe
+    assert "--min-mtime {{quote(min_mtime)}}" in recipe
+    assert "--output {{quote(output)}}" in recipe
+    assert "--require-passed" in recipe

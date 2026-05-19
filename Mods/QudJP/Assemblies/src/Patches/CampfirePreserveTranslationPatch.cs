@@ -16,6 +16,15 @@ public static class CampfirePreserveTranslationPatch
     private static readonly Regex PreservedLinePattern = new(
         "^(?<source>.+?) into (?<count>\\d+) (?<serving>.+?) of (?<result>.+?)\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex SomeSourcePattern = new(
+        "^some (?<name>.+)$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
+    private static readonly Regex ArticleSourcePattern = new(
+        "^(?:a|an) (?<name>.+)$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
+    private static readonly Regex JapaneseCharacterPattern = new(
+        "[\\p{IsHiragana}\\p{IsKatakana}\\p{IsCJKUnifiedIdeographs}]",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     [ThreadStatic]
     private static int activeDepth;
@@ -90,6 +99,23 @@ public static class CampfirePreserveTranslationPatch
         return true;
     }
 
+    internal static bool TryTranslateMessageLogMessage(string source, string route, string family, out string translated)
+    {
+        if (string.IsNullOrEmpty(source))
+        {
+            translated = source;
+            return false;
+        }
+
+        if (!TryTranslatePreservedResult(source, out translated))
+        {
+            return false;
+        }
+
+        DynamicTextObservability.RecordTransform(route, family + "." + Context, source, translated);
+        return true;
+    }
+
     private static void AddTarget(List<MethodBase> targets, Type targetType, string methodName, Type[] parameters)
     {
         var method = AccessTools.Method(targetType, methodName, parameters);
@@ -105,6 +131,13 @@ public static class CampfirePreserveTranslationPatch
     private static bool TryTranslatePreservedResult(string source, out string translated)
     {
         const string header = "You preserved:\n\n";
+        if (TryStripLeadingQudColor(source, out var colorPrefix, out var uncolored)
+            && TryTranslatePreservedResult(uncolored, out var uncoloredTranslated))
+        {
+            translated = colorPrefix + uncoloredTranslated;
+            return true;
+        }
+
         if (!source.StartsWith(header, StringComparison.Ordinal))
         {
             translated = source;
@@ -134,6 +167,22 @@ public static class CampfirePreserveTranslationPatch
         return true;
     }
 
+    private static bool TryStripLeadingQudColor(string source, out string colorPrefix, out string uncolored)
+    {
+        if (source.Length < 2
+            || source[0] != '&'
+            || !IsQudColorCode(source[1]))
+        {
+            colorPrefix = string.Empty;
+            uncolored = source;
+            return false;
+        }
+
+        colorPrefix = source.Substring(0, 2);
+        uncolored = source.Substring(2);
+        return true;
+    }
+
     private static string TranslatePreservedLine(string source)
     {
         var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
@@ -143,16 +192,96 @@ public static class CampfirePreserveTranslationPatch
             return source;
         }
 
-        var sourceItem = Restore(match, spans, "source");
+        var sourceItem = TranslatePreservedSource(RestorePreservedSource(source, match, spans));
         var count = match.Groups["count"].Value;
-        var serving = Restore(match, spans, "serving");
-        var result = Restore(match, spans, "result");
-        return $"{sourceItem}を{count} {serving}の{result}に保存した。";
+        var serving = TranslateServingUnit(Restore(match, spans, "serving"));
+        var result = TranslateDisplayNameOrSame(Restore(match, spans, "result"));
+        return $"{sourceItem}を{count}{serving}の{result}に保存した。";
+    }
+
+    private static string RestorePreservedSource(string source, Match match, IReadOnlyList<ColorSpan> spans)
+    {
+        var intoIndex = source.IndexOf(" into ", StringComparison.Ordinal);
+        if (intoIndex > 0)
+        {
+            return source.Substring(0, intoIndex).Trim();
+        }
+
+        return Restore(match, spans, "source");
     }
 
     private static string Restore(Match match, IReadOnlyList<ColorSpan> spans, string groupName)
     {
         var group = match.Groups[groupName];
         return ColorAwareTranslationComposer.RestoreCapture(group.Value, spans, group).Trim();
+    }
+
+    private static string TranslatePreservedSource(string source)
+    {
+        if (CookingIngredientFragmentTranslator.TryTranslate(source, out var ingredient))
+        {
+            return ingredient;
+        }
+
+        var match = SomeSourcePattern.Match(source);
+        if (match.Success
+            && TryTranslateDisplayNameOrAlreadyLocalized(match.Groups["name"].Value, out var someName))
+        {
+            return someName + "少々";
+        }
+
+        match = ArticleSourcePattern.Match(source);
+        if (match.Success
+            && TryTranslateDisplayNameOrAlreadyLocalized(match.Groups["name"].Value, out var articleName))
+        {
+            return articleName;
+        }
+
+        return TranslateDisplayNameOrSame(source);
+    }
+
+    private static bool TryTranslateDisplayNameOrAlreadyLocalized(string source, out string translated)
+    {
+        if (ContainsJapaneseCharacters(source))
+        {
+            translated = source;
+            return true;
+        }
+
+        translated = TranslateDisplayNameOrSame(source);
+        return !string.Equals(translated, source, StringComparison.Ordinal);
+    }
+
+    private static string TranslateDisplayNameOrSame(string source)
+    {
+        return GetDisplayNameRouteTranslator.TranslatePreservingColors(source, Context);
+    }
+
+    private static string TranslateServingUnit(string source)
+    {
+        if (string.Equals(source, "serving", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(source, "servings", StringComparison.OrdinalIgnoreCase))
+        {
+            return "食分";
+        }
+
+        if (string.Equals(source, "dram", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(source, "drams", StringComparison.OrdinalIgnoreCase))
+        {
+            return "ドラム分";
+        }
+
+        return source;
+    }
+
+    private static bool ContainsJapaneseCharacters(string source)
+    {
+        return JapaneseCharacterPattern.IsMatch(source);
+    }
+
+    private static bool IsQudColorCode(char value)
+    {
+        return (value >= 'a' && value <= 'z')
+            || (value >= 'A' && value <= 'Z');
     }
 }

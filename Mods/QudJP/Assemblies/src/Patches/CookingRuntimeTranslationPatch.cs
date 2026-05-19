@@ -408,6 +408,7 @@ public static class CookingRuntimeTranslationPatch
         translated = source switch
         {
             "You eat the meal. It's tastier than usual." => "食事を食べた。いつもよりおいしい。",
+            "You gorge on the succulent meat. It's tastier than usual." => "瑞々しい肉を貪った。いつもよりおいしい。",
             _ => source,
         };
         return true;

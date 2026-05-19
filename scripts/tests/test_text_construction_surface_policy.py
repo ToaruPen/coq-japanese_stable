@@ -9,6 +9,7 @@ from scripts.text_construction_surface_policy import (
     classify_family,
     format_surface_queue,
     lane_summary_payload,
+    load_inventory,
     queue_payload,
     valuable_surface_queue,
 )
@@ -317,8 +318,717 @@ def test_policy_separates_reviewed_issue711_work_without_overclaiming_closure() 
 
     assert entries[missile_hit_family_id]["closure_status"] == "covered_by_owner_route"
     assert entries[inventory_family_id]["closure_status"] == "partial_coverage"
-    assert entries[tombstone_family_id]["closure_status"] == "runtime_required"
+    assert entries[tombstone_family_id]["closure_status"] == "covered_by_owner_route"
     assert entries[mod_gigantic_family_id]["closure_status"] == "likely_true_gap"
+
+
+def test_policy_records_issue737_hse_runtime_gap_progress_and_journal_route_closure() -> None:
+    """Issue-737 journal runtime gaps are covered once storage/display annals routes are proven."""
+    zone_manager_family_id = "XRL.World/ZoneManager.cs::ZoneManager.SetActiveZone(Zone)"
+    campfire_family_id = "XRL.World.Parts/Campfire.cs::Campfire.CookFromIngredients(bool)"
+    journal_family_id = (
+        "Qud.API/JournalAPI.cs::JournalAPI.AddAccomplishment("
+        "string,string,string,string,string,MuralCategory,MuralWeight,string,long,bool)"
+    )
+    inventory = _inventory(
+        [
+            _family(
+                zone_manager_family_id,
+                "XRL.World/ZoneManager.cs",
+                "SetActiveZone",
+                {"HistoricStringExpander": 1, "JournalAPI": 1},
+            ),
+            _family(
+                campfire_family_id,
+                "XRL.World.Parts/Campfire.cs",
+                "CookFromIngredients",
+                {"HistoricStringExpander": 1},
+            ),
+            _family(
+                journal_family_id,
+                "Qud.API/JournalAPI.cs",
+                "AddAccomplishment",
+                {"HistoricStringExpander": 1, "JournalAPI": 1},
+            ),
+        ]
+    )
+
+    entries = {entry["family_id"]: entry for entry in valuable_surface_queue(inventory)}
+
+    assert entries[zone_manager_family_id]["closure_lane"] == "history_generated_text"
+    assert entries[zone_manager_family_id]["closure_status"] == "covered_by_owner_route"
+    zone_manager_evidence = " ".join(entries[zone_manager_family_id]["closure_evidence"])
+    assert "SetActiveZone journey AddAccomplishment branches" in zone_manager_evidence
+    assert entries[campfire_family_id]["closure_lane"] == "history_generated_text"
+    assert entries[campfire_family_id]["closure_status"] == "covered_by_owner_route"
+    campfire_evidence = " ".join(entries[campfire_family_id]["closure_evidence"])
+    assert "CampfirePreserveTranslationPatchTests.cs" in campfire_evidence
+    assert "PopupShowTranslationPatchTests.cs" in campfire_evidence
+    assert "^You eat the meal\\.$ popup pattern" in campfire_evidence
+    assert "CampfireRollIngredientsTranslationPatchTests.cs" in campfire_evidence
+    assert "CampfireDescribeMealTranslationPatchTests.cs" in campfire_evidence
+    assert "CampfireCookFromIngredientsTranslationPatchTests.cs" in campfire_evidence
+    assert "CookingRecipeDisplayNameTranslationPatchTests.cs" in campfire_evidence
+    assert "spice.cooking.terrain.* direct coverage is 290/290" in campfire_evidence
+    assert "issue-737-hse-route-audit.md" in campfire_evidence
+    assert entries[journal_family_id]["closure_lane"] == "history_generated_text"
+    assert entries[journal_family_id]["closure_status"] == "covered_by_owner_route"
+    journal_evidence = " ".join(entries[journal_family_id]["closure_evidence"])
+    assert "JournalAccomplishmentAddTranslationPatch.cs" in journal_evidence
+    assert "JournalApiAddTranslationPatchTests.cs" in journal_evidence
+    assert "ReshephHistoryTranslationTests.cs" in journal_evidence
+    assert "accepted annals candidates are merged" in journal_evidence
+    assert "issue-737-hse-route-audit.md" in journal_evidence
+
+
+def test_policy_records_hse_dynamic_quest_owner_route_closure() -> None:
+    """Dynamic quest HSE families are covered by producer-scoped owner patches and target-resolution tests."""
+    constructor_family_id = (
+        "XRL.World.ZoneBuilders/FindASpecificItemDynamicQuestTemplate_FabricateQuestGiver.cs::"
+        "FindASpecificItemDynamicQuestTemplate_FabricateQuestGiver.addQuestConversationToGiver("
+        "GameObject,Quest,GameObject)"
+    )
+    generated_quest_family_id = (
+        "XRL.World.ZoneBuilders/InteractWithAnObjectDynamicQuestTemplate_FabricateQuestGiver.cs::"
+        "InteractWithAnObjectDynamicQuestTemplate_FabricateQuestGiver.fabricateInteractWithAnObjectQuest("
+        "GameObject,string)"
+    )
+    signpost_family_id = (
+        "XRL.World.Parts/DynamicQuestSignpostConversation.cs::"
+        "DynamicQuestSignpostConversation.HandleEvent(BeforeConversationEvent)"
+    )
+    inventory = _inventory(
+        [
+            _family(
+                constructor_family_id,
+                "XRL.World.ZoneBuilders/FindASpecificItemDynamicQuestTemplate_FabricateQuestGiver.cs",
+                "addQuestConversationToGiver",
+                {"HistoricStringExpander": 1},
+            ),
+            _family(
+                generated_quest_family_id,
+                "XRL.World.ZoneBuilders/InteractWithAnObjectDynamicQuestTemplate_FabricateQuestGiver.cs",
+                "fabricateInteractWithAnObjectQuest",
+                {"HistoricStringExpander": 1},
+            ),
+            _family(
+                signpost_family_id,
+                "XRL.World.Parts/DynamicQuestSignpostConversation.cs",
+                "HandleEvent",
+                {"HistoricStringExpander": 1},
+            ),
+        ]
+    )
+
+    entries = {entry["family_id"]: entry for entry in valuable_surface_queue(inventory)}
+
+    for family_id in [constructor_family_id, generated_quest_family_id, signpost_family_id]:
+        assert entries[family_id]["closure_lane"] == "history_generated_text"
+        assert entries[family_id]["closure_status"] == "covered_by_owner_route"
+        assert "TargetMethodResolutionTests.cs" in " ".join(entries[family_id]["closure_evidence"])
+        assert "historic-string-expander-owner-plan.md" in " ".join(entries[family_id]["closure_evidence"])
+
+
+def test_policy_records_hse_journal_accomplishment_owner_route_closure() -> None:
+    """Journal accomplishment HSE families with storage-time route coverage should not stay queued."""
+    reputation_family_id = (
+        "XRL.World/Reputation.cs::Reputation.Modify("
+        "Faction,int,string,StringBuilder,string,bool,bool,bool,bool)"
+    )
+    gives_rep_family_id = (
+        "XRL.World.Parts/GivesRep.cs::GivesRep.HandleEvent(BeforeDeathRemovalEvent)"
+    )
+    inventory = _inventory(
+        [
+            _family(
+                reputation_family_id,
+                "XRL.World/Reputation.cs",
+                "Modify",
+                {"HistoricStringExpander": 1, "JournalAPI": 1},
+            ),
+            _family(
+                gives_rep_family_id,
+                "XRL.World.Parts/GivesRep.cs",
+                "HandleEvent",
+                {"HistoricStringExpander": 1, "JournalAPI": 1},
+            ),
+        ]
+    )
+
+    entries = {entry["family_id"]: entry for entry in valuable_surface_queue(inventory)}
+
+    for family_id in [reputation_family_id, gives_rep_family_id]:
+        assert entries[family_id]["closure_lane"] == "history_generated_text"
+        assert entries[family_id]["closure_status"] == "covered_by_owner_route"
+        assert "JournalApiAddTranslationPatchTests.cs" in " ".join(entries[family_id]["closure_evidence"])
+        assert "JournalPatternTranslatorTests.cs" in " ".join(entries[family_id]["closure_evidence"])
+
+
+def test_policy_records_hse_dynamic_quest_completion_route_progress() -> None:
+    """Dynamic quest completion accomplishments are owned by JournalAPI storage-time translation."""
+    find_site_family_id = (
+        "XRL.World.ZoneBuilders/FindASiteDynamicQuestManager.cs::"
+        "FindASiteDynamicQuestManagerSystem.CheckCompleted(Zone,JournalMapNote)"
+    )
+    find_item_family_id = (
+        "XRL.World.ZoneBuilders/FindASpecificItemDynamicQuestManager.cs::"
+        "FindASpecificItemDynamicQuestManagerSystem.CheckCompleted(GameObject)"
+    )
+    locate_relic_family_id = (
+        "XRL.World.Parts/LocateRelicQuestManager.cs::"
+        "LocateRelicQuestManagerSystem.CheckCompleted(GameObject)"
+    )
+    interact_family_id = (
+        "XRL.World.ZoneBuilders/InteractWithAnObjectDynamicQuestManager.cs::"
+        "System.FinishEntry(QuestEntry,GameObject)"
+    )
+    inventory = _inventory(
+        [
+            _family(
+                find_site_family_id,
+                "XRL.World.ZoneBuilders/FindASiteDynamicQuestManager.cs",
+                "CheckCompleted",
+                {"HistoricStringExpander": 1, "JournalAPI": 1},
+            ),
+            _family(
+                find_item_family_id,
+                "XRL.World.ZoneBuilders/FindASpecificItemDynamicQuestManager.cs",
+                "CheckCompleted",
+                {"HistoricStringExpander": 1, "JournalAPI": 1},
+            ),
+            _family(
+                locate_relic_family_id,
+                "XRL.World.Parts/LocateRelicQuestManager.cs",
+                "CheckCompleted",
+                {"HistoricStringExpander": 1, "JournalAPI": 1},
+            ),
+            _family(
+                interact_family_id,
+                "XRL.World.ZoneBuilders/InteractWithAnObjectDynamicQuestManager.cs",
+                "FinishEntry",
+                {"HistoricStringExpander": 1, "JournalAPI": 1},
+            ),
+        ]
+    )
+
+    entries = {entry["family_id"]: entry for entry in valuable_surface_queue(inventory)}
+
+    for family_id in [find_site_family_id, find_item_family_id, locate_relic_family_id]:
+        assert entries[family_id]["closure_lane"] == "history_generated_text"
+        assert entries[family_id]["closure_status"] == "covered_by_owner_route"
+        assert "JournalApiAddTranslationPatchTests.cs" in " ".join(entries[family_id]["closure_evidence"])
+        assert "JournalPatternTranslatorTests.cs" in " ".join(entries[family_id]["closure_evidence"])
+
+    assert entries[interact_family_id]["closure_lane"] == "history_generated_text"
+    assert entries[interact_family_id]["closure_status"] == "covered_by_owner_route"
+    interact_evidence = " ".join(entries[interact_family_id]["closure_evidence"])
+    assert "JournalApiAddTranslationPatchTests.cs" in interact_evidence
+    assert "finite QuestableVerb tags" in interact_evidence
+
+
+def test_policy_records_hse_journal_story_completion_routes() -> None:
+    """HSE journal story accomplishments are covered by storage patterns and owner popups."""
+    opening_family_id = "XRL.World.Parts/OpeningStory.cs::OpeningStory.AddAccomplishment(string)"
+    animator_family_id = "XRL.World.Parts/AnimatorSpray.cs::AnimatorSpray.HandleEvent(InventoryActionEvent)"
+    body_family_id = (
+        "XRL.World.Parts/Body.cs::Body.Dismember(BodyPart,GameObject,IInventory,bool,bool,IEvent)"
+    )
+    status_family_id = "XRL.UI/StatusScreen.cs::StatusScreen.BuyRandomMutation(GameObject)"
+    village_surface_family_id = "XRL.World.Parts/VillageSurface.cs::VillageSurface.CheckReveal()"
+    inventory = _inventory(
+        [
+            _family(
+                opening_family_id,
+                "XRL.World.Parts/OpeningStory.cs",
+                "AddAccomplishment",
+                {"HistoricStringExpander": 1, "JournalAPI": 1},
+            ),
+            _family(
+                animator_family_id,
+                "XRL.World.Parts/AnimatorSpray.cs",
+                "HandleEvent",
+                {"HistoricStringExpander": 1, "JournalAPI": 1, "Popup": 1},
+            ),
+            _family(
+                body_family_id,
+                "XRL.World.Parts/Body.cs",
+                "Dismember",
+                {"HistoricStringExpander": 1, "JournalAPI": 1, "Popup": 1},
+            ),
+            _family(
+                status_family_id,
+                "XRL.UI/StatusScreen.cs",
+                "BuyRandomMutation",
+                {"HistoricStringExpander": 1, "JournalAPI": 1, "Popup": 1},
+            ),
+            _family(
+                village_surface_family_id,
+                "XRL.World.Parts/VillageSurface.cs",
+                "CheckReveal",
+                {"HistoricStringExpander": 1, "JournalAPI": 1, "Popup": 1},
+            ),
+        ]
+    )
+
+    entries = {entry["family_id"]: entry for entry in valuable_surface_queue(inventory)}
+
+    for family_id in [
+        opening_family_id,
+        animator_family_id,
+        body_family_id,
+        status_family_id,
+        village_surface_family_id,
+    ]:
+        assert entries[family_id]["closure_lane"] == "history_generated_text"
+        assert entries[family_id]["closure_status"] == "covered_by_owner_route"
+        assert "JournalApiAddTranslationPatchTests.cs" in " ".join(entries[family_id]["closure_evidence"])
+        assert "JournalPatternTranslatorTests.cs" in " ".join(entries[family_id]["closure_evidence"])
+
+    assert "SingleCallsiteOwnerPopupTranslationPatchTests.cs" in " ".join(
+        entries[animator_family_id]["closure_evidence"]
+    )
+    assert "BodyTranslationPatch.cs" in " ".join(entries[body_family_id]["closure_evidence"])
+    assert "StatusScreenPopupTranslationPatchTests.cs" in " ".join(
+        entries[status_family_id]["closure_evidence"]
+    )
+
+
+def test_policy_records_hse_owner_plan_closure_for_existing_covered_families() -> None:
+    """Existing HSE owner-plan families should not remain action_required after evidence-backed review."""
+    cooking_family_id = (
+        "XRL.World.Skills.Cooking/CookingRecipe.cs::"
+        "CookingRecipe.GenerateRecipeName(List<string>,List<string>,string)"
+    )
+    memorial_family_id = "XRL.World.Parts/EaterCryptPlaque.cs::EaterCryptPlaque.GeneratePlaque()"
+    relic_family_id = (
+        "XRL.World/RelicGenerator.cs::RelicGenerator.GenerateRelic("
+        "string,int,HistoricEntitySnapshot,List<string>,Dictionary<string,List<string>>,string,string,string)"
+    )
+    village_family_id = "XRL.World.ZoneBuilders/VillageBase.cs::VillageBase.getAVillageWall()"
+    dimension_family_id = "XRL.World.Encounters/DimensionManager.cs::DimensionManager.InitializeFaction()"
+    name_style_family_id = (
+        "XRL.Names/NameStyle.cs::NameStyle.Generate("
+        "GameObject,string,string,string,string,string,string,string,List<string>,string,string,string,"
+        "Dictionary<string,string>,bool,bool,NameStyle,List<NameStyle>,int?,int?,bool?,bool?)"
+    )
+    inventory = _inventory(
+        [
+            _family(
+                cooking_family_id,
+                "XRL.World.Skills.Cooking/CookingRecipe.cs",
+                "GenerateRecipeName",
+                {"HistoricStringExpander": 1},
+            ),
+            _family(
+                memorial_family_id,
+                "XRL.World.Parts/EaterCryptPlaque.cs",
+                "GeneratePlaque",
+                {"HistoricStringExpander": 1},
+            ),
+            _family(
+                relic_family_id,
+                "XRL.World/RelicGenerator.cs",
+                "GenerateRelic",
+                {"HistoricStringExpander": 1},
+            ),
+            _family(
+                village_family_id,
+                "XRL.World.ZoneBuilders/VillageBase.cs",
+                "getAVillageWall",
+                {"HistoricStringExpander": 1},
+            ),
+            _family(
+                dimension_family_id,
+                "XRL.World.Encounters/DimensionManager.cs",
+                "InitializeFaction",
+                {"HistoricStringExpander": 1},
+            ),
+            _family(
+                name_style_family_id,
+                "XRL.Names/NameStyle.cs",
+                "Generate",
+                {"HistoricStringExpander": 1},
+            ),
+        ]
+    )
+
+    entries = {entry["family_id"]: entry for entry in valuable_surface_queue(inventory)}
+
+    for family_id in [
+        cooking_family_id,
+        memorial_family_id,
+        relic_family_id,
+        village_family_id,
+        dimension_family_id,
+        name_style_family_id,
+    ]:
+        assert entries[family_id]["closure_lane"] == "history_generated_text"
+        assert entries[family_id]["closure_status"] == "covered_by_owner_route"
+        assert "historic-string-expander-owner-plan.md" in " ".join(entries[family_id]["closure_evidence"])
+
+
+def test_policy_records_hse_friend_or_foe_reason_owner_route_closure() -> None:
+    """Friend-or-foe HSE reason frames are covered by a source-owner placeholder patch."""
+    normal_family_id = "XRL.World.Parts/GenerateFriendOrFoe.cs::GenerateFriendOrFoe.replacePlaceholders(string)"
+    heb_family_id = (
+        "XRL.World.Parts/GenerateFriendOrFoe_HEB.cs::"
+        "GenerateFriendOrFoe_HEB.replacePlaceholders(string)"
+    )
+    inventory = _inventory(
+        [
+            _family(
+                normal_family_id,
+                "XRL.World.Parts/GenerateFriendOrFoe.cs",
+                "replacePlaceholders",
+                {"HistoricStringExpander": 1},
+            ),
+            _family(
+                heb_family_id,
+                "XRL.World.Parts/GenerateFriendOrFoe_HEB.cs",
+                "replacePlaceholders",
+                {"HistoricStringExpander": 1},
+            ),
+        ]
+    )
+
+    entries = {entry["family_id"]: entry for entry in valuable_surface_queue(inventory)}
+
+    for family_id in [normal_family_id, heb_family_id]:
+        assert entries[family_id]["closure_lane"] == "history_generated_text"
+        assert entries[family_id]["closure_status"] == "covered_by_owner_route"
+        evidence = " ".join(entries[family_id]["closure_evidence"])
+        assert "FriendOrFoeReasonTranslationPatch.cs" in evidence
+        assert "FriendOrFoeReasonTranslatorTests.cs" in evidence
+        assert "FriendOrFoeReasonTranslationPatchTests.cs" in evidence
+        assert "TargetMethodResolutionTests.cs" in evidence
+
+
+def test_policy_records_hse_gossip_observation_owner_route_closure() -> None:
+    """Historic gossip HSE prose is covered by JournalAPI observation storage-time translation."""
+    one_faction_family_id = "XRL.World.Parts/Gossip.cs::Gossip.GenerateGossip_OneFaction(string)"
+    two_faction_family_id = "XRL.World.Parts/Gossip.cs::Gossip.GenerateGossip_TwoFactions(string,string)"
+    inventory = _inventory(
+        [
+            _family(
+                one_faction_family_id,
+                "XRL.World.Parts/Gossip.cs",
+                "GenerateGossip_OneFaction",
+                {"HistoricStringExpander": 1},
+            ),
+            _family(
+                two_faction_family_id,
+                "XRL.World.Parts/Gossip.cs",
+                "GenerateGossip_TwoFactions",
+                {"HistoricStringExpander": 1},
+            ),
+        ]
+    )
+
+    entries = {entry["family_id"]: entry for entry in valuable_surface_queue(inventory)}
+
+    for family_id in [one_faction_family_id, two_faction_family_id]:
+        assert entries[family_id]["closure_lane"] == "history_generated_text"
+        assert entries[family_id]["closure_status"] == "covered_by_owner_route"
+        evidence = " ".join(entries[family_id]["closure_evidence"])
+        assert "JournalObservationAddTranslationPatch.cs" in evidence
+        assert "JournalPatternTranslatorTests.cs" in evidence
+        assert "JournalApiAddTranslationPatchTests.cs" in evidence
+        assert "TargetMethodResolutionTests.cs" in evidence
+
+
+def test_policy_defers_text_filters_to_runtime_follow_up() -> None:
+    """TextFilters HSE calls require owner-specific runtime evidence outside the fixed-prose route pass."""
+    angry_family_id = "XRL.Language/TextFilters.cs::TextFilters.Angry(string)"
+    lallated_family_id = "XRL.Language/TextFilters.cs::TextFilters.Lallated(string,string)"
+    inventory = _inventory(
+        [
+            _family(
+                angry_family_id,
+                "XRL.Language/TextFilters.cs",
+                "Angry",
+                {"HistoricStringExpander": 1},
+            ),
+            _family(
+                lallated_family_id,
+                "XRL.Language/TextFilters.cs",
+                "Lallated",
+                {"HistoricStringExpander": 1},
+            ),
+        ]
+    )
+
+    entries = {entry["family_id"]: entry for entry in valuable_surface_queue(inventory)}
+
+    for family_id in [angry_family_id, lallated_family_id]:
+        assert entries[family_id]["closure_lane"] == "history_generated_text"
+        assert entries[family_id]["closure_status"] == "runtime_required"
+        evidence = " ".join(entries[family_id]["closure_evidence"])
+        assert "issues/726" in evidence
+        assert "owner-specific runtime evidence" in evidence
+        assert "semantic-probe TextFilters" in evidence
+        assert "StyledStatus.Format angry style" in evidence
+        assert "Preacher.PreacherHomily filters lineText" in evidence
+        assert "ConversationScript installs XRL.World.Conversations.Parts.TextFilter" in evidence
+        assert "filtered outputs mutate already-composed speech/status text" in evidence
+
+
+def test_policy_records_hse_sultan_region_reveal_description_owner_route_closure() -> None:
+    """SultanRegion reveal descriptions are covered by a successful SultanReveal owner patch."""
+    family_id = "XRL.World.Parts/SultanRegion.cs::SultanRegion.FireEvent(Event)"
+    inventory = _inventory(
+        [
+            _family(
+                family_id,
+                "XRL.World.Parts/SultanRegion.cs",
+                "FireEvent",
+                {"HistoricStringExpander": 1, "Description": 1},
+            ),
+        ]
+    )
+
+    entries = {entry["family_id"]: entry for entry in valuable_surface_queue(inventory)}
+
+    assert entries[family_id]["closure_lane"] == "history_generated_text"
+    assert entries[family_id]["closure_status"] == "covered_by_owner_route"
+    evidence = " ".join(entries[family_id]["closure_evidence"])
+    assert "SultanRegionRevealDescriptionTranslationPatch.cs" in evidence
+    assert "SultanRegionRevealDescriptionTranslatorTests.cs" in evidence
+    assert "SultanRegionRevealDescriptionTranslationPatchTests.cs" in evidence
+    assert "TargetMethodResolutionTests.cs" in evidence
+
+
+def test_policy_records_hse_relic_component_wrapper_closure() -> None:
+    """Relic element wrappers are covered by downstream relic name and description owner routes."""
+    spindle_family_id = (
+        "XRL.World/RelicGenerator.cs::RelicGenerator.GenerateSpindleNegotiationRelic("
+        "string,string,string,string,int)"
+    )
+    select_element_family_id = (
+        "XRL.World/RelicGenerator.cs::RelicGenerator.SelectElement("
+        "GameObject,GameObject,GameObject,GameObject)"
+    )
+    inventory = _inventory(
+        [
+            _family(
+                spindle_family_id,
+                "XRL.World/RelicGenerator.cs",
+                "GenerateSpindleNegotiationRelic",
+                {"HistoricStringExpander": 1},
+            ),
+            _family(
+                select_element_family_id,
+                "XRL.World/RelicGenerator.cs",
+                "SelectElement",
+                {"HistoricStringExpander": 1},
+            ),
+        ]
+    )
+
+    entries = {entry["family_id"]: entry for entry in valuable_surface_queue(inventory)}
+
+    for family_id in [spindle_family_id, select_element_family_id]:
+        assert entries[family_id]["closure_lane"] == "history_generated_text"
+        assert entries[family_id]["closure_status"] == "covered_by_owner_route"
+        evidence = " ".join(entries[family_id]["closure_evidence"])
+        assert "RelicDescriptionAddendumTranslationPatchTests.cs" in evidence
+        assert "RelicGeneratorGeneratedNameTranslationPatchTests.cs" in evidence
+        assert "PseudoRelicGeneratedNameTranslationPatchTests.cs" in evidence
+        assert "TargetMethodResolutionTests.cs" in evidence
+
+
+def test_policy_records_hse_sultanate_year_name_owner_route_closure() -> None:
+    """Sultanate year names are covered by a source-owner helper patch."""
+    family_id = "XRL.Annals/QudHistoryHelpers.cs::QudHistoryHelpers.GenerateSultanateYearName()"
+    inventory = _inventory(
+        [
+            _family(
+                family_id,
+                "XRL.Annals/QudHistoryHelpers.cs",
+                "GenerateSultanateYearName",
+                {"HistoricStringExpander": 1},
+            ),
+        ]
+    )
+
+    entries = {entry["family_id"]: entry for entry in valuable_surface_queue(inventory)}
+
+    assert entries[family_id]["closure_lane"] == "history_generated_text"
+    assert entries[family_id]["closure_status"] == "covered_by_owner_route"
+    evidence = " ".join(entries[family_id]["closure_evidence"])
+    assert "SultanateYearNameTranslationPatch.cs" in evidence
+    assert "HistoricSpiceGeneratedNameTranslatorTests.cs" in evidence
+    assert "SultanateYearNameTranslationPatchTests.cs" in evidence
+    assert "TargetMethodResolutionTests.cs" in evidence
+
+
+def test_policy_records_hse_imported_food_drink_faction_name_owner_route_closure() -> None:
+    """Imported food/drink faction names are covered by a source-owner faction-name patch."""
+    family_id = "XRL.Annals/ImportedFoodorDrink.cs::ImportedFoodorDrink.generateFactionName(string)"
+    inventory = _inventory(
+        [
+            _family(
+                family_id,
+                "XRL.Annals/ImportedFoodorDrink.cs",
+                "generateFactionName",
+                {"HistoricStringExpander": 1},
+            ),
+        ]
+    )
+
+    entries = {entry["family_id"]: entry for entry in valuable_surface_queue(inventory)}
+
+    assert entries[family_id]["closure_lane"] == "history_generated_text"
+    assert entries[family_id]["closure_status"] == "covered_by_owner_route"
+    evidence = " ".join(entries[family_id]["closure_evidence"])
+    assert "ImportedFoodOrDrinkFactionNameTranslationPatch.cs" in evidence
+    assert "ImportedFoodOrDrinkFactionNameTranslatorTests.cs" in evidence
+    assert "ImportedFoodOrDrinkFactionNameTranslationPatchTests.cs" in evidence
+    assert "historyspice-common.ja.json" in evidence
+
+
+def test_policy_records_hse_history_item_name_owner_route_closure() -> None:
+    """QudHistoryHelpers generated blessing item names are covered at the source helper route."""
+    family_ids = [
+        "XRL.Annals/QudHistoryHelpers.cs::QudHistoryHelpers.NameItem(string,History,HistoricEntity)",
+        "XRL.Annals/QudHistoryHelpers.cs::QudHistoryHelpers.NameItemNounRoot(string,History,HistoricEntity)",
+        "XRL.Annals/QudHistoryHelpers.cs::QudHistoryHelpers.NameItemAdjRoot(string,History,HistoricEntity)",
+    ]
+    inventory = _inventory(
+        [
+            _family(
+                family_id,
+                "XRL.Annals/QudHistoryHelpers.cs",
+                family_id.split("::QudHistoryHelpers.")[1].split("(", maxsplit=1)[0],
+                {"HistoricStringExpander": 1},
+            )
+            for family_id in family_ids
+        ]
+    )
+
+    entries = {entry["family_id"]: entry for entry in valuable_surface_queue(inventory)}
+
+    for family_id in family_ids:
+        assert entries[family_id]["closure_lane"] == "history_generated_text"
+        assert entries[family_id]["closure_status"] == "covered_by_owner_route"
+        evidence = " ".join(entries[family_id]["closure_evidence"])
+        assert "QudHistoryHelpersItemNameTranslationPatch.cs" in evidence
+        assert "HistoricSpiceGeneratedNameTranslatorTests.cs" in evidence
+        assert "QudHistoryHelpersItemNameTranslationPatchTests.cs" in evidence
+        assert "TargetMethodResolutionTests.cs" in evidence
+        assert "world-gospels.ja.json" in evidence
+
+
+def test_policy_records_hse_village_proverb_storage_route_closure() -> None:
+    """VillageProverb text is covered by the village gospel storage route and proverb patterns."""
+    family_id = "XRL.Annals/VillageProverb.cs::VillageProverb.Generate()"
+    inventory = _inventory(
+        [
+            _family(
+                family_id,
+                "XRL.Annals/VillageProverb.cs",
+                "Generate",
+                {"HistoricStringExpander": 1},
+            ),
+        ]
+    )
+
+    entries = {entry["family_id"]: entry for entry in valuable_surface_queue(inventory)}
+
+    assert entries[family_id]["closure_lane"] == "history_generated_text"
+    assert entries[family_id]["closure_status"] == "covered_by_owner_route"
+    evidence = " ".join(entries[family_id]["closure_evidence"])
+    assert "AddVillageGospelsTranslationPatch.cs" in evidence
+    assert "HistoricNarrativeDictionaryWalker.cs" in evidence
+    assert "JournalPatternTranslatorTests.cs" in evidence
+    assert "annals-patterns.ja.json" in evidence
+
+
+def test_policy_records_hse_village_coda_end_event_display_route_closure() -> None:
+    """VillageCoda end-event prose is covered by JournalSultanNote display-route annals patterns."""
+    family_id = "XRL.World.ZoneBuilders/VillageCoda.cs::VillageCoda.GenerateEndEvent()"
+    inventory = _inventory(
+        [
+            _family(
+                family_id,
+                "XRL.World.ZoneBuilders/VillageCoda.cs",
+                "GenerateEndEvent",
+                {"HistoricStringExpander": 1, "JournalAPI": 1},
+            ),
+        ]
+    )
+
+    entries = {entry["family_id"]: entry for entry in valuable_surface_queue(inventory)}
+
+    assert entries[family_id]["closure_lane"] == "history_generated_text"
+    assert entries[family_id]["closure_status"] == "covered_by_owner_route"
+    evidence = " ".join(entries[family_id]["closure_evidence"])
+    assert "JournalEntryDisplayTextPatch.cs" in evidence
+    assert "JournalTextTranslator.cs" in evidence
+    assert "JournalEntryDisplayTextPatchTests.cs" in evidence
+    assert "annals-patterns.ja.json" in evidence
+    assert "candidates_pending.json" in evidence
+
+
+def test_policy_records_hse_village_buildzone_pet_origin_owner_route_closure() -> None:
+    """Village BuildZone HSE pet origin stories are covered by the pet conversation owner route."""
+    family_ids = [
+        "XRL.World.ZoneBuilders/Village.cs::Village.BuildZone(Zone)",
+        "XRL.World.ZoneBuilders/VillageCoda.cs::VillageCoda.BuildZone(Zone)",
+    ]
+    inventory = _inventory(
+        [
+            _family(
+                family_id,
+                family_id.split("::", maxsplit=1)[0],
+                "BuildZone",
+                {"HistoricStringExpander": 1, "OtherInvocation": 1},
+            )
+            for family_id in family_ids
+        ]
+    )
+
+    entries = {entry["family_id"]: entry for entry in valuable_surface_queue(inventory)}
+
+    for family_id in family_ids:
+        assert entries[family_id]["closure_lane"] == "history_generated_text"
+        assert entries[family_id]["closure_status"] == "covered_by_owner_route"
+        evidence = " ".join(entries[family_id]["closure_evidence"])
+        assert "VillagePetConversationTranslationPatch.cs" in evidence
+        assert "VillagePetConversationTranslatorTests.cs" in evidence
+        assert "VillagePetConversationTranslationPatchTests.cs" in evidence
+        assert "TargetMethodResolutionTests.cs" in evidence
+        assert "AddVillagerConversation" in evidence
+
+
+def test_policy_records_hse_qud_history_factory_generated_name_route_closure() -> None:
+    """QudHistoryFactory generated site and cult names are covered by narrow owner patches."""
+    family_ids = [
+        "XRL.Annals/QudHistoryFactory.cs::QudHistoryFactory.NameRuinsSite(History,out bool,out string)",
+        "XRL.Annals/QudHistoryFactory.cs::QudHistoryFactory.GenerateCultName(HistoricEntity,History)",
+    ]
+    inventory = _inventory(
+        [
+            _family(
+                family_id,
+                "XRL.Annals/QudHistoryFactory.cs",
+                family_id.split("::QudHistoryFactory.")[1].split("(", maxsplit=1)[0],
+                {"HistoricStringExpander": 1},
+            )
+            for family_id in family_ids
+        ]
+    )
+
+    entries = {entry["family_id"]: entry for entry in valuable_surface_queue(inventory)}
+
+    for family_id in family_ids:
+        assert entries[family_id]["closure_lane"] == "history_generated_text"
+        assert entries[family_id]["closure_status"] == "covered_by_owner_route"
+        evidence = " ".join(entries[family_id]["closure_evidence"])
+        assert "QudHistoryFactoryNameRuinsSiteTranslationPatch.cs" in evidence
+        assert "QudHistoryFactoryGenerateCultNameTranslationPatch.cs" in evidence
+        assert "HistoricSpiceGeneratedNameTranslatorTests.cs" in evidence
+        assert "QudHistoryFactoryGeneratedNameTranslationPatchTests.cs" in evidence
+        assert "TargetMethodResolutionTests.cs" in evidence
 
 
 def test_lane_summary_payload_reports_counts_and_top_families() -> None:
@@ -398,6 +1108,45 @@ def test_classify_family_keeps_generic_string_construction_as_candidate_only() -
 
     assert result["classification"] == "candidate_only"
     assert result["construction_only_surfaces"] == ["StringBuilderAppend", "StringFormat"]
+
+
+def test_load_inventory_normalizes_static_producer_inventory_schema(tmp_path: Path) -> None:
+    """The CLI accepts the scanner's producer_family_id/callsite_count payload."""
+    inventory_path = tmp_path / "static-producer-inventory.json"
+    inventory_path.write_text(
+        """
+{
+  "schema_version": "1.0",
+  "game_version": "1.0.4",
+  "totals": {},
+  "families": [
+    {
+      "producer_family_id": "XRL.World.Parts/Campfire.cs::XRL.World.Parts.Campfire.CookPresetMeal",
+      "file": "XRL.World.Parts/Campfire.cs",
+      "namespace": "XRL.World.Parts",
+      "type_name": "XRL.World.Parts.Campfire",
+      "member_name": "CookPresetMeal",
+      "member_kind": "method",
+      "member_start_line": 734,
+      "callsite_count": 3,
+      "surface_counts": {"HistoricStringExpander": 1, "Popup.Show*": 2},
+      "representative_calls": [
+        {"line": 738, "target_surface": "HistoricStringExpander"}
+      ]
+    }
+  ]
+}
+""",
+        encoding="utf-8",
+    )
+
+    inventory = load_inventory(inventory_path)
+    entry = build_surface_queue(inventory)[0]
+
+    assert entry["family_id"] == "XRL.World.Parts/Campfire.cs::XRL.World.Parts.Campfire.CookPresetMeal"
+    assert entry["member_signature"] == "CookPresetMeal"
+    assert entry["text_construction_count"] == 3
+    assert entry["first_lines"] == [738]
 
 
 def _inventory(families: list[TextConstructionFamily]) -> TextConstructionInventory:

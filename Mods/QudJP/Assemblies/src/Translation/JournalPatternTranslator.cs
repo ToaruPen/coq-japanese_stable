@@ -42,6 +42,16 @@ internal static class JournalPatternTranslator
         new Regex("^(?:his|her|its|their) (?<rest>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex FakedDeathCapturePattern =
         new Regex("^(?<name>.+?)'s death had been faked$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex SultanCloneHadDiedCapturePattern =
+        new Regex("^(?:a clone of|a simulacrum of) (?<name>.+?) had been the one who died$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex SultanTwinHadDiedCapturePattern =
+        new Regex("^(?<name>.+?)'s twin had been the one who died$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex LeaderRelationshipTitlePattern =
+        new Regex("^leader of the (?<faction>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex PopularRivalMurderReasonPattern =
+        new Regex("^after murdering a popular rival (?<method>with .+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex VisageReasonPattern =
+        new Regex("^(?:(?<owner>.+?)の )?(?<adjective>.+?) visage$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex JapaneseCharacterPattern =
         new Regex("[\\p{IsHiragana}\\p{IsKatakana}\\p{IsCJKUnifiedIdeographs}]", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
@@ -767,6 +777,16 @@ internal static class JournalPatternTranslator
 
     private static string TranslateTemplateCapture(string source)
     {
+        if (TryTranslateAnnalsInYearCapture(source, out var inYearCapture))
+        {
+            return inYearCapture;
+        }
+
+        if (TryTranslateFurnitureStuckPrepositionCapture(source, out var furniturePrepositionCapture))
+        {
+            return furniturePrepositionCapture;
+        }
+
         if (TryTranslatePronounCapture(source, out var pronounCapture))
         {
             return pronounCapture;
@@ -792,6 +812,16 @@ internal static class JournalPatternTranslator
         if (TryTranslateFakedDeathCapture(source, out var fakedDeathCapture))
         {
             return fakedDeathCapture;
+        }
+
+        if (TryTranslateExpandedHistorySpiceCapture(source, out var expandedHistorySpiceCapture))
+        {
+            return expandedHistorySpiceCapture;
+        }
+
+        if (TryTranslateRelationshipTitleFragment(source, out var relationshipTitleCapture))
+        {
+            return relationshipTitleCapture;
         }
 
         if (TryTranslateTitlePhraseCapture(source, out var titlePhraseCapture))
@@ -831,6 +861,62 @@ internal static class JournalPatternTranslator
         }
 
         return source;
+    }
+
+    private static bool TryTranslateAnnalsInYearCapture(string source, out string translated)
+    {
+        switch (source)
+        {
+            case "In":
+            case "in":
+                translated = "年";
+                return true;
+            case "Throughout":
+            case "throughout":
+                translated = "年を通じて";
+                return true;
+            case "Throughout the entirety of":
+            case "throughout the entirety of":
+                translated = "年の全期間";
+                return true;
+            case "Early in":
+            case "early in":
+                translated = "年初頭";
+                return true;
+            case "Late in":
+            case "late in":
+                translated = "年末";
+                return true;
+            case "Sometime in":
+            case "sometime in":
+                translated = "年ごろ";
+                return true;
+        }
+
+        translated = source;
+        return false;
+    }
+
+    private static bool TryTranslateFurnitureStuckPrepositionCapture(string source, out string translated)
+    {
+        switch (source)
+        {
+            case "in":
+                translated = "に";
+                return true;
+            case "under":
+                translated = "の下に";
+                return true;
+            case "inside":
+                translated = "の中に";
+                return true;
+            case "behind":
+                translated = "の後ろに";
+                return true;
+        }
+
+        translated = source;
+        return false;
     }
 
     private static bool TryTranslatePronounCapture(string source, out string translated)
@@ -916,6 +1002,107 @@ internal static class JournalPatternTranslator
         }
 
         translated = TranslateTemplateCapture(fakedDeathMatch.Groups["name"].Value) + "の死が偽装されていた";
+        return true;
+    }
+
+    private static bool TryTranslateExpandedHistorySpiceCapture(string source, out string translated)
+    {
+        if (TryTranslatePopularRivalMurderReason(source, out translated)
+            || TryTranslateSultanCloneHadDiedReason(source, out translated)
+            || TryTranslateVisageReason(source, out translated))
+        {
+            return true;
+        }
+
+        translated = source;
+        return false;
+    }
+
+    private static bool TryTranslatePopularRivalMurderReason(string source, out string translated)
+    {
+        var match = PopularRivalMurderReasonPattern.Match(source);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        var method = match.Groups["method"].Value;
+        var translatedMethod = TranslateTemplateCapture(method);
+        if (string.Equals(translatedMethod, method, StringComparison.Ordinal))
+        {
+            translated = source;
+            return false;
+        }
+
+        translated = "人気のあるライバルを" + translatedMethod + "で殺したあと";
+        return true;
+    }
+
+    private static bool TryTranslateSultanCloneHadDiedReason(string source, out string translated)
+    {
+        var cloneMatch = SultanCloneHadDiedCapturePattern.Match(source);
+        if (cloneMatch.Success)
+        {
+            var cloneKind = source.StartsWith("a simulacrum of ", StringComparison.Ordinal)
+                ? "模造体"
+                : "クローン";
+            translated = "死亡したのは" + TranslateTemplateCapture(cloneMatch.Groups["name"].Value) + "の" + cloneKind + "だった";
+            return true;
+        }
+
+        var twinMatch = SultanTwinHadDiedCapturePattern.Match(source);
+        if (twinMatch.Success)
+        {
+            translated = "死亡したのは" + TranslateTemplateCapture(twinMatch.Groups["name"].Value) + "の双子だった";
+            return true;
+        }
+
+        translated = source;
+        return false;
+    }
+
+    private static bool TryTranslateVisageReason(string source, out string translated)
+    {
+        var match = VisageReasonPattern.Match(source);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        var adjective = match.Groups["adjective"].Value;
+        if (!HistorySpiceComponentLookup.TryTranslateWord(adjective, out var translatedAdjective)
+            || !HistorySpiceComponentLookup.TryTranslateWord("visage", out var translatedNoun))
+        {
+            translated = source;
+            return false;
+        }
+
+        var owner = match.Groups["owner"].Value;
+        translated = owner.Length == 0
+            ? translatedAdjective + translatedNoun
+            : owner + "の" + translatedAdjective + translatedNoun;
+        return true;
+    }
+
+    internal static bool TryTranslateRelationshipTitleFragment(string source, out string translated)
+    {
+        var match = LeaderRelationshipTitlePattern.Match(source);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        var faction = match.Groups["faction"].Value.Trim();
+        if (faction.Length == 0)
+        {
+            translated = source;
+            return false;
+        }
+
+        translated = TranslateTemplateCapture(faction) + "の指導者";
         return true;
     }
 

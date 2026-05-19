@@ -146,6 +146,31 @@ public sealed class JournalTextTranslatorTests
     }
 
     [Test]
+    public void TryTranslateMapNoteTextForStorage_TranslatesGeneratedSettlementAndDistanceLines()
+    {
+        WriteExactDictionary(
+            ("カルクヘタラ", "カルクヘタラ"),
+            ("Omonporch", "オモンポーチ"),
+            ("Red Rock", "レッドロック"),
+            ("east", "東"),
+            ("south", "南"));
+        WriteHistorySpiceDictionary(
+            ("stargazer", "星見"),
+            ("home", "家"));
+        WritePatternDictionary();
+
+        Assert.Multiple(() =>
+        {
+            AssertTranslatedMapNote(
+                "カルクヘタラ, Stargazerhome\n5 parasangs east and 5 parasangs south of Omonporch",
+                "\u0001カルクヘタラ, 星見の家\nオモンポーチから5パラサング東、5パラサング南");
+            AssertTranslatedMapNote(
+                "トゥキスフ, Stargazerhome\n7 parasangs east of Red Rock",
+                "\u0001トゥキスフ, 星見の家\nレッドロックから7パラサング東");
+        });
+    }
+
+    [Test]
     public void TryTranslateObservationRevealTextForStorage_UsesJournalMarkOfDeathPatterns()
     {
         WritePatternDictionary(
@@ -262,6 +287,35 @@ public sealed class JournalTextTranslatorTests
         builder.AppendLine();
         File.WriteAllText(
             Path.Combine(dictionaryDirectory, "journal-text-l1.ja.json"),
+            builder.ToString(),
+            Utf8WithoutBom);
+    }
+
+    private void WriteHistorySpiceDictionary(params (string key, string text)[] entries)
+    {
+        var scopedDirectory = Path.Combine(dictionaryDirectory, "Scoped");
+        Directory.CreateDirectory(scopedDirectory);
+
+        var builder = new StringBuilder();
+        builder.Append("{\"entries\":[");
+        for (var index = 0; index < entries.Length; index++)
+        {
+            if (index > 0)
+            {
+                builder.Append(',');
+            }
+
+            builder.Append("{\"key\":\"");
+            builder.Append(EscapeJson(entries[index].key));
+            builder.Append("\",\"text\":\"");
+            builder.Append(EscapeJson(entries[index].text));
+            builder.Append("\"}");
+        }
+
+        builder.Append("]}");
+        builder.AppendLine();
+        File.WriteAllText(
+            Path.Combine(scopedDirectory, "historyspice-common.ja.json"),
             builder.ToString(),
             Utf8WithoutBom);
     }

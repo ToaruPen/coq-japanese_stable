@@ -66,6 +66,11 @@ internal static class MessageLogProducerTranslationHelpers
         "reach",
     };
 
+    private static readonly string[] CompactHistorySpicePlaceSuffixes =
+    {
+        "home",
+    };
+
     private static readonly HashSet<string> FixedBiomeNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
     {
         "slime patch",
@@ -391,6 +396,11 @@ internal static class MessageLogProducerTranslationHelpers
             return true;
         }
 
+        if (TryTranslateCompactHistorySpicePlaceSuffixSegment(source, out translated))
+        {
+            return true;
+        }
+
         if (TryTranslateBiomeAdjectiveSegment(source, out translated))
         {
             return true;
@@ -475,6 +485,32 @@ internal static class MessageLogProducerTranslationHelpers
 
         translated = TranslateZoneSubsegment(root) + translatedSuffix;
         return true;
+    }
+
+    private static bool TryTranslateCompactHistorySpicePlaceSuffixSegment(string source, out string translated)
+    {
+        for (var index = 0; index < CompactHistorySpicePlaceSuffixes.Length; index++)
+        {
+            var suffix = CompactHistorySpicePlaceSuffixes[index];
+            if (source.Length <= suffix.Length
+                || !source.EndsWith(suffix, StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+
+            var root = source.Substring(0, source.Length - suffix.Length);
+            if (!TryTranslateZoneNameComponent(root, out var translatedRoot)
+                || !TryTranslateZoneNameComponent(suffix, out var translatedSuffix))
+            {
+                continue;
+            }
+
+            translated = translatedRoot + "の" + translatedSuffix;
+            return true;
+        }
+
+        translated = source;
+        return false;
     }
 
     private static bool TryTranslateBiomeAdjectiveSegment(string source, out string translated)
@@ -632,6 +668,16 @@ internal static class MessageLogProducerTranslationHelpers
         return TryTranslateZoneSegment(source, out var translated)
             ? translated
             : source;
+    }
+
+    private static bool TryTranslateZoneNameComponent(string source, out string translated)
+    {
+        if (StringHelpers.TryGetTranslationExactOrLowerAscii(source, out translated))
+        {
+            return true;
+        }
+
+        return HistorySpiceComponentLookup.TryTranslateWord(source, out translated);
     }
 
     private static bool TrySplitLeadingWord(string source, out string word, out string remainder)

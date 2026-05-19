@@ -22,6 +22,13 @@ public sealed partial class Issue201OtherUiBindingPatchTests
         Translator.ResetForTests();
         Translator.SetDictionaryDirectoryForTests(tempDirectory);
         LocalizationAssetResolver.SetLocalizationRootForTests(tempDirectory);
+        var journalPatternFilePath = Path.Combine(tempDirectory, "journal-patterns.ja.json");
+        File.WriteAllText(
+            journalPatternFilePath,
+            "{\"entries\":[],\"patterns\":[]}\n",
+            new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
+        JournalPatternTranslator.ResetForTests();
+        JournalPatternTranslator.SetPatternFileForTests(journalPatternFilePath);
         ChargenStructuredTextTranslator.ResetForTests();
         DynamicTextObservability.ResetForTests();
         SinkObservation.ResetForTests();
@@ -38,6 +45,7 @@ public sealed partial class Issue201OtherUiBindingPatchTests
     public void TearDown()
     {
         Translator.ResetForTests();
+        JournalPatternTranslator.ResetForTests();
         LocalizationAssetResolver.SetLocalizationRootForTests(null);
         ChargenStructuredTextTranslator.ResetForTests();
         DynamicTextObservability.ResetForTests();

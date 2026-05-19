@@ -171,6 +171,38 @@ public static class CampfireNostrumsTranslationPatch
         return true;
     }
 
+    internal static bool TryTranslatePopupProducerText(string source, string route, string family, out string translated)
+    {
+        if (!OwnerTranslationScope.IsActive(activeDepth) || string.IsNullOrEmpty(source))
+        {
+            translated = source;
+            return false;
+        }
+
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        var translatedCore = stripped switch
+        {
+            "Treat whom first?" => "最初に誰を治療する？",
+            "Treat whom next?" => "次に誰を治療する？",
+            "Select an ingredient to use." => "使う材料を選ぶ。",
+            _ => null,
+        };
+
+        if (translatedCore is null)
+        {
+            translated = source;
+            return false;
+        }
+
+        translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+            translatedCore,
+            spans,
+            stripped.Length,
+            source);
+        DynamicTextObservability.RecordTransform(route, family + "." + Context + ".PickGameObjectTitle", source, translated);
+        return true;
+    }
+
     private static bool TryTranslateCore(
         string source,
         string stripped,

@@ -40,7 +40,27 @@ public sealed class CookingRecipeDisplayNameTranslationPatchTests
 
             Assert.Multiple(() =>
             {
-                Assert.That(result, Is.EqualTo("{{W|揚げ・ウェハー}}"));
+                Assert.That(result, Is.EqualTo("{{W|揚げウェハー}}"));
+                Assert.That(HitCount(), Is.EqualTo(1));
+            });
+        });
+    }
+
+    [Test]
+    public void GetDisplayName_TranslatesGeneratedDishPrepositionName_WhenPatched()
+    {
+        WithPatchedDisplayName(() =>
+        {
+            var target = new DummyCookingRecipeDisplayNameTarget
+            {
+                DisplayNameResult = "{{W|Bread With Salt}}",
+            };
+
+            var result = target.GetDisplayName();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(result, Is.EqualTo("{{W|パン：塩入り}}"));
                 Assert.That(HitCount(), Is.EqualTo(1));
             });
         });
@@ -102,7 +122,7 @@ public sealed class CookingRecipeDisplayNameTranslationPatchTests
             Assert.Multiple(() =>
             {
                 Assert.That(tileName, Is.EqualTo("{{W|Fried Wafers}}"));
-                Assert.That(displayNameAfterTileScope, Is.EqualTo("{{W|揚げ・ウェハー}}"));
+                Assert.That(displayNameAfterTileScope, Is.EqualTo("{{W|揚げウェハー}}"));
                 Assert.That(HitCount(), Is.EqualTo(1));
             });
         });

@@ -278,6 +278,12 @@
       "expected_japanese_exact": "建造は5091年に始まり、5142年に終わった"
     },
     {
+      "candidate_id": "Abdicate#gospel#issue737",
+      "event_property": "gospel",
+      "input_source": "Early in 3476 BR, after murdering a popular rival with malicious soldering, the sultan of Qud disappeared. Because of ウーヒム IVの shining visage, she was chosen as the successor.",
+      "expected_japanese_exact": "3476年初頭、人気のあるライバルを悪意あるはんだ付けで殺したあと、クッドのスルタンは姿を消した。ウーヒム IVの輝く顔立ちのため、その者が後継者に選ばれた。"
+    },
+    {
       "candidate_id": "edge_empty_gospel",
       "event_property": "gospel",
       "input_source": "",

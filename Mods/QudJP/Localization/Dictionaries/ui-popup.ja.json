@@ -664,6 +664,11 @@
             "text": "保存する珍味を選ぶ。"
         },
         {
+            "key": "The fire breathes its warmth on your bones.",
+            "context": "XRL.UI.Popup.PickOption.Title",
+            "text": "焚き火の温もりが骨身にしみる。"
+        },
+        {
             "key": "Choose ingredients to cook with.",
             "context": "XRL.UI.Popup.PickOption.Title",
             "text": "料理に使う材料を選ぶ。"

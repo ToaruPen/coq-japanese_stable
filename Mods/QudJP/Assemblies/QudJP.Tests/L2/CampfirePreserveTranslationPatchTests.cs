@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Text;
 using HarmonyLib;
 using QudJP.Patches;
 using QudJP.Tests.DummyTargets;
@@ -10,9 +11,17 @@ namespace QudJP.Tests.L2;
 [NonParallelizable]
 public sealed class CampfirePreserveTranslationPatchTests
 {
+    private string tempDirectory = null!;
+
     [SetUp]
     public void SetUp()
     {
+        tempDirectory = Path.Combine(Path.GetTempPath(), "qudjp-campfire-preserve-l2", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(tempDirectory);
+
+        Translator.ResetForTests();
+        Translator.SetDictionaryDirectoryForTests(tempDirectory);
+        ScopedDictionaryLookup.ResetForTests();
         CampfirePreserveTranslationPatch.ResetForTests();
         DummyPopupShow.Reset();
     }
@@ -21,16 +30,29 @@ public sealed class CampfirePreserveTranslationPatchTests
     public void TearDown()
     {
         CampfirePreserveTranslationPatch.ResetForTests();
+        ScopedDictionaryLookup.ResetForTests();
+        Translator.ResetForTests();
+
+        if (Directory.Exists(tempDirectory))
+        {
+            Directory.Delete(tempDirectory, recursive: true);
+        }
     }
 
     [TestCase(
         "You preserved:\n\nan apple into 1 serving of dried apple.",
-        "保存した:\n\nan appleを1 servingのdried appleに保存した。")]
+        "保存した:\n\nan appleを1食分のdried appleに保存した。")]
     [TestCase(
-        "You preserved:\n\n{{G|two-faced banana}} into 2 servings of {{W|dried banana}}.\n{{Y|glowfish}} into 1 dram of {{C|glowfish paste}}.",
-        "保存した:\n\n{{G|two-faced banana}}を2 servingsの{{W|dried banana}}に保存した。\n{{Y|glowfish}}を1 dramの{{C|glowfish paste}}に保存した。")]
+        "You preserved:\n\nSome {{r|raw boar meat}} into 3 serving of boar jerky.\nSome {{r|raw worm meat}} into 3 servings of worm jerky.",
+        "保存した:\n\n{{r|生の猪肉}}少々を3食分の猪肉ジャーキーに保存した。\n{{r|生のワーム肉}}少々を3食分のワームジャーキーに保存した。")]
     public void Preserve_TranslatesGeneratedPreservedPopup_WhenOwnerPatched(string source, string expected)
     {
+        WriteDisplayNameDictionary(
+            ("raw boar meat", "生の猪肉"),
+            ("boar jerky", "猪肉ジャーキー"),
+            ("raw worm meat", "生のワーム肉"),
+            ("worm jerky", "ワームジャーキー"));
+
         AssertPopupMessage(
             RequireMethod(typeof(DummyCampfirePreserveTarget), nameof(DummyCampfirePreserveTarget.Preserve)),
             source,
@@ -40,10 +62,14 @@ public sealed class CampfirePreserveTranslationPatchTests
     [Test]
     public void PreserveExotic_TranslatesGeneratedPreservedPopup_WhenOwnerPatched()
     {
+        WriteDisplayNameDictionary(
+            ("phase fruit", "フェーズ果実"),
+            ("phase preserves", "フェーズ保存食"));
+
         AssertPopupMessage(
             RequireMethod(typeof(DummyCampfirePreserveTarget), nameof(DummyCampfirePreserveTarget.PreserveExotic)),
             "You preserved:\n\n{{M|phase fruit}} into 3 servings of {{C|phase preserves}}.",
-            "保存した:\n\n{{M|phase fruit}}を3 servingsの{{C|phase preserves}}に保存した。");
+            "保存した:\n\n{{M|フェーズ果実}}を3食分の{{C|フェーズ保存食}}に保存した。");
     }
 
     [Test]
@@ -152,4 +178,47 @@ public sealed class CampfirePreserveTranslationPatchTests
     }
 
     private static string CreateHarmonyId() => $"qudjp.tests.{Guid.NewGuid():N}";
+
+    private void WriteDisplayNameDictionary(params (string key, string text)[] entries)
+    {
+        WriteDictionaryFile("ui-displayname-atomic.ja.json", entries);
+    }
+
+    private void WriteDictionaryFile(string fileName, params (string key, string text)[] entries)
+    {
+        var builder = new StringBuilder();
+        builder.Append('{');
+        builder.Append("\"entries\":[");
+
+        for (var index = 0; index < entries.Length; index++)
+        {
+            if (index > 0)
+            {
+                builder.Append(',');
+            }
+
+            builder.Append("{\"key\":\"");
+            builder.Append(EscapeJson(entries[index].key));
+            builder.Append("\",\"text\":\"");
+            builder.Append(EscapeJson(entries[index].text));
+            builder.Append("\"}");
+        }
+
+        builder.Append("]}");
+        builder.AppendLine();
+
+        File.WriteAllText(
+            Path.Combine(tempDirectory, fileName),
+            builder.ToString(),
+            new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
+        ScopedDictionaryLookup.ResetForTests();
+    }
+
+    private static string EscapeJson(string value)
+    {
+        return value
+            .Replace("\\", "\\\\", StringComparison.Ordinal)
+            .Replace("\"", "\\\"", StringComparison.Ordinal)
+            .Replace("\n", "\\n", StringComparison.Ordinal);
+    }
 }

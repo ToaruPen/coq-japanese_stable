@@ -213,6 +213,303 @@ public sealed class JournalApiAddTranslationPatchTests
     }
 
     [Test]
+    public void AddAccomplishment_TranslatesReputationBecameLovedVariants_WhenPatched()
+    {
+        WriteExactDictionary(
+            ("the Farmers' Guild", "農夫ギルド"),
+            ("Salt Dunes", "塩砂丘"),
+            ("his", "その"),
+            ("him", "その者"),
+            ("chromatic aura", "色彩のオーラ"));
+        WritePatternDictionary(
+            (
+                "^You became loved among (.+?) and were treated as one of their own\\.$",
+                "{t0}に愛され、その一員として扱われるようになった。"),
+            (
+                "^While wandering around (.+?), =name= stumbled upon a clan of (.+?) performing a secret ritual\\. Because of (.+?) (.+?), they accepted (.+?) into their fold and taught (.+?) their secrets\\.$",
+                "{t0}の辺りをさまよううち、=name=は秘密の儀式を行う{t1}の一族に出くわした。{t2}{t3}ゆえ、彼らは{t4}を仲間に迎え入れ、{t5}に彼らの秘密を授けた。"),
+            (
+                "^Deep in the wilds of (.+?), =name= stumbled upon a clan of (.+?) performing a secret ritual\\. Because of (.+?) <spice\\.elements\\.(.+?)\\.quality\\.!random>, they accepted (.+?) into their fold and taught (.+?) their secrets\\.$",
+                "{t0}の荒野深くにて、=name=は秘密の儀式を行う{t1}の一族に出くわした。{t2}<spice.elements.{3}.quality.!random>ゆえ、彼らは{t4}を仲間に迎え入れ、{t5}に彼らの秘密を授けた。"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyJournalApi), nameof(DummyJournalApi.AddAccomplishment)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(JournalAccomplishmentAddTranslationPatch), nameof(JournalAccomplishmentAddTranslationPatch.Prefix))),
+                postfix: new HarmonyMethod(RequireMethod(typeof(JournalAccomplishmentAddTranslationPatch), nameof(JournalAccomplishmentAddTranslationPatch.Postfix))));
+
+            DummyJournalApi.AddAccomplishment(
+                "You became loved among the Farmers' Guild and were treated as one of their own.",
+                "While wandering around Salt Dunes, =name= stumbled upon a clan of the Farmers' Guild performing a secret ritual. Because of his chromatic aura, they accepted him into their fold and taught him their secrets.",
+                "Deep in the wilds of Salt Dunes, =name= stumbled upon a clan of the Farmers' Guild performing a secret ritual. Because of his <spice.elements.salt.quality.!random>, they accepted him into their fold and taught him their secrets.",
+                category: "general");
+
+            var entry = DummyJournalApi.Accomplishments.Single();
+            Assert.Multiple(() =>
+            {
+                Assert.That(entry.Text, Is.EqualTo("\u0001農夫ギルドに愛され、その一員として扱われるようになった。"));
+                Assert.That(
+                    entry.MuralText,
+                    Is.EqualTo("\u0001塩砂丘の辺りをさまよううち、=name=は秘密の儀式を行う農夫ギルドの一族に出くわした。その色彩のオーラゆえ、彼らはその者を仲間に迎え入れ、その者に彼らの秘密を授けた。"));
+                Assert.That(
+                    entry.GospelText,
+                    Is.EqualTo("\u0001塩砂丘の荒野深くにて、=name=は秘密の儀式を行う農夫ギルドの一族に出くわした。その<spice.elements.salt.quality.!random>ゆえ、彼らはその者を仲間に迎え入れ、その者に彼らの秘密を授けた。"));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void AddAccomplishment_TranslatesDynamicQuestCompletionVariants_FromAssets_WhenPatched()
+    {
+        WriteExactDictionary(
+            ("Grit Gate", "グリット・ゲート"),
+            ("your", "あなたの"),
+            ("shining", "輝く"),
+            ("the Barathrumites", "バラサルマイト"),
+            ("the glass lens", "ガラスレンズ"),
+            ("Joppa", "ジョッパ"),
+            ("Stopsvalinn", "ストップスヴァリン"));
+        var localizationRoot = Path.Combine(
+            QudJP.Tests.L1.TestProjectPaths.GetRepositoryRoot(),
+            "Mods",
+            "QudJP",
+            "Localization");
+        LocalizationAssetResolver.SetLocalizationRootForTests(localizationRoot);
+        JournalPatternTranslator.ResetForTests();
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyJournalApi), nameof(DummyJournalApi.AddAccomplishment)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(JournalAccomplishmentAddTranslationPatch), nameof(JournalAccomplishmentAddTranslationPatch.Prefix))),
+                postfix: new HarmonyMethod(RequireMethod(typeof(JournalAccomplishmentAddTranslationPatch), nameof(JournalAccomplishmentAddTranslationPatch.Postfix))));
+
+            DummyJournalApi.AddAccomplishment(
+                "You located Grit Gate.",
+                "Through the use of your divinely shining eyes, =name= discovered the lost location of Grit Gate.",
+                "Acting against the persecution of the Barathrumites, =name= led an army to the lost gates of Grit Gate. They liberated its citizens, who together in your honor <spice.history.gospels.Celebration.LateSultanate.!random>.",
+                category: "general");
+            DummyJournalApi.AddAccomplishment(
+                "You recovered the glass lens.",
+                "While exploring Joppa, =name= recovered the fabled artifact called the glass lens.",
+                "While visiting an obscure <spice.professions.apothecary.guildhall>, =name= met with a group of <spice.professions.apothecary.plural> and commissed what came to be known as the the glass lens.",
+                category: "general");
+            DummyJournalApi.AddAccomplishment(
+                "You prayed at the glass lens.",
+                "While exploring Joppa, =name= prayed at the fabled contraption called the glass lens.",
+                "While visiting an obscure <spice.professions.apothecary.guildhall>, =name= met with a group of <spice.professions.apothecary.plural> and commissed what came to be known as the the glass lens.",
+                category: "general");
+            DummyJournalApi.AddAccomplishment(
+                "You recovered the historic relic, Stopsvalinn.",
+                "<spice.commonPhrases.intrepid.!random.capitalize> =name= recovered Stopsvalinn, a historic relic once thought lost to the sands of time.",
+                "In an excavation at a site of deep history near Joppa, =name= recovered Stopsvalinn, the historic relic once thought lost to the sands of time.",
+                category: "general");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyJournalApi.Accomplishments[0].Text, Is.EqualTo("\u0001グリット・ゲートを発見した。"));
+                Assert.That(DummyJournalApi.Accomplishments[0].MuralText, Is.EqualTo("\u0001あなたの神々しい輝く目を用いて、=name=は失われたグリット・ゲートの場所を発見した。"));
+                Assert.That(DummyJournalApi.Accomplishments[0].GospelText, Is.EqualTo("\u0001バラサルマイトへの迫害に抗し、=name=は軍勢を率いて失われたグリット・ゲートの門へ至った。彼らはその市民を解放し、あなたの栄誉のもと<spice.history.gospels.Celebration.LateSultanate.!random>した。"));
+                Assert.That(DummyJournalApi.Accomplishments[1].Text, Is.EqualTo("\u0001ガラスレンズを回収した。"));
+                Assert.That(DummyJournalApi.Accomplishments[1].MuralText, Is.EqualTo("\u0001ジョッパを探索中、=name=はガラスレンズという伝説のアーティファクトを回収した。"));
+                Assert.That(DummyJournalApi.Accomplishments[1].GospelText, Is.EqualTo("\u0001とある<spice.professions.apothecary.guildhall>を訪れた際、=name=は<spice.professions.apothecary.plural>の一団と会い、のちにガラスレンズとして知られるものを依頼した。"));
+                Assert.That(DummyJournalApi.Accomplishments[2].Text, Is.EqualTo("\u0001ガラスレンズで祈った。"));
+                Assert.That(DummyJournalApi.Accomplishments[2].MuralText, Is.EqualTo("\u0001ジョッパを探索中、=name=はガラスレンズという伝説の仕掛けで祈った。"));
+                Assert.That(DummyJournalApi.Accomplishments[2].GospelText, Is.EqualTo("\u0001とある<spice.professions.apothecary.guildhall>を訪れた際、=name=は<spice.professions.apothecary.plural>の一団と会い、のちにガラスレンズとして知られるものを依頼した。"));
+                Assert.That(DummyJournalApi.Accomplishments[3].Text, Is.EqualTo("\u0001歴史的遺物ストップスヴァリンを回収した。"));
+                Assert.That(DummyJournalApi.Accomplishments[3].MuralText, Is.EqualTo("\u0001<spice.commonPhrases.intrepid.!random.capitalize>=name=は、かつて時の砂に失われたと思われていた歴史的遺物ストップスヴァリンを回収した。"));
+                Assert.That(DummyJournalApi.Accomplishments[3].GospelText, Is.EqualTo("\u0001ジョッパ近くの深い歴史を持つ場所での発掘において、=name=はかつて時の砂に失われたと思われていた歴史的遺物ストップスヴァリンを回収した。"));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+            LocalizationAssetResolver.SetLocalizationRootForTests(null);
+            JournalPatternTranslator.SetPatternFileForTests(patternFilePath);
+        }
+    }
+
+    [Test]
+    public void AddAccomplishment_TranslatesOpeningStoryAndAnimatorSprayVariants_FromAssets_WhenPatched()
+    {
+        WriteExactDictionary(
+            ("5th", "第5"),
+            ("Ut yara Ux", "ウト・ヤラ・ウクス"),
+            ("Joppa", "ジョッパ"),
+            ("Golgotha", "ゴルゴタ"),
+            ("your", "あなたの"),
+            ("cerulean", "空色"),
+            ("ghost", "幽鬼"),
+            ("chair", "椅子"),
+            ("with ivory limbs", "象牙色の四肢を持つ"));
+        var localizationRoot = Path.Combine(
+            QudJP.Tests.L1.TestProjectPaths.GetRepositoryRoot(),
+            "Mods",
+            "QudJP",
+            "Localization");
+        LocalizationAssetResolver.SetLocalizationRootForTests(localizationRoot);
+        JournalPatternTranslator.ResetForTests();
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyJournalApi), nameof(DummyJournalApi.AddAccomplishment)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(JournalAccomplishmentAddTranslationPatch), nameof(JournalAccomplishmentAddTranslationPatch.Prefix))),
+                postfix: new HarmonyMethod(RequireMethod(typeof(JournalAccomplishmentAddTranslationPatch), nameof(JournalAccomplishmentAddTranslationPatch.Postfix))));
+
+            DummyJournalApi.AddAccomplishment(
+                "On the 5th of Ut yara Ux, you arrived at Joppa.",
+                "On the auspicious 5th of Ut yara Ux, =name= arrived in Joppa and began your prodigious odyssey through Qud.",
+                "At <spice.time.partsOfDay.!random> under <spice.commonPhrases.strange.!random.article> and cerulean sky, the people of Joppa saw an image on the horizon that looked like a ghost bathed in cerulean. It was =name=, and after he came and left, the people of Joppa built a monument to =name= and thenceforth called him Ghost-in-Cerulean.",
+                category: "general");
+            DummyJournalApi.AddAccomplishment(
+                "You imbued a chair with life. Why?",
+                "While traveling in Joppa, =name= performed a sacred ritual with a chair, imbuing it with life and arranging it with ivory limbs. Many of the local denizens declared it a miracle. Some weren't so sure.",
+                "While traveling in Joppa, =name= performed a sacred ritual with a chair, imbuing it with life and arranging it with ivory limbs. Many of the local denizens declared it a miracle.",
+                category: "general");
+            DummyJournalApi.AddAccomplishment(
+                "You journeyed to Golgotha.",
+                "In the month of Ut yara Ux of 1012 AR, =name= ascended the trash chutes of Golgotha, victorious and bathed in slime.",
+                "One auspicious day in the jungle, =name= descended the trash chutes of Golgotha and bathed in viscous slime. From that day forth, he always kept some wet trash on your person.",
+                category: "general");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyJournalApi.Accomplishments[0].Text, Is.EqualTo("\u0001ウト・ヤラ・ウクスの第5日、ジョッパに到着した。"));
+                Assert.That(DummyJournalApi.Accomplishments[0].MuralText, Is.EqualTo("\u0001ウト・ヤラ・ウクスの第5日、=name=はジョッパに到着し、あなたのクッドを巡る驚異的な旅路を始めた。"));
+                Assert.That(DummyJournalApi.Accomplishments[0].GospelText, Is.EqualTo("\u0001<spice.time.partsOfDay.!random>、<spice.commonPhrases.strange.!random.article>と空色の空の下で、ジョッパの民は地平線に空色を浴びた幽鬼のような姿を見た。それは=name=だった。その者が来て去った後、ジョッパの民は=name=の記念碑を建て、以後その者を空色の幽鬼と呼んだ。"));
+                Assert.That(DummyJournalApi.Accomplishments[1].Text, Is.EqualTo("\u0001椅子に命を吹き込んだ。なぜ？"));
+                Assert.That(DummyJournalApi.Accomplishments[1].MuralText, Is.EqualTo("\u0001ジョッパを旅する中で、=name=は椅子を用いて神聖な儀式を行い、それに命を吹き込み、象牙色の四肢を持つよう整えた。地元の多くの住民はそれを奇跡だと宣言した。疑う者もいた。"));
+                Assert.That(DummyJournalApi.Accomplishments[1].GospelText, Is.EqualTo("\u0001ジョッパを旅する中で、=name=は椅子を用いて神聖な儀式を行い、それに命を吹き込み、象牙色の四肢を持つよう整えた。地元の多くの住民はそれを奇跡だと宣言した。"));
+                Assert.That(DummyJournalApi.Accomplishments[2].Text, Is.EqualTo("\u0001ゴルゴタに旅した。"));
+                Assert.That(DummyJournalApi.Accomplishments[2].MuralText, Is.EqualTo("\u00011012年ウト・ヤラ・ウクス、=name=は勝利を得て粘液を浴びながら、ゴルゴタの廃棄物シュートを登った。"));
+                Assert.That(DummyJournalApi.Accomplishments[2].GospelText, Is.EqualTo("\u0001ジャングルのある吉日、=name=はゴルゴタの廃棄物シュートを下り、粘つく粘液を浴びた。その日以来、その者は常に濡れたごみをあなたの身につけていた。"));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+            LocalizationAssetResolver.SetLocalizationRootForTests(null);
+            JournalPatternTranslator.SetPatternFileForTests(patternFilePath);
+        }
+    }
+
+    [Test]
+    public void AddAccomplishment_TranslatesBodyAndMutationVariants_FromAssets_WhenPatched()
+    {
+        WriteExactDictionary(
+            ("left arm", "左腕"),
+            ("shining visage", "輝く顔"),
+            ("Light Manipulation", "光操作"),
+            ("mutation", "変異"),
+            ("him", "彼"),
+            ("mutants", "変異者"),
+            ("around Salt Dunes", "塩砂丘の辺り"),
+            ("Player's", "プレイヤーの"));
+        var localizationRoot = Path.Combine(
+            QudJP.Tests.L1.TestProjectPaths.GetRepositoryRoot(),
+            "Mods",
+            "QudJP",
+            "Localization");
+        LocalizationAssetResolver.SetLocalizationRootForTests(localizationRoot);
+        JournalPatternTranslator.ResetForTests();
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyJournalApi), nameof(DummyJournalApi.AddAccomplishment)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(JournalAccomplishmentAddTranslationPatch), nameof(JournalAccomplishmentAddTranslationPatch.Prefix))),
+                postfix: new HarmonyMethod(RequireMethod(typeof(JournalAccomplishmentAddTranslationPatch), nameof(JournalAccomplishmentAddTranslationPatch.Postfix))));
+
+            DummyJournalApi.AddAccomplishment(
+                "Your left arm was dismembered.",
+                "While fighting a battle to protect the practice of shining visage, =name= valorously had his left arm dismembered.",
+                "While fighting a battle to protect the practice of shining visage, =name= valorously had his left arm dismembered.",
+                category: "general");
+            DummyJournalApi.AddAccomplishment(
+                "Your genome destabilized and you gained the Light Manipulation mutation.",
+                "<spice.commonPhrases.oneStarryNight.!random.capitalize>, =name= manifested a latent power inside him and joined the divine ranks of mutants.",
+                "While wandering around Salt Dunes, =name= stumbled upon a clan of mutants. Because of Player's <spice.elements.salt.quality.!random>, they accepted him into their fold and taught him their secrets.",
+                category: "general");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyJournalApi.Accomplishments[0].Text, Is.EqualTo("\u0001左腕が切断された。"));
+                Assert.That(DummyJournalApi.Accomplishments[0].MuralText, Is.EqualTo("\u0001輝く顔の実践を守る戦いの中で、=name=は勇敢にも左腕を切断された。"));
+                Assert.That(DummyJournalApi.Accomplishments[0].GospelText, Is.EqualTo("\u0001輝く顔の実践を守る戦いの中で、=name=は勇敢にも左腕を切断された。"));
+                Assert.That(DummyJournalApi.Accomplishments[1].Text, Is.EqualTo("\u0001あなたのゲノムが不安定になり、光操作の変異を得た。"));
+                Assert.That(DummyJournalApi.Accomplishments[1].MuralText, Is.EqualTo("\u0001<spice.commonPhrases.oneStarryNight.!random.capitalize>、=name=は内なる潜在能力を顕現させ、変異者の神聖なる列に加わった。"));
+                Assert.That(DummyJournalApi.Accomplishments[1].GospelText, Is.EqualTo("\u0001塩砂丘の辺りをさまよううち、=name=は変異者の一族に出くわした。プレイヤーの<spice.elements.salt.quality.!random>ゆえ、彼らはその者を仲間に迎え入れ、その者に彼らの秘密を授けた。"));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+            LocalizationAssetResolver.SetLocalizationRootForTests(null);
+            JournalPatternTranslator.SetPatternFileForTests(patternFilePath);
+        }
+    }
+
+    [Test]
+    public void AddAccomplishment_TranslatesVillageSurfaceVisitVariants_FromAssets_WhenPatched()
+    {
+        WriteExactDictionary(
+            ("Ut yara Ux", "ウト・ヤラ・ウクス"),
+            ("Kyakukya", "キャクキャ"),
+            ("his", "その"));
+        var localizationRoot = Path.Combine(
+            QudJP.Tests.L1.TestProjectPaths.GetRepositoryRoot(),
+            "Mods",
+            "QudJP",
+            "Localization");
+        LocalizationAssetResolver.SetLocalizationRootForTests(localizationRoot);
+        JournalPatternTranslator.ResetForTests();
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyJournalApi), nameof(DummyJournalApi.AddAccomplishment)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(JournalAccomplishmentAddTranslationPatch), nameof(JournalAccomplishmentAddTranslationPatch.Prefix))),
+                postfix: new HarmonyMethod(RequireMethod(typeof(JournalAccomplishmentAddTranslationPatch), nameof(JournalAccomplishmentAddTranslationPatch.Postfix))));
+
+            DummyJournalApi.AddAccomplishment(
+                "You visited the village of Kyakukya.",
+                "In the month of Ut yara Ux of 1012 AR, =name= founded the village of Kyakukya to <spice.history.gospels.HumblePractice.LateSultanate.!random>.",
+                "Acting against the prohibition on the practice of <spice.elements.salt.practices.!random>, =name= led an army to the gates of Kyakukya. =name= <spice.commonPhrases.liberated.!random> its citizens, and in his honor they <spice.history.gospels.Celebration.LateSultanate.!random>.",
+                category: "general");
+
+            var entry = DummyJournalApi.Accomplishments.Single();
+            Assert.Multiple(() =>
+            {
+                Assert.That(entry.Text, Is.EqualTo("\u0001キャクキャの村を訪れた。"));
+                Assert.That(entry.MuralText, Is.EqualTo("\u00011012年ウト・ヤラ・ウクス、=name=は<spice.history.gospels.HumblePractice.LateSultanate.!random>ためにキャクキャの村を建てた。"));
+                Assert.That(entry.GospelText, Is.EqualTo("\u0001<spice.elements.salt.practices.!random>の実践への禁令に抗し、=name=は軍勢を率いてキャクキャの門へ至った。=name=はその市民を<spice.commonPhrases.liberated.!random>し、その栄誉のもと彼らは<spice.history.gospels.Celebration.LateSultanate.!random>した。"));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+            LocalizationAssetResolver.SetLocalizationRootForTests(null);
+            JournalPatternTranslator.SetPatternFileForTests(patternFilePath);
+        }
+    }
+
+    [Test]
     public void AddMapNote_TranslatesText_WhenPatched()
     {
         WritePatternDictionary(("^A \"SATED\" baetyl$", "「満足した」ベテル"));
