@@ -64,7 +64,7 @@
       "ja_template": "{t1}{t0}、{t2}、{t3}の顧問たちは{t4}が{t5}ことを進言した。だが代わりに、{t6}は{t7}。",
       "review_notes": "translated by subagent chunk and placeholder-validated; {t0} is the in-year phrase token and {t1} is the year, matching Abdicate#gospel#bl:then so Early/Late/Sometime in year phrases stay atomic before the Japanese {t1}{t0} order",
       "route": "annals",
-      "en_template_hash": "sha256:989cccc6ec0cd8e4525b9a5bffe310e4bf6438947b9cd467f2cbe1953f611737"
+      "en_template_hash": "sha256:0d6038d65d34c466e8ab24d7b42fbe76c4ebfe91ebb04122f8661b35930b6177"
     },
     {
       "id": "Abdicate#gospel#bl:then",
