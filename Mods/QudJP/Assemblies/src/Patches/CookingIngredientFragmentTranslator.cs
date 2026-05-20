@@ -141,10 +141,16 @@ internal static class CookingIngredientFragmentTranslator
             spans,
             ownerGroup);
 
-        if (!TryTranslateBodyPartName(match.Groups["part"].Value, out var part))
+        var partGroup = match.Groups["part"];
+        if (!TryTranslateBodyPartName(partGroup.Value, out var part))
         {
             return false;
         }
+
+        part = ColorAwareTranslationComposer.RestoreCaptureWholeBoundaryWrappersPreservingTranslatedOwnership(
+            part,
+            spans,
+            partGroup);
 
         translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
             owner + "の" + part,

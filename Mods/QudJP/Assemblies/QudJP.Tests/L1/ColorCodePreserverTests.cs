@@ -543,6 +543,21 @@ public sealed class ColorCodePreserverTests
     }
 
     [Test]
+    public void RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership_RestoresLeadingInlineCodeInsideWrapper()
+    {
+        const string source = "{{W|^rNo}}";
+        var (stripped, _) = ColorAwareTranslationComposer.Strip(source);
+
+        var restored = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+            "{{W|いいえ}}",
+            Array.Empty<ColorSpan>(),
+            stripped.Length,
+            source);
+
+        Assert.That(restored, Is.EqualTo("{{W|^rいいえ}}"));
+    }
+
+    [Test]
     public void RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership_DoesNotProjectInlineSourceWrapper()
     {
         var (stripped, spans) = ColorAwareTranslationComposer.Strip("Take {{y|No}} now");

@@ -108,6 +108,11 @@ public sealed class ImportedFoodOrDrinkFactionNameTranslationPatchTests
     [Test]
     public void Postfix_HandlesFactionNameEdgeCases_WhenPatched()
     {
+        WriteDictionaryFile(
+            "Scoped/historyspice-common.ja.json",
+            ("honeyed", "ハチミツ風味の"),
+            ("bread", "パン"));
+        WriteDictionaryFile("world-gospels.ja.json", ("cult", "教団"));
         var harmonyId = "qudjp-test-imported-food-drink-faction-name-" + Guid.NewGuid().ToString("N");
         var harmony = new Harmony(harmonyId);
         try
@@ -120,11 +125,16 @@ public sealed class ImportedFoodOrDrinkFactionNameTranslationPatchTests
             var empty = DummyImportedFoodOrDrinkTarget.generateFactionName("Honeyed Bread");
             var emptyHits = RouteHitCount();
 
-            DummyImportedFoodOrDrinkTarget.FactionNameResult = "<color=red>Honeyed Bread</color>";
+            DummyImportedFoodOrDrinkTarget.FactionNameResult = "<color=red>Plain Feast</color>";
             var colored = DummyImportedFoodOrDrinkTarget.generateFactionName("Honeyed Bread");
             var coloredHits = RouteHitCount();
 
-            DummyImportedFoodOrDrinkTarget.FactionNameResult = MessageFrameTranslator.DirectTranslationMarker + "Honeyed Bread";
+            DummyImportedFoodOrDrinkTarget.FactionNameResult = "Cult of the Honeyed Bread";
+            var unmarked = DummyImportedFoodOrDrinkTarget.generateFactionName("Honeyed Bread");
+            var unmarkedHits = RouteHitCount();
+
+            DummyImportedFoodOrDrinkTarget.FactionNameResult =
+                MessageFrameTranslator.DirectTranslationMarker + "Cult of the Honeyed Bread";
             var marked = DummyImportedFoodOrDrinkTarget.generateFactionName("Honeyed Bread");
             var markedHits = RouteHitCount();
 
@@ -132,10 +142,12 @@ public sealed class ImportedFoodOrDrinkFactionNameTranslationPatchTests
             {
                 Assert.That(empty, Is.EqualTo(string.Empty));
                 Assert.That(emptyHits, Is.Zero);
-                Assert.That(colored, Is.EqualTo("<color=red>Honeyed Bread</color>"));
+                Assert.That(colored, Is.EqualTo("<color=red>Plain Feast</color>"));
                 Assert.That(coloredHits, Is.Zero);
-                Assert.That(marked, Is.EqualTo("Honeyed Bread"));
-                Assert.That(markedHits, Is.EqualTo(1));
+                Assert.That(unmarked, Is.EqualTo("ハチミツ風味のパンの教団"));
+                Assert.That(unmarkedHits, Is.EqualTo(1));
+                Assert.That(marked, Is.EqualTo("Cult of the Honeyed Bread"));
+                Assert.That(markedHits, Is.EqualTo(unmarkedHits + 1));
             });
         }
         finally

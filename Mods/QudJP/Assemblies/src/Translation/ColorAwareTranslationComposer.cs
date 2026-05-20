@@ -783,23 +783,38 @@ internal static class ColorAwareTranslationComposer
 
     private static string RestoreLeadingInlineColor(string? source, string translated)
     {
-        if (string.IsNullOrEmpty(source)
-            || source!.Length < 2
-            || (source[0] != '&' && source[0] != '^'))
+        if (!TryGetLeadingInlineFormattingCode(source, out var sourceCode))
         {
             return translated;
         }
 
-        if (translated.Length >= 2
-            && translated[0] == source[0]
-            && IsNonEscapedInlineFormattingCode(translated[0], translated[1]))
+        if (TryGetLeadingInlineFormattingCode(translated, out var translatedCode)
+            && translatedCode[0] == sourceCode[0])
         {
             return translated;
         }
 
-        return IsNonEscapedInlineFormattingCode(source[0], source[1])
-            ? source.Substring(0, 2) + translated
-            : translated;
+        return InsertQudColorAfterOpeningBoundaryWrappers(translated, sourceCode);
+    }
+
+    private static bool TryGetLeadingInlineFormattingCode(string? source, out string code)
+    {
+        code = string.Empty;
+        if (string.IsNullOrEmpty(source))
+        {
+            return false;
+        }
+
+        var index = IndexAfterOpeningBoundaryWrappers(source!, 0);
+        if (index + 1 >= source!.Length
+            || (source[index] != '&' && source[index] != '^')
+            || !IsNonEscapedInlineFormattingCode(source[index], source[index + 1]))
+        {
+            return false;
+        }
+
+        code = source.Substring(index, 2);
+        return true;
     }
 
     private static string RestoreWholeBoundaryPairsPreservingTranslatedOwnership(
