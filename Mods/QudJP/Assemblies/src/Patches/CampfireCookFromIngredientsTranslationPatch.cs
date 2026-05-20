@@ -127,6 +127,12 @@ public static class CampfireCookFromIngredientsTranslationPatch
             return false;
         }
 
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
+        {
+            translated = markedText;
+            return true;
+        }
+
         if (!TryTranslateSelectedIngredientsMenuRow(source, out translated))
         {
             return false;

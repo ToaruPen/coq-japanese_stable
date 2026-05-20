@@ -173,6 +173,15 @@ public sealed class JournalTextTranslatorTests
     }
 
     [Test]
+    public void TryTranslateMapNoteTextForStorage_LeavesGeneratedSettlementLineUnchanged_WhenSuffixUnknown()
+    {
+        WriteHistorySpiceDictionary(("stargazer", "星見"));
+        WritePatternDictionary();
+
+        AssertUntranslatedMapNote("Stargazerhome");
+    }
+
+    [Test]
     public void TryTranslateMapNoteTextForStorage_PrioritizesLineTranslationBeforeWholePatternFallback()
     {
         WriteExactDictionary(("Kyakukya", "キャクキャ"), ("Grit Gate", "グリット・ゲート"), ("north", "北"));

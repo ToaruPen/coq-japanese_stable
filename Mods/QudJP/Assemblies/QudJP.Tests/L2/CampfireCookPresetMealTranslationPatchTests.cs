@@ -105,6 +105,26 @@ public sealed class CampfireCookPresetMealTranslationPatchTests
     }
 
     [Test]
+    public void CookPresetMeal_LeavesUnsupportedEnglishPopupUnchanged_WhenOwnerPatched()
+    {
+        const string source = "You carefully warm the meal but decide not to eat it.";
+
+        WithPatchedOwner(() =>
+        {
+            new DummyCampfireCookPresetMealTarget
+            {
+                PopupMessageToShow = source,
+            }.CookPresetMeal(0);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(source));
+                Assert.That(HitCount("AteMeal"), Is.Zero);
+            });
+        });
+    }
+
+    [Test]
     public void CookPresetMeal_TranslatesColorTaggedPopup_WhenOwnerPatched()
     {
         WithPatchedOwner(() =>

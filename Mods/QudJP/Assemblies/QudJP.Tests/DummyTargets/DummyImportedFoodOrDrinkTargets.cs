@@ -6,6 +6,11 @@ internal static class DummyImportedFoodOrDrinkTarget
 {
     internal static string FactionNameResult { get; set; } = string.Empty;
 
+    internal static void ResetForTests()
+    {
+        FactionNameResult = string.Empty;
+    }
+
     [MethodImpl(MethodImplOptions.NoInlining)]
     public static string generateFactionName(string root)
     {

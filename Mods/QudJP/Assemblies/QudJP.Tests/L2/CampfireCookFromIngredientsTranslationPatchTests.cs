@@ -232,6 +232,33 @@ public sealed class CampfireCookFromIngredientsTranslationPatchTests
         });
     }
 
+    [Test]
+    public void CookFromIngredients_StripsDirectMarkedSelectedIngredientMenuRow_WhenOwnerActive()
+    {
+        const string source = "{{W|Cook with the {{C|0}} selected ingredients.}}\n{{y|[up to 2 remaining]}}";
+
+        WithPatchedOwner(() =>
+        {
+            var target = new DummyCampfireCookFromIngredientsTarget
+            {
+                BeforePopup = () =>
+                {
+                    var translated = PopupTranslationPatch.TranslatePopupTextForProducerRoute(
+                        MessageFrameTranslator.MarkDirectTranslation(source),
+                        nameof(PopupPickOptionTranslationPatch));
+
+                    Assert.Multiple(() =>
+                    {
+                        Assert.That(translated, Is.EqualTo(source));
+                        Assert.That(PickOptionProducerHitCount("SelectedIngredientsMenuRow"), Is.Zero);
+                    });
+                },
+            };
+
+            target.CookFromIngredients(random: false);
+        });
+    }
+
     private static void WithPatchedOwner(Action action)
     {
         var harmonyId = CreateHarmonyId();

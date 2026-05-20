@@ -28,7 +28,7 @@ public sealed class ImportedFoodOrDrinkFactionNameTranslationPatchTests
         ScopedDictionaryLookup.ResetForTests();
         DynamicTextObservability.ResetForTests();
         RuntimeDiagnostics.SetVerboseProbesEnabledForTests(true);
-        DummyImportedFoodOrDrinkTarget.FactionNameResult = string.Empty;
+        DummyImportedFoodOrDrinkTarget.ResetForTests();
     }
 
     [TearDown]
@@ -38,7 +38,7 @@ public sealed class ImportedFoodOrDrinkFactionNameTranslationPatchTests
         ScopedDictionaryLookup.ResetForTests();
         DynamicTextObservability.ResetForTests();
         RuntimeDiagnostics.SetVerboseProbesEnabledForTests(null);
-        DummyImportedFoodOrDrinkTarget.FactionNameResult = string.Empty;
+        DummyImportedFoodOrDrinkTarget.ResetForTests();
 
         if (Directory.Exists(tempDirectory))
         {
@@ -80,6 +80,8 @@ public sealed class ImportedFoodOrDrinkFactionNameTranslationPatchTests
     [Test]
     public void Postfix_LeavesNonMatchingFactionNameUnchanged_WhenPatched()
     {
+        WriteDictionaryFile("Scoped/historyspice-common.ja.json", ("honeyed", "ハチミツ風味の"));
+        WriteDictionaryFile("world-gospels.ja.json", ("cult", "教団"));
         DummyImportedFoodOrDrinkTarget.FactionNameResult = "Honeyed Bread";
         var harmonyId = "qudjp-test-imported-food-drink-faction-name-" + Guid.NewGuid().ToString("N");
         var harmony = new Harmony(harmonyId);

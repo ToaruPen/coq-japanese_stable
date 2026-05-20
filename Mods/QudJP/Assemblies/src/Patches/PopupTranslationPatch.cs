@@ -1310,7 +1310,7 @@ public static class PopupTranslationPatch
         IReadOnlyList<ColorSpan> spans,
         int labelStart)
     {
-        if (translatedLabel.StartsWith("&", StringComparison.Ordinal)
+        if (ColorAwareTranslationComposer.StartsWithQudColorAtVisibleIndex(translatedLabel, 0)
             || !HasLegacyDisabledInventoryActionColor(spans, labelStart))
         {
             return translatedLabel;

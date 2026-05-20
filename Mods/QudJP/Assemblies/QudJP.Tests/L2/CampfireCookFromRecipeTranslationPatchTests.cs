@@ -229,6 +229,7 @@ public sealed class CampfireCookFromRecipeTranslationPatchTests
                 out _);
 
             Assert.That(DirectMarkerPassThroughText(), Is.EqualTo("You eat the meal."));
+            AssertDirectMarkedPopupPassesThrough("You eat the meal.");
 
             CampfireCookFromRecipeTranslationPatch.Prefix(out var innerState);
             try
@@ -240,6 +241,7 @@ public sealed class CampfireCookFromRecipeTranslationPatchTests
                     out _);
 
                 Assert.That(DirectMarkerPassThroughText(), Is.EqualTo("You don't have enough mushroom."));
+                AssertDirectMarkedPopupPassesThrough("You don't have enough mushroom.");
             }
             finally
             {
@@ -254,6 +256,26 @@ public sealed class CampfireCookFromRecipeTranslationPatchTests
         }
 
         Assert.That(DirectMarkerPassThroughText(), Is.Null);
+    }
+
+    private static void AssertDirectMarkedPopupPassesThrough(string source)
+    {
+        var marked = MessageFrameTranslator.MarkDirectTranslation(source);
+
+        var handled = CampfireCookFromRecipeTranslationPatch.TryTranslatePopupMessage(
+            marked,
+            nameof(PopupShowTranslationPatch),
+            "Popup.Show",
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(handled, Is.True);
+            Assert.That(translated, Is.EqualTo(source));
+            Assert.That(PopupHitCount("AteMeal"), Is.Zero);
+            Assert.That(PopupHitCount("MissingIngredient"), Is.Zero);
+            Assert.That(PopupHitCount("MissingIngredientServings"), Is.Zero);
+        });
     }
 
     private static int HitCount(string detail)

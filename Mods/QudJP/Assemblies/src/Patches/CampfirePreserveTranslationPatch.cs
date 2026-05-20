@@ -227,12 +227,13 @@ public static class CampfirePreserveTranslationPatch
         Group group,
         out string trailingColor)
     {
-        var endIndex = group.Index + group.Length;
+        var scanIndex = group.Index + group.Length;
         var builder = new StringBuilder();
         for (var spanIndex = 0; spanIndex < spans.Count; spanIndex++)
         {
             var span = spans[spanIndex];
-            if (span.Index == endIndex
+            // ColorSpan.Index is a stripped visible-text index; adjacent zero-width inline tokens share it.
+            if (span.Index == scanIndex
                 && span.Token.Length == 2
                 && (span.Token[0] == '&' || span.Token[0] == '^'))
             {
