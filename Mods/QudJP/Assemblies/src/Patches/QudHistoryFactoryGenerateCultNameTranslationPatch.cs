@@ -32,11 +32,11 @@ public static class QudHistoryFactoryGenerateCultNameTranslationPatch
         return method;
     }
 
-    public static void Postfix(object sultan)
+    public static void Postfix(object __0)
     {
         try
         {
-            TranslateCultNameProperty(sultan);
+            TranslateCultNameProperty(__0);
         }
         catch (Exception ex)
         {
