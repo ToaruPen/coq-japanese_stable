@@ -52,6 +52,22 @@ public sealed class ColorCodePreserverTests
     }
 
     [Test]
+    public void Strip_DoesNotExposeAmpersandYAsVisibleText()
+    {
+        var input = "&ykeeps starting";
+        var (stripped, spans) = ColorCodePreserver.Strip(input);
+
+        var restored = ColorCodePreserver.Restore("開始し続ける", spans);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(stripped, Is.EqualTo("keeps starting"));
+            Assert.That(stripped, Does.Not.StartWith("y"));
+            Assert.That(restored, Is.EqualTo("&y開始し続ける"));
+        });
+    }
+
+    [Test]
     public void StripRestore_PreservesBackgroundCodes()
     {
         var input = "^rdanger^k";
@@ -384,8 +400,24 @@ public sealed class ColorCodePreserverTests
             Assert.That(ColorAwareTranslationComposer.StartsWithQudColorAtVisibleIndex("    ^oremove", 4), Is.True);
             Assert.That(ColorAwareTranslationComposer.StartsWithQudColorAtVisibleIndex("    &1remove", 4), Is.True);
             Assert.That(ColorAwareTranslationComposer.StartsWithQudColorAtVisibleIndex("    &qremove", 4), Is.True);
+            Assert.That(ColorAwareTranslationComposer.StartsWithQudColorAtVisibleIndex("    ^?remove", 4), Is.True);
             Assert.That(ColorAwareTranslationComposer.StartsWithQudColorAtVisibleIndex("    ^zremove", 4), Is.True);
             Assert.That(ColorAwareTranslationComposer.StartsWithQudColorAtVisibleIndex("&&remove", 0), Is.False);
+        });
+    }
+
+    [Test]
+    public void Strip_TreatsNonEscapedInlineFormattingPairsAsZeroWidthEvenWhenNotColorMapLetters()
+    {
+        var (foregroundStripped, foregroundSpans) = ColorCodePreserver.Strip("&1No");
+        var (backgroundStripped, backgroundSpans) = ColorCodePreserver.Strip("^?No");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(foregroundStripped, Is.EqualTo("No"));
+            Assert.That(backgroundStripped, Is.EqualTo("No"));
+            Assert.That(ColorCodePreserver.Restore("いいえ", foregroundSpans), Is.EqualTo("&1いいえ"));
+            Assert.That(ColorCodePreserver.Restore("いいえ", backgroundSpans), Is.EqualTo("^?いいえ"));
         });
     }
 

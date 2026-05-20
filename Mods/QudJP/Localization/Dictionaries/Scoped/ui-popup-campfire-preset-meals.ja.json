@@ -1,0 +1,41 @@
+{
+  "meta": {
+    "id": "ui-popup-campfire-preset-meals",
+    "lang": "ja",
+    "version": "0.1.0"
+  },
+  "entries": [
+    {
+      "key": "Apple Matz",
+      "text": "アップルマッツァ"
+    },
+    {
+      "key": "Mulled Mushroom Cider",
+      "text": "温めたマッシュルームサイダー"
+    },
+    {
+      "key": "Goat in Sweet Leaf",
+      "text": "甘葉包みのヤギ肉"
+    },
+    {
+      "key": "Tongue and Cheek",
+      "text": "タングアンドチーク"
+    },
+    {
+      "key": "Bone Babka",
+      "text": "ボーンバブカ"
+    },
+    {
+      "key": "Hot and Spiny",
+      "text": "ホットアンドスパイニー"
+    },
+    {
+      "key": "Mah Lah Soup",
+      "text": "マーラースープ"
+    },
+    {
+      "key": "The Porridge",
+      "text": "粥"
+    }
+  ]
+}

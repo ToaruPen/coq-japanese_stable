@@ -230,6 +230,7 @@ public sealed class HistoricSpiceGeneratedNameTranslatorTests
 
     [TestCase("Ibul wastes", "Ibul荒野")]
     [TestCase("the red Ibul", "赤のIbul")]
+    [TestCase("The red Ibul", "赤のIbul")]
     [TestCase("red wastes Ibul", "赤の荒野Ibul")]
     [TestCase("red Salt Dunes", "赤のSalt Dunes")]
     public void TryTranslateRuinsSiteName_TranslatesGeneratedSiteModifierFrames(string source, string expected)

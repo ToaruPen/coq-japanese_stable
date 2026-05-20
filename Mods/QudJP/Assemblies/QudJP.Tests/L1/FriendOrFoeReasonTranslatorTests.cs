@@ -149,6 +149,7 @@ public sealed class FriendOrFoeReasonTranslatorTests
     public void TryTranslate_LeavesUnknownReasonUnchanged()
     {
         const string source = "for reasons no one can parse";
+        WriteDictionaryFile("world-parts.ja.json", ("stealing a cherished heirloom", "大切にしていた家宝を盗んだ"));
 
         var ok = FriendOrFoeReasonTranslator.TryTranslate(source, out var translated);
 

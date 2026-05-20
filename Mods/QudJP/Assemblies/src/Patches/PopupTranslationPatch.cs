@@ -16,6 +16,7 @@ public static class PopupTranslationPatch
     private const string QudMenuItemContext = "QudMenuItem";
     private const string QudMenuItemDictionaryFile = "Scoped/ui-popup-qud-menu-item.ja.json";
     private const string CommonMenuActionDictionaryFile = "Scoped/ui-menu-actions.ja.json";
+    private const string PresetMealNameDictionaryFile = "Scoped/ui-popup-campfire-preset-meals.ja.json";
     private const string InventoryActionMenuPopupIdPrefix = "InventoryActionMenu:";
     private const string InventoryActionContext = "XRL.World.IInventoryActionsEvent";
     private const string InventoryActionDictionaryFile = "ui-inventory-actions.ja.json";
@@ -1446,18 +1447,13 @@ public static class PopupTranslationPatch
             }
         }
 
-        return meal switch
+        var presetMeal = ScopedDictionaryLookup.TranslateExactOrLowerAscii(meal, PresetMealNameDictionaryFile);
+        if (presetMeal is not null)
         {
-            "Apple Matz" => "アップルマッツァ",
-            "Mulled Mushroom Cider" => "温めたマッシュルームサイダー",
-            "Goat in Sweet Leaf" => "甘葉包みのヤギ肉",
-            "Tongue and Cheek" => "タングアンドチーク",
-            "Bone Babka" => "ボーンバブカ",
-            "Hot and Spiny" => "ホットアンドスパイニー",
-            "Mah Lah Soup" => "マーラースープ",
-            "The Porridge" => "粥",
-            _ => meal,
-        };
+            return presetMeal;
+        }
+
+        return meal;
     }
 
     private static bool ContainsJapaneseCharacters(string source)

@@ -460,7 +460,7 @@ internal static class HistoricSpiceGeneratedNameTranslator
             return false;
         }
 
-        var working = source.StartsWith("the ", StringComparison.Ordinal)
+        var working = source.StartsWith("the ", StringComparison.OrdinalIgnoreCase)
             ? source.Substring("the ".Length)
             : source;
         var words = SplitWords(working);

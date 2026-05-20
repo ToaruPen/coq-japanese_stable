@@ -523,7 +523,7 @@ Current reproduced vocabulary counts:
   `eaten alive`, `shot`, `ate alive`, `assassinated`, `of course`,
   `naturally`, `undoubtedly`, `obviously`, and `indeed`. This raises
   `spice.instancesOf.*` direct coverage to `324 / 479` (`67.64%`).
-  `spice.instancesOf.religion*`, `spice.instancesOf.profanity.*`,
+  `spice.instancesOf.religion.*`, `spice.instancesOf.profanity.*`,
   `spice.instancesOf.recently.*`, and `spice.instancesOf.reemerged.*` are now
   directly covered as one religion/profanity/recency/reemergence instance
   component unit, including `priest`, `heretic`, `pontiff`, `monk`, `cleric`,
