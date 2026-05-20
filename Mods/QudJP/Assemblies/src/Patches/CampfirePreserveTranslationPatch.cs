@@ -198,42 +198,50 @@ public static class CampfirePreserveTranslationPatch
             return source;
         }
 
-        var sourceItem = TranslatePreservedSource(RestorePreservedSource(match, spans));
+        var sourceItem = TranslatePreservedSourceWithTrailingColor(match, spans);
         var count = match.Groups["count"].Value;
         var serving = TranslateServingUnit(Restore(match, spans, "serving"));
         var result = TranslateDisplayNameOrSame(Restore(match, spans, "result"));
         return $"{sourceItem}を{count}{serving}の{result}に保存した。";
     }
 
-    private static string RestorePreservedSource(Match match, IReadOnlyList<ColorSpan> spans)
+    private static string TranslatePreservedSourceWithTrailingColor(Match match, IReadOnlyList<ColorSpan> spans)
     {
         var sourceGroup = match.Groups["source"];
         var restored = Restore(match, spans, "source");
-        return TryGetTrailingInlineColorToken(spans, sourceGroup, out var trailingColor)
-            ? restored + trailingColor
-            : restored;
+        if (!TryGetTrailingInlineColorTokens(spans, sourceGroup, out var trailingColor))
+        {
+            return TranslatePreservedSource(restored);
+        }
+
+        if (SomeSourcePattern.Match(restored).Success)
+        {
+            return TranslatePreservedSource(restored + trailingColor);
+        }
+
+        return TranslatePreservedSource(restored) + trailingColor;
     }
 
-    private static bool TryGetTrailingInlineColorToken(
+    private static bool TryGetTrailingInlineColorTokens(
         IReadOnlyList<ColorSpan> spans,
         Group group,
         out string trailingColor)
     {
         var endIndex = group.Index + group.Length;
-        for (var index = 0; index < spans.Count; index++)
+        var builder = new StringBuilder();
+        for (var spanIndex = 0; spanIndex < spans.Count; spanIndex++)
         {
-            var span = spans[index];
+            var span = spans[spanIndex];
             if (span.Index == endIndex
                 && span.Token.Length == 2
                 && (span.Token[0] == '&' || span.Token[0] == '^'))
             {
-                trailingColor = span.Token;
-                return true;
+                builder.Append(span.Token);
             }
         }
 
-        trailingColor = string.Empty;
-        return false;
+        trailingColor = builder.ToString();
+        return trailingColor.Length > 0;
     }
 
     private static string Restore(Match match, IReadOnlyList<ColorSpan> spans, string groupName)

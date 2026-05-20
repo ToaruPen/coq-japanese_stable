@@ -66,6 +66,8 @@ def load_dictionary_keys(dictionary_paths: list[Path]) -> set[str]:
             key = entry.get("key")
             if isinstance(key, str):
                 keys.add(key)
+                if key.isascii():
+                    keys.add(key.lower())
     return keys
 
 

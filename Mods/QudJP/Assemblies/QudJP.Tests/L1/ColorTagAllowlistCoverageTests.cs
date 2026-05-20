@@ -352,6 +352,7 @@ public sealed class ColorTagAllowlistCoverageTests
         "Mods/QudJP/Assemblies/src/Patches/VehicleSeatTranslationPatch.cs",
         "Mods/QudJP/Assemblies/src/Patches/VillageLeaderConversationTranslator.cs",
         "Mods/QudJP/Assemblies/src/Patches/VillagePetConversationTranslator.cs",
+        "Mods/QudJP/Assemblies/src/Patches/WaterRitualPopupTranslationPatch.cs",
         "Mods/QudJP/Assemblies/src/Patches/VillageWallDescriptionTranslator.cs",
         "Mods/QudJP/Assemblies/src/Patches/VillageTerrainRevealDescriptionTranslator.cs",
         "Mods/QudJP/Assemblies/src/Patches/WindupTranslationPatch.cs",

@@ -2043,6 +2043,16 @@ def test_summarize_coverage_uses_exact_and_lower_ascii_keys() -> None:
     )
 
 
+def test_load_dictionary_keys_adds_ascii_lowercase_aliases(tmp_path: Path) -> None:
+    """Dictionary-key loading uses the same ASCII lowercase normalization as coverage checks."""
+    dictionary_path = tmp_path / "dict.ja.json"
+    _write_json(dictionary_path, {"entries": [{"key": "Cool Static", "text": "冷たい静電気"}]})
+
+    keys = coverage.load_dictionary_keys([dictionary_path])
+
+    assert keys == {"Cool Static", "cool static"}
+
+
 def test_missing_leaf_examples_are_deduplicated_and_path_ordered() -> None:
     """Missing examples preserve a representative source path for each leaf."""
     leaves = [

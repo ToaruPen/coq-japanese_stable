@@ -22,12 +22,12 @@
       "route": "annals"
     },
     {
-      "pattern": "^[Bb]less\\ (.+?)(?:\\.)?$",
+      "pattern": "^(?:[Bb]less|[Tt]hank|[Ee]xalt|[Gg]ive\\ thanks\\ for|[Pp]raise|[Hh]onor)\\ (.+?)(?:\\.)?$",
       "template": "{t0}を祝福する。",
       "route": "annals"
     },
     {
-      "pattern": "^[Cc]urse\\ (.+?)(?:\\.)?$",
+      "pattern": "^(?:[Cc]urse|[Aa]\\ blight\\ upon|[Aa]\\ curse\\ upon)\\ (.+?)(?:\\.)?$",
       "template": "{t0}を呪う。",
       "route": "annals"
     },
@@ -107,17 +107,17 @@
       "route": "annals"
     },
     {
-      "pattern": "^((?:In|Throughout|Throughout\\ the\\ entirety\\ of))\\ (.+?),\\ (.+?)\\ (.+?)\\ all\\ of\\ (.+?),\\ (.+?)\\ of\\ (.+?)\\ and\\ (.+?)\\.\\ (.+?)\\ became\\ known\\ as\\ (?:the\\ )?(.+?)\\ (Scourge|Terror|Bane|Pest|Woe|Sorrow)\\.$",
+      "pattern": "^((?:In|Throughout|Throughout\\ the\\ entirety\\ of|Through|Around))\\ (.+?),\\ (.+?)\\ (.+?)\\ all\\ of\\ (.+?),\\ (.+?)\\ of\\ (.+?)\\ and\\ (.+?)\\.\\ (.+?)\\ became\\ known\\ as\\ (?:the\\ )?(.+?)\\ (Scourge|Terror|Bane|Pest|Woe|Sorrow)\\.$",
       "template": "{t1}年、{t2}は{t4}全域を{t3}うえ、{t6}と{t7}に対して{t5}を行った。{t8}は以後{t9}の{t10}として知られるようになった。",
       "route": "annals"
     },
     {
-      "pattern": "^((?:In|Throughout|Throughout\\ the\\ entirety\\ of))\\ (.+?),\\ (.+?)\\ (.+?)\\ all\\ of\\ (.+?),\\ (.+?)\\ of\\ (.+?)\\ and\\ (.+?)\\.\\ (.+?)\\ became\\ known\\ as\\ (.+?)\\.$",
+      "pattern": "^((?:In|Throughout|Throughout\\ the\\ entirety\\ of|Through|Around))\\ (.+?),\\ (.+?)\\ (.+?)\\ all\\ of\\ (.+?),\\ (.+?)\\ of\\ (.+?)\\ and\\ (.+?)\\.\\ (.+?)\\ became\\ known\\ as\\ (.+?)\\.$",
       "template": "{t1}年、{t2}は{t4}全域を{t3}うえ、{t6}と{t7}に対して{t5}を行った。{t8}は以後{t9}として知られるようになった。",
       "route": "annals"
     },
     {
-      "pattern": "^((?:In|Throughout|Throughout\\ the\\ entirety\\ of))\\ (.+?),\\ (.+?)\\ (.+?)\\ the\\ flower\\ fields\\ and\\ brought\\ turmoil\\ to\\ the\\ troubled\\ village\\ of\\ Bey\\ Lah\\.\\ (.+?)\\ became\\ known\\ as\\ the\\ Hindren\\ (.+?)\\.$",
+      "pattern": "^((?:In|Throughout|Throughout\\ the\\ entirety\\ of|Through|Around))\\ (.+?),\\ (.+?)\\ (.+?)\\ the\\ flower\\ fields\\ and\\ brought\\ turmoil\\ to\\ the\\ troubled\\ village\\ of\\ Bey\\ Lah\\.\\ (.+?)\\ became\\ known\\ as\\ the\\ Hindren\\ (.+?)\\.$",
       "template": "{t1}年、{t2}は花畑を{t3}うえ、悩めるベイ・ラーの村に混乱をもたらした。{t4}は以後ヒンドレンの{t5}として知られるようになった。",
       "route": "annals"
     },
@@ -657,8 +657,23 @@
       "route": "annals"
     },
     {
-      "pattern": "^(.+?)\\ got\\ (.+?)\\ (.+?)\\ stuck\\ (in|under|inside|behind)\\ (.+?)\\.$",
-      "template": "{t0}は{t1}{t2}を{t4}{t3}挟まれた。",
+      "pattern": "^(.+?)\\ got\\ (.+?)\\ (.+?)\\ stuck\\ in\\ (.+?)\\.$",
+      "template": "{t0}は{t1}{t2}を{t3}に挟まれた。",
+      "route": "annals"
+    },
+    {
+      "pattern": "^(.+?)\\ got\\ (.+?)\\ (.+?)\\ stuck\\ under\\ (.+?)\\.$",
+      "template": "{t0}は{t1}{t2}を{t3}の下に挟まれた。",
+      "route": "annals"
+    },
+    {
+      "pattern": "^(.+?)\\ got\\ (.+?)\\ (.+?)\\ stuck\\ inside\\ (.+?)\\.$",
+      "template": "{t0}は{t1}{t2}を{t3}の中に挟まれた。",
+      "route": "annals"
+    },
+    {
+      "pattern": "^(.+?)\\ got\\ (.+?)\\ (.+?)\\ stuck\\ behind\\ (.+?)\\.$",
+      "template": "{t0}は{t1}{t2}を{t3}の後ろに挟まれた。",
       "route": "annals"
     },
     {

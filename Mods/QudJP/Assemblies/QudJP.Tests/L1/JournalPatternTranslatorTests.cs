@@ -507,9 +507,11 @@ public sealed class JournalPatternTranslatorTests
         WriteDictionaryFile(
             Path.Combine("Scoped", "historyspice-common.ja.json"),
             new[] { ("finger", "指"), ("throne", "玉座") });
-        WritePatternDictionary((
-            "^(.+?) got (.+?) (.+?) stuck (in|under|inside|behind) (.+?)\\.$",
-            "{t0}は{t1}{t2}を{t4}{t3}挟まれた。"));
+        WritePatternDictionary(
+            ("^(.+?) got (.+?) (.+?) stuck in (.+?)\\.$", "{t0}は{t1}{t2}を{t3}に挟まれた。"),
+            ("^(.+?) got (.+?) (.+?) stuck under (.+?)\\.$", "{t0}は{t1}{t2}を{t3}の下に挟まれた。"),
+            ("^(.+?) got (.+?) (.+?) stuck inside (.+?)\\.$", "{t0}は{t1}{t2}を{t3}の中に挟まれた。"),
+            ("^(.+?) got (.+?) (.+?) stuck behind (.+?)\\.$", "{t0}は{t1}{t2}を{t3}の後ろに挟まれた。"));
 
         var translated = JournalPatternTranslator.Translate(
             "Oboroqoru got his finger stuck behind a throne.");
@@ -903,6 +905,11 @@ public sealed class JournalPatternTranslatorTests
                 Assert.That(
                     JournalPatternTranslator.Translate(
                         "Throughout 1001, =name= ravaged the flower fields and brought turmoil to the troubled village of Bey Lah. He became known as the Hindren Scourge."),
+                    Is.EqualTo("1001年、=name=は花畑を荒らしたうえ、悩めるベイ・ラーの村に混乱をもたらした。"
+                        + "その者は以後ヒンドレンの災厄として知られるようになった。"));
+                Assert.That(
+                    JournalPatternTranslator.Translate(
+                        "Around 1001, =name= ravaged the flower fields and brought turmoil to the troubled village of Bey Lah. He became known as the Hindren Scourge."),
                     Is.EqualTo("1001年、=name=は花畑を荒らしたうえ、悩めるベイ・ラーの村に混乱をもたらした。"
                         + "その者は以後ヒンドレンの災厄として知られるようになった。"));
                 Assert.That(

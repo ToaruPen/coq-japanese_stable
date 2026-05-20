@@ -480,14 +480,18 @@ public static class WaterRitualPopupTranslationPatch
     {
         var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
         var match = BuySecretGossipPattern.Match(stripped);
-        if (!match.Success || !TryTranslateGossipLeadIn(Restore(match, spans, "gossip"), out var translatedGossip))
+        if (!match.Success || !TryTranslateGossipLeadIn(match.Groups["gossip"].Value, out var translatedGossip))
         {
             translated = source;
             return false;
         }
 
+        var restoredGossip = ColorAwareTranslationComposer.MarkupAwareRestoreCapture(
+            translatedGossip,
+            spans,
+            match.Groups["gossip"]);
         translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
-            $"{Restore(match, spans, "speaker")}が噂を共有してくれた。\n\n\"{translatedGossip}\"",
+            $"{Restore(match, spans, "speaker")}が噂を共有してくれた。\n\n\"{restoredGossip}\"",
             spans,
             stripped.Length,
             source);

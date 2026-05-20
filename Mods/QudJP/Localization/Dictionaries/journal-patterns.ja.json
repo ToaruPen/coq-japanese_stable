@@ -58,7 +58,7 @@
     },
     {
       "pattern": "^In =year=, =name= appointed the corrupt administrator (.+?) as earl and minister of (.+?)\\. There (.+?) mandated the practice of (<spice\\.elements\\..+?\\.practices\\.!random>) in (.+?) name\\.$",
-      "template": "=year=、=name=は腐敗した行政官{t0}を{t1}の伯爵兼大臣に任じた。そこで{t2}は{t4}名のもと{3}の実践を義務づけた。",
+      "template": "=year=、=name=は腐敗した行政官{t0}を{t1}の伯爵兼大臣に任じた。そこで{t2}は{t4}名のもと{t3}の実践を義務づけた。",
       "route": "journal"
     },
     {
@@ -78,7 +78,7 @@
     },
     {
       "pattern": "^Near the location of (.+?), =name= was captured by baboons\\. (.+?) murdered their leader (<spice\\.elements\\..+?\\.murdermethods\\.!random>) and from then on wore a neck ring stained with baboon blood\\.$",
-      "template": "{t0}の近くで、=name=はヒヒに捕らえられた。{t1}はその指導者を{2}で殺し、それ以来ヒヒの血で染まった首輪を身につけた。",
+      "template": "{t0}の近くで、=name=はヒヒに捕らえられた。{t1}はその指導者を{t2}で殺し、それ以来ヒヒの血で染まった首輪を身につけた。",
       "route": "journal"
     },
     {
@@ -233,7 +233,7 @@
     },
     {
       "pattern": "^In the month of (.+?) of (.+?) AR, =name= founded the village of (.+?) to <spice\\.history\\.gospels\\.HumblePractice\\.LateSultanate\\.!random>\\.$",
-      "template": "{1}年{t0}、=name=は<spice.history.gospels.HumblePractice.LateSultanate.!random>ために{t2}の村を建てた。",
+      "template": "{t1}年{t0}、=name=は<spice.history.gospels.HumblePractice.LateSultanate.!random>ために{t2}の村を建てた。",
       "route": "journal"
     },
     {

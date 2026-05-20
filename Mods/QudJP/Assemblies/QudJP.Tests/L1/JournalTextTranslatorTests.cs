@@ -26,6 +26,7 @@ public sealed class JournalTextTranslatorTests
 
         Translator.ResetForTests();
         Translator.SetDictionaryDirectoryForTests(dictionaryDirectory);
+        ScopedDictionaryLookup.ResetForTests();
         JournalPatternTranslator.ResetForTests();
         JournalPatternTranslator.SetPatternFileForTests(patternFilePath);
     }
@@ -34,6 +35,7 @@ public sealed class JournalTextTranslatorTests
     public void TearDown()
     {
         Translator.ResetForTests();
+        ScopedDictionaryLookup.ResetForTests();
         JournalPatternTranslator.ResetForTests();
 
         if (Directory.Exists(tempDirectory))

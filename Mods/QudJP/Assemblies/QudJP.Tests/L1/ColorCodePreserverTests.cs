@@ -381,6 +381,7 @@ public sealed class ColorCodePreserverTests
         {
             Assert.That(ColorAwareTranslationComposer.StartsWithQudColorAtVisibleIndex("    &Kremove", 4), Is.True);
             Assert.That(ColorAwareTranslationComposer.StartsWithQudColorAtVisibleIndex("&&remove", 0), Is.False);
+            Assert.That(ColorAwareTranslationComposer.StartsWithQudColorAtVisibleIndex("    &1remove", 4), Is.False);
         });
     }
 

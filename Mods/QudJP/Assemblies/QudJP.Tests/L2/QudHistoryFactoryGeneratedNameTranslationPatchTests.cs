@@ -193,6 +193,7 @@ public sealed class QudHistoryFactoryGeneratedNameTranslationPatchTests
     [TestCase("")]
     public void GenerateCultNamePostfix_LeavesUnknownCultNameUnchanged_WhenPatched(string source)
     {
+        WriteDictionaryFile("Scoped/historyspice-common.ja.json", ("gleaming", "煌めき"));
         var entity = new DummyHistoricEntity();
         entity.SeedProperty("cultName", source);
         var harmonyId = "qudjp-test-history-factory-cult-" + Guid.NewGuid().ToString("N");

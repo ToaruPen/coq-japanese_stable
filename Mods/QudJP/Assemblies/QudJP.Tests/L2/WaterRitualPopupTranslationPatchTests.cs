@@ -579,6 +579,46 @@ public sealed class WaterRitualPopupTranslationPatchTests
     }
 
     [Test]
+    public void Patch_TranslatesWrappedBuySecretGossipLeadIn_WhenOwnerPatched()
+    {
+        const string popupMethod = nameof(DummyPopupShow.Show);
+        var source =
+            "{{G|Tam}} shares some gossip with you.\n\n\"{{Y|I heard that some organization repeatedly beat some party at dice.}}\"";
+
+        LocalizationAssetResolver.SetLocalizationRootForTests(GetLocalizationRoot());
+        JournalPatternTranslator.ResetForTests();
+        try
+        {
+            WithPatchedOwnerAndPopup(
+                nameof(DummyWaterRitualPopupProducerTarget.WaterRitualBuySecretRevealEntry),
+                popupMethod,
+                () =>
+                {
+                    var target = new DummyWaterRitualPopupProducerTarget
+                    {
+                        PopupMethod = popupMethod,
+                        PopupMessageToShow = source,
+                    };
+
+                    InvokeOwnerMethod(target, nameof(DummyWaterRitualPopupProducerTarget.WaterRitualBuySecretRevealEntry));
+
+                    Assert.Multiple(() =>
+                    {
+                        Assert.That(
+                            DummyPopupShow.LastShowMessage,
+                            Is.EqualTo("{{G|Tam}}が噂を共有してくれた。\n\n\"{{Y|聞いたところでは、ある組織はある一団を何度も賽子で打ち負かした。}}\""));
+                        Assert.That(HitCount("BuySecretGossip"), Is.EqualTo(1));
+                    });
+                });
+        }
+        finally
+        {
+            JournalPatternTranslator.ResetForTests();
+            LocalizationAssetResolver.SetLocalizationRootForTests(null);
+        }
+    }
+
+    [Test]
     public void Patch_StripsDirectMarkedUnknownBuySecretGossipWithoutRetranslatingBody_WhenOwnerPatched()
     {
         const string popupMethod = nameof(DummyPopupShow.Show);
