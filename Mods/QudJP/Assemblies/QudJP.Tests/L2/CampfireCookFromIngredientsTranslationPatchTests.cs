@@ -259,6 +259,46 @@ public sealed class CampfireCookFromIngredientsTranslationPatchTests
         });
     }
 
+    [Test]
+    public void CookFromIngredients_RestoresDirectMarkerPassThroughText_ForNestedOwnerScopes()
+    {
+        CampfireCookFromIngredientsTranslationPatch.Prefix(out var outerState);
+        try
+        {
+            _ = CampfireCookFromIngredientsTranslationPatch.TryTranslatePopupMessage(
+                MessageFrameTranslator.MarkDirectTranslation("You eat the meal."),
+                nameof(PopupShowTranslationPatch),
+                "Popup.Show",
+                out _);
+
+            Assert.That(DirectMarkerPassThroughText(), Is.EqualTo("You eat the meal."));
+
+            CampfireCookFromIngredientsTranslationPatch.Prefix(out var innerState);
+            try
+            {
+                _ = CampfireCookFromIngredientsTranslationPatch.TryTranslatePopupMessage(
+                    MessageFrameTranslator.MarkDirectTranslation("Nested direct popup."),
+                    nameof(PopupShowTranslationPatch),
+                    "Popup.Show",
+                    out _);
+
+                Assert.That(DirectMarkerPassThroughText(), Is.EqualTo("Nested direct popup."));
+            }
+            finally
+            {
+                CampfireCookFromIngredientsTranslationPatch.Finalizer(null, innerState);
+            }
+
+            Assert.That(DirectMarkerPassThroughText(), Is.EqualTo("You eat the meal."));
+        }
+        finally
+        {
+            CampfireCookFromIngredientsTranslationPatch.Finalizer(null, outerState);
+        }
+
+        Assert.That(DirectMarkerPassThroughText(), Is.Null);
+    }
+
     private static void WithPatchedOwner(Action action)
     {
         var harmonyId = CreateHarmonyId();
@@ -314,11 +354,13 @@ public sealed class CampfireCookFromIngredientsTranslationPatchTests
     {
         var prefix = new HarmonyMethod(RequireMethod(
             typeof(CampfireCookFromIngredientsTranslationPatch),
-            nameof(CampfireCookFromIngredientsTranslationPatch.Prefix)));
+            nameof(CampfireCookFromIngredientsTranslationPatch.Prefix),
+            typeof(string).MakeByRefType()));
         var finalizer = new HarmonyMethod(RequireMethod(
             typeof(CampfireCookFromIngredientsTranslationPatch),
             nameof(CampfireCookFromIngredientsTranslationPatch.Finalizer),
-            typeof(Exception)));
+            typeof(Exception),
+            typeof(string)));
 
         harmony.Patch(
             original: RequireMethod(
@@ -353,6 +395,15 @@ public sealed class CampfireCookFromIngredientsTranslationPatchTests
     private static string CreateHarmonyId()
     {
         return "qudjp.tests.campfire-cook-from-ingredients." + Guid.NewGuid().ToString("N");
+    }
+
+    private static string? DirectMarkerPassThroughText()
+    {
+        var field = typeof(CampfireCookFromIngredientsTranslationPatch).GetField(
+            "directMarkerPassThroughText",
+            BindingFlags.NonPublic | BindingFlags.Static);
+        Assert.That(field, Is.Not.Null);
+        return field!.GetValue(null) as string;
     }
 }
 

@@ -1288,7 +1288,7 @@ public static class PopupTranslationPatch
             hasLegacyDisabledColor ? WithoutLegacyDisabledInventoryActionColor(spans, labelStart) : spans,
             stripped);
         if (hasLegacyDisabledColor
-            && !ColorAwareTranslationComposer.StartsWithQudColorAtVisibleIndex(translated, labelStart))
+            && !ColorAwareTranslationComposer.StartsWithQudTokenAtVisibleIndex(translated, labelStart, "&K"))
         {
             translated = ColorAwareTranslationComposer.InsertQudColorAtVisibleIndex(translated, labelStart, "&K");
         }
@@ -1310,7 +1310,7 @@ public static class PopupTranslationPatch
         IReadOnlyList<ColorSpan> spans,
         int labelStart)
     {
-        if (ColorAwareTranslationComposer.StartsWithQudColorAtVisibleIndex(translatedLabel, 0)
+        if (ColorAwareTranslationComposer.StartsWithQudTokenAtVisibleIndex(translatedLabel, 0, "&K")
             || !HasLegacyDisabledInventoryActionColor(spans, labelStart))
         {
             return translatedLabel;

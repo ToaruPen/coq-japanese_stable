@@ -20,11 +20,11 @@ def _download_release_zip_recipe() -> str:
 
 def _recipe_body(name: str) -> str:
     justfile = _justfile_text()
-    marker_pattern = rf"^{re.escape(name)}(?:\s+.*)?\s*:\n"
+    marker_pattern = rf"^{re.escape(name)}(?:\s+.*)?\s*:\r?\n"
     match = re.search(marker_pattern, justfile, flags=re.MULTILINE)
     assert match, f"{name}: recipe not found in justfile"
     remainder = justfile[match.end() :]
-    next_recipe = re.search(r"^[A-Za-z0-9_-]+\b.*:\n", remainder, flags=re.MULTILINE)
+    next_recipe = re.search(r"^[A-Za-z0-9_-]+\b.*:\r?\n", remainder, flags=re.MULTILINE)
     return remainder[: next_recipe.start()] if next_recipe is not None else remainder
 
 

@@ -502,7 +502,7 @@ public sealed class JournalPatternTranslatorTests
     }
 
     [Test]
-    public void Translate_TranslatesFurnitureStuckPrepositionCapture()
+    public void Translate_TranslatesExpandedFurnitureStuckTemplates()
     {
         WriteDictionaryFile(
             Path.Combine("Scoped", "historyspice-common.ja.json"),
@@ -534,9 +534,9 @@ public sealed class JournalPatternTranslatorTests
             "^(.+?) drowned in a lake of (.+?)\\.$",
             "{t0}は{t1}の湖で溺れた。"));
 
-        var translated = JournalPatternTranslator.Translate("Sib drowned in a lake of acid.");
+        var translated = JournalPatternTranslator.Translate("sib drowned in a lake of acid.");
 
-        Assert.That(translated, Is.EqualTo("Sibは酸の湖で溺れた。"));
+        Assert.That(translated, Is.EqualTo("sibは酸の湖で溺れた。"));
     }
 
     [Test]

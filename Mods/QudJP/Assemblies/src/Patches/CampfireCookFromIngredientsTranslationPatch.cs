@@ -47,27 +47,25 @@ public static class CampfireCookFromIngredientsTranslationPatch
         return method;
     }
 
-    public static void Prefix()
+    public static void Prefix(out string? __state)
     {
         try
         {
-            OwnerTranslationScope.Enter(ref activeDepth);
+            __state = directMarkerPassThroughText;
+            OwnerDirectMarkerPopupScope.Enter(ref activeDepth);
         }
         catch (Exception ex)
         {
+            __state = directMarkerPassThroughText;
             Trace.TraceError("QudJP: {0}.Prefix failed: {1}", Context, ex);
         }
     }
 
-    public static Exception? Finalizer(Exception? __exception)
+    public static Exception? Finalizer(Exception? __exception, string? __state)
     {
         try
         {
-            OwnerTranslationScope.Exit(ref activeDepth);
-            if (!OwnerTranslationScope.IsActive(activeDepth))
-            {
-                directMarkerPassThroughText = null;
-            }
+            OwnerDirectMarkerPopupScope.Exit(ref activeDepth, ref directMarkerPassThroughText, __state);
         }
         catch (Exception ex)
         {
@@ -127,9 +125,8 @@ public static class CampfireCookFromIngredientsTranslationPatch
             return false;
         }
 
-        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
+        if (OwnerDirectMarkerPopupScope.TryStripDirectMarkedProducerText(source, out translated))
         {
-            translated = markedText;
             return true;
         }
 

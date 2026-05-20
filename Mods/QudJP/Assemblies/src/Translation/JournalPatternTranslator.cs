@@ -782,11 +782,6 @@ internal static class JournalPatternTranslator
             return inYearCapture;
         }
 
-        if (TryTranslateFurnitureStuckPrepositionCapture(source, out var furniturePrepositionCapture))
-        {
-            return furniturePrepositionCapture;
-        }
-
         if (TryTranslatePronounCapture(source, out var pronounCapture))
         {
             return pronounCapture;
@@ -890,28 +885,6 @@ internal static class JournalPatternTranslator
             case "Sometime in":
             case "sometime in":
                 translated = "年ごろ";
-                return true;
-        }
-
-        translated = source;
-        return false;
-    }
-
-    private static bool TryTranslateFurnitureStuckPrepositionCapture(string source, out string translated)
-    {
-        switch (source)
-        {
-            case "in":
-                translated = "に";
-                return true;
-            case "under":
-                translated = "の下に";
-                return true;
-            case "inside":
-                translated = "の中に";
-                return true;
-            case "behind":
-                translated = "の後ろに";
                 return true;
         }
 

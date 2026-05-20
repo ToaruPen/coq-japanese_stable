@@ -327,7 +327,7 @@ public sealed class JournalEntryDisplayTextPatchTests
                     SultanNoteText("Oboroqoru got his finger stuck behind a reactor."),
                     Is.EqualTo("Oboroqoruはその指を反応炉の後ろに挟まれた。"));
                 Assert.That(
-                    SultanNoteText("Sib drowned in a lake of acid."),
+                    SultanNoteText("sib drowned in a lake of acid."),
                     Is.EqualTo("同胞は酸の湖で溺れた。"));
             });
         }

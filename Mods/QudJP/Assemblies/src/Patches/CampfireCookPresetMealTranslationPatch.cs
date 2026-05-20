@@ -40,11 +40,11 @@ public static class CampfireCookPresetMealTranslationPatch
         try
         {
             __state = directMarkerPassThroughText;
-            OwnerTranslationScope.Enter(ref activeDepth);
+            OwnerDirectMarkerPopupScope.Enter(ref activeDepth);
         }
         catch (Exception ex)
         {
-            __state = null;
+            __state = directMarkerPassThroughText;
             Trace.TraceError("QudJP: {0}.Prefix failed: {1}", Context, ex);
         }
     }
@@ -53,8 +53,7 @@ public static class CampfireCookPresetMealTranslationPatch
     {
         try
         {
-            OwnerTranslationScope.Exit(ref activeDepth);
-            directMarkerPassThroughText = __state;
+            OwnerDirectMarkerPopupScope.Exit(ref activeDepth, ref directMarkerPassThroughText, __state);
         }
         catch (Exception ex)
         {

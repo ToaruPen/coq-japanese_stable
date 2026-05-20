@@ -86,6 +86,57 @@ public sealed class CampfireCookFromRecipeTranslationPatchTests
     }
 
     [Test]
+    public void CookFromRecipe_StripsDirectMarkedRecipeMenuRows_WhenOwnerActive()
+    {
+        const string source = "Show 3 hidden recipes missing ingredients";
+
+        CampfireCookFromRecipeTranslationPatch.Prefix(out var state);
+        try
+        {
+            var translated = PopupTranslationPatch.TranslatePopupTextForProducerRoute(
+                MessageFrameTranslator.MarkDirectTranslation(source),
+                nameof(PopupPickOptionTranslationPatch));
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(translated, Is.EqualTo(source));
+                Assert.That(HitCount("HiddenRecipesRow"), Is.Zero);
+            });
+        }
+        finally
+        {
+            CampfireCookFromRecipeTranslationPatch.Finalizer(null, state);
+        }
+    }
+
+    [Test]
+    public void CookFromRecipe_StripsDirectMarkedRecipeMenuRows_InOwnerProducerHandler()
+    {
+        const string source = "Show 3 hidden recipes missing ingredients";
+
+        CampfireCookFromRecipeTranslationPatch.Prefix(out var state);
+        try
+        {
+            var handled = CampfireCookFromRecipeTranslationPatch.TryTranslatePopupProducerText(
+                MessageFrameTranslator.MarkDirectTranslation(source),
+                nameof(PopupPickOptionTranslationPatch),
+                "Popup.ProducerText",
+                out var translated);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(handled, Is.True);
+                Assert.That(translated, Is.EqualTo(source));
+                Assert.That(HitCount("HiddenRecipesRow"), Is.Zero);
+            });
+        }
+        finally
+        {
+            CampfireCookFromRecipeTranslationPatch.Finalizer(null, state);
+        }
+    }
+
+    [Test]
     public void CookFromRecipe_LeavesEmptyProducerTextUnchanged_WhenOwnerActive()
     {
         CampfireCookFromRecipeTranslationPatch.Prefix(out var state);

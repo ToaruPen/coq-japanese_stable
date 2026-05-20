@@ -9340,12 +9340,12 @@
       "en_template_hash": "sha256:06cc20cc0d9e79b61256fc23b52b2610af668356b647cee5a672229f0c631a52"
     },
     {
-      "id": "HistorySpice#instancesOf#furnitureDeathStuck#in",
+      "id": "HistorySpice#tombstones#furnitureDeathStuck#in",
       "source_file": "HistorySpice.json",
       "annal_class": "HistorySpice",
-      "switch_case": "instancesOf.furnitureDeath",
+      "switch_case": "tombstones.furnitureDeath",
       "event_property": "gospel",
-      "sample_source": "{0} got {1} {2} stuck in {4}.",
+      "sample_source": "{0} got {1} {2} stuck in {3}.",
       "extracted_pattern": "^(.+?)\\ got\\ (.+?)\\ (.+?)\\ stuck\\ in\\ (.+?)\\.$",
       "slots": [
         {
@@ -9381,12 +9381,12 @@
       "en_template_hash": "sha256:bd889856561edf4810d70fa0e3efdc89da9d2d5d42c35e36fe210972f4cc2033"
     },
     {
-      "id": "HistorySpice#instancesOf#furnitureDeathStuck#under",
+      "id": "HistorySpice#tombstones#furnitureDeathStuck#under",
       "source_file": "HistorySpice.json",
       "annal_class": "HistorySpice",
-      "switch_case": "instancesOf.furnitureDeath",
+      "switch_case": "tombstones.furnitureDeath",
       "event_property": "gospel",
-      "sample_source": "{0} got {1} {2} stuck under {4}.",
+      "sample_source": "{0} got {1} {2} stuck under {3}.",
       "extracted_pattern": "^(.+?)\\ got\\ (.+?)\\ (.+?)\\ stuck\\ under\\ (.+?)\\.$",
       "slots": [
         {
@@ -9422,12 +9422,12 @@
       "en_template_hash": "sha256:bd889856561edf4810d70fa0e3efdc89da9d2d5d42c35e36fe210972f4cc2033"
     },
     {
-      "id": "HistorySpice#instancesOf#furnitureDeathStuck#inside",
+      "id": "HistorySpice#tombstones#furnitureDeathStuck#inside",
       "source_file": "HistorySpice.json",
       "annal_class": "HistorySpice",
-      "switch_case": "instancesOf.furnitureDeath",
+      "switch_case": "tombstones.furnitureDeath",
       "event_property": "gospel",
-      "sample_source": "{0} got {1} {2} stuck inside {4}.",
+      "sample_source": "{0} got {1} {2} stuck inside {3}.",
       "extracted_pattern": "^(.+?)\\ got\\ (.+?)\\ (.+?)\\ stuck\\ inside\\ (.+?)\\.$",
       "slots": [
         {
@@ -9463,12 +9463,12 @@
       "en_template_hash": "sha256:bd889856561edf4810d70fa0e3efdc89da9d2d5d42c35e36fe210972f4cc2033"
     },
     {
-      "id": "HistorySpice#instancesOf#furnitureDeathStuck#behind",
+      "id": "HistorySpice#tombstones#furnitureDeathStuck#behind",
       "source_file": "HistorySpice.json",
       "annal_class": "HistorySpice",
-      "switch_case": "instancesOf.furnitureDeath",
+      "switch_case": "tombstones.furnitureDeath",
       "event_property": "gospel",
-      "sample_source": "{0} got {1} {2} stuck behind {4}.",
+      "sample_source": "{0} got {1} {2} stuck behind {3}.",
       "extracted_pattern": "^(.+?)\\ got\\ (.+?)\\ (.+?)\\ stuck\\ behind\\ (.+?)\\.$",
       "slots": [
         {

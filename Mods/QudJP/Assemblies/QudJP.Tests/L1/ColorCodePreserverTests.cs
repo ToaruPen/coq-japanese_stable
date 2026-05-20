@@ -380,23 +380,37 @@ public sealed class ColorCodePreserverTests
         Assert.Multiple(() =>
         {
             Assert.That(ColorAwareTranslationComposer.StartsWithQudColorAtVisibleIndex("    &Kremove", 4), Is.True);
+            Assert.That(ColorAwareTranslationComposer.StartsWithQudColorAtVisibleIndex("    &Oremove", 4), Is.True);
+            Assert.That(ColorAwareTranslationComposer.StartsWithQudColorAtVisibleIndex("    ^oremove", 4), Is.True);
+            Assert.That(ColorAwareTranslationComposer.StartsWithQudColorAtVisibleIndex("    &1remove", 4), Is.True);
+            Assert.That(ColorAwareTranslationComposer.StartsWithQudColorAtVisibleIndex("    &qremove", 4), Is.True);
+            Assert.That(ColorAwareTranslationComposer.StartsWithQudColorAtVisibleIndex("    ^zremove", 4), Is.True);
             Assert.That(ColorAwareTranslationComposer.StartsWithQudColorAtVisibleIndex("&&remove", 0), Is.False);
-            Assert.That(ColorAwareTranslationComposer.StartsWithQudColorAtVisibleIndex("    &1remove", 4), Is.False);
-            Assert.That(ColorAwareTranslationComposer.StartsWithQudColorAtVisibleIndex("    &qremove", 4), Is.False);
-            Assert.That(ColorAwareTranslationComposer.StartsWithQudColorAtVisibleIndex("    ^zremove", 4), Is.False);
         });
     }
 
     [Test]
-    public void InsertQudColorAtVisibleIndex_TreatsInvalidColorPairsAsVisibleText()
+    public void StartsWithQudTokenAtVisibleIndex_ChecksExactTokenAtTargetVisiblePosition()
+    {
+        Assert.Multiple(() =>
+        {
+            Assert.That(ColorAwareTranslationComposer.StartsWithQudTokenAtVisibleIndex("    &K&Gremove", 4, "&K"), Is.True);
+            Assert.That(ColorAwareTranslationComposer.StartsWithQudTokenAtVisibleIndex("    &Gremove", 4, "&K"), Is.False);
+            Assert.That(ColorAwareTranslationComposer.StartsWithQudTokenAtVisibleIndex("{{y|&Kremove}}", 0, "&K"), Is.True);
+            Assert.That(ColorAwareTranslationComposer.StartsWithQudTokenAtVisibleIndex("&&remove", 0, "&K"), Is.False);
+        });
+    }
+
+    [Test]
+    public void InsertQudColorAtVisibleIndex_TreatsNonEscapedFormattingPairsAsZeroWidth()
     {
         var foreground = ColorAwareTranslationComposer.InsertQudColorAtVisibleIndex("&qNo", 1, "&K");
         var background = ColorAwareTranslationComposer.InsertQudColorAtVisibleIndex("^zNo", 1, "&K");
 
         Assert.Multiple(() =>
         {
-            Assert.That(foreground, Is.EqualTo("&&KqNo"));
-            Assert.That(background, Is.EqualTo("^&KzNo"));
+            Assert.That(foreground, Is.EqualTo("&qN&Ko"));
+            Assert.That(background, Is.EqualTo("^zN&Ko"));
         });
     }
 

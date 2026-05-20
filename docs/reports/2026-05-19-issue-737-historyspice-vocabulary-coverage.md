@@ -865,12 +865,13 @@ and exclamation leaves such as `ye Godless`, `ye Heathens`, `ye Skeptics`, and
 
 The furniture-death and liquid-drowning residuals are handled as route grammar,
 not direct dictionary leaves. `JournalPatternTranslator` now translates expanded
-annals phrases such as `got his finger stuck behind a throne` by routing the
-furniture preposition capture through a position-specific grammar helper, and
-translates expanded `drowned in a lake of {liquid}` phrases by translating the
-liquid capture through the HSE component lookup. The raw placeholders and
-preposition leaves remain out of direct dictionary coverage because their
-Japanese output depends on the surrounding generated template.
+HistorySpice template phrases such as `got his finger stuck behind a throne`
+with separate accepted patterns for each position preposition, and translates
+expanded `drowned in a lake of {liquid}` phrases by translating the liquid
+capture through the HSE component lookup. The raw placeholders and preposition
+leaves remain out of direct dictionary coverage because their Japanese output
+depends on the surrounding generated template. This is HSE template grammar
+coverage, not proof of a live tombstone producer route.
 
 The `CookingRecipe.GetDisplayName` recipe-name component family is closed as a
 single display-name owner unit. Direct scoped coverage now covers stable

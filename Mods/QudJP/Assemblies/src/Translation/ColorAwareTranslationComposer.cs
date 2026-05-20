@@ -364,8 +364,20 @@ internal static class ColorAwareTranslationComposer
         index = IndexAfterOpeningBoundaryWrappers(source, index);
         return index + 1 < source.Length
             && (source[index] == '&' || source[index] == '^')
-            && source[index] != source[index + 1]
-            && IsQudInlineColorCode(source[index + 1]);
+            && IsNonEscapedInlineFormattingCode(source[index], source[index + 1]);
+    }
+
+    internal static bool StartsWithQudTokenAtVisibleIndex(string source, int visibleIndex, string token)
+    {
+        if (string.IsNullOrEmpty(token))
+        {
+            return false;
+        }
+
+        var index = SourceIndexAtVisibleIndex(source, visibleIndex);
+        index = IndexAfterOpeningBoundaryWrappers(source, index);
+        return index <= source.Length - token.Length
+            && string.CompareOrdinal(source, index, token, 0, token.Length) == 0;
     }
 
     private static int SourceIndexAtVisibleIndex(string source, int visibleIndex)
@@ -456,8 +468,7 @@ internal static class ColorAwareTranslationComposer
 
         if (index + 1 < source.Length
             && (source[index] == '&' || source[index] == '^')
-            && source[index] != source[index + 1]
-            && IsQudInlineColorCode(source[index + 1]))
+            && IsNonEscapedInlineFormattingCode(source[index], source[index + 1]))
         {
             index += 2;
             return true;
@@ -485,7 +496,7 @@ internal static class ColorAwareTranslationComposer
             && source[index] == source[index + 1];
     }
 
-    private static bool IsQudInlineColorCode(char character) => IsQudAmpersandColor(character);
+    private static bool IsNonEscapedInlineFormattingCode(char prefix, char character) => character != prefix;
 
     private static List<WholeBoundaryPair> ExtractTrueBoundaryPairs(
         IReadOnlyList<ColorSpan> spans,
@@ -780,21 +791,9 @@ internal static class ColorAwareTranslationComposer
             return translated;
         }
 
-        return IsQudAmpersandColor(source[1])
+        return IsNonEscapedInlineFormattingCode('&', source[1])
             ? source.Substring(0, 2) + translated
             : translated;
-    }
-
-    private static bool IsQudAmpersandColor(char color)
-    {
-        return color is 'K' or 'k'
-            or 'R' or 'r'
-            or 'G' or 'g'
-            or 'B' or 'b'
-            or 'C' or 'c'
-            or 'M' or 'm'
-            or 'Y' or 'y'
-            or 'W' or 'w';
     }
 
     private static string RestoreWholeBoundaryPairsPreservingTranslatedOwnership(

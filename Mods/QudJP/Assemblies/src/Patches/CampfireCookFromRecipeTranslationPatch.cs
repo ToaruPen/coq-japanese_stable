@@ -55,11 +55,11 @@ public static class CampfireCookFromRecipeTranslationPatch
         try
         {
             __state = directMarkerPassThroughText;
-            OwnerTranslationScope.Enter(ref activeDepth);
+            OwnerDirectMarkerPopupScope.Enter(ref activeDepth);
         }
         catch (Exception ex)
         {
-            __state = null;
+            __state = directMarkerPassThroughText;
             Trace.TraceError("QudJP: {0}.Prefix failed: {1}", Context, ex);
         }
     }
@@ -68,8 +68,7 @@ public static class CampfireCookFromRecipeTranslationPatch
     {
         try
         {
-            OwnerTranslationScope.Exit(ref activeDepth);
-            directMarkerPassThroughText = __state;
+            OwnerDirectMarkerPopupScope.Exit(ref activeDepth, ref directMarkerPassThroughText, __state);
         }
         catch (Exception ex)
         {
@@ -114,6 +113,11 @@ public static class CampfireCookFromRecipeTranslationPatch
         {
             translated = source;
             return false;
+        }
+
+        if (OwnerDirectMarkerPopupScope.TryStripDirectMarkedProducerText(source, out translated))
+        {
+            return true;
         }
 
         if (TryTranslateFixedMenuLabel(source, out translated))

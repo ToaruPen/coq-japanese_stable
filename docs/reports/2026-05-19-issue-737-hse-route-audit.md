@@ -586,12 +586,14 @@ Current reproduced vocabulary counts:
   leaves: `of *var* *var2*`, furniture prepositions, year prepositions, and
   `drowned in a lake of *liquid*`.
   The furniture-death and liquid-drowning residuals are now covered at the
-  annals route grammar layer rather than as broad direct leaves:
+  HSE template grammar layer rather than as broad direct leaves:
   `JournalPatternTranslator` translates expanded `got ... stuck
-  (in|under|inside|behind) ...` captures with Japanese position particles, and
-  expanded `drowned in a lake of {liquid}` captures with HSE component lookup
-  for the liquid slot. The remaining raw placeholder/preposition leaves stay
-  classified as template grammar, not fixed vocabulary.
+  (in|under|inside|behind) ...` phrases with separate accepted patterns for
+  each position preposition, and expanded `drowned in a lake of {liquid}`
+  captures with HSE component lookup for the liquid slot. The remaining raw
+  placeholder/preposition leaves stay classified as template grammar, not fixed
+  vocabulary, and this row is not treated as proof of a live tombstone producer
+  route.
 
 ## Runtime-Proven Gaps
 
@@ -611,9 +613,10 @@ runtime evidence in Issue #737.
 
 `docs/reports/2026-05-17-historic-string-expander-owner-plan.md` records many
 HSE owner families as already covered by focused patches and tests. The current
-queue still marks many of those same families as `action_required`,
-`runtime_required`, or `likely_true_gap`; this is partly an overlay gap and
-partly a real runtime-route gap.
+queue now has `action_required: 0` and `partial_coverage: 0`. The remaining
+tracked uncertainty is concentrated in the `runtime_required` rows and the
+overlay-only cases where static coverage already exists but fresh runtime proof
+is still useful.
 
 Initial interpretation:
 
@@ -755,9 +758,19 @@ if [ -z "$LOG" ]; then
 fi
 
 just issue737-runtime-closeout
-stat -f '%Sm %z %N' -t '%Y-%m-%d %H:%M:%S %Z' "$LOG"
-wc -l "$LOG"
-shasum -a 256 "$LOG"
+uv run python - "$LOG" <<'PY'
+import datetime as dt
+import hashlib
+import pathlib
+import sys
+
+path = pathlib.Path(sys.argv[1])
+data = path.read_bytes()
+mtime = dt.datetime.fromtimestamp(path.stat().st_mtime).astimezone()
+print(mtime.strftime("%Y-%m-%d %H:%M:%S %Z"), path.stat().st_size, path)
+print(len(data.splitlines()), path)
+print(hashlib.sha256(data).hexdigest(), path)
+PY
 
 rg -n \
   'You preserved|glass berries|nip of joined paprika|chameleon horn|HISTORY OF|with malicious soldering|shining visage|On the 22nd of Tishru i Ux|Stargazerhome|parasangs .* of |leader of the ' \

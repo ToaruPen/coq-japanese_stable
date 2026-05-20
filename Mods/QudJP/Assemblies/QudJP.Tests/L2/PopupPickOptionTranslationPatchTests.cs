@@ -523,6 +523,27 @@ public sealed class PopupPickOptionTranslationPatchTests
     }
 
     [Test]
+    public void SelectableTextMenuItemDisplayTranslation_RestoresDisabledColorWhenOtherColorRemainsAtSamePosition()
+    {
+        WriteInventoryActionDictionary(
+            ("remove", "XRL.World.IInventoryActionsEvent", "&G外す"),
+            ("drop", "XRL.World.IInventoryActionsEvent", "^r落とす"));
+
+        var foreground = SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+            "    &Kremove",
+            "InventoryActionMenu:ABC123");
+        var background = SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+            "    &Kdrop",
+            "InventoryActionMenu:ABC123");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(foreground, Is.EqualTo("    &K&G外す"));
+            Assert.That(background, Is.EqualTo("    &K^r落とす"));
+        });
+    }
+
+    [Test]
     public void SelectableTextMenuItemDisplayTranslation_UsesInventoryActionOwnerDictionaryForEmbeddedHotkeyInventoryActionMenuRows()
     {
         WriteDictionary(("mark important", "GLOBAL-MARK-POISON"));
