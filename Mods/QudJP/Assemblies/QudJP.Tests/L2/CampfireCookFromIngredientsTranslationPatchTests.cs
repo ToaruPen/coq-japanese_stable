@@ -260,6 +260,33 @@ public sealed class CampfireCookFromIngredientsTranslationPatchTests
     }
 
     [Test]
+    public void CookFromIngredients_StripsDirectMarkedSelectedIngredientMenuRow_InOwnerProducerHandler()
+    {
+        const string source = "{{W|Cook with the {{C|0}} selected ingredients.}}\n{{y|[up to 2 remaining]}}";
+
+        CampfireCookFromIngredientsTranslationPatch.Prefix(out var state);
+        try
+        {
+            var handled = CampfireCookFromIngredientsTranslationPatch.TryTranslatePopupProducerText(
+                MessageFrameTranslator.MarkDirectTranslation(source),
+                nameof(PopupPickOptionTranslationPatch),
+                "Popup.ProducerText",
+                out var translated);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(handled, Is.True);
+                Assert.That(translated, Is.EqualTo(source));
+                Assert.That(PickOptionProducerHitCount("SelectedIngredientsMenuRow"), Is.Zero);
+            });
+        }
+        finally
+        {
+            CampfireCookFromIngredientsTranslationPatch.Finalizer(null, state);
+        }
+    }
+
+    [Test]
     public void CookFromIngredients_RestoresDirectMarkerPassThroughText_ForNestedOwnerScopes()
     {
         CampfireCookFromIngredientsTranslationPatch.Prefix(out var outerState);
