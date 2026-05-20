@@ -153,6 +153,329 @@ QUEST_SIGNPOST_PARTIAL_EVIDENCE: Final = "QuestSignpost directions translated; n
 TINKERING_RECIPE_PARTIAL_EVIDENCE: Final = "Tinkering recipe label translated; names use data routes"
 HERMIT_OATH_PARTIAL_EVIDENCE: Final = "Default hermit address translated; custom addresses use data routes"
 LEARN_SKILL_PARTIAL_EVIDENCE: Final = "Initiatory prompt translated; skill names use dictionary routes"
+ISSUE737_HSE_AUDIT_EVIDENCE: Final = "docs/reports/2026-05-19-issue-737-hse-route-audit.md"
+ISSUE726_TEXT_FILTER_ROUTE_EVIDENCE: Final = [
+    "https://github.com/ToaruPen/coq-japanese_stable/issues/726",
+    (
+        "TextFilters.Angry/Lallated have static owner evidence but remain "
+        "speech/status transformation routes requiring owner-specific runtime evidence"
+    ),
+    (
+        "semantic-probe TextFilters.Filter: resolved owners XRL.World.Parts.Preacher "
+        "and XRL.World.Conversations.Parts.TextFilter"
+    ),
+    (
+        "semantic-probe TextFilters.Angry: resolved owner XRL.World.Capabilities.StyledStatus "
+        "plus TextFilters.Filter switch"
+    ),
+    "static data source: DomesticatedSlave assigns Lallated to Preacher and ConversationScript",
+    "decompiled owner: StyledStatus.Format angry style calls TextFilters.Angry(Name) and TextFilters.Angry(Value)",
+    "decompiled owner: Preacher.PreacherHomily filters lineText before EmitMessage and ParticleText",
+    "decompiled owner: ConversationScript installs XRL.World.Conversations.Parts.TextFilter for conversation text",
+    (
+        "runtime deferral reason: filtered outputs mutate already-composed speech/status text, "
+        "so completion needs an observed owner-specific final output rather than a raw HSE leaf"
+    ),
+]
+ISSUE737_COOKING_ROUTE_EVIDENCE: Final = [
+    "Mods/QudJP/Assemblies/src/Patches/CampfirePreserveTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/CampfireRollIngredientsTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/CampfireDescribeMealTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/CampfireCookFromIngredientsTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/CookingRecipeDisplayNameTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/CookingIngredientFragmentTranslator.cs",
+    "Mods/QudJP/Assemblies/src/Patches/MessageLogPatch.cs",
+    "Mods/QudJP/Localization/Dictionaries/messages.ja.json",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L1/CookingIngredientFragmentTranslatorTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L1/CookingMealDescriptionTranslatorTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L1/CookingRecipeDisplayNameTranslatorTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L1/MessageLogPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L1/MessagePatternTranslatorTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/CampfirePreserveTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/CampfireRollIngredientsTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/CampfireDescribeMealTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/CampfireCookFromIngredientsTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/CookingRecipeDisplayNameTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/PopupShowTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+    ISSUE737_HSE_AUDIT_EVIDENCE,
+    (
+        "Issue #737 cooking family is covered at owner routes: preserve popup/message-log "
+        "frames, RollIngredients ingredient fragments, DescribeMeal cook templates, "
+        "CookFromIngredients owner popups, and CookingRecipe.GetDisplayName component/"
+        "suffix/preposition grammar"
+    ),
+    (
+        "spice.cooking.terrain.* direct coverage is 290/290; recipeNames direct "
+        "coverage is 524/531 with raw placeholders and route-local prepositions "
+        "handled by the recipe display-name owner route"
+    ),
+    "spice.cooking.ate[0] fixed popup leaf is covered by the existing ^You eat the meal\\.$ popup pattern",
+]
+ISSUE737_COOK_RECIPE_PRESET_ROUTE_EVIDENCE: Final = [
+    *ISSUE737_COOKING_ROUTE_EVIDENCE,
+    "Mods/QudJP/Assemblies/src/Patches/CampfireCookFromRecipeTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/CampfireCookPresetMealTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/CampfireCookFromRecipeTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/CampfireCookPresetMealTranslationPatchTests.cs",
+    (
+        "CookFromRecipe and CookPresetMeal have route-specific owner evidence for "
+        "menu-line popups, ingredient-shortage popups, preset meal popups, "
+        "direct-marker pass-through, and color/empty edge cases"
+    ),
+]
+ISSUE737_JOURNAL_ROUTE_EVIDENCE: Final = [
+    "Mods/QudJP/Assemblies/src/Patches/JournalAccomplishmentAddTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/JournalLineTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/JournalTextTranslator.cs",
+    "Mods/QudJP/Assemblies/src/Translation/JournalPatternTranslator.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L1/JournalPatternTranslatorTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L1/JournalTextTranslatorTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L1/AnnalsPatternsCandidateInventoryTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L1/AnnalsPatternsCollisionTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/JournalApiAddTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/JournalEntryDisplayTextPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/JournalLineTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/ReshephHistoryTranslationTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/Fixtures/annals-samples.json",
+    "scripts/_artifacts/annals/candidates_pending.json",
+    ISSUE737_HSE_AUDIT_EVIDENCE,
+    (
+        "Issue #737 runtime sample fixed for sultan date/title/Abdicate annal body, "
+        "map-note location, generated relationship-title fragments, and storage-time "
+        "JournalAPI.AddAccomplishment text/mural/gospel variants; accepted annals "
+        "candidates are merged into annals-patterns.ja.json"
+    ),
+]
+HSE_JOURNAL_OBSERVATION_ROUTE_EVIDENCE: Final = [
+    "Mods/QudJP/Assemblies/src/Patches/JournalObservationAddTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/JournalTextTranslator.cs",
+    "Mods/QudJP/Assemblies/src/Translation/JournalPatternTranslator.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L1/JournalPatternTranslatorTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/JournalApiAddTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+    ISSUE737_HSE_AUDIT_EVIDENCE,
+]
+HSE_DYNAMIC_QUEST_ROUTE_EVIDENCE: Final = [
+    "Mods/QudJP/Assemblies/src/Patches/DynamicQuestConversationTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/DynamicQuestConstructorConversationTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/DynamicQuestGeneratedQuestTextTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/DynamicQuestSignpostConversationTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/VillageDynamicQuestItemNameMutationTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/DynamicQuestConversationTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/DynamicQuestConstructorConversationTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/DynamicQuestGeneratedQuestTextTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/DynamicQuestSignpostConversationTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/VillageDynamicQuestItemNameMutationTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+    "docs/reports/2026-05-17-historic-string-expander-owner-plan.md",
+]
+HSE_JOURNAL_ACCOMPLISHMENT_ROUTE_EVIDENCE: Final = [
+    "Mods/QudJP/Assemblies/src/Patches/JournalAccomplishmentAddTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/JournalTextTranslator.cs",
+    "Mods/QudJP/Assemblies/src/Translation/JournalPatternTranslator.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L1/JournalPatternTranslatorTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/JournalApiAddTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/Fixtures/annals-samples.json",
+    "docs/reports/2026-05-05-issue-497-dynamic-dictionary-audit.md",
+    ISSUE737_HSE_AUDIT_EVIDENCE,
+]
+HSE_DYNAMIC_QUEST_COMPLETION_ROUTE_EVIDENCE: Final = [
+    "Mods/QudJP/Assemblies/src/Patches/JournalAccomplishmentAddTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Translation/JournalPatternTranslator.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L1/JournalPatternTranslatorTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/JournalApiAddTranslationPatchTests.cs",
+    "Mods/QudJP/Localization/Dictionaries/journal-patterns.ja.json",
+    ISSUE737_HSE_AUDIT_EVIDENCE,
+    (
+        "static producer evidence: InteractWithAnObjectDynamicQuestManager "
+        "uses finite QuestableVerb tags from Base ObjectBlueprints/Furniture.xml"
+    ),
+]
+HSE_JOURNAL_STORY_ROUTE_EVIDENCE: Final = [
+    "Mods/QudJP/Assemblies/src/Patches/JournalAccomplishmentAddTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Translation/JournalPatternTranslator.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L1/JournalPatternTranslatorTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/JournalApiAddTranslationPatchTests.cs",
+    "Mods/QudJP/Localization/Dictionaries/journal-patterns.ja.json",
+    ISSUE737_HSE_AUDIT_EVIDENCE,
+]
+HSE_COOKING_DISPLAY_ROUTE_EVIDENCE: Final = [
+    "Mods/QudJP/Assemblies/src/Patches/CookingRecipeDisplayNameTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/CookingRecipeGenerateRecipeTileTranslationScopePatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/CookbookDisplayNameTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L1/CookingRecipeDisplayNameTranslatorTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L1/CookbookDisplayNameTranslatorTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/CookingRecipeDisplayNameTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/CookbookDisplayNameTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+    "docs/reports/2026-05-17-historic-string-expander-owner-plan.md",
+]
+HSE_MEMORIAL_ROUTE_EVIDENCE: Final = [
+    "Mods/QudJP/Assemblies/src/Patches/EaterCryptPlaqueTextTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/MemorialInscriptionIntroTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/TombstoneDeathCauseTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/EaterCryptPlaqueTextTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/MemorialInscriptionIntroTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/TombstoneDeathCauseTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+    "docs/reports/2026-05-17-historic-string-expander-owner-plan.md",
+]
+HSE_RELIC_ROUTE_EVIDENCE: Final = [
+    "Mods/QudJP/Assemblies/src/Patches/RelicGeneratorGeneratedNameTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/RelicDescriptionAddendumTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/PseudoRelicGeneratedNameTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/ItemNamingGeneratedNameTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/RelicGeneratorGeneratedNameTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/RelicDescriptionAddendumTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/PseudoRelicGeneratedNameTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/ItemNamingGeneratedNameTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+    "docs/reports/2026-05-17-historic-string-expander-owner-plan.md",
+]
+HSE_VILLAGE_DESCRIPTION_ROUTE_EVIDENCE: Final = [
+    "Mods/QudJP/Assemblies/src/Patches/VillageWallDescriptionTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/VillageTerrainRevealDescriptionTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/SultanRegionRevealDescriptionTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/SultanRegionRevealDescriptionTranslator.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L1/VillageWallDescriptionTranslatorTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L1/VillageTerrainRevealDescriptionTranslatorTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L1/SultanRegionRevealDescriptionTranslatorTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/VillageWallDescriptionTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/VillageTerrainRevealDescriptionTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/SultanRegionRevealDescriptionTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+    "docs/reports/2026-05-17-historic-string-expander-owner-plan.md",
+]
+HSE_VILLAGE_CONVERSATION_ROUTE_EVIDENCE: Final = [
+    "Mods/QudJP/Assemblies/src/Patches/VillageLeaderConversationTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/VillagePetConversationTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L1/VillageLeaderConversationTranslatorTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L1/VillagePetConversationTranslatorTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/VillageLeaderConversationTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/VillagePetConversationTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+    "docs/reports/2026-05-17-historic-string-expander-owner-plan.md",
+]
+HSE_VILLAGE_BUILDZONE_ROUTE_EVIDENCE: Final = [
+    *HSE_VILLAGE_CONVERSATION_ROUTE_EVIDENCE,
+    "Mods/QudJP/Assemblies/src/Patches/AddVillageGospelsTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/GenerateVillageEraHistoryTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/HistoricNarrativeTranslationPatchesTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/HistoricNarrativeTranslationPatchesResolutionTests.cs",
+    (
+        "static producer evidence: Village/VillageCoda.BuildZone HSE pet origin-story "
+        "flows into AddVillagerConversation and is covered by the pet conversation owner route"
+    ),
+]
+HSE_DIMENSION_PSYCHIC_ROUTE_EVIDENCE: Final = [
+    "Mods/QudJP/Assemblies/src/Patches/DimensionManagerGeneratedNameTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/DimensionManagerExtraDimensionNameTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/PsychicHunterGeneratedTitleTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L1/DimensionManagerGeneratedNameTranslatorTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L1/PsychicHunterGeneratedTitleTranslatorTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/DimensionManagerGeneratedNameTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/PsychicHunterGeneratedTitleTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+    "docs/reports/2026-05-17-historic-string-expander-owner-plan.md",
+]
+HSE_MISC_OWNER_ROUTE_EVIDENCE: Final = [
+    "Mods/QudJP/Assemblies/src/Patches/BroadcastPowerOcclusionReasonTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/MerchantAdvertisementTextTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/TempleDedicationPlaqueInscriptionTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/SettlementFarmNameTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/BroadcastPowerOcclusionReasonTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/MerchantAdvertisementTextTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/TempleDedicationPlaqueInscriptionTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/SettlementFarmNameTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+    "docs/reports/2026-05-17-historic-string-expander-owner-plan.md",
+]
+HSE_FRIEND_OR_FOE_REASON_ROUTE_EVIDENCE: Final = [
+    "Mods/QudJP/Assemblies/src/Patches/FriendOrFoeReasonTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/FriendOrFoeReasonTranslator.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L1/FriendOrFoeReasonTranslatorTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/FriendOrFoeReasonTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+    ISSUE737_HSE_AUDIT_EVIDENCE,
+]
+HSE_SULTANATE_YEAR_NAME_ROUTE_EVIDENCE: Final = [
+    "Mods/QudJP/Assemblies/src/Patches/SultanateYearNameTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Translation/HistoricSpiceGeneratedNameTranslator.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L1/HistoricSpiceGeneratedNameTranslatorTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/SultanateYearNameTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+    ISSUE737_HSE_AUDIT_EVIDENCE,
+]
+HSE_IMPORTED_FOOD_DRINK_FACTION_NAME_ROUTE_EVIDENCE: Final = [
+    "Mods/QudJP/Assemblies/src/Patches/ImportedFoodOrDrinkFactionNameTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/ImportedFoodOrDrinkFactionNameTranslator.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L1/ImportedFoodOrDrinkFactionNameTranslatorTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/ImportedFoodOrDrinkFactionNameTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+    "Mods/QudJP/Localization/Dictionaries/Scoped/historyspice-common.ja.json",
+    "Mods/QudJP/Localization/Dictionaries/world-gospels.ja.json",
+    ISSUE737_HSE_AUDIT_EVIDENCE,
+]
+HSE_HISTORY_ITEM_NAME_ROUTE_EVIDENCE: Final = [
+    "Mods/QudJP/Assemblies/src/Patches/QudHistoryHelpersItemNameTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Translation/HistoricSpiceGeneratedNameTranslator.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L1/HistoricSpiceGeneratedNameTranslatorTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/QudHistoryHelpersItemNameTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+    "Mods/QudJP/Localization/Dictionaries/Scoped/historyspice-common.ja.json",
+    "Mods/QudJP/Localization/Dictionaries/world-gospels.ja.json",
+    ISSUE737_HSE_AUDIT_EVIDENCE,
+    "source helper coverage for generated blessing item-name frames; suffix pseudo-names remain pass-through",
+]
+HSE_VILLAGE_PROVERB_ROUTE_EVIDENCE: Final = [
+    "Mods/QudJP/Assemblies/src/Patches/AddVillageGospelsTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Translation/HistoricNarrativeDictionaryWalker.cs",
+    "Mods/QudJP/Assemblies/src/Translation/HistoricNarrativeTextTranslator.cs",
+    "Mods/QudJP/Assemblies/src/Translation/JournalPatternTranslator.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L1/JournalPatternTranslatorTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/HistoricNarrativeTranslationPatchesTests.cs",
+    "Mods/QudJP/Localization/Dictionaries/annals-patterns.ja.json",
+    ISSUE737_HSE_AUDIT_EVIDENCE,
+    (
+        "storage-route coverage for VillageProverb proverb entity property plus focused "
+        "proverbs/proverbsCoda template patterns"
+    ),
+]
+HSE_VILLAGE_CODA_END_EVENT_ROUTE_EVIDENCE: Final = [
+    "Mods/QudJP/Assemblies/src/Patches/JournalEntryDisplayTextPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/JournalTextTranslator.cs",
+    "Mods/QudJP/Assemblies/src/Translation/JournalPatternTranslator.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/JournalEntryDisplayTextPatchTests.cs",
+    "Mods/QudJP/Localization/Dictionaries/annals-patterns.ja.json",
+    "Mods/QudJP/Localization/Dictionaries/Scoped/historyspice-common.ja.json",
+    "scripts/_artifacts/annals/candidates_pending.json",
+    ISSUE737_HSE_AUDIT_EVIDENCE,
+    (
+        "display-route coverage for VillageCoda.GenerateEndEvent JournalSultanNote "
+        "coda branch prose plus focused annals patterns"
+    ),
+]
+HSE_QUD_HISTORY_FACTORY_GENERATED_NAME_ROUTE_EVIDENCE: Final = [
+    "Mods/QudJP/Assemblies/src/Patches/QudHistoryFactoryNameRuinsSiteTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/QudHistoryFactoryGenerateCultNameTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Translation/HistoricSpiceGeneratedNameTranslator.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L1/HistoricSpiceGeneratedNameTranslatorTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/QudHistoryFactoryGeneratedNameTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+    "Mods/QudJP/Localization/Dictionaries/Scoped/historyspice-common.ja.json",
+    "Mods/QudJP/Localization/Dictionaries/world-gospels.ja.json",
+    ISSUE737_HSE_AUDIT_EVIDENCE,
+    (
+        "QudHistoryFactory storage/source-owner coverage for generated ruins-site modifier "
+        "names and sultan cultName frames; proper roots and some forgotten ruins remain pass-through"
+    ),
+]
+HSE_NAMESTYLE_XML_ROUTE_EVIDENCE: Final = [
+    "Mods/QudJP/Localization/Naming.jp.xml",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L1/NamingXmlTests.cs",
+    "docs/reports/2026-05-17-historic-string-expander-owner-plan.md",
+]
 TEXT_CONSTRUCTION_CLOSURE_OVERLAY: Final[dict[str, ClosureOverlayEntry]] = {
     "XRL.World.Conversations.Parts/WaterRitual.cs::WaterRitual.HandleEvent(DisplayTextEvent)": {
         "closure_status": "covered_by_owner_route",
@@ -358,28 +681,408 @@ TEXT_CONSTRUCTION_CLOSURE_OVERLAY: Final[dict[str, ClosureOverlayEntry]] = {
         ],
     },
     "XRL.World.ZoneBuilders/Village.cs::Village.BuildZone(Zone)": {
-        "closure_status": "partial_coverage",
-        "closure_evidence": [
-            "Mods/QudJP/Assemblies/src/Patches/AddVillageGospelsTranslationPatch.cs",
-            "Mods/QudJP/Assemblies/src/Patches/GenerateVillageEraHistoryTranslationPatch.cs",
-            "Mods/QudJP/Assemblies/QudJP.Tests/L2/HistoricNarrativeTranslationPatchesTests.cs",
-        ],
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": HSE_VILLAGE_BUILDZONE_ROUTE_EVIDENCE,
     },
     "XRL.World.ZoneBuilders/VillageCoda.cs::VillageCoda.BuildZone(Zone)": {
-        "closure_status": "partial_coverage",
-        "closure_evidence": [
-            "Mods/QudJP/Assemblies/src/Patches/AddVillageGospelsTranslationPatch.cs",
-            "Mods/QudJP/Assemblies/src/Patches/GenerateVillageEraHistoryTranslationPatch.cs",
-            "Mods/QudJP/Assemblies/QudJP.Tests/L2/HistoricNarrativeTranslationPatchesTests.cs",
-        ],
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": HSE_VILLAGE_BUILDZONE_ROUTE_EVIDENCE,
+    },
+    "XRL.World.ZoneBuilders/VillageCoda.cs::VillageCoda.GenerateEndEvent()": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": HSE_VILLAGE_CODA_END_EVENT_ROUTE_EVIDENCE,
     },
     "XRL.World/ZoneManager.cs::ZoneManager.SetActiveZone(Zone)": {
-        "closure_status": "partial_coverage",
+        "closure_status": "covered_by_owner_route",
         "closure_evidence": [
+            *ISSUE737_JOURNAL_ROUTE_EVIDENCE,
             "Mods/QudJP/Assemblies/QudJP.Tests/L2/ZoneManagerSetActiveZoneTranslationPatchTests.cs",
+            "static producer evidence: finite SetActiveZone journey AddAccomplishment branches "
+            "are covered by journal patterns",
             "docs/reports/2026-05-15-issue-576-static-producer-runtime-deferrals.md",
             "docs/reports/2026-05-15-static-uncovered-coverage-triage.md",
         ],
+    },
+    "XRL.World.Parts/Campfire.cs::Campfire.CookFromIngredients(bool)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE737_COOKING_ROUTE_EVIDENCE,
+    },
+    "XRL.World.Parts/Campfire.cs::Campfire.RollIngredients(int,IReadOnlyList<GameObject>,System.Random)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE737_COOKING_ROUTE_EVIDENCE,
+    },
+    "XRL.World.Parts/Campfire.cs::Campfire.CookFromRecipe()": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE737_COOK_RECIPE_PRESET_ROUTE_EVIDENCE,
+    },
+    "XRL.World.Parts/Campfire.cs::Campfire.CookPresetMeal(int)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE737_COOK_RECIPE_PRESET_ROUTE_EVIDENCE,
+    },
+    "XRL.World.Parts/Campfire.cs::Campfire.DescribeMeal(IReadOnlyList<GameObject>)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE737_COOKING_ROUTE_EVIDENCE,
+    },
+    (
+        "Qud.API/JournalAPI.cs::JournalAPI.AddAccomplishment("
+        "string,string,string,string,string,MuralCategory,MuralWeight,string,long,bool)"
+    ): {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE737_JOURNAL_ROUTE_EVIDENCE,
+    },
+    (
+        "XRL.World/Reputation.cs::Reputation.Modify("
+        "Faction,int,string,StringBuilder,string,bool,bool,bool,bool)"
+    ): {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": HSE_JOURNAL_ACCOMPLISHMENT_ROUTE_EVIDENCE,
+    },
+    "XRL.World.Parts/GivesRep.cs::GivesRep.HandleEvent(BeforeDeathRemovalEvent)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": HSE_JOURNAL_ACCOMPLISHMENT_ROUTE_EVIDENCE,
+    },
+    "XRL.World.Parts/OpeningStory.cs::OpeningStory.AddAccomplishment(string)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": HSE_JOURNAL_STORY_ROUTE_EVIDENCE,
+    },
+    "XRL.World.Parts/AnimatorSpray.cs::AnimatorSpray.HandleEvent(InventoryActionEvent)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": [
+            *HSE_JOURNAL_STORY_ROUTE_EVIDENCE,
+            "Mods/QudJP/Assemblies/src/Patches/SingleCallsiteOwnerPopupTranslationPatch.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2/SingleCallsiteOwnerPopupTranslationPatchTests.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+        ],
+    },
+    "XRL.World.Parts/Body.cs::Body.Dismember(BodyPart,GameObject,IInventory,bool,bool,IEvent)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": [
+            *HSE_JOURNAL_STORY_ROUTE_EVIDENCE,
+            "Mods/QudJP/Assemblies/src/Patches/BodyTranslationPatch.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+        ],
+    },
+    "XRL.UI/StatusScreen.cs::StatusScreen.BuyRandomMutation(GameObject)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": [
+            *HSE_JOURNAL_STORY_ROUTE_EVIDENCE,
+            "Mods/QudJP/Assemblies/src/Patches/StatusScreenPopupTranslationPatch.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2/StatusScreenPopupTranslationPatchTests.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+        ],
+    },
+    "XRL.World.Parts/VillageSurface.cs::VillageSurface.CheckReveal()": {
+        "closure_status": "partial_coverage",
+        "closure_evidence": [
+            *HSE_JOURNAL_STORY_ROUTE_EVIDENCE,
+            "remaining popup owner route requires VillageSurface.CheckReveal-specific runtime or patch evidence",
+        ],
+    },
+    "XRL.World.Parts/GenerateFriendOrFoe.cs::GenerateFriendOrFoe.replacePlaceholders(string)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": HSE_FRIEND_OR_FOE_REASON_ROUTE_EVIDENCE,
+    },
+    "XRL.World.Parts/GenerateFriendOrFoe_HEB.cs::GenerateFriendOrFoe_HEB.replacePlaceholders(string)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": HSE_FRIEND_OR_FOE_REASON_ROUTE_EVIDENCE,
+    },
+    "XRL.World.Parts/Gossip.cs::Gossip.GenerateGossip_OneFaction(string)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": HSE_JOURNAL_OBSERVATION_ROUTE_EVIDENCE,
+    },
+    "XRL.World.Parts/Gossip.cs::Gossip.GenerateGossip_TwoFactions(string,string)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": HSE_JOURNAL_OBSERVATION_ROUTE_EVIDENCE,
+    },
+    "XRL.Language/TextFilters.cs::TextFilters.Angry(string)": {
+        "closure_status": "runtime_required",
+        "closure_evidence": ISSUE726_TEXT_FILTER_ROUTE_EVIDENCE,
+    },
+    "XRL.Language/TextFilters.cs::TextFilters.Lallated(string,string)": {
+        "closure_status": "runtime_required",
+        "closure_evidence": ISSUE726_TEXT_FILTER_ROUTE_EVIDENCE,
+    },
+    (
+        "XRL.World/RelicGenerator.cs::RelicGenerator.GenerateSpindleNegotiationRelic("
+        "string,string,string,string,int)"
+    ): {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": HSE_RELIC_ROUTE_EVIDENCE,
+    },
+    (
+        "XRL.World/RelicGenerator.cs::RelicGenerator.SelectElement("
+        "GameObject,GameObject,GameObject,GameObject)"
+    ): {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": HSE_RELIC_ROUTE_EVIDENCE,
+    },
+    "XRL.Annals/QudHistoryHelpers.cs::QudHistoryHelpers.GenerateSultanateYearName()": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": HSE_SULTANATE_YEAR_NAME_ROUTE_EVIDENCE,
+    },
+    "XRL.Annals/ImportedFoodorDrink.cs::ImportedFoodorDrink.generateFactionName(string)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": HSE_IMPORTED_FOOD_DRINK_FACTION_NAME_ROUTE_EVIDENCE,
+    },
+    "XRL.Annals/QudHistoryHelpers.cs::QudHistoryHelpers.NameItem(string,History,HistoricEntity)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": HSE_HISTORY_ITEM_NAME_ROUTE_EVIDENCE,
+    },
+    "XRL.Annals/QudHistoryHelpers.cs::QudHistoryHelpers.NameItemNounRoot(string,History,HistoricEntity)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": HSE_HISTORY_ITEM_NAME_ROUTE_EVIDENCE,
+    },
+    "XRL.Annals/QudHistoryHelpers.cs::QudHistoryHelpers.NameItemAdjRoot(string,History,HistoricEntity)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": HSE_HISTORY_ITEM_NAME_ROUTE_EVIDENCE,
+    },
+    "XRL.Annals/VillageProverb.cs::VillageProverb.Generate()": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": HSE_VILLAGE_PROVERB_ROUTE_EVIDENCE,
+    },
+    (
+        "XRL.Annals/QudHistoryFactory.cs::"
+        "QudHistoryFactory.NameRuinsSite(History,out bool,out string)"
+    ): {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": HSE_QUD_HISTORY_FACTORY_GENERATED_NAME_ROUTE_EVIDENCE,
+    },
+    (
+        "XRL.Annals/QudHistoryFactory.cs::"
+        "QudHistoryFactory.GenerateCultName(HistoricEntity,History)"
+    ): {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": HSE_QUD_HISTORY_FACTORY_GENERATED_NAME_ROUTE_EVIDENCE,
+    },
+    (
+        "XRL.World.Parts/LocateRelicQuestManager.cs::"
+        "LocateRelicQuestManagerSystem.CheckCompleted(GameObject)"
+    ): {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": HSE_DYNAMIC_QUEST_COMPLETION_ROUTE_EVIDENCE,
+    },
+    (
+        "XRL.World.ZoneBuilders/FindASiteDynamicQuestManager.cs::"
+        "FindASiteDynamicQuestManagerSystem.CheckCompleted(Zone,JournalMapNote)"
+    ): {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": HSE_DYNAMIC_QUEST_COMPLETION_ROUTE_EVIDENCE,
+    },
+    (
+        "XRL.World.ZoneBuilders/FindASpecificItemDynamicQuestManager.cs::"
+        "FindASpecificItemDynamicQuestManagerSystem.CheckCompleted(GameObject)"
+    ): {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": HSE_DYNAMIC_QUEST_COMPLETION_ROUTE_EVIDENCE,
+    },
+    (
+        "XRL.World.ZoneBuilders/InteractWithAnObjectDynamicQuestManager.cs::"
+        "System.FinishEntry(QuestEntry,GameObject)"
+    ): {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": HSE_DYNAMIC_QUEST_COMPLETION_ROUTE_EVIDENCE,
+    },
+    (
+        "XRL.World.ZoneBuilders/FindASpecificItemDynamicQuestTemplate_FabricateQuestGiver.cs::"
+        "FindASpecificItemDynamicQuestTemplate_FabricateQuestGiver.addQuestConversationToGiver("
+        "GameObject,Quest,GameObject)"
+    ): {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": HSE_DYNAMIC_QUEST_ROUTE_EVIDENCE,
+    },
+    (
+        "XRL.World.ZoneBuilders/FindASpecificSiteDynamicQuestTemplate_FabricateQuestGiver.cs::"
+        "FindASpecificSiteDynamicQuestTemplate_FabricateQuestGiver.addQuestConversationToGiver(GameObject,Quest)"
+    ): {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": HSE_DYNAMIC_QUEST_ROUTE_EVIDENCE,
+    },
+    (
+        "XRL.World.ZoneBuilders/InteractWithAnObjectDynamicQuestTemplate_FabricateQuestGiver.cs::"
+        "InteractWithAnObjectDynamicQuestTemplate_FabricateQuestGiver.addQuestConversationToGiver("
+        "GameObject,Quest,GameObject)"
+    ): {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": HSE_DYNAMIC_QUEST_ROUTE_EVIDENCE,
+    },
+    (
+        "XRL.World/DynamicQuestConversationHelper.cs::DynamicQuestConversationHelper."
+        "appendQuestCompletionSequence("
+        "ConversationXMLBlueprint,Quest,ConversationXMLBlueprint,string,string,"
+        "Action<ConversationXMLBlueprint>,Action<ConversationXMLBlueprint>,Action<ConversationXMLBlueprint>,"
+        "Action<ConversationXMLBlueprint>,Action<ConversationXMLBlueprint>)"
+    ): {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": HSE_DYNAMIC_QUEST_ROUTE_EVIDENCE,
+    },
+    (
+        "XRL.World.Parts/DynamicQuestSignpostConversation.cs::"
+        "DynamicQuestSignpostConversation.HandleEvent(BeforeConversationEvent)"
+    ): {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": HSE_DYNAMIC_QUEST_ROUTE_EVIDENCE,
+    },
+    (
+        "XRL.World.ZoneBuilders/FindASpecificItemDynamicQuestTemplate_FabricateQuestGiver.cs::"
+        "FindASpecificItemDynamicQuestTemplate_FabricateQuestGiver.fabricateFindASpecificItemQuest("
+        "GameObject,string)"
+    ): {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": HSE_DYNAMIC_QUEST_ROUTE_EVIDENCE,
+    },
+    (
+        "XRL.World.ZoneBuilders/InteractWithAnObjectDynamicQuestTemplate_FabricateQuestGiver.cs::"
+        "InteractWithAnObjectDynamicQuestTemplate_FabricateQuestGiver.fabricateInteractWithAnObjectQuest("
+        "GameObject,string)"
+    ): {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": HSE_DYNAMIC_QUEST_ROUTE_EVIDENCE,
+    },
+    "XRL.World/VillageDynamicQuestContext.cs::VillageDynamicQuestContext.getQuestItemNameMutation(string)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": HSE_DYNAMIC_QUEST_ROUTE_EVIDENCE,
+    },
+    (
+        "XRL.World.Skills.Cooking/CookingRecipe.cs::"
+        "CookingRecipe.GenerateRecipeName(List<string>,List<string>,string)"
+    ): {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": HSE_COOKING_DISPLAY_ROUTE_EVIDENCE,
+    },
+    "XRL.World.Parts/Cookbook.cs::Cookbook.GenerateCookbook()": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": HSE_COOKING_DISPLAY_ROUTE_EVIDENCE,
+    },
+    "XRL.World.Parts/EaterCryptPlaque.cs::EaterCryptPlaque.GeneratePlaque()": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": HSE_MEMORIAL_ROUTE_EVIDENCE,
+    },
+    "XRL.World.Parts/EaterUrn.cs::EaterUrn.GenerateUrn()": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": HSE_MEMORIAL_ROUTE_EVIDENCE,
+    },
+    "XRL.World.Parts/RachelsTombstone.cs::RachelsTombstone.GenerateTombstone()": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": HSE_MEMORIAL_ROUTE_EVIDENCE,
+    },
+    (
+        "XRL.World/RelicGenerator.cs::RelicGenerator.GenerateRelic("
+        "string,int,HistoricEntitySnapshot,List<string>,Dictionary<string,List<string>>,string,string,string)"
+    ): {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": HSE_RELIC_ROUTE_EVIDENCE,
+    },
+    (
+        "XRL.World/RelicGenerator.cs::RelicGenerator.GenerateRelicName("
+        "string,HistoricEntitySnapshot,string,out string)"
+    ): {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": HSE_RELIC_ROUTE_EVIDENCE,
+    },
+    (
+        "XRL.World/RelicGenerator.cs::RelicGenerator.GenerateRelicNameByRegion("
+        "string,HistoricEntitySnapshot,string,out string)"
+    ): {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": HSE_RELIC_ROUTE_EVIDENCE,
+    },
+    (
+        "XRL.World.Capabilities/ItemNaming.cs::ItemNaming.GenerateRelicStyleName("
+        "GameObject,GameObject,GameObject,GameObject,string,ref string,ref string)"
+    ): {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": HSE_RELIC_ROUTE_EVIDENCE,
+    },
+    (
+        "XRL.World.Capabilities/ItemNaming.cs::ItemNaming.NameItem("
+        "GameObject,GameObject,string,string,string,string,bool,bool,GameObject,GameObject,string,bool,int,bool)"
+    ): {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": HSE_RELIC_ROUTE_EVIDENCE,
+    },
+    "XRL.World.Parts/RandomAltarBaetyl.cs::RandomAltarBaetyl.GenerateItem(string,int,int)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": HSE_RELIC_ROUTE_EVIDENCE,
+    },
+    "XRL.World/Faction.cs::Faction.GenerateHeirloom(string)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": HSE_RELIC_ROUTE_EVIDENCE,
+    },
+    "XRL.World.Parts/VillageTerrain.cs::VillageTerrain.FireEvent(Event)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": HSE_VILLAGE_DESCRIPTION_ROUTE_EVIDENCE,
+    },
+    "XRL.World.ZoneBuilders/VillageBase.cs::VillageBase.getAVillageCanvas()": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": HSE_VILLAGE_DESCRIPTION_ROUTE_EVIDENCE,
+    },
+    "XRL.World.ZoneBuilders/VillageCodaBase.cs::VillageCodaBase.getAVillageCanvas()": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": HSE_VILLAGE_DESCRIPTION_ROUTE_EVIDENCE,
+    },
+    "XRL.World.ZoneBuilders/Village.cs::Village.generateWarden(GameObject,bool)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": HSE_VILLAGE_CONVERSATION_ROUTE_EVIDENCE,
+    },
+    "XRL.World.ZoneBuilders/VillageCoda.cs::VillageCoda.generateWarden(GameObject,bool)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": HSE_VILLAGE_CONVERSATION_ROUTE_EVIDENCE,
+    },
+    "XRL.World.ZoneBuilders/Village.cs::Village.generateMayor(GameObject,string,bool)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": HSE_VILLAGE_CONVERSATION_ROUTE_EVIDENCE,
+    },
+    "XRL.World.ZoneBuilders/VillageCoda.cs::VillageCoda.generateMayor(GameObject,string,bool)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": HSE_VILLAGE_CONVERSATION_ROUTE_EVIDENCE,
+    },
+    "XRL.World.Encounters/DimensionManager.cs::DimensionManager.InitializeFaction()": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": HSE_DIMENSION_PSYCHIC_ROUTE_EVIDENCE,
+    },
+    "XRL.World.Encounters/DimensionManager.cs::DimensionManager.GenerateMoreDimensions()": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": HSE_DIMENSION_PSYCHIC_ROUTE_EVIDENCE,
+    },
+    "XRL/PsychicHunterSystem.cs::PsychicHunterSystem.CreateSeekerHunters(int,Zone)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": HSE_DIMENSION_PSYCHIC_ROUTE_EVIDENCE,
+    },
+    (
+        "XRL/PsychicHunterSystem.cs::PsychicHunterSystem.CreateExtradimensionalSoloHunters("
+        "Zone,int,List<XRL.World.GameObject>,bool,bool,bool,bool)"
+    ): {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": HSE_DIMENSION_PSYCHIC_ROUTE_EVIDENCE,
+    },
+    "XRL/PsychicHunterSystem.cs::PsychicHunterSystem.CreateExtradimensionalSoloDeviant(Zone)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": HSE_DIMENSION_PSYCHIC_ROUTE_EVIDENCE,
+    },
+    "XRL.Names/SettlementNames.cs::SettlementNames.GenerateFarmNameInner(History,string)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": HSE_MISC_OWNER_ROUTE_EVIDENCE,
+    },
+    "XRL.World.Parts/BroadcastPowerReceiver.cs::BroadcastPowerReceiver.HandleEvent(GetShortDescriptionEvent)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": HSE_MISC_OWNER_ROUTE_EVIDENCE,
+    },
+    "XRL.World.Parts/MerchantRevealer.cs::MerchantRevealer.GenerateMerchantLocation()": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": HSE_MISC_OWNER_ROUTE_EVIDENCE,
+    },
+    "XRL.World.Parts/TempleDedicationPlaque.cs::TempleDedicationPlaque.GenerateInscription()": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": HSE_MISC_OWNER_ROUTE_EVIDENCE,
+    },
+    (
+        "XRL.Names/NameStyle.cs::NameStyle.Generate("
+        "GameObject,string,string,string,string,string,string,string,List<string>,string,string,string,"
+        "Dictionary<string,string>,bool,bool,NameStyle,List<NameStyle>,int?,int?,bool?,bool?)"
+    ): {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": HSE_NAMESTYLE_XML_ROUTE_EVIDENCE,
     },
     "XRL.World.Parts/CherubimSpawner.cs::CherubimSpawner.HandleEvent(BeforeObjectCreatedEvent)": {
         "closure_status": "partial_coverage",
@@ -473,30 +1176,20 @@ TEXT_CONSTRUCTION_CLOSURE_OVERLAY: Final[dict[str, ClosureOverlayEntry]] = {
         ],
     },
     "XRL.World.Parts/SultanRegion.cs::SultanRegion.FireEvent(Event)": {
-        "closure_status": "runtime_required",
-        "closure_evidence": [
-            "docs/reports/2026-05-16-issue-711-text-construction-separation.md",
-        ],
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": HSE_VILLAGE_DESCRIPTION_ROUTE_EVIDENCE,
     },
     "XRL.World.Parts/Tombstone.cs::Tombstone.GenerateTombstone()": {
-        "closure_status": "runtime_required",
-        "closure_evidence": [
-            "docs/reports/2026-05-16-issue-711-text-construction-separation.md",
-        ],
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": HSE_MEMORIAL_ROUTE_EVIDENCE,
     },
     "XRL.World.ZoneBuilders/VillageBase.cs::VillageBase.getAVillageWall()": {
-        "closure_status": "likely_true_gap",
-        "closure_evidence": [
-            "docs/reports/2026-05-15-static-uncovered-coverage-triage.md",
-            "docs/reports/2026-05-16-issue-711-text-construction-separation.md",
-        ],
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": HSE_VILLAGE_DESCRIPTION_ROUTE_EVIDENCE,
     },
     "XRL.World.ZoneBuilders/VillageCodaBase.cs::VillageCodaBase.getAVillageWall()": {
-        "closure_status": "likely_true_gap",
-        "closure_evidence": [
-            "docs/reports/2026-05-15-static-uncovered-coverage-triage.md",
-            "docs/reports/2026-05-16-issue-711-text-construction-separation.md",
-        ],
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": HSE_VILLAGE_DESCRIPTION_ROUTE_EVIDENCE,
     },
     "XRL.World.Parts/CherubimSpawner.cs::CherubimSpawner.BestowElement(GameObject,string,bool)": {
         "closure_status": "likely_true_gap",
@@ -653,7 +1346,44 @@ class ClassifiedSurface(TypedDict):
 
 def load_inventory(path: Path) -> TextConstructionInventory:
     """Load a TextConstructionInventory JSON payload."""
-    return cast("TextConstructionInventory", json.loads(path.read_text(encoding="utf-8")))
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    if isinstance(payload, dict) and isinstance(payload.get("families"), list):
+        payload = {
+            **payload,
+            "families": [_normalize_family_payload(family) for family in payload["families"]],
+        }
+    return cast("TextConstructionInventory", payload)
+
+
+def _normalize_family_payload(family: object) -> object:
+    if not isinstance(family, dict):
+        return family
+
+    surface_counts = family.get("surface_counts")
+    callsite_count = family.get("callsite_count")
+    representative_calls = family.get("representative_calls")
+    first_lines = [
+        call["line"]
+        for call in representative_calls
+        if isinstance(call, dict) and isinstance(call.get("line"), int)
+    ] if isinstance(representative_calls, list) else []
+    existing_text_construction_count = family.get("text_construction_count")
+
+    return {
+        **family,
+        "family_id": family.get("family_id", family.get("producer_family_id", "")),
+        "member_signature": family.get("member_signature", family.get("member_name", "")),
+        "text_construction_count": (
+            existing_text_construction_count
+            if isinstance(existing_text_construction_count, int)
+            else callsite_count
+            if isinstance(callsite_count, int)
+            else sum(surface_counts.values()) if isinstance(surface_counts, dict) else 0
+        ),
+        "shape_counts": family.get("shape_counts", {}),
+        "context_counts": family.get("context_counts", {}),
+        "first_lines": family.get("first_lines") or first_lines,
+    }
 
 
 def classify_family(family: TextConstructionFamily) -> ClassifiedSurface:

@@ -2,6 +2,7 @@
 using System.Reflection;
 using System.Runtime.Loader;
 using System.Text.RegularExpressions;
+using HarmonyLib;
 using QudJP.Patches;
 
 namespace QudJP.Tests.L2G;
@@ -259,6 +260,10 @@ public sealed class TargetMethodResolutionTests
     [TestCase(typeof(ZoneManagerSetActiveZoneTranslationPatch), "SetActiveZone", "XRL.World.ZoneManager", "XRL.World.Zone", new[] { "XRL.World.Zone" })]
     [TestCase(typeof(JournalEntryDisplayTextPatch), "GetDisplayText", "Qud.API.IBaseJournalEntry", "System.String", new string[0])]
     [TestCase(typeof(JournalMapNoteDisplayTextPatch), "GetDisplayText", "Qud.API.JournalMapNote", "System.String", new string[0])]
+    [TestCase(typeof(SultanateYearNameTranslationPatch), "GenerateSultanateYearName", "XRL.Annals.QudHistoryHelpers", "System.String", new string[0])]
+    [TestCase(typeof(ImportedFoodOrDrinkFactionNameTranslationPatch), "generateFactionName", "XRL.Annals.ImportedFoodorDrink", "System.String", new[] { "System.String" })]
+    [TestCase(typeof(QudHistoryFactoryNameRuinsSiteTranslationPatch), "NameRuinsSite", "XRL.Annals.QudHistoryFactory", "System.String", new[] { "HistoryKit.History", "System.Boolean&", "System.String&" })]
+    [TestCase(typeof(QudHistoryFactoryGenerateCultNameTranslationPatch), "GenerateCultName", "XRL.Annals.QudHistoryFactory", "System.Void", new[] { "HistoryKit.HistoricEntity", "HistoryKit.History" })]
     [TestCase(typeof(JournalAccomplishmentAddTranslationPatch), "AddAccomplishment", "Qud.API.JournalAPI", "System.Void", new[]
     {
         "System.String",
@@ -455,6 +460,8 @@ public sealed class TargetMethodResolutionTests
     [TestCase(typeof(PhysicsInventoryActionPopupTranslationPatch), "HandleEvent", "XRL.World.Parts.Physics", "System.Boolean", new[] { "XRL.World.InventoryActionEvent" })]
     [TestCase(typeof(BroadcastPowerOcclusionReasonTranslationPatch), "HandleEvent", "XRL.World.Parts.BroadcastPowerReceiver", "System.Boolean", new[] { "XRL.World.GetShortDescriptionEvent" })]
     [TestCase(typeof(CampfireCookFromIngredientsTranslationPatch), "CookFromIngredients", "XRL.World.Parts.Campfire", "System.Boolean", new[] { "System.Boolean" })]
+    [TestCase(typeof(CampfireCookFromRecipeTranslationPatch), "CookFromRecipe", "XRL.World.Parts.Campfire", "System.Boolean", new string[0])]
+    [TestCase(typeof(CampfireCookPresetMealTranslationPatch), "CookPresetMeal", "XRL.World.Parts.Campfire", "System.Boolean", new[] { "System.Int32" })]
     [TestCase(typeof(CampfireRollIngredientsTranslationPatch), "RollIngredients", "XRL.World.Parts.Campfire", "System.String[]", new[] { "System.Int32", "System.Collections.Generic.IReadOnlyList`1[[XRL.World.GameObject]]", "System.Random" })]
     [TestCase(typeof(CampfireDescribeMealTranslationPatch), "DescribeMeal", "XRL.World.Parts.Campfire", "System.String", new[] { "System.Collections.Generic.IReadOnlyList`1[[XRL.World.GameObject]]" })]
     [TestCase(typeof(CookbookDisplayNameTranslationPatch), "GenerateCookbook", "XRL.World.Parts.Cookbook", "System.Void", new string[0])]
@@ -543,6 +550,26 @@ public sealed class TargetMethodResolutionTests
             FullMethodSignature(targetMethod!),
             Is.EqualTo("XRL.World.Parts.Skill.Cudgel_Conk|PerformConk|System.Boolean"));
     }
+
+#if HAS_GAME_DLL
+    [Test]
+    public void ImportedFoodOrDrinkFactionNameTargetMethod_ResolvesExactRuntimeSignature()
+    {
+        var targetType = AccessTools.TypeByName("XRL.Annals.ImportedFoodorDrink");
+        Assert.That(targetType, Is.Not.Null, "Type not found: XRL.Annals.ImportedFoodorDrink");
+
+        var runtimeMethod = AccessTools.Method(targetType, "generateFactionName", new[] { typeof(string) });
+        var targetMethod = InvokeTargetMethod(typeof(ImportedFoodOrDrinkFactionNameTranslationPatch));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(runtimeMethod, Is.Not.Null, "generateFactionName(string) runtime method not found.");
+            Assert.That(runtimeMethod!.ReturnType, Is.EqualTo(typeof(string)));
+            Assert.That(targetMethod, Is.Not.Null, "ImportedFoodOrDrinkFactionNameTranslationPatch TargetMethod returned null.");
+            Assert.That(targetMethod, Is.EqualTo(runtimeMethod));
+        });
+    }
+#endif
 
 #if HAS_GAME_DLL && HAS_TMP
     [Test]
@@ -1453,6 +1480,11 @@ public sealed class TargetMethodResolutionTests
     {
         "XRL.World.Parts.SpindleNegotiation|FireEvent|System.Boolean|XRL.World.Event",
     })]
+    [TestCase(typeof(FriendOrFoeReasonTranslationPatch), new[]
+    {
+        "XRL.World.Parts.GenerateFriendOrFoe|replacePlaceholders|System.String|System.String",
+        "XRL.World.Parts.GenerateFriendOrFoe_HEB|replacePlaceholders|System.String|System.String",
+    })]
     [TestCase(typeof(MutationActionFailureTranslationPatch), new[]
     {
         "XRL.World.Parts.Mutation.ElectricalGeneration|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
@@ -1697,6 +1729,12 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.Capabilities.ItemNaming|Opportunity|System.Boolean|XRL.World.GameObject|XRL.World.GameObject|XRL.World.GameObject|System.String|System.String|System.Int32|System.Int32|System.Int32|System.Int32|System.Boolean",
         "XRL.World.Capabilities.ItemNaming|CheckBestowals|System.Void|XRL.World.GameObject|XRL.World.GameObject|System.String|System.String|XRL.World.GameObject|XRL.World.GameObject|System.String|System.Boolean&|System.Int32&|System.Boolean&",
         "XRL.World.Capabilities.ItemNaming|NameItem|System.Boolean|XRL.World.GameObject|XRL.World.GameObject|System.String|System.String|System.String|System.String|System.Boolean|System.Boolean|XRL.World.GameObject|XRL.World.GameObject|System.String|System.Boolean|System.Int32|System.Boolean",
+    })]
+    [TestCase(typeof(QudHistoryHelpersItemNameTranslationPatch), new[]
+    {
+        "XRL.Annals.QudHistoryHelpers|NameItem|System.String|System.String|HistoryKit.History|HistoryKit.HistoricEntity",
+        "XRL.Annals.QudHistoryHelpers|NameItemNounRoot|System.String|System.String|HistoryKit.History|HistoryKit.HistoricEntity",
+        "XRL.Annals.QudHistoryHelpers|NameItemAdjRoot|System.String|System.String|HistoryKit.History|HistoryKit.HistoricEntity",
     })]
     [TestCase(typeof(CookingEffectTranslationPatch), new[]
     {

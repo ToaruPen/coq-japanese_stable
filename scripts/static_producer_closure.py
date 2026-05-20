@@ -15125,7 +15125,7 @@ COVERED_OWNER_CALLSITES: Final = (
                     "Patch_TranslatesWaterRitualOwnerPopups_WhenOwnerPatched",
                     "Patch_DoesNotTranslateWaterRitualPopup_WhenOwnerAbsent",
                     "Patch_DoesNotRetranslateDirectMarkedBuySecretRevealPopup_WhenOwnerPatched",
-                    "Patch_LeavesRuntimeBuySecretGossipPopupUnchanged_WhenOwnerPatched",
+                    "Patch_LeavesUnknownRuntimeBuySecretGossipPopupUnchanged_WhenOwnerPatched",
                     "nameof(DummyWaterRitualPopupProducerTarget.WaterRitualBuySecretRevealEntry)",
                     "{{G|Tam}} shares a recipe with you.",
                     "{{G|Tam}} shares the location of {{Y|the Rust Wells}}.",

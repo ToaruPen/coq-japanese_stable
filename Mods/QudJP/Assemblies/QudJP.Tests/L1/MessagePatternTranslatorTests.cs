@@ -1728,7 +1728,7 @@ public sealed class MessagePatternTranslatorTests
                 Is.EqualTo("{{W|奇妙な小物}}を受け取った"));
             Assert.That(
                 MessagePatternTranslator.Translate("You receive " + MessageFrameTranslator.MarkDirectTranslation("奇妙な小物") + "!"),
-                Is.EqualTo(MessageFrameTranslator.MarkDirectTranslation("奇妙な小物を受け取った")));
+                Is.EqualTo("奇妙な小物を受け取った"));
         });
     }
 

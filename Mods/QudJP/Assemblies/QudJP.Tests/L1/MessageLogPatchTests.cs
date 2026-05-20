@@ -14,6 +14,7 @@ public sealed class MessageLogPatchTests
         MessageFrameTranslator.ResetForTests();
         MessagePatternTranslator.ResetForTests();
         JournalPatternTranslator.ResetForTests();
+        DynamicTextObservability.ResetForTests();
         SinkObservation.ResetForTests();
     }
 
@@ -23,6 +24,7 @@ public sealed class MessageLogPatchTests
         MessageFrameTranslator.ResetForTests();
         MessagePatternTranslator.ResetForTests();
         JournalPatternTranslator.ResetForTests();
+        DynamicTextObservability.ResetForTests();
         Translator.ResetForTests();
         SinkObservation.ResetForTests();
     }
@@ -151,6 +153,46 @@ public sealed class MessageLogPatchTests
         {
             Assert.That(message, Is.EqualTo(expected));
             Assert.That(result, Is.True);
+        });
+    }
+
+    [Test]
+    public void Prefix_TranslatesCampfirePreserveMessageLogFrameAndPreservesColors()
+    {
+        Translator.SetDictionaryDirectoryForTests(
+            Path.Combine(TestProjectPaths.GetRepositoryRoot(), "Mods", "QudJP", "Localization", "Dictionaries"));
+        const string source =
+            "&yYou preserved:\n\n"
+            + "Some &r生の猪肉&y into 3 serving of 猪肉ジャーキー.\n"
+            + "Some &r生のワーム肉&y into 3 serving of ワームジャーキー.";
+        var message = source;
+
+        var result = MessageLogPatch.Prefix(ref message);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                message,
+                Is.EqualTo(
+                    "&y保存した:\n\n"
+                    + "いくらかの&r生の猪肉&yを3食分の猪肉ジャーキーに保存した。\n"
+                    + "いくらかの&r生のワーム肉&yを3食分のワームジャーキーに保存した。"));
+            Assert.That(result, Is.True);
+            Assert.That(
+                DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                    nameof(MessageLogPatch),
+                    "MessageLog.CampfirePreserve.CampfirePreserveTranslationPatch"),
+                Is.GreaterThan(0));
+            Assert.That(
+                SinkObservation.GetHitCountForTests(
+                    nameof(MessageLogPatch),
+                    nameof(MessageLogPatch),
+                    SinkObservation.ObservationOnlyDetail,
+                    source,
+                    "You preserved:\n\n"
+                    + "Some 生の猪肉 into 3 serving of 猪肉ジャーキー.\n"
+                    + "Some 生のワーム肉 into 3 serving of ワームジャーキー."),
+                Is.EqualTo(0));
         });
     }
 

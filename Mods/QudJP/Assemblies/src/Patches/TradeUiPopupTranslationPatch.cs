@@ -277,6 +277,15 @@ public static class TradeUiPopupTranslationPatch
             return markedText;
         }
 
+        if (CampfirePreserveTranslationPatch.TryTranslateMessageLogMessage(
+                source,
+                Context,
+                "TradeUiPopup.CampfirePreserve",
+                out var campfirePreserveTranslated))
+        {
+            return campfirePreserveTranslated;
+        }
+
         if (TryTranslateTradeUiPopupText(source, out var translated))
         {
             return translated;

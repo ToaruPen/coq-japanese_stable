@@ -209,7 +209,7 @@ internal static class ColorAwareTranslationComposer
             translatedValue,
             spans,
             sourceLength);
-        return RestoreLeadingAmpersandColor(source, restored);
+        return RestoreLeadingInlineColor(source, restored);
     }
 
     internal static IReadOnlyList<ColorSpan> WithoutTrueWholeSourceBoundarySpans(
@@ -344,6 +344,159 @@ internal static class ColorAwareTranslationComposer
         mergedSpans.AddRange(sourceClosings);
         return Restore(visible, NormalizeSpansForRestoreOrder(mergedSpans));
     }
+
+    internal static string InsertQudColorAfterOpeningBoundaryWrappers(string source, string color)
+    {
+        var index = IndexAfterOpeningBoundaryWrappers(source, 0);
+        return source.Substring(0, index) + color + source.Substring(index);
+    }
+
+    internal static string InsertQudColorAtVisibleIndex(string source, int visibleIndex, string color)
+    {
+        var index = SourceIndexAtVisibleIndex(source, visibleIndex);
+        return source.Substring(0, index)
+            + InsertQudColorAfterOpeningBoundaryWrappers(source.Substring(index), color);
+    }
+
+    internal static bool StartsWithQudColorAtVisibleIndex(string source, int visibleIndex)
+    {
+        var index = SourceIndexAtVisibleIndex(source, visibleIndex);
+        index = IndexAfterOpeningBoundaryWrappers(source, index);
+        return index + 1 < source.Length
+            && (source[index] == '&' || source[index] == '^')
+            && IsNonEscapedInlineFormattingCode(source[index], source[index + 1]);
+    }
+
+    internal static bool StartsWithQudTokenAtVisibleIndex(string source, int visibleIndex, string token)
+    {
+        if (string.IsNullOrEmpty(token))
+        {
+            return false;
+        }
+
+        var index = SourceIndexAtVisibleIndex(source, visibleIndex);
+        index = IndexAfterOpeningBoundaryWrappers(source, index);
+        return index <= source.Length - token.Length
+            && string.CompareOrdinal(source, index, token, 0, token.Length) == 0;
+    }
+
+    private static int SourceIndexAtVisibleIndex(string source, int visibleIndex)
+    {
+        var index = 0;
+        var visible = 0;
+        while (index < source.Length && visible < visibleIndex)
+        {
+            if (IsEscapedQudColorToken(source, index))
+            {
+                index += 2;
+                visible++;
+                continue;
+            }
+
+            if (TryAdvanceMarkupToken(source, ref index))
+            {
+                continue;
+            }
+
+            index++;
+            visible++;
+        }
+
+        return index;
+    }
+
+    private static int IndexAfterOpeningBoundaryWrappers(string source, int startIndex)
+    {
+        var index = startIndex;
+        while (index < source.Length)
+        {
+            if (source[index] == '{'
+                && index + 1 < source.Length
+                && source[index + 1] == '{')
+            {
+                var pipeIndex = source.IndexOf('|', index + 2);
+                if (pipeIndex >= 0)
+                {
+                    index = pipeIndex + 1;
+                    continue;
+                }
+            }
+
+            if (source[index] == '<')
+            {
+                var closeIndex = source.IndexOf('>', index + 1);
+                if (closeIndex >= 0
+                    && source.IndexOf("<color=", index, StringComparison.OrdinalIgnoreCase) == index)
+                {
+                    index = closeIndex + 1;
+                    continue;
+                }
+            }
+
+            break;
+        }
+
+        return index;
+    }
+
+    private static bool TryAdvanceMarkupToken(string source, ref int index)
+    {
+        if (IsEscapedQudColorToken(source, index))
+        {
+            return false;
+        }
+
+        if (index + 1 < source.Length
+            && source[index] == '{'
+            && source[index + 1] == '{')
+        {
+            var openPipeIndex = source.IndexOf('|', index + 2);
+            if (openPipeIndex >= 0)
+            {
+                index = openPipeIndex + 1;
+                return true;
+            }
+        }
+
+        if (index + 1 < source.Length
+            && source[index] == '}'
+            && source[index + 1] == '}')
+        {
+            index += 2;
+            return true;
+        }
+
+        if (index + 1 < source.Length
+            && (source[index] == '&' || source[index] == '^')
+            && IsNonEscapedInlineFormattingCode(source[index], source[index + 1]))
+        {
+            index += 2;
+            return true;
+        }
+
+        if (source[index] == '<')
+        {
+            var closeIndex = source.IndexOf('>', index + 1);
+            if (closeIndex >= 0
+                && (source.IndexOf("<color=", index, StringComparison.OrdinalIgnoreCase) == index
+                    || source.IndexOf("</color", index, StringComparison.OrdinalIgnoreCase) == index))
+            {
+                index = closeIndex + 1;
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static bool IsEscapedQudColorToken(string source, int index)
+    {
+        return index + 1 < source.Length
+            && (source[index] == '&' || source[index] == '^')
+            && source[index] == source[index + 1];
+    }
+
+    private static bool IsNonEscapedInlineFormattingCode(char prefix, char character) => character != prefix;
 
     private static List<WholeBoundaryPair> ExtractTrueBoundaryPairs(
         IReadOnlyList<ColorSpan> spans,
@@ -628,31 +781,40 @@ internal static class ColorAwareTranslationComposer
         return false;
     }
 
-    private static string RestoreLeadingAmpersandColor(string? source, string translated)
+    private static string RestoreLeadingInlineColor(string? source, string translated)
     {
-        if (string.IsNullOrEmpty(source)
-            || source!.Length < 2
-            || source[0] != '&'
-            || translated.StartsWith("&", StringComparison.Ordinal))
+        if (!TryGetLeadingInlineFormattingCode(source, out var sourceCode))
         {
             return translated;
         }
 
-        return IsQudAmpersandColor(source[1])
-            ? source.Substring(0, 2) + translated
-            : translated;
+        if (TryGetLeadingInlineFormattingCode(translated, out var translatedCode)
+            && translatedCode[0] == sourceCode[0])
+        {
+            return translated;
+        }
+
+        return InsertQudColorAfterOpeningBoundaryWrappers(translated, sourceCode);
     }
 
-    private static bool IsQudAmpersandColor(char color)
+    private static bool TryGetLeadingInlineFormattingCode(string? source, out string code)
     {
-        return color is 'K' or 'k'
-            or 'R' or 'r'
-            or 'G' or 'g'
-            or 'B' or 'b'
-            or 'C' or 'c'
-            or 'M' or 'm'
-            or 'Y' or 'y'
-            or 'W' or 'w';
+        code = string.Empty;
+        if (string.IsNullOrEmpty(source))
+        {
+            return false;
+        }
+
+        var index = IndexAfterOpeningBoundaryWrappers(source!, 0);
+        if (index + 1 >= source!.Length
+            || (source[index] != '&' && source[index] != '^')
+            || !IsNonEscapedInlineFormattingCode(source[index], source[index + 1]))
+        {
+            return false;
+        }
+
+        code = source.Substring(index, 2);
+        return true;
     }
 
     private static string RestoreWholeBoundaryPairsPreservingTranslatedOwnership(

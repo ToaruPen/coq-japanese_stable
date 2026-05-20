@@ -4975,7 +4975,7 @@
   <object Name="JoppaOven" Inherits="Oven" Replace="true">
     <part Name="Render" DisplayName="粘土オーブン" ColorString="&amp;w" DetailColor="R" RenderString="234" Tile="Items/sw_oven.bmp" Occluding="false" RenderIfDark="true" />
     <part Name="Campfire" PresetMeals="AppleMatz" />
-    <tag Name="PresetMealMessage" Value="Eat fresh apple matz." />
+    <tag Name="PresetMealMessage" Value="新鮮なアップルマッツァを食べる。" />
     <part Name="Description" Short="厚い粘土オーブンのパチパチ音を立てる火から暖かさが放射され、熱々のスターアップル ジャムとトーストしたマッツの香りが漂う。" />
     <tag Name="ExcludeFromDynamicEncounters" />
   </object>
@@ -4984,7 +4984,7 @@
   <object Name="KyakukyaOven" Inherits="Oven" Replace="true">
     <part Name="Render" DisplayName="泥オーブン" ColorString="&amp;w" DetailColor="R" RenderString="234" Tile="Items/sw_oven.bmp" Occluding="false" RenderIfDark="true" />
     <part Name="Campfire" PresetMeals="MushroomCider" />
-    <tag Name="PresetMealMessage" Value="Drink mulled mushroom cider." />
+    <tag Name="PresetMealMessage" Value="温めたマッシュルームサイダーを飲む。" />
     <part Name="Description" Short="丸い泥オーブンのパチパチという火から暖かさが放射され、それとともにホットサイダーと塩漬けキノコの香りが漂う。" />
     <tag Name="ExcludeFromDynamicEncounters" />
   </object>
@@ -4993,7 +4993,7 @@
   <object Name="EzraOven" Inherits="Oven" Replace="true">
     <part Name="Render" DisplayName="粘土オーブン" ColorString="&amp;w" DetailColor="R" RenderString="234" Tile="Items/sw_oven.bmp" Occluding="false" RenderIfDark="true" />
     <part Name="Campfire" PresetMeals="GoatAndSweetLeaf" />
-    <tag Name="PresetMealMessage" Value="Eat goat in sweet leaf." />
+    <tag Name="PresetMealMessage" Value="甘葉包みのヤギ肉を食べる。" />
     <part Name="Description" Short="丸い石窯のパチパチという炎からは暖かさが伝わり、蒸したヤギと甘いバナナの香りが漂う。" />
     <tag Name="ExcludeFromDynamicEncounters" />
   </object>
@@ -5002,7 +5002,7 @@
   <object Name="YdFreeholdOven" Inherits="Oven" Replace="true">
     <part Name="Render" DisplayName="粘土オーブン" ColorString="&amp;w" DetailColor="R" RenderString="234" Tile="Items/sw_oven.bmp" Occluding="false" RenderIfDark="true" />
     <part Name="Campfire" PresetMeals="TongueAndCheek" />
-    <tag Name="PresetMealMessage" Value="Eat some Tongue and Cheek." />
+    <tag Name="PresetMealMessage" Value="タングアンドチークを食べる。" />
     <part Name="Description" Short="丸い土窯のパチパチとはじける火からは暖かさが放射され、発酵した舌と凝固した愛の香りが漂う。" />
     <tag Name="ExcludeFromDynamicEncounters" />
   </object>
@@ -5011,7 +5011,7 @@
   <object Name="MopangoOven" Inherits="Oven" Replace="true">
     <part Name="Render" DisplayName="骨オーブン" ColorString="&amp;Y" DetailColor="R" RenderString="234" Tile="Items/sw_oven.bmp" Occluding="false" RenderIfDark="true" />
     <part Name="Campfire" PresetMeals="BoneBabka" />
-    <tag Name="PresetMealMessage" Value="Eat bone babka." />
+    <tag Name="PresetMealMessage" Value="ボーンバブカを食べる。" />
     <part Name="Description" Short="丸いボーンオーブンのパチパチ音を立てる火から暖かさが放射され、発酵したペストリー、甘いバナナ、温かいスカルの香りが漂う。" />
     <tag Name="ExcludeFromDynamicEncounters" />
   </object>
@@ -5020,7 +5020,7 @@
   <object Name="StiltOven" Inherits="Oven" Replace="true">
     <part Name="Render" DisplayName="石窯" ColorString="&amp;y" DetailColor="R" RenderString="234" Tile="Items/sw_oven.bmp" Occluding="false" RenderIfDark="true" />
     <part Name="Campfire" PresetMeals="HotandSpiny" />
-    <tag Name="PresetMealMessage" Value="Eat some Hot and Spiny." />
+    <tag Name="PresetMealMessage" Value="ホットアンドスパイニーを食べる。" />
     <part Name="Description" Short="明るい石窯のパチパチ音を立てる炎から暖かさが広がり、熱い背骨のフルーツジャムとローストテールの香りが漂う。" />
     <tag Name="ExcludeFromDynamicEncounters" />
   </object>
@@ -5029,7 +5029,7 @@
   <object Name="BeyLahOven" Inherits="Oven" Replace="true">
     <part Name="Render" DisplayName="粘土オーブン" ColorString="&amp;w" DetailColor="R" RenderString="234" Tile="Items/sw_oven.bmp" Occluding="false" RenderIfDark="true" />
     <part Name="Campfire" PresetMeals="MahLahSoup" />
-    <tag Name="PresetMealMessage" Value="Eat mah lah soup." />
+    <tag Name="PresetMealMessage" Value="マーラースープを食べる。" />
     <part Name="Description" Short="厚い粘土オーブンのパチパチ音を立てる火から暖かさが放射され、ラースープと蒸したマッツの香りが漂う。" />
     <tag Name="ExcludeFromDynamicEncounters" />
   </object>
@@ -5038,7 +5038,7 @@
   <object Name="GritGateOven" Inherits="Oven" Replace="true">
     <part Name="Render" DisplayName="電気オーブン" ColorString="&amp;K" DetailColor="R" RenderString="234" Tile="Items/sw_oven.bmp" Occluding="false" RenderIfDark="true" />
     <part Name="Campfire" PresetMeals="ThePorridge" />
-    <tag Name="PresetMealMessage" Value="Eat the Porridge." />
+    <tag Name="PresetMealMessage" Value="粥を食べる。" />
     <tag Name="PointOfInterestKey" Value="GritGateOven" />
     <part Name="Description" Short="暗い電気オーブンのパチパチ音を立てる火から暖かさが放射され、それとともに苦いヤコギと沸騰した血漿の香りが漂う。" />
     <tag Name="ExcludeFromDynamicEncounters" />

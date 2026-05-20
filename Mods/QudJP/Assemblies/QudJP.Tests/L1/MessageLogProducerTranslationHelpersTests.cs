@@ -138,6 +138,66 @@ public sealed class MessageLogProducerTranslationHelpersTests
         });
     }
 
+    [TestCase("Stargazer home")]
+    [TestCase("Stargazerhome")]
+    public void TryTranslateZoneDisplayName_TranslatesCompactHistorySpicePlaceSuffixSegments(string source)
+    {
+        WriteExactDictionary(
+            ("Stargazer", "星見"),
+            ("home", "家"));
+
+        var translated = MessageLogProducerTranslationHelpers.TryTranslateZoneDisplayName(
+            source,
+            "ZoneDisplayNameTranslationPatch",
+            out var result);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.True);
+            Assert.That(result, Is.EqualTo("星見の家"));
+        });
+    }
+
+    [Test]
+    public void TryTranslateZoneDisplayName_DoesNotMatchCompactHistorySpiceSuffixInsideLongerWord()
+    {
+        WriteExactDictionary(
+            ("Stargazer", "星見"),
+            ("home", "家"));
+        const string source = "Stargazerhomestead";
+
+        var translated = MessageLogProducerTranslationHelpers.TryTranslateZoneDisplayName(
+            source,
+            "ZoneDisplayNameTranslationPatch",
+            out var result);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.False);
+            Assert.That(result, Is.EqualTo(source));
+        });
+    }
+
+    [TestCase("Stargazer home", "home")]
+    [TestCase("Stargazer home", "Stargazer")]
+    public void TryTranslateZoneDisplayName_LeavesCompactHistorySpiceSuffixSegmentUnchanged_WhenComponentMissing(
+        string source,
+        string translatedComponent)
+    {
+        WriteExactDictionary((translatedComponent, translatedComponent == "home" ? "家" : "星見"));
+
+        var translated = MessageLogProducerTranslationHelpers.TryTranslateZoneDisplayName(
+            source,
+            "ZoneDisplayNameTranslationPatch",
+            out var result);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.False);
+            Assert.That(result, Is.EqualTo(source));
+        });
+    }
+
     [Test]
     public void TryTranslateZoneDisplayName_TranslatesRuinsTopologyForms()
     {

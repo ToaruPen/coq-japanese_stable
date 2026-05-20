@@ -52,6 +52,10 @@ public static class WaterRitualPopupTranslationPatch
         "^(?<speaker>.+?) shares? an event from the life of a sultan with you\\.\\n\\n\"(?<gospel>.+)\"$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.Singleline);
 
+    private static readonly Regex BuySecretGossipPattern = new(
+        "^(?<speaker>.+?) shares? some gossip with you\\.\\n\\n\"(?<gossip>.+)\"$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.Singleline);
+
     private static readonly Regex ReputationTooLowPattern = new(
         "^You don't have a high enough reputation with (?<faction>.+?)\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
@@ -381,6 +385,12 @@ public static class WaterRitualPopupTranslationPatch
             return true;
         }
 
+        if (TryTranslateBuySecretGossip(source, out translated))
+        {
+            detail = "BuySecretGossip";
+            return true;
+        }
+
         if (TryTranslatePattern(
                 ReputationTooLowPattern,
                 source,
@@ -464,6 +474,81 @@ public static class WaterRitualPopupTranslationPatch
         translated = source;
         detail = string.Empty;
         return false;
+    }
+
+    private static bool TryTranslateBuySecretGossip(string source, out string translated)
+    {
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        var match = BuySecretGossipPattern.Match(stripped);
+        if (!match.Success || !TryTranslateGossipLeadIn(match.Groups["gossip"].Value, out var translatedGossip))
+        {
+            translated = source;
+            return false;
+        }
+
+        var restoredGossip = ColorAwareTranslationComposer.MarkupAwareRestoreCapture(
+            translatedGossip,
+            spans,
+            match.Groups["gossip"]);
+        translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+            $"{Restore(match, spans, "speaker")}が噂を共有してくれた。\n\n\"{restoredGossip}\"",
+            spans,
+            stripped.Length,
+            source);
+        return true;
+    }
+
+    private static bool TryTranslateGossipLeadIn(string source, out string translated)
+    {
+        var marked = MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText);
+        var sourceValue = marked ? markedText : source;
+        if (TryTranslateGossipLeadIn(sourceValue, "Did you hear?", "聞いたか？ ", marked, out translated)
+            || TryTranslateGossipLeadIn(sourceValue, "I heard that", "聞いたところでは、", marked, out translated)
+            || TryTranslateGossipLeadIn(sourceValue, "Someone told me that", "誰かが言っていたが、", marked, out translated)
+            || TryTranslateGossipLeadIn(sourceValue, "Rumor is that", "噂では、", marked, out translated)
+            || TryTranslateGossipLeadIn(sourceValue, "Bird chatter says that", "鳥のさえずりによれば、", marked, out translated))
+        {
+            return true;
+        }
+
+        if (marked)
+        {
+            translated = sourceValue;
+            return true;
+        }
+
+        translated = source;
+        return false;
+    }
+
+    private static bool TryTranslateGossipLeadIn(
+        string source,
+        string leadIn,
+        string translatedLeadIn,
+        bool sourceWasMarked,
+        out string translated)
+    {
+        if (!source.StartsWith(leadIn + " ", StringComparison.Ordinal))
+        {
+            translated = source;
+            return false;
+        }
+
+        var body = source.Substring(leadIn.Length + 1);
+        if (sourceWasMarked)
+        {
+            translated = translatedLeadIn + body;
+            return true;
+        }
+
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(body, out var markedBody))
+        {
+            translated = translatedLeadIn + markedBody;
+            return true;
+        }
+
+        translated = translatedLeadIn + JournalPatternTranslator.Translate(body, Context + ".BuySecretGossip");
+        return true;
     }
 
     private static string TranslateMutationCategory(string category)

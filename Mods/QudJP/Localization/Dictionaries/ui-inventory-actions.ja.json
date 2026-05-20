@@ -33,6 +33,91 @@
       "key": "remove",
       "context": "XRL.World.IInventoryActionsEvent",
       "text": "外す"
+    },
+    {
+      "key": "Eat fresh apple matz.",
+      "context": "XRL.World.IInventoryActionsEvent",
+      "text": "新鮮なアップルマッツァを食べる。"
+    },
+    {
+      "key": "Drink mulled mushroom cider.",
+      "context": "XRL.World.IInventoryActionsEvent",
+      "text": "温めたマッシュルームサイダーを飲む。"
+    },
+    {
+      "key": "Eat goat in sweet leaf.",
+      "context": "XRL.World.IInventoryActionsEvent",
+      "text": "甘葉包みのヤギ肉を食べる。"
+    },
+    {
+      "key": "Eat some Tongue and Cheek.",
+      "context": "XRL.World.IInventoryActionsEvent",
+      "text": "タングアンドチークを食べる。"
+    },
+    {
+      "key": "Eat bone babka.",
+      "context": "XRL.World.IInventoryActionsEvent",
+      "text": "ボーンバブカを食べる。"
+    },
+    {
+      "key": "Eat some Hot and Spiny.",
+      "context": "XRL.World.IInventoryActionsEvent",
+      "text": "ホットアンドスパイニーを食べる。"
+    },
+    {
+      "key": "Eat mah lah soup.",
+      "context": "XRL.World.IInventoryActionsEvent",
+      "text": "マーラースープを食べる。"
+    },
+    {
+      "key": "Eat the Porridge.",
+      "context": "XRL.World.IInventoryActionsEvent",
+      "text": "粥を食べる。"
+    },
+    {
+      "key": "Whip up a meal.",
+      "context": "XRL.World.IInventoryActionsEvent",
+      "text": "手早く食事を作る。"
+    },
+    {
+      "key": "Choose ingredients to cook with.",
+      "context": "XRL.World.IInventoryActionsEvent",
+      "text": "料理に使う材料を選ぶ。"
+    },
+    {
+      "key": "Cook from a recipe.",
+      "context": "XRL.World.IInventoryActionsEvent",
+      "text": "レシピから料理する。"
+    },
+    {
+      "key": "Preserve your fresh foods.",
+      "context": "XRL.World.IInventoryActionsEvent",
+      "text": "新鮮な食材を保存食にする。"
+    },
+    {
+      "key": "Preserve your exotic foods.",
+      "context": "XRL.World.IInventoryActionsEvent",
+      "text": "珍味を保存食にする。"
+    },
+    {
+      "key": "Stop bleeding.",
+      "context": "XRL.World.IInventoryActionsEvent",
+      "text": "出血を止める。"
+    },
+    {
+      "key": "Treat poison.",
+      "context": "XRL.World.IInventoryActionsEvent",
+      "text": "毒を治療する。"
+    },
+    {
+      "key": "Treat illness.",
+      "context": "XRL.World.IInventoryActionsEvent",
+      "text": "病気を治療する。"
+    },
+    {
+      "key": "Treat disease onset.",
+      "context": "XRL.World.IInventoryActionsEvent",
+      "text": "発症前の病を治療する。"
     }
   ]
 }

@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Xml.Linq;
 
 namespace QudJP.Tests.L1;
 
@@ -26,6 +27,23 @@ public sealed class UiDictionaryOwnershipTests
             ("add notes", "メモを追加"),
             ("remove notes", "メモを削除"),
             ("remove", "外す"),
+            ("Eat fresh apple matz.", "新鮮なアップルマッツァを食べる。"),
+            ("Drink mulled mushroom cider.", "温めたマッシュルームサイダーを飲む。"),
+            ("Eat goat in sweet leaf.", "甘葉包みのヤギ肉を食べる。"),
+            ("Eat some Tongue and Cheek.", "タングアンドチークを食べる。"),
+            ("Eat bone babka.", "ボーンバブカを食べる。"),
+            ("Eat some Hot and Spiny.", "ホットアンドスパイニーを食べる。"),
+            ("Eat mah lah soup.", "マーラースープを食べる。"),
+            ("Eat the Porridge.", "粥を食べる。"),
+            ("Whip up a meal.", "手早く食事を作る。"),
+            ("Choose ingredients to cook with.", "料理に使う材料を選ぶ。"),
+            ("Cook from a recipe.", "レシピから料理する。"),
+            ("Preserve your fresh foods.", "新鮮な食材を保存食にする。"),
+            ("Preserve your exotic foods.", "珍味を保存食にする。"),
+            ("Stop bleeding.", "出血を止める。"),
+            ("Treat poison.", "毒を治療する。"),
+            ("Treat illness.", "病気を治療する。"),
+            ("Treat disease onset.", "発症前の病を治療する。"),
         };
         var expectedCommonMenuActionEntries = new[]
         {
@@ -73,6 +91,63 @@ public sealed class UiDictionaryOwnershipTests
         });
     }
 
+    [Test]
+    public void CampfirePresetMealMessages_AreLocalizedAndSinkCovered()
+    {
+        var repositoryRoot = TestProjectPaths.GetRepositoryRoot();
+        var dictionariesRoot = Path.Combine(repositoryRoot, "Mods", "QudJP", "Localization", "Dictionaries");
+        var inventoryActionEntries = LoadEntries(Path.Combine(dictionariesRoot, "ui-inventory-actions.ja.json"));
+
+        var localizedFurniturePath = Path.Combine(
+            repositoryRoot,
+            "Mods",
+            "QudJP",
+            "Localization",
+            "ObjectBlueprints",
+            "Furniture.jp.xml");
+
+        var baseMessages = new[]
+        {
+            "Eat fresh apple matz.",
+            "Drink mulled mushroom cider.",
+            "Eat goat in sweet leaf.",
+            "Eat some Tongue and Cheek.",
+            "Eat bone babka.",
+            "Eat some Hot and Spiny.",
+            "Eat mah lah soup.",
+            "Eat the Porridge.",
+        };
+        var expectedLocalizedMessages = new[]
+        {
+            "新鮮なアップルマッツァを食べる。",
+            "温めたマッシュルームサイダーを飲む。",
+            "甘葉包みのヤギ肉を食べる。",
+            "タングアンドチークを食べる。",
+            "ボーンバブカを食べる。",
+            "ホットアンドスパイニーを食べる。",
+            "マーラースープを食べる。",
+            "粥を食べる。",
+        };
+        var localizedMessages = LoadPresetMealMessages(localizedFurniturePath);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(localizedMessages, Is.Not.Empty, "Furniture.jp.xml should expose preset meal menu messages.");
+            foreach (var message in baseMessages)
+            {
+                Assert.That(
+                    inventoryActionEntries,
+                    Has.Some.Matches<DictionaryEntry>(entry =>
+                        string.Equals(entry.Key, message, StringComparison.Ordinal)
+                        && string.Equals(entry.Context, "XRL.World.IInventoryActionsEvent", StringComparison.Ordinal)),
+                    $"{message} should have an InventoryActionMenu sink fallback.");
+            }
+
+            Assert.That(localizedMessages, Has.Count.EqualTo(baseMessages.Length));
+            Assert.That(localizedMessages, Is.EqualTo(expectedLocalizedMessages));
+        });
+    }
+
     private static IReadOnlyList<DictionaryEntry> LoadEntries(string path)
     {
         using var document = JsonDocument.Parse(File.ReadAllText(path));
@@ -82,6 +157,15 @@ public sealed class UiDictionaryOwnershipTests
                 entry.GetProperty("key").GetString() ?? string.Empty,
                 entry.TryGetProperty("context", out var context) ? context.GetString() ?? string.Empty : string.Empty,
                 entry.GetProperty("text").GetString() ?? string.Empty))
+            .ToArray();
+    }
+
+    private static IReadOnlyList<string> LoadPresetMealMessages(string path)
+    {
+        var document = XDocument.Load(path);
+        return document.Descendants("tag")
+            .Where(static element => string.Equals((string?)element.Attribute("Name"), "PresetMealMessage", StringComparison.Ordinal))
+            .Select(static element => (string?)element.Attribute("Value") ?? string.Empty)
             .ToArray();
     }
 

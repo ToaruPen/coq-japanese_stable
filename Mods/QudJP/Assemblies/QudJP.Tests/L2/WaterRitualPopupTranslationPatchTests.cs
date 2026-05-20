@@ -15,6 +15,7 @@ public sealed class WaterRitualPopupTranslationPatchTests
     public void SetUp()
     {
         LocalizationAssetResolver.SetLocalizationRootForTests(null);
+        JournalPatternTranslator.ResetForTests();
         Translator.ResetForTests();
         RuntimeDiagnostics.SetVerboseProbesEnabledForTests(true);
         DynamicTextObservability.ResetForTests();
@@ -26,6 +27,7 @@ public sealed class WaterRitualPopupTranslationPatchTests
     public void TearDown()
     {
         RuntimeDiagnostics.SetVerboseProbesEnabledForTests(null);
+        JournalPatternTranslator.ResetForTests();
         Translator.ResetForTests();
         LocalizationAssetResolver.SetLocalizationRootForTests(null);
         DynamicTextObservability.ResetForTests();
@@ -392,7 +394,7 @@ public sealed class WaterRitualPopupTranslationPatchTests
                     PopupMessageToShow = source,
                 };
 
-                target.WaterRitualBuySecretRevealEntry();
+                InvokeOwnerMethod(target, nameof(DummyWaterRitualPopupProducerTarget.WaterRitualBuySecretRevealEntry));
 
                 Assert.Multiple(() =>
                 {
@@ -502,7 +504,154 @@ public sealed class WaterRitualPopupTranslationPatchTests
     }
 
     [Test]
-    public void Patch_LeavesRuntimeBuySecretGossipPopupUnchanged_WhenOwnerPatched()
+    public void Patch_TranslatesRuntimeBuySecretGossipPopup_WhenOwnerPatched()
+    {
+        const string popupMethod = nameof(DummyPopupShow.Show);
+        var source =
+            "{{G|Tam}} shares some gossip with you.\n\n\"I heard that some organization repeatedly beat some party at dice.\"";
+
+        LocalizationAssetResolver.SetLocalizationRootForTests(GetLocalizationRoot());
+        JournalPatternTranslator.ResetForTests();
+        try
+        {
+            WithPatchedOwnerAndPopup(
+                nameof(DummyWaterRitualPopupProducerTarget.WaterRitualBuySecretRevealEntry),
+                popupMethod,
+                () =>
+                {
+                    var target = new DummyWaterRitualPopupProducerTarget
+                    {
+                        PopupMethod = popupMethod,
+                        PopupMessageToShow = source,
+                    };
+
+                    InvokeOwnerMethod(target, nameof(DummyWaterRitualPopupProducerTarget.WaterRitualBuySecretRevealEntry));
+
+                    Assert.Multiple(() =>
+                    {
+                        Assert.That(
+                            DummyPopupShow.LastShowMessage,
+                            Is.EqualTo("{{G|Tam}}が噂を共有してくれた。\n\n\"聞いたところでは、ある組織はある一団を何度も賽子で打ち負かした。\""));
+                        Assert.That(HitCount("BuySecretGossip"), Is.EqualTo(1));
+                        Assert.That(HitCount("BuySecretRecipe"), Is.Zero);
+                        Assert.That(HitCount("BuySecretLocation"), Is.Zero);
+                        Assert.That(HitCount("BuySecretSultanEvent"), Is.Zero);
+                    });
+                });
+        }
+        finally
+        {
+            JournalPatternTranslator.ResetForTests();
+            LocalizationAssetResolver.SetLocalizationRootForTests(null);
+        }
+    }
+
+    [Test]
+    public void Patch_StripsDirectMarkedBuySecretGossipLeadInWithoutRetranslatingBody_WhenOwnerPatched()
+    {
+        const string popupMethod = nameof(DummyPopupShow.Show);
+        var source =
+            "{{G|Tam}} shares some gossip with you.\n\n\""
+            + MessageFrameTranslator.DirectTranslationMarker
+            + "I heard that some organization repeatedly beat some party at dice.\"";
+
+        WithPatchedOwnerAndPopup(
+            nameof(DummyWaterRitualPopupProducerTarget.WaterRitualBuySecretRevealEntry),
+            popupMethod,
+            () =>
+            {
+                var target = new DummyWaterRitualPopupProducerTarget
+                {
+                    PopupMethod = popupMethod,
+                    PopupMessageToShow = source,
+                };
+
+                InvokeOwnerMethod(target, nameof(DummyWaterRitualPopupProducerTarget.WaterRitualBuySecretRevealEntry));
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(
+                        DummyPopupShow.LastShowMessage,
+                        Is.EqualTo("{{G|Tam}}が噂を共有してくれた。\n\n\"聞いたところでは、some organization repeatedly beat some party at dice.\""));
+                    Assert.That(HitCount("BuySecretGossip"), Is.EqualTo(1));
+                });
+            });
+    }
+
+    [Test]
+    public void Patch_TranslatesWrappedBuySecretGossipLeadIn_WhenOwnerPatched()
+    {
+        const string popupMethod = nameof(DummyPopupShow.Show);
+        var source =
+            "{{G|Tam}} shares some gossip with you.\n\n\"{{Y|I heard that some organization repeatedly beat some party at dice.}}\"";
+
+        LocalizationAssetResolver.SetLocalizationRootForTests(GetLocalizationRoot());
+        JournalPatternTranslator.ResetForTests();
+        try
+        {
+            WithPatchedOwnerAndPopup(
+                nameof(DummyWaterRitualPopupProducerTarget.WaterRitualBuySecretRevealEntry),
+                popupMethod,
+                () =>
+                {
+                    var target = new DummyWaterRitualPopupProducerTarget
+                    {
+                        PopupMethod = popupMethod,
+                        PopupMessageToShow = source,
+                    };
+
+                    InvokeOwnerMethod(target, nameof(DummyWaterRitualPopupProducerTarget.WaterRitualBuySecretRevealEntry));
+
+                    Assert.Multiple(() =>
+                    {
+                        Assert.That(
+                            DummyPopupShow.LastShowMessage,
+                            Is.EqualTo("{{G|Tam}}が噂を共有してくれた。\n\n\"{{Y|聞いたところでは、ある組織はある一団を何度も賽子で打ち負かした。}}\""));
+                        Assert.That(HitCount("BuySecretGossip"), Is.EqualTo(1));
+                    });
+                });
+        }
+        finally
+        {
+            JournalPatternTranslator.ResetForTests();
+            LocalizationAssetResolver.SetLocalizationRootForTests(null);
+        }
+    }
+
+    [Test]
+    public void Patch_StripsDirectMarkedUnknownBuySecretGossipWithoutRetranslatingBody_WhenOwnerPatched()
+    {
+        const string popupMethod = nameof(DummyPopupShow.Show);
+        var source =
+            "{{G|Tam}} shares some gossip with you.\n\n\""
+            + MessageFrameTranslator.DirectTranslationMarker
+            + "Listen well. A ruin lies beneath the dunes.\"";
+
+        WithPatchedOwnerAndPopup(
+            nameof(DummyWaterRitualPopupProducerTarget.WaterRitualBuySecretRevealEntry),
+            popupMethod,
+            () =>
+            {
+                var target = new DummyWaterRitualPopupProducerTarget
+                {
+                    PopupMethod = popupMethod,
+                    PopupMessageToShow = source,
+                };
+
+                InvokeOwnerMethod(target, nameof(DummyWaterRitualPopupProducerTarget.WaterRitualBuySecretRevealEntry));
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(
+                        DummyPopupShow.LastShowMessage,
+                        Is.EqualTo("{{G|Tam}}が噂を共有してくれた。\n\n\"Listen well. A ruin lies beneath the dunes.\""));
+                    Assert.That(HitCount("BuySecretGossip"), Is.EqualTo(1));
+                });
+            });
+    }
+
+    [Test]
+    public void Patch_LeavesUnknownRuntimeBuySecretGossipPopupUnchanged_WhenOwnerPatched()
     {
         const string popupMethod = nameof(DummyPopupShow.Show);
         const string source = "{{G|Tam}} shares some gossip with you.\n\n\"Listen well. A ruin lies beneath the dunes.\"";
@@ -518,14 +667,12 @@ public sealed class WaterRitualPopupTranslationPatchTests
                     PopupMessageToShow = source,
                 };
 
-                target.WaterRitualBuySecretRevealEntry();
+                InvokeOwnerMethod(target, nameof(DummyWaterRitualPopupProducerTarget.WaterRitualBuySecretRevealEntry));
 
                 Assert.Multiple(() =>
                 {
                     Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(source));
-                    Assert.That(HitCount("BuySecretRecipe"), Is.Zero);
-                    Assert.That(HitCount("BuySecretLocation"), Is.Zero);
-                    Assert.That(HitCount("BuySecretSultanEvent"), Is.Zero);
+                    Assert.That(HitCount("BuySecretGossip"), Is.Zero);
                 });
             });
     }
@@ -727,6 +874,24 @@ public sealed class WaterRitualPopupTranslationPatchTests
                    methodName,
                    BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance)
                ?? throw new InvalidOperationException($"Method not found: {type.FullName}.{methodName}");
+    }
+
+    private static string GetLocalizationRoot()
+    {
+        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
+        while (directory is not null)
+        {
+            var candidate = Path.Combine(directory.FullName, "Localization");
+            if (Directory.Exists(candidate))
+            {
+                return candidate;
+            }
+
+            directory = directory.Parent;
+        }
+
+        throw new DirectoryNotFoundException(
+            $"Localization directory not found from test directory: {TestContext.CurrentContext.TestDirectory}");
     }
 
     private sealed class DummyWaterRitualPopupProducerTarget

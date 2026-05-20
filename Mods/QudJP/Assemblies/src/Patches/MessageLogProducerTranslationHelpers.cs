@@ -66,6 +66,11 @@ internal static class MessageLogProducerTranslationHelpers
         "reach",
     };
 
+    private static readonly HashSet<string> CompactHistorySpicePlaceSuffixes = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+    {
+        "home",
+    };
+
     private static readonly HashSet<string> FixedBiomeNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
     {
         "slime patch",
@@ -391,6 +396,11 @@ internal static class MessageLogProducerTranslationHelpers
             return true;
         }
 
+        if (TryTranslateCompactHistorySpicePlaceSuffixSegment(source, out translated))
+        {
+            return true;
+        }
+
         if (TryTranslateBiomeAdjectiveSegment(source, out translated))
         {
             return true;
@@ -475,6 +485,46 @@ internal static class MessageLogProducerTranslationHelpers
 
         translated = TranslateZoneSubsegment(root) + translatedSuffix;
         return true;
+    }
+
+    private static bool TryTranslateCompactHistorySpicePlaceSuffixSegment(string source, out string translated)
+    {
+        if (!TrySplitCompactHistorySpicePlaceSuffix(source, out var root, out var suffix)
+            || !TryTranslateZoneNameComponent(root, out var translatedRoot)
+            || !TryTranslateZoneNameComponent(suffix, out var translatedSuffix))
+        {
+            translated = source;
+            return false;
+        }
+
+        translated = translatedRoot + "の" + translatedSuffix;
+        return true;
+    }
+
+    private static bool TrySplitCompactHistorySpicePlaceSuffix(string source, out string root, out string suffix)
+    {
+        if (TrySplitTrailingWord(source, out root, out suffix)
+            && CompactHistorySpicePlaceSuffixes.Contains(suffix))
+        {
+            return true;
+        }
+
+        // HistorySpice also emits compact names such as "Stargazerhome"; keep
+        // this path gated by translated root and suffix components.
+        foreach (var candidateSuffix in CompactHistorySpicePlaceSuffixes)
+        {
+            if (source.Length > candidateSuffix.Length
+                && source.EndsWith(candidateSuffix, StringComparison.OrdinalIgnoreCase))
+            {
+                root = source.Substring(0, source.Length - candidateSuffix.Length);
+                suffix = candidateSuffix;
+                return true;
+            }
+        }
+
+        root = string.Empty;
+        suffix = string.Empty;
+        return false;
     }
 
     private static bool TryTranslateBiomeAdjectiveSegment(string source, out string translated)
@@ -632,6 +682,16 @@ internal static class MessageLogProducerTranslationHelpers
         return TryTranslateZoneSegment(source, out var translated)
             ? translated
             : source;
+    }
+
+    private static bool TryTranslateZoneNameComponent(string source, out string translated)
+    {
+        if (StringHelpers.TryGetTranslationExactOrLowerAscii(source, out translated))
+        {
+            return true;
+        }
+
+        return HistorySpiceComponentLookup.TryTranslateWord(source, out translated);
     }
 
     private static bool TrySplitLeadingWord(string source, out string word, out string remainder)

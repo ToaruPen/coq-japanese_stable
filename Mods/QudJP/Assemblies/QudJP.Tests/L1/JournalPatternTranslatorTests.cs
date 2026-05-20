@@ -390,6 +390,168 @@ public sealed class JournalPatternTranslatorTests
     }
 
     [Test]
+    public void Translate_TranslatesGeneratedRelationshipTitleCapture()
+    {
+        WritePatternDictionary(("^You defeated (.+?)\\.$", "{t0}を倒した。"));
+
+        var translated = JournalPatternTranslator.Translate(
+            "You defeated leader of the シャッガンナ Pest Flock.");
+
+        Assert.That(translated, Is.EqualTo("シャッガンナ Pest Flockの指導者を倒した。"));
+    }
+
+    [Test]
+    public void Translate_TranslatesGeneratedRelationshipTitleCapture_PreservesColorTags()
+    {
+        WritePatternDictionary(("^You defeated (.+?)\\.$", "{t0}を倒した。"));
+
+        var translated = JournalPatternTranslator.Translate(
+            "You defeated {{M|leader of the シャッガンナ Pest Flock}}.");
+
+        Assert.That(translated, Is.EqualTo("{{M|シャッガンナ Pest Flockの指導者}}を倒した。"));
+    }
+
+    [Test]
+    public void Translate_TranslatesCapitalizedRelationshipTitleCapture()
+    {
+        WriteDictionaryFile("journal-test.ja.json", new[] { ("Farmers' Guild", "農民のギルド") });
+        WritePatternDictionary(("^You defeated (.+?)\\.$", "{t0}を倒した。"));
+
+        var translated = JournalPatternTranslator.Translate("You defeated Leader of the Farmers' Guild.");
+
+        Assert.That(translated, Is.EqualTo("農民のギルドの指導者を倒した。"));
+    }
+
+    [Test]
+    public void Translate_TranslatesAbdicateSuccessorAnnalWithExpandedHistorySpiceCaptures()
+    {
+        WriteDictionaryFile(
+            Path.Combine("Scoped", "historyspice-common.ja.json"),
+            new[]
+            {
+                ("with malicious soldering", "悪意あるはんだ付け"),
+                ("with poisonous gas", "毒ガスで"),
+                ("disappeared", "姿を消した"),
+                ("shining", "輝く"),
+                ("visage", "顔立ち"),
+            });
+        WritePatternDictionary((
+            "^((?:In|Early in|Late in|Sometime in))\\ (.+?)\\ (?:BR|AR),\\ (.+?),\\ the\\ sultan\\ of\\ Qud\\ (.+?)\\.\\ Because\\ of\\ (.+?),\\ (.+?)\\ was\\ chosen\\ as\\ the\\ successor\\.$",
+            "{t1}{t0}、{t2}、クッドのスルタンは{t3}。{t4}のため、{t5}が後継者に選ばれた。"));
+
+        var translated = JournalPatternTranslator.Translate(
+            "Late in 4100 AR, after murdering a popular rival with malicious soldering, the sultan of Qud disappeared. Because of シビブの shining visage, they was chosen as the successor.");
+
+        Assert.That(
+            translated,
+            Is.EqualTo("4100年末、人気のあるライバルを悪意あるはんだ付けで殺したあと、クッドのスルタンは姿を消した。シビブの輝く顔立ちのため、彼らが後継者に選ばれた。"));
+
+        var translatedParticleBoundary = JournalPatternTranslator.Translate(
+            "Late in 4100 AR, after murdering a popular rival with poisonous gas, the sultan of Qud disappeared. Because of シビブの shining visage, they was chosen as the successor.");
+
+        Assert.That(
+            translatedParticleBoundary,
+            Is.EqualTo("4100年末、人気のあるライバルを毒ガスで殺したあと、クッドのスルタンは姿を消した。シビブの輝く顔立ちのため、彼らが後継者に選ばれた。"));
+
+        var translatedCapitalIt = JournalPatternTranslator.Translate(
+            "Late in 4100 AR, after murdering a popular rival with malicious soldering, the sultan of Qud disappeared. Because of シビブの shining visage, It was chosen as the successor.");
+
+        Assert.That(
+            translatedCapitalIt,
+            Is.EqualTo("4100年末、人気のあるライバルを悪意あるはんだ付けで殺したあと、クッドのスルタンは姿を消した。シビブの輝く顔立ちのため、それが後継者に選ばれた。"));
+
+        var translatedEnglishPossessive = JournalPatternTranslator.Translate(
+            "Late in 4100 AR, after murdering a popular rival with malicious soldering, the sultan of Qud disappeared. Because of Sbib's shining visage, they was chosen as the successor.");
+
+        Assert.That(
+            translatedEnglishPossessive,
+            Is.EqualTo("4100年末、人気のあるライバルを悪意あるはんだ付けで殺したあと、クッドのスルタンは姿を消した。Sbibの輝く顔立ちのため、彼らが後継者に選ばれた。"));
+        AssertJournalPatternEdgeCases();
+    }
+
+    [Test]
+    public void Translate_TranslatesCapitalizedExpandedHistorySpiceCapture()
+    {
+        WriteDictionaryFile("journal-test.ja.json", new[] { ("Farmers' Guild", "農民のギルド") });
+        WriteDictionaryFile(
+            Path.Combine("Scoped", "historyspice-common.ja.json"),
+            new[]
+            {
+                ("with malicious soldering", "悪意あるはんだ付け"),
+                ("shining", "輝く"),
+                ("visage", "顔立ち"),
+            });
+        WritePatternDictionary((
+            "^Because\\ of\\ (.+?),\\ (.+?)\\ was\\ chosen\\ as\\ the\\ successor\\.$",
+            "{t0}のため、{t1}が後継者に選ばれた。"));
+
+        var translated = JournalPatternTranslator.Translate(
+            "Because of Leader of the Farmers' Guildの Shining Visage, they was chosen as the successor.");
+
+        Assert.That(translated, Is.EqualTo("農民のギルドの指導者の輝く顔立ちのため、彼らが後継者に選ばれた。"));
+        AssertJournalPatternEdgeCases();
+    }
+
+    [Test]
+    public void Translate_LeavesAbdicateSuccessorAnnalCaptureEnglish_WhenExpandedComponentIsUnknown()
+    {
+        WriteDictionaryFile(
+            Path.Combine("Scoped", "historyspice-common.ja.json"),
+            new[] { ("disappeared", "姿を消した") });
+        WritePatternDictionary((
+            "^((?:In|Early in|Late in|Sometime in))\\ (.+?)\\ (?:BR|AR),\\ (.+?),\\ the\\ sultan\\ of\\ Qud\\ (.+?)\\.\\ Because\\ of\\ (.+?),\\ (.+?)\\ was\\ chosen\\ as\\ the\\ successor\\.$",
+            "{t1}{t0}、{t2}、クッドのスルタンは{t3}。{t4}のため、{t5}が後継者に選ばれた。"));
+
+        var translated = JournalPatternTranslator.Translate(
+            "Sometime in 4100 AR, after inventing a clock, the sultan of Qud disappeared. Because of bright destiny, he was chosen as the successor.");
+
+        Assert.That(
+            translated,
+            Is.EqualTo("4100年ごろ、after inventing a clock、クッドのスルタンは姿を消した。bright destinyのため、その者が後継者に選ばれた。"));
+        AssertJournalPatternEdgeCases();
+    }
+
+    [Test]
+    public void Translate_TranslatesExpandedFurnitureStuckTemplates()
+    {
+        WriteDictionaryFile(
+            Path.Combine("Scoped", "historyspice-common.ja.json"),
+            new[] { ("finger", "指"), ("throne", "玉座") });
+        WritePatternDictionary(
+            ("^(.+?) got (.+?) (.+?) stuck in (.+?)\\.$", "{t0}は{t1}{t2}を{t3}に挟まれた。"),
+            ("^(.+?) got (.+?) (.+?) stuck under (.+?)\\.$", "{t0}は{t1}{t2}を{t3}の下に挟まれた。"),
+            ("^(.+?) got (.+?) (.+?) stuck inside (.+?)\\.$", "{t0}は{t1}{t2}を{t3}の中に挟まれた。"),
+            ("^(.+?) got (.+?) (.+?) stuck behind (.+?)\\.$", "{t0}は{t1}{t2}を{t3}の後ろに挟まれた。"));
+
+        var translated = JournalPatternTranslator.Translate(
+            "Oboroqoru got his finger stuck behind a throne.");
+
+        Assert.That(translated, Is.EqualTo("Oboroqoruはその指を玉座の後ろに挟まれた。"));
+
+        var translatedIn = JournalPatternTranslator.Translate(
+            "Oboroqoru got his finger stuck in a throne.");
+
+        Assert.That(translatedIn, Is.EqualTo("Oboroqoruはその指を玉座に挟まれた。"));
+        AssertJournalPatternEdgeCases();
+    }
+
+    [Test]
+    public void Translate_TranslatesDrownedInLakeOfLiquidCapture()
+    {
+        WriteDictionaryFile(
+            Path.Combine("Scoped", "historyspice-common.ja.json"),
+            new[] { ("acid", "酸") });
+        WritePatternDictionary((
+            "^(.+?) drowned in a lake of (.+?)\\.$",
+            "{t0}は{t1}の湖で溺れた。"));
+
+        var translated = JournalPatternTranslator.Translate("sib drowned in a lake of acid.");
+
+        Assert.That(translated, Is.EqualTo("sibは酸の湖で溺れた。"));
+        AssertJournalPatternEdgeCases();
+    }
+
+    [Test]
     public void Translate_DoesNotReapplyPartialSourceMarkupInSegmentedTranslatedCapture()
     {
         WriteDictionaryFile("dict-l1.ja.json", new[] { ("bloody Tam", "{{r|血まみれの}}Tam") });
@@ -483,6 +645,537 @@ public sealed class JournalPatternTranslatorTests
     }
 
     [Test]
+    public void Translate_AppliesDynamicQuestCompletionPatterns_FromAssets()
+    {
+        WriteDictionaryFile(
+            "dynamic-quest-completion-l1.ja.json",
+            new[]
+            {
+                ("Grit Gate", "グリット・ゲート"),
+                ("your", "あなたの"),
+                ("shining", "輝く"),
+                ("the Barathrumites", "バラサルマイト"),
+                ("the glass lens", "ガラスレンズ"),
+                ("Joppa", "ジョッパ"),
+                ("Stopsvalinn", "ストップスヴァリン"),
+            });
+        var localizationRoot = Path.Combine(TestProjectPaths.GetRepositoryRoot(), "Mods", "QudJP", "Localization");
+        LocalizationAssetResolver.SetLocalizationRootForTests(localizationRoot);
+        JournalPatternTranslator.ResetForTests();
+        try
+        {
+            Assert.Multiple(() =>
+            {
+                Assert.That(
+                    JournalPatternTranslator.Translate("You located Grit Gate."),
+                    Is.EqualTo("グリット・ゲートを発見した。"));
+                Assert.That(
+                    JournalPatternTranslator.Translate("Through the use of your divinely shining eyes, =name= discovered the lost location of Grit Gate."),
+                    Is.EqualTo("あなたの神々しい輝く目を用いて、=name=は失われたグリット・ゲートの場所を発見した。"));
+                Assert.That(
+                    JournalPatternTranslator.Translate("Acting against the persecution of the Barathrumites, =name= led an army to the lost gates of Grit Gate. They liberated its citizens, who together in your honor <spice.history.gospels.Celebration.LateSultanate.!random>."),
+                    Is.EqualTo("バラサルマイトへの迫害に抗し、=name=は軍勢を率いて失われたグリット・ゲートの門へ至った。彼らはその市民を解放し、あなたの栄誉のもと<spice.history.gospels.Celebration.LateSultanate.!random>した。"));
+                Assert.That(
+                    JournalPatternTranslator.Translate("You recovered the glass lens."),
+                    Is.EqualTo("ガラスレンズを回収した。"));
+                Assert.That(
+                    JournalPatternTranslator.Translate("While exploring Joppa, =name= recovered the fabled artifact called the glass lens."),
+                    Is.EqualTo("ジョッパを探索中、=name=はガラスレンズという伝説のアーティファクトを回収した。"));
+                Assert.That(
+                    JournalPatternTranslator.Translate("While visiting an obscure <spice.professions.apothecary.guildhall>, =name= met with a group of <spice.professions.apothecary.plural> and commissed what came to be known as the the glass lens."),
+                    Is.EqualTo("とある<spice.professions.apothecary.guildhall>を訪れた際、=name=は<spice.professions.apothecary.plural>の一団と会い、のちにガラスレンズとして知られるものを依頼した。"));
+                foreach (var (source, expected) in DynamicQuestInteractCompletionCases())
+                {
+                    Assert.That(JournalPatternTranslator.Translate(source), Is.EqualTo(expected));
+                }
+                Assert.That(
+                    JournalPatternTranslator.Translate("You recovered the historic relic, Stopsvalinn."),
+                    Is.EqualTo("歴史的遺物ストップスヴァリンを回収した。"));
+                Assert.That(
+                    JournalPatternTranslator.Translate("<spice.commonPhrases.intrepid.!random.capitalize> =name= recovered Stopsvalinn, a historic relic once thought lost to the sands of time."),
+                    Is.EqualTo("<spice.commonPhrases.intrepid.!random.capitalize>=name=は、かつて時の砂に失われたと思われていた歴史的遺物ストップスヴァリンを回収した。"));
+                Assert.That(
+                    JournalPatternTranslator.Translate("In an excavation at a site of deep history near Joppa, =name= recovered Stopsvalinn, the historic relic once thought lost to the sands of time."),
+                    Is.EqualTo("ジョッパ近くの深い歴史を持つ場所での発掘において、=name=はかつて時の砂に失われたと思われていた歴史的遺物ストップスヴァリンを回収した。"));
+                AssertJournalPatternEdgeCases();
+            });
+        }
+        finally
+        {
+            LocalizationAssetResolver.SetLocalizationRootForTests(null);
+            JournalPatternTranslator.SetPatternFileForTests(patternFilePath);
+        }
+    }
+
+    private static (string Source, string Expected)[] DynamicQuestInteractCompletionCases() =>
+        new[]
+        {
+            ("You opened the glass lens.", "ガラスレンズを開けた。"),
+            ("You closed the glass lens.", "ガラスレンズを閉じた。"),
+            ("You entered the glass lens.", "ガラスレンズに入った。"),
+            ("You slept in the glass lens.", "ガラスレンズで眠った。"),
+            ("You slept on the glass lens.", "ガラスレンズの上で眠った。"),
+            ("You sat on the glass lens.", "ガラスレンズに座った。"),
+            ("You put something in the glass lens.", "ガラスレンズに何かを入れた。"),
+            ("You put something on the glass lens.", "ガラスレンズに何かを置いた。"),
+            ("You drank from the glass lens.", "ガラスレンズから飲んだ。"),
+            ("You cooked at the glass lens.", "ガラスレンズで料理した。"),
+            ("You smoked from the glass lens.", "ガラスレンズで吸った。"),
+            ("You prayed at the glass lens.", "ガラスレンズで祈った。"),
+            ("You desecrated the glass lens.", "ガラスレンズを冒涜した。"),
+            (
+                "While exploring Joppa, =name= opened the fabled contraption called the glass lens.",
+                "ジョッパを探索中、=name=はガラスレンズという伝説の仕掛けを開けた。"
+            ),
+            (
+                "While exploring Joppa, =name= closed the fabled contraption called the glass lens.",
+                "ジョッパを探索中、=name=はガラスレンズという伝説の仕掛けを閉じた。"
+            ),
+            (
+                "While exploring Joppa, =name= entered the fabled contraption called the glass lens.",
+                "ジョッパを探索中、=name=はガラスレンズという伝説の仕掛けに入った。"
+            ),
+            (
+                "While exploring Joppa, =name= slept in the fabled contraption called the glass lens.",
+                "ジョッパを探索中、=name=はガラスレンズという伝説の仕掛けで眠った。"
+            ),
+            (
+                "While exploring Joppa, =name= slept on the fabled contraption called the glass lens.",
+                "ジョッパを探索中、=name=はガラスレンズという伝説の仕掛けの上で眠った。"
+            ),
+            (
+                "While exploring Joppa, =name= sat on the fabled contraption called the glass lens.",
+                "ジョッパを探索中、=name=はガラスレンズという伝説の仕掛けに座った。"
+            ),
+            (
+                "While exploring Joppa, =name= put something in the fabled contraption called the glass lens.",
+                "ジョッパを探索中、=name=はガラスレンズという伝説の仕掛けに何かを入れた。"
+            ),
+            (
+                "While exploring Joppa, =name= put something on the fabled contraption called the glass lens.",
+                "ジョッパを探索中、=name=はガラスレンズという伝説の仕掛けに何かを置いた。"
+            ),
+            (
+                "While exploring Joppa, =name= drank from the fabled contraption called the glass lens.",
+                "ジョッパを探索中、=name=はガラスレンズという伝説の仕掛けから飲んだ。"
+            ),
+            (
+                "While exploring Joppa, =name= cooked at the fabled contraption called the glass lens.",
+                "ジョッパを探索中、=name=はガラスレンズという伝説の仕掛けで料理した。"
+            ),
+            (
+                "While exploring Joppa, =name= smoked from the fabled contraption called the glass lens.",
+                "ジョッパを探索中、=name=はガラスレンズという伝説の仕掛けで吸った。"
+            ),
+            (
+                "While exploring Joppa, =name= prayed at the fabled contraption called the glass lens.",
+                "ジョッパを探索中、=name=はガラスレンズという伝説の仕掛けで祈った。"
+            ),
+            (
+                "While exploring Joppa, =name= desecrated the fabled contraption called the glass lens.",
+                "ジョッパを探索中、=name=はガラスレンズという伝説の仕掛けを冒涜した。"
+            ),
+        };
+
+    [Test]
+    public void Translate_AppliesVillageProverbPatterns_FromAssets()
+    {
+        WriteDictionaryFile(
+            Path.Combine("Scoped", "historyspice-common.ja.json"),
+            new[]
+            {
+                ("copper", "銅"),
+                ("glass workshop", "ガラス工房"),
+                ("garden", "庭園"),
+                ("prayer", "祈り"),
+                ("idleness", "怠惰"),
+                ("bless", "祝福する"),
+                ("curse", "呪う"),
+                ("sage", "賢者"),
+                ("temple", "神殿"),
+                ("grace", "恩寵"),
+                ("shame", "恥辱"),
+                ("bright", "輝く"),
+                ("sanctity", "神聖"),
+                ("profanity", "冒涜"),
+                ("hearth", "炉辺"),
+                ("wander", "さまよう"),
+                ("stone", "石"),
+            });
+        var localizationRoot = Path.Combine(TestProjectPaths.GetRepositoryRoot(), "Mods", "QudJP", "Localization");
+        LocalizationAssetResolver.SetLocalizationRootForTests(localizationRoot);
+        JournalPatternTranslator.ResetForTests();
+        try
+        {
+            Assert.Multiple(() =>
+            {
+                Assert.That(
+                    JournalPatternTranslator.Translate("Copper hold no value over Glass Workshop."),
+                    Is.EqualTo("ガラス工房に比べれば銅に価値はない。"));
+                Assert.That(
+                    JournalPatternTranslator.Translate("Plant seeds in Garden and reap Prayer."),
+                    Is.EqualTo("庭園に種を蒔けば祈りを刈り取る。"));
+                Assert.That(
+                    JournalPatternTranslator.Translate("Idleness leads to Glass Workshop."),
+                    Is.EqualTo("怠惰はガラス工房につながる。"));
+                Assert.That(
+                    JournalPatternTranslator.Translate("Glass Workshop cannot compare to glass workshop."),
+                    Is.EqualTo("ガラス工房はガラス工房に及ばない。"));
+                Assert.That(
+                    JournalPatternTranslator.Translate("Bless Glass Workshop."),
+                    Is.EqualTo("ガラス工房を祝福する。"));
+                Assert.That(
+                    JournalPatternTranslator.Translate("Thank Glass Workshop."),
+                    Is.EqualTo("ガラス工房に感謝する。"));
+                Assert.That(
+                    JournalPatternTranslator.Translate("Give thanks for Glass Workshop."),
+                    Is.EqualTo("ガラス工房に感謝を捧げる。"));
+                Assert.That(
+                    JournalPatternTranslator.Translate("Praise Glass Workshop."),
+                    Is.EqualTo("ガラス工房を称賛する。"));
+                Assert.That(
+                    JournalPatternTranslator.Translate("Honor Glass Workshop."),
+                    Is.EqualTo("ガラス工房を敬う。"));
+                Assert.That(
+                    JournalPatternTranslator.Translate("Exalt Glass Workshop."),
+                    Is.EqualTo("ガラス工房を讃える。"));
+                Assert.That(
+                    JournalPatternTranslator.Translate("Curse Idleness."),
+                    Is.EqualTo("怠惰を呪う。"));
+                Assert.That(
+                    JournalPatternTranslator.Translate("A blight upon Idleness."),
+                    Is.EqualTo("怠惰に災いあれ。"));
+                Assert.That(
+                    JournalPatternTranslator.Translate("A curse upon Idleness."),
+                    Is.EqualTo("怠惰に呪いあれ。"));
+                Assert.That(
+                    JournalPatternTranslator.Translate("Only the sage can know Glass Workshop."),
+                    Is.EqualTo("ガラス工房を知り得るのは賢者だけだ。"));
+                Assert.That(
+                    JournalPatternTranslator.Translate("At the temple lies grace."),
+                    Is.EqualTo("神殿には恩寵が宿る。"));
+                Assert.That(
+                    JournalPatternTranslator.Translate("The bright sage knows the sanctity of Glass Workshop."),
+                    Is.EqualTo("輝く賢者はガラス工房の神聖を知る。"));
+                Assert.That(
+                    JournalPatternTranslator.Translate("Prayer is no way to bless Glass Workshop."),
+                    Is.EqualTo("祈りはガラス工房を祝福する方法ではない。"));
+                Assert.That(
+                    JournalPatternTranslator.Translate("Prayer is no way to thank Glass Workshop."),
+                    Is.EqualTo("祈りはガラス工房に感謝する方法ではない。"));
+                Assert.That(
+                    JournalPatternTranslator.Translate("Prayer is no way to give thanks for Glass Workshop."),
+                    Is.EqualTo("祈りはガラス工房に感謝を捧げる方法ではない。"));
+                Assert.That(
+                    JournalPatternTranslator.Translate("Prayer is no way to praise Glass Workshop."),
+                    Is.EqualTo("祈りはガラス工房を称賛する方法ではない。"));
+                Assert.That(
+                    JournalPatternTranslator.Translate("Prayer is no way to honor Glass Workshop."),
+                    Is.EqualTo("祈りはガラス工房を敬う方法ではない。"));
+                Assert.That(
+                    JournalPatternTranslator.Translate("Prayer is no way to exalt Glass Workshop."),
+                    Is.EqualTo("祈りはガラス工房を讃える方法ではない。"));
+                Assert.That(
+                    JournalPatternTranslator.Translate("Welcome strangers in prayer, but teach them the sanctity of Glass Workshop."),
+                    Is.EqualTo("祈りの中で異邦人を迎えよ、されど彼らにガラス工房の神聖を教えよ。"));
+                Assert.That(
+                    JournalPatternTranslator.Translate("Don't wander to the temple."),
+                    Is.EqualTo("神殿へさまような。"));
+                Assert.That(
+                    JournalPatternTranslator.Translate("A stone today is worth a stone tomorrow."),
+                    Is.EqualTo("今日の石は明日の石に勝る。"));
+                Assert.That(
+                    JournalPatternTranslator.Translate("Knowing Glass Workshop means knowing the stone."),
+                    Is.EqualTo("ガラス工房を知ることは石を知ることだ。"));
+                Assert.That(
+                    JournalPatternTranslator.Translate("Like the stone to the sage, so Glass Workshop to us."),
+                    Is.EqualTo("賢者にとっての石のように、我らにとってのガラス工房もまたそうだ。"));
+                Assert.That(
+                    JournalPatternTranslator.Translate("Glass Workshop dwells in the hearth."),
+                    Is.EqualTo("ガラス工房は炉辺に宿る。"));
+                Assert.That(
+                    JournalPatternTranslator.Translate("Do not ask the sage to teach sanctity."),
+                    Is.EqualTo("賢者に神聖を教えよと求めるな。"));
+                Assert.That(
+                    JournalPatternTranslator.Translate("Keep an eye on your stone."),
+                    Is.EqualTo("自らの石から目を離すな。"));
+                Assert.That(
+                    JournalPatternTranslator.Translate("Better to be bright than to be shame."),
+                    Is.EqualTo("恥辱であるより輝くほうがよい。"));
+                Assert.That(
+                    JournalPatternTranslator.Translate("Find sanctity in every stone."),
+                    Is.EqualTo("あらゆる石の中に神聖を見いだせ。"));
+                AssertJournalPatternEdgeCases();
+            });
+        }
+        finally
+        {
+            LocalizationAssetResolver.SetLocalizationRootForTests(null);
+            JournalPatternTranslator.SetPatternFileForTests(patternFilePath);
+        }
+    }
+
+    [Test]
+    public void Translate_AppliesRemainingHistorySpiceRouteGrammarPatterns_FromAssets()
+    {
+        WriteDictionaryFile(
+            Path.Combine("Scoped", "historyspice-common.ja.json"),
+            new[]
+            {
+                ("ravaged", "荒らした"),
+                ("scourge", "災厄"),
+                ("salt", "塩"),
+                ("sowing with salt the fields", "畑に塩を撒くこと"),
+                ("Salt Dunes", "塩砂丘"),
+                ("fish", "魚"),
+                ("birds", "鳥"),
+            });
+        WriteDictionaryFile(
+            "historyspice-route-grammar-l1.ja.json",
+            new[]
+            {
+                ("Throughout", "年を通じて"),
+                ("Around", "年頃"),
+                ("flower fields", "花畑"),
+                ("Bey Lah", "ベイ・ラー"),
+                ("Hindren", "ヒンドレン"),
+            });
+        var localizationRoot = Path.Combine(TestProjectPaths.GetRepositoryRoot(), "Mods", "QudJP", "Localization");
+        LocalizationAssetResolver.SetLocalizationRootForTests(localizationRoot);
+        JournalPatternTranslator.ResetForTests();
+        try
+        {
+            Assert.Multiple(() =>
+            {
+                Assert.That(
+                    JournalPatternTranslator.Translate(
+                        "In 1001, Resheph ravaged all of Salt Dunes, sowing with salt the fields of fish and birds. He became known as the Salt Scourge."),
+                    Is.EqualTo("1001年、Reshephは塩砂丘全域を荒らしたうえ、魚と鳥に対して畑に塩を撒くことを行った。"
+                        + "その者は以後塩の災厄として知られるようになった。"));
+                Assert.That(
+                    JournalPatternTranslator.Translate(
+                        "Throughout 1001, =name= ravaged the flower fields and brought turmoil to the troubled village of Bey Lah. He became known as the Hindren Scourge."),
+                    Is.EqualTo("1001年を通じて、=name=は花畑を荒らしたうえ、悩めるベイ・ラーの村に混乱をもたらした。"
+                        + "その者は以後ヒンドレンの災厄として知られるようになった。"));
+                Assert.That(
+                    JournalPatternTranslator.Translate(
+                        "Around 1001, =name= ravaged the flower fields and brought turmoil to the troubled village of Bey Lah. He became known as the Hindren Scourge."),
+                    Is.EqualTo("1001年頃、=name=は花畑を荒らしたうえ、悩めるベイ・ラーの村に混乱をもたらした。"
+                        + "その者は以後ヒンドレンの災厄として知られるようになった。"));
+                Assert.That(
+                    JournalPatternTranslator.Translate(
+                        "In 1001 AR, it was discovered that a clone of Resheph had been the one who died. Despite reports to the contrary, Resheph was alive and well. He was known thenceforth as the Glassborn."),
+                    Is.EqualTo("1001年、死亡したのはReshephのクローンだったとの事実が明らかになった。"
+                        + "相反する報告にもかかわらず、Reshephは健在だった。その者は以後Glassbornとして知られるようになった。"));
+                Assert.That(
+                    JournalPatternTranslator.Translate(
+                        "In 1001 AR, it was discovered that Resheph's twin had been the one who died. Despite reports to the contrary, Resheph was alive and well. He was known thenceforth as the Glassborn."),
+                    Is.EqualTo("1001年、死亡したのはReshephの双子だったとの事実が明らかになった。"
+                        + "相反する報告にもかかわらず、Reshephは健在だった。その者は以後Glassbornとして知られるようになった。"));
+                AssertJournalPatternEdgeCases();
+            });
+        }
+        finally
+        {
+            LocalizationAssetResolver.SetLocalizationRootForTests(null);
+            JournalPatternTranslator.SetPatternFileForTests(patternFilePath);
+        }
+    }
+
+    [Test]
+    public void Translate_AppliesOpeningStoryAndAnimatorSprayPatterns_FromAssets()
+    {
+        WriteDictionaryFile(
+            "opening-animator-l1.ja.json",
+            new[]
+            {
+                ("5th", "第5"),
+                ("Ut yara Ux", "ウト・ヤラ・ウクス"),
+                ("Joppa", "ジョッパ"),
+                ("your", "あなたの"),
+                ("cerulean", "空色"),
+                ("ghost", "幽鬼"),
+                ("chair", "椅子"),
+                ("it", "それ"),
+                ("with ivory limbs", "象牙色の四肢を持つ"),
+            });
+        var localizationRoot = Path.Combine(TestProjectPaths.GetRepositoryRoot(), "Mods", "QudJP", "Localization");
+        LocalizationAssetResolver.SetLocalizationRootForTests(localizationRoot);
+        JournalPatternTranslator.ResetForTests();
+        try
+        {
+            Assert.Multiple(() =>
+            {
+                Assert.That(
+                    JournalPatternTranslator.Translate("On the auspicious 5th of Ut yara Ux, =name= arrived in Joppa and began your prodigious odyssey through Qud."),
+                    Is.EqualTo("ウト・ヤラ・ウクスの第5日、=name=はジョッパに到着し、あなたのクッドを巡る驚異的な旅路を始めた。"));
+                Assert.That(
+                    JournalPatternTranslator.Translate("At <spice.time.partsOfDay.!random> under <spice.commonPhrases.strange.!random.article> and cerulean sky, the people of Joppa saw an image on the horizon that looked like a ghost bathed in cerulean. It was =name=, and after he came and left, the people of Joppa built a monument to =name= and thenceforth called him Ghost-in-Cerulean."),
+                    Is.EqualTo("<spice.time.partsOfDay.!random>、<spice.commonPhrases.strange.!random.article>と空色の空の下で、ジョッパの民は地平線に空色を浴びた幽鬼のような姿を見た。それは=name=だった。その者が来て去った後、ジョッパの民は=name=の記念碑を建て、以後その者を空色の幽鬼と呼んだ。"));
+                Assert.That(
+                    JournalPatternTranslator.Translate("You imbued a chair with life. Why?"),
+                    Is.EqualTo("椅子に命を吹き込んだ。なぜ？"));
+                Assert.That(
+                    JournalPatternTranslator.Translate("While traveling in Joppa, =name= performed a sacred ritual with a chair, imbuing it with life and arranging it with ivory limbs. Many of the local denizens declared it a miracle. Some weren't so sure."),
+                    Is.EqualTo("ジョッパを旅する中で、=name=は椅子を用いて神聖な儀式を行い、それに命を吹き込み、それを象牙色の四肢を持つよう整えた。地元の多くの住民はそれを奇跡だと宣言した。疑う者もいた。"));
+                Assert.That(
+                    JournalPatternTranslator.Translate("While traveling in Joppa, =name= performed a sacred ritual with a chair, imbuing it with life and arranging it with ivory limbs. Many of the local denizens declared it a miracle."),
+                    Is.EqualTo("ジョッパを旅する中で、=name=は椅子を用いて神聖な儀式を行い、それに命を吹き込み、それを象牙色の四肢を持つよう整えた。地元の多くの住民はそれを奇跡だと宣言した。"));
+                AssertJournalPatternEdgeCases();
+            });
+        }
+        finally
+        {
+            LocalizationAssetResolver.SetLocalizationRootForTests(null);
+            JournalPatternTranslator.SetPatternFileForTests(patternFilePath);
+        }
+    }
+
+    [Test]
+    public void Translate_AppliesZoneManagerJourneyPatterns_FromAssets()
+    {
+        WriteDictionaryFile(
+            "zone-manager-journey-l1.ja.json",
+            new[]
+            {
+                ("Kyakukya", "キャクキャ"),
+                ("Oboroqoru", "オボロコル"),
+                ("Nuntu", "ヌントゥ"),
+                ("Omonporch", "オモンポーチ"),
+                ("Red Rock", "レッドロック"),
+                ("Grit Gate", "グリット・ゲート"),
+                ("Golgotha", "ゴルゴタ"),
+                ("Asphalt Mines", "アスファルト鉱山"),
+                ("the Great Sea in the Asphalt Mines", "アスファルト鉱山の大海"),
+                ("salt", "塩"),
+                ("Salt", "塩"),
+                ("Ubu Ut", "ウブ・ウト"),
+                ("your", "あなたの"),
+            });
+        var localizationRoot = Path.Combine(TestProjectPaths.GetRepositoryRoot(), "Mods", "QudJP", "Localization");
+        LocalizationAssetResolver.SetLocalizationRootForTests(localizationRoot);
+        JournalPatternTranslator.ResetForTests();
+        try
+        {
+            Assert.Multiple(() =>
+            {
+                Assert.That(
+                    JournalPatternTranslator.Translate("Done trekking through the root-strangled earth, =name= arrived in Kyakukya and was greeted by the village with warmth and reverence. Upon leaving, =name= was named Friend to Oboroqoru."),
+                    Is.EqualTo("根に絡まれた大地を歩き終え、=name=はキャクキャに到着し、村から温かな敬意をもって迎えられた。去る時、=name=はオボロコルの友と呼ばれた。"));
+                Assert.That(
+                    JournalPatternTranslator.Translate("On an expedition down the River Svy, =name= was captured by bandits. He languished in captivity for 8 years, eventually escaping to Kyakukya and befriending its mayor, the albino ape called Nuntu."),
+                    Is.EqualTo("スヴィ川を下る遠征中、=name=は盗賊に捕らえられた。その者は8年にわたり囚われの身で苦しんだが、ついにはキャクキャへ逃れ、白い類人猿ヌントゥとして知られる村長と親交を結んだ。"));
+                Assert.That(
+                    JournalPatternTranslator.Translate("In =year=, =name= appointed the corrupt administrator Asphodel as earl and minister of Omonporch. There xe mandated the practice of <spice.elements.salt.practices.!random> in your name."),
+                    Is.EqualTo("=year=、=name=は腐敗した行政官Asphodelをオモンポーチの伯爵兼大臣に任じた。そこでxeはあなたの名のもと<spice.elements.salt.practices.!random>の実践を義務づけた。"));
+                Assert.That(
+                    JournalPatternTranslator.Translate("=name= trekked through the salt pans, north and west, to the merchant bazaar and grand cathedral of the Six Day Stilt. There, the stiltfolk sang hymns in the sultan's honor."),
+                    Is.EqualTo("=name=は塩原を北へ西へと進み、シックス・デイ・スティルトの商人バザールと大聖堂へ到達した。そこでスティルトの民はスルタンを讃える聖歌を歌った。"));
+                Assert.That(
+                    JournalPatternTranslator.Translate("Near the location of Red Rock, =name= was captured by baboons. He murdered their leader <spice.elements.salt.murdermethods.!random> and from then on wore a neck ring stained with baboon blood."),
+                    Is.EqualTo("レッドロックの近くで、=name=はヒヒに捕らえられた。その者はその指導者を<spice.elements.salt.murdermethods.!random>で殺し、それ以来ヒヒの血で染まった首輪を身につけた。"));
+                Assert.That(
+                    JournalPatternTranslator.Translate("At <spice.time.partsOfDay.!random> under <spice.commonPhrases.strange.!random.article> and rusted sky, the people of the desert canyon saw an image on the horizon that looked like a salt under an archway. It was =name=, and after he came and left, the people built a monument to =name= and thenceforth called him the Underarch Salt."),
+                    Is.EqualTo("<spice.time.partsOfDay.!random>、<spice.commonPhrases.strange.!random.article>と錆びた空の下で、砂漠峡谷の民は地平線にアーチの下の塩のような姿を見た。それは=name=だった。その者が来て去った後、人々は=name=の記念碑を建て、以後その者をアンダーアーチの塩と呼んだ。"));
+                Assert.That(
+                    JournalPatternTranslator.Translate("In the month of Ubu Ut of 1001 AR, =name= ascended the trash chutes of Golgotha, victorious and bathed in slime."),
+                    Is.EqualTo("1001年ウブ・ウト、=name=は勝利を得て粘液を浴びながら、ゴルゴタの廃棄物シュートを登った。"));
+                Assert.That(
+                    JournalPatternTranslator.Translate("Sometime in =year=, =name= wandered over the high mounts and voyaged to the Great Sea in the Asphalt Mines. There he befriended no one and instead bathed in the black blood of the earth."),
+                    Is.EqualTo("=year=のある時、=name=は高き山々をさまよい、アスファルト鉱山の大海へ旅した。そこでその者は誰とも親交を結ばず、代わりに大地の黒き血を浴びた。"));
+                AssertJournalPatternEdgeCases();
+            });
+        }
+        finally
+        {
+            LocalizationAssetResolver.SetLocalizationRootForTests(null);
+            JournalPatternTranslator.SetPatternFileForTests(patternFilePath);
+        }
+    }
+
+    [Test]
+    public void Translate_AppliesBodyAndMutationAccomplishmentPatterns_FromAssets()
+    {
+        WriteDictionaryFile(
+            "body-mutation-l1.ja.json",
+            new[]
+            {
+                ("left arm", "左腕"),
+                ("shining visage", "輝く顔"),
+                ("Light Manipulation", "光操作"),
+                ("mutation", "変異"),
+                ("him", "彼"),
+                ("mutants", "変異者"),
+                ("around Salt Dunes", "塩砂丘の辺り"),
+                ("Player's", "プレイヤーの"),
+            });
+        var localizationRoot = Path.Combine(TestProjectPaths.GetRepositoryRoot(), "Mods", "QudJP", "Localization");
+        LocalizationAssetResolver.SetLocalizationRootForTests(localizationRoot);
+        JournalPatternTranslator.ResetForTests();
+        try
+        {
+            Assert.Multiple(() =>
+            {
+                Assert.That(
+                    JournalPatternTranslator.Translate("Your left arm was dismembered."),
+                    Is.EqualTo("左腕が切断された。"));
+                Assert.That(
+                    JournalPatternTranslator.Translate("While fighting a battle to protect the practice of shining visage, =name= valorously had his left arm dismembered."),
+                    Is.EqualTo("輝く顔の実践を守る戦いの中で、=name=は勇敢にも左腕を切断された。"));
+                Assert.That(
+                    JournalPatternTranslator.Translate("Your genome destabilized and you gained the Light Manipulation mutation."),
+                    Is.EqualTo("あなたのゲノムが不安定になり、光操作の変異を得た。"));
+                Assert.That(
+                    JournalPatternTranslator.Translate("<spice.commonPhrases.oneStarryNight.!random.capitalize>, =name= manifested a latent power inside him and joined the divine ranks of mutants."),
+                    Is.EqualTo("<spice.commonPhrases.oneStarryNight.!random.capitalize>、=name=は内なる潜在能力を顕現させ、変異者の神聖なる列に加わった。"));
+                Assert.That(
+                    JournalPatternTranslator.Translate("While wandering around Salt Dunes, =name= stumbled upon a clan of mutants. Because of Player's <spice.elements.salt.quality.!random>, they accepted him into their fold and taught him their secrets."),
+                    Is.EqualTo("塩砂丘の辺りをさまよううち、=name=は変異者の一族に出くわした。プレイヤーの<spice.elements.salt.quality.!random>ゆえ、彼らはその者を仲間に迎え入れ、その者に彼らの秘密を授けた。"));
+                AssertJournalPatternEdgeCases();
+            });
+        }
+        finally
+        {
+            LocalizationAssetResolver.SetLocalizationRootForTests(null);
+            JournalPatternTranslator.SetPatternFileForTests(patternFilePath);
+        }
+    }
+
+    [Test]
+    public void Translate_AppliesVillageSurfaceVisitPatterns_FromAssets()
+    {
+        WriteDictionaryFile(
+            "village-surface-l1.ja.json",
+            new[]
+            {
+                ("Ut yara Ux", "ウト・ヤラ・ウクス"),
+                ("Kyakukya", "キャクキャ"),
+                ("his", "その"),
+            });
+        var localizationRoot = Path.Combine(TestProjectPaths.GetRepositoryRoot(), "Mods", "QudJP", "Localization");
+        LocalizationAssetResolver.SetLocalizationRootForTests(localizationRoot);
+        JournalPatternTranslator.ResetForTests();
+        try
+        {
+            Assert.Multiple(() =>
+            {
+                Assert.That(
+                    JournalPatternTranslator.Translate("In the month of Ut yara Ux of 1012 AR, =name= founded the village of Kyakukya to <spice.history.gospels.HumblePractice.LateSultanate.!random>."),
+                    Is.EqualTo("1012年ウト・ヤラ・ウクス、=name=は<spice.history.gospels.HumblePractice.LateSultanate.!random>ためにキャクキャの村を建てた。"));
+                Assert.That(
+                    JournalPatternTranslator.Translate("Acting against the prohibition on the practice of <spice.elements.salt.practices.!random>, =name= led an army to the gates of Kyakukya. =name= <spice.commonPhrases.liberated.!random> its citizens, and in his honor they <spice.history.gospels.Celebration.LateSultanate.!random>."),
+                    Is.EqualTo("<spice.elements.salt.practices.!random>の実践への禁令に抗し、=name=は軍勢を率いてキャクキャの門へ至った。=name=はその市民を<spice.commonPhrases.liberated.!random>し、その栄誉のもと彼らは<spice.history.gospels.Celebration.LateSultanate.!random>した。"));
+                AssertJournalPatternEdgeCases();
+            });
+        }
+        finally
+        {
+            LocalizationAssetResolver.SetLocalizationRootForTests(null);
+            JournalPatternTranslator.SetPatternFileForTests(patternFilePath);
+        }
+    }
+
+    [Test]
     public void GetPatternLoadSummaryForTests_ContainsJournalPatternTranslator()
     {
         WritePatternDictionary(("^Notes: (.+)$", "備考: {0}"));
@@ -507,6 +1200,17 @@ public sealed class JournalPatternTranslatorTests
 
         var summary = JournalPatternTranslator.GetPatternLoadSummaryForTests();
         Assert.That(summary, Does.Contain("journal-patterns"));
+    }
+
+    private static void AssertJournalPatternEdgeCases()
+    {
+        const string fallback = "This issue 737 journal pattern should not match.";
+        var marked = MessageFrameTranslator.MarkDirectTranslation(fallback);
+
+        Assert.That(JournalPatternTranslator.Translate(fallback), Is.EqualTo(fallback));
+        Assert.That(JournalPatternTranslator.Translate(string.Empty), Is.EqualTo(string.Empty));
+        Assert.That(JournalPatternTranslator.Translate("{{R|" + fallback + "}}"), Is.EqualTo("{{R|" + fallback + "}}"));
+        Assert.That(JournalPatternTranslator.Translate(marked), Is.EqualTo(marked));
     }
 
     private void WritePatternDictionary(params (string pattern, string template)[] patterns)

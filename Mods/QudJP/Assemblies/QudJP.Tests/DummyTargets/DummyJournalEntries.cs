@@ -20,6 +20,16 @@ internal sealed class DummyJournalObservation : DummyBaseJournalEntry
     public string Category { get; set; } = "general";
 }
 
+internal sealed class DummyJournalSultanNote : DummyBaseJournalEntry
+{
+    public string SultanID { get; set; } = "sultan";
+}
+
+internal sealed class DummyJournalVillageNote : DummyBaseJournalEntry
+{
+    public string VillageID { get; set; } = "village";
+}
+
 internal sealed class DummyJournalGeneralNote : DummyBaseJournalEntry
 {
     public string Section { get; set; } = "General";

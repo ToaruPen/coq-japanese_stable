@@ -272,11 +272,23 @@ public static class ColorCodePreserver
         while (index < endIndex)
         {
             if (index + 1 < endIndex && input[index] == '{' && input[index + 1] == '{'
-                && TryReadMarkup(input, index, endIndex, out var prefixToken, out var innerStart, out var innerEnd, out var nextIndex))
+                && TryReadMarkup(
+                    input,
+                    index,
+                    endIndex,
+                    out var prefixToken,
+                    out var innerStart,
+                    out var innerEnd,
+                    out var nextIndex,
+                    out var hasClosingToken))
             {
                 spans.Add(new ColorSpan(builder.Length, prefixToken));
                 ParseSegment(input, innerStart, innerEnd, builder, spans);
-                spans.Add(new ColorSpan(builder.Length, "}}"));
+                if (hasClosingToken)
+                {
+                    spans.Add(new ColorSpan(builder.Length, "}}"));
+                }
+
                 index = nextIndex;
                 continue;
             }
@@ -367,12 +379,14 @@ public static class ColorCodePreserver
         out string prefixToken,
         out int innerStart,
         out int innerEnd,
-        out int nextIndex)
+        out int nextIndex,
+        out bool hasClosingToken)
     {
         prefixToken = string.Empty;
         innerStart = 0;
         innerEnd = 0;
         nextIndex = startIndex;
+        hasClosingToken = false;
 
         var pipeIndex = -1;
         for (var index = startIndex + 2; index < endIndex; index++)
@@ -414,6 +428,7 @@ public static class ColorCodePreserver
                     innerStart = pipeIndex + 1;
                     innerEnd = index;
                     nextIndex = index + 2;
+                    hasClosingToken = true;
                     return true;
                 }
 
@@ -421,7 +436,12 @@ public static class ColorCodePreserver
             }
         }
 
-        return false;
+        prefixToken = input.Substring(startIndex, (pipeIndex - startIndex) + 1);
+        innerStart = pipeIndex + 1;
+        innerEnd = endIndex;
+        nextIndex = endIndex;
+        hasClosingToken = false;
+        return true;
     }
 
     private static bool StartsWithOrdinalIgnoreCase(string input, int startIndex, string value)

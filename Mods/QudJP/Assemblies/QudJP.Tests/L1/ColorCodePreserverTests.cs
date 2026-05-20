@@ -52,6 +52,38 @@ public sealed class ColorCodePreserverTests
     }
 
     [Test]
+    public void Strip_DoesNotExposeAmpersandYAsVisibleText()
+    {
+        var input = "&ykeeps starting";
+        var (stripped, spans) = ColorCodePreserver.Strip(input);
+
+        var restored = ColorCodePreserver.Restore("開始し続ける", spans);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(stripped, Is.EqualTo("keeps starting"));
+            Assert.That(stripped, Does.Not.StartWith("y"));
+            Assert.That(restored, Is.EqualTo("&y開始し続ける"));
+        });
+    }
+
+    [Test]
+    public void Strip_DoesNotExposeTrailingAmpersandYAsVisibleText()
+    {
+        var input = "keeps starting&y";
+        var (stripped, spans) = ColorCodePreserver.Strip(input);
+
+        var restored = ColorCodePreserver.Restore("開始し続ける", spans);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(stripped, Is.EqualTo("keeps starting"));
+            Assert.That(stripped, Does.Not.EndWith("y"));
+            Assert.That(restored, Is.EqualTo("開始し続ける&y"));
+        });
+    }
+
+    [Test]
     public void StripRestore_PreservesBackgroundCodes()
     {
         var input = "^rdanger^k";
@@ -362,6 +394,75 @@ public sealed class ColorCodePreserverTests
     }
 
     [Test]
+    public void InsertQudColorAtVisibleIndex_CountsEscapedColorTokensAsVisibleText()
+    {
+        var foreground = ColorAwareTranslationComposer.InsertQudColorAtVisibleIndex("&&No", 1, "&K");
+        var background = ColorAwareTranslationComposer.InsertQudColorAtVisibleIndex("^^No", 1, "&K");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(foreground, Is.EqualTo("&&&KNo"));
+            Assert.That(background, Is.EqualTo("^^&KNo"));
+        });
+    }
+
+    [Test]
+    public void StartsWithQudColorAtVisibleIndex_ChecksColorAtTargetVisiblePosition()
+    {
+        Assert.Multiple(() =>
+        {
+            Assert.That(ColorAwareTranslationComposer.StartsWithQudColorAtVisibleIndex("    &Kremove", 4), Is.True);
+            Assert.That(ColorAwareTranslationComposer.StartsWithQudColorAtVisibleIndex("    &Oremove", 4), Is.True);
+            Assert.That(ColorAwareTranslationComposer.StartsWithQudColorAtVisibleIndex("    ^oremove", 4), Is.True);
+            Assert.That(ColorAwareTranslationComposer.StartsWithQudColorAtVisibleIndex("    &1remove", 4), Is.True);
+            Assert.That(ColorAwareTranslationComposer.StartsWithQudColorAtVisibleIndex("    &qremove", 4), Is.True);
+            Assert.That(ColorAwareTranslationComposer.StartsWithQudColorAtVisibleIndex("    ^?remove", 4), Is.True);
+            Assert.That(ColorAwareTranslationComposer.StartsWithQudColorAtVisibleIndex("    ^zremove", 4), Is.True);
+            Assert.That(ColorAwareTranslationComposer.StartsWithQudColorAtVisibleIndex("&&remove", 0), Is.False);
+        });
+    }
+
+    [Test]
+    public void Strip_TreatsNonEscapedInlineFormattingPairsAsZeroWidthEvenWhenNotColorMapLetters()
+    {
+        var (foregroundStripped, foregroundSpans) = ColorCodePreserver.Strip("&1No");
+        var (backgroundStripped, backgroundSpans) = ColorCodePreserver.Strip("^?No");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(foregroundStripped, Is.EqualTo("No"));
+            Assert.That(backgroundStripped, Is.EqualTo("No"));
+            Assert.That(ColorCodePreserver.Restore("いいえ", foregroundSpans), Is.EqualTo("&1いいえ"));
+            Assert.That(ColorCodePreserver.Restore("いいえ", backgroundSpans), Is.EqualTo("^?いいえ"));
+        });
+    }
+
+    [Test]
+    public void StartsWithQudTokenAtVisibleIndex_ChecksExactTokenAtTargetVisiblePosition()
+    {
+        Assert.Multiple(() =>
+        {
+            Assert.That(ColorAwareTranslationComposer.StartsWithQudTokenAtVisibleIndex("    &K&Gremove", 4, "&K"), Is.True);
+            Assert.That(ColorAwareTranslationComposer.StartsWithQudTokenAtVisibleIndex("    &Gremove", 4, "&K"), Is.False);
+            Assert.That(ColorAwareTranslationComposer.StartsWithQudTokenAtVisibleIndex("{{y|&Kremove}}", 0, "&K"), Is.True);
+            Assert.That(ColorAwareTranslationComposer.StartsWithQudTokenAtVisibleIndex("&&remove", 0, "&K"), Is.False);
+        });
+    }
+
+    [Test]
+    public void InsertQudColorAtVisibleIndex_TreatsNonEscapedFormattingPairsAsZeroWidth()
+    {
+        var foreground = ColorAwareTranslationComposer.InsertQudColorAtVisibleIndex("&qNo", 1, "&K");
+        var background = ColorAwareTranslationComposer.InsertQudColorAtVisibleIndex("^zNo", 1, "&K");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(foreground, Is.EqualTo("&qN&Ko"));
+            Assert.That(background, Is.EqualTo("^zN&Ko"));
+        });
+    }
+
+    [Test]
     public void RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership_PreservesNestedQudAndTmpColorWrappers()
     {
         var (stripped, spans) = ColorAwareTranslationComposer.Strip("{{W|<color=#44ff88>No</color>}}");
@@ -372,6 +473,19 @@ public sealed class ColorCodePreserverTests
             stripped.Length);
 
         Assert.That(restored, Is.EqualTo("{{W|<color=#44ff88>いいえ</color>}}"));
+    }
+
+    [Test]
+    public void Strip_TreatsUnclosedQudMarkupAsFormattingUntilEndOfSource()
+    {
+        var (stripped, spans) = ColorCodePreserver.Strip("{{y|plain visible text");
+        var restored = ColorCodePreserver.Restore("維持される", spans);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(stripped, Is.EqualTo("plain visible text"));
+            Assert.That(restored, Is.EqualTo("{{y|維持される"));
+        });
     }
 
     [Test]
@@ -411,6 +525,36 @@ public sealed class ColorCodePreserverTests
             stripped.Length);
 
         Assert.That(restored, Is.EqualTo("^rいいえ^k"));
+    }
+
+    [Test]
+    public void RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership_RestoresLeadingBackgroundCode()
+    {
+        const string source = "^rNo";
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+
+        var restored = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+            "いいえ",
+            spans,
+            stripped.Length,
+            source);
+
+        Assert.That(restored, Is.EqualTo("^rいいえ"));
+    }
+
+    [Test]
+    public void RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership_RestoresLeadingInlineCodeInsideWrapper()
+    {
+        const string source = "{{W|^rNo}}";
+        var (stripped, _) = ColorAwareTranslationComposer.Strip(source);
+
+        var restored = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+            "{{W|いいえ}}",
+            Array.Empty<ColorSpan>(),
+            stripped.Length,
+            source);
+
+        Assert.That(restored, Is.EqualTo("{{W|^rいいえ}}"));
     }
 
     [Test]

@@ -1,11 +1,24 @@
 using System;
 using System.Text;
+using System.Text.RegularExpressions;
 using HarmonyLib;
 
 namespace QudJP.Patches;
 
 internal static class JournalTextTranslator
 {
+    private static readonly Regex MapNoteDistanceLinePattern = new(
+        "^(?<steps>\\d+ parasangs? (?:north|south|east|west)(?: and \\d+ parasangs? (?:north|south|east|west))*) of (?<landmark>.+)$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex MapNoteDistanceStepPattern = new(
+        "^(?<count>\\d+) parasangs? (?<direction>north|south|east|west)$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex EmbeddedLeaderRelationshipTitlePattern = new(
+        "\\bleader of the (?<faction>[^{}\\r\\n、。をにがはと.]+)",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     internal static bool TryTranslateAccomplishmentTextForStorage(
         string source,
         string? category,
@@ -113,7 +126,9 @@ internal static class JournalTextTranslator
             return !string.Equals(category, "player", StringComparison.OrdinalIgnoreCase);
         }
 
-        return typeName.IndexOf("JournalObservation", StringComparison.Ordinal) >= 0;
+        return typeName.IndexOf("JournalObservation", StringComparison.Ordinal) >= 0
+            || typeName.IndexOf("JournalSultanNote", StringComparison.Ordinal) >= 0
+            || typeName.IndexOf("JournalVillageNote", StringComparison.Ordinal) >= 0;
 #pragma warning restore CA2249
     }
 
@@ -126,23 +141,22 @@ internal static class JournalTextTranslator
 
     private static bool TryTranslateDisplayText(string source, string route, out string translated)
     {
-        if (TryTranslateExactPreservingColors(source, route, "Journal.Exact", out translated))
+        var current = source;
+        var changed = false;
+        if (TryTranslateLines(current, route, out var afterLines))
         {
-            return true;
+            current = afterLines;
+            changed = true;
         }
 
-        if (MessageLogProducerTranslationHelpers.TryTranslateZoneDisplayName(source, route, out translated))
+        if (TryTranslateEmbeddedRelationshipTitleFragments(current, route, out var afterRelationshipTitles))
         {
-            return true;
+            current = afterRelationshipTitles;
+            changed = true;
         }
 
-        translated = JournalPatternTranslator.Translate(source, route);
-        if (!string.Equals(source, translated, StringComparison.Ordinal))
-        {
-            return true;
-        }
-
-        return TryTranslateLines(source, route, out translated);
+        translated = JournalPatternTranslator.Translate(current, route);
+        return changed || !string.Equals(current, translated, StringComparison.Ordinal);
     }
 
     private static bool TryTranslateExactPreservingColors(string source, string route, string family, out string translated)
@@ -170,29 +184,28 @@ internal static class JournalTextTranslator
 
     private static bool TryTranslateLines(string source, string route, out string translated)
     {
-        if (source.IndexOf('\n') < 0)
-        {
-            translated = source;
-            return false;
-        }
-
-        var lines = source.Split(new[] { '\n' }, StringSplitOptions.None);
+        var newline = source.Contains("\r\n") ? "\r\n" : "\n";
+        var normalizedSource = newline == "\r\n"
+            ? source.Replace("\r\n", "\n")
+            : source;
+        var lines = normalizedSource.Split(new[] { '\n' }, StringSplitOptions.None);
+        var exactFamily = lines.Length == 1 ? "Journal.Exact" : "Journal.LineExact";
         var changed = false;
-        var builder = new StringBuilder(source.Length);
+        var builder = new StringBuilder(normalizedSource.Length);
         for (var index = 0; index < lines.Length; index++)
         {
             var line = lines[index];
             var translatedLine = line;
             if (!string.IsNullOrEmpty(line)
-                && !TryTranslateExactPreservingColors(line, route, "Journal.LineExact", out translatedLine))
+                && !TryTranslateExactPreservingColors(line, route, exactFamily, out translatedLine))
             {
-                translatedLine = JournalPatternTranslator.Translate(line, route);
+                translatedLine = TranslateJournalLine(line, route);
             }
 
             changed |= !string.Equals(line, translatedLine, StringComparison.Ordinal);
             if (index > 0)
             {
-                builder.Append('\n');
+                builder.Append(newline);
             }
 
             builder.Append(translatedLine);
@@ -205,6 +218,108 @@ internal static class JournalTextTranslator
         }
 
         return changed;
+    }
+
+    private static string TranslateJournalLine(string line, string route)
+    {
+        var translatedPattern = JournalPatternTranslator.Translate(line, route);
+        if (!string.Equals(line, translatedPattern, StringComparison.Ordinal))
+        {
+            return translatedPattern;
+        }
+
+        if (MessageLogProducerTranslationHelpers.TryTranslateZoneDisplayName(line, route, out var zoneLine))
+        {
+            return zoneLine;
+        }
+
+        if (TryTranslateMapNoteDistanceLine(line, route, out var distanceLine))
+        {
+            return distanceLine;
+        }
+
+        return line;
+    }
+
+    private static bool TryTranslateEmbeddedRelationshipTitleFragments(string source, string route, out string translated)
+    {
+        translated = EmbeddedLeaderRelationshipTitlePattern.Replace(
+            source,
+            match => JournalPatternTranslator.TryTranslateRelationshipTitleFragment(match.Value, out var fragment)
+                ? fragment
+                : match.Value);
+
+        if (string.Equals(source, translated, StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        DynamicTextObservability.RecordTransform(route, "Journal.RelationshipTitleFragment", source, translated);
+        return true;
+    }
+
+    private static bool TryTranslateMapNoteDistanceLine(string source, string route, out string translated)
+    {
+        var match = MapNoteDistanceLinePattern.Match(source);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        var landmark = TranslateMapNoteLandmark(match.Groups["landmark"].Value, route);
+        var stepSources = match.Groups["steps"].Value.Split(new[] { " and " }, StringSplitOptions.None);
+        var translatedSteps = new string[stepSources.Length];
+        for (var index = 0; index < stepSources.Length; index++)
+        {
+            if (!TryTranslateMapNoteDistanceStep(stepSources[index], out translatedSteps[index]))
+            {
+                translated = source;
+                return false;
+            }
+        }
+
+        translated = landmark + "から" + string.Join("、", translatedSteps);
+        DynamicTextObservability.RecordTransform(route, "Journal.MapNoteDistanceLine", source, translated);
+        return true;
+    }
+
+    private static bool TryTranslateMapNoteDistanceStep(string source, out string translated)
+    {
+        var match = MapNoteDistanceStepPattern.Match(source);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        var direction = match.Groups["direction"].Value;
+        if (!StringHelpers.TryGetTranslationExactOrLowerAscii(direction, out var translatedDirection))
+        {
+            translatedDirection = direction switch
+            {
+                "north" => "北",
+                "south" => "南",
+                "east" => "東",
+                "west" => "西",
+                _ => direction,
+            };
+        }
+
+        translated = match.Groups["count"].Value + "パラサング" + translatedDirection;
+        return true;
+    }
+
+    private static string TranslateMapNoteLandmark(string source, string route)
+    {
+        if (MessageLogProducerTranslationHelpers.TryTranslateZoneDisplayName(source, route, out var zoneName))
+        {
+            return zoneName;
+        }
+
+        return StringHelpers.TryGetTranslationExactOrLowerAscii(source, out var exact)
+            ? exact
+            : source;
     }
 
     private static string? GetStringMemberValue(object instance, string memberName)

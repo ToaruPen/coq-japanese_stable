@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using HarmonyLib;
@@ -80,7 +81,7 @@ public sealed class QudMenuBottomContextTranslationPatchTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(((DummyMenuItem)context.items[0]!).text, Is.EqualTo("[Esc] 戻る"));
+            Assert.That(((DummyMenuItem)context.items[0]!).text, Is.EqualTo("{{W|[Esc]}} {{y|戻る}}"));
             Assert.That(
                 DynamicTextObservability.GetRouteFamilyHitCountForTests(
                     nameof(QudMenuBottomContextTranslationPatch),
@@ -96,11 +97,11 @@ public sealed class QudMenuBottomContextTranslationPatchTests
 
         RunRefreshButtonsWithPatch(context);
 
-        Assert.That(((DummyMenuItem)context.items[0]!).text, Is.EqualTo("[Esc] Back"));
+        Assert.That(((DummyMenuItem)context.items[0]!).text, Is.EqualTo("{{W|[Esc]}} {{y|Back}}"));
     }
 
-    [TestCase("{{y|{{W|[~Accept]}} Continue}}", "[~Accept] 続ける")]
-    [TestCase("{{y|{{W|[space]}} Continue}}", "[space] 続ける")]
+    [TestCase("{{y|{{W|[~Accept]}} Continue}}", "{{W|[~Accept]}} {{y|続ける}}")]
+    [TestCase("{{y|{{W|[space]}} Continue}}", "{{W|[space]}} {{y|続ける}}")]
     public void Prefix_PreservesNestedHotkeyTokenAndBrackets(string source, string expected)
     {
         WriteScopedMenuActionDictionary(("continue", "続ける"));
@@ -113,14 +114,34 @@ public sealed class QudMenuBottomContextTranslationPatchTests
     }
 
     [Test]
-    public void Prefix_StripsMalformedNestedHotkeyLabelToVisibleFallback()
+    public void Prefix_PreservesMalformedNestedHotkeyLabelUnchanged()
     {
         var source = "{{y|{{W|Esc}} Back}}";
         var context = new DummyQudMenuBottomContext(source);
 
         Assert.DoesNotThrow(() => RunRefreshButtonsWithPatch(context));
 
-        Assert.That(((DummyMenuItem)context.items[0]!).text, Is.EqualTo("Esc Back"));
+        Assert.That(((DummyMenuItem)context.items[0]!).text, Is.EqualTo(source));
+    }
+
+    [Test]
+    public void Prefix_PreservesPopupMessageButtonColorTags()
+    {
+        WriteDictionary(
+            ("{{W|[y]}} {{y|Yes}}", "{{W|[y]}} {{y|はい}}"),
+            ("{{W|[n]}} {{y|No}}", "{{W|[n]}} {{y|いいえ}}"));
+
+        var context = new DummyQudMenuBottomContext(
+            "{{y|{{W|[y]}} Yes}}",
+            "{{y|{{W|[n]}} No}}");
+
+        RunRefreshButtonsWithPatch(context);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(((DummyMenuItem)context.items[0]!).text, Is.EqualTo("{{W|[y]}} {{y|はい}}"));
+            Assert.That(((DummyMenuItem)context.items[1]!).text, Is.EqualTo("{{W|[n]}} {{y|いいえ}}"));
+        });
     }
 
     private static void RunRefreshButtonsWithPatch(DummyQudMenuBottomContext context)
@@ -156,6 +177,7 @@ public sealed class QudMenuBottomContextTranslationPatchTests
     private static void ResetTestState()
     {
         Translator.ResetForTests();
+        ScopedDictionaryLookup.ResetForTests();
         DynamicTextObservability.ResetForTests();
         SinkObservation.ResetForTests();
     }
@@ -211,9 +233,9 @@ public sealed class QudMenuBottomContextTranslationPatchTests
     {
         public IList items;
 
-        public DummyQudMenuBottomContext(string text)
+        public DummyQudMenuBottomContext(params string[] texts)
         {
-            items = new ArrayList { new DummyMenuItem(text) };
+            items = new ArrayList(texts.Select(static text => new DummyMenuItem(text)).ToArray());
         }
 
         public void RefreshButtons()

@@ -26,6 +26,7 @@ public sealed class JournalTextTranslatorTests
 
         Translator.ResetForTests();
         Translator.SetDictionaryDirectoryForTests(dictionaryDirectory);
+        ScopedDictionaryLookup.ResetForTests();
         JournalPatternTranslator.ResetForTests();
         JournalPatternTranslator.SetPatternFileForTests(patternFilePath);
     }
@@ -34,6 +35,7 @@ public sealed class JournalTextTranslatorTests
     public void TearDown()
     {
         Translator.ResetForTests();
+        ScopedDictionaryLookup.ResetForTests();
         JournalPatternTranslator.ResetForTests();
 
         if (Directory.Exists(tempDirectory))
@@ -142,6 +144,98 @@ public sealed class JournalTextTranslatorTests
             AssertTranslatedMapNote("\u0001a slime bog", "\u0001a slime bog");
             AssertUntranslatedMapNote("an unknown landmark");
             AssertUntranslatedMapNote(string.Empty);
+        });
+    }
+
+    [Test]
+    public void TryTranslateMapNoteTextForStorage_TranslatesGeneratedSettlementAndDistanceLines()
+    {
+        WriteExactDictionary(
+            ("カルクヘタラ", "カルクヘタラ"),
+            ("Omonporch", "オモンポーチ"),
+            ("Red Rock", "レッドロック"),
+            ("east", "東"),
+            ("south", "南"));
+        WriteHistorySpiceDictionary(
+            ("stargazer", "星見"),
+            ("home", "家"));
+        WritePatternDictionary();
+
+        Assert.Multiple(() =>
+        {
+            AssertTranslatedMapNote(
+                "カルクヘタラ, Stargazerhome\n5 parasangs east and 5 parasangs south of Omonporch",
+                "\u0001カルクヘタラ, 星見の家\nオモンポーチから5パラサング東、5パラサング南");
+            AssertTranslatedMapNote(
+                "トゥキスフ, Stargazerhome\n7 parasangs east of Red Rock",
+                "\u0001トゥキスフ, 星見の家\nレッドロックから7パラサング東");
+        });
+    }
+
+    [Test]
+    public void TryTranslateMapNoteTextForStorage_LeavesGeneratedSettlementLineUnchanged_WhenSuffixUnknown()
+    {
+        WriteHistorySpiceDictionary(("stargazer", "星見"));
+        WritePatternDictionary();
+
+        AssertUntranslatedMapNote("Stargazerhome");
+    }
+
+    [Test]
+    public void TryTranslateMapNoteTextForStorage_PrioritizesLineTranslationBeforeWholePatternFallback()
+    {
+        WriteExactDictionary(("Kyakukya", "キャクキャ"), ("Grit Gate", "グリット・ゲート"), ("north", "北"));
+        WritePatternDictionary(("^You journeyed to (.+?)\\.", "{t0}に旅した。"));
+
+        var ok = JournalTextTranslator.TryTranslateMapNoteTextForStorage(
+            "You journeyed to Kyakukya.\n2 parasangs north of Grit Gate",
+            "Locations",
+            "JournalTextTranslatorTests",
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(translated, Is.EqualTo("\u0001キャクキャに旅した。\nグリット・ゲートから2パラサング北"));
+        });
+    }
+
+    [Test]
+    public void TryTranslateMapNoteTextForStorage_PreservesCrLfLineEndings()
+    {
+        WriteExactDictionary(("Kyakukya", "キャクキャ"), ("Grit Gate", "グリット・ゲート"), ("north", "北"));
+        WritePatternDictionary(("^You journeyed to (.+?)\\.", "{t0}に旅した。"));
+
+        var ok = JournalTextTranslator.TryTranslateMapNoteTextForStorage(
+            "You journeyed to Kyakukya.\r\n2 parasangs north of Grit Gate",
+            "Locations",
+            "JournalTextTranslatorTests",
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(translated, Is.EqualTo("\u0001キャクキャに旅した。\r\nグリット・ゲートから2パラサング北"));
+        });
+    }
+
+    [Test]
+    public void TryTranslateObservationRevealTextForStorage_FallsBackToWholeMultilinePattern()
+    {
+        WriteExactDictionary(("Joppa", "ジョッパ"));
+        WritePatternDictionary((
+            "^On the auspicious (.+?), =name= arrived in (.+?)\\.\n(.+?)$",
+            "{t0}、=name=は{t1}に到着した。\n{t2}"));
+
+        var ok = JournalTextTranslator.TryTranslateObservationRevealTextForStorage(
+            "On the auspicious 5th of Ut yara Ux, =name= arrived in Joppa.\nJourney began.",
+            "JournalTextTranslatorTests",
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(translated, Is.EqualTo("\u00015th of Ut yara Ux、=name=はジョッパに到着した。\nJourney began."));
         });
     }
 
@@ -262,6 +356,35 @@ public sealed class JournalTextTranslatorTests
         builder.AppendLine();
         File.WriteAllText(
             Path.Combine(dictionaryDirectory, "journal-text-l1.ja.json"),
+            builder.ToString(),
+            Utf8WithoutBom);
+    }
+
+    private void WriteHistorySpiceDictionary(params (string key, string text)[] entries)
+    {
+        var scopedDirectory = Path.Combine(dictionaryDirectory, "Scoped");
+        Directory.CreateDirectory(scopedDirectory);
+
+        var builder = new StringBuilder();
+        builder.Append("{\"entries\":[");
+        for (var index = 0; index < entries.Length; index++)
+        {
+            if (index > 0)
+            {
+                builder.Append(',');
+            }
+
+            builder.Append("{\"key\":\"");
+            builder.Append(EscapeJson(entries[index].key));
+            builder.Append("\",\"text\":\"");
+            builder.Append(EscapeJson(entries[index].text));
+            builder.Append("\"}");
+        }
+
+        builder.Append("]}");
+        builder.AppendLine();
+        File.WriteAllText(
+            Path.Combine(scopedDirectory, "historyspice-common.ja.json"),
             builder.ToString(),
             Utf8WithoutBom);
     }

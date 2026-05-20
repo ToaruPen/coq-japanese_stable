@@ -42,6 +42,116 @@
       "route": "journal"
     },
     {
+      "pattern": "^Done trekking through the root-strangled earth, =name= arrived in (.+?) and was greeted by the village with warmth and reverence\\. Upon leaving, =name= was named Friend to (.+?)\\.$",
+      "template": "根に絡まれた大地を歩き終え、=name=は{t0}に到着し、村から温かな敬意をもって迎えられた。去る時、=name=は{t1}の友と呼ばれた。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^On an expedition down the River Svy, =name= was captured by bandits\\. (.+?) languished in captivity for (.+?) years, eventually escaping to (.+?) and befriending its mayor, the albino ape called (.+?)\\.$",
+      "template": "スヴィ川を下る遠征中、=name=は盗賊に捕らえられた。{t0}は{t1}年にわたり囚われの身で苦しんだが、ついには{t2}へ逃れ、白い類人猿{t3}として知られる村長と親交を結んだ。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^=name= journeyed to the Spindle at (.+?), voiced a prayer for the Fossilized Saads, and observed a star fall along the planet's axis\\.$",
+      "template": "=name=は{t0}のスピンドルへ旅し、化石化したサードたちに祈りを捧げ、惑星の軸に沿って星が落ちるのを見た。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^In =year=, =name= appointed the corrupt administrator (.+?) as earl and minister of (.+?)\\. There (.+?) mandated the practice of (<spice\\.elements\\..+?\\.practices\\.!random>) in (.+?) name\\.$",
+      "template": "=year=、=name=は腐敗した行政官{t0}を{t1}の伯爵兼大臣に任じた。そこで{t2}は{t4}名のもと{t3}の実践を義務づけた。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^=name= trekked through the salt pans, north and west, to the merchant bazaar and grand cathedral of the Six Day Stilt\\. There, the stiltfolk sang hymns in the sultan's honor\\.$",
+      "template": "=name=は塩原を北へ西へと進み、シックス・デイ・スティルトの商人バザールと大聖堂へ到達した。そこでスティルトの民はスルタンを讃える聖歌を歌った。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^After trekking the vacant flats, =name= journeyed to the merchant bazaar and cathedral at the Six Day Stilt\\. There (.+?) befriended the Mechanimists and threw an artifact down the Sacred Well\\.$",
+      "template": "空虚な平原を歩いた後、=name=はシックス・デイ・スティルトの商人バザールと大聖堂へ旅した。そこで{t0}はメカニミストと親交を結び、聖なる井戸へアーティファクトを投げ込んだ。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^=name= hiked the salted marshes and came upon the ancient gathering place called (.+?), where a bevy of snapjaws cooked the sultan a satisfying meal\\.$",
+      "template": "=name=は塩の湿地を歩き、{t0}と呼ばれる古代の集会所にたどり着いた。そこではスナップジョーの一団がスルタンに満足のいく食事を作っていた。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^Near the location of (.+?), =name= was captured by baboons\\. (.+?) murdered their leader (<spice\\.elements\\..+?\\.murdermethods\\.!random>) and from then on wore a neck ring stained with baboon blood\\.$",
+      "template": "{t0}の近くで、=name=はヒヒに捕らえられた。{t1}はその指導者を{t2}で殺し、それ以来ヒヒの血で染まった首輪を身につけた。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^To commemorate the imperial conquests of =name=, a triumphal arch was erected across the fruiting gorges\\.$",
+      "template": "=name=の帝国征服を記念し、実り多き峡谷をまたぐ凱旋門が建てられた。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^At (<spice\\.time\\.partsOfDay\\.!random>) under (<spice\\.commonPhrases\\.strange\\.!random\\.article>) and rusted sky, the people of the desert canyon saw an image on the horizon that looked like a (.+?) under an archway\\. It was =name=, and after (.+?) came and left, the people built a monument to =name= and thenceforth called (.+?) the Underarch (.+?)\\.$",
+      "template": "{0}、{1}と錆びた空の下で、砂漠峡谷の民は地平線にアーチの下の{t2}のような姿を見た。それは=name=だった。{t3}が来て去った後、人々は=name=の記念碑を建て、以後{t4}をアンダーアーチの{t5}と呼んだ。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^Hillfolk dug wells deep into the earth and drew spring water to honor the sultan =name= in sacred ritual\\.$",
+      "template": "丘陵の民は大地の深くまで井戸を掘り、神聖な儀式でスルタン=name=を讃えるため湧き水を汲み上げた。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^While journeying across the wavegraph hills, =name= discovered the rust wells\\. There (.+?) befriended water barons and sipped from the red iron spring\\.$",
+      "template": "波形丘陵を旅する中で、=name=は錆の井戸を発見した。そこで{t0}は水の男爵たちと親交を結び、赤鉄の泉をすすった。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^The scholar-sultan =name= visited (.+?) and lectured the monastic order there on the subject of light refraction\\.$",
+      "template": "学者スルタン=name=は{t0}を訪れ、そこの修道会に光の屈折について講義した。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^While delving deep through moss-skirted steeples of chrome, =name= discovered the ancient (.+?)\\. There (.+?) befriended the Barathrumites and lectured them on light refraction\\.$",
+      "template": "苔をまとったクロムの尖塔の奥深くを潜る中で、=name=は古代の{t0}を発見した。そこで{t1}はバラサルマイトと親交を結び、光の屈折について講義した。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^In the month of (.+?) of (.+?) AR, =name= ascended the trash chutes of (.+?), victorious and bathed in slime\\.$",
+      "template": "{t1}年{t0}、=name=は勝利を得て粘液を浴びながら、{t2}の廃棄物シュートを登った。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^One auspicious day in the jungle, =name= descended the trash chutes of (.+?) and bathed in viscous slime\\. From that day forth, (.+?) always kept some wet trash on (.+?) person\\.$",
+      "template": "ジャングルのある吉日、=name=は{t0}の廃棄物シュートを下り、粘つく粘液を浴びた。その日以来、{t1}は常に濡れたごみを{t2}身につけていた。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^=name= trekked to the frozen sauna at (.+?) and soaked in the company of trolls\\.$",
+      "template": "=name=は{t0}の凍てついたサウナへ歩き、トロールたちとともに湯に浸かった。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^In =year=, =name= appointed a corrupt administrator to the frozen sauna at (.+?)\\. There (.+?) mandated association with trolls in (.+?) name\\.$",
+      "template": "=year=、=name=は{t0}の凍てついたサウナに腐敗した行政官を任じた。そこで{t1}は{t2}名のもとトロールとの交際を義務づけた。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^In the month of (.+?) of (.+?) AR, =name= trekked to the Tomb of the Eaters and traced a sigil across the Death Gate\\. O wise sultan!$",
+      "template": "{t1}年{t0}、=name=は喰らう者の墓へ歩み、死の門に印をなぞった。おお、賢きスルタンよ！",
+      "route": "journal"
+    },
+    {
+      "pattern": "^While traveling through the banana grove, =name= trekked to the Tomb of the Eaters and dreamed they emerged at the Court of Sultans and crossed the Death Gate\\. From that day forth, (.+?) always kept the Mark of Death on (.+?) person\\.$",
+      "template": "バナナ林を旅する中で、=name=は喰らう者の墓へ歩み、スルタンたちの宮廷に現れて死の門を渡る夢を見た。その日以来、{t0}は常に死の印を{t1}身につけていた。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^Strong =name= trekked to (.+?) to breathe the tarry vapor and bathe in the black blood of the earth\\.$",
+      "template": "強き=name=はタールの蒸気を吸い、大地の黒き血を浴びるため{t0}へ歩んだ。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^Sometime in =year=, =name= wandered over the high mounts and voyaged to (.+?)\\. There (.+?) befriended no one and instead bathed in the black blood of the earth\\.$",
+      "template": "=year=のある時、=name=は高き山々をさまよい、{t0}へ旅した。そこで{t1}は誰とも親交を結ばず、代わりに大地の黒き血を浴びた。",
+      "route": "journal"
+    },
+    {
       "pattern": "^You discovered the hidden village of (.+?)\\.$",
       "template": "隠れ里{t0}を発見した。",
       "route": "journal"
@@ -59,6 +169,11 @@
     {
       "pattern": "^Last visited on the (.+?) of (.+?)$",
       "template": "{t1}の{t0}日に最後に訪れた。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^On the auspicious (.+?) of (.+?), =name= arrived in (.+?) and began (.+?) prodigious odyssey through Qud\\.$",
+      "template": "{t1}の{t0}日、=name=は{t2}に到着し、{t3}クッドを巡る驚異的な旅路を始めた。",
       "route": "journal"
     },
     {
@@ -97,6 +212,16 @@
       "route": "journal"
     },
     {
+      "pattern": "^On the (.+?) of (.+?)$",
+      "template": "{t1}の{t0}日",
+      "route": "journal"
+    },
+    {
+      "pattern": "^At (<spice\\.time\\.partsOfDay\\.!random>) under (<spice\\.commonPhrases\\.strange\\.!random\\.article>) and (.+?) sky, the people of (.+?) saw an image on the horizon that looked like a (.+?) bathed in (.+?)\\. It was =name=, and after (.+?) came and left, the people of (.+?) built a monument to =name= and thenceforth called (.+?) (.+?)-in-(.+?)\\.$",
+      "template": "{0}、{1}と{t2}の空の下で、{t3}の民は地平線に{t5}を浴びた{t4}のような姿を見た。それは=name=だった。{t6}が来て去った後、{t7}の民は=name=の記念碑を建て、以後{t8}を{t10}の{t9}と呼んだ。",
+      "route": "journal"
+    },
+    {
       "pattern": "^You discovered the location of (.+?)\\.$",
       "template": "{0}の場所を発見した。",
       "route": "journal"
@@ -107,18 +232,28 @@
       "route": "journal"
     },
     {
+      "pattern": "^In the month of (.+?) of (.+?) AR, =name= founded the village of (.+?) to <spice\\.history\\.gospels\\.HumblePractice\\.LateSultanate\\.!random>\\.$",
+      "template": "{t1}年{t0}、=name=は<spice.history.gospels.HumblePractice.LateSultanate.!random>ために{t2}の村を建てた。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^Acting against the prohibition on the practice of <spice\\.elements\\.(.+?)\\.practices\\.!random>, =name= led an army to the gates of (.+?)\\. =name= <spice\\.commonPhrases\\.liberated\\.!random> its citizens, and in (.+?) honor they <spice\\.history\\.gospels\\.Celebration\\.LateSultanate\\.!random>\\.$",
+      "template": "<spice.elements.{0}.practices.!random>の実践への禁令に抗し、=name=は軍勢を率いて{t1}の門へ至った。=name=はその市民を<spice.commonPhrases.liberated.!random>し、{t2}栄誉のもと彼らは<spice.history.gospels.Celebration.LateSultanate.!random>した。",
+      "route": "journal"
+    },
+    {
       "pattern": "^You visited the historic site of (.+?)\\.$",
       "template": "史跡{t0}を訪れた。",
       "route": "journal"
     },
     {
       "pattern": "^You became loved among (.+?) and were treated as one of their own\\.$",
-      "template": "{0}に愛され、その一員として扱われるようになった。",
+      "template": "{t0}に愛され、その一員として扱われるようになった。",
       "route": "journal"
     },
     {
       "pattern": "^You recovered the historic relic, (.+?)\\.$",
-      "template": "歴史的遺物{0}を回収した。",
+      "template": "歴史的遺物{t0}を回収した。",
       "route": "journal"
     },
     {
@@ -198,7 +333,17 @@
     },
     {
       "pattern": "^You imbued (.+?) with life\\. Why\\?$",
-      "template": "{0}に命を吹き込んだ。なぜ？",
+      "template": "{t0}に命を吹き込んだ。なぜ？",
+      "route": "journal"
+    },
+    {
+      "pattern": "^While traveling in (.+?), =name= performed a sacred ritual with (.+?), imbuing (.+?) with life and arranging (.+?) (.+?)\\. Many of the local denizens declared it a miracle\\. Some weren't so sure\\.$",
+      "template": "{t0}を旅する中で、=name=は{t1}を用いて神聖な儀式を行い、{t2}に命を吹き込み、{t3}を{t4}よう整えた。地元の多くの住民はそれを奇跡だと宣言した。疑う者もいた。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^While traveling in (.+?), =name= performed a sacred ritual with (.+?), imbuing (.+?) with life and arranging (.+?) (.+?)\\. Many of the local denizens declared it a miracle\\.$",
+      "template": "{t0}を旅する中で、=name=は{t1}を用いて神聖な儀式を行い、{t2}に命を吹き込み、{t3}を{t4}よう整えた。地元の多くの住民はそれを奇跡だと宣言した。",
       "route": "journal"
     },
     {
@@ -282,8 +427,28 @@
       "route": "journal"
     },
     {
-      "pattern": "^Your genome destabilized and you gained the (.+?) (.+?)\\.$",
-      "template": "あなたのゲノムが不安定になり、{0}の{1}を得た。",
+      "pattern": "^Your (.+?) (?:was|were) dismembered\\.$",
+      "template": "{t0}が切断された。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^While fighting a battle to protect the practice of (.+?), =name= valorously had (.+?) (.+?) dismembered\\.$",
+      "template": "{t0}の実践を守る戦いの中で、=name=は勇敢にも{t2}を切断された。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^Your genome destabilized and you gained the (.+?) (mutation|defect)\\.$",
+      "template": "あなたのゲノムが不安定になり、{t0}の{t1}を得た。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^<spice\\.commonPhrases\\.oneStarryNight\\.!random\\.capitalize>, =name= manifested a latent power inside (?:.+?) and joined the divine ranks of (.+?)\\.$",
+      "template": "<spice.commonPhrases.oneStarryNight.!random.capitalize>、=name=は内なる潜在能力を顕現させ、{t0}の神聖なる列に加わった。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^While wandering (.+?), =name= stumbled upon a clan of (.+?)\\. Because of (.+?) <spice\\.elements\\.(.+?)\\.quality\\.!random>, they accepted (.+?) into their fold and taught (.+?) their secrets\\.$",
+      "template": "{t0}をさまよううち、=name=は{t1}の一族に出くわした。{t2}<spice.elements.{3}.quality.!random>ゆえ、彼らは{t4}を仲間に迎え入れ、{t5}に彼らの秘密を授けた。",
       "route": "journal"
     },
     {
@@ -298,12 +463,172 @@
     },
     {
       "pattern": "^You located (.+?)\\.$",
-      "template": "{0}を発見した。",
+      "template": "{t0}を発見した。",
       "route": "journal"
     },
     {
       "pattern": "^You recovered (.+?)\\.$",
-      "template": "{0}を回収した。",
+      "template": "{t0}を回収した。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^You opened (.+?)\\.$",
+      "template": "{t0}を開けた。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^You closed (.+?)\\.$",
+      "template": "{t0}を閉じた。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^You entered (.+?)\\.$",
+      "template": "{t0}に入った。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^You slept in (.+?)\\.$",
+      "template": "{t0}で眠った。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^You slept on (.+?)\\.$",
+      "template": "{t0}の上で眠った。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^You sat on (.+?)\\.$",
+      "template": "{t0}に座った。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^You put something in (.+?)\\.$",
+      "template": "{t0}に何かを入れた。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^You put something on (.+?)\\.$",
+      "template": "{t0}に何かを置いた。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^You drank from (.+?)\\.$",
+      "template": "{t0}から飲んだ。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^You cooked at (.+?)\\.$",
+      "template": "{t0}で料理した。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^You smoked from (.+?)\\.$",
+      "template": "{t0}で吸った。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^You prayed at (.+?)\\.$",
+      "template": "{t0}で祈った。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^You desecrated (.+?)\\.$",
+      "template": "{t0}を冒涜した。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^Through the use of (.+?) divinely (.+?) eyes, =name= discovered the lost location of (.+?)\\.$",
+      "template": "{t0}神々しい{t1}目を用いて、=name=は失われた{t2}の場所を発見した。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^Acting against the persecution of (.+?), =name= led an army to the lost gates of (.+?)\\. (.+?) liberated its citizens, who together in (.+?) honor <spice\\.history\\.gospels\\.Celebration\\.LateSultanate\\.!random>\\.$",
+      "template": "{t0}への迫害に抗し、=name=は軍勢を率いて失われた{t1}の門へ至った。{t2}はその市民を解放し、{t3}栄誉のもと<spice.history.gospels.Celebration.LateSultanate.!random>した。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^While exploring (.+?), =name= recovered the fabled artifact called (.+?)\\.$",
+      "template": "{t0}を探索中、=name=は{t1}という伝説のアーティファクトを回収した。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^While exploring (.+?), =name= opened the fabled contraption called (.+?)\\.$",
+      "template": "{t0}を探索中、=name=は{t1}という伝説の仕掛けを開けた。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^While exploring (.+?), =name= closed the fabled contraption called (.+?)\\.$",
+      "template": "{t0}を探索中、=name=は{t1}という伝説の仕掛けを閉じた。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^While exploring (.+?), =name= entered the fabled contraption called (.+?)\\.$",
+      "template": "{t0}を探索中、=name=は{t1}という伝説の仕掛けに入った。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^While exploring (.+?), =name= slept in the fabled contraption called (.+?)\\.$",
+      "template": "{t0}を探索中、=name=は{t1}という伝説の仕掛けで眠った。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^While exploring (.+?), =name= slept on the fabled contraption called (.+?)\\.$",
+      "template": "{t0}を探索中、=name=は{t1}という伝説の仕掛けの上で眠った。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^While exploring (.+?), =name= sat on the fabled contraption called (.+?)\\.$",
+      "template": "{t0}を探索中、=name=は{t1}という伝説の仕掛けに座った。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^While exploring (.+?), =name= put something in the fabled contraption called (.+?)\\.$",
+      "template": "{t0}を探索中、=name=は{t1}という伝説の仕掛けに何かを入れた。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^While exploring (.+?), =name= put something on the fabled contraption called (.+?)\\.$",
+      "template": "{t0}を探索中、=name=は{t1}という伝説の仕掛けに何かを置いた。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^While exploring (.+?), =name= drank from the fabled contraption called (.+?)\\.$",
+      "template": "{t0}を探索中、=name=は{t1}という伝説の仕掛けから飲んだ。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^While exploring (.+?), =name= cooked at the fabled contraption called (.+?)\\.$",
+      "template": "{t0}を探索中、=name=は{t1}という伝説の仕掛けで料理した。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^While exploring (.+?), =name= smoked from the fabled contraption called (.+?)\\.$",
+      "template": "{t0}を探索中、=name=は{t1}という伝説の仕掛けで吸った。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^While exploring (.+?), =name= prayed at the fabled contraption called (.+?)\\.$",
+      "template": "{t0}を探索中、=name=は{t1}という伝説の仕掛けで祈った。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^While exploring (.+?), =name= desecrated the fabled contraption called (.+?)\\.$",
+      "template": "{t0}を探索中、=name=は{t1}という伝説の仕掛けを冒涜した。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^While visiting an obscure (<spice\\.professions\\..+?\\.guildhall>), =name= met with a group of (<spice\\.professions\\..+?\\.plural>) and commissed what came to be known as (.+?)\\.$",
+      "template": "とある{0}を訪れた際、=name=は{1}の一団と会い、のちに{t2}として知られるものを依頼した。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^<spice\\.commonPhrases\\.intrepid\\.!random\\.capitalize> =name= recovered (.+?), a historic relic once thought lost to the sands of time\\.$",
+      "template": "<spice.commonPhrases.intrepid.!random.capitalize>=name=は、かつて時の砂に失われたと思われていた歴史的遺物{t0}を回収した。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^In an excavation at a site of deep history near (.+?), =name= recovered (.+?), the historic relic once thought lost to the sands of time\\.$",
+      "template": "{t0}近くの深い歴史を持つ場所での発掘において、=name=はかつて時の砂に失われたと思われていた歴史的遺物{t1}を回収した。",
       "route": "journal"
     },
     {

@@ -5,6 +5,7 @@ decompiled_root := env_var("HOME") + "/dev/coq-decompiled_stable"
 decompiled_annals_root := env_var("HOME") + "/dev/coq-decompiled_stable/XRL.Annals"
 dotnet_artifacts_root := env_var_or_default("QUDJP_DOTNET_ARTIFACTS_ROOT", ".artifacts/dotnet")
 dotnet_test_build_properties := "-p:RunAnalyzers=false -p:RunAnalyzersDuringBuild=false"
+player_log := env_var_or_default("QUDJP_PLAYER_LOG", `case "$(uname -s)" in Darwin) [ -f "${HOME}/Library/Logs/Freehold Games/CavesOfQud/Player.log" ] && printf '%s' "${HOME}/Library/Logs/Freehold Games/CavesOfQud/Player.log" || : ;; Linux) for path in "${HOME}/.local/share/CavesOfQud/Player.log" "${HOME}/.config/CavesOfQud/Player.log"; do [ -f "${path}" ] && { printf '%s' "${path}"; exit 0; }; done; : ;; *) : ;; esac`)
 
 default:
   just --list
@@ -343,6 +344,26 @@ deploy-dev-to destination:
 runtime-evidence-check: test-l1
   uv run pytest scripts/tests/test_triage_log_parser.py scripts/tests/test_triage_models.py scripts/tests/test_triage_classifier.py scripts/tests/test_triage_integration.py -q
   uv run pytest scripts/tests/test_triage_integration.py -q -k sample_log_smoke
+
+# Check fresh Player.log evidence for Issue #737 HSE route closeout.
+issue737-runtime-closeout min_mtime="2026-05-19T20:33:00+09:00" log=player_log output="/tmp/issue737-runtime-closeout.json":
+  #!/usr/bin/env bash
+  set -euo pipefail
+  log_args=()
+  if [ -n {{quote(log)}} ]; then
+    log_args=(--log {{quote(log)}})
+  fi
+  {{python}} scripts/issue737_runtime_closeout.py "${log_args[@]}" --min-mtime {{quote(min_mtime)}} --output {{quote(output)}}
+
+# Require Issue #737 HSE route closeout to be fully passed.
+issue737-runtime-closeout-strict min_mtime="2026-05-19T20:33:00+09:00" log=player_log output="/tmp/issue737-runtime-closeout.json":
+  #!/usr/bin/env bash
+  set -euo pipefail
+  log_args=()
+  if [ -n {{quote(log)}} ]; then
+    log_args=(--log {{quote(log)}})
+  fi
+  {{python}} scripts/issue737_runtime_closeout.py "${log_args[@]}" --min-mtime {{quote(min_mtime)}} --output {{quote(output)}} --require-passed
 
 # Run the broad local verification gate.
 check: build test-csharp python-check python-test localization-check translation-token-check changelog-link-check markdown-report-check localization-coverage-map-check

@@ -21,6 +21,9 @@ public sealed class CookingRuntimeTranslationPatchTests
         "You eat the meal. It's tastier than usual.\n\n{{W|+5 hit points for the rest of the day}}",
         "食事を食べた。いつもよりおいしい。\n\n{{W|一日中、HP+5}}")]
     [TestCase(
+        "You gorge on the succulent meat. It's tastier than usual.\n\n{{W|+5 hit points for the rest of the day}}",
+        "瑞々しい肉を貪った。いつもよりおいしい。\n\n{{W|一日中、HP+5}}")]
+    [TestCase(
         "You eat the meal. It's tastier than usual.\n\n{{W|+1 MA for the rest of the day}}",
         "食事を食べた。いつもよりおいしい。\n\n{{W|一日中、MA+1}}")]
     [TestCase(

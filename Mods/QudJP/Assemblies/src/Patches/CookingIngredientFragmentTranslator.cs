@@ -6,7 +6,11 @@ namespace QudJP.Patches;
 internal static class CookingIngredientFragmentTranslator
 {
     private static readonly Regex MeasuredIngredientPattern = new(
-        "^a (?<unit>pinch|dash|smidgen|sprinkle|nip|dram) of (?<name>.+)$",
+        "^(?:(?:a|an) )?(?<unit>pinch|dash|smidgen|sprinkle|nip|dram) of (?<name>.+)$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.Singleline);
+
+    private static readonly Regex PossessiveBodyPartIngredientPattern = new(
+        "^(?<owner>.+?)(?:'s|') (?<part>right hand|left hand|right foot|left foot|hand|foot|head|face|arm|leg|tail|wing|horn)$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.Singleline);
 
     private static readonly Regex SomeIngredientPattern = new(
@@ -60,12 +64,36 @@ internal static class CookingIngredientFragmentTranslator
             return true;
         }
 
+        if (TryTranslateIngredientName(source!, out ingredient))
+        {
+            translated = ingredient;
+            return true;
+        }
+
         translated = source!;
         return false;
     }
 
     private static bool TryTranslateIngredientName(string source, out string translated)
     {
+        if (TryTranslatePossessiveBodyPartIngredientName(source, out translated))
+        {
+            return true;
+        }
+
+        return TryTranslateNonPossessiveIngredientName(source, out translated);
+    }
+
+    private static bool TryTranslateNonPossessiveIngredientName(string source, out string translated)
+    {
+        using var _ = Translator.PushMissingKeyLoggingSuppression(true);
+        var scoped = HistorySpiceComponentLookup.TranslateExactOrLowerAscii(source);
+        if (scoped is not null)
+        {
+            translated = scoped;
+            return true;
+        }
+
         translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
             source,
             nameof(CampfireRollIngredientsTranslationPatch));
@@ -74,11 +102,9 @@ internal static class CookingIngredientFragmentTranslator
             return true;
         }
 
-        using var _ = Translator.PushMissingKeyLoggingSuppression(true);
-        var scoped = HistorySpiceComponentLookup.TranslateExactOrLowerAscii(source);
-        if (scoped is not null)
+        if (HistorySpiceComponentLookup.TryTranslateTitlePhrase(source, out var titlePhrase))
         {
-            translated = scoped;
+            translated = titlePhrase;
             return true;
         }
 
@@ -92,6 +118,68 @@ internal static class CookingIngredientFragmentTranslator
 
         translated = source;
         return false;
+    }
+
+    private static bool TryTranslatePossessiveBodyPartIngredientName(string source, out string translated)
+    {
+        translated = source;
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        var match = PossessiveBodyPartIngredientPattern.Match(stripped);
+        if (!match.Success)
+        {
+            return false;
+        }
+
+        var ownerGroup = match.Groups["owner"];
+        if (!TryTranslateNonPossessiveIngredientName(ownerGroup.Value, out var owner))
+        {
+            owner = ownerGroup.Value;
+        }
+
+        owner = ColorAwareTranslationComposer.RestoreCaptureWholeBoundaryWrappersPreservingTranslatedOwnership(
+            owner,
+            spans,
+            ownerGroup);
+
+        var partGroup = match.Groups["part"];
+        if (!TryTranslateBodyPartName(partGroup.Value, out var part))
+        {
+            return false;
+        }
+
+        part = ColorAwareTranslationComposer.RestoreCaptureWholeBoundaryWrappersPreservingTranslatedOwnership(
+            part,
+            spans,
+            partGroup);
+
+        translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+            owner + "の" + part,
+            spans,
+            stripped.Length,
+            source);
+        return true;
+    }
+
+    private static bool TryTranslateBodyPartName(string source, out string translated)
+    {
+        translated = source switch
+        {
+            "right hand" => "右手",
+            "left hand" => "左手",
+            "right foot" => "右足",
+            "left foot" => "左足",
+            "hand" => "手",
+            "foot" => "足",
+            "head" => "頭",
+            "face" => "顔",
+            "arm" => "腕",
+            "leg" => "脚",
+            "tail" => "尾",
+            "wing" => "翼",
+            "horn" => "角",
+            _ => source,
+        };
+        return !string.Equals(translated, source, StringComparison.Ordinal);
     }
 
     private static bool TryTranslateUnit(string source, out string translated)

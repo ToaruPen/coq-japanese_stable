@@ -201,6 +201,127 @@ public sealed class CampfireNostrumsTranslationPatchTests
             expectedHits: 0);
     }
 
+    [TestCase("Treat whom first?", "最初に誰を治療する？")]
+    [TestCase("Treat whom next?", "次に誰を治療する？")]
+    [TestCase("Select an ingredient to use.", "使う材料を選ぶ。")]
+    [TestCase("{{W|Treat whom first?}}", "{{W|最初に誰を治療する？}}")]
+    public void Patch_TranslatesPickGameObjectTitles_WhenOwnerActive(string source, string expected)
+    {
+        CampfireNostrumsTranslationPatch.Prefix();
+        try
+        {
+            var translated = PopupTranslationPatch.TranslatePopupTextForProducerRoute(
+                source,
+                nameof(PopupPickOptionTranslationPatch));
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(translated, Is.EqualTo(expected));
+                Assert.That(PickGameObjectTitleHitCount(), Is.EqualTo(1));
+            });
+        }
+        finally
+        {
+            CampfireNostrumsTranslationPatch.Finalizer(null);
+        }
+    }
+
+    [Test]
+    public void Patch_StripsDirectMarkedPickGameObjectTitleWithoutRetranslating_WhenOwnerActive()
+    {
+        CampfireNostrumsTranslationPatch.Prefix();
+        try
+        {
+            var handled = CampfireNostrumsTranslationPatch.TryTranslatePopupProducerText(
+                MessageFrameTranslator.MarkDirectTranslation("Treat whom first?"),
+                nameof(PopupPickOptionTranslationPatch),
+                "Popup.ProducerText",
+                out var translated);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(handled, Is.True);
+                Assert.That(translated, Is.EqualTo("Treat whom first?"));
+                Assert.That(PickGameObjectTitleHitCount(), Is.EqualTo(1));
+            });
+        }
+        finally
+        {
+            CampfireNostrumsTranslationPatch.Finalizer(null);
+        }
+    }
+
+    [Test]
+    public void Patch_StripsDirectMarkedUnknownPickGameObjectTitle_WhenOwnerActive()
+    {
+        CampfireNostrumsTranslationPatch.Prefix();
+        try
+        {
+            var handled = CampfireNostrumsTranslationPatch.TryTranslatePopupProducerText(
+                MessageFrameTranslator.MarkDirectTranslation("^AUnknown title"),
+                nameof(PopupPickOptionTranslationPatch),
+                "Popup.ProducerText",
+                out var translated);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(handled, Is.True);
+                Assert.That(translated, Is.EqualTo("^AUnknown title"));
+                Assert.That(PickGameObjectTitleHitCount(), Is.EqualTo(1));
+            });
+        }
+        finally
+        {
+            CampfireNostrumsTranslationPatch.Finalizer(null);
+        }
+    }
+
+    [Test]
+    public void Patch_LeavesUnknownPickGameObjectTitleUnchanged_WhenOwnerActive()
+    {
+        const string source = "^AUnknown title";
+
+        CampfireNostrumsTranslationPatch.Prefix();
+        try
+        {
+            var handled = CampfireNostrumsTranslationPatch.TryTranslatePopupProducerText(
+                source,
+                nameof(PopupPickOptionTranslationPatch),
+                "Popup.ProducerText",
+                out var translated);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(handled, Is.False);
+                Assert.That(translated, Is.EqualTo(source));
+                Assert.That(PickGameObjectTitleHitCount(), Is.Zero);
+            });
+        }
+        finally
+        {
+            CampfireNostrumsTranslationPatch.Finalizer(null);
+        }
+    }
+
+    [Test]
+    public void Patch_DoesNotTranslatePickGameObjectTitle_WhenOwnerAbsent()
+    {
+        const string source = "Treat whom first?";
+
+        var handled = CampfireNostrumsTranslationPatch.TryTranslatePopupProducerText(
+            source,
+            nameof(PopupPickOptionTranslationPatch),
+            "Popup.ProducerText",
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(handled, Is.False);
+            Assert.That(translated, Is.EqualTo(source));
+            Assert.That(PickGameObjectTitleHitCount(), Is.Zero);
+        });
+    }
+
     [Test]
     public void Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched()
     {
@@ -246,6 +367,13 @@ public sealed class CampfireNostrumsTranslationPatchTests
         return DynamicTextObservability.GetRouteFamilyHitCountForTests(
             nameof(PopupShowTranslationPatch),
             "Popup.ProducerText." + nameof(CampfireNostrumsTranslationPatch) + "." + detail);
+    }
+
+    private static int PickGameObjectTitleHitCount()
+    {
+        return DynamicTextObservability.GetRouteFamilyHitCountForTests(
+            nameof(PopupPickOptionTranslationPatch),
+            "Popup.ProducerText." + nameof(CampfireNostrumsTranslationPatch) + ".PickGameObjectTitle");
     }
 
     private static bool ShouldUseFailurePopup(string detail)

@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using HarmonyLib;
 
 namespace QudJP.Patches;
@@ -10,6 +11,10 @@ namespace QudJP.Patches;
 public static class JournalLineTranslationPatch
 {
     private const string Context = nameof(JournalLineTranslationPatch);
+
+    private static readonly Regex SultanHistoryHeaderPattern = new(
+        "^HISTORY OF (?<name>.+)$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     [HarmonyTargetMethod]
     private static MethodBase? TargetMethod()
@@ -79,7 +84,7 @@ public static class JournalLineTranslationPatch
         var prefix = prefixBuilder.ToString();
         var source = prefix + categoryName;
         var route = ObservabilityHelpers.ComposeContext(Context, "field=headerText");
-        var translatedCategory = TranslateVisibleText(categoryName, route, "JournalLine.CategoryHeader");
+        var translatedCategory = TranslateCategoryHeader(categoryName, route);
         var translated = prefix + translatedCategory;
 
         TrySetActive(GetMemberValue(instance, "headerContainer"), active: true);
@@ -352,6 +357,24 @@ public static class JournalLineTranslationPatch
     }
 
     private static string TranslateVisibleText(string source, string route, string family) => UiBindingTranslationHelpers.TranslateVisibleText(source, route, family);
+
+    private static string TranslateCategoryHeader(string source, string route)
+    {
+        var translated = ColorAwareTranslationComposer.TranslatePreservingColors(
+            source,
+            static visible =>
+            {
+                var match = SultanHistoryHeaderPattern.Match(visible);
+                return match.Success ? match.Groups["name"].Value + "の歴史" : visible;
+            });
+        if (!string.Equals(source, translated, StringComparison.Ordinal))
+        {
+            DynamicTextObservability.RecordTransform(route, "JournalLine.SultanHistoryHeader", source, translated);
+            return translated;
+        }
+
+        return TranslateVisibleText(source, route, "JournalLine.CategoryHeader");
+    }
 
     private static string GetRequiredStringMemberValue(object instance, string memberName)
     {

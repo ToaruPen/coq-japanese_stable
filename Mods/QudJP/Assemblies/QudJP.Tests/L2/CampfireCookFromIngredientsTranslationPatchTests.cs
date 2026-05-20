@@ -10,18 +10,50 @@ namespace QudJP.Tests.L2;
 [NonParallelizable]
 public sealed class CampfireCookFromIngredientsTranslationPatchTests
 {
+    private string tempDictionaryDirectory = null!;
+
     [SetUp]
     public void SetUp()
     {
+        tempDictionaryDirectory = Path.Combine(
+            Path.GetTempPath(),
+            "qudjp-campfire-cook-from-ingredients-l2",
+            Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(tempDictionaryDirectory);
+        Translator.ResetForTests();
+        Translator.SetDictionaryDirectoryForTests(tempDictionaryDirectory);
+        ScopedDictionaryLookup.ResetForTests();
         DynamicTextObservability.ResetForTests();
         MessageFrameTranslator.ResetForTests();
         DummyPopupShow.Reset();
+    }
+
+    [TearDown]
+    public void TearDown()
+    {
+        Translator.ResetForTests();
+        ScopedDictionaryLookup.ResetForTests();
+        DynamicTextObservability.ResetForTests();
+        MessageFrameTranslator.ResetForTests();
+
+        if (Directory.Exists(tempDictionaryDirectory))
+        {
+            Directory.Delete(tempDictionaryDirectory, recursive: true);
+        }
     }
 
     [TestCase(
         "You create a new recipe for {{|Glowfish Stew}}!",
         "{{|Glowfish Stew}}の新しいレシピを作った！",
         "RecipeCreated")]
+    [TestCase(
+        "You eat the meal.",
+        "食事をとった。",
+        "AteMeal")]
+    [TestCase(
+        "You toss {{Y|snapjaw haunch}} into a pot and stir.",
+        "{{Y|snapjaw haunch}}を鍋に放り込み、かき混ぜた。",
+        "MealDescription")]
     [TestCase(
         "You start to metabolize the meal, gaining the following effect for the rest of the day:\n\n{{W|+1 to hit}}",
         "食事の代謝が始まり、一日中次の効果を得る:\n\n{{W|命中+1}}",
@@ -117,10 +149,181 @@ public sealed class CampfireCookFromIngredientsTranslationPatchTests
             Assert.Multiple(() =>
             {
                 Assert.That(DummyPopupShow.LastShowMessage, Is.Not.Null);
+                Assert.That(HitCount("AteMeal"), Is.Zero);
+                Assert.That(HitCount("MealDescription"), Is.Zero);
                 Assert.That(HitCount("RecipeCreated"), Is.Zero);
                 Assert.That(HitCount("MetabolizeMeal"), Is.Zero);
             });
         });
+    }
+
+    [TestCase(
+        "{{W|Cook with the {{C|0}} selected ingredients.}}\n{{y|[up to 2 remaining]}}",
+        "{{W|選択した材料{{C|0}}個で料理する。}}\n{{y|[あと2個まで]}}")]
+    [TestCase(
+        "{{W|Cook with the {{R|3}} selected ingredients.}}\n{{y|[0 remaining]}}",
+        "{{W|選択した材料{{R|3}}個で料理する。}}\n{{y|[残り0個]}}")]
+    public void CookFromIngredients_TranslatesSelectedIngredientMenuRows_WhenOwnerActive(
+        string source,
+        string expected)
+    {
+        WithPatchedOwner(() =>
+        {
+            var target = new DummyCampfireCookFromIngredientsTarget
+            {
+                BeforePopup = () =>
+                {
+                    var translated = PopupTranslationPatch.TranslatePopupTextForProducerRoute(
+                        source,
+                        nameof(PopupPickOptionTranslationPatch));
+
+                    Assert.Multiple(() =>
+                    {
+                        Assert.That(translated, Is.EqualTo(expected));
+                        Assert.That(PickOptionProducerHitCount("SelectedIngredientsMenuRow"), Is.EqualTo(1));
+                    });
+                },
+            };
+
+            target.CookFromIngredients(random: false);
+        });
+    }
+
+    [Test]
+    public void CookFromIngredients_TranslatesSelectedIngredientMenuRows_WithCrLfLineEndings()
+    {
+        const string source = "{{W|Cook with the {{C|0}} selected ingredients.}}\r\n{{y|[up to 2 remaining]}}";
+
+        WithPatchedOwner(() =>
+        {
+            var target = new DummyCampfireCookFromIngredientsTarget
+            {
+                BeforePopup = () =>
+                {
+                    var translated = PopupTranslationPatch.TranslatePopupTextForProducerRoute(
+                        source,
+                        nameof(PopupPickOptionTranslationPatch));
+
+                    Assert.Multiple(() =>
+                    {
+                        Assert.That(translated, Is.EqualTo("{{W|選択した材料{{C|0}}個で料理する。}}\n{{y|[あと2個まで]}}"));
+                        Assert.That(PickOptionProducerHitCount("SelectedIngredientsMenuRow"), Is.EqualTo(1));
+                    });
+                },
+            };
+
+            target.CookFromIngredients(random: false);
+        });
+    }
+
+    [Test]
+    public void CookFromIngredients_DoesNotTranslateSelectedIngredientMenuRows_WhenOwnerAbsent()
+    {
+        const string source = "{{W|Cook with the {{C|0}} selected ingredients.}}\n{{y|[up to 2 remaining]}}";
+
+        var translated = PopupTranslationPatch.TranslatePopupTextForProducerRoute(
+            source,
+            nameof(PopupPickOptionTranslationPatch));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.EqualTo(source));
+            Assert.That(PickOptionProducerHitCount("SelectedIngredientsMenuRow"), Is.Zero);
+        });
+    }
+
+    [Test]
+    public void CookFromIngredients_StripsDirectMarkedSelectedIngredientMenuRow_WhenOwnerActive()
+    {
+        const string source = "{{W|Cook with the {{C|0}} selected ingredients.}}\n{{y|[up to 2 remaining]}}";
+
+        WithPatchedOwner(() =>
+        {
+            var target = new DummyCampfireCookFromIngredientsTarget
+            {
+                BeforePopup = () =>
+                {
+                    var translated = PopupTranslationPatch.TranslatePopupTextForProducerRoute(
+                        MessageFrameTranslator.MarkDirectTranslation(source),
+                        nameof(PopupPickOptionTranslationPatch));
+
+                    Assert.Multiple(() =>
+                    {
+                        Assert.That(translated, Is.EqualTo(source));
+                        Assert.That(PickOptionProducerHitCount("SelectedIngredientsMenuRow"), Is.Zero);
+                    });
+                },
+            };
+
+            target.CookFromIngredients(random: false);
+        });
+    }
+
+    [Test]
+    public void CookFromIngredients_StripsDirectMarkedSelectedIngredientMenuRow_InOwnerProducerHandler()
+    {
+        const string source = "{{W|Cook with the {{C|0}} selected ingredients.}}\n{{y|[up to 2 remaining]}}";
+
+        CampfireCookFromIngredientsTranslationPatch.Prefix(out var state);
+        try
+        {
+            var handled = CampfireCookFromIngredientsTranslationPatch.TryTranslatePopupProducerText(
+                MessageFrameTranslator.MarkDirectTranslation(source),
+                nameof(PopupPickOptionTranslationPatch),
+                "Popup.ProducerText",
+                out var translated);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(handled, Is.True);
+                Assert.That(translated, Is.EqualTo(source));
+                Assert.That(PickOptionProducerHitCount("SelectedIngredientsMenuRow"), Is.Zero);
+            });
+        }
+        finally
+        {
+            CampfireCookFromIngredientsTranslationPatch.Finalizer(null, state);
+        }
+    }
+
+    [Test]
+    public void CookFromIngredients_RestoresDirectMarkerPassThroughText_ForNestedOwnerScopes()
+    {
+        CampfireCookFromIngredientsTranslationPatch.Prefix(out var outerState);
+        try
+        {
+            _ = CampfireCookFromIngredientsTranslationPatch.TryTranslatePopupMessage(
+                MessageFrameTranslator.MarkDirectTranslation("You eat the meal."),
+                nameof(PopupShowTranslationPatch),
+                "Popup.Show",
+                out _);
+
+            Assert.That(DirectMarkerPassThroughText(), Is.EqualTo("You eat the meal."));
+
+            CampfireCookFromIngredientsTranslationPatch.Prefix(out var innerState);
+            try
+            {
+                _ = CampfireCookFromIngredientsTranslationPatch.TryTranslatePopupMessage(
+                    MessageFrameTranslator.MarkDirectTranslation("Nested direct popup."),
+                    nameof(PopupShowTranslationPatch),
+                    "Popup.Show",
+                    out _);
+
+                Assert.That(DirectMarkerPassThroughText(), Is.EqualTo("Nested direct popup."));
+            }
+            finally
+            {
+                CampfireCookFromIngredientsTranslationPatch.Finalizer(null, innerState);
+            }
+
+            Assert.That(DirectMarkerPassThroughText(), Is.EqualTo("You eat the meal."));
+        }
+        finally
+        {
+            CampfireCookFromIngredientsTranslationPatch.Finalizer(null, outerState);
+        }
+
+        Assert.That(DirectMarkerPassThroughText(), Is.Null);
     }
 
     private static void WithPatchedOwner(Action action)
@@ -178,11 +381,13 @@ public sealed class CampfireCookFromIngredientsTranslationPatchTests
     {
         var prefix = new HarmonyMethod(RequireMethod(
             typeof(CampfireCookFromIngredientsTranslationPatch),
-            nameof(CampfireCookFromIngredientsTranslationPatch.Prefix)));
+            nameof(CampfireCookFromIngredientsTranslationPatch.Prefix),
+            typeof(string).MakeByRefType()));
         var finalizer = new HarmonyMethod(RequireMethod(
             typeof(CampfireCookFromIngredientsTranslationPatch),
             nameof(CampfireCookFromIngredientsTranslationPatch.Finalizer),
-            typeof(Exception)));
+            typeof(Exception),
+            typeof(string)));
 
         harmony.Patch(
             original: RequireMethod(
@@ -200,6 +405,13 @@ public sealed class CampfireCookFromIngredientsTranslationPatchTests
             "Popup.Show." + nameof(CampfireCookFromIngredientsTranslationPatch) + "." + detail);
     }
 
+    private static int PickOptionProducerHitCount(string detail)
+    {
+        return DynamicTextObservability.GetRouteFamilyHitCountForTests(
+            nameof(PopupPickOptionTranslationPatch),
+            "Popup.ProducerText." + nameof(CampfireCookFromIngredientsTranslationPatch) + "." + detail);
+    }
+
     private static MethodInfo RequireMethod(Type type, string name, params Type[] parameterTypes)
     {
         var method = AccessTools.Method(type, name, parameterTypes);
@@ -211,15 +423,27 @@ public sealed class CampfireCookFromIngredientsTranslationPatchTests
     {
         return "qudjp.tests.campfire-cook-from-ingredients." + Guid.NewGuid().ToString("N");
     }
+
+    private static string? DirectMarkerPassThroughText()
+    {
+        var field = typeof(CampfireCookFromIngredientsTranslationPatch).GetField(
+            "directMarkerPassThroughText",
+            BindingFlags.NonPublic | BindingFlags.Static);
+        Assert.That(field, Is.Not.Null);
+        return field!.GetValue(null) as string;
+    }
 }
 
 internal sealed class DummyCampfireCookFromIngredientsTarget
 {
     public string PopupMessageToShow { get; set; } = string.Empty;
 
+    public Action? BeforePopup { get; set; }
+
     public bool CookFromIngredients(bool random)
     {
         _ = random;
+        BeforePopup?.Invoke();
         DummyPopupShow.Show(PopupMessageToShow);
         return true;
     }
