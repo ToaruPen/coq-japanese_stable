@@ -52,6 +52,20 @@ public sealed class FriendOrFoeReasonTranslatorTests
     }
 
     [Test]
+    public void TryTranslate_UsesExistingWorldPartsExactReasonInsideColorBoundaryWrapper()
+    {
+        WriteDictionaryFile("world-parts.ja.json", ("stealing a cherished heirloom", "大切にしていた家宝を盗んだ"));
+
+        var ok = FriendOrFoeReasonTranslator.TryTranslate("{{W|stealing a cherished heirloom}}", out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(translated, Is.EqualTo("{{W|大切にしていた家宝を盗んだ}}"));
+        });
+    }
+
+    [Test]
     public void TryTranslate_EmptyString_ReturnsFalseAndUnchanged()
     {
         var ok = FriendOrFoeReasonTranslator.TryTranslate(string.Empty, out var translated);

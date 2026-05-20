@@ -318,7 +318,7 @@
     },
     {
       "pattern": "^Throughout\\ the\\ entirety\\ of\\ (.+?),\\ (.+?)\\ (.+?)\\ the\\ flower\\ fields\\ and\\ brought\\ turmoil\\ to\\ the\\ troubled\\ village\\ of\\ Bey\\ Lah\\.\\ (.+?)\\ became\\ known\\ as\\ the\\ Hindren\\ (.+?)\\.$",
-      "template": "{t0}年を通じて、{t1}は花畑を{t2}うえ、悩めるベイ・ラーの村に混乱をもたらした。{t3}は以後ヒンドレンの{t4}として知られるようになった。",
+      "template": "{t0}年全体を通じて、{t1}は花畑を{t2}うえ、悩めるベイ・ラーの村に混乱をもたらした。{t3}は以後ヒンドレンの{t4}として知られるようになった。",
       "route": "annals"
     },
     {

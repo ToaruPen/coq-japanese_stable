@@ -88,6 +88,16 @@ def test_issue737_runtime_closeout_recipe_uses_dedicated_checker() -> None:
     assert "--require-passed" not in recipe
 
 
+def test_issue737_player_log_variable_only_uses_regular_files() -> None:
+    """Default Player.log discovery should not pass missing paths or directories to the checker."""
+    justfile = _justfile_text()
+    player_log_line = next(line for line in justfile.splitlines() if line.startswith("player_log :="))
+
+    assert '[ -f "${HOME}/Library/Logs/Freehold Games/CavesOfQud/Player.log" ]' in player_log_line
+    assert '[ -f "${path}" ]' in player_log_line
+    assert "[ -e " not in player_log_line
+
+
 def test_issue737_runtime_closeout_strict_recipe_requires_passed_status() -> None:
     """The strict Issue #737 closeout gate should fail until runtime evidence fully passes."""
     recipe = _recipe_body("issue737-runtime-closeout-strict")

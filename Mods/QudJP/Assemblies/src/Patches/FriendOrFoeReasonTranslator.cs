@@ -59,13 +59,13 @@ internal static class FriendOrFoeReasonTranslator
             return true;
         }
 
-        if (ScopedDictionaryLookup.TranslateExactOrLowerAscii(sourceValue, WorldPartsDictionaryFile) is { } exact)
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(sourceValue);
+        if (ScopedDictionaryLookup.TranslateExactOrLowerAscii(stripped, WorldPartsDictionaryFile) is { } exact)
         {
-            translated = exact;
+            translated = RestoreWhole(exact, stripped, spans, sourceValue);
             return true;
         }
 
-        var (stripped, spans) = ColorAwareTranslationComposer.Strip(sourceValue);
         if (TryTranslatePattern(
                 stripped,
                 spans,

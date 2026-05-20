@@ -5,7 +5,7 @@ decompiled_root := env_var("HOME") + "/dev/coq-decompiled_stable"
 decompiled_annals_root := env_var("HOME") + "/dev/coq-decompiled_stable/XRL.Annals"
 dotnet_artifacts_root := env_var_or_default("QUDJP_DOTNET_ARTIFACTS_ROOT", ".artifacts/dotnet")
 dotnet_test_build_properties := "-p:RunAnalyzers=false -p:RunAnalyzersDuringBuild=false"
-player_log := env_var_or_default("QUDJP_PLAYER_LOG", `case "$(uname -s)" in Darwin) printf '%s' "${HOME}/Library/Logs/Freehold Games/CavesOfQud/Player.log" ;; Linux) for path in "${HOME}/.local/share/CavesOfQud/Player.log" "${HOME}/.config/CavesOfQud/Player.log"; do [ -e "${path}" ] && { printf '%s' "${path}"; exit 0; }; done; : ;; *) : ;; esac`)
+player_log := env_var_or_default("QUDJP_PLAYER_LOG", `case "$(uname -s)" in Darwin) [ -f "${HOME}/Library/Logs/Freehold Games/CavesOfQud/Player.log" ] && printf '%s' "${HOME}/Library/Logs/Freehold Games/CavesOfQud/Player.log" || : ;; Linux) for path in "${HOME}/.local/share/CavesOfQud/Player.log" "${HOME}/.config/CavesOfQud/Player.log"; do [ -f "${path}" ] && { printf '%s' "${path}"; exit 0; }; done; : ;; *) : ;; esac`)
 
 default:
   just --list

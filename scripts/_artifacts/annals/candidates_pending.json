@@ -10103,7 +10103,7 @@
       ],
       "status": "accepted",
       "reason": "",
-      "ja_template": "{t0}年を通じて、{t1}は花畑を{t2}うえ、悩めるベイ・ラーの村に混乱をもたらした。{t3}は以後ヒンドレンの{t4}として知られるようになった。",
+      "ja_template": "{t0}年全体を通じて、{t1}は花畑を{t2}うえ、悩めるベイ・ラーの村に混乱をもたらした。{t3}は以後ヒンドレンの{t4}として知られるようになった。",
       "review_notes": "issue-737 route grammar closure; prefix-specific fixed leaf",
       "route": "annals",
       "en_template_hash": "sha256:7d0a10cc23e8ad34dd10fd0226b27c37dffa3f24af9ce14e12f5e590300753fd"

@@ -35,8 +35,8 @@ Observed current counts:
 - Valuable queue entries: `2,641`.
   - `history_generated_text` lane: `78` entries.
   - `action_required`: `0`
-  - `covered_by_owner_route`: `76`
-  - `partial_coverage`: `0`
+  - `covered_by_owner_route`: `75`
+  - `partial_coverage`: `1`
   - `runtime_required`: `2`
 
 Runtime evidence comes from the sanitized `Player.log` excerpts attached to
@@ -613,10 +613,10 @@ runtime evidence in Issue #737.
 
 `docs/reports/2026-05-17-historic-string-expander-owner-plan.md` records many
 HSE owner families as already covered by focused patches and tests. The current
-queue now has `action_required: 0` and `partial_coverage: 0`. The remaining
-tracked uncertainty is concentrated in the `runtime_required` rows and the
-overlay-only cases where static coverage already exists but fresh runtime proof
-is still useful.
+queue now has `action_required: 0` and `partial_coverage: 1`. The remaining
+tracked uncertainty is concentrated in the `runtime_required` rows, the
+`VillageSurface.CheckReveal` partial row, and the overlay-only cases where static
+coverage already exists but fresh runtime proof is still useful.
 
 Initial interpretation:
 
@@ -689,7 +689,7 @@ Current status for the Issue #737 objective:
 
 | Requirement | Current evidence | Status |
 | --- | --- | --- |
-| Audit the full current `history_generated_text` queue, not only the attached runtime samples. | Current regenerated policy output has `78` `history_generated_text` entries: `76` `covered_by_owner_route`, `2` `runtime_required`, `0` `action_required`, and `0` `partial_coverage`. | Satisfied for static queue classification. |
+| Audit the full current `history_generated_text` queue, not only the attached runtime samples. | Current regenerated policy output has `78` `history_generated_text` entries: `75` `covered_by_owner_route`, `2` `runtime_required`, `1` `partial_coverage`, and `0` `action_required`. | Satisfied for static queue classification; `VillageSurface.CheckReveal` remains partial instead of claimed as fully owner-covered. |
 | Fix runtime-proven campfire cooking leaks at owner routes. | `CampfirePreserveTranslationPatch`, `CampfireRollIngredientsTranslationPatch`, `CampfireDescribeMealTranslationPatch`, `CampfireCookFromIngredientsTranslationPatch`, `CookingRecipeDisplayNameTranslationPatch`, message-log frame coverage, and focused L1/L2/L2G tests cover preserve frames, ingredient fragments, cook templates, recipe display names, and `spice.cooking.ate[0]` popup output. | Satisfied by owner-route tests; needs fresh runtime log for deployed closeout. |
 | Fix runtime-proven journal/sultan/map-note generated residues at owner routes. | Journal storage/display patches, accepted annals patterns, component reconstruction, map-note generated-location handling, and L1/L2/L2G tests cover the attached sultan history, date, relationship-title, and location-distance samples. | Satisfied by owner-route tests; needs fresh runtime log for deployed closeout. |
 | Close the additional static route-grammar residues found after the first audit. | `VillageProverb` `proverbs` / `proverbsCoda` final-output forms, `allThroughout` RampageRegion/Bey Lah frames, and `sultanClone` faked-death captures are now covered by focused `annals-patterns.ja.json` entries plus `JournalPatternTranslator` capture reconstruction. | Satisfied by focused L1 tests; needs fresh runtime log for deployed closeout. |
@@ -697,10 +697,12 @@ Current status for the Issue #737 objective:
 | Confirm no newer Issue #737 runtime-proven leak was added after the current implementation scope. | `gh issue view 737 --comments` currently shows two comments. The last update is `2026-05-18T22:19:38Z`, and it is the HSE vocabulary audit already reflected in the coverage report. | Satisfied as of this audit. |
 | Prove the fixed routes in a fresh deployed runtime log. | `just deploy-mod` succeeded again at `2026-05-19 20:33 JST`, and the deployed `QudJP.dll` SHA-256 matches the worktree DLL (`e7ca108e00cc4b3d564fa30b190a47bf3d3a5526be0d91df81733f4a8440c910`). The current local `Player.log` is not post-sync evidence: modified `2026-05-18 11:38:06 JST`, `3673` lines, SHA-256 `b3241421a01d7c78d0bc5104cee92c4d5b30eb444d0bf00023d6f2d75fa29346`. | Not satisfied; runtime closeout remains pending. |
 
-Therefore the current implementation can claim static route audit closure and
-owner-route test coverage for all runtime-proven Issue #737 gaps, but it should
-not be marked as fully runtime-closed until a fresh deployed run produces a new
-`Player.log` for the affected campfire and journal routes.
+Therefore the current implementation can claim owner-route test coverage for the
+runtime-proven Issue #737 gaps and static classification for the full HSE queue,
+but it should not be marked as fully runtime-closed until a fresh deployed run
+produces a new `Player.log` for the affected campfire and journal routes. The
+`VillageSurface.CheckReveal` row remains a static partial-coverage item until
+its route-specific output is proven at the same level as the covered rows.
 
 ## Runtime Closeout Checklist
 
@@ -821,6 +823,8 @@ Decision meanings:
   route family or its immediate display/storage consumer.
 - `covered_by_owner_route`: current implementation and tests prove the
   producer/owner route named in the row is covered.
+- `partial_coverage`: adjacent shared routes or patterns exist, but this exact
+  producer row lacks enough route-specific proof to claim full owner coverage.
 - `covered_overlay_stale`: previous owner-plan coverage likely exists, but the
   policy overlay still needs evidence-backed update.
 - `owner_audit`: needs producer/display ownership review before any patch or
@@ -876,7 +880,7 @@ Decision meanings:
 | covered_by_owner_route | `XRL.World.Parts/GenerateFriendOrFoe_HEB.cs::GenerateFriendOrFoe_HEB.replacePlaceholders` | 18 | source-owner `FriendOrFoeReasonTranslationPatch` translates HEB reason frames after HSE placeholder expansion plus L1/L2/L2G coverage |
 | covered_by_owner_route | `XRL.Annals/QudHistoryFactory.cs::QudHistoryFactory.GenerateCultName` | 17 | storage-owner `QudHistoryFactoryGenerateCultNameTranslationPatch` translates stored `cultName` frames after HSE expansion using component dictionaries plus L1/L2/L2G coverage |
 | covered_by_owner_route | `XRL.World.Parts/RachelsTombstone.cs::RachelsTombstone.GenerateTombstone` | 17 | `covered_by_owner_route` through memorial intro/death-cause patches plus L2/L2G coverage |
-| covered_by_owner_route | `XRL.World.Parts/VillageSurface.cs::VillageSurface.CheckReveal` | 16 | `covered_by_owner_route` through `JournalAccomplishmentAddTranslationPatch` village visit/founded/prohibition text/mural/gospel patterns |
+| partial_coverage | `XRL.World.Parts/VillageSurface.cs::VillageSurface.CheckReveal` | 16 | Partial journal/accomplishment coverage exists for village visit/founded/prohibition shapes, but this exact reveal producer needs route-specific proof before promotion to `covered_by_owner_route` |
 | covered_by_owner_route | `XRL.World.ZoneBuilders/FindASpecificItemDynamicQuestTemplate_FabricateQuestGiver.cs::fabricateFindASpecificItemQuest` | 13 | `covered_by_owner_route` through `DynamicQuestGeneratedQuestTextTranslationPatch` plus L2/L2G coverage |
 | covered_by_owner_route | `XRL.World.Capabilities/ItemNaming.cs::ItemNaming.GenerateRelicStyleName` | 11 | `covered_by_owner_route` through item-naming generated-name patch plus L2/L2G coverage |
 | covered_by_owner_route | `XRL.World/RelicGenerator.cs::RelicGenerator.GenerateRelicName` | 11 | `covered_by_owner_route` through relic generated-name patch plus L2/L2G coverage |
@@ -932,11 +936,11 @@ Decision meanings:
    whose current implementation and tests provide concrete evidence. This route
    closure pass moved the Issue #737 campfire runtime-gap rows through family-level owner
    coverage, promoted the journal runtime-gap row to `covered_by_owner_route`,
-   and moved seventy-six HSE families to `covered_by_owner_route` based on
+   and moved seventy-five HSE families to `covered_by_owner_route` based on
    existing producer patches, localized data ownership, and L1/L2/L2G coverage.
-   No `history_generated_text` row remains `action_required` or
-   `partial_coverage`; only the two TextFilters speech/status transformation
-   rows remain `runtime_required`.
+   No `history_generated_text` row remains `action_required`; one
+   `VillageSurface.CheckReveal` row remains `partial_coverage`, and the two
+   TextFilters speech/status transformation rows remain `runtime_required`.
 5. Re-run the text-construction queue after future owner-route changes and keep
    this report aligned with any remaining non-closed rows.
 
@@ -965,7 +969,7 @@ Current local verification rerun:
 - `just test-l2g`: passed, `495` tests.
 - `just localization-coverage-map-check`: passed.
 - `just text-construction-surface-queue "$HOME/dev/coq-decompiled_stable" /tmp/issue737-text-construction-inventory-current.json 30`: regenerated `17459` family records and `2641` queue entries.
-- `uv run python scripts/text_construction_surface_policy.py --inventory /tmp/issue737-text-construction-inventory-current.json --format json --include valuable --limit 0`: reproduced `78` `history_generated_text` entries with `76` `covered_by_owner_route` and `2` `runtime_required`.
+- `uv run python scripts/text_construction_surface_policy.py --inventory /tmp/issue737-text-construction-inventory-current.json --format json --include valuable --limit 0`: reproduced `78` `history_generated_text` entries with `75` `covered_by_owner_route`, `1` `partial_coverage`, and `2` `runtime_required`.
 - `just semantic-probe --method Angry --owner XRL.Language.TextFilters --limit 20`: reproduced `3` resolved matching owner hits, `0` candidate, and `0` unresolved.
 - `just semantic-probe --method Lallated --owner XRL.Language.TextFilters --limit 20`: reproduced `1` resolved matching owner hit, `0` candidate, and `0` unresolved.
 - `just semantic-probe --method Filter --owner XRL.Language.TextFilters --limit 30`: reproduced `2` resolved matching owner hits, `0` candidate, and `0` unresolved for `TextFilters.Filter`; the broader same-name `System.Predicate<T>.Filter` hits are excluded from the owner match.
