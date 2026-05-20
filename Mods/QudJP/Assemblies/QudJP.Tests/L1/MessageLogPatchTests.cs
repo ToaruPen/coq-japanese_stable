@@ -175,8 +175,8 @@ public sealed class MessageLogPatchTests
                 message,
                 Is.EqualTo(
                     "&y保存した:\n\n"
-                    + "&r生の猪肉&y少々を3食分の猪肉ジャーキーに保存した。\n"
-                    + "&r生のワーム肉&y少々を3食分のワームジャーキーに保存した。"));
+                    + "&r生の猪肉少々&yを3食分の猪肉ジャーキーに保存した。\n"
+                    + "&r生のワーム肉少々&yを3食分のワームジャーキーに保存した。"));
             Assert.That(result, Is.True);
             Assert.That(
                 DynamicTextObservability.GetRouteFamilyHitCountForTests(
