@@ -958,6 +958,101 @@ public sealed class LocalizationCoverageTests
     }
 
     [Test]
+    public void ActiveEffectDictionaries_CoverIssue739ObservedRuntimeSamples()
+    {
+        var dictionariesRoot = Path.Combine(localizationRoot, "Dictionaries");
+        var cookingEntries = LoadEntries(Path.Combine(dictionariesRoot, "world-effects-cooking.ja.json"));
+        var statusEntries = LoadEntries(Path.Combine(dictionariesRoot, "world-effects-status.ja.json"));
+        var statusKeys = statusEntries.Select(static entry => entry.Key).ToArray();
+        var generatedEntries = LoadEntries(Path.Combine(dictionariesRoot, "Scoped", "world-effects-generated-templates.ja.json"));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                cookingEntries,
+                Does.Contain(new DictionaryEntry("metabolizing", "XRL.World.Effects.ProceduralCookingEffect.DisplayName", "代謝中")));
+            Assert.That(
+                cookingEntries,
+                Does.Contain(new DictionaryEntry("{{W|metabolizing}}", "XRL.World.Effects.ProceduralCookingEffect.GetDescription", "{{W|代謝中}}")));
+            Assert.That(
+                cookingEntries,
+                Does.Contain(new DictionaryEntry("You thirst at half rate.", "XRL.World.Skills.Cooking.AppleMatz.GetDescription", "喉の渇きが半減する。")));
+            Assert.That(
+                generatedEntries,
+                Does.Contain(new DictionaryEntry(
+                    "+{0} DV while wielding a long blade in the primary hand.",
+                    "XRL.World.Effects.LongbladeStance_Defensive.GetDetails",
+                    "主手に長剣を装備しているあいだDV+{0}。")));
+            Assert.That(
+                generatedEntries,
+                Does.Contain(new DictionaryEntry(
+                    "+{0} to your penetration roll and -{1} to hit while wielding a long blade in the primary hand.",
+                    "XRL.World.Effects.LongbladeStance_Aggressive.GetDetails",
+                    "主手に長剣を装備しているあいだ貫通判定+{0}、命中-{1}。")));
+            Assert.That(
+                generatedEntries,
+                Does.Contain(new DictionaryEntry(
+                    "+{0} to hit while wielding a long blade in the primary hand.",
+                    "XRL.World.Effects.LongbladeStance_Dueling.GetDetails",
+                    "主手に長剣を装備しているあいだ命中+{0}。")));
+            Assert.That(
+                statusKeys,
+                Does.Contain("{{G|defensive stance}}"));
+            Assert.That(
+                statusKeys,
+                Does.Contain("aggressive stance"));
+            Assert.That(
+                statusKeys,
+                Does.Contain("dueling stance"));
+        });
+    }
+
+    [Test]
+    public void ActiveEffectProducerInventory_ClassifiesCurrentEffectDisplayFamilies()
+    {
+        var repoRoot = TestProjectPaths.GetRepositoryRoot();
+        var inventoryPath = Path.Combine(repoRoot, "docs", "active-effect-producer-inventory.json");
+        using var document = JsonDocument.Parse(File.ReadAllText(inventoryPath));
+        var root = document.RootElement;
+        var allowedClassifications = root.GetProperty("classification_values")
+            .EnumerateArray()
+            .Select(static value => value.GetString() ?? string.Empty)
+            .ToHashSet(StringComparer.Ordinal);
+        var observedProducerIds = root.GetProperty("observed_issue_739_producers")
+            .EnumerateArray()
+            .Select(static value => value.GetString() ?? string.Empty)
+            .ToHashSet(StringComparer.Ordinal);
+        var items = root.GetProperty("items").EnumerateArray().ToArray();
+        var invalidClassifications = items
+            .Select(static item => item.GetProperty("classification").GetString() ?? string.Empty)
+            .Where(classification => !allowedClassifications.Contains(classification))
+            .Distinct(StringComparer.Ordinal)
+            .ToArray();
+        var itemIds = items
+            .Select(static item => item.GetProperty("family_id").GetString() ?? string.Empty)
+            .ToHashSet(StringComparer.Ordinal);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(root.GetProperty("schema_version").GetInt32(), Is.EqualTo(1));
+            Assert.That(root.GetProperty("issue").GetInt32(), Is.EqualTo(739));
+            Assert.That(root.GetProperty("totals").GetProperty("family_count").GetInt32(), Is.EqualTo(466));
+            Assert.That(items, Has.Length.EqualTo(466));
+            Assert.That(invalidClassifications, Is.Empty);
+            Assert.That(
+                observedProducerIds.Where(id => !itemIds.Contains(id)).ToArray(),
+                Is.Empty,
+                "Issue #739 observed XRL.World.Effects producers must remain present in the checked-in inventory.");
+            Assert.That(
+                root.GetProperty("adjacent_route_producers")
+                    .EnumerateArray()
+                    .Select(static item => item.GetProperty("family_id").GetString() ?? string.Empty)
+                    .ToArray(),
+                Does.Contain("XRL.World.Skills.Cooking/AppleMatz.cs::AppleMatz.GetDescription()"));
+        });
+    }
+
+    [Test]
     public void SkillsAndPowersDictionary_ContainsStaticAbilityBarBaseLeaves()
     {
         var entries = LoadEntries(Path.Combine(localizationRoot, "Dictionaries", "ui-skillsandpowers.ja.json"));
