@@ -25,6 +25,7 @@ public sealed class QudHistoryFactoryGeneratedNameTranslationPatchTests
 
         Translator.ResetForTests();
         Translator.SetDictionaryDirectoryForTests(dictionaryDirectory);
+        ScopedDictionaryLookup.ResetForTests();
         DynamicTextObservability.ResetForTests();
         RuntimeDiagnostics.SetVerboseProbesEnabledForTests(true);
         DummyQudHistoryFactoryTarget.RuinsSiteNameResult = string.Empty;
@@ -34,6 +35,7 @@ public sealed class QudHistoryFactoryGeneratedNameTranslationPatchTests
     public void TearDown()
     {
         Translator.ResetForTests();
+        ScopedDictionaryLookup.ResetForTests();
         DynamicTextObservability.ResetForTests();
         RuntimeDiagnostics.SetVerboseProbesEnabledForTests(null);
         DummyQudHistoryFactoryTarget.RuinsSiteNameResult = string.Empty;

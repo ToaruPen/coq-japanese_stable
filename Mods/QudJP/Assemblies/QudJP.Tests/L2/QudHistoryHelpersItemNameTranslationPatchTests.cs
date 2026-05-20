@@ -25,6 +25,7 @@ public sealed class QudHistoryHelpersItemNameTranslationPatchTests
 
         Translator.ResetForTests();
         Translator.SetDictionaryDirectoryForTests(dictionaryDirectory);
+        ScopedDictionaryLookup.ResetForTests();
         DynamicTextObservability.ResetForTests();
         RuntimeDiagnostics.SetVerboseProbesEnabledForTests(true);
         DummyQudHistoryHelpersTarget.HistoricItemNameResult = string.Empty;
@@ -34,6 +35,7 @@ public sealed class QudHistoryHelpersItemNameTranslationPatchTests
     public void TearDown()
     {
         Translator.ResetForTests();
+        ScopedDictionaryLookup.ResetForTests();
         DynamicTextObservability.ResetForTests();
         RuntimeDiagnostics.SetVerboseProbesEnabledForTests(null);
         DummyQudHistoryHelpersTarget.HistoricItemNameResult = string.Empty;
@@ -52,31 +54,14 @@ public sealed class QudHistoryHelpersItemNameTranslationPatchTests
         WriteDictionaryFile("Scoped/historyspice-common.ja.json", ("sword", "剣"));
         WriteDictionaryFile("world-gospels.ja.json", ("blessing", "祝福"));
         DummyQudHistoryHelpersTarget.HistoricItemNameResult = "Sword's Blessing";
-        var harmonyId = "qudjp-test-history-item-name-" + Guid.NewGuid().ToString("N");
-        var harmony = new Harmony(harmonyId);
-        try
-        {
-            var original = RequireDummyMethod(methodName);
-            harmony.Patch(
-                original: original,
-                postfix: new HarmonyMethod(RequireMethod(
-                    typeof(QudHistoryHelpersItemNameTranslationPatch),
-                    nameof(QudHistoryHelpersItemNameTranslationPatch.Postfix),
-                    typeof(MethodBase),
-                    typeof(string).MakeByRefType())));
 
-            var result = InvokeDummyMethod(methodName);
+        var result = InvokeWithPatchedPostfix(methodName);
 
-            Assert.Multiple(() =>
-            {
-                Assert.That(result, Is.EqualTo("剣の祝福"));
-                Assert.That(RouteHitCount(methodName), Is.EqualTo(1));
-            });
-        }
-        finally
+        Assert.Multiple(() =>
         {
-            harmony.UnpatchAll(harmonyId);
-        }
+            Assert.That(result, Is.EqualTo("剣の祝福"));
+            Assert.That(RouteHitCount(methodName), Is.EqualTo(1));
+        });
     }
 
     [Test]
@@ -85,25 +70,79 @@ public sealed class QudHistoryHelpersItemNameTranslationPatchTests
         WriteDictionaryFile("Scoped/historyspice-common.ja.json", ("sword", "剣"));
         WriteDictionaryFile("world-gospels.ja.json", ("blessing", "祝福"));
         DummyQudHistoryHelpersTarget.HistoricItemNameResult = "Swordicus";
+        var result = InvokeWithPatchedPostfix(nameof(DummyQudHistoryHelpersTarget.NameItem));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.EqualTo("Swordicus"));
+            Assert.That(RouteHitCount(nameof(DummyQudHistoryHelpersTarget.NameItem)), Is.Zero);
+        });
+    }
+
+    [Test]
+    public void Postfix_LeavesEmptyItemNameUnchanged_WhenPatched()
+    {
+        WriteDictionaryFile("Scoped/historyspice-common.ja.json", ("sword", "剣"));
+        WriteDictionaryFile("world-gospels.ja.json", ("blessing", "祝福"));
+        DummyQudHistoryHelpersTarget.HistoricItemNameResult = string.Empty;
+
+        var result = InvokeWithPatchedPostfix(nameof(DummyQudHistoryHelpersTarget.NameItem));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.Empty);
+            Assert.That(RouteHitCount(nameof(DummyQudHistoryHelpersTarget.NameItem)), Is.Zero);
+        });
+    }
+
+    [Test]
+    public void Postfix_PreservesColorTagsOnGeneratedItemName_WhenPatched()
+    {
+        WriteDictionaryFile("Scoped/historyspice-common.ja.json", ("sword", "剣"));
+        WriteDictionaryFile("world-gospels.ja.json", ("blessing", "祝福"));
+        DummyQudHistoryHelpersTarget.HistoricItemNameResult = "<color=#44ff88>Sword's Blessing</color>";
+
+        var result = InvokeWithPatchedPostfix(nameof(DummyQudHistoryHelpersTarget.NameItem));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.EqualTo("<color=#44ff88>剣の祝福</color>"));
+            Assert.That(RouteHitCount(nameof(DummyQudHistoryHelpersTarget.NameItem)), Is.EqualTo(1));
+        });
+    }
+
+    [Test]
+    public void Postfix_StripsDirectMarkerWithoutRetranslating_WhenPatched()
+    {
+        WriteDictionaryFile("Scoped/historyspice-common.ja.json", ("sword", "剣"));
+        WriteDictionaryFile("world-gospels.ja.json", ("blessing", "祝福"));
+        DummyQudHistoryHelpersTarget.HistoricItemNameResult =
+            MessageFrameTranslator.DirectTranslationMarker + "Sword's Blessing";
+
+        var result = InvokeWithPatchedPostfix(nameof(DummyQudHistoryHelpersTarget.NameItem));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.EqualTo("Sword's Blessing"));
+            Assert.That(RouteHitCount(nameof(DummyQudHistoryHelpersTarget.NameItem)), Is.EqualTo(1));
+        });
+    }
+
+    private static string InvokeWithPatchedPostfix(string methodName)
+    {
         var harmonyId = "qudjp-test-history-item-name-" + Guid.NewGuid().ToString("N");
         var harmony = new Harmony(harmonyId);
         try
         {
             harmony.Patch(
-                original: RequireDummyMethod(nameof(DummyQudHistoryHelpersTarget.NameItem)),
+                original: RequireDummyMethod(methodName),
                 postfix: new HarmonyMethod(RequireMethod(
                     typeof(QudHistoryHelpersItemNameTranslationPatch),
                     nameof(QudHistoryHelpersItemNameTranslationPatch.Postfix),
                     typeof(MethodBase),
                     typeof(string).MakeByRefType())));
 
-            var result = InvokeDummyMethod(nameof(DummyQudHistoryHelpersTarget.NameItem));
-
-            Assert.Multiple(() =>
-            {
-                Assert.That(result, Is.EqualTo("Swordicus"));
-                Assert.That(RouteHitCount(nameof(DummyQudHistoryHelpersTarget.NameItem)), Is.Zero);
-            });
+            return InvokeDummyMethod(methodName);
         }
         finally
         {

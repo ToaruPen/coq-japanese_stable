@@ -22,6 +22,7 @@ public sealed class CampfireCookFromIngredientsTranslationPatchTests
         Directory.CreateDirectory(tempDictionaryDirectory);
         Translator.ResetForTests();
         Translator.SetDictionaryDirectoryForTests(tempDictionaryDirectory);
+        ScopedDictionaryLookup.ResetForTests();
         DynamicTextObservability.ResetForTests();
         MessageFrameTranslator.ResetForTests();
         DummyPopupShow.Reset();
@@ -31,6 +32,7 @@ public sealed class CampfireCookFromIngredientsTranslationPatchTests
     public void TearDown()
     {
         Translator.ResetForTests();
+        ScopedDictionaryLookup.ResetForTests();
         DynamicTextObservability.ResetForTests();
         MessageFrameTranslator.ResetForTests();
 

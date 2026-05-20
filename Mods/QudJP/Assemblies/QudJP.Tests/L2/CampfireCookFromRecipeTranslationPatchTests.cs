@@ -20,6 +20,7 @@ public sealed class CampfireCookFromRecipeTranslationPatchTests
         Directory.CreateDirectory(tempDictionaryDirectory);
         Translator.ResetForTests();
         Translator.SetDictionaryDirectoryForTests(tempDictionaryDirectory);
+        ScopedDictionaryLookup.ResetForTests();
         DynamicTextObservability.ResetForTests();
     }
 
@@ -27,6 +28,7 @@ public sealed class CampfireCookFromRecipeTranslationPatchTests
     public void TearDown()
     {
         Translator.ResetForTests();
+        ScopedDictionaryLookup.ResetForTests();
         DynamicTextObservability.ResetForTests();
 
         if (Directory.Exists(tempDictionaryDirectory))

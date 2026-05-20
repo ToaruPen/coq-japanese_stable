@@ -25,6 +25,7 @@ public sealed class SultanateYearNameTranslationPatchTests
 
         Translator.ResetForTests();
         Translator.SetDictionaryDirectoryForTests(dictionaryDirectory);
+        ScopedDictionaryLookup.ResetForTests();
         DynamicTextObservability.ResetForTests();
         RuntimeDiagnostics.SetVerboseProbesEnabledForTests(true);
         DummyQudHistoryHelpersTarget.SultanateYearNameResult = string.Empty;
@@ -34,6 +35,7 @@ public sealed class SultanateYearNameTranslationPatchTests
     public void TearDown()
     {
         Translator.ResetForTests();
+        ScopedDictionaryLookup.ResetForTests();
         DynamicTextObservability.ResetForTests();
         RuntimeDiagnostics.SetVerboseProbesEnabledForTests(null);
         DummyQudHistoryHelpersTarget.SultanateYearNameResult = string.Empty;

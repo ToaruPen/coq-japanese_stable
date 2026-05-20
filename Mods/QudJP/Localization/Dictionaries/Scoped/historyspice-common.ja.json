@@ -1581,6 +1581,7 @@
     { "key": "threaten", "text": "脅かす" },
     { "key": "accost", "text": "呼び止める" },
     { "key": "bless", "text": "祝福する" },
+    { "key": "curse", "text": "呪った" },
     { "key": "thank", "text": "感謝する" },
     { "key": "exalt", "text": "称揚する" },
     { "key": "give thanks for", "text": "感謝を捧げる" },

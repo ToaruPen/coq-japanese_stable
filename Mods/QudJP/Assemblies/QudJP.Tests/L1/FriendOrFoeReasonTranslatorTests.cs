@@ -22,12 +22,14 @@ public sealed class FriendOrFoeReasonTranslatorTests
 
         Translator.ResetForTests();
         Translator.SetDictionaryDirectoryForTests(dictionaryDirectory);
+        ScopedDictionaryLookup.ResetForTests();
     }
 
     [TearDown]
     public void TearDown()
     {
         Translator.ResetForTests();
+        ScopedDictionaryLookup.ResetForTests();
 
         if (Directory.Exists(tempDirectory))
         {
