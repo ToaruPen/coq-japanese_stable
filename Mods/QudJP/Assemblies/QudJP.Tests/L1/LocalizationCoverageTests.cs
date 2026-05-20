@@ -45,6 +45,27 @@ public sealed class LocalizationCoverageTests
         ["UI"] = "UI",
     };
 
+    private static readonly string[] ExpectedActiveEffectProducerClassifications =
+    {
+        "owner-translated",
+        "fixed-leaf translated",
+        "generated/composed route translated",
+        "intentional pass-through",
+        "deferred with reason",
+    };
+
+    private static readonly string[] ExpectedIssue739ObservedProducerIds =
+    {
+        "XRL.World.Effects/ProceduralCookingEffect.cs::ProceduralCookingEffect.ProceduralCookingEffect()",
+        "XRL.World.Effects/ProceduralCookingEffect.cs::ProceduralCookingEffect.GetDescription()",
+        "XRL.World.Effects/LongbladeStance_Defensive.cs::LongbladeStance_Defensive.LongbladeStance_Defensive()",
+        "XRL.World.Effects/LongbladeStance_Aggressive.cs::LongbladeStance_Aggressive.LongbladeStance_Aggressive()",
+        "XRL.World.Effects/LongbladeStance_Dueling.cs::LongbladeStance_Dueling.LongbladeStance_Dueling()",
+        "XRL.World.Effects/LongbladeStance_Defensive.cs::LongbladeStance_Defensive.GetDetails()",
+        "XRL.World.Effects/LongbladeStance_Aggressive.cs::LongbladeStance_Aggressive.GetDetails()",
+        "XRL.World.Effects/LongbladeStance_Dueling.cs::LongbladeStance_Dueling.GetDetails()",
+    };
+
     private string localizationRoot = null!;
 
     [SetUp]
@@ -963,7 +984,6 @@ public sealed class LocalizationCoverageTests
         var dictionariesRoot = Path.Combine(localizationRoot, "Dictionaries");
         var cookingEntries = LoadEntries(Path.Combine(dictionariesRoot, "world-effects-cooking.ja.json"));
         var statusEntries = LoadEntries(Path.Combine(dictionariesRoot, "world-effects-status.ja.json"));
-        var statusKeys = statusEntries.Select(static entry => entry.Key).ToArray();
         var generatedEntries = LoadEntries(Path.Combine(dictionariesRoot, "Scoped", "world-effects-generated-templates.ja.json"));
 
         Assert.Multiple(() =>
@@ -996,14 +1016,23 @@ public sealed class LocalizationCoverageTests
                     "XRL.World.Effects.LongbladeStance_Dueling.GetDetails",
                     "主手に長剣を装備しているあいだ命中+{0}。")));
             Assert.That(
-                statusKeys,
-                Does.Contain("{{G|defensive stance}}"));
+                statusEntries,
+                Does.Contain(new DictionaryEntry(
+                    "{{G|defensive stance}}",
+                    "XRL.World.Effects.LongbladeStance_Defensive.DisplayName",
+                    "{{G|防御姿勢}}")));
             Assert.That(
-                statusKeys,
-                Does.Contain("aggressive stance"));
+                statusEntries,
+                Does.Contain(new DictionaryEntry(
+                    "aggressive stance",
+                    "XRL.World.Effects.LongbladeStance_Aggressive.DisplayName",
+                    "攻撃姿勢")));
             Assert.That(
-                statusKeys,
-                Does.Contain("dueling stance"));
+                statusEntries,
+                Does.Contain(new DictionaryEntry(
+                    "dueling stance",
+                    "XRL.World.Effects.LongbladeStance_Dueling.DisplayName",
+                    "決闘姿勢")));
         });
     }
 
@@ -1014,14 +1043,15 @@ public sealed class LocalizationCoverageTests
         var inventoryPath = Path.Combine(repoRoot, "docs", "active-effect-producer-inventory.json");
         using var document = JsonDocument.Parse(File.ReadAllText(inventoryPath));
         var root = document.RootElement;
-        var allowedClassifications = root.GetProperty("classification_values")
+        var classificationValues = root.GetProperty("classification_values")
             .EnumerateArray()
             .Select(static value => value.GetString() ?? string.Empty)
-            .ToHashSet(StringComparer.Ordinal);
+            .ToArray();
         var observedProducerIds = root.GetProperty("observed_issue_739_producers")
             .EnumerateArray()
             .Select(static value => value.GetString() ?? string.Empty)
-            .ToHashSet(StringComparer.Ordinal);
+            .ToArray();
+        var allowedClassifications = ExpectedActiveEffectProducerClassifications.ToHashSet(StringComparer.Ordinal);
         var items = root.GetProperty("items").EnumerateArray().ToArray();
         var invalidClassifications = items
             .Select(static item => item.GetProperty("classification").GetString() ?? string.Empty)
@@ -1038,6 +1068,8 @@ public sealed class LocalizationCoverageTests
             Assert.That(root.GetProperty("issue").GetInt32(), Is.EqualTo(739));
             Assert.That(root.GetProperty("totals").GetProperty("family_count").GetInt32(), Is.EqualTo(466));
             Assert.That(items, Has.Length.EqualTo(466));
+            Assert.That(classificationValues, Is.EquivalentTo(ExpectedActiveEffectProducerClassifications));
+            Assert.That(observedProducerIds, Is.EquivalentTo(ExpectedIssue739ObservedProducerIds));
             Assert.That(invalidClassifications, Is.Empty);
             Assert.That(
                 observedProducerIds.Where(id => !itemIds.Contains(id)).ToArray(),

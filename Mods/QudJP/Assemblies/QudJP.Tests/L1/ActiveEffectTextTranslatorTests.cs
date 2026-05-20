@@ -206,11 +206,7 @@ public sealed class ActiveEffectTextTranslatorTests
         "主手に長剣を装備しているあいだ命中+3。")]
     public void TryTranslateText_TranslatesLongBladeStanceGeneratedDetails(string source, string expected)
     {
-        WriteScopedDictionary(
-            "Scoped/world-effects-generated-templates.ja.json",
-            ("+{0} DV while wielding a long blade in the primary hand.", "XRL.World.Effects.LongbladeStance_Defensive.GetDetails", "主手に長剣を装備しているあいだDV+{0}。"),
-            ("+{0} to your penetration roll and -{1} to hit while wielding a long blade in the primary hand.", "XRL.World.Effects.LongbladeStance_Aggressive.GetDetails", "主手に長剣を装備しているあいだ貫通判定+{0}、命中-{1}。"),
-            ("+{0} to hit while wielding a long blade in the primary hand.", "XRL.World.Effects.LongbladeStance_Dueling.GetDetails", "主手に長剣を装備しているあいだ命中+{0}。"));
+        WriteLongbladeStanceTemplateDictionary();
 
         var changed = ActiveEffectTextTranslator.TryTranslateText(
             source,
@@ -224,6 +220,76 @@ public sealed class ActiveEffectTextTranslatorTests
             Assert.That(translated, Is.EqualTo(expected));
             Assert.That(Translator.GetMissingKeyHitCountForTests(source), Is.EqualTo(0));
         });
+    }
+
+    [Test]
+    public void TryTranslateText_LongBladeStanceGeneratedDetails_FallsBackToEnglishWhenTemplateDictionaryMisses()
+    {
+        var source = "+4 DV while wielding a long blade in the primary hand.";
+
+        var changed = ActiveEffectTextTranslator.TryTranslateText(
+            source,
+            "ActiveEffectTextTranslatorTests",
+            "ActiveEffects.Details.LongbladeStance",
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(changed, Is.False);
+            Assert.That(translated, Is.EqualTo(source));
+            Assert.That(
+                Translator.GetMissingKeyHitCountForTests("+{0} DV while wielding a long blade in the primary hand."),
+                Is.EqualTo(1));
+        });
+    }
+
+    [Test]
+    public void TryTranslateText_LongBladeStanceGeneratedDetails_PreservesWholeColorTag()
+    {
+        WriteLongbladeStanceTemplateDictionary();
+        const string source = "<color=#FF0000>+2 DV while wielding a long blade in the primary hand.</color>";
+
+        var changed = ActiveEffectTextTranslator.TryTranslateText(
+            source,
+            "ActiveEffectTextTranslatorTests",
+            "ActiveEffects.Details.LongbladeStance",
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(changed, Is.True);
+            Assert.That(translated, Is.EqualTo("<color=#FF0000>主手に長剣を装備しているあいだDV+2。</color>"));
+            Assert.That(Translator.GetMissingKeyHitCountForTests(source), Is.EqualTo(0));
+        });
+    }
+
+    [Test]
+    public void TryTranslateText_LongBladeStanceGeneratedDetails_DirectMarkerFallsThroughSafely()
+    {
+        WriteLongbladeStanceTemplateDictionary();
+        const string source = "\u0001+2 DV while wielding a long blade in the primary hand.";
+
+        var changed = ActiveEffectTextTranslator.TryTranslateText(
+            source,
+            "ActiveEffectTextTranslatorTests",
+            "ActiveEffects.Details.LongbladeStance",
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(changed, Is.False);
+            Assert.That(translated, Is.EqualTo(source));
+            Assert.That(Translator.GetMissingKeyHitCountForTests(source), Is.EqualTo(1));
+        });
+    }
+
+    private void WriteLongbladeStanceTemplateDictionary()
+    {
+        WriteScopedDictionary(
+            "Scoped/world-effects-generated-templates.ja.json",
+            ("+{0} DV while wielding a long blade in the primary hand.", "XRL.World.Effects.LongbladeStance_Defensive.GetDetails", "主手に長剣を装備しているあいだDV+{0}。"),
+            ("+{0} to your penetration roll and -{1} to hit while wielding a long blade in the primary hand.", "XRL.World.Effects.LongbladeStance_Aggressive.GetDetails", "主手に長剣を装備しているあいだ貫通判定+{0}、命中-{1}。"),
+            ("+{0} to hit while wielding a long blade in the primary hand.", "XRL.World.Effects.LongbladeStance_Dueling.GetDetails", "主手に長剣を装備しているあいだ命中+{0}。"));
     }
 
     private void WriteDictionary(params (string key, string text)[] entries)
