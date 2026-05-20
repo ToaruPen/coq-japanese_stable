@@ -327,7 +327,7 @@ public sealed class HistoricSpiceGeneratedNameTranslatorTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(ok, Is.False);
+            Assert.That(ok, Is.True);
             Assert.That(translated, Is.EqualTo(source));
         });
     }

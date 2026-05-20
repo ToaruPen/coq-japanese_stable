@@ -8579,8 +8579,8 @@
       "annal_class": "VillageProverb",
       "switch_case": "proverbs/proverbsCoda",
       "event_property": "gospel",
-      "sample_source": "*Activity* is no way to <spice.instancesOf.bless.!random> *sacredThing*",
-      "extracted_pattern": "^(.+?)\\ is\\ no\\ way\\ to\\ (?:bless|thank|exalt|give\\ thanks\\ for|praise|honor)\\ (.+?)(?:\\.)?$",
+      "sample_source": "*Activity* is no way to bless *sacredThing*",
+      "extracted_pattern": "^(.+?)\\ is\\ no\\ way\\ to\\ bless\\ (.+?)(?:\\.)?$",
       "slots": [
         {
           "index": 0,
@@ -8597,7 +8597,152 @@
       ],
       "status": "accepted",
       "reason": "",
-      "ja_template": "{t0}は{t1}を祝福する道ではない。",
+      "ja_template": "{t0}は{t1}を祝福する方法ではない。",
+      "review_notes": "issue-737 route grammar closure",
+      "route": "annals",
+      "en_template_hash": "sha256:98f8657d7e7be9a4e2b0b4c7eff73f2c4f103820e20b59c9a97b73e6ecab38a5"
+    },
+    {
+      "id": "VillageProverb#proverb#no-way-to-exalt",
+      "source_file": "VillageProverb.cs",
+      "annal_class": "VillageProverb",
+      "switch_case": "proverbs/proverbsCoda",
+      "event_property": "gospel",
+      "sample_source": "*Activity* is no way to exalt *sacredThing*",
+      "extracted_pattern": "^(.+?)\\ is\\ no\\ way\\ to\\ exalt\\ (.+?)(?:\\.)?$",
+      "slots": [
+        {
+          "index": 0,
+          "type": "historykit-token",
+          "raw": "capture:0",
+          "default": "{t0}"
+        },
+        {
+          "index": 1,
+          "type": "historykit-token",
+          "raw": "capture:1",
+          "default": "{t1}"
+        }
+      ],
+      "status": "accepted",
+      "reason": "",
+      "ja_template": "{t0}は{t1}を讃える方法ではない。",
+      "review_notes": "issue-737 route grammar closure",
+      "route": "annals",
+      "en_template_hash": "sha256:98f8657d7e7be9a4e2b0b4c7eff73f2c4f103820e20b59c9a97b73e6ecab38a5"
+    },
+    {
+      "id": "VillageProverb#proverb#no-way-to-give-thanks-for",
+      "source_file": "VillageProverb.cs",
+      "annal_class": "VillageProverb",
+      "switch_case": "proverbs/proverbsCoda",
+      "event_property": "gospel",
+      "sample_source": "*Activity* is no way to give thanks for *sacredThing*",
+      "extracted_pattern": "^(.+?)\\ is\\ no\\ way\\ to\\ give\\ thanks\\ for\\ (.+?)(?:\\.)?$",
+      "slots": [
+        {
+          "index": 0,
+          "type": "historykit-token",
+          "raw": "capture:0",
+          "default": "{t0}"
+        },
+        {
+          "index": 1,
+          "type": "historykit-token",
+          "raw": "capture:1",
+          "default": "{t1}"
+        }
+      ],
+      "status": "accepted",
+      "reason": "",
+      "ja_template": "{t0}は{t1}に感謝を捧げる方法ではない。",
+      "review_notes": "issue-737 route grammar closure",
+      "route": "annals",
+      "en_template_hash": "sha256:98f8657d7e7be9a4e2b0b4c7eff73f2c4f103820e20b59c9a97b73e6ecab38a5"
+    },
+    {
+      "id": "VillageProverb#proverb#no-way-to-honor",
+      "source_file": "VillageProverb.cs",
+      "annal_class": "VillageProverb",
+      "switch_case": "proverbs/proverbsCoda",
+      "event_property": "gospel",
+      "sample_source": "*Activity* is no way to honor *sacredThing*",
+      "extracted_pattern": "^(.+?)\\ is\\ no\\ way\\ to\\ honor\\ (.+?)(?:\\.)?$",
+      "slots": [
+        {
+          "index": 0,
+          "type": "historykit-token",
+          "raw": "capture:0",
+          "default": "{t0}"
+        },
+        {
+          "index": 1,
+          "type": "historykit-token",
+          "raw": "capture:1",
+          "default": "{t1}"
+        }
+      ],
+      "status": "accepted",
+      "reason": "",
+      "ja_template": "{t0}は{t1}を敬う方法ではない。",
+      "review_notes": "issue-737 route grammar closure",
+      "route": "annals",
+      "en_template_hash": "sha256:98f8657d7e7be9a4e2b0b4c7eff73f2c4f103820e20b59c9a97b73e6ecab38a5"
+    },
+    {
+      "id": "VillageProverb#proverb#no-way-to-praise",
+      "source_file": "VillageProverb.cs",
+      "annal_class": "VillageProverb",
+      "switch_case": "proverbs/proverbsCoda",
+      "event_property": "gospel",
+      "sample_source": "*Activity* is no way to praise *sacredThing*",
+      "extracted_pattern": "^(.+?)\\ is\\ no\\ way\\ to\\ praise\\ (.+?)(?:\\.)?$",
+      "slots": [
+        {
+          "index": 0,
+          "type": "historykit-token",
+          "raw": "capture:0",
+          "default": "{t0}"
+        },
+        {
+          "index": 1,
+          "type": "historykit-token",
+          "raw": "capture:1",
+          "default": "{t1}"
+        }
+      ],
+      "status": "accepted",
+      "reason": "",
+      "ja_template": "{t0}は{t1}を称賛する方法ではない。",
+      "review_notes": "issue-737 route grammar closure",
+      "route": "annals",
+      "en_template_hash": "sha256:98f8657d7e7be9a4e2b0b4c7eff73f2c4f103820e20b59c9a97b73e6ecab38a5"
+    },
+    {
+      "id": "VillageProverb#proverb#no-way-to-thank",
+      "source_file": "VillageProverb.cs",
+      "annal_class": "VillageProverb",
+      "switch_case": "proverbs/proverbsCoda",
+      "event_property": "gospel",
+      "sample_source": "*Activity* is no way to thank *sacredThing*",
+      "extracted_pattern": "^(.+?)\\ is\\ no\\ way\\ to\\ thank\\ (.+?)(?:\\.)?$",
+      "slots": [
+        {
+          "index": 0,
+          "type": "historykit-token",
+          "raw": "capture:0",
+          "default": "{t0}"
+        },
+        {
+          "index": 1,
+          "type": "historykit-token",
+          "raw": "capture:1",
+          "default": "{t1}"
+        }
+      ],
+      "status": "accepted",
+      "reason": "",
+      "ja_template": "{t0}は{t1}に感謝する方法ではない。",
       "review_notes": "issue-737 route grammar closure",
       "route": "annals",
       "en_template_hash": "sha256:98f8657d7e7be9a4e2b0b4c7eff73f2c4f103820e20b59c9a97b73e6ecab38a5"

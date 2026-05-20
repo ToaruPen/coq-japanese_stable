@@ -833,7 +833,22 @@ public sealed class JournalPatternTranslatorTests
                     Is.EqualTo("輝く賢者はガラス工房の神聖を知る。"));
                 Assert.That(
                     JournalPatternTranslator.Translate("Prayer is no way to bless Glass Workshop."),
-                    Is.EqualTo("祈りはガラス工房を祝福する道ではない。"));
+                    Is.EqualTo("祈りはガラス工房を祝福する方法ではない。"));
+                Assert.That(
+                    JournalPatternTranslator.Translate("Prayer is no way to thank Glass Workshop."),
+                    Is.EqualTo("祈りはガラス工房に感謝する方法ではない。"));
+                Assert.That(
+                    JournalPatternTranslator.Translate("Prayer is no way to give thanks for Glass Workshop."),
+                    Is.EqualTo("祈りはガラス工房に感謝を捧げる方法ではない。"));
+                Assert.That(
+                    JournalPatternTranslator.Translate("Prayer is no way to praise Glass Workshop."),
+                    Is.EqualTo("祈りはガラス工房を称賛する方法ではない。"));
+                Assert.That(
+                    JournalPatternTranslator.Translate("Prayer is no way to honor Glass Workshop."),
+                    Is.EqualTo("祈りはガラス工房を敬う方法ではない。"));
+                Assert.That(
+                    JournalPatternTranslator.Translate("Prayer is no way to exalt Glass Workshop."),
+                    Is.EqualTo("祈りはガラス工房を讃える方法ではない。"));
                 Assert.That(
                     JournalPatternTranslator.Translate("Welcome strangers in prayer, but teach them the sanctity of Glass Workshop."),
                     Is.EqualTo("祈りの中で異邦人を迎えよ、されど彼らにガラス工房の神聖を教えよ。"));

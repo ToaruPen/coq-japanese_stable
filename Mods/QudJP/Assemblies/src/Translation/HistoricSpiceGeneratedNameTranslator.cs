@@ -337,7 +337,7 @@ internal static class HistoricSpiceGeneratedNameTranslator
         if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
         {
             translated = markedText;
-            return false;
+            return true;
         }
 
         if (TryTranslateDishName(source, out translated)

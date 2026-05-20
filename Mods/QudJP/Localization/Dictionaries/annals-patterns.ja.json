@@ -2,158 +2,8 @@
   "entries": [],
   "patterns": [
     {
-      "pattern": "^(.+?)\\ hold\\ no\\ value\\ over\\ (.+?)(?:\\.)?$",
-      "template": "{t1}に比べれば{t0}に価値はない。",
-      "route": "annals"
-    },
-    {
-      "pattern": "^[Pp]lant\\ seeds\\ in\\ (.+?)\\ and\\ reap\\ (.+?)(?:\\.)?$",
-      "template": "{t0}に種を蒔けば{t1}を刈り取る。",
-      "route": "annals"
-    },
-    {
-      "pattern": "^(.+?)\\ leads\\ to\\ (.+?)(?:\\.)?$",
-      "template": "{t0}は{t1}につながる。",
-      "route": "annals"
-    },
-    {
-      "pattern": "^(.+?)\\ cannot\\ compare\\ to\\ (.+?)(?:\\.)?$",
-      "template": "{t0}は{t1}に及ばない。",
-      "route": "annals"
-    },
-    {
-      "pattern": "^([Bb]less|[Tt]hank|[Ee]xalt|[Gg]ive\\ thanks\\ for|[Pp]raise|[Hh]onor)\\ (.+?)(?:\\.)?$",
-      "template": "{t1}を{t0}。",
-      "route": "annals"
-    },
-    {
-      "pattern": "^([Cc]urse|[Aa]\\ blight\\ upon|[Aa]\\ curse\\ upon)\\ (.+?)(?:\\.)?$",
-      "template": "{t1}を{t0}。",
-      "route": "annals"
-    },
-    {
-      "pattern": "^[Oo]nly\\ the\\ (.+?)\\ can\\ know\\ (.+?)(?:\\.)?$",
-      "template": "{t1}を知り得るのは{t0}だけだ。",
-      "route": "annals"
-    },
-    {
-      "pattern": "^[Aa]t\\ the\\ (.+?)\\ lies\\ (.+?)(?:\\.)?$",
-      "template": "{t0}には{t1}が宿る。",
-      "route": "annals"
-    },
-    {
-      "pattern": "^[Tt]he\\ (.+?)\\ (.+?)\\ knows\\ the\\ (.+?)\\ of\\ (.+?)(?:\\.)?$",
-      "template": "{t0}{t1}は{t3}の{t2}を知る。",
-      "route": "annals"
-    },
-    {
-      "pattern": "^(.+?)\\ is\\ no\\ way\\ to\\ (?:bless|thank|exalt|give\\ thanks\\ for|praise|honor)\\ (.+?)(?:\\.)?$",
-      "template": "{t0}は{t1}を祝福する道ではない。",
-      "route": "annals"
-    },
-    {
-      "pattern": "^[Ww]elcome\\ strangers\\ in\\ (.+?),\\ but\\ teach\\ them\\ the\\ (.+?)\\ of\\ (.+?)(?:\\.)?$",
-      "template": "{t0}の中で異邦人を迎えよ、されど彼らに{t2}の{t1}を教えよ。",
-      "route": "annals"
-    },
-    {
-      "pattern": "^[Ww]elcome\\ strangers\\ (.+?),\\ but\\ teach\\ them\\ the\\ (.+?)\\ of\\ (.+?)(?:\\.)?$",
-      "template": "{t0}で異邦人を迎えよ、されど彼らに{t2}の{t1}を教えよ。",
-      "route": "annals"
-    },
-    {
-      "pattern": "^[Dd]on\\'t\\ (.+?)\\ to\\ the\\ (.+?)(?:\\.)?$",
-      "template": "{t1}へ{t0}な。",
-      "route": "annals"
-    },
-    {
-      "pattern": "^[Aa]\\ (.+?)\\ today\\ is\\ worth\\ a\\ (.+?)\\ tomorrow(?:\\.)?$",
-      "template": "今日の{t0}は明日の{t1}に勝る。",
-      "route": "annals"
-    },
-    {
-      "pattern": "^[Kk]nowing\\ (.+?)\\ means\\ knowing\\ the\\ (.+?)(?:\\.)?$",
-      "template": "{t0}を知ることは{t1}を知ることだ。",
-      "route": "annals"
-    },
-    {
-      "pattern": "^[Ll]ike\\ the\\ (.+?)\\ to\\ the\\ (.+?),\\ so\\ (.+?)\\ to\\ us(?:\\.)?$",
-      "template": "{t1}にとっての{t0}のように、我らにとっての{t2}もまたそうだ。",
-      "route": "annals"
-    },
-    {
-      "pattern": "^(.+?)\\ dwells\\ in\\ the\\ (.+?)(?:\\.)?$",
-      "template": "{t0}は{t1}に宿る。",
-      "route": "annals"
-    },
-    {
-      "pattern": "^[Dd]o\\ not\\ ask\\ the\\ (.+?)\\ to\\ teach\\ (.+?)(?:\\.)?$",
-      "template": "{t0}に{t1}を教えよと求めるな。",
-      "route": "annals"
-    },
-    {
-      "pattern": "^[Kk]eep\\ an\\ eye\\ on\\ your\\ (.+?)(?:\\.)?$",
-      "template": "自らの{t0}から目を離すな。",
-      "route": "annals"
-    },
-    {
-      "pattern": "^[Bb]etter\\ to\\ be\\ (.+?)\\ than\\ to\\ be\\ (.+?)(?:\\.)?$",
-      "template": "{t1}であるより{t0}ほうがよい。",
-      "route": "annals"
-    },
-    {
-      "pattern": "^[Ff]ind\\ (.+?)\\ in\\ every\\ (.+?)(?:\\.)?$",
-      "template": "あらゆる{t1}の中に{t0}を見いだせ。",
-      "route": "annals"
-    },
-    {
-      "pattern": "^((?:In|Throughout|Throughout\\ the\\ entirety\\ of|Through|Around))\\ (.+?),\\ (.+?)\\ (.+?)\\ all\\ of\\ (.+?),\\ (.+?)\\ of\\ (.+?)\\ and\\ (.+?)\\.\\ (.+?)\\ became\\ known\\ as\\ (?:the\\ )?(.+?)\\ (Scourge|Terror|Bane|Pest|Woe|Sorrow)\\.$",
-      "template": "{t1}{t0}、{t2}は{t4}全域を{t3}うえ、{t6}と{t7}に対して{t5}を行った。{t8}は以後{t9}の{t10}として知られるようになった。",
-      "route": "annals"
-    },
-    {
-      "pattern": "^((?:In|Throughout|Throughout\\ the\\ entirety\\ of|Through|Around))\\ (.+?),\\ (.+?)\\ (.+?)\\ all\\ of\\ (.+?),\\ (.+?)\\ of\\ (.+?)\\ and\\ (.+?)\\.\\ (.+?)\\ became\\ known\\ as\\ (.+?)\\.$",
-      "template": "{t1}{t0}、{t2}は{t4}全域を{t3}うえ、{t6}と{t7}に対して{t5}を行った。{t8}は以後{t9}として知られるようになった。",
-      "route": "annals"
-    },
-    {
-      "pattern": "^((?:In|Throughout|Throughout\\ the\\ entirety\\ of|Through|Around))\\ (.+?),\\ (.+?)\\ (.+?)\\ the\\ flower\\ fields\\ and\\ brought\\ turmoil\\ to\\ the\\ troubled\\ village\\ of\\ Bey\\ Lah\\.\\ (.+?)\\ became\\ known\\ as\\ the\\ Hindren\\ (.+?)\\.$",
-      "template": "{t1}{t0}、{t2}は花畑を{t3}うえ、悩めるベイ・ラーの村に混乱をもたらした。{t4}は以後ヒンドレンの{t5}として知られるようになった。",
-      "route": "annals"
-    },
-    {
       "pattern": "^In\\ (.+?)\\ (?:BR|AR),\\ a\\ triad\\ of\\ plagues\\ afflicted\\ the\\ land\\.\\ Tongues\\ rotted\\ away\\ in\\ the\\ mouths\\ of\\ kith\\ and\\ kin,\\ their\\ legs\\ annealed\\ to\\ iron,\\ and\\ darkness\\ bloomed\\ from\\ the\\ earth\\.\\ The\\ warden\\ physickers\\ voiced\\ a\\ prayer\\ to\\ (.+?)\\ the\\ Above\\ and\\ walked\\ beneath\\ the\\ chrome\\ arches\\ to\\ heal\\ the\\ sick\\.$",
       "template": "{t0}年、三つの災厄が地を苦しめた。親しき者らの口の中で舌は腐り落ち、脚は鉄へと焼き固まり、闇は大地より咲いた。番人の医師たちは天上なる{t1}へ祈りを捧げ、クロームのアーチの下を歩み、病める者を癒やした。",
-      "route": "annals"
-    },
-    {
-      "pattern": "^In\\ (.+?)\\ (?:BR|AR),\\ (.+?)\\ cleansed\\ the\\ (.+?)\\ of\\ the\\ plagues\\ of\\ the\\ Gyre\\ and,\\ through\\ the\\ tutelage\\ of\\ the\\ tinker\\ monks\\ at\\ Grit\\ Gate,\\ taught\\ (.+?)\\ to\\ sow\\ (.+?)\\ along\\ their\\ fertile\\ tracks\\.$",
-      "template": "{t0}年、{t1}は{t2}よりジャイアの災厄を祓い、グリット・ゲートの修道機械僧たちの教えを通じて、{t3}にその肥沃なる道筋に沿って{t4}を蒔く術を授けた。",
-      "route": "annals"
-    },
-    {
-      "pattern": "^In\\ (.+?)\\ (?:BR|AR),\\ (.+?),\\ the\\ Above,\\ forsook\\ the\\ people\\ of\\ Qud\\ in\\ favor\\ of\\ its\\ sludges\\ and\\ microorganisms,\\ and\\ then\\ disappeared\\.\\ (.+?)\\ (?:was|were)\\ 216\\ years\\ old\\.$",
-      "template": "{t0}年、天上なる{t1}は、クッドの民を見捨て、そのヘドロと微生物を選び、やがて姿を消した。{t2}は216歳であった。",
-      "route": "annals"
-    },
-    {
-      "pattern": "^In\\ (.+?)\\ (?:BR|AR),\\ a\\ triad\\ of\\ plagues\\ afflicted\\ the\\ land\\.\\ Tongues\\ rotted\\ away\\ in\\ the\\ mouths\\ of\\ kith\\ and\\ kin,\\ their\\ legs\\ annealed\\ to\\ iron,\\ and\\ darkness\\ bloomed\\ from\\ the\\ earth\\.\\ (.+?)\\ and\\ their\\ warden\\ physickers\\ walked\\ beneath\\ the\\ chrome\\ arches\\ and\\ healed\\ the\\ sick\\.$",
-      "template": "{t0}年、三つの災厄が地を苦しめた。親しき者らの口の中で舌は腐り落ち、脚は鉄へと焼き固まり、闇は大地より咲いた。{t1}と番人の医師たちはクロームのアーチの下を歩み、病める者を癒やした。",
-      "route": "annals"
-    },
-    {
-      "pattern": "^At\\ twilight\\ in\\ the\\ shadow\\ of\\ the\\ Spindle,\\ the\\ people\\ of\\ (.+?)\\ saw\\ an\\ image\\ on\\ the\\ horizon\\ that\\ looked\\ like\\ a\\ (.+?)\\ bathed\\ in\\ starfire\\.\\ It\\ was\\ (.+?),\\ and\\ after\\ (.+?)\\ came\\ and\\ left\\ (.+?),\\ the\\ people\\ built\\ a\\ monument\\ to\\ (.+?),\\ and\\ thenceforth\\ called\\ (.+?)\\ (.+?)-in-Starfire\\.$",
-      "template": "薄暮、スピンドルの影にて、{t0}の民は、地平に星火を浴びた{t1}のごとき像を見た。それは{t2}であり、{t3}が{t4}に来たりて去った後、民は{t5}の記念碑を建て、それより後、{t6}を星火の{t7}と呼んだ。",
-      "route": "annals"
-    },
-    {
-      "pattern": "^In\\ (.+?)\\ (?:BR|AR),\\ (?!Resheph,)(.+?),\\ died\\ of\\ natural\\ causes\\.\\ (.+?)\\ was\\ (.+?)\\ years\\ old\\.$",
-      "template": "{t0}年、{t1}は自然の理により身罷った。{t2}は享年{t3}歳であった。",
-      "route": "annals"
-    },
-    {
-      "pattern": "^In\\ (.+?)\\ (?:BR|AR),\\ it\\ was\\ discovered\\ that\\ (.+?)\\.\\ Despite\\ reports\\ to\\ the\\ contrary,\\ (.+?)\\ was\\ alive\\ and\\ well\\.\\ (.+?)\\ was\\ known\\ thenceforth\\ as\\ the\\ (.+?)\\.$",
-      "template": "{t0}年、{t1}との事実が明らかになった。相反する報告にもかかわらず、{t2}は健在だった。{t3}は以後{t4}として知られるようになった。",
       "route": "annals"
     },
     {
@@ -177,8 +27,18 @@
       "route": "annals"
     },
     {
+      "pattern": "^At\\ twilight\\ in\\ the\\ shadow\\ of\\ the\\ Spindle,\\ the\\ people\\ of\\ (.+?)\\ saw\\ an\\ image\\ on\\ the\\ horizon\\ that\\ looked\\ like\\ a\\ (.+?)\\ bathed\\ in\\ starfire\\.\\ It\\ was\\ (.+?),\\ and\\ after\\ (.+?)\\ came\\ and\\ left\\ (.+?),\\ the\\ people\\ built\\ a\\ monument\\ to\\ (.+?),\\ and\\ thenceforth\\ called\\ (.+?)\\ (.+?)-in-Starfire\\.$",
+      "template": "薄暮、スピンドルの影にて、{t0}の民は、地平に星火を浴びた{t1}のごとき像を見た。それは{t2}であり、{t3}が{t4}に来たりて去った後、民は{t5}の記念碑を建て、それより後、{t6}を星火の{t7}と呼んだ。",
+      "route": "annals"
+    },
+    {
       "pattern": "^At\\ Starfarer's\\ Quay,\\ Resheph\\ consulted\\ with\\ mysterious\\ strangers\\ and\\ learned\\ the\\ secret\\ of\\ the\\ Gyre\\.\\ By\\ cause\\ of\\ the\\ misdeeds\\ of\\ the\\ elder\\ saads\\ and\\ sultans,\\ star\\ beings\\ had\\ levied\\ a\\ curse\\ on\\ Qud\\.\\ Resheph\\ vowed\\ to\\ make\\ right\\ from\\ this\\ wrong\\ and\\ redeem\\ our\\ doomed\\ world\\.$",
       "template": "星渡りの埠頭にて、レシェフは謎めいた異邦人らに諮り、ジャイアの秘密を知った。古きサードとスルタンらの悪行により、星の者たちはクッドに呪いを課していた。レシェフはこの過ちを正し、滅び定められし我らの世界を贖わんと誓った。",
+      "route": "annals"
+    },
+    {
+      "pattern": "^In\\ (.+?)\\ (?:BR|AR),\\ a\\ triad\\ of\\ plagues\\ afflicted\\ the\\ land\\.\\ Tongues\\ rotted\\ away\\ in\\ the\\ mouths\\ of\\ kith\\ and\\ kin,\\ their\\ legs\\ annealed\\ to\\ iron,\\ and\\ darkness\\ bloomed\\ from\\ the\\ earth\\.\\ (.+?)\\ and\\ their\\ warden\\ physickers\\ walked\\ beneath\\ the\\ chrome\\ arches\\ and\\ healed\\ the\\ sick\\.$",
+      "template": "{t0}年、三つの災厄が地を苦しめた。親しき者らの口の中で舌は腐り落ち、脚は鉄へと焼き固まり、闇は大地より咲いた。{t1}と番人の医師たちはクロームのアーチの下を歩み、病める者を癒やした。",
       "route": "annals"
     },
     {
@@ -307,11 +167,6 @@
       "route": "annals"
     },
     {
-      "pattern": "^In\\ (.+?)\\ (?:BR|AR),\\ (.+?)\\ won\\ a\\ decisive\\ victory\\ against\\ the\\ combined\\ forces\\ of\\ (.+?)\\ at\\ the\\ bloody\\ Battle\\ of\\ (.+?)\\.\\ As\\ a\\ result\\ of\\ the\\ battle,\\ (.+?)\\ was\\ so\\ (.+?)\\ that\\ it\\ was\\ renamed\\ (.+)\\.$",
-      "template": "{t0}年、{t1}は血塗られし{t3}の戦いにて、{t2}の連合軍に決定的勝利を収めた。この戦いの結果、{t4}はあまりに{t5}となり、{t6}と改め名づけられた。",
-      "route": "annals"
-    },
-    {
       "pattern": "^(.+?)!\\ (.+?)\\ the\\ life\\ of\\ (.+?)\\ --\\ called\\ (.+?)born!\\ --\\ scion\\ of\\ the\\ Fossilized\\ Saads\\ and\\ (.+?)\\ who\\ was\\ dowered\\ the\\ (.+?)\\.\\ Observe\\ the\\ twin\\ miracles\\ of\\ the\\ (.+?):\\ the\\ (.+?)\\ was\\ born,\\ and\\ (.+?)\\.$",
       "template": "{t0}！ {t1}、{t2}の生涯を。すなわち{t3}生まれと呼ばれし者、化石化せしサアドの裔にして、{t4}は{t5}を授けられし者なり。{t6}の双つの奇跡を見よ。{t7}が生まれ、そして{t8}。",
       "route": "annals"
@@ -327,6 +182,16 @@
       "route": "annals"
     },
     {
+      "pattern": "^In\\ (.+?)\\ (?:BR|AR),\\ (.+?)\\ won\\ a\\ decisive\\ victory\\ against\\ the\\ combined\\ forces\\ of\\ (.+?)\\ at\\ the\\ bloody\\ Battle\\ of\\ (.+?)\\.\\ As\\ a\\ result\\ of\\ the\\ battle,\\ (.+?)\\ was\\ so\\ (.+?)\\ that\\ it\\ was\\ renamed\\ (.+)\\.$",
+      "template": "{t0}年、{t1}は血塗られし{t3}の戦いにて、{t2}の連合軍に決定的勝利を収めた。この戦いの結果、{t4}はあまりに{t5}となり、{t6}と改め名づけられた。",
+      "route": "annals"
+    },
+    {
+      "pattern": "^((?:In|Throughout|Throughout\\ the\\ entirety\\ of|Through|Around))\\ (.+?),\\ (.+?)\\ (.+?)\\ the\\ flower\\ fields\\ and\\ brought\\ turmoil\\ to\\ the\\ troubled\\ village\\ of\\ Bey\\ Lah\\.\\ (.+?)\\ became\\ known\\ as\\ the\\ Hindren\\ (.+?)\\.$",
+      "template": "{t1}{t0}、{t2}は花畑を{t3}うえ、悩めるベイ・ラーの村に混乱をもたらした。{t4}は以後ヒンドレンの{t5}として知られるようになった。",
+      "route": "annals"
+    },
+    {
       "pattern": "^While\\ wandering\\ around\\ (.+?),\\ (.+?)\\ stumbled\\ upon\\ a\\ clan\\ of\\ (.+?)\\ performing\\ a\\ secret\\ ritual\\.\\ Because\\ of\\ (.+?)\\ (.+?),\\ they\\ furiously\\ rebuked\\ (.+?)\\ and\\ declared\\ (.+?)\\ a\\ villain\\ to\\ their\\ kind\\.$",
       "template": "{t0}の辺りをさまよううち、{t1}は秘密の儀式を行う{t2}の一族に出くわした。{t3}{t4}ゆえ、彼らは{t5}を激しく叱責し、{t6}を同族の悪者であると宣した。",
       "route": "annals"
@@ -334,6 +199,16 @@
     {
       "pattern": "^Deep\\ in\\ the\\ wilds\\ of\\ (.+?),\\ (.+?)\\ stumbled\\ upon\\ a\\ clan\\ of\\ (.+?)\\ performing\\ a\\ secret\\ ritual\\.\\ Because\\ of\\ (.+?)\\ (.+?),\\ they\\ furiously\\ rebuked\\ (.+?)\\ and\\ declared\\ (.+?)\\ a\\ villain\\ to\\ their\\ kind\\.$",
       "template": "{t0}の荒野深くにて、{t1}は秘密の儀式を行う{t2}の一族に出くわした。{t3}{t4}ゆえ、彼らは{t5}を激しく叱責し、{t6}を同族の悪者であると宣した。",
+      "route": "annals"
+    },
+    {
+      "pattern": "^((?:In|Throughout|Throughout\\ the\\ entirety\\ of|Through|Around))\\ (.+?),\\ (.+?)\\ (.+?)\\ all\\ of\\ (.+?),\\ (.+?)\\ of\\ (.+?)\\ and\\ (.+?)\\.\\ (.+?)\\ became\\ known\\ as\\ (?:the\\ )?(.+?)\\ (Scourge|Terror|Bane|Pest|Woe|Sorrow)\\.$",
+      "template": "{t1}{t0}、{t2}は{t4}全域を{t3}うえ、{t6}と{t7}に対して{t5}を行った。{t8}は以後{t9}の{t10}として知られるようになった。",
+      "route": "annals"
+    },
+    {
+      "pattern": "^In\\ (.+?)\\ (?:BR|AR),\\ (.+?)\\ cleansed\\ the\\ (.+?)\\ of\\ the\\ plagues\\ of\\ the\\ Gyre\\ and,\\ through\\ the\\ tutelage\\ of\\ the\\ tinker\\ monks\\ at\\ Grit\\ Gate,\\ taught\\ (.+?)\\ to\\ sow\\ (.+?)\\ along\\ their\\ fertile\\ tracks\\.$",
+      "template": "{t0}年、{t1}は{t2}よりジャイアの災厄を祓い、グリット・ゲートの修道機械僧たちの教えを通じて、{t3}にその肥沃なる道筋に沿って{t4}を蒔く術を授けた。",
       "route": "annals"
     },
     {
@@ -427,13 +302,13 @@
       "route": "annals"
     },
     {
-      "pattern": "^In\\ the\\ (.+?),\\ (.+?)\\ (.+?)\\ the\\ (.+?),\\ who\\ (.+?)\\.\\ Let\\ the\\ (.+?)\\ of\\ (.+)\\ serve\\ as\\ testament\\ to\\ the\\ (.+?)\\ of\\ (.+?)\\ and\\ a\\ (.+?)\\ to\\ those\\ who\\ would\\ (.+?)\\ (.+?)\\.$",
-      "template": "{t0}において、{t1}は{t4}ところの{t3}を{t2}。{t6}の{t5}をして、{t8}の{t7}の証となし、また{t11}を{t10}せんとする者どもへの{t9}となさしめよ。",
+      "pattern": "^In\\ (.+?)\\ (?:BR|AR),\\ Resheph\\ closed\\ the\\ gates\\ to\\ the\\ Tomb\\ of\\ the\\ Eaters,\\ abdicated\\ the\\ throne,\\ and\\ dissolved\\ the\\ sultanate\\ in\\ order\\ to\\ lift\\ the\\ curse\\ of\\ the\\ Gyre\\.$",
+      "template": "{0}年、レシェフはジャイアの呪いを解くため、喰らう者の墓所の門を閉ざし、王座を退き、スルタン国を解いた。",
       "route": "annals"
     },
     {
-      "pattern": "^In\\ (.+?)\\ (?:BR|AR),\\ Resheph\\ closed\\ the\\ gates\\ to\\ the\\ Tomb\\ of\\ the\\ Eaters,\\ abdicated\\ the\\ throne,\\ and\\ dissolved\\ the\\ sultanate\\ in\\ order\\ to\\ lift\\ the\\ curse\\ of\\ the\\ Gyre\\.$",
-      "template": "{0}年、レシェフはジャイアの呪いを解くため、喰らう者の墓所の門を閉ざし、王座を退き、スルタン国を解いた。",
+      "pattern": "^In\\ (.+?)\\ (?:BR|AR),\\ (.+?),\\ the\\ Above,\\ forsook\\ the\\ people\\ of\\ Qud\\ in\\ favor\\ of\\ its\\ sludges\\ and\\ microorganisms,\\ and\\ then\\ disappeared\\.\\ (.+?)\\ (?:was|were)\\ 216\\ years\\ old\\.$",
+      "template": "{t0}年、天上なる{t1}は、クッドの民を見捨て、そのヘドロと微生物を選び、やがて姿を消した。{t2}は216歳であった。",
       "route": "annals"
     },
     {
@@ -454,6 +329,11 @@
     {
       "pattern": "^At\\ the\\ Battle\\ of\\ (.+?),\\ (.+?)\\ fought\\ to\\ subjugate\\ (.+?)\\.\\ (.+?)\\ wielded\\ (.+?)\\ (.+?)\\ with\\ such\\ (.+?)\\ that\\ it\\ became\\ forever\\ known\\ as\\ (.+?),\\ the\\ (.+?)\\ of\\ (.+?)\\.$",
       "template": "{t0}の戦いで、{t1}は{t2}を征服すべく戦った。{t3}は{t4}{t5}を振るい、その{t6}ゆえに、それは永遠に{t7}、{t9}の{t8}として知られるようになった。",
+      "route": "annals"
+    },
+    {
+      "pattern": "^In\\ the\\ (.+?),\\ (.+?)\\ (.+?)\\ the\\ (.+?),\\ who\\ (.+?)\\.\\ Let\\ the\\ (.+?)\\ of\\ (.+)\\ serve\\ as\\ testament\\ to\\ the\\ (.+?)\\ of\\ (.+?)\\ and\\ a\\ (.+?)\\ to\\ those\\ who\\ would\\ (.+?)\\ (.+?)\\.$",
+      "template": "{t0}において、{t1}は{t4}ところの{t3}を{t2}。{t6}の{t5}をして、{t8}の{t7}の証となし、また{t11}を{t10}せんとする者どもへの{t9}となさしめよ。",
       "route": "annals"
     },
     {
@@ -482,6 +362,11 @@
       "route": "annals"
     },
     {
+      "pattern": "^In\\ (.+?)\\ (?:BR|AR),\\ it\\ was\\ discovered\\ that\\ (.+?)\\.\\ Despite\\ reports\\ to\\ the\\ contrary,\\ (.+?)\\ was\\ alive\\ and\\ well\\.\\ (.+?)\\ was\\ known\\ thenceforth\\ as\\ the\\ (.+?)\\.$",
+      "template": "{t0}年、{t1}との事実が明らかになった。相反する報告にもかかわらず、{t2}は健在だった。{t3}は以後{t4}として知られるようになった。",
+      "route": "annals"
+    },
+    {
       "pattern": "^Let\\ us\\ (.+?)\\ the\\ (.+?),\\ when,\\ deep\\ in\\ (.+?),\\ (.+?)\\ (.+?)\\ (.+?)\\ and\\ (.+?)\\ the\\ (.+?)\\ (.+?)\\ who\\ lived\\ there\\.\\ To\\ (.+?)\\ (.+?)\\ (.+?)\\ to\\ them,\\ (.+?)\\ (.+?)\\.$",
       "template": "われら{t1}を{t0}ん。その時、{t2}の深きところにて、{t3}は{t5}を{t4}、そこに住まいし{t7}{t8}を{t6}たり。彼らに{t10}{t11}を{t9}さんとして、{t12}は{t13}。",
       "route": "annals"
@@ -492,13 +377,13 @@
       "route": "annals"
     },
     {
-      "pattern": "^At\\ the\\ Battle\\ of\\ (.+?),\\ (.+?)\\ fought\\ to\\ subjugate\\ (.+?)\\.\\ (.+?)\\ wielded\\ (.+?)\\ (.+?)\\ with\\ such\\ (.+?)\\ that\\ it\\ became\\ forever\\ known\\ as\\ (.+)\\.$",
-      "template": "{t0}の戦いで、{t1}は{t2}を征服すべく戦った。{t3}は{t4}{t5}を振るい、その{t6}ゆえに、それは永遠に{t7}として知られるようになった。",
+      "pattern": "^In\\ late\\ (.+?)\\ (?:BR|AR),\\ (.+?)\\ was\\ assailed\\ by\\ (.+?)\\ over\\ the\\ sanctioned\\ persecution\\ of\\ (.+?)\\.\\ (.+?)\\ lost\\ and\\ was\\ (.+?)\\.\\ (.+?)\\ was\\ (.+?)\\ years\\ old\\.$",
+      "template": "{t0}年の末、{t1}は{t3}への公認された迫害をめぐり、{t2}に襲われた。{t4}は敗れ、{t5}。{t6}は{t7}歳であった。",
       "route": "annals"
     },
     {
-      "pattern": "^In\\ late\\ (.+?)\\ (?:BR|AR),\\ (.+?)\\ was\\ assailed\\ by\\ (.+?)\\ over\\ the\\ sanctioned\\ persecution\\ of\\ (.+?)\\.\\ (.+?)\\ lost\\ and\\ was\\ (.+?)\\.\\ (.+?)\\ was\\ (.+?)\\ years\\ old\\.$",
-      "template": "{t0}年の末、{t1}は{t3}への公認された迫害をめぐり、{t2}に襲われた。{t4}は敗れ、{t5}。{t6}は{t7}歳であった。",
+      "pattern": "^((?:In|Throughout|Throughout\\ the\\ entirety\\ of|Through|Around))\\ (.+?),\\ (.+?)\\ (.+?)\\ all\\ of\\ (.+?),\\ (.+?)\\ of\\ (.+?)\\ and\\ (.+?)\\.\\ (.+?)\\ became\\ known\\ as\\ (.+?)\\.$",
+      "template": "{t1}{t0}、{t2}は{t4}全域を{t3}うえ、{t6}と{t7}に対して{t5}を行った。{t8}は以後{t9}として知られるようになった。",
       "route": "annals"
     },
     {
@@ -512,6 +397,11 @@
       "route": "annals"
     },
     {
+      "pattern": "^((?:In|Early in|Late in|Sometime in))\\ (.+?)\\ (?:BR|AR),\\ (.+?),\\ the\\ sultan\\ of\\ Qud\\ (.+?)\\.\\ Because(?:\\ of)?\\ (.+?),\\ (.+?)\\ was\\ chosen\\ as\\ the\\ successor\\.$",
+      "template": "{t1}{t0}、{t2}、クッドのスルタンは{t3}。{t4}のため、{t5}が後継者に選ばれた。",
+      "route": "annals"
+    },
+    {
       "pattern": "^For\\ the\\ sake\\ of\\ (.+?),\\ (.+?)\\ (.+?)\\ at\\ (.+?)\\ in\\ (.+?)\\ to\\ (.+?)\\ among\\ the\\ (.+?)\\ and\\ (.+?)\\.\\ After\\ (.+?)\\ (.+?)\\ years,\\ (.+?)\\ (.+?)\\ at\\ (.+?)\\.$",
       "template": "{t0}のため、{t1}は{t4}の{t3}にて{t2}、{t6}と{t7}の間に{t5}せんとした。{t8}年もの{t9}歳月を経て、{t10}は{t12}にて{t11}。",
       "route": "annals"
@@ -519,6 +409,11 @@
     {
       "pattern": "^(.+?),\\ (.+?)\\ cemented\\ (.+?)\\ friendship\\ with\\ (.+?)\\ by\\ marrying\\ (.+?)\\.\\ (.+?),\\ the\\ (.+?)\\ bestowed\\ upon\\ (.+?)\\ a\\ wedding\\ gift\\ they\\ called\\ (.+?)\\.$",
       "template": "{t0}、{t1}は{t4}と婚姻を結ぶことにより、{t2}の{t3}との友誼を固めた。{t5}、{t6}は{t7}に、彼らが{t8}と呼ぶ婚礼の贈り物を授けた。",
+      "route": "annals"
+    },
+    {
+      "pattern": "^At\\ the\\ Battle\\ of\\ (.+?),\\ (.+?)\\ fought\\ to\\ subjugate\\ (.+?)\\.\\ (.+?)\\ wielded\\ (.+?)\\ (.+?)\\ with\\ such\\ (.+?)\\ that\\ it\\ became\\ forever\\ known\\ as\\ (.+)\\.$",
+      "template": "{t0}の戦いで、{t1}は{t2}を征服すべく戦った。{t3}は{t4}{t5}を振るい、その{t6}ゆえに、それは永遠に{t7}として知られるようになった。",
       "route": "annals"
     },
     {
@@ -577,23 +472,23 @@
       "route": "annals"
     },
     {
+      "pattern": "^((?:In|Early in|Late in|Sometime in))\\ (.+?)\\ (?:BR|AR),\\ (.+?),\\ (.+?)\\ counselors\\ suggested\\ (.+?)\\ (.+?)\\.\\ Instead,\\ (.+?)\\ (.+?)\\.$",
+      "template": "{t1}{t0}、{t2}、{t3}の顧問たちは{t4}が{t5}ことを進言した。だが代わりに、{t6}は{t7}。",
+      "route": "annals"
+    },
+    {
       "pattern": "^In\\ (.+?)\\ (?:BR|AR),\\ Resheph\\ appointed\\ Rebekah\\ administrator\\ of\\ (.+?)\\.\\ She\\ tendered\\ alms\\ for\\ the\\ sick\\ in\\ his\\ name\\.$",
       "template": "{0}年、レシェフはレベカを{t1}の施政官に任じた。彼女は彼の名において病める者へ施しを捧げた。",
       "route": "annals"
     },
     {
-      "pattern": "^In\\ the\\ (.+?),\\ (.+)\\ laid\\ (.+?)\\ body\\ to\\ rest\\ and\\ crossed\\ into\\ Brightsheol\\.\\ (.+?)\\ was\\ (.+?)\\ years\\ old\\.$",
-      "template": "{t0}、{t1}は{t2}身を休め、ブライトシェオルへ渡った。{t3}は享年{t4}歳であった。",
-      "route": "annals"
-    },
-    {
-      "pattern": "^((?:In|Early in|Late in|Sometime in))\\ (.+?)\\ (?:BR|AR),\\ (.+?),\\ the\\ sultan\\ of\\ Qud\\ (.+?)\\.\\ Because(?:\\ of)?\\ (.+?),\\ (.+?)\\ was\\ chosen\\ as\\ the\\ successor\\.$",
-      "template": "{t1}{t0}、{t2}、クッドのスルタンは{t3}。{t4}のため、{t5}が後継者に選ばれた。",
-      "route": "annals"
-    },
-    {
       "pattern": "^(.+?)\\ (.+?)\\ (?:BR|AR),\\ (.+?)\\ (.+?)\\ all\\ of\\ (.+?),\\ (.+?)\\ of\\ (.+?)\\ and\\ (.+?)\\.\\ (.+?)\\ became\\ known\\ as\\ (.+?)\\.$",
       "template": "{t0}{t1}年、{t2}は{t4}全土を{t3}、{t6}と{t7}に{t5}をもたらした。{t8}は{t9}として知られるようになった。",
+      "route": "annals"
+    },
+    {
+      "pattern": "^In\\ the\\ (.+?),\\ (.+)\\ laid\\ (.+?)\\ body\\ to\\ rest\\ and\\ crossed\\ into\\ Brightsheol\\.\\ (.+?)\\ was\\ (.+?)\\ years\\ old\\.$",
+      "template": "{t0}、{t1}は{t2}身を休め、ブライトシェオルへ渡った。{t3}は享年{t4}歳であった。",
       "route": "annals"
     },
     {
@@ -617,13 +512,13 @@
       "route": "annals"
     },
     {
-      "pattern": "^((?:In|Early in|Late in|Sometime in))\\ (.+?)\\ (?:BR|AR),\\ (.+?),\\ (.+?)\\ counselors\\ suggested\\ (.+?)\\ (.+?)\\.\\ Instead,\\ (.+?)\\ (.+?)\\.$",
-      "template": "{t1}{t0}、{t2}、{t3}の顧問たちは{t4}が{t5}ことを進言した。だが代わりに、{t6}は{t7}。",
+      "pattern": "^(.+?),\\ a\\ babe\\ was\\ found\\ swaddled\\ (.+?)\\ (with\\ .+?)\\.\\ That\\ babe\\ came\\ to\\ be\\ known\\ as\\ (.+?)\\.$",
+      "template": "{t0}、ひとりの嬰児（{t2}）が{t1}にて産着に包まれて見いだされた。その嬰児はのちに{t3}として知られるようになった。",
       "route": "annals"
     },
     {
-      "pattern": "^(.+?),\\ a\\ babe\\ was\\ found\\ swaddled\\ (.+?)\\ (with\\ .+?)\\.\\ That\\ babe\\ came\\ to\\ be\\ known\\ as\\ (.+?)\\.$",
-      "template": "{t0}、ひとりの嬰児（{t2}）が{t1}にて産着に包まれて見いだされた。その嬰児はのちに{t3}として知られるようになった。",
+      "pattern": "^In\\ (.+?)\\ (?:BR|AR),\\ (?!Resheph,)(.+?),\\ died\\ of\\ natural\\ causes\\.\\ (.+?)\\ was\\ (.+?)\\ years\\ old\\.$",
+      "template": "{t0}年、{t1}は自然の理により身罷った。{t2}は享年{t3}歳であった。",
       "route": "annals"
     },
     {
@@ -642,8 +537,23 @@
       "route": "annals"
     },
     {
+      "pattern": "^([Bb]less|[Tt]hank|[Ee]xalt|[Gg]ive\\ thanks\\ for|[Pp]raise|[Hh]onor)\\ (.+?)(?:\\.)?$",
+      "template": "{t1}を{t0}。",
+      "route": "annals"
+    },
+    {
+      "pattern": "^[Ww]elcome\\ strangers\\ in\\ (.+?),\\ but\\ teach\\ them\\ the\\ (.+?)\\ of\\ (.+?)(?:\\.)?$",
+      "template": "{t0}の中で異邦人を迎えよ、されど彼らに{t2}の{t1}を教えよ。",
+      "route": "annals"
+    },
+    {
       "pattern": "^(.+?),\\ (.+?)\\ cemented\\ (.+?)\\ friendship\\ with\\ (.+?)\\ by\\ marrying\\ (.+?)\\.$",
       "template": "{t0}、{t1}は{t4}と婚姻を結ぶことにより、{t2}の{t3}との友誼を固めた。",
+      "route": "annals"
+    },
+    {
+      "pattern": "^[Ww]elcome\\ strangers\\ (.+?),\\ but\\ teach\\ them\\ the\\ (.+?)\\ of\\ (.+?)(?:\\.)?$",
+      "template": "{t0}で異邦人を迎えよ、されど彼らに{t2}の{t1}を教えよ。",
       "route": "annals"
     },
     {
@@ -657,33 +567,33 @@
       "route": "annals"
     },
     {
-      "pattern": "^(.+?)\\ got\\ (.+?)\\ (.+?)\\ stuck\\ in\\ (.+?)\\.$",
-      "template": "{t0}は{t1}{t2}を{t3}に挟まれた。",
-      "route": "annals"
-    },
-    {
-      "pattern": "^(.+?)\\ got\\ (.+?)\\ (.+?)\\ stuck\\ under\\ (.+?)\\.$",
-      "template": "{t0}は{t1}{t2}を{t3}の下に挟まれた。",
-      "route": "annals"
-    },
-    {
-      "pattern": "^(.+?)\\ got\\ (.+?)\\ (.+?)\\ stuck\\ inside\\ (.+?)\\.$",
-      "template": "{t0}は{t1}{t2}を{t3}の中に挟まれた。",
-      "route": "annals"
-    },
-    {
-      "pattern": "^(.+?)\\ got\\ (.+?)\\ (.+?)\\ stuck\\ behind\\ (.+?)\\.$",
-      "template": "{t0}は{t1}{t2}を{t3}の後ろに挟まれた。",
-      "route": "annals"
-    },
-    {
-      "pattern": "^(.+?)\\ drowned\\ in\\ a\\ lake\\ of\\ (.+?)\\.$",
-      "template": "{t0}は{t1}の湖で溺れた。",
-      "route": "annals"
-    },
-    {
       "pattern": "^(.+?)\\ (.+?)\\ of\\ (.+?)!\\ It\\ was\\ there\\ that\\ (.+?)\\ (.+?)\\.$",
       "template": "{t2}の{t1}に{t0}！ そこにて{t3}は{t4}。",
+      "route": "annals"
+    },
+    {
+      "pattern": "^[Ll]ike\\ the\\ (.+?)\\ to\\ the\\ (.+?),\\ so\\ (.+?)\\ to\\ us(?:\\.)?$",
+      "template": "{t1}にとっての{t0}のように、我らにとっての{t2}もまたそうだ。",
+      "route": "annals"
+    },
+    {
+      "pattern": "^([Cc]urse|[Aa]\\ blight\\ upon|[Aa]\\ curse\\ upon)\\ (.+?)(?:\\.)?$",
+      "template": "{t1}を{t0}。",
+      "route": "annals"
+    },
+    {
+      "pattern": "^[Tt]he\\ (.+?)\\ (.+?)\\ knows\\ the\\ (.+?)\\ of\\ (.+?)(?:\\.)?$",
+      "template": "{t0}{t1}は{t3}の{t2}を知る。",
+      "route": "annals"
+    },
+    {
+      "pattern": "^[Aa]\\ (.+?)\\ today\\ is\\ worth\\ a\\ (.+?)\\ tomorrow(?:\\.)?$",
+      "template": "今日の{t0}は明日の{t1}に勝る。",
+      "route": "annals"
+    },
+    {
+      "pattern": "^(.+?)\\ is\\ no\\ way\\ to\\ give\\ thanks\\ for\\ (.+?)(?:\\.)?$",
+      "template": "{t0}は{t1}に感謝を捧げる方法ではない。",
       "route": "annals"
     },
     {
@@ -692,13 +602,128 @@
       "route": "annals"
     },
     {
+      "pattern": "^[Bb]etter\\ to\\ be\\ (.+?)\\ than\\ to\\ be\\ (.+?)(?:\\.)?$",
+      "template": "{t1}であるより{t0}ほうがよい。",
+      "route": "annals"
+    },
+    {
+      "pattern": "^[Dd]o\\ not\\ ask\\ the\\ (.+?)\\ to\\ teach\\ (.+?)(?:\\.)?$",
+      "template": "{t0}に{t1}を教えよと求めるな。",
+      "route": "annals"
+    },
+    {
+      "pattern": "^[Kk]nowing\\ (.+?)\\ means\\ knowing\\ the\\ (.+?)(?:\\.)?$",
+      "template": "{t0}を知ることは{t1}を知ることだ。",
+      "route": "annals"
+    },
+    {
+      "pattern": "^[Pp]lant\\ seeds\\ in\\ (.+?)\\ and\\ reap\\ (.+?)(?:\\.)?$",
+      "template": "{t0}に種を蒔けば{t1}を刈り取る。",
+      "route": "annals"
+    },
+    {
       "pattern": "^(.+?)\\ was\\ adopted\\ by\\ (.+?)\\ who\\ love\\ (.+?)\\.$",
       "template": "{t0}は、{t2}を愛する{t1}に養子として迎えられた。",
       "route": "annals"
     },
     {
+      "pattern": "^(.+?)\\ got\\ (.+?)\\ (.+?)\\ stuck\\ behind\\ (.+?)\\.$",
+      "template": "{t0}は{t1}{t2}を{t3}の後ろに挟まれた。",
+      "route": "annals"
+    },
+    {
+      "pattern": "^(.+?)\\ got\\ (.+?)\\ (.+?)\\ stuck\\ inside\\ (.+?)\\.$",
+      "template": "{t0}は{t1}{t2}を{t3}の中に挟まれた。",
+      "route": "annals"
+    },
+    {
+      "pattern": "^(.+?)\\ got\\ (.+?)\\ (.+?)\\ stuck\\ under\\ (.+?)\\.$",
+      "template": "{t0}は{t1}{t2}を{t3}の下に挟まれた。",
+      "route": "annals"
+    },
+    {
+      "pattern": "^(.+?)\\ got\\ (.+?)\\ (.+?)\\ stuck\\ in\\ (.+?)\\.$",
+      "template": "{t0}は{t1}{t2}を{t3}に挟まれた。",
+      "route": "annals"
+    },
+    {
+      "pattern": "^(.+?)\\ is\\ no\\ way\\ to\\ praise\\ (.+?)(?:\\.)?$",
+      "template": "{t0}は{t1}を称賛する方法ではない。",
+      "route": "annals"
+    },
+    {
+      "pattern": "^[Oo]nly\\ the\\ (.+?)\\ can\\ know\\ (.+?)(?:\\.)?$",
+      "template": "{t1}を知り得るのは{t0}だけだ。",
+      "route": "annals"
+    },
+    {
+      "pattern": "^(.+?)\\ is\\ no\\ way\\ to\\ bless\\ (.+?)(?:\\.)?$",
+      "template": "{t0}は{t1}を祝福する方法ではない。",
+      "route": "annals"
+    },
+    {
+      "pattern": "^(.+?)\\ is\\ no\\ way\\ to\\ exalt\\ (.+?)(?:\\.)?$",
+      "template": "{t0}は{t1}を讃える方法ではない。",
+      "route": "annals"
+    },
+    {
+      "pattern": "^(.+?)\\ is\\ no\\ way\\ to\\ honor\\ (.+?)(?:\\.)?$",
+      "template": "{t0}は{t1}を敬う方法ではない。",
+      "route": "annals"
+    },
+    {
+      "pattern": "^(.+?)\\ is\\ no\\ way\\ to\\ thank\\ (.+?)(?:\\.)?$",
+      "template": "{t0}は{t1}に感謝する方法ではない。",
+      "route": "annals"
+    },
+    {
+      "pattern": "^(.+?)\\ hold\\ no\\ value\\ over\\ (.+?)(?:\\.)?$",
+      "template": "{t1}に比べれば{t0}に価値はない。",
+      "route": "annals"
+    },
+    {
+      "pattern": "^(.+?)\\ drowned\\ in\\ a\\ lake\\ of\\ (.+?)\\.$",
+      "template": "{t0}は{t1}の湖で溺れた。",
+      "route": "annals"
+    },
+    {
+      "pattern": "^(.+?)\\ cannot\\ compare\\ to\\ (.+?)(?:\\.)?$",
+      "template": "{t0}は{t1}に及ばない。",
+      "route": "annals"
+    },
+    {
+      "pattern": "^[Kk]eep\\ an\\ eye\\ on\\ your\\ (.+?)(?:\\.)?$",
+      "template": "自らの{t0}から目を離すな。",
+      "route": "annals"
+    },
+    {
+      "pattern": "^[Dd]on\\'t\\ (.+?)\\ to\\ the\\ (.+?)(?:\\.)?$",
+      "template": "{t1}へ{t0}な。",
+      "route": "annals"
+    },
+    {
+      "pattern": "^[Ff]ind\\ (.+?)\\ in\\ every\\ (.+?)(?:\\.)?$",
+      "template": "あらゆる{t1}の中に{t0}を見いだせ。",
+      "route": "annals"
+    },
+    {
+      "pattern": "^[Aa]t\\ the\\ (.+?)\\ lies\\ (.+?)(?:\\.)?$",
+      "template": "{t0}には{t1}が宿る。",
+      "route": "annals"
+    },
+    {
+      "pattern": "^(.+?)\\ dwells\\ in\\ the\\ (.+?)(?:\\.)?$",
+      "template": "{t0}は{t1}に宿る。",
+      "route": "annals"
+    },
+    {
       "pattern": "^(.+?)\\ (.+?)\\ named\\ it\\ (.+?)\\.$",
       "template": "{t0}、{t1}はそれを{t2}と名づけた。",
+      "route": "annals"
+    },
+    {
+      "pattern": "^(.+?)\\ leads\\ to\\ (.+?)(?:\\.)?$",
+      "template": "{t0}は{t1}につながる。",
       "route": "annals"
     },
     {

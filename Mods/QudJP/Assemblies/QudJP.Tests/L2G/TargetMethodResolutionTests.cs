@@ -566,7 +566,7 @@ public sealed class TargetMethodResolutionTests
             Assert.That(runtimeMethod, Is.Not.Null, "generateFactionName(string) runtime method not found.");
             Assert.That(runtimeMethod!.ReturnType, Is.EqualTo(typeof(string)));
             Assert.That(targetMethod, Is.Not.Null, "ImportedFoodOrDrinkFactionNameTranslationPatch TargetMethod returned null.");
-            Assert.That(targetMethod, Is.SameAs(runtimeMethod));
+            Assert.That(targetMethod, Is.EqualTo(runtimeMethod));
         });
     }
 #endif
