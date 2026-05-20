@@ -102,6 +102,22 @@ public sealed class FriendOrFoeReasonTranslatorTests
     }
 
     [Test]
+    public void TryTranslate_StripsDirectMarkerBeforeTranslating()
+    {
+        WriteDictionaryFile("Scoped/historyspice-common.ja.json", ("suns", "太陽"));
+
+        var ok = FriendOrFoeReasonTranslator.TryTranslate(
+            MessageFrameTranslator.DirectTranslationMarker + "praising their suns",
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(translated, Is.EqualTo("太陽を称賛した"));
+        });
+    }
+
+    [Test]
     public void TryTranslate_LeavesUnknownReasonUnchanged()
     {
         const string source = "for reasons no one can parse";

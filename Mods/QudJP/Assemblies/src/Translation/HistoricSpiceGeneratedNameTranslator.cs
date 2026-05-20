@@ -348,7 +348,14 @@ internal static class HistoricSpiceGeneratedNameTranslator
 
     internal static bool TryTranslateSultanateYearName(string source, out string translated)
     {
-        var match = SultanateYearNamePattern.Match(source);
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
+        {
+            translated = markedText;
+            return true;
+        }
+
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        var match = SultanateYearNamePattern.Match(stripped);
         if (!match.Success
             || !HistorySpiceComponentLookup.TryTranslateWord(match.Groups["adjective"].Value, out var adjective)
             || !HistorySpiceComponentLookup.TryTranslateWord(match.Groups["noun"].Value, out var noun))
@@ -357,7 +364,11 @@ internal static class HistoricSpiceGeneratedNameTranslator
             return false;
         }
 
-        translated = adjective + noun + "の年";
+        translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+            adjective + noun + "の年",
+            spans,
+            stripped.Length,
+            source);
         return true;
     }
 
@@ -366,7 +377,7 @@ internal static class HistoricSpiceGeneratedNameTranslator
         if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
         {
             translated = markedText;
-            return false;
+            return true;
         }
 
         var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
@@ -389,7 +400,7 @@ internal static class HistoricSpiceGeneratedNameTranslator
         if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
         {
             translated = markedText;
-            return false;
+            return true;
         }
 
         var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
@@ -412,7 +423,7 @@ internal static class HistoricSpiceGeneratedNameTranslator
         if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
         {
             translated = markedText;
-            return false;
+            return true;
         }
 
         var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);

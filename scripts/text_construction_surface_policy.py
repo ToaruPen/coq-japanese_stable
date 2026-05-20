@@ -212,6 +212,18 @@ ISSUE737_COOKING_ROUTE_EVIDENCE: Final = [
     ),
     "spice.cooking.ate[0] fixed popup leaf is covered by the existing ^You eat the meal\\.$ popup pattern",
 ]
+ISSUE737_COOK_RECIPE_PRESET_ROUTE_EVIDENCE: Final = [
+    *ISSUE737_COOKING_ROUTE_EVIDENCE,
+    "Mods/QudJP/Assemblies/src/Patches/CampfireCookFromRecipeTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/CampfireCookPresetMealTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/CampfireCookFromRecipeTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/CampfireCookPresetMealTranslationPatchTests.cs",
+    (
+        "CookFromRecipe and CookPresetMeal have route-specific owner evidence for "
+        "menu-line popups, ingredient-shortage popups, preset meal popups, "
+        "direct-marker pass-through, and color/empty edge cases"
+    ),
+]
 ISSUE737_JOURNAL_ROUTE_EVIDENCE: Final = [
     "Mods/QudJP/Assemblies/src/Patches/JournalAccomplishmentAddTranslationPatch.cs",
     "Mods/QudJP/Assemblies/src/Patches/JournalLineTranslationPatch.cs",
@@ -701,11 +713,11 @@ TEXT_CONSTRUCTION_CLOSURE_OVERLAY: Final[dict[str, ClosureOverlayEntry]] = {
     },
     "XRL.World.Parts/Campfire.cs::Campfire.CookFromRecipe()": {
         "closure_status": "covered_by_owner_route",
-        "closure_evidence": ISSUE737_COOKING_ROUTE_EVIDENCE,
+        "closure_evidence": ISSUE737_COOK_RECIPE_PRESET_ROUTE_EVIDENCE,
     },
     "XRL.World.Parts/Campfire.cs::Campfire.CookPresetMeal(int)": {
         "closure_status": "covered_by_owner_route",
-        "closure_evidence": ISSUE737_COOKING_ROUTE_EVIDENCE,
+        "closure_evidence": ISSUE737_COOK_RECIPE_PRESET_ROUTE_EVIDENCE,
     },
     "XRL.World.Parts/Campfire.cs::Campfire.DescribeMeal(IReadOnlyList<GameObject>)": {
         "closure_status": "covered_by_owner_route",
@@ -1343,8 +1355,6 @@ def load_inventory(path: Path) -> TextConstructionInventory:
 def _normalize_family_payload(family: object) -> object:
     if not isinstance(family, dict):
         return family
-    if "family_id" in family:
-        return family
 
     surface_counts = family.get("surface_counts")
     callsite_count = family.get("callsite_count")
@@ -1357,7 +1367,7 @@ def _normalize_family_payload(family: object) -> object:
 
     return {
         **family,
-        "family_id": family.get("producer_family_id", ""),
+        "family_id": family.get("family_id", family.get("producer_family_id", "")),
         "member_signature": family.get("member_signature", family.get("member_name", "")),
         "text_construction_count": (
             callsite_count

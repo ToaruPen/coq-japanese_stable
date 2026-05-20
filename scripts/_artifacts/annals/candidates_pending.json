@@ -8307,7 +8307,7 @@
       "switch_case": "proverbs/proverbsCoda",
       "event_property": "gospel",
       "sample_source": "*ValuedOre* hold no value over *sacredThing*",
-      "extracted_pattern": "^(.+?)\\ hold\\ no\\ value\\ over\\ (.+?)\\.$",
+      "extracted_pattern": "^(.+?)\\ hold\\ no\\ value\\ over\\ (.+?)(?:\\.)?$",
       "slots": [
         {
           "index": 0,
@@ -8327,7 +8327,7 @@
       "ja_template": "{t1}に比べれば{t0}に価値はない。",
       "review_notes": "issue-737 village proverb storage-route coverage",
       "route": "annals",
-      "en_template_hash": "sha256:439cb0cc423e4eefb048deb86e0da7d4da44dd118e65741eff2755d1882a72dd"
+      "en_template_hash": "sha256:990026addbd27aba5d751b8e361ffbb009b9ea9ebfe784ff00e3b0d2a70f3b5f"
     },
     {
       "id": "VillageProverb#proverb#plant-seeds",
@@ -8336,7 +8336,7 @@
       "switch_case": "proverbs/proverbsCoda",
       "event_property": "gospel",
       "sample_source": "plant seeds in *ArableLand* and reap *sacredThing*",
-      "extracted_pattern": "^Plant\\ seeds\\ in\\ (.+?)\\ and\\ reap\\ (.+?)\\.$",
+      "extracted_pattern": "^[Pp]lant\\ seeds\\ in\\ (.+?)\\ and\\ reap\\ (.+?)(?:\\.)?$",
       "slots": [
         {
           "index": 0,
@@ -8356,7 +8356,7 @@
       "ja_template": "{t0}に種を蒔けば{t1}を刈り取る。",
       "review_notes": "issue-737 village proverb storage-route coverage",
       "route": "annals",
-      "en_template_hash": "sha256:32647ae9cff7c281796c4fa57f2af50b5dd31dba8b4f8f0e43305f4f73860f92"
+      "en_template_hash": "sha256:866cfd56b56615704a41cb16c7b22b76cfa752787cc8abc4173083c7066f96ad"
     },
     {
       "id": "VillageProverb#proverb#activity-leads",
@@ -8667,7 +8667,7 @@
       "switch_case": "proverbs",
       "event_property": "gospel",
       "sample_source": "don't <spice.commonPhrases.trek.!random> to the <spice.placeNouns.!random>",
-      "extracted_pattern": "^Don't\\ (.+?)\\ to\\ the\\ (.+?)\\.$",
+      "extracted_pattern": "^[Dd]on\\'t\\ (.+?)\\ to\\ the\\ (.+?)(?:\\.)?$",
       "slots": [
         {
           "index": 0,
@@ -8687,7 +8687,7 @@
       "ja_template": "{t1}へ{t0}な。",
       "review_notes": "issue-737 route grammar closure",
       "route": "annals",
-      "en_template_hash": "sha256:ac381b3ae197ab8b74526222fcc7ea021a5896a17eb88e4cfd3d58153986449a"
+      "en_template_hash": "sha256:8e4de2ac37a2fd1ca740f081764beeb353cdb39e2569ccd032cda6b4ee4e47f6"
     },
     {
       "id": "VillageProverb#proverb#today-worth-tomorrow",
@@ -8696,7 +8696,7 @@
       "switch_case": "proverbs",
       "event_property": "gospel",
       "sample_source": "a <spice.nouns.!random> today is worth a <spice.nouns.!random> tomorrow",
-      "extracted_pattern": "^A\\ (.+?)\\ today\\ is\\ worth\\ a\\ (.+?)\\ tomorrow\\.$",
+      "extracted_pattern": "^[Aa]\\ (.+?)\\ today\\ is\\ worth\\ a\\ (.+?)\\ tomorrow(?:\\.)?$",
       "slots": [
         {
           "index": 0,
@@ -8716,7 +8716,7 @@
       "ja_template": "今日の{t0}は明日の{t1}に勝る。",
       "review_notes": "issue-737 route grammar closure",
       "route": "annals",
-      "en_template_hash": "sha256:b543881287aed6176c79d7ca0d3fcd9adf0595f4a80b5219140e9d63f94b508d"
+      "en_template_hash": "sha256:2e83452d49ab16ab4f7c15d2cc51eafeb0973bf561d09102a4f8ffd303b984d7"
     },
     {
       "id": "VillageProverb#proverb#knowing-means-knowing",

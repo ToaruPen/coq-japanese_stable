@@ -141,7 +141,7 @@ public sealed class HistoricSpiceGeneratedNameTranslatorTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(ok, Is.False);
+            Assert.That(ok, Is.True);
             Assert.That(translated, Is.EqualTo("Sword's Blessing"));
         });
     }
@@ -198,6 +198,20 @@ public sealed class HistoricSpiceGeneratedNameTranslatorTests
         });
     }
 
+    [Test]
+    public void TryTranslateSultanCultName_StripsDirectMarkerWithoutRetranslating()
+    {
+        var ok = HistoricSpiceGeneratedNameTranslator.TryTranslateSultanCultName(
+            MessageFrameTranslator.DirectTranslationMarker + "Cult of the Gleaming Ghost",
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(translated, Is.EqualTo("Cult of the Gleaming Ghost"));
+        });
+    }
+
     [TestCase("Ibul wastes", "Ibul荒野")]
     [TestCase("the red Ibul", "赤のIbul")]
     [TestCase("red wastes Ibul", "赤の荒野Ibul")]
@@ -229,6 +243,20 @@ public sealed class HistoricSpiceGeneratedNameTranslatorTests
         {
             Assert.That(ok, Is.False);
             Assert.That(translated, Is.EqualTo(source));
+        });
+    }
+
+    [Test]
+    public void TryTranslateRuinsSiteName_StripsDirectMarkerWithoutRetranslating()
+    {
+        var ok = HistoricSpiceGeneratedNameTranslator.TryTranslateRuinsSiteName(
+            MessageFrameTranslator.DirectTranslationMarker + "red wastes Ibul",
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(translated, Is.EqualTo("red wastes Ibul"));
         });
     }
 

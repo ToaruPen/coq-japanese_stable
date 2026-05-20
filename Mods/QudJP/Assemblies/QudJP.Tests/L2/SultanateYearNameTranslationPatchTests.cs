@@ -97,6 +97,38 @@ public sealed class SultanateYearNameTranslationPatchTests
         }
     }
 
+    [TestCase("", "", 0)]
+    [TestCase("<color=#44ff88>Year of the Shining Visage</color>", "<color=#44ff88>輝く容貌の年</color>", 1)]
+    [TestCase("\u0001Year of the Shining Visage", "Year of the Shining Visage", 1)]
+    public void Postfix_HandlesSultanateYearNameEdgeCases_WhenPatched(
+        string source,
+        string expected,
+        int expectedHits)
+    {
+        WriteDictionaryFile("Scoped/historyspice-common.ja.json", ("shining", "輝く"), ("visage", "容貌"));
+        DummyQudHistoryHelpersTarget.SultanateYearNameResult = source;
+        var harmonyId = "qudjp-test-sultanate-year-name-" + Guid.NewGuid().ToString("N");
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyQudHistoryHelpersTarget), nameof(DummyQudHistoryHelpersTarget.GenerateSultanateYearName)),
+                postfix: new HarmonyMethod(RequireMethod(typeof(SultanateYearNameTranslationPatch), nameof(SultanateYearNameTranslationPatch.Postfix), typeof(string).MakeByRefType())));
+
+            var result = DummyQudHistoryHelpersTarget.GenerateSultanateYearName();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(result, Is.EqualTo(expected));
+                Assert.That(RouteHitCount(), Is.EqualTo(expectedHits));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
     private void WriteDictionaryFile(string fileName, params (string Key, string Text)[] entries)
     {
         var path = Path.Combine(dictionaryDirectory, fileName);

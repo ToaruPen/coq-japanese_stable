@@ -84,7 +84,6 @@ public sealed class QudHistoryFactoryGeneratedNameTranslationPatchTests
     [TestCase("Ibul")]
     [TestCase("some forgotten ruins")]
     [TestCase("")]
-    [TestCase("\u0001red wastes Ibul")]
     public void NameRuinsSitePostfix_LeavesProperAndFallbackNamesUnchanged_WhenPatched(string source)
     {
         WriteDictionaryFile("Scoped/historyspice-common.ja.json", ("red", "赤"), ("wastes", "荒野"));
@@ -118,6 +117,20 @@ public sealed class QudHistoryFactoryGeneratedNameTranslationPatchTests
         {
             harmony.UnpatchAll(harmonyId);
         }
+    }
+
+    [Test]
+    public void NameRuinsSitePostfix_StripsDirectMarker_WhenPatched()
+    {
+        var result = MessageFrameTranslator.DirectTranslationMarker + "red wastes Ibul";
+
+        QudHistoryFactoryNameRuinsSiteTranslationPatch.Postfix(ref result);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.EqualTo("red wastes Ibul"));
+            Assert.That(RuinsRouteHitCount(), Is.EqualTo(1));
+        });
     }
 
     [Test]
@@ -176,7 +189,6 @@ public sealed class QudHistoryFactoryGeneratedNameTranslationPatchTests
 
     [TestCase("Mystery of the Unknown Ghost")]
     [TestCase("")]
-    [TestCase("\u0001Cult of the Gleaming Ghost")]
     public void GenerateCultNamePostfix_LeavesUnknownCultNameUnchanged_WhenPatched(string source)
     {
         var entity = new DummyHistoricEntity();
@@ -208,6 +220,21 @@ public sealed class QudHistoryFactoryGeneratedNameTranslationPatchTests
         {
             harmony.UnpatchAll(harmonyId);
         }
+    }
+
+    [Test]
+    public void GenerateCultNamePostfix_StripsDirectMarker_WhenPatched()
+    {
+        var entity = new DummyHistoricEntity();
+        entity.SeedProperty("cultName", MessageFrameTranslator.DirectTranslationMarker + "Cult of the Gleaming Ghost");
+
+        QudHistoryFactoryGenerateCultNameTranslationPatch.Postfix(entity);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(entity.GetCurrentSnapshot().GetProperty("cultName"), Is.EqualTo("Cult of the Gleaming Ghost"));
+            Assert.That(CultRouteHitCount(), Is.EqualTo(1));
+        });
     }
 
     [Test]

@@ -70,6 +70,20 @@ public sealed class ImportedFoodOrDrinkFactionNameTranslatorTests
         });
     }
 
+    [Test]
+    public void TryTranslate_StripsDirectMarkerWithoutRetranslating()
+    {
+        var source = MessageFrameTranslator.DirectTranslationMarker + "Cult of the Bread";
+
+        var ok = ImportedFoodOrDrinkFactionNameTranslator.TryTranslate(source, out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(translated, Is.EqualTo("Cult of the Bread"));
+        });
+    }
+
     [TestCase("")]
     [TestCase("Honeyed Bread")]
     [TestCase("Cult of Root")]

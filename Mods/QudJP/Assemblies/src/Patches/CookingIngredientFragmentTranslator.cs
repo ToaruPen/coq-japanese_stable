@@ -131,7 +131,7 @@ internal static class CookingIngredientFragmentTranslator
 
         if (!TryTranslateNonPossessiveIngredientName(match.Groups["owner"].Value, out var owner))
         {
-            return false;
+            owner = match.Groups["owner"].Value;
         }
 
         if (!TryTranslateBodyPartName(match.Groups["part"].Value, out var part))

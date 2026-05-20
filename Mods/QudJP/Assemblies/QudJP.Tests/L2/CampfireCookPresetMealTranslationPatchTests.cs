@@ -87,6 +87,42 @@ public sealed class CampfireCookPresetMealTranslationPatchTests
     }
 
     [Test]
+    public void CookPresetMeal_LeavesEmptyPopupUnchanged_WhenOwnerPatched()
+    {
+        WithPatchedOwner(() =>
+        {
+            new DummyCampfireCookPresetMealTarget
+            {
+                PopupMessageToShow = string.Empty,
+            }.CookPresetMeal(0);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(string.Empty));
+                Assert.That(HitCount("AteMeal"), Is.Zero);
+            });
+        });
+    }
+
+    [Test]
+    public void CookPresetMeal_TranslatesColorTaggedPopup_WhenOwnerPatched()
+    {
+        WithPatchedOwner(() =>
+        {
+            new DummyCampfireCookPresetMealTarget
+            {
+                PopupMessageToShow = "<color=#44ff88>You eat the meal.</color>",
+            }.CookPresetMeal(0);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("<color=#44ff88>食事をとった。</color>"));
+                Assert.That(HitCount("AteMeal"), Is.EqualTo(1));
+            });
+        });
+    }
+
+    [Test]
     public void CookPresetMeal_RestoresDirectMarkerPassThroughText_ForNestedOwnerScopes()
     {
         CampfireCookPresetMealTranslationPatch.Prefix(out var outerState);

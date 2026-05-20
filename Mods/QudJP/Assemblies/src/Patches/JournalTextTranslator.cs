@@ -141,18 +141,22 @@ internal static class JournalTextTranslator
 
     private static bool TryTranslateDisplayText(string source, string route, out string translated)
     {
-        if (TryTranslateLines(source, route, out translated))
+        var current = source;
+        var changed = false;
+        if (TryTranslateLines(current, route, out var afterLines))
         {
-            return true;
+            current = afterLines;
+            changed = true;
         }
 
-        if (TryTranslateEmbeddedRelationshipTitleFragments(source, route, out translated))
+        if (TryTranslateEmbeddedRelationshipTitleFragments(current, route, out var afterRelationshipTitles))
         {
-            return true;
+            current = afterRelationshipTitles;
+            changed = true;
         }
 
-        translated = JournalPatternTranslator.Translate(source, route);
-        return !string.Equals(source, translated, StringComparison.Ordinal);
+        translated = JournalPatternTranslator.Translate(current, route);
+        return changed || !string.Equals(current, translated, StringComparison.Ordinal);
     }
 
     private static bool TryTranslateExactPreservingColors(string source, string route, string family, out string translated)

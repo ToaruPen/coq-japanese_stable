@@ -250,10 +250,10 @@ public sealed class CookingRecipeDisplayNameTranslatorTests
         });
     }
 
-    [TestCase("{{W|Bread With Salt}}")]
-    [TestCase("{{W|Bread With Salt And Meat}}")]
-    [TestCase("{{W|Bread With Salt, Meat, And Wild Rice}}")]
-    public void TryProcessDisplayName_DoesNotJoinDishComponentsWithMiddleDots(string source)
+    [TestCase("{{W|Bread With Salt}}", "{{W|パン：塩入り}}")]
+    [TestCase("{{W|Bread With Salt And Meat}}", "{{W|パン：塩と肉入り}}")]
+    [TestCase("{{W|Bread With Salt, Meat, And Wild Rice}}", "{{W|パン：塩、肉、野生米入り}}")]
+    public void TryProcessDisplayName_DoesNotJoinDishComponentsWithMiddleDots(string source, string expected)
     {
         var ok = CookingRecipeDisplayNameTranslationPatch.TryProcessDisplayName(
             source,
@@ -264,7 +264,8 @@ public sealed class CookingRecipeDisplayNameTranslatorTests
         {
             Assert.That(ok, Is.True);
             Assert.That(actualTranslation, Is.True);
-            Assert.That(translated, Does.Not.Contain("\u30fb"));
+            Assert.That(translated, Is.EqualTo(expected));
+            Assert.That(translated, Does.Not.Contain("・"));
         });
     }
 

@@ -20,7 +20,7 @@ def _download_release_zip_recipe() -> str:
 
 def _recipe_body(name: str) -> str:
     justfile = _justfile_text()
-    marker_pattern = rf"^{name}\b.*:\n"
+    marker_pattern = rf"^{re.escape(name)}(?:\s+.*)?\s*:\n"
     match = re.search(marker_pattern, justfile, flags=re.MULTILINE)
     assert match, f"{name}: recipe not found in justfile"
     remainder = justfile[match.end() :]

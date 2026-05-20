@@ -25,6 +25,12 @@ internal static class ImportedFoodOrDrinkFactionNameTranslator
             return false;
         }
 
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(sourceValue, out var markedText))
+        {
+            translated = markedText;
+            return true;
+        }
+
         var (stripped, spans) = ColorAwareTranslationComposer.Strip(sourceValue);
         if (TryTranslateCore(stripped, out var translatedCore))
         {

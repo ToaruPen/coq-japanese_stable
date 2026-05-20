@@ -38,11 +38,24 @@ internal static class FriendOrFoeReasonTranslator
 
     internal static bool TryTranslate(string? source, out string translated)
     {
-        var sourceValue = source ?? string.Empty;
+        string sourceValue;
+        if (source is null)
+        {
+            sourceValue = string.Empty;
+        }
+        else
+        {
+            sourceValue = source;
+        }
         if (sourceValue.Length == 0)
         {
             translated = sourceValue;
             return false;
+        }
+
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(sourceValue, out var markedText))
+        {
+            sourceValue = markedText;
         }
 
         if (ScopedDictionaryLookup.TranslateExactOrLowerAscii(sourceValue, WorldPartsDictionaryFile) is { } exact)

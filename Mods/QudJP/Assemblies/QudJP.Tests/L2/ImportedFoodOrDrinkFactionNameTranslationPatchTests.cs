@@ -25,6 +25,7 @@ public sealed class ImportedFoodOrDrinkFactionNameTranslationPatchTests
 
         Translator.ResetForTests();
         Translator.SetDictionaryDirectoryForTests(dictionaryDirectory);
+        ScopedDictionaryLookup.ResetForTests();
         DynamicTextObservability.ResetForTests();
         RuntimeDiagnostics.SetVerboseProbesEnabledForTests(true);
         DummyImportedFoodOrDrinkTarget.FactionNameResult = string.Empty;
@@ -34,6 +35,7 @@ public sealed class ImportedFoodOrDrinkFactionNameTranslationPatchTests
     public void TearDown()
     {
         Translator.ResetForTests();
+        ScopedDictionaryLookup.ResetForTests();
         DynamicTextObservability.ResetForTests();
         RuntimeDiagnostics.SetVerboseProbesEnabledForTests(null);
         DummyImportedFoodOrDrinkTarget.FactionNameResult = string.Empty;
@@ -125,6 +127,7 @@ public sealed class ImportedFoodOrDrinkFactionNameTranslationPatchTests
         builder.Append("]}");
         builder.AppendLine();
         File.WriteAllText(path, builder.ToString(), Utf8WithoutBom);
+        ScopedDictionaryLookup.ResetForTests();
     }
 
     private static int RouteHitCount() =>

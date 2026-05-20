@@ -2,12 +2,12 @@
   "entries": [],
   "patterns": [
     {
-      "pattern": "^(.+?)\\ hold\\ no\\ value\\ over\\ (.+?)\\.$",
+      "pattern": "^(.+?)\\ hold\\ no\\ value\\ over\\ (.+?)(?:\\.)?$",
       "template": "{t1}に比べれば{t0}に価値はない。",
       "route": "annals"
     },
     {
-      "pattern": "^Plant\\ seeds\\ in\\ (.+?)\\ and\\ reap\\ (.+?)\\.$",
+      "pattern": "^[Pp]lant\\ seeds\\ in\\ (.+?)\\ and\\ reap\\ (.+?)(?:\\.)?$",
       "template": "{t0}に種を蒔けば{t1}を刈り取る。",
       "route": "annals"
     },
@@ -62,12 +62,12 @@
       "route": "annals"
     },
     {
-      "pattern": "^Don't\\ (.+?)\\ to\\ the\\ (.+?)\\.$",
+      "pattern": "^[Dd]on\\'t\\ (.+?)\\ to\\ the\\ (.+?)(?:\\.)?$",
       "template": "{t1}へ{t0}な。",
       "route": "annals"
     },
     {
-      "pattern": "^A\\ (.+?)\\ today\\ is\\ worth\\ a\\ (.+?)\\ tomorrow\\.$",
+      "pattern": "^[Aa]\\ (.+?)\\ today\\ is\\ worth\\ a\\ (.+?)\\ tomorrow(?:\\.)?$",
       "template": "今日の{t0}は明日の{t1}に勝る。",
       "route": "annals"
     },
