@@ -167,14 +167,8 @@ public sealed class StatusScreenBindingOwnerPatchTests
             ("astrally burdened", "星界的に重く縛られた"),
             ("bloody wet", "血に濡れている"));
 
-        var harmonyId = CreateHarmonyId();
-        var harmony = new Harmony(harmonyId);
-        try
+        RunWithCharacterEffectLinePatch(() =>
         {
-            harmony.Patch(
-                original: RequireMethod(typeof(DummyCharacterEffectLineTarget), nameof(DummyCharacterEffectLineTarget.setData)),
-                prefix: new HarmonyMethod(RequireMethod(typeof(CharacterEffectLineTranslationPatch), nameof(CharacterEffectLineTranslationPatch.Prefix))));
-
             var target = new DummyCharacterEffectLineTarget();
             target.setData(new DummyCharacterEffectLineDataTarget
             {
@@ -219,6 +213,105 @@ public sealed class StatusScreenBindingOwnerPatchTests
                         "Beguiled"),
                     Is.EqualTo(0));
             });
+        });
+    }
+
+    [Test]
+    public void CharacterEffectLineTranslationPatch_TranslatesObservedMetabolizingNames_WhenPatched()
+    {
+        WriteDictionary(("metabolizing", "代謝中"));
+
+        RunWithCharacterEffectLinePatch(() =>
+        {
+            var plainTarget = new DummyCharacterEffectLineTarget();
+            plainTarget.setData(new DummyCharacterEffectLineDataTarget
+            {
+                effect = new DummyStatusEffect
+                {
+                    DisplayName = "metabolizing",
+                },
+            });
+
+            var coloredTarget = new DummyCharacterEffectLineTarget();
+            coloredTarget.setData(new DummyCharacterEffectLineDataTarget
+            {
+                effect = new DummyStatusEffect
+                {
+                    DisplayName = "{{W|metabolizing}}",
+                },
+            });
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(plainTarget.text.Text, Is.EqualTo("代謝中"));
+                Assert.That(coloredTarget.text.Text, Is.EqualTo("{{W|代謝中}}"));
+                Assert.That(Translator.GetMissingKeyHitCountForTests("metabolizing"), Is.EqualTo(0));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(CharacterEffectLineTranslationPatch),
+                        "CharacterStatus.EffectName"),
+                    Is.GreaterThan(0));
+            });
+        });
+    }
+
+    [Test]
+    public void CharacterEffectLineTranslationPatch_TranslatesObservedLongbladeStanceNames_WhenPatched()
+    {
+        WriteDictionary(
+            ("defensive stance", "防御姿勢"),
+            ("aggressive stance", "攻撃姿勢"),
+            ("dueling stance", "決闘姿勢"));
+
+        RunWithCharacterEffectLinePatch(() =>
+        {
+            var defensiveTarget = new DummyCharacterEffectLineTarget();
+            defensiveTarget.setData(new DummyCharacterEffectLineDataTarget
+            {
+                effect = new DummyStatusEffect
+                {
+                    DisplayName = "{{G|defensive stance}}",
+                },
+            });
+
+            var aggressiveTarget = new DummyCharacterEffectLineTarget();
+            aggressiveTarget.setData(new DummyCharacterEffectLineDataTarget
+            {
+                effect = new DummyStatusEffect
+                {
+                    DisplayName = "{{R|aggressive stance}}",
+                },
+            });
+
+            var duelingTarget = new DummyCharacterEffectLineTarget();
+            duelingTarget.setData(new DummyCharacterEffectLineDataTarget
+            {
+                effect = new DummyStatusEffect
+                {
+                    DisplayName = "{{W|dueling stance}}",
+                },
+            });
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(defensiveTarget.text.Text, Is.EqualTo("{{G|防御姿勢}}"));
+                Assert.That(aggressiveTarget.text.Text, Is.EqualTo("{{R|攻撃姿勢}}"));
+                Assert.That(duelingTarget.text.Text, Is.EqualTo("{{W|決闘姿勢}}"));
+            });
+        });
+    }
+
+    private static void RunWithCharacterEffectLinePatch(Action action)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyCharacterEffectLineTarget), nameof(DummyCharacterEffectLineTarget.setData)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(CharacterEffectLineTranslationPatch), nameof(CharacterEffectLineTranslationPatch.Prefix))));
+
+            action();
         }
         finally
         {

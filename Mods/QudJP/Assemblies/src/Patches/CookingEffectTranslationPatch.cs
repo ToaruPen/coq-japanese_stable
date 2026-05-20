@@ -121,6 +121,7 @@ public static class CookingEffectTranslationPatch
     {
         foreach (var target in new (string typeName, string methodName)[]
         {
+            ("XRL.World.Effects.ProceduralCookingEffect", "GetDescription"),
             ("XRL.World.Effects.ProceduralCookingEffect", "GetProceduralEffectDescription"),
             ("XRL.World.Effects.ProceduralCookingEffect", "GetTemplatedProceduralEffectDescription"),
             ("XRL.World.Effects.CookingDomainElectric_Discharge_ProceduralCookingTriggeredAction", "GetDescription"),

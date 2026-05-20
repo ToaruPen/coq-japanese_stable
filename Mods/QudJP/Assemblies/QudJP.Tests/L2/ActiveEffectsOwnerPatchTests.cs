@@ -454,6 +454,53 @@ public sealed class ActiveEffectsOwnerPatchTests
         }
     }
 
+    [Test]
+    public void GameObjectShowActiveEffectsPatch_ComposesTranslatedObservedEffectBody_WhenPatched()
+    {
+        WriteDictionary(
+            ("Active Effects - {0}", "発動中の効果 - {0}"),
+            ("{{W|metabolizing}}", "{{W|代謝中}}"));
+        WriteScopedDictionary(
+            "Scoped/world-effects-generated-templates.ja.json",
+            ("+{0} DV while wielding a long blade in the primary hand.", "XRL.World.Effects.LongbladeStance_Defensive.GetDetails", "主手に長剣を装備しているあいだDV+{0}。"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyEffect), nameof(DummyEffect.GetDescription)),
+                postfix: new HarmonyMethod(RequireMethod(typeof(EffectDescriptionPatch), nameof(EffectDescriptionPatch.Postfix))));
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyEffect), nameof(DummyEffect.GetDetails)),
+                postfix: new HarmonyMethod(RequireMethod(typeof(EffectDetailsPatch), nameof(EffectDetailsPatch.Postfix))));
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyGameObjectActiveEffectsTarget), nameof(DummyGameObjectActiveEffectsTarget.ShowActiveEffects)),
+                transpiler: new HarmonyMethod(RequireMethod(typeof(GameObjectShowActiveEffectsPatch), nameof(GameObjectShowActiveEffectsPatch.Transpiler))));
+
+            var target = new DummyGameObjectActiveEffectsTarget
+            {
+                TitleSuffix = "Player",
+                Effect = new DummyEffect
+                {
+                    DescriptionText = "{{W|metabolizing}}",
+                    DetailsText = "+2 DV while wielding a long blade in the primary hand.",
+                },
+            };
+            target.ShowActiveEffects();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyBookUI.LastTitle, Is.EqualTo("&W発動中の効果&Y - Player"));
+                Assert.That(DummyBookUI.LastText, Is.EqualTo("{{W|代謝中}}\n\n主手に長剣を装備しているあいだDV+2。"));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
     private static string CreateHarmonyId()
     {
         return $"qudjp.tests.{Guid.NewGuid():N}";

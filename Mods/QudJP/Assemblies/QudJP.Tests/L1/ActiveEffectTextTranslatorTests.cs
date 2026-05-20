@@ -186,6 +186,131 @@ public sealed class ActiveEffectTextTranslatorTests
         });
     }
 
+    [TestCase(
+        "+2 DV while wielding a long blade in the primary hand.",
+        "主手に長剣を装備しているあいだDV+2。")]
+    [TestCase(
+        "+3 DV while wielding a long blade in the primary hand.",
+        "主手に長剣を装備しているあいだDV+3。")]
+    [TestCase(
+        "+1 to your penetration roll and -2 to hit while wielding a long blade in the primary hand.",
+        "主手に長剣を装備しているあいだ貫通判定+1、命中-2。")]
+    [TestCase(
+        "+2 to your penetration roll and -3 to hit while wielding a long blade in the primary hand.",
+        "主手に長剣を装備しているあいだ貫通判定+2、命中-3。")]
+    [TestCase(
+        "+2 to hit while wielding a long blade in the primary hand.",
+        "主手に長剣を装備しているあいだ命中+2。")]
+    [TestCase(
+        "+3 to hit while wielding a long blade in the primary hand.",
+        "主手に長剣を装備しているあいだ命中+3。")]
+    public void TryTranslateText_TranslatesLongBladeStanceGeneratedDetails(string source, string expected)
+    {
+        WriteLongbladeStanceTemplateDictionary();
+
+        var changed = ActiveEffectTextTranslator.TryTranslateText(
+            source,
+            "ActiveEffectTextTranslatorTests",
+            "ActiveEffects.Details.LongbladeStance",
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(changed, Is.True);
+            Assert.That(translated, Is.EqualTo(expected));
+            Assert.That(Translator.GetMissingKeyHitCountForTests(source), Is.EqualTo(0));
+        });
+    }
+
+    [Test]
+    public void TryTranslateText_LongBladeStanceGeneratedDetails_FallsBackToEnglishWhenTemplateDictionaryMisses()
+    {
+        var source = "+4 DV while wielding a long blade in the primary hand.";
+
+        var changed = ActiveEffectTextTranslator.TryTranslateText(
+            source,
+            "ActiveEffectTextTranslatorTests",
+            "ActiveEffects.Details.LongbladeStance",
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(changed, Is.False);
+            Assert.That(translated, Is.EqualTo(source));
+            Assert.That(
+                Translator.GetMissingKeyHitCountForTests("+{0} DV while wielding a long blade in the primary hand."),
+                Is.EqualTo(1));
+        });
+    }
+
+    [Test]
+    public void TryTranslateText_LongBladeStanceGeneratedDetails_PreservesWholeColorTag()
+    {
+        WriteLongbladeStanceTemplateDictionary();
+        const string source = "<color=#FF0000>+2 DV while wielding a long blade in the primary hand.</color>";
+
+        var changed = ActiveEffectTextTranslator.TryTranslateText(
+            source,
+            "ActiveEffectTextTranslatorTests",
+            "ActiveEffects.Details.LongbladeStance",
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(changed, Is.True);
+            Assert.That(translated, Is.EqualTo("<color=#FF0000>主手に長剣を装備しているあいだDV+2。</color>"));
+            Assert.That(Translator.GetMissingKeyHitCountForTests(source), Is.EqualTo(0));
+        });
+    }
+
+    [Test]
+    public void TryTranslateText_LongBladeStanceGeneratedDetails_DirectMarkerFallsThroughSafely()
+    {
+        WriteLongbladeStanceTemplateDictionary();
+        const string source = "\u0001+2 DV while wielding a long blade in the primary hand.";
+
+        var changed = ActiveEffectTextTranslator.TryTranslateText(
+            source,
+            "ActiveEffectTextTranslatorTests",
+            "ActiveEffects.Details.LongbladeStance",
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(changed, Is.False);
+            Assert.That(translated, Is.EqualTo(source));
+            Assert.That(Translator.GetMissingKeyHitCountForTests(source), Is.EqualTo(1));
+        });
+    }
+
+    [Test]
+    public void TryTranslateText_LongBladeStanceGeneratedDetails_EmptyInputFallsThroughSafely()
+    {
+        WriteLongbladeStanceTemplateDictionary();
+
+        var changed = ActiveEffectTextTranslator.TryTranslateText(
+            string.Empty,
+            "ActiveEffectTextTranslatorTests",
+            "ActiveEffects.Details.LongbladeStance",
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(changed, Is.False);
+            Assert.That(translated, Is.EqualTo(string.Empty));
+            Assert.That(Translator.GetMissingKeyHitCountForTests(string.Empty), Is.EqualTo(0));
+        });
+    }
+
+    private void WriteLongbladeStanceTemplateDictionary()
+    {
+        WriteScopedDictionary(
+            "Scoped/world-effects-generated-templates.ja.json",
+            ("+{0} DV while wielding a long blade in the primary hand.", "XRL.World.Effects.LongbladeStance_Defensive.GetDetails", "主手に長剣を装備しているあいだDV+{0}。"),
+            ("+{0} to your penetration roll and -{1} to hit while wielding a long blade in the primary hand.", "XRL.World.Effects.LongbladeStance_Aggressive.GetDetails", "主手に長剣を装備しているあいだ貫通判定+{0}、命中-{1}。"),
+            ("+{0} to hit while wielding a long blade in the primary hand.", "XRL.World.Effects.LongbladeStance_Dueling.GetDetails", "主手に長剣を装備しているあいだ命中+{0}。"));
+    }
+
     private void WriteDictionary(params (string key, string text)[] entries)
     {
         var builder = new StringBuilder();
