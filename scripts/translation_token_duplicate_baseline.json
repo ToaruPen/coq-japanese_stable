@@ -530,7 +530,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/Scoped/historyspice-common.ja.json",
-          "entry_index": 583,
+          "entry_index": 586,
           "text": "見よ"
         },
         {
@@ -1901,13 +1901,19 @@
       "scope": "cross_file",
       "path": "Dictionaries",
       "key": "brass",
-      "entry_count": 3,
+      "entry_count": 4,
       "texts": [
+        "真鍮",
         "真鍮",
         "黄銅",
         "黄銅"
       ],
       "occurrences": [
+        {
+          "path": "Dictionaries/Scoped/historyspice-common.ja.json",
+          "entry_index": 235,
+          "text": "真鍮"
+        },
         {
           "path": "Dictionaries/ui-displayname-atomic.ja.json",
           "entry_index": 23,
@@ -1937,7 +1943,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/Scoped/historyspice-common.ja.json",
-          "entry_index": 304,
+          "entry_index": 307,
           "text": "クロム"
         },
         {
@@ -2025,7 +2031,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/Scoped/historyspice-common.ja.json",
-          "entry_index": 1517,
+          "entry_index": 1521,
           "text": "彫り刻まれた"
         },
         {
@@ -2185,7 +2191,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/Scoped/historyspice-common.ja.json",
-          "entry_index": 305,
+          "entry_index": 308,
           "text": "ガラス"
         },
         {
@@ -2274,7 +2280,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/Scoped/historyspice-common.ja.json",
-          "entry_index": 296,
+          "entry_index": 299,
           "text": "ハチミツ"
         },
         {
@@ -2368,7 +2374,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/Scoped/historyspice-common.ja.json",
-          "entry_index": 1308,
+          "entry_index": 1312,
           "text": "失われた"
         },
         {
@@ -2621,7 +2627,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/Scoped/historyspice-common.ja.json",
-          "entry_index": 1516,
+          "entry_index": 1520,
           "text": "彩色された"
         },
         {
@@ -2711,7 +2717,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/Scoped/historyspice-common.ja.json",
-          "entry_index": 516,
+          "entry_index": 519,
           "text": "塩"
         },
         {
@@ -2989,7 +2995,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/Scoped/historyspice-common.ja.json",
-          "entry_index": 302,
+          "entry_index": 305,
           "text": "四角"
         },
         {
