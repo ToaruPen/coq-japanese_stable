@@ -102,7 +102,7 @@ public sealed class FriendOrFoeReasonTranslatorTests
     }
 
     [Test]
-    public void TryTranslate_StripsDirectMarkerBeforeTranslating()
+    public void TryTranslate_StripsDirectMarkerWithoutRetranslating()
     {
         WriteDictionaryFile("Scoped/historyspice-common.ja.json", ("suns", "太陽"));
 
@@ -113,7 +113,7 @@ public sealed class FriendOrFoeReasonTranslatorTests
         Assert.Multiple(() =>
         {
             Assert.That(ok, Is.True);
-            Assert.That(translated, Is.EqualTo("太陽を称賛した"));
+            Assert.That(translated, Is.EqualTo("praising their suns"));
         });
     }
 

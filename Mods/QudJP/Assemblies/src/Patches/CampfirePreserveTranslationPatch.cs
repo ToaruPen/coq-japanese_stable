@@ -107,10 +107,13 @@ public static class CampfirePreserveTranslationPatch
             return false;
         }
 
-        var visibleSource = MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText)
-            ? markedText
-            : source;
-        if (!TryTranslatePreservedResult(visibleSource, out translated))
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
+        {
+            translated = markedText;
+            return true;
+        }
+
+        if (!TryTranslatePreservedResult(source, out translated))
         {
             return false;
         }

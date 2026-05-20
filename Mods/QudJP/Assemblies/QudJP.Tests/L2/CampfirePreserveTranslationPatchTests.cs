@@ -101,7 +101,7 @@ public sealed class CampfirePreserveTranslationPatchTests
     }
 
     [Test]
-    public void TryTranslateMessageLogMessage_StripsDirectMarkerBeforeTranslating()
+    public void TryTranslateMessageLogMessage_StripsDirectMarkerWithoutRetranslating()
     {
         var handled = CampfirePreserveTranslationPatch.TryTranslateMessageLogMessage(
             MessageFrameTranslator.MarkDirectTranslation("You preserved:\n\nan apple into 1 serving of dried apple."),
@@ -112,7 +112,7 @@ public sealed class CampfirePreserveTranslationPatchTests
         Assert.Multiple(() =>
         {
             Assert.That(handled, Is.True);
-            Assert.That(translated, Is.EqualTo("保存した:\n\nan appleを1食分のdried appleに保存した。"));
+            Assert.That(translated, Is.EqualTo("You preserved:\n\nan apple into 1 serving of dried apple."));
         });
     }
 

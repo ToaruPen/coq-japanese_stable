@@ -55,7 +55,8 @@ internal static class FriendOrFoeReasonTranslator
 
         if (MessageFrameTranslator.TryStripDirectTranslationMarker(sourceValue, out var markedText))
         {
-            sourceValue = markedText;
+            translated = markedText;
+            return true;
         }
 
         if (ScopedDictionaryLookup.TranslateExactOrLowerAscii(sourceValue, WorldPartsDictionaryFile) is { } exact)
