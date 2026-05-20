@@ -74,6 +74,7 @@ public sealed class SultanateYearNameTranslationPatchTests
     [Test]
     public void Postfix_LeavesUnknownSultanateYearNameUnchanged_WhenPatched()
     {
+        WriteDictionaryFile("Scoped/historyspice-common.ja.json", ("shining", "輝く"), ("visage", "容貌"));
         DummyQudHistoryHelpersTarget.SultanateYearNameResult = "Year of the Unknown Visage";
         var harmonyId = "qudjp-test-sultanate-year-name-" + Guid.NewGuid().ToString("N");
         var harmony = new Harmony(harmonyId);

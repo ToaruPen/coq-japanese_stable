@@ -777,14 +777,14 @@ internal static class JournalPatternTranslator
 
     private static string TranslateTemplateCapture(string source)
     {
-        if (TryTranslateAnnalsInYearCapture(source, out var inYearCapture))
-        {
-            return inYearCapture;
-        }
-
         if (TryTranslateFurnitureStuckPrepositionCapture(source, out var furniturePrepositionCapture))
         {
             return furniturePrepositionCapture;
+        }
+
+        if (TryTranslateAnnalsInYearCapture(source, out var inYearCapture))
+        {
+            return inYearCapture;
         }
 
         if (TryTranslatePronounCapture(source, out var pronounCapture))

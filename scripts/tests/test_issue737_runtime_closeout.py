@@ -19,6 +19,55 @@ def _write_log(path: Path, text: str, *, mtime: datetime) -> None:
     os.utime(path, (timestamp, timestamp))
 
 
+def test_get_default_log_path_uses_first_existing_linux_candidate(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Linux default discovery checks common XDG-like Caves of Qud log paths."""
+    first = tmp_path / ".local" / "share" / "CavesOfQud" / "Player.log"
+    second = tmp_path / ".config" / "CavesOfQud" / "Player.log"
+    second.parent.mkdir(parents=True)
+    second.write_text("log", encoding="utf-8")
+    monkeypatch.setattr(closeout.sys, "platform", "linux")
+    monkeypatch.setattr(closeout.Path, "home", staticmethod(lambda: tmp_path))
+
+    assert closeout.get_default_log_path() == second
+
+    first.parent.mkdir(parents=True)
+    first.write_text("log", encoding="utf-8")
+
+    assert closeout.get_default_log_path() == first
+
+
+def test_main_uses_resolved_default_log_when_log_argument_is_omitted(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The CLI can run without --log when an OS default Player.log exists."""
+    log = tmp_path / ".local" / "share" / "CavesOfQud" / "Player.log"
+    output = tmp_path / "report.json"
+    log.parent.mkdir(parents=True)
+    _write_log(
+        log,
+        "[QudJP] Build marker: issue737-test, Version: 0.1.0.0\n",
+        mtime=datetime(2026, 5, 19, 1, 0, tzinfo=UTC),
+    )
+    monkeypatch.setattr(closeout.sys, "platform", "linux")
+    monkeypatch.setattr(closeout.Path, "home", staticmethod(lambda: tmp_path))
+
+    exit_code = closeout.main(
+        [
+            "--min-mtime",
+            "2026-05-19T00:00:00+00:00",
+            "--output",
+            str(output),
+        ],
+    )
+
+    assert exit_code == 0
+    assert json.loads(output.read_text(encoding="utf-8"))["status"] == "unobserved"
+
+
 def test_analyze_log_reports_stale_without_claiming_runtime_result(tmp_path: Path) -> None:
     """A pre-deploy log is context only and must not prove pass or fail."""
     log = tmp_path / "Player.log"

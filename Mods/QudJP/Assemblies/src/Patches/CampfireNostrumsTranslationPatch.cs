@@ -192,7 +192,7 @@ public static class CampfireNostrumsTranslationPatch
 
         if (translatedCore is null)
         {
-            translated = hadDirectMarker ? visibleSource : stripped;
+            translated = hadDirectMarker ? visibleSource : source;
             if (!hadDirectMarker)
             {
                 return false;

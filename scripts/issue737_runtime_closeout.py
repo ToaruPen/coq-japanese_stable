@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import re
 import sys
 from dataclasses import dataclass
@@ -12,7 +13,6 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-_DEFAULT_LOG = Path.home() / "Library" / "Logs" / "Freehold Games" / "CavesOfQud" / "Player.log"
 _DEFAULT_SOURCE_MOD_ROOT = Path(__file__).resolve().parents[1] / "Mods" / "QudJP"
 _DEFAULT_DEPLOYMENT_FILES = (
     Path("Assemblies") / "QudJP.dll",
@@ -20,6 +20,33 @@ _DEFAULT_DEPLOYMENT_FILES = (
     Path("Localization") / "Dictionaries" / "annals-patterns.ja.json",
     Path("Localization") / "Dictionaries" / "journal-patterns.ja.json",
 )
+
+
+def get_default_log_path() -> Path | None:
+    """Return the first existing OS-specific Player.log path."""
+    home = Path.home()
+    candidates: list[Path] = []
+    if sys.platform == "darwin":
+        candidates.append(home / "Library" / "Logs" / "Freehold Games" / "CavesOfQud" / "Player.log")
+    elif sys.platform.startswith("linux"):
+        candidates.extend(
+            (
+                home / ".local" / "share" / "CavesOfQud" / "Player.log",
+                home / ".config" / "CavesOfQud" / "Player.log",
+            ),
+        )
+    elif sys.platform == "win32":
+        local_app_data = os.environ.get("LOCALAPPDATA")
+        if local_app_data:
+            candidates.append(Path(local_app_data) / "CavesOfQud" / "Player.log")
+        user_profile = os.environ.get("USERPROFILE")
+        if user_profile:
+            candidates.append(Path(user_profile) / "AppData" / "Local" / "CavesOfQud" / "Player.log")
+
+    for candidate in candidates:
+        if candidate.exists():
+            return candidate
+    return None
 _VISIBLE_PROBE_FIELD_PATTERN = re.compile(
     r"\b(?:final|translated)='(?P<single>(?:\\'|[^'])*)'|"
     r'\b(?:final|translated)="(?P<double>(?:\\"|[^"])*)"',
@@ -151,8 +178,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--log",
         type=Path,
-        default=_DEFAULT_LOG,
-        help=f"Path to Player.log (default: {_DEFAULT_LOG})",
+        default=None,
+        help="Path to Player.log (default: first existing OS-specific Caves of Qud log path).",
     )
     parser.add_argument(
         "--min-mtime",
@@ -191,10 +218,14 @@ def main(argv: list[str] | None = None) -> int:
         help="Relative mod file to compare for --deployed-mod-root. May be repeated.",
     )
     args = parser.parse_args(argv)
+    log_path = args.log or get_default_log_path()
+    if log_path is None:
+        print("Error: Player.log path was not provided and no default OS-specific path exists.", file=sys.stderr)  # noqa: T201
+        return 1
 
     try:
         report = analyze_log(
-            log_path=args.log,
+            log_path=log_path,
             min_mtime=args.min_mtime,
             source_mod_root=args.source_mod_root,
             deployed_mod_root=args.deployed_mod_root,

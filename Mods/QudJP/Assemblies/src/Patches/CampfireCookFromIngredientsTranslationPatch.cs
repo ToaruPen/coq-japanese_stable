@@ -161,7 +161,7 @@ public static class CampfireCookFromIngredientsTranslationPatch
 
     private static bool TryTranslateSelectedIngredientsMenuRow(string source, out string translated)
     {
-        var lines = source.Split('\n');
+        var lines = source.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
         if (lines.Length is < 1 or > 2)
         {
             translated = source;

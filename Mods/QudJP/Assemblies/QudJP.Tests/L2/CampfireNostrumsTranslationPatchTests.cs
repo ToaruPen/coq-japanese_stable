@@ -277,6 +277,33 @@ public sealed class CampfireNostrumsTranslationPatchTests
     }
 
     [Test]
+    public void Patch_LeavesUnknownPickGameObjectTitleUnchanged_WhenOwnerActive()
+    {
+        const string source = "^AUnknown title";
+
+        CampfireNostrumsTranslationPatch.Prefix();
+        try
+        {
+            var handled = CampfireNostrumsTranslationPatch.TryTranslatePopupProducerText(
+                source,
+                nameof(PopupPickOptionTranslationPatch),
+                "Popup.ProducerText",
+                out var translated);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(handled, Is.False);
+                Assert.That(translated, Is.EqualTo(source));
+                Assert.That(PickGameObjectTitleHitCount(), Is.Zero);
+            });
+        }
+        finally
+        {
+            CampfireNostrumsTranslationPatch.Finalizer(null);
+        }
+    }
+
+    [Test]
     public void Patch_DoesNotTranslatePickGameObjectTitle_WhenOwnerAbsent()
     {
         const string source = "Treat whom first?";

@@ -77,6 +77,7 @@ public sealed class FriendOrFoeReasonTranslationPatchTests
     public void Postfix_LeavesUnknownReasonsUnchanged_WhenPatched()
     {
         const string source = "unstructured dislike";
+        WriteDictionaryFile("world-parts.ja.json", ("stealing a cherished heirloom", "大切な家宝を盗んだ"));
         var harmonyId = "qudjp-test-friend-foe-reason-" + Guid.NewGuid().ToString("N");
         var harmony = new Harmony(harmonyId);
         try

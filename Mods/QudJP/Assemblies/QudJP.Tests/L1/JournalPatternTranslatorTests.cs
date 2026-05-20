@@ -515,6 +515,11 @@ public sealed class JournalPatternTranslatorTests
             "Oboroqoru got his finger stuck behind a throne.");
 
         Assert.That(translated, Is.EqualTo("Oboroqoruはその指を玉座の後ろに挟まれた。"));
+
+        var translatedIn = JournalPatternTranslator.Translate(
+            "Oboroqoru got his finger stuck in a throne.");
+
+        Assert.That(translatedIn, Is.EqualTo("Oboroqoruはその指を玉座に挟まれた。"));
     }
 
     [Test]

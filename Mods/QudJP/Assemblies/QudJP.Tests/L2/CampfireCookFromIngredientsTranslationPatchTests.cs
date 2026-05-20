@@ -185,6 +185,30 @@ public sealed class CampfireCookFromIngredientsTranslationPatchTests
     }
 
     [Test]
+    public void CookFromIngredients_TranslatesSelectedIngredientMenuRows_WithCrLfLineEndings()
+    {
+        const string source = "{{W|Cook with the {{C|0}} selected ingredients.}}\r\n{{y|[up to 2 remaining]}}";
+
+        CampfireCookFromIngredientsTranslationPatch.Prefix();
+        try
+        {
+            var translated = PopupTranslationPatch.TranslatePopupTextForProducerRoute(
+                source,
+                nameof(PopupPickOptionTranslationPatch));
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(translated, Is.EqualTo("{{W|選択した材料{{C|0}}個で料理する。}}\n{{y|[あと2個まで]}}"));
+                Assert.That(PickOptionProducerHitCount("SelectedIngredientsMenuRow"), Is.EqualTo(1));
+            });
+        }
+        finally
+        {
+            CampfireCookFromIngredientsTranslationPatch.Finalizer(null);
+        }
+    }
+
+    [Test]
     public void CookFromIngredients_DoesNotTranslateSelectedIngredientMenuRows_WhenOwnerAbsent()
     {
         const string source = "{{W|Cook with the {{C|0}} selected ingredients.}}\n{{y|[up to 2 remaining]}}";

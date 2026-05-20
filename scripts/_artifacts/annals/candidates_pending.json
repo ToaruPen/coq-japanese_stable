@@ -62,7 +62,7 @@
       "status": "accepted",
       "reason": "",
       "ja_template": "{t1}{t0}、{t2}、{t3}の顧問たちは{t4}が{t5}ことを進言した。だが代わりに、{t6}は{t7}。",
-      "review_notes": "translated by subagent chunk and placeholder-validated",
+      "review_notes": "translated by subagent chunk and placeholder-validated; {t0} is the in-year suffix translated by JournalPatternTranslator, so the Japanese year order is intentionally {t1}{t0}",
       "route": "annals",
       "en_template_hash": "sha256:989cccc6ec0cd8e4525b9a5bffe310e4bf6438947b9cd467f2cbe1953f611737"
     },

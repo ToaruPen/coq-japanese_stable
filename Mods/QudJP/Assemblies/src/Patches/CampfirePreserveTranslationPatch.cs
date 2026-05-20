@@ -176,7 +176,7 @@ public static class CampfirePreserveTranslationPatch
     private static bool TryStripLeadingQudColor(string source, out string colorPrefix, out string uncolored)
     {
         if (source.Length < 2
-            || source[0] != '&'
+            || (source[0] != '&' && source[0] != '^')
             || !IsQudColorCode(source[1]))
         {
             colorPrefix = string.Empty;
