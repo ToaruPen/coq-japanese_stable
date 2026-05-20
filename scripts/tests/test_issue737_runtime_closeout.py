@@ -143,6 +143,26 @@ def test_analyze_log_detects_preserve_residue_after_outer_frame_translation(tmp_
     assert failed_checks["campfire_preserve_frame"]["matches"][0]["pattern"] == "preserve-frame residue"
 
 
+def test_analyze_log_detects_preserve_article_residue_after_outer_frame_translation(tmp_path: Path) -> None:
+    """English articles are residue even when into/serving have already been localized."""
+    log = tmp_path / "Player.log"
+    _write_log(
+        log,
+        "[QudJP] Build marker: issue737-test, Version: 0.1.0.0\n"
+        "[QudJP] FinalOutputProbe/v1: final='保存した:\\n\\nan {{r|生肉}}を3食分の肉ジャーキーに保存した。'",
+        mtime=datetime(2026, 5, 19, 1, 0, tzinfo=UTC),
+    )
+
+    report = closeout.analyze_log(
+        log_path=log,
+        min_mtime=datetime(2026, 5, 19, 0, 0, tzinfo=UTC),
+    )
+
+    failed_checks = {check["id"]: check for check in report["checks"] if check["status"] == "failed"}
+    assert report["status"] == "failed"
+    assert failed_checks["campfire_preserve_frame"]["matches"][0]["pattern"] == "preserve-frame residue"
+
+
 def test_analyze_log_ignores_dynamic_probe_source_when_translated_text_is_clean(tmp_path: Path) -> None:
     """Dynamic probe source text is route evidence, but residue checks use translated/final fields."""
     log = tmp_path / "Player.log"

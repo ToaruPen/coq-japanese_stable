@@ -70,14 +70,14 @@ internal static class FriendOrFoeReasonTranslator
                 stripped,
                 spans,
                 InsultingTheirPattern,
-                match => TranslateCapture(match, "noun") + "を侮辱した",
+                (match, captureSpans) => TranslateCapture(match, "noun", captureSpans, stripped.Length) + "を侮辱した",
                 sourceValue,
                 out translated)
             || TryTranslatePattern(
                 stripped,
                 spans,
                 PraisingTheirPattern,
-                match => TranslateCapture(match, "noun") + "を称賛した",
+                (match, captureSpans) => TranslateCapture(match, "noun", captureSpans, stripped.Length) + "を称賛した",
                 sourceValue,
                 out translated)
             || TryTranslateHeb(stripped, spans, sourceValue, out translated))
@@ -105,36 +105,36 @@ internal static class FriendOrFoeReasonTranslator
                 stripped,
                 spans,
                 DestroyingNumbersPattern,
-                match => TranslateCapture(match, "adjective") + "数を破壊した",
+                (match, captureSpans) => TranslateCapture(match, "adjective", captureSpans, stripped.Length) + "数を破壊した",
                 source,
                 out translated)
             || TryTranslatePattern(
                 stripped,
                 spans,
                 DreamingDimensionPattern,
-                match => TranslateCapture(match, "dimension") + "を夢見て存在させた",
+                (match, captureSpans) => TranslateCapture(match, "dimension", captureSpans, stripped.Length) + "を夢見て存在させた",
                 source,
                 out translated)
             || TryTranslatePattern(
                 stripped,
                 spans,
                 InventingConceptPattern,
-                match => TranslateCapture(match, "nouns") + "という概念を発明した",
+                (match, captureSpans) => TranslateCapture(match, "nouns", captureSpans, stripped.Length) + "という概念を発明した",
                 source,
                 out translated)
             || TryTranslatePattern(
                 stripped,
                 spans,
                 SwappingPerceptionPattern,
-                match => TranslateCapture(match, "first") + "と"
-                    + TranslateCapture(match, "second") + "の知覚のされ方を入れ替えた",
+                (match, captureSpans) => TranslateCapture(match, "first", captureSpans, stripped.Length) + "と"
+                    + TranslateCapture(match, "second", captureSpans, stripped.Length) + "の知覚のされ方を入れ替えた",
                 source,
                 out translated)
             || TryTranslatePattern(
                 stripped,
                 spans,
                 WarpingPocketPattern,
-                match => TranslateCapture(match, "object") + "へと時空の小片を歪めた",
+                (match, captureSpans) => TranslateCapture(match, "object", captureSpans, stripped.Length) + "へと時空の小片を歪めた",
                 source,
                 out translated);
     }
@@ -143,7 +143,7 @@ internal static class FriendOrFoeReasonTranslator
         string stripped,
         IReadOnlyList<ColorSpan> spans,
         Regex pattern,
-        Func<Match, string> build,
+        Func<Match, IReadOnlyList<ColorSpan>, string> build,
         string source,
         out string translated)
     {
@@ -154,14 +154,30 @@ internal static class FriendOrFoeReasonTranslator
             return false;
         }
 
-        translated = RestoreWhole(build(match), stripped, spans, source);
+        translated = RestoreWhole(build(match, spans), stripped, spans, source);
         return true;
     }
 
-    private static string TranslateCapture(Match match, string groupName)
+    private static string TranslateCapture(
+        Match match,
+        string groupName,
+        IReadOnlyList<ColorSpan> spans,
+        int sourceLength)
     {
         var group = match.Groups[groupName];
         var capture = group.Value.Trim();
+        var translated = TranslateCaptureVisible(capture);
+        var captureSpans = ColorAwareTranslationComposer.WithoutTrueWholeSourceBoundarySpans(spans, sourceLength);
+        if (!string.Equals(translated, capture, StringComparison.Ordinal))
+        {
+            return ColorAwareTranslationComposer.MarkupAwareRestoreCapture(translated, captureSpans, group).Trim();
+        }
+
+        return ColorAwareTranslationComposer.RestoreCapture(capture, captureSpans, group).Trim();
+    }
+
+    private static string TranslateCaptureVisible(string capture)
+    {
         if (HistorySpiceComponentLookup.TranslateExactOrLowerAscii(capture) is { } historySpice)
         {
             return historySpice;

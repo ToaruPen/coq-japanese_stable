@@ -103,6 +103,45 @@ public sealed class ImportedFoodOrDrinkFactionNameTranslationPatchTests
         }
     }
 
+    [Test]
+    public void Postfix_HandlesFactionNameEdgeCases_WhenPatched()
+    {
+        var harmonyId = "qudjp-test-imported-food-drink-faction-name-" + Guid.NewGuid().ToString("N");
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyImportedFoodOrDrinkTarget), nameof(DummyImportedFoodOrDrinkTarget.generateFactionName), typeof(string)),
+                postfix: new HarmonyMethod(RequireMethod(typeof(ImportedFoodOrDrinkFactionNameTranslationPatch), nameof(ImportedFoodOrDrinkFactionNameTranslationPatch.Postfix), typeof(string).MakeByRefType())));
+
+            DummyImportedFoodOrDrinkTarget.FactionNameResult = string.Empty;
+            var empty = DummyImportedFoodOrDrinkTarget.generateFactionName("Honeyed Bread");
+            var emptyHits = RouteHitCount();
+
+            DummyImportedFoodOrDrinkTarget.FactionNameResult = "<color=red>Honeyed Bread</color>";
+            var colored = DummyImportedFoodOrDrinkTarget.generateFactionName("Honeyed Bread");
+            var coloredHits = RouteHitCount();
+
+            DummyImportedFoodOrDrinkTarget.FactionNameResult = MessageFrameTranslator.DirectTranslationMarker + "Honeyed Bread";
+            var marked = DummyImportedFoodOrDrinkTarget.generateFactionName("Honeyed Bread");
+            var markedHits = RouteHitCount();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(empty, Is.EqualTo(string.Empty));
+                Assert.That(emptyHits, Is.Zero);
+                Assert.That(colored, Is.EqualTo("<color=red>Honeyed Bread</color>"));
+                Assert.That(coloredHits, Is.Zero);
+                Assert.That(marked, Is.EqualTo("Honeyed Bread"));
+                Assert.That(markedHits, Is.EqualTo(1));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
     private void WriteDictionaryFile(string fileName, params (string Key, string Text)[] entries)
     {
         var path = Path.Combine(dictionaryDirectory, fileName);

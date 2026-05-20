@@ -225,6 +225,7 @@ public sealed class CookingIngredientFragmentTranslatorTests
     [TestCase("some madpole cheek", "マッドポールの頬肉少々")]
     [TestCase("smidgen of brass croc meat", "真鍮ワニ肉ひとつまみ")]
     [TestCase("filthy scribe's right hand", "汚らわしい書記の右手")]
+    [TestCase("{{Y|filthy scribe's right hand}}", "{{Y|汚らわしい書記の右手}}")]
     [TestCase("unknown pilgrim's right hand", "unknown pilgrimの右手")]
     public void TryTranslate_TranslatesMeasuredAndArticleIngredientFragments(string source, string expected)
     {

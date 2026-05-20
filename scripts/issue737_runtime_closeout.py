@@ -51,6 +51,7 @@ _VISIBLE_PROBE_FIELD_PATTERN = re.compile(
     r"\b(?:final|translated)='(?P<single>(?:\\'|[^'])*)'|"
     r'\b(?:final|translated)="(?P<double>(?:\\"|[^"])*)"',
 )
+_PRESERVE_ARTICLE_RESIDUE_PATTERN = re.compile(r"\b(?:Some|some|An|an|A|a)\b")
 
 
 @dataclass(frozen=True)
@@ -310,7 +311,12 @@ def _is_observed(check: CloseoutCheck, lines: list[str]) -> bool:
 def _has_preserve_frame_residue(line: str) -> bool:
     if "You preserved" not in line and "保存した" not in line and "CampfirePreserveTranslationPatch" not in line:
         return False
-    return "Some " in line or " into " in line or " serving" in line
+    return (
+        "Some " in line
+        or " into " in line
+        or " serving" in line
+        or _PRESERVE_ARTICLE_RESIDUE_PATTERN.search(line) is not None
+    )
 
 
 def _overall_status(checks: list[dict[str, Any]], *, deployment: dict[str, Any]) -> str:

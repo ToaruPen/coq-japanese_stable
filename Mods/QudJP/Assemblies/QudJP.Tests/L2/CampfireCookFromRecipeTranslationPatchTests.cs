@@ -83,6 +83,60 @@ public sealed class CampfireCookFromRecipeTranslationPatchTests
         });
     }
 
+    [Test]
+    public void CookFromRecipe_LeavesEmptyProducerTextUnchanged_WhenOwnerActive()
+    {
+        CampfireCookFromRecipeTranslationPatch.Prefix(out var state);
+        try
+        {
+            var menuTranslated = PopupTranslationPatch.TranslatePopupTextForProducerRoute(
+                string.Empty,
+                nameof(PopupPickOptionTranslationPatch));
+            var handled = CampfireCookFromRecipeTranslationPatch.TryTranslatePopupMessage(
+                string.Empty,
+                nameof(PopupShowTranslationPatch),
+                "Popup.Show",
+                out var popupTranslated);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(menuTranslated, Is.EqualTo(string.Empty));
+                Assert.That(handled, Is.False);
+                Assert.That(popupTranslated, Is.EqualTo(string.Empty));
+                Assert.That(HitCount("HiddenRecipesRow"), Is.Zero);
+                Assert.That(PopupHitCount("MissingIngredientServings"), Is.Zero);
+                Assert.That(PopupHitCount("AteMeal"), Is.Zero);
+            });
+        }
+        finally
+        {
+            CampfireCookFromRecipeTranslationPatch.Finalizer(null, state);
+        }
+    }
+
+    [Test]
+    public void CookFromRecipe_LeavesEmptyProducerTextUnchanged_WhenOwnerAbsent()
+    {
+        var menuTranslated = PopupTranslationPatch.TranslatePopupTextForProducerRoute(
+            string.Empty,
+            nameof(PopupPickOptionTranslationPatch));
+        var handled = CampfireCookFromRecipeTranslationPatch.TryTranslatePopupMessage(
+            string.Empty,
+            nameof(PopupShowTranslationPatch),
+            "Popup.Show",
+            out var popupTranslated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(menuTranslated, Is.EqualTo(string.Empty));
+            Assert.That(handled, Is.False);
+            Assert.That(popupTranslated, Is.EqualTo(string.Empty));
+            Assert.That(HitCount("HiddenRecipesRow"), Is.Zero);
+            Assert.That(PopupHitCount("MissingIngredientServings"), Is.Zero);
+            Assert.That(PopupHitCount("AteMeal"), Is.Zero);
+        });
+    }
+
     [TestCase(
         "You don't have enough servings of {{Y|witchwood bark}}.",
         "{{Y|witchwood bark}}の食分が足りない。",

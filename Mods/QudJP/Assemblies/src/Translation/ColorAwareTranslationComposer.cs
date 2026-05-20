@@ -345,6 +345,103 @@ internal static class ColorAwareTranslationComposer
         return Restore(visible, NormalizeSpansForRestoreOrder(mergedSpans));
     }
 
+    internal static string InsertQudColorAfterOpeningBoundaryWrappers(string source, string color)
+    {
+        var index = 0;
+        while (index < source.Length)
+        {
+            if (source[index] == '{'
+                && index + 1 < source.Length
+                && source[index + 1] == '{')
+            {
+                var pipeIndex = source.IndexOf('|', index + 2);
+                if (pipeIndex >= 0)
+                {
+                    index = pipeIndex + 1;
+                    continue;
+                }
+            }
+
+            if (source[index] == '<')
+            {
+                var closeIndex = source.IndexOf('>', index + 1);
+                if (closeIndex >= 0
+                    && source.IndexOf("<color=", index, StringComparison.OrdinalIgnoreCase) == index)
+                {
+                    index = closeIndex + 1;
+                    continue;
+                }
+            }
+
+            break;
+        }
+
+        return source.Substring(0, index) + color + source.Substring(index);
+    }
+
+    internal static string InsertQudColorAtVisibleIndex(string source, int visibleIndex, string color)
+    {
+        var index = 0;
+        var visible = 0;
+        while (index < source.Length && visible < visibleIndex)
+        {
+            if (TryAdvanceMarkupToken(source, ref index))
+            {
+                continue;
+            }
+
+            index++;
+            visible++;
+        }
+
+        return source.Substring(0, index)
+            + InsertQudColorAfterOpeningBoundaryWrappers(source.Substring(index), color);
+    }
+
+    private static bool TryAdvanceMarkupToken(string source, ref int index)
+    {
+        if (index + 1 < source.Length
+            && source[index] == '{'
+            && source[index + 1] == '{')
+        {
+            var openPipeIndex = source.IndexOf('|', index + 2);
+            if (openPipeIndex >= 0)
+            {
+                index = openPipeIndex + 1;
+                return true;
+            }
+        }
+
+        if (index + 1 < source.Length
+            && source[index] == '}'
+            && source[index + 1] == '}')
+        {
+            index += 2;
+            return true;
+        }
+
+        if (index + 1 < source.Length
+            && (source[index] == '&' || source[index] == '^'))
+        {
+            index += 2;
+            return true;
+        }
+
+        if (source[index] == '<')
+        {
+            var closeIndex = source.IndexOf('>', index + 1);
+            if (closeIndex >= 0
+                && (source.IndexOf("<color=", index, StringComparison.OrdinalIgnoreCase) == index
+                    || source.IndexOf("</color", index, StringComparison.OrdinalIgnoreCase) == index))
+            {
+                index = closeIndex + 1;
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     private static List<WholeBoundaryPair> ExtractTrueBoundaryPairs(
         IReadOnlyList<ColorSpan> spans,
         int sourceStart,

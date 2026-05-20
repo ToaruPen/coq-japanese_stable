@@ -50,6 +50,18 @@ public sealed class FriendOrFoeReasonTranslatorTests
     }
 
     [Test]
+    public void TryTranslate_EmptyString_ReturnsFalseAndUnchanged()
+    {
+        var ok = FriendOrFoeReasonTranslator.TryTranslate(string.Empty, out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.False);
+            Assert.That(translated, Is.EqualTo(string.Empty));
+        });
+    }
+
+    [Test]
     public void TryTranslate_TranslatesExpandedNormalReasonCapture()
     {
         WriteDictionaryFile("Scoped/historyspice-common.ja.json", ("suns", "太陽"));
@@ -98,6 +110,20 @@ public sealed class FriendOrFoeReasonTranslatorTests
         {
             Assert.That(ok, Is.True);
             Assert.That(translated, Is.EqualTo("{{Y|太陽を称賛した}}"));
+        });
+    }
+
+    [Test]
+    public void TryTranslate_PreservesCaptureLocalColorWrappers()
+    {
+        WriteDictionaryFile("Scoped/historyspice-common.ja.json", ("suns", "太陽"));
+
+        var ok = FriendOrFoeReasonTranslator.TryTranslate("insulting their {{W|suns}}", out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(translated, Is.EqualTo("{{W|太陽}}を侮辱した"));
         });
     }
 

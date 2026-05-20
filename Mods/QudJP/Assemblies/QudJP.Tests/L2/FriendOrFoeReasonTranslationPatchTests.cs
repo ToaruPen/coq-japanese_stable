@@ -100,6 +100,84 @@ public sealed class FriendOrFoeReasonTranslationPatchTests
         }
     }
 
+    [Test]
+    public void Postfix_LeavesEmptyReasonUnchanged_WhenPatched()
+    {
+        const string source = "";
+        var harmonyId = "qudjp-test-friend-foe-reason-" + Guid.NewGuid().ToString("N");
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyFriendOrFoeReasonTarget), nameof(DummyFriendOrFoeReasonTarget.replacePlaceholders), typeof(string)),
+                postfix: new HarmonyMethod(RequireMethod(typeof(FriendOrFoeReasonTranslationPatch), nameof(FriendOrFoeReasonTranslationPatch.Postfix), typeof(string).MakeByRefType())));
+
+            var result = DummyFriendOrFoeReasonTarget.replacePlaceholders(source);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(result, Is.EqualTo(source));
+                Assert.That(RouteHitCount(), Is.Zero);
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void Postfix_PreservesCaptureColorTags_WhenPatched()
+    {
+        WriteDictionaryFile("Scoped/historyspice-common.ja.json", ("suns", "太陽"));
+        var harmonyId = "qudjp-test-friend-foe-reason-" + Guid.NewGuid().ToString("N");
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyFriendOrFoeReasonTarget), nameof(DummyFriendOrFoeReasonTarget.replacePlaceholders), typeof(string)),
+                postfix: new HarmonyMethod(RequireMethod(typeof(FriendOrFoeReasonTranslationPatch), nameof(FriendOrFoeReasonTranslationPatch.Postfix), typeof(string).MakeByRefType())));
+
+            var result = DummyFriendOrFoeReasonTarget.replacePlaceholders("insulting their {{W|suns}}");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(result, Is.EqualTo("{{W|太陽}}を侮辱した"));
+                Assert.That(RouteHitCount(), Is.EqualTo(1));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void Postfix_StripsDirectMarkerWithoutRetranslating_WhenPatched()
+    {
+        var harmonyId = "qudjp-test-friend-foe-reason-" + Guid.NewGuid().ToString("N");
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyFriendOrFoeReasonTarget), nameof(DummyFriendOrFoeReasonTarget.replacePlaceholders), typeof(string)),
+                postfix: new HarmonyMethod(RequireMethod(typeof(FriendOrFoeReasonTranslationPatch), nameof(FriendOrFoeReasonTranslationPatch.Postfix), typeof(string).MakeByRefType())));
+
+            var result = DummyFriendOrFoeReasonTarget.replacePlaceholders(
+                MessageFrameTranslator.DirectTranslationMarker + "insulting their suns");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(result, Is.EqualTo("insulting their suns"));
+                Assert.That(RouteHitCount(), Is.EqualTo(1));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
     private void WriteDictionaryFile(string fileName, params (string Key, string Text)[] entries)
     {
         var path = Path.Combine(dictionaryDirectory, fileName);

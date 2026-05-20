@@ -123,7 +123,8 @@ internal static class CookingIngredientFragmentTranslator
     private static bool TryTranslatePossessiveBodyPartIngredientName(string source, out string translated)
     {
         translated = source;
-        var match = PossessiveBodyPartIngredientPattern.Match(source);
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        var match = PossessiveBodyPartIngredientPattern.Match(stripped);
         if (!match.Success)
         {
             return false;
@@ -139,7 +140,11 @@ internal static class CookingIngredientFragmentTranslator
             return false;
         }
 
-        translated = owner + "の" + part;
+        translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+            owner + "の" + part,
+            spans,
+            stripped.Length,
+            source);
         return true;
     }
 

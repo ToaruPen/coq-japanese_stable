@@ -1289,7 +1289,7 @@ public static class PopupTranslationPatch
             stripped);
         if (hasLegacyDisabledColor && !translated.StartsWith("&", StringComparison.Ordinal))
         {
-            translated = InsertAmpersandColorAtVisibleIndex(translated, labelStart, "&K");
+            translated = ColorAwareTranslationComposer.InsertQudColorAtVisibleIndex(translated, labelStart, "&K");
         }
 
         DynamicTextObservability.RecordTransform(route, family + ".PlainInventoryActionLabel", source, translated);
@@ -1315,7 +1315,7 @@ public static class PopupTranslationPatch
             return translatedLabel;
         }
 
-        return InsertAmpersandColorAfterOpeningBoundaryWrappers(translatedLabel, "&K");
+        return ColorAwareTranslationComposer.InsertQudColorAfterOpeningBoundaryWrappers(translatedLabel, "&K");
     }
 
     private static bool HasLegacyDisabledInventoryActionColor(IReadOnlyList<ColorSpan> spans, int labelStart)
@@ -1360,103 +1360,6 @@ public static class PopupTranslationPatch
         }
 
         return filtered ?? spans;
-    }
-
-    private static string InsertAmpersandColorAfterOpeningBoundaryWrappers(string source, string color)
-    {
-        var index = 0;
-        while (index < source.Length)
-        {
-            if (source[index] == '{'
-                && index + 1 < source.Length
-                && source[index + 1] == '{')
-            {
-                var pipeIndex = source.IndexOf('|', index + 2);
-                if (pipeIndex >= 0)
-                {
-                    index = pipeIndex + 1;
-                    continue;
-                }
-            }
-
-            if (source[index] == '<')
-            {
-                var closeIndex = source.IndexOf('>', index + 1);
-                if (closeIndex >= 0
-                    && source.IndexOf("<color=", index, StringComparison.OrdinalIgnoreCase) == index)
-                {
-                    index = closeIndex + 1;
-                    continue;
-                }
-            }
-
-            break;
-        }
-
-        return source.Substring(0, index) + color + source.Substring(index);
-    }
-
-    private static string InsertAmpersandColorAtVisibleIndex(string source, int visibleIndex, string color)
-    {
-        var index = 0;
-        var visible = 0;
-        while (index < source.Length && visible < visibleIndex)
-        {
-            if (TryAdvanceMarkupToken(source, ref index))
-            {
-                continue;
-            }
-
-            index++;
-            visible++;
-        }
-
-        return source.Substring(0, index)
-            + InsertAmpersandColorAfterOpeningBoundaryWrappers(source.Substring(index), color);
-    }
-
-    private static bool TryAdvanceMarkupToken(string source, ref int index)
-    {
-        if (index + 1 < source.Length
-            && source[index] == '{'
-            && source[index + 1] == '{')
-        {
-            var openPipeIndex = source.IndexOf('|', index + 2);
-            if (openPipeIndex >= 0)
-            {
-                index = openPipeIndex + 1;
-                return true;
-            }
-        }
-
-        if (index + 1 < source.Length
-            && source[index] == '}'
-            && source[index + 1] == '}')
-        {
-            index += 2;
-            return true;
-        }
-
-        if (index + 1 < source.Length
-            && (source[index] == '&' || source[index] == '^'))
-        {
-            index += 2;
-            return true;
-        }
-
-        if (source[index] == '<')
-        {
-            var closeIndex = source.IndexOf('>', index + 1);
-            if (closeIndex >= 0
-                && (source.IndexOf("<color=", index, StringComparison.OrdinalIgnoreCase) == index
-                    || source.IndexOf("</color", index, StringComparison.OrdinalIgnoreCase) == index))
-            {
-                index = closeIndex + 1;
-                return true;
-            }
-        }
-
-        return false;
     }
 
     private static bool TryAcceptInventoryActionMenuOwnerMiss(string source, string? popupId, out string translated)

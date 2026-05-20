@@ -1376,7 +1376,7 @@ def _normalize_family_payload(family: object) -> object:
         ),
         "shape_counts": family.get("shape_counts", {}),
         "context_counts": family.get("context_counts", {}),
-        "first_lines": family.get("first_lines", first_lines),
+        "first_lines": family.get("first_lines") or first_lines,
     }
 
 

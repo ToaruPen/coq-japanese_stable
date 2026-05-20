@@ -1185,6 +1185,40 @@ def test_load_inventory_normalizes_family_payload_even_when_family_id_exists(tmp
     assert entry["first_lines"] == [738]
 
 
+def test_load_inventory_backfills_empty_first_lines_from_representative_calls(tmp_path: Path) -> None:
+    """Mixed-schema payloads with first_lines: [] still keep representative callsite evidence."""
+    inventory_path = tmp_path / "static-producer-inventory.json"
+    inventory_path.write_text(
+        """
+{
+  "schema_version": "1.0",
+  "game_version": "1.0.4",
+  "totals": {},
+  "families": [
+    {
+      "family_id": "XRL.World.Parts/Campfire.cs::Campfire.CookPresetMeal(int)",
+      "file": "XRL.World.Parts/Campfire.cs",
+      "type_name": "XRL.World.Parts.Campfire",
+      "member_name": "CookPresetMeal",
+      "member_start_line": 734,
+      "surface_counts": {"HistoricStringExpander": 1, "Popup.Show*": 2},
+      "first_lines": [],
+      "representative_calls": [
+        {"line": 738, "target_surface": "HistoricStringExpander"}
+      ]
+    }
+  ]
+}
+""",
+        encoding="utf-8",
+    )
+
+    inventory = load_inventory(inventory_path)
+    entry = build_surface_queue(inventory)[0]
+
+    assert entry["first_lines"] == [738]
+
+
 def _inventory(families: list[TextConstructionFamily]) -> TextConstructionInventory:
     return {
         "schema_version": "1.0",
