@@ -932,6 +932,7 @@ internal static class JournalPatternTranslator
                 translated = "その者";
                 return true;
             case "it":
+            case "It":
                 translated = "それ";
                 return true;
             case "his":

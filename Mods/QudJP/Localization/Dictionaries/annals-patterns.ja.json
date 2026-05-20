@@ -133,7 +133,7 @@
     },
     {
       "pattern": "^In\\ (.+?)\\ (?:BR|AR),\\ (.+?),\\ the\\ Above,\\ forsook\\ the\\ people\\ of\\ Qud\\ in\\ favor\\ of\\ its\\ sludges\\ and\\ microorganisms,\\ and\\ then\\ disappeared\\.\\ (.+?)\\ (?:was|were)\\ 216\\ years\\ old\\.$",
-      "template": "{t0}年、天上なる{t1}は、クッドの民を見捨て、そのヘドロと微生物を選び、やがて姿を消した。その者は216歳であった。",
+      "template": "{t0}年、天上なる{t1}は、クッドの民を見捨て、そのヘドロと微生物を選び、やがて姿を消した。{t2}は216歳であった。",
       "route": "annals"
     },
     {
@@ -143,7 +143,7 @@
     },
     {
       "pattern": "^At\\ twilight\\ in\\ the\\ shadow\\ of\\ the\\ Spindle,\\ the\\ people\\ of\\ (.+?)\\ saw\\ an\\ image\\ on\\ the\\ horizon\\ that\\ looked\\ like\\ a\\ (.+?)\\ bathed\\ in\\ starfire\\.\\ It\\ was\\ (.+?),\\ and\\ after\\ (.+?)\\ came\\ and\\ left\\ (.+?),\\ the\\ people\\ built\\ a\\ monument\\ to\\ (.+?),\\ and\\ thenceforth\\ called\\ (.+?)\\ (.+?)-in-Starfire\\.$",
-      "template": "薄暮、スピンドルの影にて、{t0}の民は、地平に星火を浴びた{t1}のごとき像を見た。それは{t2}であり、その者が{t4}に来たりて去った後、民はその者の記念碑を建て、それより後、その者を星火の{t7}と呼んだ。",
+      "template": "薄暮、スピンドルの影にて、{t0}の民は、地平に星火を浴びた{t1}のごとき像を見た。それは{t2}であり、{t3}が{t4}に来たりて去った後、民は{t5}の記念碑を建て、それより後、{t6}を星火の{t7}と呼んだ。",
       "route": "annals"
     },
     {

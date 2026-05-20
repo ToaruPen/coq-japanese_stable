@@ -441,6 +441,13 @@ public sealed class JournalPatternTranslatorTests
         Assert.That(
             translatedParticleBoundary,
             Is.EqualTo("4100年末、人気のあるライバルを毒ガスで殺したあと、クッドのスルタンは姿を消した。シビブの輝く顔立ちのため、彼らが後継者に選ばれた。"));
+
+        var translatedCapitalIt = JournalPatternTranslator.Translate(
+            "Late in 4100 AR, after murdering a popular rival with malicious soldering, the sultan of Qud disappeared. Because of シビブの shining visage, It was chosen as the successor.");
+
+        Assert.That(
+            translatedCapitalIt,
+            Is.EqualTo("4100年末、人気のあるライバルを悪意あるはんだ付けで殺したあと、クッドのスルタンは姿を消した。シビブの輝く顔立ちのため、それが後継者に選ばれた。"));
     }
 
     [Test]

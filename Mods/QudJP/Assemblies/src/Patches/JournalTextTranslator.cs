@@ -151,8 +151,8 @@ internal static class JournalTextTranslator
             return true;
         }
 
-        translated = source;
-        return false;
+        translated = JournalPatternTranslator.Translate(source, route);
+        return !string.Equals(source, translated, StringComparison.Ordinal);
     }
 
     private static bool TryTranslateExactPreservingColors(string source, string route, string family, out string translated)

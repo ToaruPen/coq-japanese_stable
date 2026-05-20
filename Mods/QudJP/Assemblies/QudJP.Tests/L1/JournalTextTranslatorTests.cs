@@ -190,6 +190,26 @@ public sealed class JournalTextTranslatorTests
     }
 
     [Test]
+    public void TryTranslateObservationRevealTextForStorage_FallsBackToWholeMultilinePattern()
+    {
+        WriteExactDictionary(("Joppa", "ジョッパ"));
+        WritePatternDictionary((
+            "^On the auspicious (.+?), =name= arrived in (.+?)\\.\n(.+?)$",
+            "{t0}、=name=は{t1}に到着した。\n{t2}"));
+
+        var ok = JournalTextTranslator.TryTranslateObservationRevealTextForStorage(
+            "On the auspicious 5th of Ut yara Ux, =name= arrived in Joppa.\nJourney began.",
+            "JournalTextTranslatorTests",
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(translated, Is.EqualTo("\u00015th of Ut yara Ux、=name=はジョッパに到着した。\nJourney began."));
+        });
+    }
+
+    [Test]
     public void TryTranslateObservationRevealTextForStorage_UsesJournalMarkOfDeathPatterns()
     {
         WritePatternDictionary(

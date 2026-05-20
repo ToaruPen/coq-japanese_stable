@@ -179,9 +179,8 @@ public static class CampfireNostrumsTranslationPatch
             return false;
         }
 
-        var visibleSource = MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText)
-            ? markedText
-            : source;
+        var hadDirectMarker = MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText);
+        var visibleSource = hadDirectMarker ? markedText : source;
         var (stripped, spans) = ColorAwareTranslationComposer.Strip(visibleSource);
         var translatedCore = stripped switch
         {
@@ -193,8 +192,14 @@ public static class CampfireNostrumsTranslationPatch
 
         if (translatedCore is null)
         {
-            translated = source;
-            return false;
+            translated = stripped;
+            if (!hadDirectMarker)
+            {
+                return false;
+            }
+
+            DynamicTextObservability.RecordTransform(route, family + "." + Context + ".PickGameObjectTitle", source, translated);
+            return true;
         }
 
         translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(

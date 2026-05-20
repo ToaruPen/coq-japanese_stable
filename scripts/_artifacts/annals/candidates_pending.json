@@ -9240,7 +9240,7 @@
       ],
       "status": "accepted",
       "reason": "",
-      "ja_template": "{t0}年、天上なる{t1}は、クッドの民を見捨て、そのヘドロと微生物を選び、やがて姿を消した。その者は216歳であった。",
+      "ja_template": "{t0}年、天上なる{t1}は、クッドの民を見捨て、そのヘドロと微生物を選び、やがて姿を消した。{t2}は216歳であった。",
       "review_notes": "issue-737 VillageCoda.GenerateEndEvent display-route coverage",
       "route": "annals",
       "en_template_hash": "sha256:93c39d7d9719891a815874bcf5218927458c6a88aa55a7e5732128aad0f35f7d"
@@ -9334,7 +9334,7 @@
       ],
       "status": "accepted",
       "reason": "",
-      "ja_template": "薄暮、スピンドルの影にて、{t0}の民は、地平に星火を浴びた{t1}のごとき像を見た。それは{t2}であり、その者が{t4}に来たりて去った後、民はその者の記念碑を建て、それより後、その者を星火の{t7}と呼んだ。",
+      "ja_template": "薄暮、スピンドルの影にて、{t0}の民は、地平に星火を浴びた{t1}のごとき像を見た。それは{t2}であり、{t3}が{t4}に来たりて去った後、民は{t5}の記念碑を建て、それより後、{t6}を星火の{t7}と呼んだ。",
       "review_notes": "issue-737 VillageCoda.GenerateEndEvent display-route coverage",
       "route": "annals",
       "en_template_hash": "sha256:06cc20cc0d9e79b61256fc23b52b2610af668356b647cee5a672229f0c631a52"
