@@ -108,17 +108,17 @@
     },
     {
       "pattern": "^((?:In|Throughout|Throughout\\ the\\ entirety\\ of))\\ (.+?),\\ (.+?)\\ (.+?)\\ all\\ of\\ (.+?),\\ (.+?)\\ of\\ (.+?)\\ and\\ (.+?)\\.\\ (.+?)\\ became\\ known\\ as\\ (?:the\\ )?(.+?)\\ (Scourge|Terror|Bane|Pest|Woe|Sorrow)\\.$",
-      "template": "{t1}{t0}、{t2}は{t4}全域を{t3}うえ、{t6}と{t7}に対して{t5}を行った。{t8}は以後{t9}の{t10}として知られるようになった。",
+      "template": "{t1}年、{t2}は{t4}全域を{t3}うえ、{t6}と{t7}に対して{t5}を行った。{t8}は以後{t9}の{t10}として知られるようになった。",
       "route": "annals"
     },
     {
       "pattern": "^((?:In|Throughout|Throughout\\ the\\ entirety\\ of))\\ (.+?),\\ (.+?)\\ (.+?)\\ all\\ of\\ (.+?),\\ (.+?)\\ of\\ (.+?)\\ and\\ (.+?)\\.\\ (.+?)\\ became\\ known\\ as\\ (.+?)\\.$",
-      "template": "{t1}{t0}、{t2}は{t4}全域を{t3}うえ、{t6}と{t7}に対して{t5}を行った。{t8}は以後{t9}として知られるようになった。",
+      "template": "{t1}年、{t2}は{t4}全域を{t3}うえ、{t6}と{t7}に対して{t5}を行った。{t8}は以後{t9}として知られるようになった。",
       "route": "annals"
     },
     {
       "pattern": "^((?:In|Throughout|Throughout\\ the\\ entirety\\ of))\\ (.+?),\\ (.+?)\\ (.+?)\\ the\\ flower\\ fields\\ and\\ brought\\ turmoil\\ to\\ the\\ troubled\\ village\\ of\\ Bey\\ Lah\\.\\ (.+?)\\ became\\ known\\ as\\ the\\ Hindren\\ (.+?)\\.$",
-      "template": "{t1}{t0}、{t2}は花畑を{t3}うえ、悩めるベイ・ラーの村に混乱をもたらした。{t4}は以後ヒンドレンの{t5}として知られるようになった。",
+      "template": "{t1}年、{t2}は花畑を{t3}うえ、悩めるベイ・ラーの村に混乱をもたらした。{t4}は以後ヒンドレンの{t5}として知られるようになった。",
       "route": "annals"
     },
     {

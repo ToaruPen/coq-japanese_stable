@@ -8999,7 +8999,7 @@
       ],
       "status": "accepted",
       "reason": "",
-      "ja_template": "{t1}{t0}、{t2}は{t4}全域を{t3}うえ、{t6}と{t7}に対して{t5}を行った。{t8}は以後{t9}の{t10}として知られるようになった。",
+      "ja_template": "{t1}年、{t2}は{t4}全域を{t3}うえ、{t6}と{t7}に対して{t5}を行った。{t8}は以後{t9}の{t10}として知られるようになった。",
       "review_notes": "issue-737 route grammar closure",
       "route": "annals",
       "en_template_hash": "sha256:a06c99da831e55e97ca7a46d2c6aaf7de98d8b70adcd8e70eb945b8df828455c"
@@ -9076,7 +9076,7 @@
       ],
       "status": "accepted",
       "reason": "",
-      "ja_template": "{t1}{t0}、{t2}は{t4}全域を{t3}うえ、{t6}と{t7}に対して{t5}を行った。{t8}は以後{t9}として知られるようになった。",
+      "ja_template": "{t1}年、{t2}は{t4}全域を{t3}うえ、{t6}と{t7}に対して{t5}を行った。{t8}は以後{t9}として知られるようになった。",
       "review_notes": "issue-737 route grammar closure",
       "route": "annals",
       "en_template_hash": "sha256:3d3199e7c2db5789f48043484c966d00ff37485c827073c56ef891849653b1b4"
@@ -9129,7 +9129,7 @@
       ],
       "status": "accepted",
       "reason": "",
-      "ja_template": "{t1}{t0}、{t2}は花畑を{t3}うえ、悩めるベイ・ラーの村に混乱をもたらした。{t4}は以後ヒンドレンの{t5}として知られるようになった。",
+      "ja_template": "{t1}年、{t2}は花畑を{t3}うえ、悩めるベイ・ラーの村に混乱をもたらした。{t4}は以後ヒンドレンの{t5}として知られるようになった。",
       "review_notes": "issue-737 route grammar closure",
       "route": "annals",
       "en_template_hash": "sha256:7d0a10cc23e8ad34dd10fd0226b27c37dffa3f24af9ce14e12f5e590300753fd"

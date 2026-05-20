@@ -347,7 +347,54 @@ internal static class ColorAwareTranslationComposer
 
     internal static string InsertQudColorAfterOpeningBoundaryWrappers(string source, string color)
     {
+        var index = IndexAfterOpeningBoundaryWrappers(source, 0);
+        return source.Substring(0, index) + color + source.Substring(index);
+    }
+
+    internal static string InsertQudColorAtVisibleIndex(string source, int visibleIndex, string color)
+    {
+        var index = SourceIndexAtVisibleIndex(source, visibleIndex);
+        return source.Substring(0, index)
+            + InsertQudColorAfterOpeningBoundaryWrappers(source.Substring(index), color);
+    }
+
+    internal static bool StartsWithQudColorAtVisibleIndex(string source, int visibleIndex)
+    {
+        var index = SourceIndexAtVisibleIndex(source, visibleIndex);
+        index = IndexAfterOpeningBoundaryWrappers(source, index);
+        return index + 1 < source.Length
+            && (source[index] == '&' || source[index] == '^')
+            && source[index] != source[index + 1];
+    }
+
+    private static int SourceIndexAtVisibleIndex(string source, int visibleIndex)
+    {
         var index = 0;
+        var visible = 0;
+        while (index < source.Length && visible < visibleIndex)
+        {
+            if (IsEscapedQudColorToken(source, index))
+            {
+                index += 2;
+                visible++;
+                continue;
+            }
+
+            if (TryAdvanceMarkupToken(source, ref index))
+            {
+                continue;
+            }
+
+            index++;
+            visible++;
+        }
+
+        return index;
+    }
+
+    private static int IndexAfterOpeningBoundaryWrappers(string source, int startIndex)
+    {
+        var index = startIndex;
         while (index < source.Length)
         {
             if (source[index] == '{'
@@ -376,30 +423,16 @@ internal static class ColorAwareTranslationComposer
             break;
         }
 
-        return source.Substring(0, index) + color + source.Substring(index);
-    }
-
-    internal static string InsertQudColorAtVisibleIndex(string source, int visibleIndex, string color)
-    {
-        var index = 0;
-        var visible = 0;
-        while (index < source.Length && visible < visibleIndex)
-        {
-            if (TryAdvanceMarkupToken(source, ref index))
-            {
-                continue;
-            }
-
-            index++;
-            visible++;
-        }
-
-        return source.Substring(0, index)
-            + InsertQudColorAfterOpeningBoundaryWrappers(source.Substring(index), color);
+        return index;
     }
 
     private static bool TryAdvanceMarkupToken(string source, ref int index)
     {
+        if (IsEscapedQudColorToken(source, index))
+        {
+            return false;
+        }
+
         if (index + 1 < source.Length
             && source[index] == '{'
             && source[index + 1] == '{')
@@ -440,6 +473,13 @@ internal static class ColorAwareTranslationComposer
         }
 
         return false;
+    }
+
+    private static bool IsEscapedQudColorToken(string source, int index)
+    {
+        return index + 1 < source.Length
+            && (source[index] == '&' || source[index] == '^')
+            && source[index] == source[index + 1];
     }
 
     private static List<WholeBoundaryPair> ExtractTrueBoundaryPairs(

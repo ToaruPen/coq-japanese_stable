@@ -362,6 +362,29 @@ public sealed class ColorCodePreserverTests
     }
 
     [Test]
+    public void InsertQudColorAtVisibleIndex_CountsEscapedColorTokensAsVisibleText()
+    {
+        var foreground = ColorAwareTranslationComposer.InsertQudColorAtVisibleIndex("&&No", 1, "&K");
+        var background = ColorAwareTranslationComposer.InsertQudColorAtVisibleIndex("^^No", 1, "&K");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(foreground, Is.EqualTo("&&&KNo"));
+            Assert.That(background, Is.EqualTo("^^&KNo"));
+        });
+    }
+
+    [Test]
+    public void StartsWithQudColorAtVisibleIndex_ChecksColorAtTargetVisiblePosition()
+    {
+        Assert.Multiple(() =>
+        {
+            Assert.That(ColorAwareTranslationComposer.StartsWithQudColorAtVisibleIndex("    &Kremove", 4), Is.True);
+            Assert.That(ColorAwareTranslationComposer.StartsWithQudColorAtVisibleIndex("&&remove", 0), Is.False);
+        });
+    }
+
+    [Test]
     public void RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership_PreservesNestedQudAndTmpColorWrappers()
     {
         var (stripped, spans) = ColorAwareTranslationComposer.Strip("{{W|<color=#44ff88>No</color>}}");

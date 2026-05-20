@@ -1287,7 +1287,8 @@ public static class PopupTranslationPatch
             visibleTranslation,
             hasLegacyDisabledColor ? WithoutLegacyDisabledInventoryActionColor(spans, labelStart) : spans,
             stripped);
-        if (hasLegacyDisabledColor && !translated.StartsWith("&", StringComparison.Ordinal))
+        if (hasLegacyDisabledColor
+            && !ColorAwareTranslationComposer.StartsWithQudColorAtVisibleIndex(translated, labelStart))
         {
             translated = ColorAwareTranslationComposer.InsertQudColorAtVisibleIndex(translated, labelStart, "&K");
         }
