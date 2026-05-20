@@ -97,6 +97,32 @@ public sealed class TradeUiPopupTranslationPatchTests
     }
 
     [Test]
+    public void Prefix_TranslatesCampfirePreserveWindowPopup_BeforeGenericMessagePatternFallback()
+    {
+        using var patch = PatchMethod(nameof(DummyTradeUiPopupTarget.Show));
+
+        DummyTradeUiPopupTarget.Show(
+            "You preserved:\n\nA {{W|ヨンダーケーン}} into 15 serving of {{B|発酵ヨンダーケーン}}.");
+
+        Assert.That(
+            DummyTradeUiPopupTarget.LastShowMessage,
+            Is.EqualTo("保存した:\n\n{{W|ヨンダーケーン}}を15食分の{{B|発酵ヨンダーケーン}}に保存した。"));
+    }
+
+    [Test]
+    public void Prefix_TranslatesCampfirePreserveWindowPopup_WithMultipleSomeLines()
+    {
+        using var patch = PatchMethod(nameof(DummyTradeUiPopupTarget.Show));
+
+        DummyTradeUiPopupTarget.Show(
+            "You preserved:\n\nSome {{r|生の猪肉}} into 3 serving of {{W|猪肉ジャーキー}}.\nSome {{r|生のワーム肉}} into 3 serving of {{W|ワームジャーキー}}.");
+
+        Assert.That(
+            DummyTradeUiPopupTarget.LastShowMessage,
+            Is.EqualTo("保存した:\n\nいくらかの{{r|生の猪肉}}を3食分の{{W|猪肉ジャーキー}}に保存した。\nいくらかの{{r|生のワーム肉}}を3食分の{{W|ワームジャーキー}}に保存した。"));
+    }
+
+    [Test]
     public void Prefix_UsesOwnerTemplateForTradeQuestion_IgnoresDictionaryEntriesAndPreservesColorTags()
     {
         WriteDictionary(

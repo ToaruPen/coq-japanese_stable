@@ -44,7 +44,7 @@ public sealed class CampfirePreserveTranslationPatchTests
         "保存した:\n\nan appleを1食分のdried appleに保存した。")]
     [TestCase(
         "You preserved:\n\nSome {{r|raw boar meat}} into 3 serving of boar jerky.\nSome {{r|raw worm meat}} into 3 servings of worm jerky.",
-        "保存した:\n\n{{r|生の猪肉}}少々を3食分の猪肉ジャーキーに保存した。\n{{r|生のワーム肉}}少々を3食分のワームジャーキーに保存した。")]
+        "保存した:\n\nいくらかの{{r|生の猪肉}}を3食分の猪肉ジャーキーに保存した。\nいくらかの{{r|生のワーム肉}}を3食分のワームジャーキーに保存した。")]
     public void Preserve_TranslatesGeneratedPreservedPopup_WhenOwnerPatched(string source, string expected)
     {
         WriteDisplayNameDictionary(
@@ -95,7 +95,7 @@ public sealed class CampfirePreserveTranslationPatchTests
         AssertPopupMessage(
             RequireMethod(typeof(DummyCampfirePreserveTarget), nameof(DummyCampfirePreserveTarget.Preserve)),
             "You preserved:\n\nSome クダング's Jewel into 1 serving of jeweled preserves.",
-            "保存した:\n\nクダングの宝玉少々を1食分の宝玉保存食に保存した。");
+            "保存した:\n\nいくらかのクダングの宝玉を1食分の宝玉保存食に保存した。");
     }
 
     [Test]
@@ -108,7 +108,7 @@ public sealed class CampfirePreserveTranslationPatchTests
         AssertPopupMessage(
             RequireMethod(typeof(DummyCampfirePreserveTarget), nameof(DummyCampfirePreserveTarget.Preserve)),
             "^rYou preserved:\n\nSome raw boar meat into 3 servings of boar jerky.",
-            "^r保存した:\n\n生の猪肉少々を3食分の猪肉ジャーキーに保存した。");
+            "^r保存した:\n\nいくらかの生の猪肉を3食分の猪肉ジャーキーに保存した。");
     }
 
     [Test]
@@ -134,7 +134,7 @@ public sealed class CampfirePreserveTranslationPatchTests
         AssertPopupMessage(
             RequireMethod(typeof(DummyCampfirePreserveTarget), nameof(DummyCampfirePreserveTarget.Preserve)),
             "You preserved:\n\nSome {{r|raw boar meat}}&W^k into 3 servings of boar jerky.",
-            "保存した:\n\n{{r|生の猪肉}}少々&W^kを3食分の猪肉ジャーキーに保存した。");
+            "保存した:\n\nいくらかの{{r|生の猪肉}}&W^kを3食分の猪肉ジャーキーに保存した。");
     }
 
     [Test]

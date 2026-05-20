@@ -257,7 +257,7 @@ public static class CampfirePreserveTranslationPatch
         if (match.Success
             && TryTranslateDisplayNameOrAlreadyLocalized(match.Groups["name"].Value, out var someName))
         {
-            return someName + "少々";
+            return "いくらかの" + someName;
         }
 
         match = ArticleSourcePattern.Match(source);
