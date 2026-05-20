@@ -266,7 +266,7 @@ public sealed class CampfireNostrumsTranslationPatchTests
             Assert.Multiple(() =>
             {
                 Assert.That(handled, Is.True);
-                Assert.That(translated, Is.EqualTo("Unknown title"));
+                Assert.That(translated, Is.EqualTo("^AUnknown title"));
                 Assert.That(PickGameObjectTitleHitCount(), Is.EqualTo(1));
             });
         }
