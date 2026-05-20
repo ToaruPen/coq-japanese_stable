@@ -82,6 +82,35 @@ public sealed class HistoricSpiceGeneratedNameTranslatorTests
         });
     }
 
+    [TestCase("{{M|Year of the Shining Visage}}", "{{M|輝く容貌の年}}")]
+    [TestCase("&GYear of the Shining Visage", "&G輝く容貌の年")]
+    public void TryTranslateSultanateYearName_PreservesColorTags(string source, string expected)
+    {
+        WriteDictionaryFile("Scoped/historyspice-common.ja.json", ("shining", "輝く"), ("visage", "容貌"));
+
+        var ok = HistoricSpiceGeneratedNameTranslator.TryTranslateSultanateYearName(source, out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(translated, Is.EqualTo(expected));
+        });
+    }
+
+    [Test]
+    public void TryTranslateSultanateYearName_StripsDirectTranslationMarkerInsideColorTags()
+    {
+        var ok = HistoricSpiceGeneratedNameTranslator.TryTranslateSultanateYearName(
+            "{{M|" + MessageFrameTranslator.DirectTranslationMarker + "Year of the Shining Visage}}",
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(translated, Is.EqualTo("{{M|Year of the Shining Visage}}"));
+        });
+    }
+
     [TestCase("")]
     [TestCase("Era of the Shining Visage")]
     public void TryTranslateSultanateYearName_LeavesNonMatchingInputUnchanged(string source)
@@ -162,6 +191,20 @@ public sealed class HistoricSpiceGeneratedNameTranslatorTests
         });
     }
 
+    [Test]
+    public void TryTranslateHistoricItemName_StripsDirectMarkerInsideColorTags()
+    {
+        var ok = HistoricSpiceGeneratedNameTranslator.TryTranslateHistoricItemName(
+            "{{M|" + MessageFrameTranslator.DirectTranslationMarker + "Sword's Blessing}}",
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(translated, Is.EqualTo("{{M|Sword's Blessing}}"));
+        });
+    }
+
     [TestCase("Sword's Qwern")]
     [TestCase("Swordicus")]
     [TestCase("")]
@@ -184,6 +227,8 @@ public sealed class HistoricSpiceGeneratedNameTranslatorTests
     [TestCase("Ibulian Cult", "Ibul派の教団")]
     [TestCase("Gleamingian Cult", "煌めき派の教団")]
     [TestCase("2nd Ibulian Cult", "第2 Ibul派の教団")]
+    [TestCase("{{M|Cult of the Gleaming Ghost}}", "{{M|煌めき幽鬼の教団}}")]
+    [TestCase("&GCult of the Gleaming Ghost", "&G煌めき幽鬼の教団")]
     public void TryTranslateSultanCultName_TranslatesGeneratedCultNameFrames(string source, string expected)
     {
         WriteDictionaryFile("Scoped/historyspice-common.ja.json", ("gleaming", "煌めき"), ("ghost", "幽鬼"));
@@ -228,11 +273,27 @@ public sealed class HistoricSpiceGeneratedNameTranslatorTests
         });
     }
 
+    [Test]
+    public void TryTranslateSultanCultName_StripsDirectMarkerInsideColorTags()
+    {
+        var ok = HistoricSpiceGeneratedNameTranslator.TryTranslateSultanCultName(
+            "{{M|" + MessageFrameTranslator.DirectTranslationMarker + "Cult of the Gleaming Ghost}}",
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(translated, Is.EqualTo("{{M|Cult of the Gleaming Ghost}}"));
+        });
+    }
+
     [TestCase("Ibul wastes", "Ibul荒野")]
     [TestCase("the red Ibul", "赤のIbul")]
     [TestCase("The red Ibul", "赤のIbul")]
     [TestCase("red wastes Ibul", "赤の荒野Ibul")]
     [TestCase("red Salt Dunes", "赤のSalt Dunes")]
+    [TestCase("{{M|red wastes Ibul}}", "{{M|赤の荒野Ibul}}")]
+    [TestCase("&Gred wastes Ibul", "&G赤の荒野Ibul")]
     public void TryTranslateRuinsSiteName_TranslatesGeneratedSiteModifierFrames(string source, string expected)
     {
         WriteDictionaryFile("Scoped/historyspice-common.ja.json", ("red", "赤"), ("wastes", "荒野"));
@@ -274,6 +335,20 @@ public sealed class HistoricSpiceGeneratedNameTranslatorTests
         {
             Assert.That(ok, Is.True);
             Assert.That(translated, Is.EqualTo("red wastes Ibul"));
+        });
+    }
+
+    [Test]
+    public void TryTranslateRuinsSiteName_StripsDirectMarkerInsideColorTags()
+    {
+        var ok = HistoricSpiceGeneratedNameTranslator.TryTranslateRuinsSiteName(
+            "{{M|" + MessageFrameTranslator.DirectTranslationMarker + "red wastes Ibul}}",
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(translated, Is.EqualTo("{{M|red wastes Ibul}}"));
         });
     }
 
@@ -329,6 +404,40 @@ public sealed class HistoricSpiceGeneratedNameTranslatorTests
         {
             Assert.That(ok, Is.True);
             Assert.That(translated, Is.EqualTo(source));
+        });
+    }
+
+    [TestCase("{{M|Broth of Glowfish}}", "{{M|グロウフィッシュ入りブロス}}")]
+    [TestCase("&GBroth of Glowfish", "&Gグロウフィッシュ入りブロス")]
+    public void TryTranslateCapture_PreservesColorTags(string source, string expected)
+    {
+        WriteDictionaryFile(
+            "Scoped/historyspice-common.ja.json",
+            ("broth", "ブロス"),
+            ("glowfish", "グロウフィッシュ"));
+
+        var ok = HistoricSpiceGeneratedNameTranslator.TryTranslateCapture(source, out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(translated, Is.EqualTo(expected));
+        });
+    }
+
+    [Test]
+    public void TryTranslateCapture_DirectMarkerInsideColorTags_RemovedAndNotRetranslated()
+    {
+        const string source = "Broth of Glowfish";
+
+        var ok = HistoricSpiceGeneratedNameTranslator.TryTranslateCapture(
+            "{{M|" + MessageFrameTranslator.DirectTranslationMarker + source + "}}",
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(translated, Is.EqualTo("{{M|" + source + "}}"));
         });
     }
 

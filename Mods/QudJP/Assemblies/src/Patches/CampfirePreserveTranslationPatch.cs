@@ -272,14 +272,19 @@ public static class CampfirePreserveTranslationPatch
 
     private static bool TryTranslateDisplayNameOrAlreadyLocalized(string source, out string translated)
     {
+        translated = TranslateDisplayNameOrSame(source);
+        if (!string.Equals(translated, source, StringComparison.Ordinal))
+        {
+            return true;
+        }
+
         if (ContainsJapaneseCharacters(source))
         {
             translated = source;
             return true;
         }
 
-        translated = TranslateDisplayNameOrSame(source);
-        return !string.Equals(translated, source, StringComparison.Ordinal);
+        return false;
     }
 
     private static string TranslateDisplayNameOrSame(string source)

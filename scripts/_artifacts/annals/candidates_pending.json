@@ -8422,7 +8422,7 @@
       "annal_class": "VillageProverb",
       "switch_case": "proverbs/proverbsCoda",
       "event_property": "gospel",
-      "sample_source": "<spice.instancesOf.bless.!random> *sacredThing*",
+      "sample_source": "Bless *sacredThing*",
       "extracted_pattern": "^[Bb]less\\ (.+?)(?:\\.)?$",
       "slots": [
         {
@@ -8445,7 +8445,7 @@
       "annal_class": "VillageProverb",
       "switch_case": "proverbs/proverbsCoda",
       "event_property": "gospel",
-      "sample_source": "<spice.instancesOf.bless.!random> *sacredThing*",
+      "sample_source": "Thank *sacredThing*",
       "extracted_pattern": "^[Tt]hank\\ (.+?)(?:\\.)?$",
       "slots": [
         {
@@ -8468,7 +8468,7 @@
       "annal_class": "VillageProverb",
       "switch_case": "proverbs/proverbsCoda",
       "event_property": "gospel",
-      "sample_source": "<spice.instancesOf.bless.!random> *sacredThing*",
+      "sample_source": "Exalt *sacredThing*",
       "extracted_pattern": "^[Ee]xalt\\ (.+?)(?:\\.)?$",
       "slots": [
         {
@@ -8491,7 +8491,7 @@
       "annal_class": "VillageProverb",
       "switch_case": "proverbs/proverbsCoda",
       "event_property": "gospel",
-      "sample_source": "<spice.instancesOf.bless.!random> *sacredThing*",
+      "sample_source": "Give thanks for *sacredThing*",
       "extracted_pattern": "^[Gg]ive\\ thanks\\ for\\ (.+?)(?:\\.)?$",
       "slots": [
         {
@@ -8514,7 +8514,7 @@
       "annal_class": "VillageProverb",
       "switch_case": "proverbs/proverbsCoda",
       "event_property": "gospel",
-      "sample_source": "<spice.instancesOf.bless.!random> *sacredThing*",
+      "sample_source": "Praise *sacredThing*",
       "extracted_pattern": "^[Pp]raise\\ (.+?)(?:\\.)?$",
       "slots": [
         {
@@ -8537,7 +8537,7 @@
       "annal_class": "VillageProverb",
       "switch_case": "proverbs/proverbsCoda",
       "event_property": "gospel",
-      "sample_source": "<spice.instancesOf.bless.!random> *sacredThing*",
+      "sample_source": "Honor *sacredThing*",
       "extracted_pattern": "^[Hh]onor\\ (.+?)(?:\\.)?$",
       "slots": [
         {
@@ -8560,7 +8560,7 @@
       "annal_class": "VillageProverb",
       "switch_case": "proverbs/proverbsCoda",
       "event_property": "gospel",
-      "sample_source": "<spice.instancesOf.curse.!random> *profaneThing*",
+      "sample_source": "Curse *profaneThing*",
       "extracted_pattern": "^[Cc]urse\\ (.+?)(?:\\.)?$",
       "slots": [
         {
@@ -8583,7 +8583,7 @@
       "annal_class": "VillageProverb",
       "switch_case": "proverbs/proverbsCoda",
       "event_property": "gospel",
-      "sample_source": "<spice.instancesOf.curse.!random> *profaneThing*",
+      "sample_source": "A blight upon *profaneThing*",
       "extracted_pattern": "^[Aa]\\ blight\\ upon\\ (.+?)(?:\\.)?$",
       "slots": [
         {
@@ -8606,7 +8606,7 @@
       "annal_class": "VillageProverb",
       "switch_case": "proverbs/proverbsCoda",
       "event_property": "gospel",
-      "sample_source": "<spice.instancesOf.curse.!random> *profaneThing*",
+      "sample_source": "A curse upon *profaneThing*",
       "extracted_pattern": "^[Aa]\\ curse\\ upon\\ (.+?)(?:\\.)?$",
       "slots": [
         {
@@ -9233,7 +9233,7 @@
       "annal_class": "RampageRegion",
       "switch_case": "gospel",
       "event_property": "gospel",
-      "sample_source": "<spice.commonPhrases.allThroughout.!random.capitalize> %year%, <entity.name> <spice.commonPhrases.ravaged.!random> all of region, ravaging of faction and faction. <entity.subjectPronoun.capitalize> became known as the Region Scourge.",
+      "sample_source": "In %year%, <entity.name> <spice.commonPhrases.ravaged.!random> all of region, ravaging of faction and faction. <entity.subjectPronoun.capitalize> became known as the Region Scourge.",
       "extracted_pattern": "^In\\ (.+?),\\ (.+?)\\ (.+?)\\ all\\ of\\ (.+?),\\ (.+?)\\ of\\ (.+?)\\ and\\ (.+?)\\.\\ (.+?)\\ became\\ known\\ as\\ (?:the\\ )?(.+?)\\ (Scourge|Terror|Bane|Pest|Woe|Sorrow)\\.$",
       "slots": [
         {
@@ -9310,7 +9310,7 @@
       "annal_class": "RampageRegion",
       "switch_case": "gospel",
       "event_property": "gospel",
-      "sample_source": "<spice.commonPhrases.allThroughout.!random.capitalize> %year%, <entity.name> <spice.commonPhrases.ravaged.!random> all of region, ravaging of faction and faction. <entity.subjectPronoun.capitalize> became known as the Region Scourge.",
+      "sample_source": "Throughout %year%, <entity.name> <spice.commonPhrases.ravaged.!random> all of region, ravaging of faction and faction. <entity.subjectPronoun.capitalize> became known as the Region Scourge.",
       "extracted_pattern": "^Throughout\\ (.+?),\\ (.+?)\\ (.+?)\\ all\\ of\\ (.+?),\\ (.+?)\\ of\\ (.+?)\\ and\\ (.+?)\\.\\ (.+?)\\ became\\ known\\ as\\ (?:the\\ )?(.+?)\\ (Scourge|Terror|Bane|Pest|Woe|Sorrow)\\.$",
       "slots": [
         {
@@ -9387,7 +9387,7 @@
       "annal_class": "RampageRegion",
       "switch_case": "gospel",
       "event_property": "gospel",
-      "sample_source": "<spice.commonPhrases.allThroughout.!random.capitalize> %year%, <entity.name> <spice.commonPhrases.ravaged.!random> all of region, ravaging of faction and faction. <entity.subjectPronoun.capitalize> became known as the Region Scourge.",
+      "sample_source": "Throughout the entirety of %year%, <entity.name> <spice.commonPhrases.ravaged.!random> all of region, ravaging of faction and faction. <entity.subjectPronoun.capitalize> became known as the Region Scourge.",
       "extracted_pattern": "^Throughout\\ the\\ entirety\\ of\\ (.+?),\\ (.+?)\\ (.+?)\\ all\\ of\\ (.+?),\\ (.+?)\\ of\\ (.+?)\\ and\\ (.+?)\\.\\ (.+?)\\ became\\ known\\ as\\ (?:the\\ )?(.+?)\\ (Scourge|Terror|Bane|Pest|Woe|Sorrow)\\.$",
       "slots": [
         {
@@ -9464,7 +9464,7 @@
       "annal_class": "RampageRegion",
       "switch_case": "gospel",
       "event_property": "gospel",
-      "sample_source": "<spice.commonPhrases.allThroughout.!random.capitalize> %year%, <entity.name> <spice.commonPhrases.ravaged.!random> all of region, ravaging of faction and faction. <entity.subjectPronoun.capitalize> became known as the Region Scourge.",
+      "sample_source": "Through %year%, <entity.name> <spice.commonPhrases.ravaged.!random> all of region, ravaging of faction and faction. <entity.subjectPronoun.capitalize> became known as the Region Scourge.",
       "extracted_pattern": "^Through\\ (.+?),\\ (.+?)\\ (.+?)\\ all\\ of\\ (.+?),\\ (.+?)\\ of\\ (.+?)\\ and\\ (.+?)\\.\\ (.+?)\\ became\\ known\\ as\\ (?:the\\ )?(.+?)\\ (Scourge|Terror|Bane|Pest|Woe|Sorrow)\\.$",
       "slots": [
         {
@@ -9541,7 +9541,7 @@
       "annal_class": "RampageRegion",
       "switch_case": "gospel",
       "event_property": "gospel",
-      "sample_source": "<spice.commonPhrases.allThroughout.!random.capitalize> %year%, <entity.name> <spice.commonPhrases.ravaged.!random> all of region, ravaging of faction and faction. <entity.subjectPronoun.capitalize> became known as the Region Scourge.",
+      "sample_source": "Around %year%, <entity.name> <spice.commonPhrases.ravaged.!random> all of region, ravaging of faction and faction. <entity.subjectPronoun.capitalize> became known as the Region Scourge.",
       "extracted_pattern": "^Around\\ (.+?),\\ (.+?)\\ (.+?)\\ all\\ of\\ (.+?),\\ (.+?)\\ of\\ (.+?)\\ and\\ (.+?)\\.\\ (.+?)\\ became\\ known\\ as\\ (?:the\\ )?(.+?)\\ (Scourge|Terror|Bane|Pest|Woe|Sorrow)\\.$",
       "slots": [
         {
@@ -9618,7 +9618,7 @@
       "annal_class": "RampageRegion",
       "switch_case": "gospel",
       "event_property": "gospel",
-      "sample_source": "<spice.commonPhrases.allThroughout.!random.capitalize> %year%, <entity.name> <spice.commonPhrases.ravaged.!random> all of region, ravaging of faction and faction. <entity.subjectPronoun.capitalize> became known as cognomen.",
+      "sample_source": "In %year%, <entity.name> <spice.commonPhrases.ravaged.!random> all of region, ravaging of faction and faction. <entity.subjectPronoun.capitalize> became known as cognomen.",
       "extracted_pattern": "^In\\ (.+?),\\ (.+?)\\ (.+?)\\ all\\ of\\ (.+?),\\ (.+?)\\ of\\ (.+?)\\ and\\ (.+?)\\.\\ (.+?)\\ became\\ known\\ as\\ (.+?)\\.$",
       "slots": [
         {
@@ -9689,7 +9689,7 @@
       "annal_class": "RampageRegion",
       "switch_case": "gospel",
       "event_property": "gospel",
-      "sample_source": "<spice.commonPhrases.allThroughout.!random.capitalize> %year%, <entity.name> <spice.commonPhrases.ravaged.!random> all of region, ravaging of faction and faction. <entity.subjectPronoun.capitalize> became known as cognomen.",
+      "sample_source": "Throughout %year%, <entity.name> <spice.commonPhrases.ravaged.!random> all of region, ravaging of faction and faction. <entity.subjectPronoun.capitalize> became known as cognomen.",
       "extracted_pattern": "^Throughout\\ (.+?),\\ (.+?)\\ (.+?)\\ all\\ of\\ (.+?),\\ (.+?)\\ of\\ (.+?)\\ and\\ (.+?)\\.\\ (.+?)\\ became\\ known\\ as\\ (.+?)\\.$",
       "slots": [
         {
@@ -9760,7 +9760,7 @@
       "annal_class": "RampageRegion",
       "switch_case": "gospel",
       "event_property": "gospel",
-      "sample_source": "<spice.commonPhrases.allThroughout.!random.capitalize> %year%, <entity.name> <spice.commonPhrases.ravaged.!random> all of region, ravaging of faction and faction. <entity.subjectPronoun.capitalize> became known as cognomen.",
+      "sample_source": "Throughout the entirety of %year%, <entity.name> <spice.commonPhrases.ravaged.!random> all of region, ravaging of faction and faction. <entity.subjectPronoun.capitalize> became known as cognomen.",
       "extracted_pattern": "^Throughout\\ the\\ entirety\\ of\\ (.+?),\\ (.+?)\\ (.+?)\\ all\\ of\\ (.+?),\\ (.+?)\\ of\\ (.+?)\\ and\\ (.+?)\\.\\ (.+?)\\ became\\ known\\ as\\ (.+?)\\.$",
       "slots": [
         {
@@ -9831,7 +9831,7 @@
       "annal_class": "RampageRegion",
       "switch_case": "gospel",
       "event_property": "gospel",
-      "sample_source": "<spice.commonPhrases.allThroughout.!random.capitalize> %year%, <entity.name> <spice.commonPhrases.ravaged.!random> all of region, ravaging of faction and faction. <entity.subjectPronoun.capitalize> became known as cognomen.",
+      "sample_source": "Through %year%, <entity.name> <spice.commonPhrases.ravaged.!random> all of region, ravaging of faction and faction. <entity.subjectPronoun.capitalize> became known as cognomen.",
       "extracted_pattern": "^Through\\ (.+?),\\ (.+?)\\ (.+?)\\ all\\ of\\ (.+?),\\ (.+?)\\ of\\ (.+?)\\ and\\ (.+?)\\.\\ (.+?)\\ became\\ known\\ as\\ (.+?)\\.$",
       "slots": [
         {
@@ -9902,7 +9902,7 @@
       "annal_class": "RampageRegion",
       "switch_case": "gospel",
       "event_property": "gospel",
-      "sample_source": "<spice.commonPhrases.allThroughout.!random.capitalize> %year%, <entity.name> <spice.commonPhrases.ravaged.!random> all of region, ravaging of faction and faction. <entity.subjectPronoun.capitalize> became known as cognomen.",
+      "sample_source": "Around %year%, <entity.name> <spice.commonPhrases.ravaged.!random> all of region, ravaging of faction and faction. <entity.subjectPronoun.capitalize> became known as cognomen.",
       "extracted_pattern": "^Around\\ (.+?),\\ (.+?)\\ (.+?)\\ all\\ of\\ (.+?),\\ (.+?)\\ of\\ (.+?)\\ and\\ (.+?)\\.\\ (.+?)\\ became\\ known\\ as\\ (.+?)\\.$",
       "slots": [
         {
@@ -9973,7 +9973,7 @@
       "annal_class": "BeyLahSurface",
       "switch_case": "JournalAPI.AddAccomplishment",
       "event_property": "gospel",
-      "sample_source": "<spice.commonPhrases.allThroughout.!random.capitalize> =year=, =name= <spice.commonPhrases.ravaged.!random> the flower fields and brought turmoil to the troubled village of Bey Lah. He became known as the Hindren Scourge.",
+      "sample_source": "In =year=, =name= <spice.commonPhrases.ravaged.!random> the flower fields and brought turmoil to the troubled village of Bey Lah. He became known as the Hindren Scourge.",
       "extracted_pattern": "^In\\ (.+?),\\ (.+?)\\ (.+?)\\ the\\ flower\\ fields\\ and\\ brought\\ turmoil\\ to\\ the\\ troubled\\ village\\ of\\ Bey\\ Lah\\.\\ (.+?)\\ became\\ known\\ as\\ the\\ Hindren\\ (.+?)\\.$",
       "slots": [
         {
@@ -10020,7 +10020,7 @@
       "annal_class": "BeyLahSurface",
       "switch_case": "JournalAPI.AddAccomplishment",
       "event_property": "gospel",
-      "sample_source": "<spice.commonPhrases.allThroughout.!random.capitalize> =year=, =name= <spice.commonPhrases.ravaged.!random> the flower fields and brought turmoil to the troubled village of Bey Lah. He became known as the Hindren Scourge.",
+      "sample_source": "Throughout =year=, =name= <spice.commonPhrases.ravaged.!random> the flower fields and brought turmoil to the troubled village of Bey Lah. He became known as the Hindren Scourge.",
       "extracted_pattern": "^Throughout\\ (.+?),\\ (.+?)\\ (.+?)\\ the\\ flower\\ fields\\ and\\ brought\\ turmoil\\ to\\ the\\ troubled\\ village\\ of\\ Bey\\ Lah\\.\\ (.+?)\\ became\\ known\\ as\\ the\\ Hindren\\ (.+?)\\.$",
       "slots": [
         {
@@ -10067,7 +10067,7 @@
       "annal_class": "BeyLahSurface",
       "switch_case": "JournalAPI.AddAccomplishment",
       "event_property": "gospel",
-      "sample_source": "<spice.commonPhrases.allThroughout.!random.capitalize> =year=, =name= <spice.commonPhrases.ravaged.!random> the flower fields and brought turmoil to the troubled village of Bey Lah. He became known as the Hindren Scourge.",
+      "sample_source": "Throughout the entirety of =year=, =name= <spice.commonPhrases.ravaged.!random> the flower fields and brought turmoil to the troubled village of Bey Lah. He became known as the Hindren Scourge.",
       "extracted_pattern": "^Throughout\\ the\\ entirety\\ of\\ (.+?),\\ (.+?)\\ (.+?)\\ the\\ flower\\ fields\\ and\\ brought\\ turmoil\\ to\\ the\\ troubled\\ village\\ of\\ Bey\\ Lah\\.\\ (.+?)\\ became\\ known\\ as\\ the\\ Hindren\\ (.+?)\\.$",
       "slots": [
         {
@@ -10114,7 +10114,7 @@
       "annal_class": "BeyLahSurface",
       "switch_case": "JournalAPI.AddAccomplishment",
       "event_property": "gospel",
-      "sample_source": "<spice.commonPhrases.allThroughout.!random.capitalize> =year=, =name= <spice.commonPhrases.ravaged.!random> the flower fields and brought turmoil to the troubled village of Bey Lah. He became known as the Hindren Scourge.",
+      "sample_source": "Through =year=, =name= <spice.commonPhrases.ravaged.!random> the flower fields and brought turmoil to the troubled village of Bey Lah. He became known as the Hindren Scourge.",
       "extracted_pattern": "^Through\\ (.+?),\\ (.+?)\\ (.+?)\\ the\\ flower\\ fields\\ and\\ brought\\ turmoil\\ to\\ the\\ troubled\\ village\\ of\\ Bey\\ Lah\\.\\ (.+?)\\ became\\ known\\ as\\ the\\ Hindren\\ (.+?)\\.$",
       "slots": [
         {
@@ -10161,7 +10161,7 @@
       "annal_class": "BeyLahSurface",
       "switch_case": "JournalAPI.AddAccomplishment",
       "event_property": "gospel",
-      "sample_source": "<spice.commonPhrases.allThroughout.!random.capitalize> =year=, =name= <spice.commonPhrases.ravaged.!random> the flower fields and brought turmoil to the troubled village of Bey Lah. He became known as the Hindren Scourge.",
+      "sample_source": "Around =year=, =name= <spice.commonPhrases.ravaged.!random> the flower fields and brought turmoil to the troubled village of Bey Lah. He became known as the Hindren Scourge.",
       "extracted_pattern": "^Around\\ (.+?),\\ (.+?)\\ (.+?)\\ the\\ flower\\ fields\\ and\\ brought\\ turmoil\\ to\\ the\\ troubled\\ village\\ of\\ Bey\\ Lah\\.\\ (.+?)\\ became\\ known\\ as\\ the\\ Hindren\\ (.+?)\\.$",
       "slots": [
         {

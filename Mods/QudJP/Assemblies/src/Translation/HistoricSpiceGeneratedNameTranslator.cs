@@ -334,17 +334,22 @@ internal static class HistoricSpiceGeneratedNameTranslator
 
     internal static bool TryTranslateCapture(string source, out string translated)
     {
-        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        if (TryStripDirectMarkerFromStrippedSource(source, stripped, spans, out translated))
         {
-            translated = markedText;
             return true;
         }
 
-        if (TryTranslateDishName(source, out translated)
-            || TryTranslateCommaSeparatedCognomens(source, out translated)
-            || TryTranslateFakedDeathCognomen(source, out translated)
-            || TryTranslateFestivalName(source, out translated))
+        if (TryTranslateDishName(stripped, out var translatedCore)
+            || TryTranslateCommaSeparatedCognomens(stripped, out translatedCore)
+            || TryTranslateFakedDeathCognomen(stripped, out translatedCore)
+            || TryTranslateFestivalName(stripped, out translatedCore))
         {
+            translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+                translatedCore,
+                spans,
+                stripped.Length,
+                source);
             return true;
         }
 
@@ -354,13 +359,12 @@ internal static class HistoricSpiceGeneratedNameTranslator
 
     internal static bool TryTranslateSultanateYearName(string source, out string translated)
     {
-        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        if (TryStripDirectMarkerFromStrippedSource(source, stripped, spans, out translated))
         {
-            translated = markedText;
             return true;
         }
 
-        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
         var match = SultanateYearNamePattern.Match(stripped);
         if (!match.Success
             || !HistorySpiceComponentLookup.TryTranslateWord(match.Groups["adjective"].Value, out var adjective)
@@ -380,13 +384,12 @@ internal static class HistoricSpiceGeneratedNameTranslator
 
     internal static bool TryTranslateHistoricItemName(string source, out string translated)
     {
-        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        if (TryStripDirectMarkerFromStrippedSource(source, stripped, spans, out translated))
         {
-            translated = markedText;
             return true;
         }
 
-        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
         if (TryTranslateHistoricItemNameCore(stripped, out var translatedCore))
         {
             translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
@@ -403,13 +406,12 @@ internal static class HistoricSpiceGeneratedNameTranslator
 
     internal static bool TryTranslateSultanCultName(string source, out string translated)
     {
-        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        if (TryStripDirectMarkerFromStrippedSource(source, stripped, spans, out translated))
         {
-            translated = markedText;
             return true;
         }
 
-        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
         if (TryTranslateSultanCultNameCore(stripped, out var translatedCore))
         {
             translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
@@ -426,13 +428,12 @@ internal static class HistoricSpiceGeneratedNameTranslator
 
     internal static bool TryTranslateRuinsSiteName(string source, out string translated)
     {
-        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        if (TryStripDirectMarkerFromStrippedSource(source, stripped, spans, out translated))
         {
-            translated = markedText;
             return true;
         }
 
-        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
         if (TryTranslateRuinsSiteNameCore(stripped, out var translatedCore))
         {
             translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
@@ -445,6 +446,26 @@ internal static class HistoricSpiceGeneratedNameTranslator
 
         translated = source;
         return false;
+    }
+
+    private static bool TryStripDirectMarkerFromStrippedSource(
+        string source,
+        string stripped,
+        IReadOnlyList<ColorSpan> spans,
+        out string translated)
+    {
+        if (!MessageFrameTranslator.TryStripDirectTranslationMarker(stripped, out var markedText))
+        {
+            translated = source;
+            return false;
+        }
+
+        translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+            markedText,
+            spans,
+            stripped.Length,
+            source);
+        return true;
     }
 
     private static bool TryTranslateHistoricItemNameCore(string source, out string translated) =>

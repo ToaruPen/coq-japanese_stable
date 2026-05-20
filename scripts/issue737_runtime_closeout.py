@@ -72,6 +72,8 @@ class CloseoutCheck:
     description: str
     observed_patterns: tuple[str, ...]
     failure_patterns: tuple[tuple[str, str], ...]
+    route_patterns: tuple[str, ...] = ()
+    visible_patterns: tuple[str, ...] = ()
     runtime_required: bool = False
 
 
@@ -91,6 +93,8 @@ _CHECKS: tuple[CloseoutCheck, ...] = (
         id="campfire_meal_ingredients",
         description="Campfire meal descriptions no longer expose Issue #737 English ingredient fragments.",
         observed_patterns=("CampfireDescribeMealTranslationPatch", "You toss ", "鍋に放り込み"),
+        route_patterns=("CampfireDescribeMealTranslationPatch",),
+        visible_patterns=("鍋に放り込み",),
         failure_patterns=(
             ("glass berries", "glass berries"),
             ("nip of joined paprika", "nip of joined paprika"),
@@ -101,12 +105,16 @@ _CHECKS: tuple[CloseoutCheck, ...] = (
         id="campfire_preserve_frame",
         description="Campfire preserve output no longer exposes Some/into/serving frame residue.",
         observed_patterns=("CampfirePreserveTranslationPatch", "You preserved", "保存した"),
+        route_patterns=("CampfirePreserveTranslationPatch",),
+        visible_patterns=("保存した",),
         failure_patterns=(("preserve-frame residue", "PRESERVE_FRAME_RESIDUE"),),
     ),
     CloseoutCheck(
         id="sultan_journal_history",
         description="Sultan/journal history no longer exposes Issue #737 generated header/body/date residue.",
         observed_patterns=("JournalSultanNote", "JournalVillageNote", "Sultan Histories", "スルタン", "HISTORY OF"),
+        route_patterns=("JournalSultanNote", "JournalVillageNote", "Sultan Histories"),
+        visible_patterns=("スルタン", "歴史"),
         failure_patterns=(
             ("HISTORY OF", "HISTORY OF"),
             ("with malicious soldering", "with malicious soldering"),
@@ -118,6 +126,8 @@ _CHECKS: tuple[CloseoutCheck, ...] = (
         id="journal_map_note_location",
         description="Journal map-note generated locations no longer expose English settlement/distance residue.",
         observed_patterns=("JournalMapNote", "最後に訪れた", "parasangs", "Stargazerhome"),
+        route_patterns=("JournalMapNote",),
+        visible_patterns=("最後に訪れた",),
         failure_patterns=(
             ("Stargazerhome", "Stargazerhome"),
             ("parasangs-distance", "parasangs "),
@@ -127,6 +137,8 @@ _CHECKS: tuple[CloseoutCheck, ...] = (
         id="journal_relationship_title",
         description="Generated relationship/title fragments no longer expose leader-of-the residue.",
         observed_patterns=("leader of the ", "の指導者"),
+        route_patterns=("Journal",),
+        visible_patterns=("の指導者",),
         failure_patterns=(("leader of the", "leader of the "),),
     ),
     CloseoutCheck(
@@ -323,6 +335,20 @@ def _observed_search_texts(line: str) -> list[str]:
     return [*visible_values, _SOURCE_PROBE_FIELD_PATTERN.sub("", line)]
 
 
+def _observed_context_texts(line: str) -> list[str]:
+    """Return route/context evidence without source payloads."""
+    if "Probe/" not in line:
+        return [line]
+    return [_SOURCE_PROBE_FIELD_PATTERN.sub("", line)]
+
+
+def _observed_visible_texts(line: str) -> list[str]:
+    """Return player-visible probe values, or the full non-probe line."""
+    if "Probe/" not in line:
+        return [line]
+    return _visible_probe_values(line)
+
+
 def _unescape_probe_value(value: str) -> str:
     unescaped = (
         value.replace(r"\'", "'")
@@ -335,11 +361,32 @@ def _unescape_probe_value(value: str) -> str:
 
 
 def _is_observed(check: CloseoutCheck, lines: list[str]) -> bool:
+    if check.route_patterns or check.visible_patterns:
+        return _has_observed_route_context(check, lines) and _has_observed_visible_text(check, lines)
+
     return any(
         pattern in text
         for pattern in check.observed_patterns
         for line in lines
         for text in _observed_search_texts(line)
+    )
+
+
+def _has_observed_route_context(check: CloseoutCheck, lines: list[str]) -> bool:
+    return not check.route_patterns or any(
+        pattern in text
+        for pattern in check.route_patterns
+        for line in lines
+        for text in _observed_context_texts(line)
+    )
+
+
+def _has_observed_visible_text(check: CloseoutCheck, lines: list[str]) -> bool:
+    return not check.visible_patterns or any(
+        pattern in text
+        for pattern in check.visible_patterns
+        for line in lines
+        for text in _observed_visible_texts(line)
     )
 
 

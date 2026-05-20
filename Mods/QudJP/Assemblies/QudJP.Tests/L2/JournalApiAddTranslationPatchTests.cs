@@ -266,6 +266,61 @@ public sealed class JournalApiAddTranslationPatchTests
     }
 
     [Test]
+    public void AddAccomplishment_ReputationBecameLovedEdges_WhenPatched()
+    {
+        WriteExactDictionary(
+            ("the Farmers' Guild", "農夫ギルド"),
+            ("Salt Dunes", "塩砂丘"),
+            ("his", "その"),
+            ("him", "その者"),
+            ("chromatic aura", "色彩のオーラ"));
+        WritePatternDictionary(
+            (
+                "^You became loved among (.+?) and were treated as one of their own\\.$",
+                "{t0}に愛され、その一員として扱われるようになった。"),
+            (
+                "^While wandering around (.+?), =name= stumbled upon a clan of (.+?) performing a secret ritual\\. Because of (.+?) (.+?), they accepted (.+?) into their fold and taught (.+?) their secrets\\.$",
+                "{t0}の辺りをさまよううち、=name=は秘密の儀式を行う{t1}の一族に出くわした。{t2}{t3}ゆえ、彼らは{t4}を仲間に迎え入れ、{t5}に彼らの秘密を授けた。"));
+
+        WithPatchedJournalApi(() =>
+        {
+            DummyJournalApi.AddAccomplishment(
+                "You became loved among the Unknown Guild and were treated as one of their own.",
+                muralText: "While wandering around Nowhere, =name= stumbled upon a clan of the Unknown Guild performing a secret ritual. Because of his chromatic aura, they accepted him into their fold and taught him their secrets.",
+                category: "general");
+            DummyJournalApi.AddAccomplishment(
+                string.Empty,
+                muralText: "   ",
+                gospelText: null,
+                category: "general");
+            DummyJournalApi.AddAccomplishment(
+                "You became loved among {{Y|the Farmers' Guild}} and were treated as one of their own.",
+                category: "general");
+            DummyJournalApi.AddAccomplishment(
+                MessageFrameTranslator.MarkDirectTranslation(
+                    "You became loved among the Farmers' Guild and were treated as one of their own."),
+                category: "general");
+        });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(DummyJournalApi.Accomplishments, Has.Count.EqualTo(3));
+            Assert.That(
+                DummyJournalApi.Accomplishments[0].Text,
+                Is.EqualTo("\u0001Unknown Guildに愛され、その一員として扱われるようになった。"));
+            Assert.That(
+                DummyJournalApi.Accomplishments[0].MuralText,
+                Is.EqualTo("\u0001Nowhereの辺りをさまよううち、=name=は秘密の儀式を行うUnknown Guildの一族に出くわした。その色彩のオーラゆえ、彼らはその者を仲間に迎え入れ、その者に彼らの秘密を授けた。"));
+            Assert.That(
+                DummyJournalApi.Accomplishments[1].Text,
+                Is.EqualTo("\u0001{{Y|農夫ギルド}}に愛され、その一員として扱われるようになった。"));
+            Assert.That(
+                DummyJournalApi.Accomplishments[2].Text,
+                Is.EqualTo("\u0001You became loved among the Farmers' Guild and were treated as one of their own."));
+        });
+    }
+
+    [Test]
     public void AddAccomplishment_TranslatesDynamicQuestCompletionVariants_FromAssets_WhenPatched()
     {
         WriteExactDictionary(
@@ -722,6 +777,24 @@ public sealed class JournalApiAddTranslationPatchTests
     private static string CreateHarmonyId()
     {
         return $"qudjp.tests.{Guid.NewGuid():N}";
+    }
+
+    private static void WithPatchedJournalApi(Action action)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyJournalApi), nameof(DummyJournalApi.AddAccomplishment)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(JournalAccomplishmentAddTranslationPatch), nameof(JournalAccomplishmentAddTranslationPatch.Prefix))),
+                postfix: new HarmonyMethod(RequireMethod(typeof(JournalAccomplishmentAddTranslationPatch), nameof(JournalAccomplishmentAddTranslationPatch.Postfix))));
+            action();
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
     }
 
     private static MethodInfo RequireMethod(Type type, string methodName)

@@ -86,6 +86,19 @@ public sealed class CampfirePreserveTranslationPatchTests
     }
 
     [Test]
+    public void Preserve_TranslatesMixedScriptGeneratedDisplayNames_BeforeAlreadyLocalizedPassThrough()
+    {
+        WriteDisplayNameDictionary(
+            ("クダング's Jewel", "クダングの宝玉"),
+            ("jeweled preserves", "宝玉保存食"));
+
+        AssertPopupMessage(
+            RequireMethod(typeof(DummyCampfirePreserveTarget), nameof(DummyCampfirePreserveTarget.Preserve)),
+            "You preserved:\n\nSome クダング's Jewel into 1 serving of jeweled preserves.",
+            "保存した:\n\nクダングの宝玉少々を1食分の宝玉保存食に保存した。");
+    }
+
+    [Test]
     public void Preserve_TranslatesGeneratedPreservedPopup_WithBackgroundColorPrefix()
     {
         WriteDisplayNameDictionary(

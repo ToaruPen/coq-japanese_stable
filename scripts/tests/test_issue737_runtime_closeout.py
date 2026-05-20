@@ -17,6 +17,17 @@ def _write_log(path: Path, text: str, *, mtime: datetime) -> None:
     os.utime(path, (timestamp, timestamp))
 
 
+def _isolate_default_log_environment(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    *,
+    platform: str = "linux",
+) -> None:
+    monkeypatch.delenv("QUDJP_PLAYER_LOG", raising=False)
+    monkeypatch.setattr(closeout.sys, "platform", platform)
+    monkeypatch.setattr(closeout.Path, "home", staticmethod(lambda: tmp_path))
+
+
 def test_get_default_log_path_uses_first_existing_linux_candidate(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
@@ -26,8 +37,7 @@ def test_get_default_log_path_uses_first_existing_linux_candidate(
     second = tmp_path / ".config" / "CavesOfQud" / "Player.log"
     second.parent.mkdir(parents=True)
     second.write_text("log", encoding="utf-8")
-    monkeypatch.setattr(closeout.sys, "platform", "linux")
-    monkeypatch.setattr(closeout.Path, "home", staticmethod(lambda: tmp_path))
+    _isolate_default_log_environment(tmp_path, monkeypatch)
 
     assert closeout.get_default_log_path() == second
 
@@ -48,9 +58,8 @@ def test_get_default_log_path_prefers_qudjp_player_log(
     env_log.write_text("custom", encoding="utf-8")
     default_log.parent.mkdir(parents=True)
     default_log.write_text("default", encoding="utf-8")
+    _isolate_default_log_environment(tmp_path, monkeypatch)
     monkeypatch.setenv("QUDJP_PLAYER_LOG", str(env_log))
-    monkeypatch.setattr(closeout.sys, "platform", "linux")
-    monkeypatch.setattr(closeout.Path, "home", staticmethod(lambda: tmp_path))
 
     assert closeout.get_default_log_path() == env_log
 
@@ -60,8 +69,8 @@ def test_get_default_log_path_rejects_directory_qudjp_player_log(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """Directory env values are not valid runtime evidence logs."""
+    _isolate_default_log_environment(tmp_path, monkeypatch)
     monkeypatch.setenv("QUDJP_PLAYER_LOG", str(tmp_path))
-    monkeypatch.setattr(closeout.sys, "platform", "linux")
 
     assert closeout.get_default_log_path() is None
 
@@ -87,8 +96,7 @@ def test_main_uses_resolved_default_log_when_log_argument_is_omitted(
         "[QudJP] Build marker: issue737-test, Version: 0.1.0.0\n",
         mtime=datetime(2026, 5, 19, 1, 0, tzinfo=UTC),
     )
-    monkeypatch.setattr(closeout.sys, "platform", "linux")
-    monkeypatch.setattr(closeout.Path, "home", staticmethod(lambda: tmp_path))
+    _isolate_default_log_environment(tmp_path, monkeypatch)
 
     exit_code = closeout.main(
         [
@@ -337,7 +345,8 @@ def test_analyze_log_distinguishes_observed_pass_from_unobserved_route(tmp_path:
         "[QudJP] Build marker: issue737-test, Version: 0.1.0.0\n"
         "[QudJP] DynamicTextProbe/v1: route='CampfireDescribeMealTranslationPatch' "
         "translated='ガラスベリーを鍋に放り込み、かき混ぜた。'\n"
-        "[QudJP] FinalOutputProbe/v1: final='保存した:\\n\\n{{r|生肉}}を3食分の肉ジャーキーに保存した。'",
+        "[QudJP] FinalOutputProbe/v1: route='CampfirePreserveTranslationPatch' "
+        "final='保存した:\\n\\n{{r|生肉}}を3食分の肉ジャーキーに保存した。'",
         mtime=datetime(2026, 5, 19, 1, 0, tzinfo=UTC),
     )
 
@@ -381,10 +390,11 @@ def test_analyze_log_passes_when_all_non_textfilter_routes_are_observed_without_
         "[QudJP] Build marker: issue737-test, Version: 0.1.0.0\n"
         "[QudJP] DynamicTextProbe/v1: route='CampfireDescribeMealTranslationPatch' "
         "translated='ガラスベリーを鍋に放り込み、かき混ぜた。'\n"
-        "[QudJP] FinalOutputProbe/v1: final='保存した:\\n\\n{{r|生肉}}を3食分の肉ジャーキーに保存した。'\n"
+        "[QudJP] FinalOutputProbe/v1: route='CampfirePreserveTranslationPatch' "
+        "final='保存した:\\n\\n{{r|生肉}}を3食分の肉ジャーキーに保存した。'\n"
         "[QudJP] FinalOutputProbe/v1: route='JournalSultanNote' final='スルタンの歴史'\n"
         "[QudJP] FinalOutputProbe/v1: route='JournalMapNote' final='最後に訪れた: 星見の家'\n"
-        "[QudJP] FinalOutputProbe/v1: final='シャッガンナ Pest Flockの指導者'",
+        "[QudJP] FinalOutputProbe/v1: route='JournalRelationshipTitle' final='シャッガンナ Pest Flockの指導者'",
         mtime=datetime(2026, 5, 19, 1, 0, tzinfo=UTC),
     )
 
@@ -465,10 +475,11 @@ def test_analyze_log_rejects_passed_runtime_when_deployment_hash_mismatches(tmp_
         "[QudJP] Build marker: issue737-test, Version: 0.1.0.0\n"
         "[QudJP] DynamicTextProbe/v1: route='CampfireDescribeMealTranslationPatch' "
         "translated='ガラスベリーを鍋に放り込み、かき混ぜた。'\n"
-        "[QudJP] FinalOutputProbe/v1: final='保存した:\\n\\n{{r|生肉}}を3食分の肉ジャーキーに保存した。'\n"
+        "[QudJP] FinalOutputProbe/v1: route='CampfirePreserveTranslationPatch' "
+        "final='保存した:\\n\\n{{r|生肉}}を3食分の肉ジャーキーに保存した。'\n"
         "[QudJP] FinalOutputProbe/v1: route='JournalSultanNote' final='スルタンの歴史'\n"
         "[QudJP] FinalOutputProbe/v1: route='JournalMapNote' final='最後に訪れた: 星見の家'\n"
-        "[QudJP] FinalOutputProbe/v1: final='シャッガンナ Pest Flockの指導者'",
+        "[QudJP] FinalOutputProbe/v1: route='JournalRelationshipTitle' final='シャッガンナ Pest Flockの指導者'",
         mtime=datetime(2026, 5, 19, 1, 0, tzinfo=UTC),
     )
 
@@ -549,10 +560,11 @@ def test_main_require_passed_accepts_passed_report(tmp_path: Path) -> None:
         "[QudJP] Build marker: issue737-test, Version: 0.1.0.0\n"
         "[QudJP] DynamicTextProbe/v1: route='CampfireDescribeMealTranslationPatch' "
         "translated='ガラスベリーを鍋に放り込み、かき混ぜた。'\n"
-        "[QudJP] FinalOutputProbe/v1: final='保存した:\\n\\n{{r|生肉}}を3食分の肉ジャーキーに保存した。'\n"
+        "[QudJP] FinalOutputProbe/v1: route='CampfirePreserveTranslationPatch' "
+        "final='保存した:\\n\\n{{r|生肉}}を3食分の肉ジャーキーに保存した。'\n"
         "[QudJP] FinalOutputProbe/v1: route='JournalSultanNote' final='スルタンの歴史'\n"
         "[QudJP] FinalOutputProbe/v1: route='JournalMapNote' final='最後に訪れた: 星見の家'\n"
-        "[QudJP] FinalOutputProbe/v1: final='シャッガンナ Pest Flockの指導者'",
+        "[QudJP] FinalOutputProbe/v1: route='JournalRelationshipTitle' final='シャッガンナ Pest Flockの指導者'",
         mtime=datetime(2026, 5, 19, 1, 0, tzinfo=UTC),
     )
 

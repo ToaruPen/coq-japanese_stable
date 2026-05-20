@@ -1,5 +1,7 @@
 using System.Reflection;
+using HarmonyLib;
 using QudJP.Patches;
+using QudJP.Tests.DummyTargets;
 
 namespace QudJP.Tests.L2;
 
@@ -22,6 +24,7 @@ public sealed class CampfireCookFromRecipeTranslationPatchTests
         Translator.SetDictionaryDirectoryForTests(tempDictionaryDirectory);
         ScopedDictionaryLookup.ResetForTests();
         DynamicTextObservability.ResetForTests();
+        DummyPopupShow.Reset();
     }
 
     [TearDown]
@@ -52,23 +55,26 @@ public sealed class CampfireCookFromRecipeTranslationPatchTests
         string expected,
         string detail)
     {
-        CampfireCookFromRecipeTranslationPatch.Prefix(out var state);
-        try
+        WithPatchedOwner(() =>
         {
-            var translated = PopupTranslationPatch.TranslatePopupTextForProducerRoute(
-                source,
-                nameof(PopupPickOptionTranslationPatch));
-
-            Assert.Multiple(() =>
+            var target = new DummyCampfireCookFromRecipeTarget
             {
-                Assert.That(translated, Is.EqualTo(expected));
-                Assert.That(HitCount(detail), Is.EqualTo(1));
-            });
-        }
-        finally
-        {
-            CampfireCookFromRecipeTranslationPatch.Finalizer(null, state);
-        }
+                BeforePopup = () =>
+                {
+                    var translated = PopupTranslationPatch.TranslatePopupTextForProducerRoute(
+                        source,
+                        nameof(PopupPickOptionTranslationPatch));
+
+                    Assert.Multiple(() =>
+                    {
+                        Assert.That(translated, Is.EqualTo(expected));
+                        Assert.That(HitCount(detail), Is.EqualTo(1));
+                    });
+                },
+            };
+
+            target.CookFromRecipe();
+        });
     }
 
     [Test]
@@ -368,6 +374,51 @@ public sealed class CampfireCookFromRecipeTranslationPatchTests
             "Popup.Show." + nameof(CampfireCookFromRecipeTranslationPatch) + "." + detail);
     }
 
+    private static void WithPatchedOwner(Action action)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchOwner(harmony);
+            action();
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void PatchOwner(Harmony harmony)
+    {
+        var prefix = new HarmonyMethod(RequireMethod(
+            typeof(CampfireCookFromRecipeTranslationPatch),
+            nameof(CampfireCookFromRecipeTranslationPatch.Prefix),
+            typeof(string).MakeByRefType()));
+        var finalizer = new HarmonyMethod(RequireMethod(
+            typeof(CampfireCookFromRecipeTranslationPatch),
+            nameof(CampfireCookFromRecipeTranslationPatch.Finalizer),
+            typeof(Exception),
+            typeof(string)));
+
+        harmony.Patch(
+            original: RequireMethod(typeof(DummyCampfireCookFromRecipeTarget), nameof(DummyCampfireCookFromRecipeTarget.CookFromRecipe)),
+            prefix: prefix,
+            finalizer: finalizer);
+    }
+
+    private static MethodInfo RequireMethod(Type type, string name, params Type[] parameterTypes)
+    {
+        var method = AccessTools.Method(type, name, parameterTypes);
+        Assert.That(method, Is.Not.Null, $"{type.FullName}.{name} not found");
+        return method!;
+    }
+
+    private static string CreateHarmonyId()
+    {
+        return "qudjp.tests.campfire-cook-from-recipe." + Guid.NewGuid().ToString("N");
+    }
+
     private static string? DirectMarkerPassThroughText()
     {
         var field = typeof(CampfireCookFromRecipeTranslationPatch).GetField(
@@ -375,5 +426,15 @@ public sealed class CampfireCookFromRecipeTranslationPatchTests
             BindingFlags.NonPublic | BindingFlags.Static);
         Assert.That(field, Is.Not.Null);
         return field!.GetValue(null) as string;
+    }
+}
+
+internal sealed class DummyCampfireCookFromRecipeTarget
+{
+    public Action? BeforePopup { get; set; }
+
+    public void CookFromRecipe()
+    {
+        BeforePopup?.Invoke();
     }
 }

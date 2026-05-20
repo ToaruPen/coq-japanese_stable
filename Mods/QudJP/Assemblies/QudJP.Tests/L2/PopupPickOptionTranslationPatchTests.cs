@@ -322,6 +322,11 @@ public sealed class PopupPickOptionTranslationPatchTests
                 Is.EqualTo("{{W|[a]}} {{y|なめらか粥を食べる}}"));
             Assert.That(
                 SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[a]}} {{y|Eat {{Y|クダング's Jewel}}}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[a]}} {{y|Eat {{Y|クダング's Jewel}}}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
                     "{{W|[a]}} {{y|Eat Apple Matz.}}",
                     "InventoryActionMenu:ABC123"),
                 Is.EqualTo("{{W|[a]}} {{y|アップルマッツァを食べる}}"));

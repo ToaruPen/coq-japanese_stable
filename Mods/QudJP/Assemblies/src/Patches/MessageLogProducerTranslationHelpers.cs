@@ -66,7 +66,7 @@ internal static class MessageLogProducerTranslationHelpers
         "reach",
     };
 
-    private static readonly string[] CompactHistorySpicePlaceSuffixes =
+    private static readonly HashSet<string> CompactHistorySpicePlaceSuffixes = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
     {
         "home",
     };
@@ -489,27 +489,41 @@ internal static class MessageLogProducerTranslationHelpers
 
     private static bool TryTranslateCompactHistorySpicePlaceSuffixSegment(string source, out string translated)
     {
-        for (var index = 0; index < CompactHistorySpicePlaceSuffixes.Length; index++)
+        if (!TrySplitCompactHistorySpicePlaceSuffix(source, out var root, out var suffix)
+            || !TryTranslateZoneNameComponent(root, out var translatedRoot)
+            || !TryTranslateZoneNameComponent(suffix, out var translatedSuffix))
         {
-            var suffix = CompactHistorySpicePlaceSuffixes[index];
-            if (source.Length <= suffix.Length
-                || !source.EndsWith(suffix, StringComparison.OrdinalIgnoreCase))
-            {
-                continue;
-            }
+            translated = source;
+            return false;
+        }
 
-            var root = source.Substring(0, source.Length - suffix.Length);
-            if (!TryTranslateZoneNameComponent(root, out var translatedRoot)
-                || !TryTranslateZoneNameComponent(suffix, out var translatedSuffix))
-            {
-                continue;
-            }
+        translated = translatedRoot + "の" + translatedSuffix;
+        return true;
+    }
 
-            translated = translatedRoot + "の" + translatedSuffix;
+    private static bool TrySplitCompactHistorySpicePlaceSuffix(string source, out string root, out string suffix)
+    {
+        if (TrySplitTrailingWord(source, out root, out suffix)
+            && CompactHistorySpicePlaceSuffixes.Contains(suffix))
+        {
             return true;
         }
 
-        translated = source;
+        // HistorySpice also emits compact names such as "Stargazerhome"; keep
+        // this path gated by translated root and suffix components.
+        foreach (var candidateSuffix in CompactHistorySpicePlaceSuffixes)
+        {
+            if (source.Length > candidateSuffix.Length
+                && source.EndsWith(candidateSuffix, StringComparison.OrdinalIgnoreCase))
+            {
+                root = source.Substring(0, source.Length - candidateSuffix.Length);
+                suffix = candidateSuffix;
+                return true;
+            }
+        }
+
+        root = string.Empty;
+        suffix = string.Empty;
         return false;
     }
 

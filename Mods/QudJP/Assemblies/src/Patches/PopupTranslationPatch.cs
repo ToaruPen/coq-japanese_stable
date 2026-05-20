@@ -20,8 +20,8 @@ public static class PopupTranslationPatch
     private const string InventoryActionMenuPopupIdPrefix = "InventoryActionMenu:";
     private const string InventoryActionContext = "XRL.World.IInventoryActionsEvent";
     private const string InventoryActionDictionaryFile = "ui-inventory-actions.ja.json";
-    private static readonly Regex JapaneseCharacterPattern =
-        new Regex("[\\p{IsHiragana}\\p{IsKatakana}\\p{IsCJKUnifiedIdeographs}]", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex AsciiLetterPattern =
+        new Regex("[A-Za-z]", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex HotkeyLabelPattern =
         new Regex("^\\[(?<hotkey>[^\\]]+)\\]\\s+(?<label>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex PlainHotkeyLabelPattern =
@@ -1422,7 +1422,7 @@ public static class PopupTranslationPatch
 
         var translatedMeal = TranslateCookingRecipeNameForInventoryActionMenu(meal);
         if (translatedMeal.Length == 0
-            || (string.Equals(translatedMeal, meal, StringComparison.Ordinal) && !ContainsJapaneseCharacters(meal)))
+            || (string.Equals(translatedMeal, meal, StringComparison.Ordinal) && ContainsAsciiLetters(meal)))
         {
             return false;
         }
@@ -1456,9 +1456,9 @@ public static class PopupTranslationPatch
         return meal;
     }
 
-    private static bool ContainsJapaneseCharacters(string source)
+    private static bool ContainsAsciiLetters(string source)
     {
-        return JapaneseCharacterPattern.IsMatch(source);
+        return AsciiLetterPattern.IsMatch(source);
     }
 
     internal static bool IsInventoryActionMenuPopup(string? popupId)

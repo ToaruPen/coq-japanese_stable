@@ -227,7 +227,7 @@ public sealed class CampfireNostrumsTranslationPatchTests
     }
 
     [Test]
-    public void Patch_TranslatesDirectMarkedPickGameObjectTitle_WhenOwnerActive()
+    public void Patch_StripsDirectMarkedPickGameObjectTitleWithoutRetranslating_WhenOwnerActive()
     {
         CampfireNostrumsTranslationPatch.Prefix();
         try
@@ -241,7 +241,7 @@ public sealed class CampfireNostrumsTranslationPatchTests
             Assert.Multiple(() =>
             {
                 Assert.That(handled, Is.True);
-                Assert.That(translated, Is.EqualTo("最初に誰を治療する？"));
+                Assert.That(translated, Is.EqualTo("Treat whom first?"));
                 Assert.That(PickGameObjectTitleHitCount(), Is.EqualTo(1));
             });
         }
