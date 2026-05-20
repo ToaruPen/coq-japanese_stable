@@ -566,7 +566,7 @@ Current reproduced vocabulary counts:
   `410 / 479` (`85.59%`).
   `spice.instancesOf.unfortunately.*`, `spice.instancesOf.unseated.*`,
   `spice.instancesOf.venerated.*`, `spice.instancesOf.villageActivityAdj.*`,
-  `spice.instancesOf.warrior*`, `spice.instancesOf.willYou.*`,
+  `spice.instancesOf.warrior.*`, `spice.instancesOf.willYou.*`,
   `spice.instancesOf.wouldLikeTo.*`, and `spice.instancesOf.yeGodless.*` are
   now directly covered as one unfortunate/warrior/request/exclamation instance
   component unit, including `unfortunately`, `sadly`, `unseated`, `ousted`,
@@ -755,6 +755,11 @@ if [ -z "$LOG" ]; then
       done
       ;;
   esac
+fi
+
+if [ -z "$LOG" ]; then
+  echo "Player.log not found; set QUDJP_PLAYER_LOG to the runtime log path." >&2
+  exit 1
 fi
 
 just issue737-runtime-closeout

@@ -209,7 +209,7 @@ internal static class ColorAwareTranslationComposer
             translatedValue,
             spans,
             sourceLength);
-        return RestoreLeadingAmpersandColor(source, restored);
+        return RestoreLeadingInlineColor(source, restored);
     }
 
     internal static IReadOnlyList<ColorSpan> WithoutTrueWholeSourceBoundarySpans(
@@ -781,17 +781,23 @@ internal static class ColorAwareTranslationComposer
         return false;
     }
 
-    private static string RestoreLeadingAmpersandColor(string? source, string translated)
+    private static string RestoreLeadingInlineColor(string? source, string translated)
     {
         if (string.IsNullOrEmpty(source)
             || source!.Length < 2
-            || source[0] != '&'
-            || translated.StartsWith("&", StringComparison.Ordinal))
+            || (source[0] != '&' && source[0] != '^'))
         {
             return translated;
         }
 
-        return IsNonEscapedInlineFormattingCode('&', source[1])
+        if (translated.Length >= 2
+            && translated[0] == source[0]
+            && IsNonEscapedInlineFormattingCode(translated[0], translated[1]))
+        {
+            return translated;
+        }
+
+        return IsNonEscapedInlineFormattingCode(source[0], source[1])
             ? source.Substring(0, 2) + translated
             : translated;
     }

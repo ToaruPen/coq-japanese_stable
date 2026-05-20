@@ -130,10 +130,16 @@ internal static class CookingIngredientFragmentTranslator
             return false;
         }
 
-        if (!TryTranslateNonPossessiveIngredientName(match.Groups["owner"].Value, out var owner))
+        var ownerGroup = match.Groups["owner"];
+        if (!TryTranslateNonPossessiveIngredientName(ownerGroup.Value, out var owner))
         {
-            owner = match.Groups["owner"].Value;
+            owner = ownerGroup.Value;
         }
+
+        owner = ColorAwareTranslationComposer.RestoreCaptureWholeBoundaryWrappersPreservingTranslatedOwnership(
+            owner,
+            spans,
+            ownerGroup);
 
         if (!TryTranslateBodyPartName(match.Groups["part"].Value, out var part))
         {

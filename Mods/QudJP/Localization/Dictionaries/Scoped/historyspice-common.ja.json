@@ -1,5 +1,15 @@
 {
   "entries": [
+    { "key": "In", "text": "年" },
+    { "key": "in", "text": "年" },
+    { "key": "Throughout", "text": "年を通じて" },
+    { "key": "throughout", "text": "年を通じて" },
+    { "key": "Throughout the entirety of", "text": "年全体を通じて" },
+    { "key": "throughout the entirety of", "text": "年全体を通じて" },
+    { "key": "Through", "text": "年を通じて" },
+    { "key": "through", "text": "年を通じて" },
+    { "key": "Around", "text": "年頃" },
+    { "key": "around", "text": "年頃" },
     { "key": "someone", "text": "誰か" },
     { "key": "somebody", "text": "誰か" },
     { "key": "a mysterious person", "text": "謎の人物" },

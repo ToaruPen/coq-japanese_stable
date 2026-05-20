@@ -886,6 +886,8 @@ public sealed class JournalPatternTranslatorTests
             "historyspice-route-grammar-l1.ja.json",
             new[]
             {
+                ("Throughout", "年を通じて"),
+                ("Around", "年頃"),
                 ("flower fields", "花畑"),
                 ("Bey Lah", "ベイ・ラー"),
                 ("Hindren", "ヒンドレン"),
@@ -905,12 +907,12 @@ public sealed class JournalPatternTranslatorTests
                 Assert.That(
                     JournalPatternTranslator.Translate(
                         "Throughout 1001, =name= ravaged the flower fields and brought turmoil to the troubled village of Bey Lah. He became known as the Hindren Scourge."),
-                    Is.EqualTo("1001年、=name=は花畑を荒らしたうえ、悩めるベイ・ラーの村に混乱をもたらした。"
+                    Is.EqualTo("1001年を通じて、=name=は花畑を荒らしたうえ、悩めるベイ・ラーの村に混乱をもたらした。"
                         + "その者は以後ヒンドレンの災厄として知られるようになった。"));
                 Assert.That(
                     JournalPatternTranslator.Translate(
                         "Around 1001, =name= ravaged the flower fields and brought turmoil to the troubled village of Bey Lah. He became known as the Hindren Scourge."),
-                    Is.EqualTo("1001年、=name=は花畑を荒らしたうえ、悩めるベイ・ラーの村に混乱をもたらした。"
+                    Is.EqualTo("1001年頃、=name=は花畑を荒らしたうえ、悩めるベイ・ラーの村に混乱をもたらした。"
                         + "その者は以後ヒンドレンの災厄として知られるようになった。"));
                 Assert.That(
                     JournalPatternTranslator.Translate(
