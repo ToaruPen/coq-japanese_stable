@@ -19,6 +19,8 @@ public static class PopupTranslationPatch
     private const string InventoryActionMenuPopupIdPrefix = "InventoryActionMenu:";
     private const string InventoryActionContext = "XRL.World.IInventoryActionsEvent";
     private const string InventoryActionDictionaryFile = "ui-inventory-actions.ja.json";
+    private static readonly Regex JapaneseCharacterPattern =
+        new Regex("[\\p{IsHiragana}\\p{IsKatakana}\\p{IsCJKUnifiedIdeographs}]", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex HotkeyLabelPattern =
         new Regex("^\\[(?<hotkey>[^\\]]+)\\]\\s+(?<label>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex PlainHotkeyLabelPattern =
@@ -1513,7 +1515,14 @@ public static class PopupTranslationPatch
             meal = meal.Substring(0, meal.Length - 1).TrimEnd();
         }
 
-        translated = TranslateCookingRecipeNameForInventoryActionMenu(meal) + "を食べる";
+        var translatedMeal = TranslateCookingRecipeNameForInventoryActionMenu(meal);
+        if (translatedMeal.Length == 0
+            || (string.Equals(translatedMeal, meal, StringComparison.Ordinal) && !ContainsJapaneseCharacters(meal)))
+        {
+            return false;
+        }
+
+        translated = translatedMeal + "を食べる";
         return true;
     }
 
@@ -1545,6 +1554,11 @@ public static class PopupTranslationPatch
             "The Porridge" => "粥",
             _ => meal,
         };
+    }
+
+    private static bool ContainsJapaneseCharacters(string source)
+    {
+        return JapaneseCharacterPattern.IsMatch(source);
     }
 
     internal static bool IsInventoryActionMenuPopup(string? popupId)

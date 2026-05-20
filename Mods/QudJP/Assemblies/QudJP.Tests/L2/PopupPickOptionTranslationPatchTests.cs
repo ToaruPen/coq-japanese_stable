@@ -320,6 +320,11 @@ public sealed class PopupPickOptionTranslationPatchTests
                     "{{W|[a]}} {{y|Eat {{Y|なめらか粥}}}}",
                     "InventoryActionMenu:ABC123"),
                 Is.EqualTo("{{W|[a]}} {{y|なめらか粥を食べる}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[a]}} {{y|Eat {{Y|Uncatalogued Feast}}}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[a]}} {{y|Eat {{Y|Uncatalogued Feast}}}}"));
         });
     }
 

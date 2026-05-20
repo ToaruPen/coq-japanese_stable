@@ -507,6 +507,12 @@ public static class WaterRitualPopupTranslationPatch
             return true;
         }
 
+        if (marked)
+        {
+            translated = sourceValue;
+            return true;
+        }
+
         translated = source;
         return false;
     }
