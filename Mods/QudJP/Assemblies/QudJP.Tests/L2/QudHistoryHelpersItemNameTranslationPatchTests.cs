@@ -28,7 +28,7 @@ public sealed class QudHistoryHelpersItemNameTranslationPatchTests
         ScopedDictionaryLookup.ResetForTests();
         DynamicTextObservability.ResetForTests();
         RuntimeDiagnostics.SetVerboseProbesEnabledForTests(true);
-        DummyQudHistoryHelpersTarget.HistoricItemNameResult = string.Empty;
+        DummyQudHistoryHelpersTarget.ResetForTests();
     }
 
     [TearDown]
@@ -38,7 +38,7 @@ public sealed class QudHistoryHelpersItemNameTranslationPatchTests
         ScopedDictionaryLookup.ResetForTests();
         DynamicTextObservability.ResetForTests();
         RuntimeDiagnostics.SetVerboseProbesEnabledForTests(null);
-        DummyQudHistoryHelpersTarget.HistoricItemNameResult = string.Empty;
+        DummyQudHistoryHelpersTarget.ResetForTests();
 
         if (Directory.Exists(tempDirectory))
         {

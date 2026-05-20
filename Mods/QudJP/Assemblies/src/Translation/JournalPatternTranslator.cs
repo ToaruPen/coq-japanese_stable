@@ -51,7 +51,7 @@ internal static class JournalPatternTranslator
     private static readonly Regex PopularRivalMurderReasonPattern =
         new Regex("^after murdering a popular rival (?<method>with .+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.IgnoreCase);
     private static readonly Regex VisageReasonPattern =
-        new Regex("^(?:(?<owner>.+?)の )?(?<adjective>.+?) visage$", RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        new Regex("^(?:(?<owner>.+?)(?:'s |の ))?(?<adjective>.+?) visage$", RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.IgnoreCase);
     private static readonly Regex JapaneseCharacterPattern =
         new Regex("[\\p{IsHiragana}\\p{IsKatakana}\\p{IsCJKUnifiedIdeographs}]", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 

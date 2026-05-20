@@ -28,7 +28,7 @@ public sealed class SultanateYearNameTranslationPatchTests
         ScopedDictionaryLookup.ResetForTests();
         DynamicTextObservability.ResetForTests();
         RuntimeDiagnostics.SetVerboseProbesEnabledForTests(true);
-        DummyQudHistoryHelpersTarget.SultanateYearNameResult = string.Empty;
+        DummyQudHistoryHelpersTarget.ResetForTests();
     }
 
     [TearDown]
@@ -38,7 +38,7 @@ public sealed class SultanateYearNameTranslationPatchTests
         ScopedDictionaryLookup.ResetForTests();
         DynamicTextObservability.ResetForTests();
         RuntimeDiagnostics.SetVerboseProbesEnabledForTests(null);
-        DummyQudHistoryHelpersTarget.SultanateYearNameResult = string.Empty;
+        DummyQudHistoryHelpersTarget.ResetForTests();
 
         if (Directory.Exists(tempDirectory))
         {

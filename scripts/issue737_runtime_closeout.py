@@ -51,6 +51,8 @@ def get_default_log_path() -> Path | None:
         if candidate.is_file():
             return candidate
     return None
+
+
 _VISIBLE_PROBE_FIELD_PATTERN = re.compile(
     r"\b(?:final|translated)='(?P<single>(?:\\'|[^'])*)'|"
     r'\b(?:final|translated)="(?P<double>(?:\\"|[^"])*)"',

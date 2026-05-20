@@ -7,6 +7,12 @@ internal static class DummyQudHistoryHelpersTarget
     internal static string SultanateYearNameResult { get; set; } = string.Empty;
     internal static string HistoricItemNameResult { get; set; } = string.Empty;
 
+    internal static void ResetForTests()
+    {
+        SultanateYearNameResult = string.Empty;
+        HistoricItemNameResult = string.Empty;
+    }
+
     [MethodImpl(MethodImplOptions.NoInlining)]
     public static string GenerateSultanateYearName()
     {

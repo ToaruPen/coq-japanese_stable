@@ -125,6 +125,17 @@ public sealed class QudHistoryFactoryGeneratedNameTranslationPatchTests
     public void NameRuinsSitePostfix_StripsDirectMarker_WhenPatched()
     {
         WriteDictionaryFile("Scoped/historyspice-common.ja.json", ("red", "赤"), ("wastes", "荒野"));
+        var unmarkedResult = "red wastes Ibul";
+
+        QudHistoryFactoryNameRuinsSiteTranslationPatch.Postfix(ref unmarkedResult);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(unmarkedResult, Is.EqualTo("赤の荒野Ibul"));
+            Assert.That(RuinsRouteHitCount(), Is.EqualTo(1));
+        });
+
+        DynamicTextObservability.ResetForTests();
         var result = MessageFrameTranslator.DirectTranslationMarker + "red wastes Ibul";
 
         QudHistoryFactoryNameRuinsSiteTranslationPatch.Postfix(ref result);
@@ -231,6 +242,18 @@ public sealed class QudHistoryFactoryGeneratedNameTranslationPatchTests
     {
         WriteDictionaryFile("Scoped/historyspice-common.ja.json", ("gleaming", "煌めき"), ("ghost", "幽鬼"));
         WriteDictionaryFile("world-gospels.ja.json", ("cult", "教団"));
+        var unmarkedEntity = new DummyHistoricEntity();
+        unmarkedEntity.SeedProperty("cultName", "Cult of the Gleaming Ghost");
+
+        QudHistoryFactoryGenerateCultNameTranslationPatch.Postfix(unmarkedEntity);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(unmarkedEntity.GetCurrentSnapshot().GetProperty("cultName"), Is.EqualTo("煌めき幽鬼の教団"));
+            Assert.That(CultRouteHitCount(), Is.EqualTo(1));
+        });
+
+        DynamicTextObservability.ResetForTests();
         var entity = new DummyHistoricEntity();
         entity.SeedProperty("cultName", MessageFrameTranslator.DirectTranslationMarker + "Cult of the Gleaming Ghost");
 

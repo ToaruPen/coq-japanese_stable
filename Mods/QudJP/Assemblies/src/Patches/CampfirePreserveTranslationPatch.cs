@@ -214,11 +214,6 @@ public static class CampfirePreserveTranslationPatch
             return TranslatePreservedSource(restored);
         }
 
-        if (SomeSourcePattern.IsMatch(restored))
-        {
-            return TranslatePreservedSource(restored) + trailingColor;
-        }
-
         return TranslatePreservedSource(restored) + trailingColor;
     }
 
