@@ -179,7 +179,10 @@ public static class CampfireNostrumsTranslationPatch
             return false;
         }
 
-        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        var visibleSource = MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText)
+            ? markedText
+            : source;
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(visibleSource);
         var translatedCore = stripped switch
         {
             "Treat whom first?" => "最初に誰を治療する？",
@@ -198,7 +201,7 @@ public static class CampfireNostrumsTranslationPatch
             translatedCore,
             spans,
             stripped.Length,
-            source);
+            visibleSource);
         DynamicTextObservability.RecordTransform(route, family + "." + Context + ".PickGameObjectTitle", source, translated);
         return true;
     }

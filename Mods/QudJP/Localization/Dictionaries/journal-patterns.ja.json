@@ -338,12 +338,12 @@
     },
     {
       "pattern": "^While traveling in (.+?), =name= performed a sacred ritual with (.+?), imbuing (.+?) with life and arranging (.+?) (.+?)\\. Many of the local denizens declared it a miracle\\. Some weren't so sure\\.$",
-      "template": "{t0}を旅する中で、=name=は{t1}を用いて神聖な儀式を行い、それに命を吹き込み、{t4}よう整えた。地元の多くの住民はそれを奇跡だと宣言した。疑う者もいた。",
+      "template": "{t0}を旅する中で、=name=は{t1}を用いて神聖な儀式を行い、{t2}に命を吹き込み、{t3}を{t4}よう整えた。地元の多くの住民はそれを奇跡だと宣言した。疑う者もいた。",
       "route": "journal"
     },
     {
       "pattern": "^While traveling in (.+?), =name= performed a sacred ritual with (.+?), imbuing (.+?) with life and arranging (.+?) (.+?)\\. Many of the local denizens declared it a miracle\\.$",
-      "template": "{t0}を旅する中で、=name=は{t1}を用いて神聖な儀式を行い、それに命を吹き込み、{t4}よう整えた。地元の多くの住民はそれを奇跡だと宣言した。",
+      "template": "{t0}を旅する中で、=name=は{t1}を用いて神聖な儀式を行い、{t2}に命を吹き込み、{t3}を{t4}よう整えた。地元の多くの住民はそれを奇跡だと宣言した。",
       "route": "journal"
     },
     {

@@ -378,7 +378,7 @@ Current reproduced vocabulary counts:
   `spice.commonPhrases.shortHearth.*`, `spice.commonPhrases.starapplefarm.*`,
   `spice.commonPhrases.yard.*`, and `spice.commonPhrases.yearsAgo.*` are now
   directly covered as one place/time common-phrase unit, including `holme`,
-  `orchard`, `grove`, `yard`, `fold`, ` quadrangle`, `quad`, `years ago`,
+  `orchard`, `grove`, `yard`, `fold`, `quadrangle`, `quad`, `years ago`,
   `beyond the gulf of time`, `back when the musa was perpetually ripe`,
   `early in the days after the reign of Resheph`, and `long ago`; existing HSE
   coverage keeps `home`, `<^.farm.!random>`, and `square` as owners for those
@@ -714,7 +714,7 @@ The post-sync runtime check should confirm:
   ingredient fragments `glass berries`, `nip of joined paprika`, or
   `chameleon horn`.
 - Campfire preserve output no longer exposes the original preserve-frame
-  residue `Some`, ` into `, or ` serving` in the `You preserved:` message-log
+  residue `Some`, ' into ', or `serving` in the `You preserved:` message-log
   and popup outputs.
 - Sultan/journal history output no longer exposes the original generated
   header/body/date residue `HISTORY OF`, `with malicious soldering`,
@@ -758,7 +758,7 @@ uv run python scripts/issue737_runtime_closeout.py \
 
 The `rg` command is expected to be interpreted with route context: a hit on
 `You preserved` alone is not a failure, while hits that still contain `Some`,
-` into `, or ` serving` in the preserve frame remain a failure for this issue.
+' into ', or `serving` in the preserve frame remain a failure for this issue.
 The dedicated closeout checker reports `stale` when the log predates the
 deployment, `failed` when original Issue #737 residue is still observed,
 `unobserved` when the fresh log does not replay every affected route, and

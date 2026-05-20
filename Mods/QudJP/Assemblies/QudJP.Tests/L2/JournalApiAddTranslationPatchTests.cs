@@ -390,8 +390,8 @@ public sealed class JournalApiAddTranslationPatchTests
                 Assert.That(DummyJournalApi.Accomplishments[0].MuralText, Is.EqualTo("\u0001ウト・ヤラ・ウクスの第5日、=name=はジョッパに到着し、あなたのクッドを巡る驚異的な旅路を始めた。"));
                 Assert.That(DummyJournalApi.Accomplishments[0].GospelText, Is.EqualTo("\u0001<spice.time.partsOfDay.!random>、<spice.commonPhrases.strange.!random.article>と空色の空の下で、ジョッパの民は地平線に空色を浴びた幽鬼のような姿を見た。それは=name=だった。その者が来て去った後、ジョッパの民は=name=の記念碑を建て、以後その者を空色の幽鬼と呼んだ。"));
                 Assert.That(DummyJournalApi.Accomplishments[1].Text, Is.EqualTo("\u0001椅子に命を吹き込んだ。なぜ？"));
-                Assert.That(DummyJournalApi.Accomplishments[1].MuralText, Is.EqualTo("\u0001ジョッパを旅する中で、=name=は椅子を用いて神聖な儀式を行い、それに命を吹き込み、象牙色の四肢を持つよう整えた。地元の多くの住民はそれを奇跡だと宣言した。疑う者もいた。"));
-                Assert.That(DummyJournalApi.Accomplishments[1].GospelText, Is.EqualTo("\u0001ジョッパを旅する中で、=name=は椅子を用いて神聖な儀式を行い、それに命を吹き込み、象牙色の四肢を持つよう整えた。地元の多くの住民はそれを奇跡だと宣言した。"));
+                Assert.That(DummyJournalApi.Accomplishments[1].MuralText, Is.EqualTo("\u0001ジョッパを旅する中で、=name=は椅子を用いて神聖な儀式を行い、それに命を吹き込み、それを象牙色の四肢を持つよう整えた。地元の多くの住民はそれを奇跡だと宣言した。疑う者もいた。"));
+                Assert.That(DummyJournalApi.Accomplishments[1].GospelText, Is.EqualTo("\u0001ジョッパを旅する中で、=name=は椅子を用いて神聖な儀式を行い、それに命を吹き込み、それを象牙色の四肢を持つよう整えた。地元の多くの住民はそれを奇跡だと宣言した。"));
                 Assert.That(DummyJournalApi.Accomplishments[2].Text, Is.EqualTo("\u0001ゴルゴタに旅した。"));
                 Assert.That(DummyJournalApi.Accomplishments[2].MuralText, Is.EqualTo("\u00011012年ウト・ヤラ・ウクス、=name=は勝利を得て粘液を浴びながら、ゴルゴタの廃棄物シュートを登った。"));
                 Assert.That(DummyJournalApi.Accomplishments[2].GospelText, Is.EqualTo("\u0001ジャングルのある吉日、=name=はゴルゴタの廃棄物シュートを下り、粘つく粘液を浴びた。その日以来、その者は常に濡れたごみをあなたの身につけていた。"));

@@ -166,6 +166,7 @@ public sealed class HistoricSpiceGeneratedNameTranslatorTests
     [TestCase("Gleaming Ghost Cult", "煌めき幽鬼の教団")]
     [TestCase("Cult of Resheph", "Reshephの教団")]
     [TestCase("Ibulian Cult", "Ibul派の教団")]
+    [TestCase("Gleamingian Cult", "煌めき派の教団")]
     [TestCase("2nd Ibulian Cult", "2nd Ibul派の教団")]
     public void TryTranslateSultanCultName_TranslatesGeneratedCultNameFrames(string source, string expected)
     {
@@ -200,6 +201,7 @@ public sealed class HistoricSpiceGeneratedNameTranslatorTests
     [TestCase("Ibul wastes", "Ibul荒野")]
     [TestCase("the red Ibul", "赤のIbul")]
     [TestCase("red wastes Ibul", "赤の荒野Ibul")]
+    [TestCase("red Salt Dunes", "赤のSalt Dunes")]
     public void TryTranslateRuinsSiteName_TranslatesGeneratedSiteModifierFrames(string source, string expected)
     {
         WriteDictionaryFile("Scoped/historyspice-common.ja.json", ("red", "赤"), ("wastes", "荒野"));

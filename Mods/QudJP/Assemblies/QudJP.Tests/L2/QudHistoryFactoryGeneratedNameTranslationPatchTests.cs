@@ -83,6 +83,8 @@ public sealed class QudHistoryFactoryGeneratedNameTranslationPatchTests
 
     [TestCase("Ibul")]
     [TestCase("some forgotten ruins")]
+    [TestCase("")]
+    [TestCase("\u0001red wastes Ibul")]
     public void NameRuinsSitePostfix_LeavesProperAndFallbackNamesUnchanged_WhenPatched(string source)
     {
         WriteDictionaryFile("Scoped/historyspice-common.ja.json", ("red", "赤"), ("wastes", "荒野"));
@@ -118,8 +120,25 @@ public sealed class QudHistoryFactoryGeneratedNameTranslationPatchTests
         }
     }
 
+    [Test]
+    public void NameRuinsSitePostfix_PreservesColorTags_WhenPatched()
+    {
+        WriteDictionaryFile("Scoped/historyspice-common.ja.json", ("red", "赤"), ("wastes", "荒野"));
+        var source = "{{R|red wastes Ibul}}";
+        var result = source;
+
+        QudHistoryFactoryNameRuinsSiteTranslationPatch.Postfix(ref result);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.EqualTo("{{R|赤の荒野Ibul}}"));
+            Assert.That(RuinsRouteHitCount(), Is.EqualTo(1));
+        });
+    }
+
     [TestCase("Cult of the Gleaming Ghost", "煌めき幽鬼の教団")]
     [TestCase("Ibulian Cult", "Ibul派の教団")]
+    [TestCase("Gleamingian Cult", "煌めき派の教団")]
     public void GenerateCultNamePostfix_TranslatesStoredCultName_WhenPatched(string source, string expected)
     {
         WriteDictionaryFile("Scoped/historyspice-common.ja.json", ("gleaming", "煌めき"), ("ghost", "幽鬼"));
@@ -155,11 +174,13 @@ public sealed class QudHistoryFactoryGeneratedNameTranslationPatchTests
         }
     }
 
-    [Test]
-    public void GenerateCultNamePostfix_LeavesUnknownCultNameUnchanged_WhenPatched()
+    [TestCase("Mystery of the Unknown Ghost")]
+    [TestCase("")]
+    [TestCase("\u0001Cult of the Gleaming Ghost")]
+    public void GenerateCultNamePostfix_LeavesUnknownCultNameUnchanged_WhenPatched(string source)
     {
         var entity = new DummyHistoricEntity();
-        entity.SeedProperty("cultName", "Mystery of the Unknown Ghost");
+        entity.SeedProperty("cultName", source);
         var harmonyId = "qudjp-test-history-factory-cult-" + Guid.NewGuid().ToString("N");
         var harmony = new Harmony(harmonyId);
         try
@@ -179,7 +200,7 @@ public sealed class QudHistoryFactoryGeneratedNameTranslationPatchTests
 
             Assert.Multiple(() =>
             {
-                Assert.That(entity.GetCurrentSnapshot().GetProperty("cultName"), Is.EqualTo("Mystery of the Unknown Ghost"));
+                Assert.That(entity.GetCurrentSnapshot().GetProperty("cultName"), Is.EqualTo(source));
                 Assert.That(CultRouteHitCount(), Is.Zero);
             });
         }
@@ -187,6 +208,23 @@ public sealed class QudHistoryFactoryGeneratedNameTranslationPatchTests
         {
             harmony.UnpatchAll(harmonyId);
         }
+    }
+
+    [Test]
+    public void GenerateCultNamePostfix_PreservesColorTags_WhenPatched()
+    {
+        WriteDictionaryFile("Scoped/historyspice-common.ja.json", ("gleaming", "煌めき"), ("ghost", "幽鬼"));
+        WriteDictionaryFile("world-gospels.ja.json", ("cult", "教団"));
+        var entity = new DummyHistoricEntity();
+        entity.SeedProperty("cultName", "{{R|Cult of the Gleaming Ghost}}");
+
+        QudHistoryFactoryGenerateCultNameTranslationPatch.Postfix(entity);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(entity.GetCurrentSnapshot().GetProperty("cultName"), Is.EqualTo("{{R|煌めき幽鬼の教団}}"));
+            Assert.That(CultRouteHitCount(), Is.EqualTo(1));
+        });
     }
 
     private void WriteDictionaryFile(string fileName, params (string Key, string Text)[] entries)

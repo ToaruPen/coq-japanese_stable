@@ -765,8 +765,9 @@ internal static class HistoricSpiceGeneratedNameTranslator
         }
 
         var ordinal = match.Groups["ordinal"].Value;
+        var root = TranslateHistoricItemRoot(match.Groups["root"].Value);
         translated = (ordinal.Length > 0 ? ordinal + " " : string.Empty)
-            + match.Groups["root"].Value
+            + root
             + "派の"
             + kind;
         return true;
@@ -1182,13 +1183,7 @@ internal static class HistoricSpiceGeneratedNameTranslator
 
     private static string ConcatWords(string[] words, int start, int end)
     {
-        var result = string.Empty;
-        for (var index = start; index < end; index++)
-        {
-            result += words[index];
-        }
-
-        return result;
+        return string.Join(" ", words, start, end - start);
     }
 
 }

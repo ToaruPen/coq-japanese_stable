@@ -122,7 +122,7 @@ public sealed class UiDictionaryOwnershipTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(baseMessages, Is.Not.Empty, "Base Furniture.xml should expose preset meal menu messages.");
+            Assert.That(localizedMessages, Is.Not.Empty, "Furniture.jp.xml should expose preset meal menu messages.");
             foreach (var message in baseMessages)
             {
                 Assert.That(

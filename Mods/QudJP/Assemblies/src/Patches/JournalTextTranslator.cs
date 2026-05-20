@@ -141,18 +141,7 @@ internal static class JournalTextTranslator
 
     private static bool TryTranslateDisplayText(string source, string route, out string translated)
     {
-        translated = JournalPatternTranslator.Translate(source, route);
-        if (!string.Equals(source, translated, StringComparison.Ordinal))
-        {
-            return true;
-        }
-
-        if (TryTranslateExactPreservingColors(source, route, "Journal.Exact", out translated))
-        {
-            return true;
-        }
-
-        if (MessageLogProducerTranslationHelpers.TryTranslateZoneDisplayName(source, route, out translated))
+        if (TryTranslateLines(source, route, out translated))
         {
             return true;
         }
@@ -162,7 +151,8 @@ internal static class JournalTextTranslator
             return true;
         }
 
-        return TryTranslateLines(source, route, out translated);
+        translated = source;
+        return false;
     }
 
     private static bool TryTranslateExactPreservingColors(string source, string route, string family, out string translated)
@@ -190,13 +180,8 @@ internal static class JournalTextTranslator
 
     private static bool TryTranslateLines(string source, string route, out string translated)
     {
-        if (source.IndexOf('\n') < 0)
-        {
-            translated = source;
-            return false;
-        }
-
         var lines = source.Split(new[] { '\n' }, StringSplitOptions.None);
+        var exactFamily = lines.Length == 1 ? "Journal.Exact" : "Journal.LineExact";
         var changed = false;
         var builder = new StringBuilder(source.Length);
         for (var index = 0; index < lines.Length; index++)
@@ -204,7 +189,7 @@ internal static class JournalTextTranslator
             var line = lines[index];
             var translatedLine = line;
             if (!string.IsNullOrEmpty(line)
-                && !TryTranslateExactPreservingColors(line, route, "Journal.LineExact", out translatedLine))
+                && !TryTranslateExactPreservingColors(line, route, exactFamily, out translatedLine))
             {
                 translatedLine = TranslateJournalLine(line, route);
             }
@@ -229,6 +214,12 @@ internal static class JournalTextTranslator
 
     private static string TranslateJournalLine(string line, string route)
     {
+        var translatedPattern = JournalPatternTranslator.Translate(line, route);
+        if (!string.Equals(line, translatedPattern, StringComparison.Ordinal))
+        {
+            return translatedPattern;
+        }
+
         if (MessageLogProducerTranslationHelpers.TryTranslateZoneDisplayName(line, route, out var zoneLine))
         {
             return zoneLine;
@@ -239,7 +230,7 @@ internal static class JournalTextTranslator
             return distanceLine;
         }
 
-        return JournalPatternTranslator.Translate(line, route);
+        return line;
     }
 
     private static bool TryTranslateEmbeddedRelationshipTitleFragments(string source, string route, out string translated)

@@ -227,6 +227,31 @@ public sealed class CampfireNostrumsTranslationPatchTests
     }
 
     [Test]
+    public void Patch_TranslatesDirectMarkedPickGameObjectTitle_WhenOwnerActive()
+    {
+        CampfireNostrumsTranslationPatch.Prefix();
+        try
+        {
+            var handled = CampfireNostrumsTranslationPatch.TryTranslatePopupProducerText(
+                MessageFrameTranslator.MarkDirectTranslation("Treat whom first?"),
+                nameof(PopupPickOptionTranslationPatch),
+                "Popup.ProducerText",
+                out var translated);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(handled, Is.True);
+                Assert.That(translated, Is.EqualTo("最初に誰を治療する？"));
+                Assert.That(PickGameObjectTitleHitCount(), Is.EqualTo(1));
+            });
+        }
+        finally
+        {
+            CampfireNostrumsTranslationPatch.Finalizer(null);
+        }
+    }
+
+    [Test]
     public void Patch_DoesNotTranslatePickGameObjectTitle_WhenOwnerAbsent()
     {
         const string source = "Treat whom first?";

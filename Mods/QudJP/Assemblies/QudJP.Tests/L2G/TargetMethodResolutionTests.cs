@@ -2,6 +2,7 @@
 using System.Reflection;
 using System.Runtime.Loader;
 using System.Text.RegularExpressions;
+using HarmonyLib;
 using QudJP.Patches;
 
 namespace QudJP.Tests.L2G;
@@ -549,6 +550,26 @@ public sealed class TargetMethodResolutionTests
             FullMethodSignature(targetMethod!),
             Is.EqualTo("XRL.World.Parts.Skill.Cudgel_Conk|PerformConk|System.Boolean"));
     }
+
+#if HAS_GAME_DLL
+    [Test]
+    public void ImportedFoodOrDrinkFactionNameTargetMethod_ResolvesExactRuntimeSignature()
+    {
+        var targetType = AccessTools.TypeByName("XRL.Annals.ImportedFoodorDrink");
+        Assert.That(targetType, Is.Not.Null, "Type not found: XRL.Annals.ImportedFoodorDrink");
+
+        var runtimeMethod = AccessTools.Method(targetType, "generateFactionName", new[] { typeof(string) });
+        var targetMethod = InvokeTargetMethod(typeof(ImportedFoodOrDrinkFactionNameTranslationPatch));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(runtimeMethod, Is.Not.Null, "generateFactionName(string) runtime method not found.");
+            Assert.That(runtimeMethod!.ReturnType, Is.EqualTo(typeof(string)));
+            Assert.That(targetMethod, Is.Not.Null, "ImportedFoodOrDrinkFactionNameTranslationPatch TargetMethod returned null.");
+            Assert.That(targetMethod, Is.SameAs(runtimeMethod));
+        });
+    }
+#endif
 
 #if HAS_GAME_DLL && HAS_TMP
     [Test]

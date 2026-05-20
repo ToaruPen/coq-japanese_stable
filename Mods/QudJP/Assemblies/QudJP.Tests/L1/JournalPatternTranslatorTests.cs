@@ -419,6 +419,7 @@ public sealed class JournalPatternTranslatorTests
             new[]
             {
                 ("with malicious soldering", "悪意あるはんだ付け"),
+                ("with poisonous gas", "毒ガスで"),
                 ("disappeared", "姿を消した"),
                 ("shining", "輝く"),
                 ("visage", "顔立ち"),
@@ -433,6 +434,13 @@ public sealed class JournalPatternTranslatorTests
         Assert.That(
             translated,
             Is.EqualTo("4100年末、人気のあるライバルを悪意あるはんだ付けで殺したあと、クッドのスルタンは姿を消した。シビブの輝く顔立ちのため、彼らが後継者に選ばれた。"));
+
+        var translatedParticleBoundary = JournalPatternTranslator.Translate(
+            "Late in 4100 AR, after murdering a popular rival with poisonous gas, the sultan of Qud disappeared. Because of シビブの shining visage, they was chosen as the successor.");
+
+        Assert.That(
+            translatedParticleBoundary,
+            Is.EqualTo("4100年末、人気のあるライバルを毒ガスで殺したあと、クッドのスルタンは姿を消した。シビブの輝く顔立ちのため、彼らが後継者に選ばれた。"));
     }
 
     [Test]
@@ -630,6 +638,7 @@ public sealed class JournalPatternTranslatorTests
                 Assert.That(
                     JournalPatternTranslator.Translate("In an excavation at a site of deep history near Joppa, =name= recovered Stopsvalinn, the historic relic once thought lost to the sands of time."),
                     Is.EqualTo("ジョッパ近くの深い歴史を持つ場所での発掘において、=name=はかつて時の砂に失われたと思われていた歴史的遺物ストップスヴァリンを回収した。"));
+                AssertJournalPatternEdgeCases();
             });
         }
         finally
@@ -801,6 +810,7 @@ public sealed class JournalPatternTranslatorTests
                 Assert.That(
                     JournalPatternTranslator.Translate("Find sanctity in every stone."),
                     Is.EqualTo("あらゆる石の中に神聖を見いだせ。"));
+                AssertJournalPatternEdgeCases();
             });
         }
         finally
@@ -860,6 +870,7 @@ public sealed class JournalPatternTranslatorTests
                         "In 1001 AR, it was discovered that Resheph's twin had been the one who died. Despite reports to the contrary, Resheph was alive and well. He was known thenceforth as the Glassborn."),
                     Is.EqualTo("1001年、死亡したのはReshephの双子だったとの事実が明らかになった。"
                         + "相反する報告にもかかわらず、Reshephは健在だった。その者は以後Glassbornとして知られるようになった。"));
+                AssertJournalPatternEdgeCases();
             });
         }
         finally
@@ -883,6 +894,7 @@ public sealed class JournalPatternTranslatorTests
                 ("cerulean", "空色"),
                 ("ghost", "幽鬼"),
                 ("chair", "椅子"),
+                ("it", "それ"),
                 ("with ivory limbs", "象牙色の四肢を持つ"),
             });
         var localizationRoot = Path.Combine(TestProjectPaths.GetRepositoryRoot(), "Mods", "QudJP", "Localization");
@@ -903,10 +915,11 @@ public sealed class JournalPatternTranslatorTests
                     Is.EqualTo("椅子に命を吹き込んだ。なぜ？"));
                 Assert.That(
                     JournalPatternTranslator.Translate("While traveling in Joppa, =name= performed a sacred ritual with a chair, imbuing it with life and arranging it with ivory limbs. Many of the local denizens declared it a miracle. Some weren't so sure."),
-                    Is.EqualTo("ジョッパを旅する中で、=name=は椅子を用いて神聖な儀式を行い、それに命を吹き込み、象牙色の四肢を持つよう整えた。地元の多くの住民はそれを奇跡だと宣言した。疑う者もいた。"));
+                    Is.EqualTo("ジョッパを旅する中で、=name=は椅子を用いて神聖な儀式を行い、それに命を吹き込み、それを象牙色の四肢を持つよう整えた。地元の多くの住民はそれを奇跡だと宣言した。疑う者もいた。"));
                 Assert.That(
                     JournalPatternTranslator.Translate("While traveling in Joppa, =name= performed a sacred ritual with a chair, imbuing it with life and arranging it with ivory limbs. Many of the local denizens declared it a miracle."),
-                    Is.EqualTo("ジョッパを旅する中で、=name=は椅子を用いて神聖な儀式を行い、それに命を吹き込み、象牙色の四肢を持つよう整えた。地元の多くの住民はそれを奇跡だと宣言した。"));
+                    Is.EqualTo("ジョッパを旅する中で、=name=は椅子を用いて神聖な儀式を行い、それに命を吹き込み、それを象牙色の四肢を持つよう整えた。地元の多くの住民はそれを奇跡だと宣言した。"));
+                AssertJournalPatternEdgeCases();
             });
         }
         finally
@@ -968,6 +981,7 @@ public sealed class JournalPatternTranslatorTests
                 Assert.That(
                     JournalPatternTranslator.Translate("Sometime in =year=, =name= wandered over the high mounts and voyaged to the Great Sea in the Asphalt Mines. There he befriended no one and instead bathed in the black blood of the earth."),
                     Is.EqualTo("=year=のある時、=name=は高き山々をさまよい、アスファルト鉱山の大海へ旅した。そこでその者は誰とも親交を結ばず、代わりに大地の黒き血を浴びた。"));
+                AssertJournalPatternEdgeCases();
             });
         }
         finally
@@ -1015,6 +1029,7 @@ public sealed class JournalPatternTranslatorTests
                 Assert.That(
                     JournalPatternTranslator.Translate("While wandering around Salt Dunes, =name= stumbled upon a clan of mutants. Because of Player's <spice.elements.salt.quality.!random>, they accepted him into their fold and taught him their secrets."),
                     Is.EqualTo("塩砂丘の辺りをさまよううち、=name=は変異者の一族に出くわした。プレイヤーの<spice.elements.salt.quality.!random>ゆえ、彼らはその者を仲間に迎え入れ、その者に彼らの秘密を授けた。"));
+                AssertJournalPatternEdgeCases();
             });
         }
         finally
@@ -1048,6 +1063,7 @@ public sealed class JournalPatternTranslatorTests
                 Assert.That(
                     JournalPatternTranslator.Translate("Acting against the prohibition on the practice of <spice.elements.salt.practices.!random>, =name= led an army to the gates of Kyakukya. =name= <spice.commonPhrases.liberated.!random> its citizens, and in his honor they <spice.history.gospels.Celebration.LateSultanate.!random>."),
                     Is.EqualTo("<spice.elements.salt.practices.!random>の実践への禁令に抗し、=name=は軍勢を率いてキャクキャの門へ至った。=name=はその市民を<spice.commonPhrases.liberated.!random>し、その栄誉のもと彼らは<spice.history.gospels.Celebration.LateSultanate.!random>した。"));
+                AssertJournalPatternEdgeCases();
             });
         }
         finally
@@ -1082,6 +1098,17 @@ public sealed class JournalPatternTranslatorTests
 
         var summary = JournalPatternTranslator.GetPatternLoadSummaryForTests();
         Assert.That(summary, Does.Contain("journal-patterns"));
+    }
+
+    private static void AssertJournalPatternEdgeCases()
+    {
+        const string fallback = "This issue 737 journal pattern should not match.";
+        var marked = MessageFrameTranslator.MarkDirectTranslation(fallback);
+
+        Assert.That(JournalPatternTranslator.Translate(fallback), Is.EqualTo(fallback));
+        Assert.That(JournalPatternTranslator.Translate(string.Empty), Is.EqualTo(string.Empty));
+        Assert.That(JournalPatternTranslator.Translate("{{R|" + fallback + "}}"), Is.EqualTo("{{R|" + fallback + "}}"));
+        Assert.That(JournalPatternTranslator.Translate(marked), Is.EqualTo(marked));
     }
 
     private void WritePatternDictionary(params (string pattern, string template)[] patterns)

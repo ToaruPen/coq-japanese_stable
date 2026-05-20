@@ -35,27 +35,26 @@ public static class CampfireCookPresetMealTranslationPatch
         return method;
     }
 
-    public static void Prefix()
+    public static void Prefix(out string? __state)
     {
         try
         {
+            __state = directMarkerPassThroughText;
             OwnerTranslationScope.Enter(ref activeDepth);
         }
         catch (Exception ex)
         {
+            __state = null;
             Trace.TraceError("QudJP: {0}.Prefix failed: {1}", Context, ex);
         }
     }
 
-    public static Exception? Finalizer(Exception? __exception)
+    public static Exception? Finalizer(Exception? __exception, string? __state)
     {
         try
         {
             OwnerTranslationScope.Exit(ref activeDepth);
-            if (!OwnerTranslationScope.IsActive(activeDepth))
-            {
-                directMarkerPassThroughText = null;
-            }
+            directMarkerPassThroughText = __state;
         }
         catch (Exception ex)
         {

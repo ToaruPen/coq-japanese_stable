@@ -86,6 +86,46 @@ public sealed class CampfireCookPresetMealTranslationPatchTests
         });
     }
 
+    [Test]
+    public void CookPresetMeal_RestoresDirectMarkerPassThroughText_ForNestedOwnerScopes()
+    {
+        CampfireCookPresetMealTranslationPatch.Prefix(out var outerState);
+        try
+        {
+            _ = CampfireCookPresetMealTranslationPatch.TryTranslatePopupMessage(
+                MessageFrameTranslator.MarkDirectTranslation("You eat the meal."),
+                nameof(PopupShowTranslationPatch),
+                "Popup.Show",
+                out _);
+
+            Assert.That(DirectMarkerPassThroughText(), Is.EqualTo("You eat the meal."));
+
+            CampfireCookPresetMealTranslationPatch.Prefix(out var innerState);
+            try
+            {
+                _ = CampfireCookPresetMealTranslationPatch.TryTranslatePopupMessage(
+                    MessageFrameTranslator.MarkDirectTranslation("Nested direct popup."),
+                    nameof(PopupShowTranslationPatch),
+                    "Popup.Show",
+                    out _);
+
+                Assert.That(DirectMarkerPassThroughText(), Is.EqualTo("Nested direct popup."));
+            }
+            finally
+            {
+                CampfireCookPresetMealTranslationPatch.Finalizer(null, innerState);
+            }
+
+            Assert.That(DirectMarkerPassThroughText(), Is.EqualTo("You eat the meal."));
+        }
+        finally
+        {
+            CampfireCookPresetMealTranslationPatch.Finalizer(null, outerState);
+        }
+
+        Assert.That(DirectMarkerPassThroughText(), Is.Null);
+    }
+
     private static void WithPatchedOwner(Action action)
     {
         var harmonyId = CreateHarmonyId();
@@ -131,11 +171,13 @@ public sealed class CampfireCookPresetMealTranslationPatchTests
                 typeof(int)),
             prefix: new HarmonyMethod(RequireMethod(
                 typeof(CampfireCookPresetMealTranslationPatch),
-                nameof(CampfireCookPresetMealTranslationPatch.Prefix))),
+                nameof(CampfireCookPresetMealTranslationPatch.Prefix),
+                typeof(string).MakeByRefType())),
             finalizer: new HarmonyMethod(RequireMethod(
                 typeof(CampfireCookPresetMealTranslationPatch),
                 nameof(CampfireCookPresetMealTranslationPatch.Finalizer),
-                typeof(Exception))));
+                typeof(Exception),
+                typeof(string))));
     }
 
     private static int HitCount(string detail)
@@ -155,6 +197,15 @@ public sealed class CampfireCookPresetMealTranslationPatchTests
     private static string CreateHarmonyId()
     {
         return "qudjp.tests.campfire-cook-preset-meal." + Guid.NewGuid().ToString("N");
+    }
+
+    private static string? DirectMarkerPassThroughText()
+    {
+        var field = typeof(CampfireCookPresetMealTranslationPatch).GetField(
+            "directMarkerPassThroughText",
+            BindingFlags.NonPublic | BindingFlags.Static);
+        Assert.That(field, Is.Not.Null);
+        return field!.GetValue(null) as string;
     }
 }
 

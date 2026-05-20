@@ -931,6 +931,9 @@ internal static class JournalPatternTranslator
             case "her":
                 translated = "その者";
                 return true;
+            case "it":
+                translated = "それ";
+                return true;
             case "his":
             case "its":
                 translated = "その";
@@ -1035,8 +1038,22 @@ internal static class JournalPatternTranslator
             return false;
         }
 
-        translated = "人気のあるライバルを" + translatedMethod + "で殺したあと";
+        var methodSuffix = EndsWithInstrumentalParticleDe(translatedMethod)
+            ? "殺したあと"
+            : "で殺したあと";
+        translated = "人気のあるライバルを" + translatedMethod + methodSuffix;
         return true;
+    }
+
+    private static bool EndsWithInstrumentalParticleDe(string source)
+    {
+        var end = source.Length;
+        while (end > 0 && (char.IsWhiteSpace(source[end - 1]) || char.IsPunctuation(source[end - 1])))
+        {
+            end--;
+        }
+
+        return end > 0 && source[end - 1] == 'で';
     }
 
     private static bool TryTranslateSultanCloneHadDiedReason(string source, out string translated)

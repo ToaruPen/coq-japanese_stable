@@ -1,3 +1,4 @@
+using System.Reflection;
 using QudJP.Patches;
 
 namespace QudJP.Tests.L2;
@@ -47,7 +48,7 @@ public sealed class CampfireCookFromRecipeTranslationPatchTests
         string expected,
         string detail)
     {
-        CampfireCookFromRecipeTranslationPatch.Prefix();
+        CampfireCookFromRecipeTranslationPatch.Prefix(out var state);
         try
         {
             var translated = PopupTranslationPatch.TranslatePopupTextForProducerRoute(
@@ -62,7 +63,7 @@ public sealed class CampfireCookFromRecipeTranslationPatchTests
         }
         finally
         {
-            CampfireCookFromRecipeTranslationPatch.Finalizer(null);
+            CampfireCookFromRecipeTranslationPatch.Finalizer(null, state);
         }
     }
 
@@ -95,7 +96,7 @@ public sealed class CampfireCookFromRecipeTranslationPatchTests
         string expected,
         string detail)
     {
-        CampfireCookFromRecipeTranslationPatch.Prefix();
+        CampfireCookFromRecipeTranslationPatch.Prefix(out var state);
         try
         {
             var handled = CampfireCookFromRecipeTranslationPatch.TryTranslatePopupMessage(
@@ -113,14 +114,14 @@ public sealed class CampfireCookFromRecipeTranslationPatchTests
         }
         finally
         {
-            CampfireCookFromRecipeTranslationPatch.Finalizer(null);
+            CampfireCookFromRecipeTranslationPatch.Finalizer(null, state);
         }
     }
 
     [Test]
     public void CookFromRecipe_TranslatesAteMealPopup_WhenOwnerActive()
     {
-        CampfireCookFromRecipeTranslationPatch.Prefix();
+        CampfireCookFromRecipeTranslationPatch.Prefix(out var state);
         try
         {
             var handled = CampfireCookFromRecipeTranslationPatch.TryTranslatePopupMessage(
@@ -138,7 +139,7 @@ public sealed class CampfireCookFromRecipeTranslationPatchTests
         }
         finally
         {
-            CampfireCookFromRecipeTranslationPatch.Finalizer(null);
+            CampfireCookFromRecipeTranslationPatch.Finalizer(null, state);
         }
     }
 
@@ -159,6 +160,46 @@ public sealed class CampfireCookFromRecipeTranslationPatchTests
         });
     }
 
+    [Test]
+    public void CookFromRecipe_RestoresDirectMarkerPassThroughText_ForNestedOwnerScopes()
+    {
+        CampfireCookFromRecipeTranslationPatch.Prefix(out var outerState);
+        try
+        {
+            _ = CampfireCookFromRecipeTranslationPatch.TryTranslatePopupMessage(
+                MessageFrameTranslator.MarkDirectTranslation("You eat the meal."),
+                nameof(PopupShowTranslationPatch),
+                "Popup.Show",
+                out _);
+
+            Assert.That(DirectMarkerPassThroughText(), Is.EqualTo("You eat the meal."));
+
+            CampfireCookFromRecipeTranslationPatch.Prefix(out var innerState);
+            try
+            {
+                _ = CampfireCookFromRecipeTranslationPatch.TryTranslatePopupMessage(
+                    MessageFrameTranslator.MarkDirectTranslation("You don't have enough mushroom."),
+                    nameof(PopupShowTranslationPatch),
+                    "Popup.Show",
+                    out _);
+
+                Assert.That(DirectMarkerPassThroughText(), Is.EqualTo("You don't have enough mushroom."));
+            }
+            finally
+            {
+                CampfireCookFromRecipeTranslationPatch.Finalizer(null, innerState);
+            }
+
+            Assert.That(DirectMarkerPassThroughText(), Is.EqualTo("You eat the meal."));
+        }
+        finally
+        {
+            CampfireCookFromRecipeTranslationPatch.Finalizer(null, outerState);
+        }
+
+        Assert.That(DirectMarkerPassThroughText(), Is.Null);
+    }
+
     private static int HitCount(string detail)
     {
         return DynamicTextObservability.GetRouteFamilyHitCountForTests(
@@ -171,5 +212,14 @@ public sealed class CampfireCookFromRecipeTranslationPatchTests
         return DynamicTextObservability.GetRouteFamilyHitCountForTests(
             nameof(PopupShowTranslationPatch),
             "Popup.Show." + nameof(CampfireCookFromRecipeTranslationPatch) + "." + detail);
+    }
+
+    private static string? DirectMarkerPassThroughText()
+    {
+        var field = typeof(CampfireCookFromRecipeTranslationPatch).GetField(
+            "directMarkerPassThroughText",
+            BindingFlags.NonPublic | BindingFlags.Static);
+        Assert.That(field, Is.Not.Null);
+        return field!.GetValue(null) as string;
     }
 }

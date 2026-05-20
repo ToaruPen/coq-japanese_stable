@@ -5,7 +5,7 @@ Date: 2026-05-19
 ## Scope
 
 This report tracks the direct dictionary-key coverage dimension added to Issue
-#737. It is independent from route ownership: a route may call the intended
+`#737`. It is independent from route ownership: a route may call the intended
 translator and still emit English when the selected `HistorySpice.json` leaf has
 no QudJP component coverage or data-source reconstruction path.
 
@@ -641,7 +641,7 @@ covered together as one place/time HSE component unit. Direct scoped coverage
 completes stable place, farmstead, courtyard, and historical-time leaves in
 `spice.commonPhrases.shortHearth.*`, `starapplefarm.*`, `yard.*`, and
 `yearsAgo.*`, including `holme`, `orchard`, `grove`, `yard`, `fold`,
-` quadrangle`, `quad`, `years ago`, `beyond the gulf of time`,
+`quadrangle`, `quad`, `years ago`, `beyond the gulf of time`,
 `back when the musa was perpetually ripe`,
 `early in the days after the reign of Resheph`, and `long ago`. Existing HSE
 coverage remains the owner for shared leaves such as `home`, `<^.farm.!random>`,

@@ -171,6 +171,25 @@ public sealed class JournalTextTranslatorTests
     }
 
     [Test]
+    public void TryTranslateMapNoteTextForStorage_PrioritizesLineTranslationBeforeWholePatternFallback()
+    {
+        WriteExactDictionary(("Kyakukya", "キャクキャ"), ("Grit Gate", "グリット・ゲート"), ("north", "北"));
+        WritePatternDictionary(("^You journeyed to (.+?)\\.", "{t0}に旅した。"));
+
+        var ok = JournalTextTranslator.TryTranslateMapNoteTextForStorage(
+            "You journeyed to Kyakukya.\n2 parasangs north of Grit Gate",
+            "Locations",
+            "JournalTextTranslatorTests",
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(translated, Is.EqualTo("\u0001キャクキャに旅した。\nグリット・ゲートから2パラサング北"));
+        });
+    }
+
+    [Test]
     public void TryTranslateObservationRevealTextForStorage_UsesJournalMarkOfDeathPatterns()
     {
         WritePatternDictionary(
