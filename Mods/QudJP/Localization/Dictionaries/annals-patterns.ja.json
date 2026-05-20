@@ -617,7 +617,7 @@
       "route": "annals"
     },
     {
-      "pattern": "^(.+?)\\ (.+?)\\ (?:BR|AR),\\ (.+?),\\ (.+?)\\ counselors\\ suggested\\ (.+?)\\ (.+?)\\.\\ Instead,\\ (.+?)\\ (.+?)\\.$",
+      "pattern": "^((?:In|Early in|Late in|Sometime in))\\ (.+?)\\ (?:BR|AR),\\ (.+?),\\ (.+?)\\ counselors\\ suggested\\ (.+?)\\ (.+?)\\.\\ Instead,\\ (.+?)\\ (.+?)\\.$",
       "template": "{t1}{t0}、{t2}、{t3}の顧問たちは{t4}が{t5}ことを進言した。だが代わりに、{t6}は{t7}。",
       "route": "annals"
     },

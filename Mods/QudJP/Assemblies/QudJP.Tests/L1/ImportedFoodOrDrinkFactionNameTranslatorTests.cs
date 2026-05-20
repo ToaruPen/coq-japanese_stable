@@ -100,6 +100,18 @@ public sealed class ImportedFoodOrDrinkFactionNameTranslatorTests
         });
     }
 
+    [Test]
+    public void TryTranslate_LeavesNullInputAsEmpty()
+    {
+        var ok = ImportedFoodOrDrinkFactionNameTranslator.TryTranslate(null, out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.False);
+            Assert.That(translated, Is.Empty);
+        });
+    }
+
     private void WriteDictionaryFile(string fileName, params (string Key, string Text)[] entries)
     {
         var path = Path.Combine(dictionaryDirectory, fileName);

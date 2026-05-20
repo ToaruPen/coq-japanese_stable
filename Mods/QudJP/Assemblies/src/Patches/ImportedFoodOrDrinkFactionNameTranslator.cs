@@ -18,7 +18,16 @@ internal static class ImportedFoodOrDrinkFactionNameTranslator
 
     internal static bool TryTranslate(string? source, out string translated)
     {
-        var sourceValue = source ?? string.Empty;
+        string sourceValue;
+        if (source is null)
+        {
+            sourceValue = string.Empty;
+        }
+        else
+        {
+            sourceValue = source;
+        }
+
         if (sourceValue.Length == 0)
         {
             translated = sourceValue;

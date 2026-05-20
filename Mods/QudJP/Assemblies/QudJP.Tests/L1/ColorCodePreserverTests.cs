@@ -428,6 +428,19 @@ public sealed class ColorCodePreserverTests
     }
 
     [Test]
+    public void Strip_TreatsUnclosedQudMarkupAsFormattingUntilEndOfSource()
+    {
+        var (stripped, spans) = ColorCodePreserver.Strip("{{y|plain visible text");
+        var restored = ColorCodePreserver.Restore("維持される", spans);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(stripped, Is.EqualTo("plain visible text"));
+            Assert.That(restored, Is.EqualTo("{{y|維持される"));
+        });
+    }
+
+    [Test]
     public void RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership_PreservesNestedTmpColorAndQudWrappers()
     {
         var (stripped, spans) = ColorAwareTranslationComposer.Strip("<color=#44ff88>{{y|No}}</color>");
