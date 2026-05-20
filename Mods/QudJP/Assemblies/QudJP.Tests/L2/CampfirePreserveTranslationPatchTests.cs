@@ -99,6 +99,19 @@ public sealed class CampfirePreserveTranslationPatchTests
     }
 
     [Test]
+    public void Preserve_TranslatesSomeSourcePopup_WithoutConsumingTrailingInlineColors()
+    {
+        WriteDisplayNameDictionary(
+            ("raw boar meat", "生の猪肉"),
+            ("boar jerky", "猪肉ジャーキー"));
+
+        AssertPopupMessage(
+            RequireMethod(typeof(DummyCampfirePreserveTarget), nameof(DummyCampfirePreserveTarget.Preserve)),
+            "You preserved:\n\nSome {{r|raw boar meat}}&W^k into 3 servings of boar jerky.",
+            "保存した:\n\n{{r|生の猪肉}}少々&W^kを3食分の猪肉ジャーキーに保存した。");
+    }
+
+    [Test]
     public void CampfirePreserve_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent()
     {
         var harmonyId = CreateHarmonyId();

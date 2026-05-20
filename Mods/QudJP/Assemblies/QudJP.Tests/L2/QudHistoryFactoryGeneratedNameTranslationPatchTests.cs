@@ -124,6 +124,7 @@ public sealed class QudHistoryFactoryGeneratedNameTranslationPatchTests
     [Test]
     public void NameRuinsSitePostfix_StripsDirectMarker_WhenPatched()
     {
+        WriteDictionaryFile("Scoped/historyspice-common.ja.json", ("red", "赤"), ("wastes", "荒野"));
         var result = MessageFrameTranslator.DirectTranslationMarker + "red wastes Ibul";
 
         QudHistoryFactoryNameRuinsSiteTranslationPatch.Postfix(ref result);
@@ -228,6 +229,8 @@ public sealed class QudHistoryFactoryGeneratedNameTranslationPatchTests
     [Test]
     public void GenerateCultNamePostfix_StripsDirectMarker_WhenPatched()
     {
+        WriteDictionaryFile("Scoped/historyspice-common.ja.json", ("gleaming", "煌めき"), ("ghost", "幽鬼"));
+        WriteDictionaryFile("world-gospels.ja.json", ("cult", "教団"));
         var entity = new DummyHistoricEntity();
         entity.SeedProperty("cultName", MessageFrameTranslator.DirectTranslationMarker + "Cult of the Gleaming Ghost");
 

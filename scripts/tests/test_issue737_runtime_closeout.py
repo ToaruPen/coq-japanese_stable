@@ -4,12 +4,10 @@ import json
 import os
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import TYPE_CHECKING
+
+import pytest
 
 from scripts import issue737_runtime_closeout as closeout
-
-if TYPE_CHECKING:
-    import pytest
 
 
 def _write_log(path: Path, text: str, *, mtime: datetime) -> None:
@@ -70,12 +68,10 @@ def test_get_default_log_path_rejects_directory_qudjp_player_log(
 
 def test_analyze_log_rejects_directory_path(tmp_path: Path) -> None:
     """Player.log analysis rejects directories before read_text."""
-    try:
+    with pytest.raises(FileNotFoundError) as exc_info:
         closeout.analyze_log(log_path=tmp_path)
-    except FileNotFoundError as exc:
-        assert str(tmp_path) in str(exc)
-    else:
-        raise AssertionError("Expected FileNotFoundError for directory log path")
+
+    assert str(tmp_path) in str(exc_info.value)
 
 
 def test_main_uses_resolved_default_log_when_log_argument_is_omitted(

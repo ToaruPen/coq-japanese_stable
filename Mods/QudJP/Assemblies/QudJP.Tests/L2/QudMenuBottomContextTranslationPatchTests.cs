@@ -177,6 +177,7 @@ public sealed class QudMenuBottomContextTranslationPatchTests
     private static void ResetTestState()
     {
         Translator.ResetForTests();
+        ScopedDictionaryLookup.ResetForTests();
         DynamicTextObservability.ResetForTests();
         SinkObservation.ResetForTests();
     }

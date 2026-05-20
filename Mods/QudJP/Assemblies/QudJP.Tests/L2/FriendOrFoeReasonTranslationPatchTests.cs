@@ -157,6 +157,7 @@ public sealed class FriendOrFoeReasonTranslationPatchTests
     [Test]
     public void Postfix_StripsDirectMarkerWithoutRetranslating_WhenPatched()
     {
+        WriteDictionaryFile("Scoped/historyspice-common.ja.json", ("suns", "太陽"));
         var harmonyId = "qudjp-test-friend-foe-reason-" + Guid.NewGuid().ToString("N");
         var harmony = new Harmony(harmonyId);
         try
