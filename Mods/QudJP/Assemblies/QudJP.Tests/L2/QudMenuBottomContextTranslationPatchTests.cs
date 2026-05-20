@@ -114,7 +114,7 @@ public sealed class QudMenuBottomContextTranslationPatchTests
     }
 
     [Test]
-    public void Prefix_StripsMalformedNestedHotkeyLabelToVisibleFallback()
+    public void Prefix_PreservesMalformedNestedHotkeyLabelUnchanged()
     {
         var source = "{{y|{{W|Esc}} Back}}";
         var context = new DummyQudMenuBottomContext(source);

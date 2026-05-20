@@ -91,6 +91,8 @@ public sealed class ImportedFoodOrDrinkFactionNameTranslatorTests
     [TestCase("Cult of Root")]
     public void TryTranslate_LeavesUnknownOrNonMatchingInputUnchanged(string source)
     {
+        WriteDictionaryFile("world-gospels.ja.json", ("cult", "教団"));
+
         var ok = ImportedFoodOrDrinkFactionNameTranslator.TryTranslate(source, out var translated);
 
         Assert.Multiple(() =>
