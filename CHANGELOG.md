@@ -10,6 +10,41 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+## [0.3.00] - 2026-05-20
+
+### Changed
+
+- 確認ポップアップの質問文を、丁寧な `しますか？` 形式へ揃えました。
+- macOS Apple Silicon 向け Harmony 2.4.2 native ARM64 回避策に合わせて、ビルド時の `Lib.Harmony` fallback package を更新しました。
+- 既存のメッセージパターン翻訳が正しい owner surface で追跡されるよう、確認済み経路の分類を整理しました。
+
+### Fixed
+
+- アビリティ詳細、アビリティ画面のホットキー、ステータス画面タブ、飛行メッセージ、レーザー光線ダメージログに残っていた英語表示を日本語化しました。
+- 生成される歴史、墓碑文、村の伝承、クエスト会話、料理本名、レリック文、地下聖堂の銘文、墓石、サイキックハンター称号、集落名の日本語カバレッジを拡充しました。
+- 方角や近隣ロケーションを含む動的クエスト標識が、英語 prefix 断片ではなく自然な日本語の目標文として表示されるようにしました。
+- 生成される形容詞、身体特徴、地形、活動、称号の断片を、色 markup、placeholder、固有名を保ったまま自然な日本語へ置き換えました。
+- 生成アイテム説明、active effect 名、インベントリの武器状態ラベルに残っていた英語表示を日本語化しました。
+- code redemption、色選択、マウス入力、save error などの固定ポップアップ文を日本語化しました。
+- Exodus countdown、ミサイル命中出力、automatic action stop、料理 trigger、normality-lattice contest などのログ・ポップアップ文を追加で日本語化しました。
+- QudJP 有効時に、一部の Carbide Chef と手続き生成料理レシピから効果が失われる問題を修正しました。
+- サイバネティック implant の説明文を Caves of Qud 1.0.4 の効果に合わせて修正しました。
+- ゴーレム素材選択ポップアップの翻訳 patch が起動時に失敗する問題を修正しました。
+- 日本語 UI 翻訳を有効にしたとき、journal entries が消える問題を修正しました。
+- Unstable Genome、Beak、Beguiling、Domination、Psychometry、Dystechnia の mutation 説明訳を修正しました。
+- pass-by、XDidY、戦闘メッセージ、所有表現、Does subject、message/journal capture、mutation self-target prompt、belcher output、conk confirmation、生成像ラベルなどに残る英語冠詞・所有代名詞を除去しました。
+- `[swimming]`、`bloody wet`、rusted、broken、cracked、flying、wading、raised、timer/cell/chapter/ammo suffix などの状態・suffix 表示を日本語化しました。
+- bleeding、leaking、oozing、fluxing などの message frame、damage source、wound stop log 表現を日本語化しました。
+- Tzedech/Welcome 会話の空 override を削除し、localization validation warning が出ないようにしました。
+- Water Ritual の message log、summary、conversation choice に残っていた英語表示を日本語化しました。
+- campfire cooking menu、ingredient selection、recipe cooking、meal creation message、生成 journal text、HistorySpice 系の歴史名に残っていた英語表示を日本語化しました。
+- masterwork weapon mod の説明、表示名、maker mark、examine-identification message を日本語化しました。
+- schematic や data disk の bit cost など、display name の angle suffix に含まれる色付き tinkering bit tag を保持するようにしました。
+- ミサイル武器の複数 ammo・複数 projectile の runtime tooltip 行を日本語化しました。
+- cracked scrap component の item-name 表現を、より分かりやすい `ひび割れた` に修正しました。
+
+---
+
 ## [0.2.52] - 2026-05-13
 
 ### Added
@@ -304,7 +339,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
-[Unreleased]: https://github.com/ToaruPen/coq-japanese_stable/compare/v0.2.52...HEAD
+[Unreleased]: https://github.com/ToaruPen/coq-japanese_stable/compare/v0.3.00...HEAD
+[0.3.00]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.3.00
 [0.2.52]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.2.52
 [0.2.51]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.2.51
 [0.2.50]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.2.50
