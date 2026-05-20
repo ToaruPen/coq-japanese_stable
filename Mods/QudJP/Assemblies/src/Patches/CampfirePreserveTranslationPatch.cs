@@ -198,22 +198,42 @@ public static class CampfirePreserveTranslationPatch
             return source;
         }
 
-        var sourceItem = TranslatePreservedSource(RestorePreservedSource(source, match, spans));
+        var sourceItem = TranslatePreservedSource(RestorePreservedSource(match, spans));
         var count = match.Groups["count"].Value;
         var serving = TranslateServingUnit(Restore(match, spans, "serving"));
         var result = TranslateDisplayNameOrSame(Restore(match, spans, "result"));
         return $"{sourceItem}を{count}{serving}の{result}に保存した。";
     }
 
-    private static string RestorePreservedSource(string source, Match match, IReadOnlyList<ColorSpan> spans)
+    private static string RestorePreservedSource(Match match, IReadOnlyList<ColorSpan> spans)
     {
-        var intoIndex = source.IndexOf(" into ", StringComparison.Ordinal);
-        if (intoIndex > 0)
+        var sourceGroup = match.Groups["source"];
+        var restored = Restore(match, spans, "source");
+        return TryGetTrailingInlineColorToken(spans, sourceGroup, out var trailingColor)
+            ? restored + trailingColor
+            : restored;
+    }
+
+    private static bool TryGetTrailingInlineColorToken(
+        IReadOnlyList<ColorSpan> spans,
+        Group group,
+        out string trailingColor)
+    {
+        var endIndex = group.Index + group.Length;
+        for (var index = 0; index < spans.Count; index++)
         {
-            return source.Substring(0, intoIndex).Trim();
+            var span = spans[index];
+            if (span.Index == endIndex
+                && span.Token.Length == 2
+                && (span.Token[0] == '&' || span.Token[0] == '^'))
+            {
+                trailingColor = span.Token;
+                return true;
+            }
         }
 
-        return Restore(match, spans, "source");
+        trailingColor = string.Empty;
+        return false;
     }
 
     private static string Restore(Match match, IReadOnlyList<ColorSpan> spans, string groupName)

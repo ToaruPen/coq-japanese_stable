@@ -43,15 +43,15 @@ internal static class JournalPatternTranslator
     private static readonly Regex FakedDeathCapturePattern =
         new Regex("^(?<name>.+?)'s death had been faked$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex SultanCloneHadDiedCapturePattern =
-        new Regex("^(?:a clone of|a simulacrum of) (?<name>.+?) had been the one who died$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+        new Regex("^(?:a clone of|a simulacrum of) (?<name>.+?) had been the one who died$", RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.IgnoreCase);
     private static readonly Regex SultanTwinHadDiedCapturePattern =
-        new Regex("^(?<name>.+?)'s twin had been the one who died$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+        new Regex("^(?<name>.+?)'s twin had been the one who died$", RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.IgnoreCase);
     private static readonly Regex LeaderRelationshipTitlePattern =
-        new Regex("^leader of the (?<faction>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+        new Regex("^leader of the (?<faction>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.IgnoreCase);
     private static readonly Regex PopularRivalMurderReasonPattern =
-        new Regex("^after murdering a popular rival (?<method>with .+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+        new Regex("^after murdering a popular rival (?<method>with .+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.IgnoreCase);
     private static readonly Regex VisageReasonPattern =
-        new Regex("^(?:(?<owner>.+?)の )?(?<adjective>.+?) visage$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+        new Regex("^(?:(?<owner>.+?)の )?(?<adjective>.+?) visage$", RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.IgnoreCase);
     private static readonly Regex JapaneseCharacterPattern =
         new Regex("[\\p{IsHiragana}\\p{IsKatakana}\\p{IsCJKUnifiedIdeographs}]", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
@@ -1062,7 +1062,7 @@ internal static class JournalPatternTranslator
         var cloneMatch = SultanCloneHadDiedCapturePattern.Match(source);
         if (cloneMatch.Success)
         {
-            var cloneKind = source.StartsWith("a simulacrum of ", StringComparison.Ordinal)
+            var cloneKind = source.StartsWith("a simulacrum of ", StringComparison.OrdinalIgnoreCase)
                 ? "模造体"
                 : "クローン";
             translated = "死亡したのは" + TranslateTemplateCapture(cloneMatch.Groups["name"].Value) + "の" + cloneKind + "だった";
@@ -1098,9 +1098,10 @@ internal static class JournalPatternTranslator
         }
 
         var owner = match.Groups["owner"].Value;
+        var translatedOwner = TranslateTemplateCapture(owner);
         translated = owner.Length == 0
             ? translatedAdjective + translatedNoun
-            : owner + "の" + translatedAdjective + translatedNoun;
+            : translatedOwner + "の" + translatedAdjective + translatedNoun;
         return true;
     }
 

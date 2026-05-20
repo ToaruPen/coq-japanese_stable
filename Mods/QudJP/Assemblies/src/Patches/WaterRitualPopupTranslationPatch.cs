@@ -496,11 +496,13 @@ public static class WaterRitualPopupTranslationPatch
 
     private static bool TryTranslateGossipLeadIn(string source, out string translated)
     {
-        if (TryTranslateGossipLeadIn(source, "Did you hear?", "聞いたか？ ", out translated)
-            || TryTranslateGossipLeadIn(source, "I heard that", "聞いたところでは、", out translated)
-            || TryTranslateGossipLeadIn(source, "Someone told me that", "誰かが言っていたが、", out translated)
-            || TryTranslateGossipLeadIn(source, "Rumor is that", "噂では、", out translated)
-            || TryTranslateGossipLeadIn(source, "Bird chatter says that", "鳥のさえずりによれば、", out translated))
+        var marked = MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText);
+        var sourceValue = marked ? markedText : source;
+        if (TryTranslateGossipLeadIn(sourceValue, "Did you hear?", "聞いたか？ ", marked, out translated)
+            || TryTranslateGossipLeadIn(sourceValue, "I heard that", "聞いたところでは、", marked, out translated)
+            || TryTranslateGossipLeadIn(sourceValue, "Someone told me that", "誰かが言っていたが、", marked, out translated)
+            || TryTranslateGossipLeadIn(sourceValue, "Rumor is that", "噂では、", marked, out translated)
+            || TryTranslateGossipLeadIn(sourceValue, "Bird chatter says that", "鳥のさえずりによれば、", marked, out translated))
         {
             return true;
         }
@@ -509,7 +511,12 @@ public static class WaterRitualPopupTranslationPatch
         return false;
     }
 
-    private static bool TryTranslateGossipLeadIn(string source, string leadIn, string translatedLeadIn, out string translated)
+    private static bool TryTranslateGossipLeadIn(
+        string source,
+        string leadIn,
+        string translatedLeadIn,
+        bool sourceWasMarked,
+        out string translated)
     {
         if (!source.StartsWith(leadIn + " ", StringComparison.Ordinal))
         {
@@ -518,6 +525,12 @@ public static class WaterRitualPopupTranslationPatch
         }
 
         var body = source.Substring(leadIn.Length + 1);
+        if (sourceWasMarked)
+        {
+            translated = translatedLeadIn + body;
+            return true;
+        }
+
         if (MessageFrameTranslator.TryStripDirectTranslationMarker(body, out var markedBody))
         {
             translated = translatedLeadIn + markedBody;

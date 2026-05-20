@@ -412,6 +412,17 @@ public sealed class JournalPatternTranslatorTests
     }
 
     [Test]
+    public void Translate_TranslatesCapitalizedRelationshipTitleCapture()
+    {
+        WriteDictionaryFile("journal-test.ja.json", new[] { ("Farmers' Guild", "農民のギルド") });
+        WritePatternDictionary(("^You defeated (.+?)\\.$", "{t0}を倒した。"));
+
+        var translated = JournalPatternTranslator.Translate("You defeated Leader of the Farmers' Guild.");
+
+        Assert.That(translated, Is.EqualTo("農民のギルドの指導者を倒した。"));
+    }
+
+    [Test]
     public void Translate_TranslatesAbdicateSuccessorAnnalWithExpandedHistorySpiceCaptures()
     {
         WriteDictionaryFile(
@@ -448,6 +459,28 @@ public sealed class JournalPatternTranslatorTests
         Assert.That(
             translatedCapitalIt,
             Is.EqualTo("4100年末、人気のあるライバルを悪意あるはんだ付けで殺したあと、クッドのスルタンは姿を消した。シビブの輝く顔立ちのため、それが後継者に選ばれた。"));
+    }
+
+    [Test]
+    public void Translate_TranslatesCapitalizedExpandedHistorySpiceCapture()
+    {
+        WriteDictionaryFile("journal-test.ja.json", new[] { ("Farmers' Guild", "農民のギルド") });
+        WriteDictionaryFile(
+            Path.Combine("Scoped", "historyspice-common.ja.json"),
+            new[]
+            {
+                ("with malicious soldering", "悪意あるはんだ付け"),
+                ("shining", "輝く"),
+                ("visage", "顔立ち"),
+            });
+        WritePatternDictionary((
+            "^Because\\ of\\ (.+?),\\ (.+?)\\ was\\ chosen\\ as\\ the\\ successor\\.$",
+            "{t0}のため、{t1}が後継者に選ばれた。"));
+
+        var translated = JournalPatternTranslator.Translate(
+            "Because of Leader of the Farmers' Guildの Shining Visage, they was chosen as the successor.");
+
+        Assert.That(translated, Is.EqualTo("農民のギルドの指導者の輝く顔立ちのため、彼らが後継者に選ばれた。"));
     }
 
     [Test]

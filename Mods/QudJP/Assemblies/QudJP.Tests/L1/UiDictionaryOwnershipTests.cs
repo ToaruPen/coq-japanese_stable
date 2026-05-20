@@ -1,5 +1,4 @@
 using System.Text.Json;
-using System.Text.RegularExpressions;
 using System.Xml.Linq;
 
 namespace QudJP.Tests.L1;
@@ -118,6 +117,17 @@ public sealed class UiDictionaryOwnershipTests
             "Eat mah lah soup.",
             "Eat the Porridge.",
         };
+        var expectedLocalizedMessages = new[]
+        {
+            "新鮮なアップルマッツァを食べる。",
+            "温めたマッシュルームサイダーを飲む。",
+            "甘葉包みのヤギ肉を食べる。",
+            "タングアンドチークを食べる。",
+            "ボーンバブカを食べる。",
+            "ホットアンドスパイニーを食べる。",
+            "マーラースープを食べる。",
+            "粥を食べる。",
+        };
         var localizedMessages = LoadPresetMealMessages(localizedFurniturePath);
 
         Assert.Multiple(() =>
@@ -134,13 +144,7 @@ public sealed class UiDictionaryOwnershipTests
             }
 
             Assert.That(localizedMessages, Has.Count.EqualTo(baseMessages.Length));
-            foreach (var message in localizedMessages)
-            {
-                Assert.That(
-                    LooksLikeUntranslatedEnglish(message),
-                    Is.False,
-                    $"{message} should be localized in Furniture.jp.xml because Campfire reads PresetMealMessage directly.");
-            }
+            Assert.That(localizedMessages, Is.EqualTo(expectedLocalizedMessages));
         });
     }
 
@@ -163,12 +167,6 @@ public sealed class UiDictionaryOwnershipTests
             .Where(static element => string.Equals((string?)element.Attribute("Name"), "PresetMealMessage", StringComparison.Ordinal))
             .Select(static element => (string?)element.Attribute("Value") ?? string.Empty)
             .ToArray();
-    }
-
-    private static bool LooksLikeUntranslatedEnglish(string value)
-    {
-        return Regex.IsMatch(value, @"\b(?:Eat|Drink)\b", RegexOptions.CultureInvariant)
-            && Regex.IsMatch(value, "[A-Za-z]", RegexOptions.CultureInvariant);
     }
 
     private sealed record DictionaryEntry(string Key, string Context, string Text);

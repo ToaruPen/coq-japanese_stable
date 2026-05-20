@@ -22,42 +22,42 @@
       "route": "annals"
     },
     {
-      "pattern": "^Bless\\ (.+?)\\.$",
+      "pattern": "^[Bb]less\\ (.+?)(?:\\.)?$",
       "template": "{t0}を祝福する。",
       "route": "annals"
     },
     {
-      "pattern": "^Curse\\ (.+?)\\.$",
+      "pattern": "^[Cc]urse\\ (.+?)(?:\\.)?$",
       "template": "{t0}を呪う。",
       "route": "annals"
     },
     {
-      "pattern": "^Only\\ the\\ (.+?)\\ can\\ know\\ (.+?)\\.$",
+      "pattern": "^[Oo]nly\\ the\\ (.+?)\\ can\\ know\\ (.+?)(?:\\.)?$",
       "template": "{t1}を知り得るのは{t0}だけだ。",
       "route": "annals"
     },
     {
-      "pattern": "^At\\ the\\ (.+?)\\ lies\\ (.+?)\\.$",
+      "pattern": "^[Aa]t\\ the\\ (.+?)\\ lies\\ (.+?)(?:\\.)?$",
       "template": "{t0}には{t1}が宿る。",
       "route": "annals"
     },
     {
-      "pattern": "^The\\ (.+?)\\ (.+?)\\ knows\\ the\\ (.+?)\\ of\\ (.+?)\\.$",
+      "pattern": "^[Tt]he\\ (.+?)\\ (.+?)\\ knows\\ the\\ (.+?)\\ of\\ (.+?)(?:\\.)?$",
       "template": "{t0}{t1}は{t3}の{t2}を知る。",
       "route": "annals"
     },
     {
-      "pattern": "^(.+?)\\ is\\ no\\ way\\ to\\ bless\\ (.+?)\\.$",
+      "pattern": "^(.+?)\\ is\\ no\\ way\\ to\\ bless\\ (.+?)(?:\\.)?$",
       "template": "{t0}は{t1}を祝福する道ではない。",
       "route": "annals"
     },
     {
-      "pattern": "^Welcome\\ strangers\\ in\\ (.+?),\\ but\\ teach\\ them\\ the\\ (.+?)\\ of\\ (.+?)\\.$",
+      "pattern": "^[Ww]elcome\\ strangers\\ in\\ (.+?),\\ but\\ teach\\ them\\ the\\ (.+?)\\ of\\ (.+?)(?:\\.)?$",
       "template": "{t0}の中で異邦人を迎えよ、されど彼らに{t2}の{t1}を教えよ。",
       "route": "annals"
     },
     {
-      "pattern": "^Welcome\\ strangers\\ (.+?),\\ but\\ teach\\ them\\ the\\ (.+?)\\ of\\ (.+?)\\.$",
+      "pattern": "^[Ww]elcome\\ strangers\\ (.+?),\\ but\\ teach\\ them\\ the\\ (.+?)\\ of\\ (.+?)(?:\\.)?$",
       "template": "{t0}で異邦人を迎えよ、されど彼らに{t2}の{t1}を教えよ。",
       "route": "annals"
     },
@@ -72,37 +72,37 @@
       "route": "annals"
     },
     {
-      "pattern": "^Knowing\\ (.+?)\\ means\\ knowing\\ the\\ (.+?)\\.$",
+      "pattern": "^[Kk]nowing\\ (.+?)\\ means\\ knowing\\ the\\ (.+?)(?:\\.)?$",
       "template": "{t0}を知ることは{t1}を知ることだ。",
       "route": "annals"
     },
     {
-      "pattern": "^Like\\ the\\ (.+?)\\ to\\ the\\ (.+?),\\ so\\ (.+?)\\ to\\ us\\.$",
+      "pattern": "^[Ll]ike\\ the\\ (.+?)\\ to\\ the\\ (.+?),\\ so\\ (.+?)\\ to\\ us(?:\\.)?$",
       "template": "{t1}にとっての{t0}のように、我らにとっての{t2}もまたそうだ。",
       "route": "annals"
     },
     {
-      "pattern": "^(.+?)\\ dwells\\ in\\ the\\ (.+?)\\.$",
+      "pattern": "^(.+?)\\ dwells\\ in\\ the\\ (.+?)(?:\\.)?$",
       "template": "{t0}は{t1}に宿る。",
       "route": "annals"
     },
     {
-      "pattern": "^Do\\ not\\ ask\\ the\\ (.+?)\\ to\\ teach\\ (.+?)\\.$",
+      "pattern": "^[Dd]o\\ not\\ ask\\ the\\ (.+?)\\ to\\ teach\\ (.+?)(?:\\.)?$",
       "template": "{t0}に{t1}を教えよと求めるな。",
       "route": "annals"
     },
     {
-      "pattern": "^Keep\\ an\\ eye\\ on\\ your\\ (.+?)\\.$",
+      "pattern": "^[Kk]eep\\ an\\ eye\\ on\\ your\\ (.+?)(?:\\.)?$",
       "template": "自らの{t0}から目を離すな。",
       "route": "annals"
     },
     {
-      "pattern": "^Better\\ to\\ be\\ (.+?)\\ than\\ to\\ be\\ (.+?)\\.$",
+      "pattern": "^[Bb]etter\\ to\\ be\\ (.+?)\\ than\\ to\\ be\\ (.+?)(?:\\.)?$",
       "template": "{t1}であるより{t0}ほうがよい。",
       "route": "annals"
     },
     {
-      "pattern": "^Find\\ (.+?)\\ in\\ every\\ (.+?)\\.$",
+      "pattern": "^[Ff]ind\\ (.+?)\\ in\\ every\\ (.+?)(?:\\.)?$",
       "template": "あらゆる{t1}の中に{t0}を見いだせ。",
       "route": "annals"
     },

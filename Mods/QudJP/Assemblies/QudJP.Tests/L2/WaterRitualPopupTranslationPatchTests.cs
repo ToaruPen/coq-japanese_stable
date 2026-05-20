@@ -507,7 +507,7 @@ public sealed class WaterRitualPopupTranslationPatchTests
     public void Patch_TranslatesRuntimeBuySecretGossipPopup_WhenOwnerPatched()
     {
         const string popupMethod = nameof(DummyPopupShow.Show);
-        const string source =
+        var source =
             "{{G|Tam}} shares some gossip with you.\n\n\"I heard that some organization repeatedly beat some party at dice.\"";
 
         LocalizationAssetResolver.SetLocalizationRootForTests(GetLocalizationRoot());
@@ -544,6 +544,38 @@ public sealed class WaterRitualPopupTranslationPatchTests
             JournalPatternTranslator.ResetForTests();
             LocalizationAssetResolver.SetLocalizationRootForTests(null);
         }
+    }
+
+    [Test]
+    public void Patch_StripsDirectMarkedBuySecretGossipLeadInWithoutRetranslatingBody_WhenOwnerPatched()
+    {
+        const string popupMethod = nameof(DummyPopupShow.Show);
+        var source =
+            "{{G|Tam}} shares some gossip with you.\n\n\""
+            + MessageFrameTranslator.DirectTranslationMarker
+            + "I heard that some organization repeatedly beat some party at dice.\"";
+
+        WithPatchedOwnerAndPopup(
+            nameof(DummyWaterRitualPopupProducerTarget.WaterRitualBuySecretRevealEntry),
+            popupMethod,
+            () =>
+            {
+                var target = new DummyWaterRitualPopupProducerTarget
+                {
+                    PopupMethod = popupMethod,
+                    PopupMessageToShow = source,
+                };
+
+                InvokeOwnerMethod(target, nameof(DummyWaterRitualPopupProducerTarget.WaterRitualBuySecretRevealEntry));
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(
+                        DummyPopupShow.LastShowMessage,
+                        Is.EqualTo("{{G|Tam}}が噂を共有してくれた。\n\n\"聞いたところでは、some organization repeatedly beat some party at dice.\""));
+                    Assert.That(HitCount("BuySecretGossip"), Is.EqualTo(1));
+                });
+            });
     }
 
     [Test]

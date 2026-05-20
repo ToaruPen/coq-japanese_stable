@@ -82,6 +82,8 @@ public sealed class QudHistoryHelpersItemNameTranslationPatchTests
     [Test]
     public void Postfix_LeavesUnknownItemNameUnchanged_WhenPatched()
     {
+        WriteDictionaryFile("Scoped/historyspice-common.ja.json", ("sword", "剣"));
+        WriteDictionaryFile("world-gospels.ja.json", ("blessing", "祝福"));
         DummyQudHistoryHelpersTarget.HistoricItemNameResult = "Swordicus";
         var harmonyId = "qudjp-test-history-item-name-" + Guid.NewGuid().ToString("N");
         var harmony = new Harmony(harmonyId);

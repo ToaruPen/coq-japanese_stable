@@ -8423,7 +8423,7 @@
       "switch_case": "proverbs/proverbsCoda",
       "event_property": "gospel",
       "sample_source": "<spice.instancesOf.bless.!random> *sacredThing*",
-      "extracted_pattern": "^Bless\\ (.+?)\\.$",
+      "extracted_pattern": "^[Bb]less\\ (.+?)(?:\\.)?$",
       "slots": [
         {
           "index": 0,
@@ -8446,7 +8446,7 @@
       "switch_case": "proverbs/proverbsCoda",
       "event_property": "gospel",
       "sample_source": "<spice.instancesOf.curse.!random> *profaneThing*",
-      "extracted_pattern": "^Curse\\ (.+?)\\.$",
+      "extracted_pattern": "^[Cc]urse\\ (.+?)(?:\\.)?$",
       "slots": [
         {
           "index": 0,
@@ -8469,7 +8469,7 @@
       "switch_case": "proverbs/proverbsCoda",
       "event_property": "gospel",
       "sample_source": "only the <spice.personNouns.!random> can know *sacredThing*",
-      "extracted_pattern": "^Only\\ the\\ (.+?)\\ can\\ know\\ (.+?)\\.$",
+      "extracted_pattern": "^[Oo]nly\\ the\\ (.+?)\\ can\\ know\\ (.+?)(?:\\.)?$",
       "slots": [
         {
           "index": 0,
@@ -8498,7 +8498,7 @@
       "switch_case": "proverbs",
       "event_property": "gospel",
       "sample_source": "at the <spice.placeNouns.!random> lies <spice.instancesOf.divineFeeling.!random>",
-      "extracted_pattern": "^At\\ the\\ (.+?)\\ lies\\ (.+?)\\.$",
+      "extracted_pattern": "^[Aa]t\\ the\\ (.+?)\\ lies\\ (.+?)(?:\\.)?$",
       "slots": [
         {
           "index": 0,
@@ -8527,7 +8527,7 @@
       "switch_case": "proverbs/proverbsCoda",
       "event_property": "gospel",
       "sample_source": "the <spice.adjectives.!random> <spice.personNouns.!random> knows the <spice.commonPhrases.sanctity.!random> of *sacredThing*",
-      "extracted_pattern": "^The\\ (.+?)\\ (.+?)\\ knows\\ the\\ (.+?)\\ of\\ (.+?)\\.$",
+      "extracted_pattern": "^[Tt]he\\ (.+?)\\ (.+?)\\ knows\\ the\\ (.+?)\\ of\\ (.+?)(?:\\.)?$",
       "slots": [
         {
           "index": 0,
@@ -8568,7 +8568,7 @@
       "switch_case": "proverbs/proverbsCoda",
       "event_property": "gospel",
       "sample_source": "*Activity* is no way to <spice.instancesOf.bless.!random> *sacredThing*",
-      "extracted_pattern": "^(.+?)\\ is\\ no\\ way\\ to\\ bless\\ (.+?)\\.$",
+      "extracted_pattern": "^(.+?)\\ is\\ no\\ way\\ to\\ bless\\ (.+?)(?:\\.)?$",
       "slots": [
         {
           "index": 0,
@@ -8597,7 +8597,7 @@
       "switch_case": "proverbs/proverbsCoda",
       "event_property": "gospel",
       "sample_source": "welcome strangers in *VillageActivity*, but teach them the <spice.commonPhrases.sanctity.!random> of *sacredThing*",
-      "extracted_pattern": "^Welcome\\ strangers\\ in\\ (.+?),\\ but\\ teach\\ them\\ the\\ (.+?)\\ of\\ (.+?)\\.$",
+      "extracted_pattern": "^[Ww]elcome\\ strangers\\ in\\ (.+?),\\ but\\ teach\\ them\\ the\\ (.+?)\\ of\\ (.+?)(?:\\.)?$",
       "slots": [
         {
           "index": 0,
@@ -8632,7 +8632,7 @@
       "switch_case": "proverbs/proverbsCoda",
       "event_property": "gospel",
       "sample_source": "welcome strangers *VillageActivity*, but teach them the <spice.commonPhrases.sanctity.!random> of *sacredThing*",
-      "extracted_pattern": "^Welcome\\ strangers\\ (.+?),\\ but\\ teach\\ them\\ the\\ (.+?)\\ of\\ (.+?)\\.$",
+      "extracted_pattern": "^[Ww]elcome\\ strangers\\ (.+?),\\ but\\ teach\\ them\\ the\\ (.+?)\\ of\\ (.+?)(?:\\.)?$",
       "slots": [
         {
           "index": 0,
@@ -8725,7 +8725,7 @@
       "switch_case": "proverbs/proverbsCoda",
       "event_property": "gospel",
       "sample_source": "knowing *sacredThing* means knowing the <spice.nouns.!random>",
-      "extracted_pattern": "^Knowing\\ (.+?)\\ means\\ knowing\\ the\\ (.+?)\\.$",
+      "extracted_pattern": "^[Kk]nowing\\ (.+?)\\ means\\ knowing\\ the\\ (.+?)(?:\\.)?$",
       "slots": [
         {
           "index": 0,
@@ -8754,7 +8754,7 @@
       "switch_case": "proverbs/proverbsCoda",
       "event_property": "gospel",
       "sample_source": "like the <spice.nouns.!random> to the <spice.personNouns.!random>, so *sacredThing* to us",
-      "extracted_pattern": "^Like\\ the\\ (.+?)\\ to\\ the\\ (.+?),\\ so\\ (.+?)\\ to\\ us\\.$",
+      "extracted_pattern": "^[Ll]ike\\ the\\ (.+?)\\ to\\ the\\ (.+?),\\ so\\ (.+?)\\ to\\ us(?:\\.)?$",
       "slots": [
         {
           "index": 0,
@@ -8789,7 +8789,7 @@
       "switch_case": "proverbs/proverbsCoda",
       "event_property": "gospel",
       "sample_source": "*sacredThing* dwells in the <spice.commonPhrases.hearth.!random>",
-      "extracted_pattern": "^(.+?)\\ dwells\\ in\\ the\\ (.+?)\\.$",
+      "extracted_pattern": "^(.+?)\\ dwells\\ in\\ the\\ (.+?)(?:\\.)?$",
       "slots": [
         {
           "index": 0,
@@ -8818,7 +8818,7 @@
       "switch_case": "proverbs",
       "event_property": "gospel",
       "sample_source": "do not ask the <spice.personNouns.!random> to teach <spice.commonPhrases.sanctity.!random>",
-      "extracted_pattern": "^Do\\ not\\ ask\\ the\\ (.+?)\\ to\\ teach\\ (.+?)\\.$",
+      "extracted_pattern": "^[Dd]o\\ not\\ ask\\ the\\ (.+?)\\ to\\ teach\\ (.+?)(?:\\.)?$",
       "slots": [
         {
           "index": 0,
@@ -8847,7 +8847,7 @@
       "switch_case": "proverbs",
       "event_property": "gospel",
       "sample_source": "keep an eye on your <spice.nouns.!random>",
-      "extracted_pattern": "^Keep\\ an\\ eye\\ on\\ your\\ (.+?)\\.$",
+      "extracted_pattern": "^[Kk]eep\\ an\\ eye\\ on\\ your\\ (.+?)(?:\\.)?$",
       "slots": [
         {
           "index": 0,
@@ -8870,7 +8870,7 @@
       "switch_case": "proverbs",
       "event_property": "gospel",
       "sample_source": "better to be <spice.adjectives.!random> than to be <spice.adjectives.!random>",
-      "extracted_pattern": "^Better\\ to\\ be\\ (.+?)\\ than\\ to\\ be\\ (.+?)\\.$",
+      "extracted_pattern": "^[Bb]etter\\ to\\ be\\ (.+?)\\ than\\ to\\ be\\ (.+?)(?:\\.)?$",
       "slots": [
         {
           "index": 0,
@@ -8899,7 +8899,7 @@
       "switch_case": "proverbs",
       "event_property": "gospel",
       "sample_source": "find <spice.commonPhrases.sanctity.!random> in every <spice.nouns.!random>",
-      "extracted_pattern": "^Find\\ (.+?)\\ in\\ every\\ (.+?)\\.$",
+      "extracted_pattern": "^[Ff]ind\\ (.+?)\\ in\\ every\\ (.+?)(?:\\.)?$",
       "slots": [
         {
           "index": 0,
