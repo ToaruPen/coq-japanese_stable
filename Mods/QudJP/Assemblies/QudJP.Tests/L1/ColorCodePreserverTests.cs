@@ -68,6 +68,22 @@ public sealed class ColorCodePreserverTests
     }
 
     [Test]
+    public void Strip_DoesNotExposeTrailingAmpersandYAsVisibleText()
+    {
+        var input = "keeps starting&y";
+        var (stripped, spans) = ColorCodePreserver.Strip(input);
+
+        var restored = ColorCodePreserver.Restore("開始し続ける", spans);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(stripped, Is.EqualTo("keeps starting"));
+            Assert.That(stripped, Does.Not.EndWith("y"));
+            Assert.That(restored, Is.EqualTo("開始し続ける&y"));
+        });
+    }
+
+    [Test]
     public void StripRestore_PreservesBackgroundCodes()
     {
         var input = "^rdanger^k";
