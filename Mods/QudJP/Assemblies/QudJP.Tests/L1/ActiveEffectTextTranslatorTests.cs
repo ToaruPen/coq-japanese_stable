@@ -283,6 +283,25 @@ public sealed class ActiveEffectTextTranslatorTests
         });
     }
 
+    [Test]
+    public void TryTranslateText_LongBladeStanceGeneratedDetails_EmptyInputFallsThroughSafely()
+    {
+        WriteLongbladeStanceTemplateDictionary();
+
+        var changed = ActiveEffectTextTranslator.TryTranslateText(
+            string.Empty,
+            "ActiveEffectTextTranslatorTests",
+            "ActiveEffects.Details.LongbladeStance",
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(changed, Is.False);
+            Assert.That(translated, Is.EqualTo(string.Empty));
+            Assert.That(Translator.GetMissingKeyHitCountForTests(string.Empty), Is.EqualTo(0));
+        });
+    }
+
     private void WriteLongbladeStanceTemplateDictionary()
     {
         WriteScopedDictionary(

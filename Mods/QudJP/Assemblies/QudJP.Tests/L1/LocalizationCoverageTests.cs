@@ -996,6 +996,12 @@ public sealed class LocalizationCoverageTests
                 Does.Contain(new DictionaryEntry("{{W|metabolizing}}", "XRL.World.Effects.ProceduralCookingEffect.GetDescription", "{{W|代謝中}}")));
             Assert.That(
                 cookingEntries,
+                Does.Contain(new DictionaryEntry(
+                    "@thisCreature thirst@s at half rate.",
+                    "XRL.World.Effects.ProceduralCookingEffectUnit_LessThirst.GetDescription",
+                    "喉の渇きが半減する。")));
+            Assert.That(
+                cookingEntries,
                 Does.Contain(new DictionaryEntry("You thirst at half rate.", "XRL.World.Skills.Cooking.AppleMatz.GetDescription", "喉の渇きが半減する。")));
             Assert.That(
                 generatedEntries,
@@ -1030,9 +1036,21 @@ public sealed class LocalizationCoverageTests
             Assert.That(
                 statusEntries,
                 Does.Contain(new DictionaryEntry(
+                    "{{R|aggressive stance}}",
+                    "XRL.World.Effects.LongbladeStance_Aggressive.DisplayName",
+                    "{{R|攻撃姿勢}}")));
+            Assert.That(
+                statusEntries,
+                Does.Contain(new DictionaryEntry(
                     "dueling stance",
                     "XRL.World.Effects.LongbladeStance_Dueling.DisplayName",
                     "決闘姿勢")));
+            Assert.That(
+                statusEntries,
+                Does.Contain(new DictionaryEntry(
+                    "{{W|dueling stance}}",
+                    "XRL.World.Effects.LongbladeStance_Dueling.DisplayName",
+                    "{{W|決闘姿勢}}")));
         });
     }
 
