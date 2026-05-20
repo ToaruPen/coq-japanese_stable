@@ -68,6 +68,20 @@ public sealed class HistoricSpiceGeneratedNameTranslatorTests
         });
     }
 
+    [Test]
+    public void TryTranslateSultanateYearName_StripsDirectTranslationMarker()
+    {
+        var ok = HistoricSpiceGeneratedNameTranslator.TryTranslateSultanateYearName(
+            MessageFrameTranslator.DirectTranslationMarker + "Year of the Shining Visage",
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(translated, Is.EqualTo("Year of the Shining Visage"));
+        });
+    }
+
     [TestCase("")]
     [TestCase("Era of the Shining Visage")]
     public void TryTranslateSultanateYearName_LeavesNonMatchingInputUnchanged(string source)

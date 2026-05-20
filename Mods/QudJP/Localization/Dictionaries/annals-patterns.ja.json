@@ -47,7 +47,7 @@
       "route": "annals"
     },
     {
-      "pattern": "^(.+?)\\ is\\ no\\ way\\ to\\ bless\\ (.+?)(?:\\.)?$",
+      "pattern": "^(.+?)\\ is\\ no\\ way\\ to\\ (?:bless|thank|exalt|give\\ thanks\\ for|praise|honor)\\ (.+?)(?:\\.)?$",
       "template": "{t0}は{t1}を祝福する道ではない。",
       "route": "annals"
     },

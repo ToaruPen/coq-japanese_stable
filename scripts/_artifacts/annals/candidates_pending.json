@@ -8568,7 +8568,7 @@
       "switch_case": "proverbs/proverbsCoda",
       "event_property": "gospel",
       "sample_source": "*Activity* is no way to <spice.instancesOf.bless.!random> *sacredThing*",
-      "extracted_pattern": "^(.+?)\\ is\\ no\\ way\\ to\\ bless\\ (.+?)(?:\\.)?$",
+      "extracted_pattern": "^(.+?)\\ is\\ no\\ way\\ to\\ (?:bless|thank|exalt|give\\ thanks\\ for|praise|honor)\\ (.+?)(?:\\.)?$",
       "slots": [
         {
           "index": 0,

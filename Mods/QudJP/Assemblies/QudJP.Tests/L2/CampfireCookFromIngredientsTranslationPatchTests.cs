@@ -167,23 +167,26 @@ public sealed class CampfireCookFromIngredientsTranslationPatchTests
         string source,
         string expected)
     {
-        CampfireCookFromIngredientsTranslationPatch.Prefix();
-        try
+        WithPatchedOwner(() =>
         {
-            var translated = PopupTranslationPatch.TranslatePopupTextForProducerRoute(
-                source,
-                nameof(PopupPickOptionTranslationPatch));
-
-            Assert.Multiple(() =>
+            var target = new DummyCampfireCookFromIngredientsTarget
             {
-                Assert.That(translated, Is.EqualTo(expected));
-                Assert.That(PickOptionProducerHitCount("SelectedIngredientsMenuRow"), Is.EqualTo(1));
-            });
-        }
-        finally
-        {
-            CampfireCookFromIngredientsTranslationPatch.Finalizer(null);
-        }
+                BeforePopup = () =>
+                {
+                    var translated = PopupTranslationPatch.TranslatePopupTextForProducerRoute(
+                        source,
+                        nameof(PopupPickOptionTranslationPatch));
+
+                    Assert.Multiple(() =>
+                    {
+                        Assert.That(translated, Is.EqualTo(expected));
+                        Assert.That(PickOptionProducerHitCount("SelectedIngredientsMenuRow"), Is.EqualTo(1));
+                    });
+                },
+            };
+
+            target.CookFromIngredients(random: false);
+        });
     }
 
     [Test]
@@ -191,23 +194,26 @@ public sealed class CampfireCookFromIngredientsTranslationPatchTests
     {
         const string source = "{{W|Cook with the {{C|0}} selected ingredients.}}\r\n{{y|[up to 2 remaining]}}";
 
-        CampfireCookFromIngredientsTranslationPatch.Prefix();
-        try
+        WithPatchedOwner(() =>
         {
-            var translated = PopupTranslationPatch.TranslatePopupTextForProducerRoute(
-                source,
-                nameof(PopupPickOptionTranslationPatch));
-
-            Assert.Multiple(() =>
+            var target = new DummyCampfireCookFromIngredientsTarget
             {
-                Assert.That(translated, Is.EqualTo("{{W|選択した材料{{C|0}}個で料理する。}}\n{{y|[あと2個まで]}}"));
-                Assert.That(PickOptionProducerHitCount("SelectedIngredientsMenuRow"), Is.EqualTo(1));
-            });
-        }
-        finally
-        {
-            CampfireCookFromIngredientsTranslationPatch.Finalizer(null);
-        }
+                BeforePopup = () =>
+                {
+                    var translated = PopupTranslationPatch.TranslatePopupTextForProducerRoute(
+                        source,
+                        nameof(PopupPickOptionTranslationPatch));
+
+                    Assert.Multiple(() =>
+                    {
+                        Assert.That(translated, Is.EqualTo("{{W|選択した材料{{C|0}}個で料理する。}}\n{{y|[あと2個まで]}}"));
+                        Assert.That(PickOptionProducerHitCount("SelectedIngredientsMenuRow"), Is.EqualTo(1));
+                    });
+                },
+            };
+
+            target.CookFromIngredients(random: false);
+        });
     }
 
     [Test]
@@ -327,9 +333,12 @@ internal sealed class DummyCampfireCookFromIngredientsTarget
 {
     public string PopupMessageToShow { get; set; } = string.Empty;
 
+    public Action? BeforePopup { get; set; }
+
     public bool CookFromIngredients(bool random)
     {
         _ = random;
+        BeforePopup?.Invoke();
         DummyPopupShow.Show(PopupMessageToShow);
         return true;
     }

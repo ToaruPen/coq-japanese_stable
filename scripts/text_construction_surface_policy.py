@@ -1364,13 +1364,16 @@ def _normalize_family_payload(family: object) -> object:
         for call in representative_calls
         if isinstance(call, dict) and isinstance(call.get("line"), int)
     ] if isinstance(representative_calls, list) else []
+    existing_text_construction_count = family.get("text_construction_count")
 
     return {
         **family,
         "family_id": family.get("family_id", family.get("producer_family_id", "")),
         "member_signature": family.get("member_signature", family.get("member_name", "")),
         "text_construction_count": (
-            callsite_count
+            existing_text_construction_count
+            if isinstance(existing_text_construction_count, int)
+            else callsite_count
             if isinstance(callsite_count, int)
             else sum(surface_counts.values()) if isinstance(surface_counts, dict) else 0
         ),
