@@ -187,11 +187,6 @@
       "route": "annals"
     },
     {
-      "pattern": "^((?:In|Throughout|Throughout\\ the\\ entirety\\ of|Through|Around))\\ (.+?),\\ (.+?)\\ (.+?)\\ the\\ flower\\ fields\\ and\\ brought\\ turmoil\\ to\\ the\\ troubled\\ village\\ of\\ Bey\\ Lah\\.\\ (.+?)\\ became\\ known\\ as\\ the\\ Hindren\\ (.+?)\\.$",
-      "template": "{t1}{t0}、{t2}は花畑を{t3}うえ、悩めるベイ・ラーの村に混乱をもたらした。{t4}は以後ヒンドレンの{t5}として知られるようになった。",
-      "route": "annals"
-    },
-    {
       "pattern": "^While\\ wandering\\ around\\ (.+?),\\ (.+?)\\ stumbled\\ upon\\ a\\ clan\\ of\\ (.+?)\\ performing\\ a\\ secret\\ ritual\\.\\ Because\\ of\\ (.+?)\\ (.+?),\\ they\\ furiously\\ rebuked\\ (.+?)\\ and\\ declared\\ (.+?)\\ a\\ villain\\ to\\ their\\ kind\\.$",
       "template": "{t0}の辺りをさまよううち、{t1}は秘密の儀式を行う{t2}の一族に出くわした。{t3}{t4}ゆえ、彼らは{t5}を激しく叱責し、{t6}を同族の悪者であると宣した。",
       "route": "annals"
@@ -199,11 +194,6 @@
     {
       "pattern": "^Deep\\ in\\ the\\ wilds\\ of\\ (.+?),\\ (.+?)\\ stumbled\\ upon\\ a\\ clan\\ of\\ (.+?)\\ performing\\ a\\ secret\\ ritual\\.\\ Because\\ of\\ (.+?)\\ (.+?),\\ they\\ furiously\\ rebuked\\ (.+?)\\ and\\ declared\\ (.+?)\\ a\\ villain\\ to\\ their\\ kind\\.$",
       "template": "{t0}の荒野深くにて、{t1}は秘密の儀式を行う{t2}の一族に出くわした。{t3}{t4}ゆえ、彼らは{t5}を激しく叱責し、{t6}を同族の悪者であると宣した。",
-      "route": "annals"
-    },
-    {
-      "pattern": "^((?:In|Throughout|Throughout\\ the\\ entirety\\ of|Through|Around))\\ (.+?),\\ (.+?)\\ (.+?)\\ all\\ of\\ (.+?),\\ (.+?)\\ of\\ (.+?)\\ and\\ (.+?)\\.\\ (.+?)\\ became\\ known\\ as\\ (?:the\\ )?(.+?)\\ (Scourge|Terror|Bane|Pest|Woe|Sorrow)\\.$",
-      "template": "{t1}{t0}、{t2}は{t4}全域を{t3}うえ、{t6}と{t7}に対して{t5}を行った。{t8}は以後{t9}の{t10}として知られるようになった。",
       "route": "annals"
     },
     {
@@ -327,6 +317,11 @@
       "route": "annals"
     },
     {
+      "pattern": "^Throughout\\ the\\ entirety\\ of\\ (.+?),\\ (.+?)\\ (.+?)\\ the\\ flower\\ fields\\ and\\ brought\\ turmoil\\ to\\ the\\ troubled\\ village\\ of\\ Bey\\ Lah\\.\\ (.+?)\\ became\\ known\\ as\\ the\\ Hindren\\ (.+?)\\.$",
+      "template": "{t0}年を通じて、{t1}は花畑を{t2}うえ、悩めるベイ・ラーの村に混乱をもたらした。{t3}は以後ヒンドレンの{t4}として知られるようになった。",
+      "route": "annals"
+    },
+    {
       "pattern": "^At\\ the\\ Battle\\ of\\ (.+?),\\ (.+?)\\ fought\\ to\\ subjugate\\ (.+?)\\.\\ (.+?)\\ wielded\\ (.+?)\\ (.+?)\\ with\\ such\\ (.+?)\\ that\\ it\\ became\\ forever\\ known\\ as\\ (.+?),\\ the\\ (.+?)\\ of\\ (.+?)\\.$",
       "template": "{t0}の戦いで、{t1}は{t2}を征服すべく戦った。{t3}は{t4}{t5}を振るい、その{t6}ゆえに、それは永遠に{t7}、{t9}の{t8}として知られるようになった。",
       "route": "annals"
@@ -349,6 +344,11 @@
     {
       "pattern": "^In\\ late\\ (.+?)\\ (?:BR|AR),\\ (.+?)\\ was\\ assailed\\ by\\ (.+?)\\ over\\ the\\ sanctioned\\ persecution\\ of\\ (.+?)\\.\\ (.+?)\\ won\\ and\\ had\\ the\\ (.+?)\\ (.+?)\\.\\ (.+?)\\ was\\ (.+?)\\ years\\ old\\.$",
       "template": "{t0}年の末、{t1}は{t3}への公認された迫害をめぐり、{t2}に襲われた。{t4}は勝利し、{t5}を{t6}させた。{t7}は{t8}歳であった。",
+      "route": "annals"
+    },
+    {
+      "pattern": "^Throughout\\ the\\ entirety\\ of\\ (.+?),\\ (.+?)\\ (.+?)\\ all\\ of\\ (.+?),\\ (.+?)\\ of\\ (.+?)\\ and\\ (.+?)\\.\\ (.+?)\\ became\\ known\\ as\\ (?:the\\ )?(.+?)\\ (Scourge|Terror|Bane|Pest|Woe|Sorrow)\\.$",
+      "template": "{t0}年全体を通じて、{t1}は{t3}全域を{t2}うえ、{t5}と{t6}に対して{t4}を行った。{t7}は以後{t8}の{t9}として知られるようになった。",
       "route": "annals"
     },
     {
@@ -382,8 +382,8 @@
       "route": "annals"
     },
     {
-      "pattern": "^((?:In|Throughout|Throughout\\ the\\ entirety\\ of|Through|Around))\\ (.+?),\\ (.+?)\\ (.+?)\\ all\\ of\\ (.+?),\\ (.+?)\\ of\\ (.+?)\\ and\\ (.+?)\\.\\ (.+?)\\ became\\ known\\ as\\ (.+?)\\.$",
-      "template": "{t1}{t0}、{t2}は{t4}全域を{t3}うえ、{t6}と{t7}に対して{t5}を行った。{t8}は以後{t9}として知られるようになった。",
+      "pattern": "^Throughout\\ (.+?),\\ (.+?)\\ (.+?)\\ the\\ flower\\ fields\\ and\\ brought\\ turmoil\\ to\\ the\\ troubled\\ village\\ of\\ Bey\\ Lah\\.\\ (.+?)\\ became\\ known\\ as\\ the\\ Hindren\\ (.+?)\\.$",
+      "template": "{t0}年を通じて、{t1}は花畑を{t2}うえ、悩めるベイ・ラーの村に混乱をもたらした。{t3}は以後ヒンドレンの{t4}として知られるようになった。",
       "route": "annals"
     },
     {
@@ -394,6 +394,21 @@
     {
       "pattern": "^In\\ (.+?)\\ (?:BR|AR),\\ a\\ corrupt\\ administrator\\ was\\ appointed\\ minister\\ of\\ (.+?)\\.\\ (.+?)\\ outlawed\\ association\\ with\\ (.+?),\\ and\\ (.+?)\\ was\\ forced\\ to\\ flee\\.$",
       "template": "{0}年、腐敗した施政官が{t1}の大臣に任じられた。{t2}は{t3}との交わりを禁じ、{t4}は逃亡を余儀なくされた。",
+      "route": "annals"
+    },
+    {
+      "pattern": "^Through\\ (.+?),\\ (.+?)\\ (.+?)\\ the\\ flower\\ fields\\ and\\ brought\\ turmoil\\ to\\ the\\ troubled\\ village\\ of\\ Bey\\ Lah\\.\\ (.+?)\\ became\\ known\\ as\\ the\\ Hindren\\ (.+?)\\.$",
+      "template": "{t0}年を通じて、{t1}は花畑を{t2}うえ、悩めるベイ・ラーの村に混乱をもたらした。{t3}は以後ヒンドレンの{t4}として知られるようになった。",
+      "route": "annals"
+    },
+    {
+      "pattern": "^Around\\ (.+?),\\ (.+?)\\ (.+?)\\ the\\ flower\\ fields\\ and\\ brought\\ turmoil\\ to\\ the\\ troubled\\ village\\ of\\ Bey\\ Lah\\.\\ (.+?)\\ became\\ known\\ as\\ the\\ Hindren\\ (.+?)\\.$",
+      "template": "{t0}年頃、{t1}は花畑を{t2}うえ、悩めるベイ・ラーの村に混乱をもたらした。{t3}は以後ヒンドレンの{t4}として知られるようになった。",
+      "route": "annals"
+    },
+    {
+      "pattern": "^Throughout\\ (.+?),\\ (.+?)\\ (.+?)\\ all\\ of\\ (.+?),\\ (.+?)\\ of\\ (.+?)\\ and\\ (.+?)\\.\\ (.+?)\\ became\\ known\\ as\\ (?:the\\ )?(.+?)\\ (Scourge|Terror|Bane|Pest|Woe|Sorrow)\\.$",
+      "template": "{t0}年を通じて、{t1}は{t3}全域を{t2}うえ、{t5}と{t6}に対して{t4}を行った。{t7}は以後{t8}の{t9}として知られるようになった。",
       "route": "annals"
     },
     {
@@ -412,8 +427,23 @@
       "route": "annals"
     },
     {
+      "pattern": "^Through\\ (.+?),\\ (.+?)\\ (.+?)\\ all\\ of\\ (.+?),\\ (.+?)\\ of\\ (.+?)\\ and\\ (.+?)\\.\\ (.+?)\\ became\\ known\\ as\\ (?:the\\ )?(.+?)\\ (Scourge|Terror|Bane|Pest|Woe|Sorrow)\\.$",
+      "template": "{t0}年を通じて、{t1}は{t3}全域を{t2}うえ、{t5}と{t6}に対して{t4}を行った。{t7}は以後{t8}の{t9}として知られるようになった。",
+      "route": "annals"
+    },
+    {
       "pattern": "^At\\ the\\ Battle\\ of\\ (.+?),\\ (.+?)\\ fought\\ to\\ subjugate\\ (.+?)\\.\\ (.+?)\\ wielded\\ (.+?)\\ (.+?)\\ with\\ such\\ (.+?)\\ that\\ it\\ became\\ forever\\ known\\ as\\ (.+)\\.$",
       "template": "{t0}の戦いで、{t1}は{t2}を征服すべく戦った。{t3}は{t4}{t5}を振るい、その{t6}ゆえに、それは永遠に{t7}として知られるようになった。",
+      "route": "annals"
+    },
+    {
+      "pattern": "^In\\ (.+?),\\ (.+?)\\ (.+?)\\ the\\ flower\\ fields\\ and\\ brought\\ turmoil\\ to\\ the\\ troubled\\ village\\ of\\ Bey\\ Lah\\.\\ (.+?)\\ became\\ known\\ as\\ the\\ Hindren\\ (.+?)\\.$",
+      "template": "{t0}年、{t1}は花畑を{t2}うえ、悩めるベイ・ラーの村に混乱をもたらした。{t3}は以後ヒンドレンの{t4}として知られるようになった。",
+      "route": "annals"
+    },
+    {
+      "pattern": "^Around\\ (.+?),\\ (.+?)\\ (.+?)\\ all\\ of\\ (.+?),\\ (.+?)\\ of\\ (.+?)\\ and\\ (.+?)\\.\\ (.+?)\\ became\\ known\\ as\\ (?:the\\ )?(.+?)\\ (Scourge|Terror|Bane|Pest|Woe|Sorrow)\\.$",
+      "template": "{t0}年頃、{t1}は{t3}全域を{t2}うえ、{t5}と{t6}に対して{t4}を行った。{t7}は以後{t8}の{t9}として知られるようになった。",
       "route": "annals"
     },
     {
@@ -439,6 +469,11 @@
     {
       "pattern": "^After\\ (.+?)\\ with\\ (.+?),\\ (.+?)\\ convinced\\ them\\ to\\ help\\ (.+?)\\ found\\ (.+?)\\ in\\ (.+?)\\ for\\ the\\ purpose\\ of\\ (.+?)\\ (.+?)\\.\\ They\\ named\\ it\\ (.+?)\\.$",
       "template": "{t1}と{t0}したのち、{t2}は{t3}が{t5}に{t4}を創設する助力をするよう彼らを説得した。その目的は{t7}を{t6}ことだった。彼らはそれを{t8}と名づけた。",
+      "route": "annals"
+    },
+    {
+      "pattern": "^In\\ (.+?),\\ (.+?)\\ (.+?)\\ all\\ of\\ (.+?),\\ (.+?)\\ of\\ (.+?)\\ and\\ (.+?)\\.\\ (.+?)\\ became\\ known\\ as\\ (?:the\\ )?(.+?)\\ (Scourge|Terror|Bane|Pest|Woe|Sorrow)\\.$",
+      "template": "{t0}年、{t1}は{t3}全域を{t2}うえ、{t5}と{t6}に対して{t4}を行った。{t7}は以後{t8}の{t9}として知られるようになった。",
       "route": "annals"
     },
     {
@@ -477,6 +512,11 @@
       "route": "annals"
     },
     {
+      "pattern": "^Throughout\\ the\\ entirety\\ of\\ (.+?),\\ (.+?)\\ (.+?)\\ all\\ of\\ (.+?),\\ (.+?)\\ of\\ (.+?)\\ and\\ (.+?)\\.\\ (.+?)\\ became\\ known\\ as\\ (.+?)\\.$",
+      "template": "{t0}年全体を通じて、{t1}は{t3}全域を{t2}うえ、{t5}と{t6}に対して{t4}を行った。{t7}は以後{t8}として知られるようになった。",
+      "route": "annals"
+    },
+    {
       "pattern": "^In\\ (.+?)\\ (?:BR|AR),\\ Resheph\\ appointed\\ Rebekah\\ administrator\\ of\\ (.+?)\\.\\ She\\ tendered\\ alms\\ for\\ the\\ sick\\ in\\ his\\ name\\.$",
       "template": "{0}年、レシェフはレベカを{t1}の施政官に任じた。彼女は彼の名において病める者へ施しを捧げた。",
       "route": "annals"
@@ -497,8 +537,28 @@
       "route": "annals"
     },
     {
+      "pattern": "^Throughout\\ (.+?),\\ (.+?)\\ (.+?)\\ all\\ of\\ (.+?),\\ (.+?)\\ of\\ (.+?)\\ and\\ (.+?)\\.\\ (.+?)\\ became\\ known\\ as\\ (.+?)\\.$",
+      "template": "{t0}年を通じて、{t1}は{t3}全域を{t2}うえ、{t5}と{t6}に対して{t4}を行った。{t7}は以後{t8}として知られるようになった。",
+      "route": "annals"
+    },
+    {
+      "pattern": "^Through\\ (.+?),\\ (.+?)\\ (.+?)\\ all\\ of\\ (.+?),\\ (.+?)\\ of\\ (.+?)\\ and\\ (.+?)\\.\\ (.+?)\\ became\\ known\\ as\\ (.+?)\\.$",
+      "template": "{t0}年を通じて、{t1}は{t3}全域を{t2}うえ、{t5}と{t6}に対して{t4}を行った。{t7}は以後{t8}として知られるようになった。",
+      "route": "annals"
+    },
+    {
+      "pattern": "^Around\\ (.+?),\\ (.+?)\\ (.+?)\\ all\\ of\\ (.+?),\\ (.+?)\\ of\\ (.+?)\\ and\\ (.+?)\\.\\ (.+?)\\ became\\ known\\ as\\ (.+?)\\.$",
+      "template": "{t0}年頃、{t1}は{t3}全域を{t2}うえ、{t5}と{t6}に対して{t4}を行った。{t7}は以後{t8}として知られるようになった。",
+      "route": "annals"
+    },
+    {
       "pattern": "^One\\ auspicious\\ day,\\ (.+?)\\ (.+?)\\.\\ (.+?),\\ (.+?)\\ always\\ kept\\ some\\ (.+?)\\ hidden\\ on\\ (.+?)\\ person\\.$",
       "template": "ある吉日、{t0}は{t1}。{t2}、{t3}は常に{t5}の身にいくらかの{t4}を隠し持つようになった。",
+      "route": "annals"
+    },
+    {
+      "pattern": "^In\\ (.+?),\\ (.+?)\\ (.+?)\\ all\\ of\\ (.+?),\\ (.+?)\\ of\\ (.+?)\\ and\\ (.+?)\\.\\ (.+?)\\ became\\ known\\ as\\ (.+?)\\.$",
+      "template": "{t0}年、{t1}は{t3}全域を{t2}うえ、{t5}と{t6}に対して{t4}を行った。{t7}は以後{t8}として知られるようになった。",
       "route": "annals"
     },
     {
@@ -537,11 +597,6 @@
       "route": "annals"
     },
     {
-      "pattern": "^([Bb]less|[Tt]hank|[Ee]xalt|[Gg]ive\\ thanks\\ for|[Pp]raise|[Hh]onor)\\ (.+?)(?:\\.)?$",
-      "template": "{t1}を{t0}。",
-      "route": "annals"
-    },
-    {
       "pattern": "^[Ww]elcome\\ strangers\\ in\\ (.+?),\\ but\\ teach\\ them\\ the\\ (.+?)\\ of\\ (.+?)(?:\\.)?$",
       "template": "{t0}の中で異邦人を迎えよ、されど彼らに{t2}の{t1}を教えよ。",
       "route": "annals"
@@ -574,11 +629,6 @@
     {
       "pattern": "^[Ll]ike\\ the\\ (.+?)\\ to\\ the\\ (.+?),\\ so\\ (.+?)\\ to\\ us(?:\\.)?$",
       "template": "{t1}にとっての{t0}のように、我らにとっての{t2}もまたそうだ。",
-      "route": "annals"
-    },
-    {
-      "pattern": "^([Cc]urse|[Aa]\\ blight\\ upon|[Aa]\\ curse\\ upon)\\ (.+?)(?:\\.)?$",
-      "template": "{t1}を{t0}。",
       "route": "annals"
     },
     {
@@ -717,13 +767,58 @@
       "route": "annals"
     },
     {
+      "pattern": "^[Gg]ive\\ thanks\\ for\\ (.+?)(?:\\.)?$",
+      "template": "{t0}に感謝を捧げる。",
+      "route": "annals"
+    },
+    {
       "pattern": "^(.+?)\\ (.+?)\\ named\\ it\\ (.+?)\\.$",
       "template": "{t0}、{t1}はそれを{t2}と名づけた。",
       "route": "annals"
     },
     {
+      "pattern": "^[Aa]\\ blight\\ upon\\ (.+?)(?:\\.)?$",
+      "template": "{t0}に災いあれ。",
+      "route": "annals"
+    },
+    {
+      "pattern": "^[Aa]\\ curse\\ upon\\ (.+?)(?:\\.)?$",
+      "template": "{t0}に呪いあれ。",
+      "route": "annals"
+    },
+    {
       "pattern": "^(.+?)\\ leads\\ to\\ (.+?)(?:\\.)?$",
       "template": "{t0}は{t1}につながる。",
+      "route": "annals"
+    },
+    {
+      "pattern": "^[Pp]raise\\ (.+?)(?:\\.)?$",
+      "template": "{t0}を称賛する。",
+      "route": "annals"
+    },
+    {
+      "pattern": "^[Bb]less\\ (.+?)(?:\\.)?$",
+      "template": "{t0}を祝福する。",
+      "route": "annals"
+    },
+    {
+      "pattern": "^[Cc]urse\\ (.+?)(?:\\.)?$",
+      "template": "{t0}を呪う。",
+      "route": "annals"
+    },
+    {
+      "pattern": "^[Ee]xalt\\ (.+?)(?:\\.)?$",
+      "template": "{t0}を讃える。",
+      "route": "annals"
+    },
+    {
+      "pattern": "^[Hh]onor\\ (.+?)(?:\\.)?$",
+      "template": "{t0}を敬う。",
+      "route": "annals"
+    },
+    {
+      "pattern": "^[Tt]hank\\ (.+?)(?:\\.)?$",
+      "template": "{t0}に感謝する。",
       "route": "annals"
     },
     {

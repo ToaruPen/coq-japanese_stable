@@ -73,6 +73,19 @@ public sealed class CampfirePreserveTranslationPatchTests
     }
 
     [Test]
+    public void PreserveExotic_PreservesCountColorInGeneratedPreservedPopup()
+    {
+        WriteDisplayNameDictionary(
+            ("phase fruit", "フェーズ果実"),
+            ("phase preserves", "フェーズ保存食"));
+
+        AssertPopupMessage(
+            RequireMethod(typeof(DummyCampfirePreserveTarget), nameof(DummyCampfirePreserveTarget.PreserveExotic)),
+            "You preserved:\n\n{{M|phase fruit}} into {{C|3}} servings of {{C|phase preserves}}.",
+            "保存した:\n\n{{M|フェーズ果実}}を{{C|3}}食分の{{C|フェーズ保存食}}に保存した。");
+    }
+
+    [Test]
     public void Preserve_TranslatesGeneratedPreservedPopup_WithBackgroundColorPrefix()
     {
         WriteDisplayNameDictionary(

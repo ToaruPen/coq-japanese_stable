@@ -204,6 +204,7 @@ internal static class ColorRouteCatalog
             ["Mods/QudJP/Assemblies/src/Patches/ConversationDisplayTextPatch.cs|ColorAwareTranslationComposer.TranslatePreservingColors("] = 1,
             ["Mods/QudJP/Assemblies/src/Patches/ConversationRewardPopupTranslationPatch.cs|MessagePatternTranslator.Translate("] = 1,
             ["Mods/QudJP/Assemblies/src/Patches/ConversationTemplateTranslator.cs|ColorAwareTranslationComposer.TranslatePreservingColors("] = 1,
+            ["Mods/QudJP/Assemblies/src/Patches/CampfireCookFromRecipeTranslationPatch.cs|ColorAwareTranslationComposer.TranslatePreservingColors("] = 1,
             ["Mods/QudJP/Assemblies/src/Patches/CampfirePreserveTranslationPatch.cs|GetDisplayNameRouteTranslator.TranslatePreservingColors("] = 1,
             ["Mods/QudJP/Assemblies/src/Patches/CookingIngredientFragmentTranslator.cs|GetDisplayNameRouteTranslator.TranslatePreservingColors("] = 1,
             ["Mods/QudJP/Assemblies/src/Patches/CudgelConkPopupTranslationPatch.cs|ColorAwareTranslationComposer.TranslatePreservingColors("] = 2,

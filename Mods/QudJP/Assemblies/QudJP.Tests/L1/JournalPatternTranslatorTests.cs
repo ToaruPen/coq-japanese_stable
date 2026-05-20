@@ -466,6 +466,7 @@ public sealed class JournalPatternTranslatorTests
         Assert.That(
             translatedEnglishPossessive,
             Is.EqualTo("4100年末、人気のあるライバルを悪意あるはんだ付けで殺したあと、クッドのスルタンは姿を消した。Sbibの輝く顔立ちのため、彼らが後継者に選ばれた。"));
+        AssertJournalPatternEdgeCases();
     }
 
     [Test]
@@ -488,6 +489,7 @@ public sealed class JournalPatternTranslatorTests
             "Because of Leader of the Farmers' Guildの Shining Visage, they was chosen as the successor.");
 
         Assert.That(translated, Is.EqualTo("農民のギルドの指導者の輝く顔立ちのため、彼らが後継者に選ばれた。"));
+        AssertJournalPatternEdgeCases();
     }
 
     [Test]
@@ -506,6 +508,7 @@ public sealed class JournalPatternTranslatorTests
         Assert.That(
             translated,
             Is.EqualTo("4100年ごろ、after inventing a clock、クッドのスルタンは姿を消した。bright destinyのため、その者が後継者に選ばれた。"));
+        AssertJournalPatternEdgeCases();
     }
 
     [Test]
@@ -529,6 +532,7 @@ public sealed class JournalPatternTranslatorTests
             "Oboroqoru got his finger stuck in a throne.");
 
         Assert.That(translatedIn, Is.EqualTo("Oboroqoruはその指を玉座に挟まれた。"));
+        AssertJournalPatternEdgeCases();
     }
 
     [Test]
@@ -544,6 +548,7 @@ public sealed class JournalPatternTranslatorTests
         var translated = JournalPatternTranslator.Translate("sib drowned in a lake of acid.");
 
         Assert.That(translated, Is.EqualTo("sibは酸の湖で溺れた。"));
+        AssertJournalPatternEdgeCases();
     }
 
     [Test]
@@ -820,8 +825,29 @@ public sealed class JournalPatternTranslatorTests
                     JournalPatternTranslator.Translate("Bless Glass Workshop."),
                     Is.EqualTo("ガラス工房を祝福する。"));
                 Assert.That(
+                    JournalPatternTranslator.Translate("Thank Glass Workshop."),
+                    Is.EqualTo("ガラス工房に感謝する。"));
+                Assert.That(
+                    JournalPatternTranslator.Translate("Give thanks for Glass Workshop."),
+                    Is.EqualTo("ガラス工房に感謝を捧げる。"));
+                Assert.That(
+                    JournalPatternTranslator.Translate("Praise Glass Workshop."),
+                    Is.EqualTo("ガラス工房を称賛する。"));
+                Assert.That(
+                    JournalPatternTranslator.Translate("Honor Glass Workshop."),
+                    Is.EqualTo("ガラス工房を敬う。"));
+                Assert.That(
+                    JournalPatternTranslator.Translate("Exalt Glass Workshop."),
+                    Is.EqualTo("ガラス工房を讃える。"));
+                Assert.That(
                     JournalPatternTranslator.Translate("Curse Idleness."),
                     Is.EqualTo("怠惰を呪う。"));
+                Assert.That(
+                    JournalPatternTranslator.Translate("A blight upon Idleness."),
+                    Is.EqualTo("怠惰に災いあれ。"));
+                Assert.That(
+                    JournalPatternTranslator.Translate("A curse upon Idleness."),
+                    Is.EqualTo("怠惰に呪いあれ。"));
                 Assert.That(
                     JournalPatternTranslator.Translate("Only the sage can know Glass Workshop."),
                     Is.EqualTo("ガラス工房を知り得るのは賢者だけだ。"));

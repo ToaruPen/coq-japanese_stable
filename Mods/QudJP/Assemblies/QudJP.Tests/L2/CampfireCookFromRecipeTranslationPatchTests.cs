@@ -42,6 +42,8 @@ public sealed class CampfireCookFromRecipeTranslationPatchTests
     [TestCase("Remove from favorite recipes", "お気に入りレシピから外す", "MenuLabel")]
     [TestCase("Forget", "忘れる", "MenuLabel")]
     [TestCase("Back", "戻る", "MenuLabel")]
+    [TestCase("{{K|Cook}}", "{{K|料理する}}", "MenuLabel")]
+    [TestCase("&KBack", "&K戻る", "MenuLabel")]
     [TestCase("Show 3 hidden recipes missing ingredients", "材料不足の非表示レシピを3件表示", "HiddenRecipesRow")]
     [TestCase("{{K|Show {{C|12}} hidden recipes missing ingredients}}", "{{K|材料不足の非表示レシピを{{C|12}}件表示}}", "HiddenRecipesRow")]
     [TestCase("&K< 3 hidden for missing ingredients >", "&K< 材料不足のため非表示: 3件 >", "HiddenRecipesIntro")]

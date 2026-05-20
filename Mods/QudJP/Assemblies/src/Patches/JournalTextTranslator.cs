@@ -184,10 +184,14 @@ internal static class JournalTextTranslator
 
     private static bool TryTranslateLines(string source, string route, out string translated)
     {
-        var lines = source.Split(new[] { '\n' }, StringSplitOptions.None);
+        var newline = source.Contains("\r\n") ? "\r\n" : "\n";
+        var normalizedSource = newline == "\r\n"
+            ? source.Replace("\r\n", "\n")
+            : source;
+        var lines = normalizedSource.Split(new[] { '\n' }, StringSplitOptions.None);
         var exactFamily = lines.Length == 1 ? "Journal.Exact" : "Journal.LineExact";
         var changed = false;
-        var builder = new StringBuilder(source.Length);
+        var builder = new StringBuilder(normalizedSource.Length);
         for (var index = 0; index < lines.Length; index++)
         {
             var line = lines[index];
@@ -201,7 +205,7 @@ internal static class JournalTextTranslator
             changed |= !string.Equals(line, translatedLine, StringComparison.Ordinal);
             if (index > 0)
             {
-                builder.Append('\n');
+                builder.Append(newline);
             }
 
             builder.Append(translatedLine);

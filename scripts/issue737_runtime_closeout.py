@@ -57,6 +57,10 @@ _VISIBLE_PROBE_FIELD_PATTERN = re.compile(
     r"\b(?:final|translated)='(?P<single>(?:\\'|[^'])*)'|"
     r'\b(?:final|translated)="(?P<double>(?:\\"|[^"])*)"',
 )
+_SOURCE_PROBE_FIELD_PATTERN = re.compile(
+    r"\bsource='(?:\\'|[^']*)'|"
+    r'\bsource="(?:\\"|[^"]*)"',
+)
 _PRESERVE_ARTICLE_RESIDUE_PATTERN = re.compile(r"\b(?:Some|some|An|an|A|a)\b")
 
 
@@ -292,11 +296,31 @@ def _failure_search_texts(line: str) -> list[str]:
     if "Probe/" not in line:
         return [line]
 
-    visible_values = [
+    visible_values = _visible_probe_values(line)
+    return visible_values or [line]
+
+
+def _visible_probe_values(line: str) -> list[str]:
+    """Return rendered probe values, excluding source-only route context."""
+    if "Probe/" not in line:
+        return []
+
+    return [
         _unescape_probe_value(match.group("single") or match.group("double") or "")
         for match in _VISIBLE_PROBE_FIELD_PATTERN.finditer(line)
     ]
-    return visible_values or [line]
+
+
+def _observed_search_texts(line: str) -> list[str]:
+    """Return rendered probe text plus route context, without source payloads."""
+    if "Probe/" not in line:
+        return [line]
+
+    visible_values = _visible_probe_values(line)
+    if not visible_values:
+        return []
+
+    return [*visible_values, _SOURCE_PROBE_FIELD_PATTERN.sub("", line)]
 
 
 def _unescape_probe_value(value: str) -> str:
@@ -311,7 +335,12 @@ def _unescape_probe_value(value: str) -> str:
 
 
 def _is_observed(check: CloseoutCheck, lines: list[str]) -> bool:
-    return any(pattern in line for pattern in check.observed_patterns for line in lines)
+    return any(
+        pattern in text
+        for pattern in check.observed_patterns
+        for line in lines
+        for text in _observed_search_texts(line)
+    )
 
 
 def _has_preserve_frame_residue(line: str) -> bool:

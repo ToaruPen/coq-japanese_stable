@@ -199,7 +199,7 @@ public static class CampfirePreserveTranslationPatch
         }
 
         var sourceItem = TranslatePreservedSourceWithTrailingColor(match, spans);
-        var count = match.Groups["count"].Value;
+        var count = Restore(match, spans, "count");
         var serving = TranslateServingUnit(Restore(match, spans, "serving"));
         var result = TranslateDisplayNameOrSame(Restore(match, spans, "result"));
         return $"{sourceItem}を{count}{serving}の{result}に保存した。";

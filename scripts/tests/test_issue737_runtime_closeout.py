@@ -220,6 +220,26 @@ def test_analyze_log_ignores_dynamic_probe_source_when_translated_text_is_clean(
     assert checks["campfire_meal_ingredients"]["matches"] == []
 
 
+def test_analyze_log_does_not_count_probe_source_as_observed_output(tmp_path: Path) -> None:
+    """Source-only probe fields do not prove that a player-visible route rendered cleanly."""
+    log = tmp_path / "Player.log"
+    _write_log(
+        log,
+        "[QudJP] Build marker: issue737-test, Version: 0.1.0.0\n"
+        "[QudJP] DynamicTextProbe/v1: route='CampfireDescribeMealTranslationPatch' "
+        "source='candidate source text only'\n",
+        mtime=datetime(2026, 5, 19, 1, 0, tzinfo=UTC),
+    )
+
+    report = closeout.analyze_log(
+        log_path=log,
+        min_mtime=datetime(2026, 5, 19, 0, 0, tzinfo=UTC),
+    )
+
+    checks = {check["id"]: check for check in report["checks"]}
+    assert checks["campfire_meal_ingredients"]["status"] == "unobserved"
+
+
 def test_analyze_log_ignores_final_output_source_when_final_text_is_clean(tmp_path: Path) -> None:
     """Final-output source text is not itself residue when the final visible text is clean."""
     log = tmp_path / "Player.log"
@@ -317,7 +337,7 @@ def test_analyze_log_distinguishes_observed_pass_from_unobserved_route(tmp_path:
         "[QudJP] Build marker: issue737-test, Version: 0.1.0.0\n"
         "[QudJP] DynamicTextProbe/v1: route='CampfireDescribeMealTranslationPatch' "
         "translated='ガラスベリーを鍋に放り込み、かき混ぜた。'\n"
-        "[QudJP] FinalOutputProbe/v1: source='保存した:\\n\\n{{r|生肉}}を3食分の肉ジャーキーに保存した。'",
+        "[QudJP] FinalOutputProbe/v1: final='保存した:\\n\\n{{r|生肉}}を3食分の肉ジャーキーに保存した。'",
         mtime=datetime(2026, 5, 19, 1, 0, tzinfo=UTC),
     )
 
@@ -361,10 +381,10 @@ def test_analyze_log_passes_when_all_non_textfilter_routes_are_observed_without_
         "[QudJP] Build marker: issue737-test, Version: 0.1.0.0\n"
         "[QudJP] DynamicTextProbe/v1: route='CampfireDescribeMealTranslationPatch' "
         "translated='ガラスベリーを鍋に放り込み、かき混ぜた。'\n"
-        "[QudJP] FinalOutputProbe/v1: source='保存した:\\n\\n{{r|生肉}}を3食分の肉ジャーキーに保存した。'\n"
+        "[QudJP] FinalOutputProbe/v1: final='保存した:\\n\\n{{r|生肉}}を3食分の肉ジャーキーに保存した。'\n"
         "[QudJP] FinalOutputProbe/v1: route='JournalSultanNote' final='スルタンの歴史'\n"
         "[QudJP] FinalOutputProbe/v1: route='JournalMapNote' final='最後に訪れた: 星見の家'\n"
-        "[QudJP] FinalOutputProbe/v1: source='シャッガンナ Pest Flockの指導者'",
+        "[QudJP] FinalOutputProbe/v1: final='シャッガンナ Pest Flockの指導者'",
         mtime=datetime(2026, 5, 19, 1, 0, tzinfo=UTC),
     )
 
@@ -445,10 +465,10 @@ def test_analyze_log_rejects_passed_runtime_when_deployment_hash_mismatches(tmp_
         "[QudJP] Build marker: issue737-test, Version: 0.1.0.0\n"
         "[QudJP] DynamicTextProbe/v1: route='CampfireDescribeMealTranslationPatch' "
         "translated='ガラスベリーを鍋に放り込み、かき混ぜた。'\n"
-        "[QudJP] FinalOutputProbe/v1: source='保存した:\\n\\n{{r|生肉}}を3食分の肉ジャーキーに保存した。'\n"
+        "[QudJP] FinalOutputProbe/v1: final='保存した:\\n\\n{{r|生肉}}を3食分の肉ジャーキーに保存した。'\n"
         "[QudJP] FinalOutputProbe/v1: route='JournalSultanNote' final='スルタンの歴史'\n"
         "[QudJP] FinalOutputProbe/v1: route='JournalMapNote' final='最後に訪れた: 星見の家'\n"
-        "[QudJP] FinalOutputProbe/v1: source='シャッガンナ Pest Flockの指導者'",
+        "[QudJP] FinalOutputProbe/v1: final='シャッガンナ Pest Flockの指導者'",
         mtime=datetime(2026, 5, 19, 1, 0, tzinfo=UTC),
     )
 
@@ -529,10 +549,10 @@ def test_main_require_passed_accepts_passed_report(tmp_path: Path) -> None:
         "[QudJP] Build marker: issue737-test, Version: 0.1.0.0\n"
         "[QudJP] DynamicTextProbe/v1: route='CampfireDescribeMealTranslationPatch' "
         "translated='ガラスベリーを鍋に放り込み、かき混ぜた。'\n"
-        "[QudJP] FinalOutputProbe/v1: source='保存した:\\n\\n{{r|生肉}}を3食分の肉ジャーキーに保存した。'\n"
+        "[QudJP] FinalOutputProbe/v1: final='保存した:\\n\\n{{r|生肉}}を3食分の肉ジャーキーに保存した。'\n"
         "[QudJP] FinalOutputProbe/v1: route='JournalSultanNote' final='スルタンの歴史'\n"
         "[QudJP] FinalOutputProbe/v1: route='JournalMapNote' final='最後に訪れた: 星見の家'\n"
-        "[QudJP] FinalOutputProbe/v1: source='シャッガンナ Pest Flockの指導者'",
+        "[QudJP] FinalOutputProbe/v1: final='シャッガンナ Pest Flockの指導者'",
         mtime=datetime(2026, 5, 19, 1, 0, tzinfo=UTC),
     )
 

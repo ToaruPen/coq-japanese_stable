@@ -144,15 +144,15 @@ public static class CampfireCookFromRecipeTranslationPatch
 
     private static bool TryTranslateFixedMenuLabel(string source, out string translated)
     {
-        translated = source switch
+        translated = ColorAwareTranslationComposer.TranslatePreservingColors(source, static visible => visible switch
         {
             "Cook" => "料理する",
             "Add to favorite recipes" => "お気に入りレシピに追加",
             "Remove from favorite recipes" => "お気に入りレシピから外す",
             "Forget" => "忘れる",
             "Back" => "戻る",
-            _ => source,
-        };
+            _ => visible,
+        });
         return !string.Equals(translated, source, StringComparison.Ordinal);
     }
 
