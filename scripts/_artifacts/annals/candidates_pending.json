@@ -9246,7 +9246,7 @@
         {
           "index": 2,
           "type": "historykit-token",
-          "raw": "pronouns.Subjective",
+          "raw": "pronouns.subjective",
           "default": "{t2}"
         }
       ],

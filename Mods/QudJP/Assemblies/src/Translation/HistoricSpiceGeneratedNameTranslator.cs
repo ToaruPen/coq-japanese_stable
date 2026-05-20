@@ -334,6 +334,12 @@ internal static class HistoricSpiceGeneratedNameTranslator
 
     internal static bool TryTranslateCapture(string source, out string translated)
     {
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
+        {
+            translated = markedText;
+            return false;
+        }
+
         if (TryTranslateDishName(source, out translated)
             || TryTranslateCommaSeparatedCognomens(source, out translated)
             || TryTranslateFakedDeathCognomen(source, out translated)
@@ -814,13 +820,29 @@ internal static class HistoricSpiceGeneratedNameTranslator
             return false;
         }
 
-        var ordinal = match.Groups["ordinal"].Value;
+        var ordinal = TranslateOrdinalEnglishToJapanese(match.Groups["ordinal"].Value);
         var root = TranslateHistoricItemRoot(match.Groups["root"].Value);
         translated = (ordinal.Length > 0 ? ordinal + " " : string.Empty)
             + root
             + "派の"
             + kind;
         return true;
+    }
+
+    private static string TranslateOrdinalEnglishToJapanese(string ordinal)
+    {
+        if (ordinal.Length == 0)
+        {
+            return string.Empty;
+        }
+
+        var numericLength = ordinal.Length;
+        while (numericLength > 0 && !char.IsDigit(ordinal[numericLength - 1]))
+        {
+            numericLength--;
+        }
+
+        return numericLength > 0 ? "第" + ordinal.Substring(0, numericLength) : string.Empty;
     }
 
     private static bool TryTranslateItemBlessing(string source, out string translated)

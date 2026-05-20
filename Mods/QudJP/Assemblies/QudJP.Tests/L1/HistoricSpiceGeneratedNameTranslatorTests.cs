@@ -183,7 +183,7 @@ public sealed class HistoricSpiceGeneratedNameTranslatorTests
     [TestCase("Cult of Resheph", "Reshephの教団")]
     [TestCase("Ibulian Cult", "Ibul派の教団")]
     [TestCase("Gleamingian Cult", "煌めき派の教団")]
-    [TestCase("2nd Ibulian Cult", "2nd Ibul派の教団")]
+    [TestCase("2nd Ibulian Cult", "第2 Ibul派の教団")]
     public void TryTranslateSultanCultName_TranslatesGeneratedCultNameFrames(string source, string expected)
     {
         WriteDictionaryFile("Scoped/historyspice-common.ja.json", ("gleaming", "煌めき"), ("ghost", "幽鬼"));
@@ -291,6 +291,44 @@ public sealed class HistoricSpiceGeneratedNameTranslatorTests
         {
             Assert.That(ok, Is.True);
             Assert.That(translated, Is.EqualTo("グロウフィッシュ入りブロス"));
+        });
+    }
+
+    [Test]
+    public void TryTranslateCapture_UnknownInput_ReturnsFalseAndOriginal()
+    {
+        WriteDictionaryFile(
+            "Scoped/historyspice-common.ja.json",
+            ("broth", "ブロス"),
+            ("glowfish", "グロウフィッシュ"));
+        const string source = "Mystery of Nothing";
+
+        var ok = HistoricSpiceGeneratedNameTranslator.TryTranslateCapture(source, out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.False);
+            Assert.That(translated, Is.EqualTo(source));
+        });
+    }
+
+    [Test]
+    public void TryTranslateCapture_DirectMarker_RemovedAndNotRetranslated()
+    {
+        WriteDictionaryFile(
+            "Scoped/historyspice-common.ja.json",
+            ("broth", "ブロス"),
+            ("glowfish", "グロウフィッシュ"));
+        const string source = "Broth of Glowfish";
+
+        var ok = HistoricSpiceGeneratedNameTranslator.TryTranslateCapture(
+            MessageFrameTranslator.DirectTranslationMarker + source,
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.False);
+            Assert.That(translated, Is.EqualTo(source));
         });
     }
 

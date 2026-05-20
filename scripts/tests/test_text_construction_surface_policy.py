@@ -577,12 +577,20 @@ def test_policy_records_hse_journal_story_completion_routes() -> None:
         animator_family_id,
         body_family_id,
         status_family_id,
-        village_surface_family_id,
     ]:
         assert entries[family_id]["closure_lane"] == "history_generated_text"
         assert entries[family_id]["closure_status"] == "covered_by_owner_route"
         assert "JournalApiAddTranslationPatchTests.cs" in " ".join(entries[family_id]["closure_evidence"])
         assert "JournalPatternTranslatorTests.cs" in " ".join(entries[family_id]["closure_evidence"])
+
+    assert entries[village_surface_family_id]["closure_lane"] == "history_generated_text"
+    assert entries[village_surface_family_id]["closure_status"] == "partial_coverage"
+    assert "JournalApiAddTranslationPatchTests.cs" in " ".join(
+        entries[village_surface_family_id]["closure_evidence"]
+    )
+    assert "VillageSurface.CheckReveal-specific runtime or patch evidence" in " ".join(
+        entries[village_surface_family_id]["closure_evidence"]
+    )
 
     assert "SingleCallsiteOwnerPopupTranslationPatchTests.cs" in " ".join(
         entries[animator_family_id]["closure_evidence"]

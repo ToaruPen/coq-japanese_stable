@@ -225,6 +225,29 @@ public sealed class CampfireCookFromRecipeTranslationPatchTests
         }
     }
 
+    [TestCase("You don't have enough servings of {{Y|witchwood bark}}.", "MissingIngredientServings")]
+    [TestCase("You don't have enough mushroom.", "MissingIngredient")]
+    public void CookFromRecipe_LeavesMissingIngredientPopupUnchanged_WhenOwnerAbsent(
+        string source,
+        string detail)
+    {
+        CampfireCookFromRecipeTranslationPatch.Prefix(out var state);
+        CampfireCookFromRecipeTranslationPatch.Finalizer(null, state);
+
+        var handled = CampfireCookFromRecipeTranslationPatch.TryTranslatePopupMessage(
+            source,
+            nameof(PopupShowTranslationPatch),
+            "Popup.Show",
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(handled, Is.False);
+            Assert.That(translated, Is.EqualTo(source));
+            Assert.That(PopupHitCount(detail), Is.Zero);
+        });
+    }
+
     [Test]
     public void CookFromRecipe_TranslatesAteMealPopup_WhenOwnerActive()
     {

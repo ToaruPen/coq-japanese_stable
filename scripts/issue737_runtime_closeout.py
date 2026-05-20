@@ -25,7 +25,8 @@ _DEFAULT_DEPLOYMENT_FILES = (
 def get_default_log_path() -> Path | None:
     """Return the first existing OS-specific Player.log path."""
     if env_log := os.environ.get("QUDJP_PLAYER_LOG"):
-        return Path(env_log)
+        path = Path(env_log)
+        return path if path.is_file() else None
 
     home = Path.home()
     candidates: list[Path] = []
@@ -47,7 +48,7 @@ def get_default_log_path() -> Path | None:
             candidates.append(Path(user_profile) / "AppData" / "Local" / "CavesOfQud" / "Player.log")
 
     for candidate in candidates:
-        if candidate.exists():
+        if candidate.is_file():
             return candidate
     return None
 _VISIBLE_PROBE_FIELD_PATTERN = re.compile(
@@ -141,7 +142,7 @@ def analyze_log(
     deployment_files: tuple[Path, ...] = _DEFAULT_DEPLOYMENT_FILES,
 ) -> dict[str, Any]:
     """Analyze a Player.log for Issue #737 closeout evidence."""
-    if not log_path.exists():
+    if not log_path.is_file():
         msg = f"Player.log not found: {log_path}"
         raise FileNotFoundError(msg)
 

@@ -46,6 +46,8 @@ def test_get_default_log_path_prefers_qudjp_player_log(
     """The explicit runtime evidence log overrides platform defaults."""
     env_log = tmp_path / "custom" / "Player.log"
     default_log = tmp_path / ".local" / "share" / "CavesOfQud" / "Player.log"
+    env_log.parent.mkdir(parents=True)
+    env_log.write_text("custom", encoding="utf-8")
     default_log.parent.mkdir(parents=True)
     default_log.write_text("default", encoding="utf-8")
     monkeypatch.setenv("QUDJP_PLAYER_LOG", str(env_log))
@@ -53,6 +55,27 @@ def test_get_default_log_path_prefers_qudjp_player_log(
     monkeypatch.setattr(closeout.Path, "home", staticmethod(lambda: tmp_path))
 
     assert closeout.get_default_log_path() == env_log
+
+
+def test_get_default_log_path_rejects_directory_qudjp_player_log(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Directory env values are not valid runtime evidence logs."""
+    monkeypatch.setenv("QUDJP_PLAYER_LOG", str(tmp_path))
+    monkeypatch.setattr(closeout.sys, "platform", "linux")
+
+    assert closeout.get_default_log_path() is None
+
+
+def test_analyze_log_rejects_directory_path(tmp_path: Path) -> None:
+    """Player.log analysis rejects directories before read_text."""
+    try:
+        closeout.analyze_log(log_path=tmp_path)
+    except FileNotFoundError as exc:
+        assert str(tmp_path) in str(exc)
+    else:
+        raise AssertionError("Expected FileNotFoundError for directory log path")
 
 
 def test_main_uses_resolved_default_log_when_log_argument_is_omitted(

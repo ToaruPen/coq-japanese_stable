@@ -773,8 +773,11 @@ TEXT_CONSTRUCTION_CLOSURE_OVERLAY: Final[dict[str, ClosureOverlayEntry]] = {
         ],
     },
     "XRL.World.Parts/VillageSurface.cs::VillageSurface.CheckReveal()": {
-        "closure_status": "covered_by_owner_route",
-        "closure_evidence": HSE_JOURNAL_STORY_ROUTE_EVIDENCE,
+        "closure_status": "partial_coverage",
+        "closure_evidence": [
+            *HSE_JOURNAL_STORY_ROUTE_EVIDENCE,
+            "remaining popup owner route requires VillageSurface.CheckReveal-specific runtime or patch evidence",
+        ],
     },
     "XRL.World.Parts/GenerateFriendOrFoe.cs::GenerateFriendOrFoe.replacePlaceholders(string)": {
         "closure_status": "covered_by_owner_route",
