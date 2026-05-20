@@ -27,6 +27,7 @@ public sealed class JournalEntryDisplayTextPatchTests
 
         Translator.ResetForTests();
         Translator.SetDictionaryDirectoryForTests(dictionaryDirectory);
+        ScopedDictionaryLookup.ResetForTests();
         JournalPatternTranslator.ResetForTests();
         JournalPatternTranslator.SetPatternFileForTests(patternFilePath);
         DynamicTextObservability.ResetForTests();
@@ -37,6 +38,7 @@ public sealed class JournalEntryDisplayTextPatchTests
     public void TearDown()
     {
         Translator.ResetForTests();
+        ScopedDictionaryLookup.ResetForTests();
         JournalPatternTranslator.ResetForTests();
         DynamicTextObservability.ResetForTests();
         SinkObservation.ResetForTests();
