@@ -442,8 +442,8 @@
       "route": "journal"
     },
     {
-      "pattern": "^<spice\\.commonPhrases\\.oneStarryNight\\.!random\\.capitalize>, =name= manifested a latent power inside (.+?) and joined the divine ranks of (.+?)\\.$",
-      "template": "<spice.commonPhrases.oneStarryNight.!random.capitalize>、=name=は内なる潜在能力を顕現させ、{t1}の神聖なる列に加わった。",
+      "pattern": "^<spice\\.commonPhrases\\.oneStarryNight\\.!random\\.capitalize>, =name= manifested a latent power inside (?:.+?) and joined the divine ranks of (.+?)\\.$",
+      "template": "<spice.commonPhrases.oneStarryNight.!random.capitalize>、=name=は内なる潜在能力を顕現させ、{t0}の神聖なる列に加わった。",
       "route": "journal"
     },
     {

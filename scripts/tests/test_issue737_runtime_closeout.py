@@ -39,6 +39,22 @@ def test_get_default_log_path_uses_first_existing_linux_candidate(
     assert closeout.get_default_log_path() == first
 
 
+def test_get_default_log_path_prefers_qudjp_player_log(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The explicit runtime evidence log overrides platform defaults."""
+    env_log = tmp_path / "custom" / "Player.log"
+    default_log = tmp_path / ".local" / "share" / "CavesOfQud" / "Player.log"
+    default_log.parent.mkdir(parents=True)
+    default_log.write_text("default", encoding="utf-8")
+    monkeypatch.setenv("QUDJP_PLAYER_LOG", str(env_log))
+    monkeypatch.setattr(closeout.sys, "platform", "linux")
+    monkeypatch.setattr(closeout.Path, "home", staticmethod(lambda: tmp_path))
+
+    assert closeout.get_default_log_path() == env_log
+
+
 def test_main_uses_resolved_default_log_when_log_argument_is_omitted(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,

@@ -9328,7 +9328,7 @@
         {
           "index": 7,
           "type": "historykit-token",
-          "raw": "subject.PersonTerm",
+          "raw": "subject.personTerm",
           "default": "{t7}"
         }
       ],

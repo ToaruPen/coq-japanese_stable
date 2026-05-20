@@ -618,6 +618,11 @@ internal static class HistoricSpiceGeneratedNameTranslator
             return false;
         }
 
+        if (TryTranslateDishOfName(words, out translated))
+        {
+            return true;
+        }
+
         for (var index = 0; index < words.Length; index++)
         {
             if (!TryMatchDishPreposition(words, index, out var consumed, out var prepositionKind))
@@ -662,6 +667,40 @@ internal static class HistoricSpiceGeneratedNameTranslator
         }
 
         translated = source;
+        return false;
+    }
+
+    private static bool TryTranslateDishOfName(string[] words, out string translated)
+    {
+        for (var index = 1; index < words.Length - 1; index++)
+        {
+            if (!IsWord(words, index, "of"))
+            {
+                continue;
+            }
+
+            if (!TryTranslateDishList(words, 0, index, out var leftItems)
+                || !TryTranslateDishList(words, index + 1, words.Length, out var rightItems))
+            {
+                continue;
+            }
+
+            var leftIsDish = IsDishLikePhrase(words, 0, index);
+            var rightIsDish = IsDishLikePhrase(words, index + 1, words.Length);
+            if (!leftIsDish && !rightIsDish)
+            {
+                continue;
+            }
+
+            var leftPhrase = JoinDishItems(leftItems);
+            var rightPhrase = JoinDishItems(rightItems);
+            translated = leftIsDish
+                ? rightPhrase + "入り" + leftPhrase
+                : leftPhrase + "入り" + rightPhrase;
+            return true;
+        }
+
+        translated = string.Empty;
         return false;
     }
 

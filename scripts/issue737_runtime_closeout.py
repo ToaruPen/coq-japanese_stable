@@ -24,6 +24,9 @@ _DEFAULT_DEPLOYMENT_FILES = (
 
 def get_default_log_path() -> Path | None:
     """Return the first existing OS-specific Player.log path."""
+    if env_log := os.environ.get("QUDJP_PLAYER_LOG"):
+        return Path(env_log)
+
     home = Path.home()
     candidates: list[Path] = []
     if sys.platform == "darwin":

@@ -735,7 +735,26 @@ replays the attached Issue #737 scenarios.
 Suggested first-pass closeout commands:
 
 ```bash
-LOG="$HOME/Library/Logs/Freehold Games/CavesOfQud/Player.log"
+LOG="${QUDJP_PLAYER_LOG:-}"
+if [ -z "$LOG" ]; then
+  case "$(uname -s)" in
+    Darwin)
+      LOG="$HOME/Library/Logs/Freehold Games/CavesOfQud/Player.log"
+      ;;
+    Linux)
+      for candidate in \
+        "$HOME/.local/share/CavesOfQud/Player.log" \
+        "$HOME/.config/CavesOfQud/Player.log"; do
+        if [ -e "$candidate" ]; then
+          LOG="$candidate"
+          break
+        fi
+      done
+      ;;
+  esac
+fi
+
+just issue737-runtime-closeout
 stat -f '%Sm %z %N' -t '%Y-%m-%d %H:%M:%S %Z' "$LOG"
 wc -l "$LOG"
 shasum -a 256 "$LOG"
@@ -747,7 +766,6 @@ rg -n \
 uv run python scripts/triage_untranslated.py --log "$LOG" \
   --output /tmp/issue737-post-sync-triage.json
 
-just issue737-runtime-closeout
 just issue737-runtime-closeout-strict
 uv run python scripts/issue737_runtime_closeout.py \
   --log "$LOG" \

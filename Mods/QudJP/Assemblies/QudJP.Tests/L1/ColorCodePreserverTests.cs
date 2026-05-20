@@ -382,6 +382,21 @@ public sealed class ColorCodePreserverTests
             Assert.That(ColorAwareTranslationComposer.StartsWithQudColorAtVisibleIndex("    &Kremove", 4), Is.True);
             Assert.That(ColorAwareTranslationComposer.StartsWithQudColorAtVisibleIndex("&&remove", 0), Is.False);
             Assert.That(ColorAwareTranslationComposer.StartsWithQudColorAtVisibleIndex("    &1remove", 4), Is.False);
+            Assert.That(ColorAwareTranslationComposer.StartsWithQudColorAtVisibleIndex("    &qremove", 4), Is.False);
+            Assert.That(ColorAwareTranslationComposer.StartsWithQudColorAtVisibleIndex("    ^zremove", 4), Is.False);
+        });
+    }
+
+    [Test]
+    public void InsertQudColorAtVisibleIndex_TreatsInvalidColorPairsAsVisibleText()
+    {
+        var foreground = ColorAwareTranslationComposer.InsertQudColorAtVisibleIndex("&qNo", 1, "&K");
+        var background = ColorAwareTranslationComposer.InsertQudColorAtVisibleIndex("^zNo", 1, "&K");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(foreground, Is.EqualTo("&&KqNo"));
+            Assert.That(background, Is.EqualTo("^&KzNo"));
         });
     }
 

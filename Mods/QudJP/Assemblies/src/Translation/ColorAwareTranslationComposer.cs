@@ -365,7 +365,7 @@ internal static class ColorAwareTranslationComposer
         return index + 1 < source.Length
             && (source[index] == '&' || source[index] == '^')
             && source[index] != source[index + 1]
-            && IsQudColorChar(source[index + 1]);
+            && IsQudInlineColorCode(source[index + 1]);
     }
 
     private static int SourceIndexAtVisibleIndex(string source, int visibleIndex)
@@ -456,7 +456,8 @@ internal static class ColorAwareTranslationComposer
 
         if (index + 1 < source.Length
             && (source[index] == '&' || source[index] == '^')
-            && IsQudColorChar(source[index + 1]))
+            && source[index] != source[index + 1]
+            && IsQudInlineColorCode(source[index + 1]))
         {
             index += 2;
             return true;
@@ -484,11 +485,7 @@ internal static class ColorAwareTranslationComposer
             && source[index] == source[index + 1];
     }
 
-    private static bool IsQudColorChar(char character)
-    {
-        return character >= 'A' && character <= 'Z'
-            || character >= 'a' && character <= 'z';
-    }
+    private static bool IsQudInlineColorCode(char character) => IsQudAmpersandColor(character);
 
     private static List<WholeBoundaryPair> ExtractTrueBoundaryPairs(
         IReadOnlyList<ColorSpan> spans,

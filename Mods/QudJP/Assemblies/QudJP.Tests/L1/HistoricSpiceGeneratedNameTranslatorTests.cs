@@ -276,6 +276,23 @@ public sealed class HistoricSpiceGeneratedNameTranslatorTests
         });
     }
 
+    [Test]
+    public void TryTranslateCapture_ReordersDishOfIngredientName()
+    {
+        WriteDictionaryFile(
+            "Scoped/historyspice-common.ja.json",
+            ("broth", "ブロス"),
+            ("glowfish", "グロウフィッシュ"));
+
+        var ok = HistoricSpiceGeneratedNameTranslator.TryTranslateCapture("Broth of Glowfish", out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(translated, Is.EqualTo("グロウフィッシュ入りブロス"));
+        });
+    }
+
     private void WriteDictionaryFile(string fileName, params (string Key, string Text)[] entries)
     {
         var path = Path.Combine(dictionaryDirectory, fileName);
