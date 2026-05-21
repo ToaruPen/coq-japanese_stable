@@ -53,6 +53,11 @@ public static class QudTestFixtureLoader
             throw new SerializationException("QudTest fixture suite is required in " + path);
         }
 
+        if (document.Cases is null)
+        {
+            throw new SerializationException("QudTest fixture cases are required in " + path);
+        }
+
         if (document.Cases.Count == 0)
         {
             throw new SerializationException("QudTest fixture contains no cases in " + path);

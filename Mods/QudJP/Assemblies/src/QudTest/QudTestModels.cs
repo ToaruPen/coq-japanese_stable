@@ -16,7 +16,7 @@ public sealed class QudTestFixtureDocument
     public string Description { get; set; } = string.Empty;
 
     [JsonProperty("cases")]
-    public List<QudTestCase> Cases { get; } = [];
+    public List<QudTestCase> Cases { get; private set; } = [];
 }
 
 public sealed class QudTestCase

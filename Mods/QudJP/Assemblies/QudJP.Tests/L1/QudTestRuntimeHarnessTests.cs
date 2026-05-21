@@ -84,6 +84,27 @@ public sealed class QudTestRuntimeHarnessTests
     }
 
     [Test]
+    public void LoadFixtures_RejectsNullCasesCollection()
+    {
+        File.WriteAllText(
+            Path.Combine(fixturesDirectory, "runtime-smoke.json"),
+            """
+            {
+              "schemaVersion": 1,
+              "suite": "runtime",
+              "description": "runtime smoke",
+              "cases": null
+            }
+            """,
+            System.Text.Encoding.UTF8);
+
+        Assert.That(
+            () => QudTestFixtureLoader.LoadDirectory(fixturesDirectory),
+            Throws.InstanceOf<System.Runtime.Serialization.SerializationException>()
+                .With.Message.Contains("cases are required"));
+    }
+
+    [Test]
     public void Run_RejectsNullArguments()
     {
         Assert.Multiple(() =>
