@@ -40,7 +40,7 @@ jobs:
           cache-dependency-path: pyproject.toml
 
       - name: Install Python tools
-        run: pip install hypothesis pytest ruff
+        run: pip install hypothesis pytest ruff uv
 
       - name: Install Node tool dependencies
         run: npm ci
