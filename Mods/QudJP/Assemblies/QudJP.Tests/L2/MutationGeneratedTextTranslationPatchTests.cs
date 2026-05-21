@@ -32,8 +32,8 @@ public sealed class MutationGeneratedTextTranslationPatchTests
 
     [TestCase(
         PhotosyntheticSkinOwner,
-        "You start to metabolize the meal, gaining the following effect for the rest of the day:\n\n{{W|+5% to quickness}}",
-        "食事を消化し始め、今日の残りの間、以下の効果を得る:\n\n{{W|+5% to quickness}}",
+        "You start to metabolize the meal, gaining the following effect for the rest of the day:\n\n{{W|+30% to natural healing rate\n+15 Quickness\n}}",
+        "食事の代謝が始まり、一日中次の効果を得る:\n\n{{W|自然治癒速度+30%\nクイックネス+15\n}}",
         "PhotosyntheticSkinMetabolize")]
     [TestCase(
         LifeDrainOwner,

@@ -163,6 +163,37 @@ public sealed class CookingEffectTranslationPatchTests
         Assert.That(translated, Is.EqualTo("酸耐性+12\n筋力+4\nunchanged line"));
     }
 
+    [Test]
+    public void Postfix_TranslatesObservedProceduralCookingEffectDescription_WhenPatched()
+    {
+        var target = new DummyCookingEffectTextTarget
+        {
+            ReturnValue = "{{W|metabolizing}}",
+        };
+
+        var translated = InvokePatched(target, nameof(DummyCookingEffectTextTarget.GetDescription));
+        Assert.That(translated, Is.EqualTo("{{W|代謝中}}"));
+    }
+
+    [Test]
+    public void Postfix_TranslatesObservedLessThirstProceduralDetailLine_ToMacroFreeActiveEffectText_WhenPatched()
+    {
+        var target = new DummyCookingEffectTextTarget
+        {
+            ReturnValue = "+10-15% to natural healing rate\n@thisCreature thirst@s at half rate.",
+        };
+
+        var translated = InvokePatched(target, nameof(DummyCookingEffectTextTarget.GetProceduralEffectDescription));
+        var processed = SimulateCampfireProcessEffectDescription(translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.EqualTo("自然治癒速度+10-15%\n喉の渇きが半減する。"));
+            Assert.That(processed, Is.EqualTo(translated));
+            Assert.That(processed, Does.Not.Contain("You thirst at half rate."));
+        });
+    }
+
     [TestCase(nameof(DummyCookingEffectTextTarget.GetProceduralEffectDescription))]
     [TestCase(nameof(DummyCookingEffectTextTarget.GetTemplatedProceduralEffectDescription))]
     public void Postfix_HandlesProceduralEffectDescriptionLines_EmptyInput_WhenPatched(string methodName)
@@ -233,6 +264,11 @@ public sealed class CookingEffectTranslationPatchTests
         {
             harmony.UnpatchAll(harmonyId);
         }
+    }
+
+    private static string SimulateCampfireProcessEffectDescription(string source)
+    {
+        return source.Replace("@thisCreature thirst@s at half rate.", "You thirst at half rate.", StringComparison.Ordinal);
     }
 
     private static MethodInfo RequireMethod(Type type, string methodName)

@@ -329,6 +329,31 @@
             "text": "{{R|アドレナリン全開}}"
         },
         {
+            "key": "{{G|defensive stance}}",
+            "context": "XRL.World.Effects.LongbladeStance_Defensive.DisplayName",
+            "text": "{{G|防御姿勢}}"
+        },
+        {
+            "key": "{{R|aggressive stance}}",
+            "context": "XRL.World.Effects.LongbladeStance_Aggressive.DisplayName",
+            "text": "{{R|攻撃姿勢}}"
+        },
+        {
+            "key": "aggressive stance",
+            "context": "XRL.World.Effects.LongbladeStance_Aggressive.DisplayName",
+            "text": "攻撃姿勢"
+        },
+        {
+            "key": "{{W|dueling stance}}",
+            "context": "XRL.World.Effects.LongbladeStance_Dueling.DisplayName",
+            "text": "{{W|決闘姿勢}}"
+        },
+        {
+            "key": "dueling stance",
+            "context": "XRL.World.Effects.LongbladeStance_Dueling.DisplayName",
+            "text": "決闘姿勢"
+        },
+        {
             "key": "&minhabited",
             "context": "XRL.World.Effects.MutationInfection.Description",
             "text": "&m寄生されている"

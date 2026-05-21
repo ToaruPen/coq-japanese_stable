@@ -61,7 +61,7 @@
       "id": "popup-text.campfire-metabolize-meal",
       "route": "popup-text",
       "input": "You start to metabolize the meal, gaining the following effect for the rest of the day:\n\n{{W|+5 to heat resistance}}",
-      "expected": "食事を消化し始め、今日の残りの間、以下の効果を得る:\n\n{{W|+5 to heat resistance}}"
+      "expected": "食事の代謝が始まり、一日中次の効果を得る:\n\n{{W|+5 to heat resistance}}"
     },
     {
       "id": "popup-askstring.quit-without-saving-confirm",
