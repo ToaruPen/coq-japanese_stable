@@ -10,6 +10,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+## [0.3.01] - 2026-05-22
+
+### Fixed
+
+- metabolized effect や long blade stance など、active effects 画面に残っていた英語表示の日本語カバレッジを改善しました。
+- Charge、Death From Above、Juke、Hook and Drag、Proselytize、Slam、Make Camp、field amputation、Tinkering recharge、repair outcome など、スキル由来の失敗ログ・確認ポップアップ・メッセージ表現を追加で日本語化しました。
+- 生成クエスト、journal text、message frame で日本語化される表示文の範囲を広げました。
+- 料理効果名と食事効果ポップアップで使われる `metabolized` 系の日本語表現を統一しました。
+- 終了確認ポップアップの長押し承認文とセーブせず終了するボタン表示を日本語化しました。
+
+---
+
 ## [0.3.00] - 2026-05-20
 
 ### Changed
@@ -339,7 +351,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
-[Unreleased]: https://github.com/ToaruPen/coq-japanese_stable/compare/v0.3.00...HEAD
+[Unreleased]: https://github.com/ToaruPen/coq-japanese_stable/compare/v0.3.01...HEAD
+[0.3.01]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.3.01
 [0.3.00]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.3.00
 [0.2.52]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.2.52
 [0.2.51]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.2.51
