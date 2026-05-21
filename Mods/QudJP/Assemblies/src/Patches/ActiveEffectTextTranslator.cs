@@ -13,6 +13,12 @@ internal static class ActiveEffectTextTranslator
 
     private const string QuicknessMutationPluralTemplateKey = "+{0} Quickness\n+{1} ranks to physical mutations";
 
+    private const string LongbladeDefensiveTemplateKey = "+{0} DV while wielding a long blade in the primary hand.";
+
+    private const string LongbladeAggressiveTemplateKey = "+{0} to your penetration roll and -{1} to hit while wielding a long blade in the primary hand.";
+
+    private const string LongbladeDuelingTemplateKey = "+{0} to hit while wielding a long blade in the primary hand.";
+
     private static readonly IReadOnlyDictionary<string, string> GeneratedTemplateContexts =
         new Dictionary<string, string>(StringComparer.Ordinal)
         {
@@ -30,6 +36,9 @@ internal static class ActiveEffectTextTranslator
             ["psionically cleaved (-{0} MA)"] = "XRL.World.Effects.ShatterMentalArmor.GetDescription",
             [QuicknessMutationSingularTemplateKey] = "XRL.World.Effects.AdrenalControl2Boosted.GetDetails",
             [QuicknessMutationPluralTemplateKey] = "XRL.World.Effects.AdrenalControl2Boosted.GetDetails",
+            [LongbladeDefensiveTemplateKey] = "XRL.World.Effects.LongbladeStance_Defensive.GetDetails",
+            [LongbladeAggressiveTemplateKey] = "XRL.World.Effects.LongbladeStance_Aggressive.GetDetails",
+            [LongbladeDuelingTemplateKey] = "XRL.World.Effects.LongbladeStance_Dueling.GetDetails",
         };
 
     private static readonly Regex QuicknessMutationSingularPattern = new(
@@ -98,6 +107,18 @@ internal static class ActiveEffectTextTranslator
 
     private static readonly Regex PsionicallyCleavedPattern = new(
         @"^psionically cleaved \(-(?<penalty>\d+) MA\)$",
+        RegexOptions.CultureInvariant);
+
+    private static readonly Regex LongbladeDefensivePattern = new(
+        @"^\+(?<dv>\d+) DV while wielding a long blade in the primary hand\.$",
+        RegexOptions.CultureInvariant);
+
+    private static readonly Regex LongbladeAggressivePattern = new(
+        @"^\+(?<penetration>\d+) to your penetration roll and -(?<hit>\d+) to hit while wielding a long blade in the primary hand\.$",
+        RegexOptions.CultureInvariant);
+
+    private static readonly Regex LongbladeDuelingPattern = new(
+        @"^\+(?<hit>\d+) to hit while wielding a long blade in the primary hand\.$",
         RegexOptions.CultureInvariant);
 
     internal static bool TryTranslateText(string source, string route, string family, out string translated)
@@ -196,6 +217,48 @@ internal static class ActiveEffectTextTranslator
                 QuicknessMutationPluralPattern,
                 QuicknessMutationPluralTemplateKey,
                 match => new object[] { match.Groups["quickness"].Value, match.Groups["ranks"].Value },
+                out translated))
+        {
+            return true;
+        }
+
+        if (TryTranslateKnownTemplate(
+                source,
+                stripped,
+                spans,
+                route,
+                family,
+                LongbladeDefensivePattern,
+                LongbladeDefensiveTemplateKey,
+                match => new object[] { match.Groups["dv"].Value },
+                out translated))
+        {
+            return true;
+        }
+
+        if (TryTranslateKnownTemplate(
+                source,
+                stripped,
+                spans,
+                route,
+                family,
+                LongbladeAggressivePattern,
+                LongbladeAggressiveTemplateKey,
+                match => new object[] { match.Groups["penetration"].Value, match.Groups["hit"].Value },
+                out translated))
+        {
+            return true;
+        }
+
+        if (TryTranslateKnownTemplate(
+                source,
+                stripped,
+                spans,
+                route,
+                family,
+                LongbladeDuelingPattern,
+                LongbladeDuelingTemplateKey,
+                match => new object[] { match.Groups["hit"].Value },
                 out translated))
         {
             return true;

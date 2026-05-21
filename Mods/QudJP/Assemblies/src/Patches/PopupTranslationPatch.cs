@@ -1146,7 +1146,8 @@ public static class PopupTranslationPatch
         var isBottomContextRoute = string.Equals(route, nameof(QudMenuBottomContextTranslationPatch), StringComparison.Ordinal);
         if (!string.Equals(route, nameof(PopupPickOptionTranslationPatch), StringComparison.Ordinal)
             && !isBottomContextRoute
-            && !string.Equals(route, nameof(SelectableTextMenuItemTranslationPatch), StringComparison.Ordinal))
+            && !string.Equals(route, nameof(SelectableTextMenuItemTranslationPatch), StringComparison.Ordinal)
+            && !string.Equals(route, nameof(PopupMessageTranslationPatch), StringComparison.Ordinal))
         {
             return false;
         }

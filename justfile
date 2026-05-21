@@ -340,6 +340,26 @@ deploy-dev-to destination:
   just rebuild-dev
   just sync-mod-dev-to {{quote(destination)}}
 
+# Print the default QudTest runtime artifact paths.
+qudtest-results:
+  {{python}} scripts/qudtest_inspect.py --print-default-paths
+
+# Run QudTest without opening the game UI and inspect the generated artifact.
+qudtest-headless command="qudtest:runtime" output=".artifacts/qudtest":
+  dotnet run --project scripts/tools/QudTestHeadless/QudTestHeadless.csproj -- --command {{quote(command)}} --fixtures Mods/QudJP/QudTest/fixtures --output {{quote(output)}} --mod-language ja
+  {{python}} scripts/qudtest_inspect.py --fixtures Mods/QudJP/QudTest/fixtures --results "{{output}}/results.json" --skip-player-log
+
+# Inspect the latest in-game QudTest artifact and Player.log.
+qudtest-inspect-game:
+  {{python}} scripts/qudtest_inspect.py
+
+# Inspect the latest in-game QudTest artifact.
+qudtest-inspect: qudtest-inspect-game
+
+# List recent in-game QudTest runs.
+qudtest-history:
+  {{python}} scripts/qudtest_inspect.py --list-runs --limit 10
+
 # Run the Phase F runtime evidence verification commands.
 runtime-evidence-check: test-l1
   uv run pytest scripts/tests/test_triage_log_parser.py scripts/tests/test_triage_models.py scripts/tests/test_triage_classifier.py scripts/tests/test_triage_integration.py -q

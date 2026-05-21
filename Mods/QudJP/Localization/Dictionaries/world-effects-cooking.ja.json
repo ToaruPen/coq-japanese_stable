@@ -11,7 +11,7 @@
         {
             "key": "{{w|metabolized effect}}",
             "context": "XRL.World.Effects.BasicTriggeredCookingEffect.GetDescription",
-            "text": "{{w|代謝中の効果}}"
+            "text": "{{w|代謝効果}}"
         },
         {
             "key": "+10-15 Acid Resistance",
@@ -934,6 +934,16 @@
             "text": "{{W|代謝中}}"
         },
         {
+            "key": "metabolizing",
+            "context": "XRL.World.Effects.ProceduralCookingEffect.DisplayName",
+            "text": "代謝中"
+        },
+        {
+            "key": "You thirst at half rate.",
+            "context": "XRL.World.Skills.Cooking.AppleMatz.GetDescription",
+            "text": "喉の渇きが半減する。"
+        },
+        {
             "key": "No effect.",
             "context": "XRL.World.Effects.ProceduralCookingEffectUnitMutation.GetDescription",
             "text": "効果なし。"
@@ -951,7 +961,7 @@
         {
             "key": "@thisCreature thirst@s at half rate.",
             "context": "XRL.World.Effects.ProceduralCookingEffectUnit_LessThirst.GetDescription",
-            "text": "@thisCreature の喉の渇きが半減する。"
+            "text": "喉の渇きが半減する。"
         },
         {
             "key": "+XP",

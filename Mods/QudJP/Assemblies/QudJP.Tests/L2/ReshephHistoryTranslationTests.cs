@@ -44,7 +44,7 @@ public sealed class ReshephHistoryTranslationTests
         return Path.Combine(TestContext.CurrentContext.TestDirectory, "Fixtures", "annals-samples.json");
     }
 
-    public static IEnumerable<TestCaseData> Samples()
+    public static IReadOnlyList<ReshephSampleEntry> Samples()
     {
         var path = GetFixturePath();
         if (!File.Exists(path))
@@ -56,10 +56,7 @@ public sealed class ReshephHistoryTranslationTests
             throw new InvalidDataException($"Failed to deserialize fixture: {path}");
         if (doc.SchemaVersion != ExpectedSchemaVersion)
             throw new InvalidDataException($"Fixture schema_version mismatch: expected '{ExpectedSchemaVersion}', got '{doc.SchemaVersion}' in {path}");
-        foreach (var sample in doc.Samples)
-        {
-            yield return new TestCaseData(sample).SetName($"Resheph_{sample.CandidateId}");
-        }
+        return doc.Samples;
     }
 
     [SetUp]
@@ -83,8 +80,19 @@ public sealed class ReshephHistoryTranslationTests
         LocalizationAssetResolver.SetLocalizationRootForTests(null);
     }
 
-    [TestCaseSource(nameof(Samples))]
-    public void TranslateEventPropertiesDict_ProducesExpectedJapanese(ReshephSampleEntry sample)
+    [Test]
+    public void TranslateEventPropertiesDict_ProducesExpectedJapanese_ForAllSamples()
+    {
+        Assert.Multiple(() =>
+        {
+            foreach (var sample in Samples())
+            {
+                AssertSample(sample);
+            }
+        });
+    }
+
+    private static void AssertSample(ReshephSampleEntry sample)
     {
         var dict = new Dictionary<string, string>(System.StringComparer.Ordinal)
         {

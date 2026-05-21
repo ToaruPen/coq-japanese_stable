@@ -89,6 +89,7 @@ Steam Workshop 版と GitHub Release ZIP には、明示的に実行した場合
 
 - 開発コマンドは `justfile` に集約しています。初回は `just --list` で利用可能な recipe を確認してください。
 - 通常の `just build` / `just deploy-mod` は shipping 相当の DLL を作成し、冗長な probe ログを出しません。probe が必要なローカル調査では `just build-dev` / `just deploy-dev` を使います。
+- `just qudtest-headless` でゲームを起動せずに runtime route の最終テキスト artifact を出力できます。`just qudtest-headless qudtest:bindings .artifacts/qudtest-bindings` は代表 patch の `TargetMethod` / `TargetMethods` が現在のゲーム DLL 上で期待シグネチャへ解決できるかを fixture と照合します。`just qudtest-headless qudtest:bindings-all .artifacts/qudtest-bindings-all` は全 patch の target entrypoint を列挙し、未知のゼロ解決や例外を検知します。ゲーム内 wish command `qudtest` / `qudtest:runtime` / `qudtest:wish` / `qudtest:bindings` / `qudtest:bindings-all` で実 mod load 経由の artifact も出せます。確認は `just qudtest-inspect-game`、履歴確認は `just qudtest-history` を使います。
 - C# テストは NUnit、L1 / L2 / L2G の 3 層構成 + 手動 L3 ([`docs/test-architecture.md`](docs/test-architecture.md))
 - Python ツールは pytest + Ruff + ast-grep
 - 静的解析: Roslyn analyzer suite (`QudJP.Analyzers`) に独自規約 QJ001 / QJ002 / QJ003 を加えて強制

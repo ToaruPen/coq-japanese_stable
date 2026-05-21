@@ -45,6 +45,27 @@ public sealed class LocalizationCoverageTests
         ["UI"] = "UI",
     };
 
+    private static readonly string[] ExpectedActiveEffectProducerClassifications =
+    {
+        "owner-translated",
+        "fixed-leaf translated",
+        "generated/composed route translated",
+        "intentional pass-through",
+        "deferred with reason",
+    };
+
+    private static readonly string[] ExpectedIssue739ObservedProducerIds =
+    {
+        "XRL.World.Effects/ProceduralCookingEffect.cs::ProceduralCookingEffect.ProceduralCookingEffect()",
+        "XRL.World.Effects/ProceduralCookingEffect.cs::ProceduralCookingEffect.GetDescription()",
+        "XRL.World.Effects/LongbladeStance_Defensive.cs::LongbladeStance_Defensive.LongbladeStance_Defensive()",
+        "XRL.World.Effects/LongbladeStance_Aggressive.cs::LongbladeStance_Aggressive.LongbladeStance_Aggressive()",
+        "XRL.World.Effects/LongbladeStance_Dueling.cs::LongbladeStance_Dueling.LongbladeStance_Dueling()",
+        "XRL.World.Effects/LongbladeStance_Defensive.cs::LongbladeStance_Defensive.GetDetails()",
+        "XRL.World.Effects/LongbladeStance_Aggressive.cs::LongbladeStance_Aggressive.GetDetails()",
+        "XRL.World.Effects/LongbladeStance_Dueling.cs::LongbladeStance_Dueling.GetDetails()",
+    };
+
     private string localizationRoot = null!;
 
     [SetUp]
@@ -955,6 +976,133 @@ public sealed class LocalizationCoverageTests
             expectedKeys.Where(key => !worldEffectsStatusKeys.Contains(key)).ToArray(),
             Is.Empty,
             "Static active-effect description leaves from the decompiled effect inventory must stay covered.");
+    }
+
+    [Test]
+    public void ActiveEffectDictionaries_CoverIssue739ObservedRuntimeSamples()
+    {
+        var dictionariesRoot = Path.Combine(localizationRoot, "Dictionaries");
+        var cookingEntries = LoadEntries(Path.Combine(dictionariesRoot, "world-effects-cooking.ja.json"));
+        var statusEntries = LoadEntries(Path.Combine(dictionariesRoot, "world-effects-status.ja.json"));
+        var generatedEntries = LoadEntries(Path.Combine(dictionariesRoot, "Scoped", "world-effects-generated-templates.ja.json"));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                cookingEntries,
+                Does.Contain(new DictionaryEntry("metabolizing", "XRL.World.Effects.ProceduralCookingEffect.DisplayName", "代謝中")));
+            Assert.That(
+                cookingEntries,
+                Does.Contain(new DictionaryEntry("{{W|metabolizing}}", "XRL.World.Effects.ProceduralCookingEffect.GetDescription", "{{W|代謝中}}")));
+            Assert.That(
+                cookingEntries,
+                Does.Contain(new DictionaryEntry("{{w|metabolized effect}}", "XRL.World.Effects.BasicTriggeredCookingEffect.GetDescription", "{{w|代謝効果}}")));
+            Assert.That(
+                cookingEntries,
+                Does.Contain(new DictionaryEntry(
+                    "@thisCreature thirst@s at half rate.",
+                    "XRL.World.Effects.ProceduralCookingEffectUnit_LessThirst.GetDescription",
+                    "喉の渇きが半減する。")));
+            Assert.That(
+                cookingEntries,
+                Does.Contain(new DictionaryEntry("You thirst at half rate.", "XRL.World.Skills.Cooking.AppleMatz.GetDescription", "喉の渇きが半減する。")));
+            Assert.That(
+                generatedEntries,
+                Does.Contain(new DictionaryEntry(
+                    "+{0} DV while wielding a long blade in the primary hand.",
+                    "XRL.World.Effects.LongbladeStance_Defensive.GetDetails",
+                    "主手に長剣を装備しているあいだDV+{0}。")));
+            Assert.That(
+                generatedEntries,
+                Does.Contain(new DictionaryEntry(
+                    "+{0} to your penetration roll and -{1} to hit while wielding a long blade in the primary hand.",
+                    "XRL.World.Effects.LongbladeStance_Aggressive.GetDetails",
+                    "主手に長剣を装備しているあいだ貫通判定+{0}、命中-{1}。")));
+            Assert.That(
+                generatedEntries,
+                Does.Contain(new DictionaryEntry(
+                    "+{0} to hit while wielding a long blade in the primary hand.",
+                    "XRL.World.Effects.LongbladeStance_Dueling.GetDetails",
+                    "主手に長剣を装備しているあいだ命中+{0}。")));
+            Assert.That(
+                statusEntries,
+                Does.Contain(new DictionaryEntry(
+                    "{{G|defensive stance}}",
+                    "XRL.World.Effects.LongbladeStance_Defensive.DisplayName",
+                    "{{G|防御姿勢}}")));
+            Assert.That(
+                statusEntries,
+                Does.Contain(new DictionaryEntry(
+                    "aggressive stance",
+                    "XRL.World.Effects.LongbladeStance_Aggressive.DisplayName",
+                    "攻撃姿勢")));
+            Assert.That(
+                statusEntries,
+                Does.Contain(new DictionaryEntry(
+                    "{{R|aggressive stance}}",
+                    "XRL.World.Effects.LongbladeStance_Aggressive.DisplayName",
+                    "{{R|攻撃姿勢}}")));
+            Assert.That(
+                statusEntries,
+                Does.Contain(new DictionaryEntry(
+                    "dueling stance",
+                    "XRL.World.Effects.LongbladeStance_Dueling.DisplayName",
+                    "決闘姿勢")));
+            Assert.That(
+                statusEntries,
+                Does.Contain(new DictionaryEntry(
+                    "{{W|dueling stance}}",
+                    "XRL.World.Effects.LongbladeStance_Dueling.DisplayName",
+                    "{{W|決闘姿勢}}")));
+        });
+    }
+
+    [Test]
+    public void ActiveEffectProducerInventory_ClassifiesCurrentEffectDisplayFamilies()
+    {
+        var repoRoot = TestProjectPaths.GetRepositoryRoot();
+        var inventoryPath = Path.Combine(repoRoot, "docs", "active-effect-producer-inventory.json");
+        using var document = JsonDocument.Parse(File.ReadAllText(inventoryPath));
+        var root = document.RootElement;
+        var classificationValues = root.GetProperty("classification_values")
+            .EnumerateArray()
+            .Select(static value => value.GetString() ?? string.Empty)
+            .ToArray();
+        var observedProducerIds = root.GetProperty("observed_issue_739_producers")
+            .EnumerateArray()
+            .Select(static value => value.GetString() ?? string.Empty)
+            .ToArray();
+        var allowedClassifications = ExpectedActiveEffectProducerClassifications.ToHashSet(StringComparer.Ordinal);
+        var items = root.GetProperty("items").EnumerateArray().ToArray();
+        var invalidClassifications = items
+            .Select(static item => item.GetProperty("classification").GetString() ?? string.Empty)
+            .Where(classification => !allowedClassifications.Contains(classification))
+            .Distinct(StringComparer.Ordinal)
+            .ToArray();
+        var itemIds = items
+            .Select(static item => item.GetProperty("family_id").GetString() ?? string.Empty)
+            .ToHashSet(StringComparer.Ordinal);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(root.GetProperty("schema_version").GetInt32(), Is.EqualTo(1));
+            Assert.That(root.GetProperty("issue").GetInt32(), Is.EqualTo(739));
+            Assert.That(root.GetProperty("totals").GetProperty("family_count").GetInt32(), Is.EqualTo(466));
+            Assert.That(items, Has.Length.EqualTo(466));
+            Assert.That(classificationValues, Is.EquivalentTo(ExpectedActiveEffectProducerClassifications));
+            Assert.That(observedProducerIds, Is.EquivalentTo(ExpectedIssue739ObservedProducerIds));
+            Assert.That(invalidClassifications, Is.Empty);
+            Assert.That(
+                observedProducerIds.Where(id => !itemIds.Contains(id)).ToArray(),
+                Is.Empty,
+                "Issue #739 observed XRL.World.Effects producers must remain present in the checked-in inventory.");
+            Assert.That(
+                root.GetProperty("adjacent_route_producers")
+                    .EnumerateArray()
+                    .Select(static item => item.GetProperty("family_id").GetString() ?? string.Empty)
+                    .ToArray(),
+                Does.Contain("XRL.World.Skills.Cooking/AppleMatz.cs::AppleMatz.GetDescription()"));
+        });
     }
 
     [Test]

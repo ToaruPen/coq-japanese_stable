@@ -112,6 +112,85 @@ just runtime-evidence-check
 Use these commands when checking Phase F docs, runtime observability, or the
 first-PR boundary.
 
+## QudTest final-text and binding artifact checks
+
+QudTest is the preferred lightweight check when the question is "what final
+string does QudJP send through this runtime route?" The default path is
+headless: it loads repository-owned fixtures from `QudTest/fixtures/*.json`,
+executes the same QudJP route helpers used by the mod, and writes artifacts
+under `.artifacts/qudtest`.
+
+QudTest also has a generic patch-binding lane for questions like "does this
+patch still resolve to the current runtime method?" `qudtest:bindings` invokes
+the patch's `TargetMethod()` / `TargetMethods()` entrypoint and compares the
+resolved `DeclaringType|MethodName|ReturnType|ParamType...` signatures against
+fixture `expectedTargets`. This catches stale patch targets and fixture drift,
+but it does not prove that Harmony applied the patch in a live game or that the
+translated final text is correct.
+
+Use `qudtest:bindings-all` when you need a broad sweep across every patch type
+with a Harmony target entrypoint. It does not compare fixture signatures; it
+fails unknown empty target sets and target-resolution exceptions, while keeping
+known intentional zero-target patches visible in the artifact with diagnostics.
+Promote any high-risk patch from this broad sweep into a `qudtest:bindings`
+fixture when its exact target signature should be frozen.
+
+Workflow:
+
+```bash
+just qudtest-headless
+just qudtest-headless qudtest:bindings .artifacts/qudtest-bindings
+just qudtest-headless qudtest:bindings-all .artifacts/qudtest-bindings-all
+```
+
+Use the in-game wish path when you specifically need evidence that the deployed
+mod loads and the wish bridge is discoverable by the game:
+
+```bash
+just deploy-mod
+# In game, open wish and run one of:
+#   qudtest
+#   qudtest:runtime
+#   qudtest:wish
+#   qudtest:bindings
+#   qudtest:bindings-all
+just qudtest-inspect-game
+```
+
+Useful commands:
+
+```bash
+just qudtest-headless qudtest:wish
+just qudtest-headless qudtest:bindings .artifacts/qudtest-bindings
+just qudtest-headless qudtest:bindings-all .artifacts/qudtest-bindings-all
+just qudtest-results
+just qudtest-history
+```
+
+The latest headless result is:
+
+```text
+.artifacts/qudtest/results.json
+```
+
+The latest in-game result is:
+
+```text
+~/Library/Application Support/Freehold Games/CavesOfQud/Local/QudTest/results.json
+```
+
+`qudtest-inspect-game` compares runtime results to repository fixtures for the
+artifact's suite, rejects stale artifacts, checks the QudJP fixture language tag
+`modLanguage=ja`, reports failed cases, and scans `Player.log` for fatal mod
+markers. The `qudtest-headless` recipe intentionally passes
+`--skip-player-log`; runtime log validation only belongs to the in-game path.
+
+QudTest final-text fixtures prove the final text value emitted by the selected
+QudJP route. Binding fixtures prove target resolution against the current game
+DLL. Neither mode proves actual rendered pixels, font fallback, layout, UI
+visibility, or live Harmony application. For display issues, keep using the L3
+manual smoke path and screenshots/logs.
+
 ## Diagnostics and probe logging
 
 Runtime diagnostics must keep shipping logs small and actionable:

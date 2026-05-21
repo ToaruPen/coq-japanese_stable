@@ -85,23 +85,19 @@ public sealed class QudJPModTests
     }
 
     [Test]
-    public void InvokePatchAll_ScansCorrectAssembly_AndHandlesErrorsGracefully()
+    public void InvokePatchAll_ScansQudJPModAssembly_WithoutRequiringRealHarmonyPatchApplication()
     {
-        var harmonyId = $"qudjp.tests.patchall.{Guid.NewGuid():N}";
-        var harmony = new Harmony(harmonyId);
+        var harmony = new RecordingHarmonyProcessor();
 
-        try
-        {
-            var output = TestTraceHelper.CaptureTrace(() => Assert.That(() => QudJPMod.InvokePatchAll(harmony), Throws.Nothing));
+        Assert.That(() => QudJPMod.InvokePatchAll(harmony), Throws.Nothing);
 
-            Assert.That(output, Does.Contain("[QudJP]"),
-                "InvokePatchAll should log when patches fail to apply, " +
-                "proving PatchAll(Assembly) scanned the correct assembly");
-        }
-        finally
+        Assert.Multiple(() =>
         {
-            harmony.UnpatchAll(harmonyId);
-        }
+            Assert.That(harmony.RequestedPatchTypes, Does.Contain(typeof(MessageQueueTranslationPatch)));
+            Assert.That(harmony.RequestedPatchTypes, Does.Contain(typeof(PatchAllTestPatch)));
+            Assert.That(harmony.RequestedPatchTypes, Does.Not.Contain(typeof(QudJPModTests)));
+            Assert.That(harmony.PatchCallCount, Is.EqualTo(harmony.RequestedPatchTypes.Count));
+        });
     }
 
     [Test]
@@ -336,6 +332,32 @@ public sealed class QudJPModTests
         private static IEnumerable<MethodBase> TargetMethods()
         {
             throw new InvalidOperationException("multiple targets failed");
+        }
+    }
+
+    internal sealed class RecordingHarmonyProcessor
+    {
+        public List<Type> RequestedPatchTypes { get; } = new();
+
+        public int PatchCallCount { get; private set; }
+
+        public RecordingPatchProcessor CreateClassProcessor(Type patchType)
+        {
+            RequestedPatchTypes.Add(patchType);
+            return new RecordingPatchProcessor(this);
+        }
+
+        internal void RecordPatchCall()
+        {
+            PatchCallCount++;
+        }
+    }
+
+    internal sealed class RecordingPatchProcessor(RecordingHarmonyProcessor owner)
+    {
+        public void Patch()
+        {
+            owner.RecordPatchCall();
         }
     }
 

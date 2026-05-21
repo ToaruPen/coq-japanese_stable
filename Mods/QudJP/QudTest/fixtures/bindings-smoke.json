@@ -1,0 +1,120 @@
+{
+  "schemaVersion": 1,
+  "suite": "bindings",
+  "description": "Representative patch target binding checks against the current game DLL.",
+  "cases": [
+    {
+      "id": "binding.campfire-describe-meal",
+      "route": "patch-binding",
+      "patch": "QudJP.Patches.CampfireDescribeMealTranslationPatch",
+      "expectedTargets": [
+        "XRL.World.Parts.Campfire|DescribeMeal|System.String|System.Collections.Generic.IReadOnlyList`1[[XRL.World.GameObject]]"
+      ]
+    },
+    {
+      "id": "binding.campfire-preserve",
+      "route": "patch-binding",
+      "patch": "QudJP.Patches.CampfirePreserveTranslationPatch",
+      "expectedTargets": [
+        "XRL.World.Parts.Campfire|Preserve|System.Boolean",
+        "XRL.World.Parts.Campfire|PreserveExotic|System.Boolean"
+      ]
+    },
+    {
+      "id": "binding.cooking-recipe-display-name",
+      "route": "patch-binding",
+      "patch": "QudJP.Patches.CookingRecipeDisplayNameTranslationPatch",
+      "expectedTargets": [
+        "XRL.World.Skills.Cooking.CookingRecipe|GetDisplayName|System.String"
+      ]
+    },
+    {
+      "id": "binding.journal-entry-display-text",
+      "route": "patch-binding",
+      "patch": "QudJP.Patches.JournalEntryDisplayTextPatch",
+      "expectedTargets": [
+        "Qud.API.IBaseJournalEntry|GetDisplayText|System.String"
+      ]
+    },
+    {
+      "id": "binding.journal-map-note-display-text",
+      "route": "patch-binding",
+      "patch": "QudJP.Patches.JournalMapNoteDisplayTextPatch",
+      "expectedTargets": [
+        "Qud.API.JournalMapNote|GetDisplayText|System.String"
+      ]
+    },
+    {
+      "id": "binding.ui-text-skin",
+      "route": "patch-binding",
+      "patch": "QudJP.Patches.UITextSkinTranslationPatch",
+      "expectedTargets": [
+        "XRL.UI.UITextSkin|SetText|System.Boolean|System.String"
+      ]
+    },
+    {
+      "id": "binding.zone-manager-generate-zone",
+      "route": "patch-binding",
+      "patch": "QudJP.Patches.ZoneManagerGenerateZoneTranslationPatch",
+      "expectedTargets": [
+        "XRL.World.ZoneManager|GenerateZone|System.Void|System.String"
+      ]
+    },
+    {
+      "id": "binding.game-object-move",
+      "route": "patch-binding",
+      "patch": "QudJP.Patches.GameObjectMoveTranslationPatch",
+      "expectedTargets": [
+        "XRL.World.GameObject|Move|System.Boolean|System.String|XRL.World.GameObject&|System.Boolean|System.Boolean|System.Boolean|System.Boolean|System.Boolean|System.Boolean|XRL.World.GameObject|XRL.World.GameObject|System.Boolean|System.Nullable`1[[System.Int32]]|System.String|System.Nullable`1[[System.Int32]]|System.Boolean|System.Boolean|XRL.World.GameObject|XRL.World.GameObject|System.Int32"
+      ]
+    },
+    {
+      "id": "binding.door-attempt-open",
+      "route": "patch-binding",
+      "patch": "QudJP.Patches.DoorAttemptOpenTranslationPatch",
+      "expectedTargets": [
+        "XRL.World.Parts.Door|AttemptOpen|System.Boolean|XRL.World.GameObject|System.Boolean|System.Boolean|System.Boolean|System.Boolean|System.Boolean|System.Boolean|XRL.World.IEvent"
+      ]
+    },
+    {
+      "id": "binding.tinkering-build-popup",
+      "route": "patch-binding",
+      "patch": "QudJP.Patches.TinkeringBuildPopupTranslationPatch",
+      "expectedTargets": [
+        "XRL.UI.TinkeringScreen|PerformUITinkerBuild|System.Boolean|XRL.World.GameObject|XRL.World.Tinkering.TinkerData|XRL.World.IEvent"
+      ]
+    },
+    {
+      "id": "binding.game-summary-show",
+      "route": "patch-binding",
+      "patch": "QudJP.Patches.GameSummaryScreenShowTranslationPatch",
+      "expectedTargets": [
+        "Qud.UI.GameSummaryScreen|_ShowGameSummary|System.Threading.Tasks.Task`1[[System.Boolean]]|System.String|System.String|System.String|System.Boolean"
+      ]
+    },
+    {
+      "id": "binding.game-summary-menu-bars",
+      "route": "patch-binding",
+      "patch": "QudJP.Patches.GameSummaryScreenMenuBarsTranslationPatch",
+      "expectedTargets": [
+        "Qud.UI.GameSummaryScreen|UpdateMenuBars|System.Void"
+      ]
+    },
+    {
+      "id": "binding.conversation-pronoun-exchange",
+      "route": "patch-binding",
+      "patch": "QudJP.Patches.ConversationPronounExchangeTranslationPatch",
+      "expectedTargets": [
+        "XRL.World.Parts.ConversationScript|PronounExchangeDescription|System.String|XRL.World.GameObject|XRL.World.GameObject|System.Boolean|System.Boolean|System.Boolean"
+      ]
+    },
+    {
+      "id": "binding.loading-status",
+      "route": "patch-binding",
+      "patch": "QudJP.Patches.LoadingStatusTranslationPatch",
+      "expectedTargets": [
+        "XRL.UI.Loading|SetLoadingStatus|System.Void|System.String|System.Boolean"
+      ]
+    }
+  ]
+}

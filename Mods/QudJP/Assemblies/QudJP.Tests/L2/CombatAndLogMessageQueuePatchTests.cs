@@ -107,101 +107,109 @@ public sealed class CombatAndLogMessageQueuePatchTests
         }
     }
 
-    [TestCase("{{r|You take 7 damage from the acid!}}", "{{r|酸で7ダメージを受けた！}}")]
-    [TestCase("{{r|You take 7 damage from the acid}}", "{{r|酸で7ダメージを受けた}}")]
-    [TestCase("{{r|You take 7 damage while phased!}}", "{{r|You take 7 damage while phased!}}")]
-    [TestCase("{{r|You take no damage from the acid!}}", "{{r|酸でダメージを受けなかった！}}")]
-    [TestCase("The snapjaw takes 4 damage from the acid!", "snapjawは酸で4ダメージを受けた！")]
-    [TestCase("The snapjaw takes no damage from the acid!", "snapjawは酸でダメージを受けなかった！")]
-    [TestCase("snapjaws take 4 damage from the acid!", "snapjawsは酸で4ダメージを受けた！")]
-    [TestCase("{{r|You take 3 damage being run over by the chrome pyramid!}}", "{{r|chrome pyramidに轢かれて3ダメージを受けた！}}")]
-    [TestCase("{{r|You take 5 heat from the blaze!}}", "{{r|blazeで5熱ダメージを受けた！}}")]
-    [TestCase("{{r|You take 5 {{icy|cold damage}} from the shard!}}", "{{r|shardで5{{icy|冷気ダメージ}}を受けた！}}")]
-    [TestCase("{{r|You take 8 damage from your laser beam! {{R|(x2)}}}}", "{{r|あなたのレーザービームで8ダメージを受けた！ {{R|(x2)}}}}")]
-    [TestCase("The {{B|濡れた}}グロウフィッシュ takes 7 damage from your laser beam! {{&r|(x3)}}", "{{B|濡れた}}グロウフィッシュはあなたのレーザービームで7ダメージを受けた！ {{&r|(x3)}}")]
-    [TestCase("{{r|You take 6 damage {{R|(x2)}} from colliding with the chrome wall.}}", "{{r|{{R|(x2)}} chrome wallとの衝突で6ダメージを受けた。}}")]
-    [TestCase("The {{B|濡れた}}光葉 takes 1 damage from leaking.", "{{B|濡れた}}光葉は液漏れで1ダメージを受けた。")]
-    [TestCase("The 樹液まみれの濡れた光葉 takes no damage from oozing.", "樹液まみれの濡れた光葉は滲出でダメージを受けなかった。")]
-    [TestCase("{{r|You take 1 damage from fluxing.}}", "{{r|フラックス漏れで1ダメージを受けた。}}")]
-    [TestCase("The 落葉剤グレネード mk I miner mk I takes 4 damage from your freezing effect!", "落葉剤グレネード mk I miner mk Iはあなたの凍結効果で4ダメージを受けた！")]
-    [TestCase(
-        "{{r|You take 9 damage from your plasma you started by you near your ally and You!}}",
-        "{{r|あなたのplasma you started by you near your ally and Youで9ダメージを受けた！}}")]
-    public void PhysicsProcessTakeDamage_TranslatesDamageFrames_WhenOwnerPatched(string source, string expected)
+    [Test]
+    public void PhysicsProcessTakeDamage_TranslatesDamageFrames_WhenOwnerPatched()
     {
-        AssertPhysicsProcessTakeDamageQueuedMessage(source, expected);
+        var cases = new (string Source, string Expected)[]
+        {
+            ("{{r|You take 7 damage from the acid!}}", "{{r|酸で7ダメージを受けた！}}"),
+            ("{{r|You take 7 damage from the acid}}", "{{r|酸で7ダメージを受けた}}"),
+            ("{{r|You take 7 damage while phased!}}", "{{r|You take 7 damage while phased!}}"),
+            ("{{r|You take no damage from the acid!}}", "{{r|酸でダメージを受けなかった！}}"),
+            ("The snapjaw takes 4 damage from the acid!", "snapjawは酸で4ダメージを受けた！"),
+            ("The snapjaw takes no damage from the acid!", "snapjawは酸でダメージを受けなかった！"),
+            ("snapjaws take 4 damage from the acid!", "snapjawsは酸で4ダメージを受けた！"),
+            ("{{r|You take 3 damage being run over by the chrome pyramid!}}", "{{r|chrome pyramidに轢かれて3ダメージを受けた！}}"),
+            ("{{r|You take 5 heat from the blaze!}}", "{{r|blazeで5熱ダメージを受けた！}}"),
+            ("{{r|You take 5 {{icy|cold damage}} from the shard!}}", "{{r|shardで5{{icy|冷気ダメージ}}を受けた！}}"),
+            ("{{r|You take 8 damage from your laser beam! {{R|(x2)}}}}", "{{r|あなたのレーザービームで8ダメージを受けた！ {{R|(x2)}}}}"),
+            ("The {{B|濡れた}}グロウフィッシュ takes 7 damage from your laser beam! {{&r|(x3)}}", "{{B|濡れた}}グロウフィッシュはあなたのレーザービームで7ダメージを受けた！ {{&r|(x3)}}"),
+            ("{{r|You take 6 damage {{R|(x2)}} from colliding with the chrome wall.}}", "{{r|{{R|(x2)}} chrome wallとの衝突で6ダメージを受けた。}}"),
+            ("The {{B|濡れた}}光葉 takes 1 damage from leaking.", "{{B|濡れた}}光葉は液漏れで1ダメージを受けた。"),
+            ("The 樹液まみれの濡れた光葉 takes no damage from oozing.", "樹液まみれの濡れた光葉は滲出でダメージを受けなかった。"),
+            ("{{r|You take 1 damage from fluxing.}}", "{{r|フラックス漏れで1ダメージを受けた。}}"),
+            ("The 落葉剤グレネード mk I miner mk I takes 4 damage from your freezing effect!", "落葉剤グレネード mk I miner mk Iはあなたの凍結効果で4ダメージを受けた！"),
+            ("{{r|You take 9 damage from your plasma you started by you near your ally and You!}}", "{{r|あなたのplasma you started by you near your ally and Youで9ダメージを受けた！}}"),
+        };
+
+        AssertPhysicsProcessTakeDamageQueuedMessages(cases);
     }
 
-    [TestCase("The target takes 4 damage from your pyrokinesis!", "targetはあなたの熱念動で4ダメージを受けた！")]
-    [TestCase("The target takes 4 damage from 監視官イラメの cryokinesis!", "targetは監視官イラメの冷気操作で4ダメージを受けた！")]
-    [TestCase("The target takes 4 damage from snapjaw's life drain!", "targetはsnapjawの生命吸収で4ダメージを受けた！")]
-    [TestCase("The target takes 4 damage from your disintegration!", "targetはあなたの分解で4ダメージを受けた！")]
-    [TestCase("The target takes 4 damage from your stunning force!", "targetはあなたの衝撃念力で4ダメージを受けた！")]
-    [TestCase("The target takes 4 damage from your freezing weapon!", "targetはあなたの凍てつく武器で4ダメージを受けた！")]
-    [TestCase("The target takes 4 damage from your flaming weapon!", "targetはあなたの火炎武器で4ダメージを受けた！")]
-    [TestCase("The target takes 4 damage from your damage reflection!", "targetはあなたのダメージ反射で4ダメージを受けた！")]
-    [TestCase("The target takes 4 damage from your pummeling!", "targetはあなたの殴打で4ダメージを受けた！")]
-    [TestCase("The target takes 4 damage from your shield slam!", "targetはあなたのシールドスラムで4ダメージを受けた！")]
-    [TestCase("The target takes 4 damage from your explosion!", "targetはあなたの爆発で4ダメージを受けた！")]
-    [TestCase("The target takes 4 damage from your electrical discharge!", "targetはあなたの放電で4ダメージを受けた！")]
-    [TestCase("The target takes 4 damage from an electrical discharge!", "targetは放電で4ダメージを受けた！")]
-    [TestCase("The target takes 4 damage from your flames!", "targetはあなたの炎で4ダメージを受けた！")]
-    [TestCase("The target takes 4 damage from your freeze!", "targetはあなたの凍結で4ダメージを受けた！")]
-    [TestCase("The target takes 4 damage from your passage!", "targetはあなたの通過で4ダメージを受けた！")]
-    [TestCase("The target takes 4 damage from your digestive enzymes!", "targetはあなたの消化酵素で4ダメージを受けた！")]
-    [TestCase("The target takes 4 damage from your tiny spines!", "targetはあなたの小さな棘で4ダメージを受けた！")]
-    [TestCase("The target takes 4 damage from your projectile.", "targetはあなたの投射物で4ダメージを受けた。")]
-    [TestCase("The target takes 4 damage from your attack.", "targetはあなたの攻撃で4ダメージを受けた。")]
-    [TestCase("The target takes 4 damage from your carbide armor!", "targetはあなたのcarbide装甲で4ダメージを受けた！")]
-    [TestCase("The target takes 4 damage from your freezing effect armor!", "targetはあなたの凍結効果装甲で4ダメージを受けた！")]
-    [TestCase("The target takes 4 damage from your spores!", "targetはあなたの胞子で4ダメージを受けた！")]
-    [TestCase("The target takes 4 damage from your thorns.", "targetはあなたの棘で4ダメージを受けた。")]
-    [TestCase("The target takes 4 damage from your impalement.", "targetはあなたの串刺しで4ダメージを受けた。")]
-    [TestCase("{{r|You take 4 damage from your {{C|freezing effect}}!}}", "{{r|あなたの{{C|凍結効果}}で4ダメージを受けた！}}")]
-    [TestCase("{{r|You take 4 damage from {{G|acid}}!}}", "{{r|{{G|酸}}で4ダメージを受けた！}}")]
-    [TestCase("{{r|You take 4 damage from your {{g|poison}}!}}", "{{r|あなたの{{g|毒}}で4ダメージを受けた！}}")]
-    [TestCase("{{r|You take 4 damage from {{W|plasma}}!}}", "{{r|{{W|プラズマ}}で4ダメージを受けた！}}")]
-    [TestCase("{{r|You take 4 damage from {{y|normality gas}}!}}", "{{r|{{y|正常化ガス}}で4ダメージを受けた！}}")]
-    [TestCase("{{r|You take 4 damage from {{y|defoliant}}!}}", "{{r|{{y|落葉剤}}で4ダメージを受けた！}}")]
-    [TestCase("{{r|You take 4 damage from {{y|fungicide}}!}}", "{{r|{{y|殺真菌剤}}で4ダメージを受けた！}}")]
-    [TestCase("{{r|You take 4 damage from a plume of acid!}}", "{{r|酸の噴煙で4ダメージを受けた！}}")]
-    [TestCase("{{r|You take 4 damage from a {{fiery|jet of flames}}!}}", "{{r|{{fiery|火炎噴流}}で4ダメージを受けた！}}")]
-    [TestCase("{{r|You take 4 damage from the {{icy|cryogenic mist}}.}}", "{{r|{{icy|極低温の霧}}で4ダメージを受けた。}}")]
-    [TestCase("{{r|You take 4 damage from your {{Y|scalding steam}}!}}", "{{r|あなたの{{Y|灼熱の蒸気}}で4ダメージを受けた！}}")]
-    [TestCase("{{r|You take 4 damage from 骨灰の {{K|choking ash}}!}}", "{{r|骨灰の{{K|窒息性の灰}}で4ダメージを受けた！}}")]
-    [TestCase("{{r|You take 4 damage from falling rocks! {{R|(x2)}}}}", "{{r|落石で4ダメージを受けた！ {{R|(x2)}}}}")]
-    [TestCase("{{r|You take 4 damage from being crushed by a machine press.}}", "{{r|機械プレスに押し潰されたことで4ダメージを受けた。}}")]
-    [TestCase("{{r|You take 4 damage from being forced into phase.}}", "{{r|位相に押し込まれたことで4ダメージを受けた。}}")]
-    [TestCase("{{r|You take 4 damage from slamming into {{W|two}} walls!}}", "{{r|{{W|2}}枚の壁に叩きつけられたことで4ダメージを受けた！}}")]
-    [TestCase("{{r|You take 4 damage from an electrical shock delivered by your defibrillator.}}", "{{r|あなたのdefibrillatorからの電気ショックで4ダメージを受けた。}}")]
-    [TestCase("{{r|You take 4 damage from an {{electrical|electrical shock}} delivered by your defibrillator.}}", "{{r|あなたのdefibrillatorからの{{electrical|電気ショック}}で4ダメージを受けた。}}")]
-    [TestCase("{{r|You take 4 damage from a sharp edge!}}", "{{r|鋭利な刃で4ダメージを受けた！}}")]
-    [TestCase("{{r|You take 4 damage from the device.}}", "{{r|装置で4ダメージを受けた。}}")]
-    [TestCase("{{r|You take 4 damage from sitting!}}", "{{r|座ったことで4ダメージを受けた！}}")]
-    [TestCase("{{r|You take 4 damage from a nosebleed.}}", "{{r|鼻血で4ダメージを受けた。}}")]
-    [TestCase("{{r|You take 4 damage from a processor leak.}}", "{{r|プロセッサ漏れで4ダメージを受けた。}}")]
-    [TestCase("{{r|You take 4 damage from a hemorrhage.}}", "{{r|出血で4ダメージを受けた。}}")]
-    [TestCase("{{r|You take 4 damage from falling rock falling on you.}}", "{{r|falling rockがあなたに落下したことで4ダメージを受けた。}}")]
-    [TestCase("{{r|You take 4 damage from its fall.}}", "{{r|その落下で4ダメージを受けた。}}")]
-    [TestCase("{{r|You take 4 damage from geomagnetic disc flying into you!}}", "{{r|geomagnetic discがあなたに飛び込んだことで4ダメージを受けた！}}")]
-    [TestCase("{{r|You take 4 damage from scourging yourself.}}", "{{r|自分を鞭打ったことで4ダメージを受けた。}}")]
-    [TestCase("{{r|You take 4 damage from using your body as raw materials.}}", "{{r|あなたの体を原材料にしたことで4ダメージを受けた。}}")]
-    [TestCase("{{r|You take 4 damage from the cumulative trauma of your mental assault!}}", "{{r|あなたの精神攻撃による累積外傷で4ダメージを受けた！}}")]
-    [TestCase("{{r|You take 4 damage from the cumulative trauma of a goatfolk's mental assault!}}", "{{r|goatfolkの精神攻撃による累積外傷で4ダメージを受けた！}}")]
-    [TestCase("{{r|You take 4 damage from your failed assault on the structure of spacetime.}}", "{{r|あなたの時空構造への干渉失敗で4ダメージを受けた。}}")]
-    [TestCase("{{r|You take 4 damage from the fire you started!}}", "{{r|あなたが起こした火で4ダメージを受けた！}}")]
-    [TestCase("{{r|You take 4 damage from the fire a laser turret started!}}", "{{r|laser turretが起こした火で4ダメージを受けた！}}")]
-    [TestCase("The snapjaw takes 4 damage from the fire itself started!", "snapjawは自身が起こした火で4ダメージを受けた！")]
-    [TestCase("The target takes 4 damage from the fire started by snapjaw!", "targetはsnapjawが起こした火で4ダメージを受けた！")]
-    [TestCase("The snapjaw takes 4 damage from the fire started by itself!", "snapjawは自身が起こした火で4ダメージを受けた！")]
-    [TestCase("The target takes 4 damage from the fire started by the snapjaw!", "targetはsnapjawが起こした火で4ダメージを受けた！")]
-    [TestCase("{{r|You take 4 damage from {{G|drinking acid}}!}}", "{{r|{{G|酸を飲んだこと}}で4ダメージを受けた！}}")]
-    [TestCase("{{r|You take 4 damage from {{lava|drinking lava}}!}}", "{{r|{{lava|溶岩を飲んだこと}}で4ダメージを受けた！}}")]
-    [TestCase("{{r|You take 4 damage from {{K|drinking asphalt}}!}}", "{{r|{{K|アスファルトを飲んだこと}}で4ダメージを受けた！}}")]
-    [TestCase("{{r|You take 4 damage from the {{G|hulk}} {{w|honey}}!}}", "{{r|{{G|ハルク}} {{w|ハニー}}で4ダメージを受けた！}}")]
-    public void PhysicsProcessTakeDamage_TranslatesStaticProducerDamageSources_WhenOwnerPatched(string source, string expected)
+    [Test]
+    public void PhysicsProcessTakeDamage_TranslatesStaticProducerDamageSources_WhenOwnerPatched()
     {
-        AssertPhysicsProcessTakeDamageQueuedMessage(source, expected);
+        var cases = new (string Source, string Expected)[]
+        {
+            ("The target takes 4 damage from your pyrokinesis!", "targetはあなたの熱念動で4ダメージを受けた！"),
+            ("The target takes 4 damage from 監視官イラメの cryokinesis!", "targetは監視官イラメの冷気操作で4ダメージを受けた！"),
+            ("The target takes 4 damage from snapjaw's life drain!", "targetはsnapjawの生命吸収で4ダメージを受けた！"),
+            ("The target takes 4 damage from your disintegration!", "targetはあなたの分解で4ダメージを受けた！"),
+            ("The target takes 4 damage from your stunning force!", "targetはあなたの衝撃念力で4ダメージを受けた！"),
+            ("The target takes 4 damage from your freezing weapon!", "targetはあなたの凍てつく武器で4ダメージを受けた！"),
+            ("The target takes 4 damage from your flaming weapon!", "targetはあなたの火炎武器で4ダメージを受けた！"),
+            ("The target takes 4 damage from your damage reflection!", "targetはあなたのダメージ反射で4ダメージを受けた！"),
+            ("The target takes 4 damage from your pummeling!", "targetはあなたの殴打で4ダメージを受けた！"),
+            ("The target takes 4 damage from your shield slam!", "targetはあなたのシールドスラムで4ダメージを受けた！"),
+            ("The target takes 4 damage from your explosion!", "targetはあなたの爆発で4ダメージを受けた！"),
+            ("The target takes 4 damage from your electrical discharge!", "targetはあなたの放電で4ダメージを受けた！"),
+            ("The target takes 4 damage from an electrical discharge!", "targetは放電で4ダメージを受けた！"),
+            ("The target takes 4 damage from your flames!", "targetはあなたの炎で4ダメージを受けた！"),
+            ("The target takes 4 damage from your freeze!", "targetはあなたの凍結で4ダメージを受けた！"),
+            ("The target takes 4 damage from your passage!", "targetはあなたの通過で4ダメージを受けた！"),
+            ("The target takes 4 damage from your digestive enzymes!", "targetはあなたの消化酵素で4ダメージを受けた！"),
+            ("The target takes 4 damage from your tiny spines!", "targetはあなたの小さな棘で4ダメージを受けた！"),
+            ("The target takes 4 damage from your projectile.", "targetはあなたの投射物で4ダメージを受けた。"),
+            ("The target takes 4 damage from your attack.", "targetはあなたの攻撃で4ダメージを受けた。"),
+            ("The target takes 4 damage from your carbide armor!", "targetはあなたのcarbide装甲で4ダメージを受けた！"),
+            ("The target takes 4 damage from your freezing effect armor!", "targetはあなたの凍結効果装甲で4ダメージを受けた！"),
+            ("The target takes 4 damage from your spores!", "targetはあなたの胞子で4ダメージを受けた！"),
+            ("The target takes 4 damage from your thorns.", "targetはあなたの棘で4ダメージを受けた。"),
+            ("The target takes 4 damage from your impalement.", "targetはあなたの串刺しで4ダメージを受けた。"),
+            ("{{r|You take 4 damage from your {{C|freezing effect}}!}}", "{{r|あなたの{{C|凍結効果}}で4ダメージを受けた！}}"),
+            ("{{r|You take 4 damage from {{G|acid}}!}}", "{{r|{{G|酸}}で4ダメージを受けた！}}"),
+            ("{{r|You take 4 damage from your {{g|poison}}!}}", "{{r|あなたの{{g|毒}}で4ダメージを受けた！}}"),
+            ("{{r|You take 4 damage from {{W|plasma}}!}}", "{{r|{{W|プラズマ}}で4ダメージを受けた！}}"),
+            ("{{r|You take 4 damage from {{y|normality gas}}!}}", "{{r|{{y|正常化ガス}}で4ダメージを受けた！}}"),
+            ("{{r|You take 4 damage from {{y|defoliant}}!}}", "{{r|{{y|落葉剤}}で4ダメージを受けた！}}"),
+            ("{{r|You take 4 damage from {{y|fungicide}}!}}", "{{r|{{y|殺真菌剤}}で4ダメージを受けた！}}"),
+            ("{{r|You take 4 damage from a plume of acid!}}", "{{r|酸の噴煙で4ダメージを受けた！}}"),
+            ("{{r|You take 4 damage from a {{fiery|jet of flames}}!}}", "{{r|{{fiery|火炎噴流}}で4ダメージを受けた！}}"),
+            ("{{r|You take 4 damage from the {{icy|cryogenic mist}}.}}", "{{r|{{icy|極低温の霧}}で4ダメージを受けた。}}"),
+            ("{{r|You take 4 damage from your {{Y|scalding steam}}!}}", "{{r|あなたの{{Y|灼熱の蒸気}}で4ダメージを受けた！}}"),
+            ("{{r|You take 4 damage from 骨灰の {{K|choking ash}}!}}", "{{r|骨灰の{{K|窒息性の灰}}で4ダメージを受けた！}}"),
+            ("{{r|You take 4 damage from falling rocks! {{R|(x2)}}}}", "{{r|落石で4ダメージを受けた！ {{R|(x2)}}}}"),
+            ("{{r|You take 4 damage from being crushed by a machine press.}}", "{{r|機械プレスに押し潰されたことで4ダメージを受けた。}}"),
+            ("{{r|You take 4 damage from being forced into phase.}}", "{{r|位相に押し込まれたことで4ダメージを受けた。}}"),
+            ("{{r|You take 4 damage from slamming into {{W|two}} walls!}}", "{{r|{{W|2}}枚の壁に叩きつけられたことで4ダメージを受けた！}}"),
+            ("{{r|You take 4 damage from an electrical shock delivered by your defibrillator.}}", "{{r|あなたのdefibrillatorからの電気ショックで4ダメージを受けた。}}"),
+            ("{{r|You take 4 damage from an {{electrical|electrical shock}} delivered by your defibrillator.}}", "{{r|あなたのdefibrillatorからの{{electrical|電気ショック}}で4ダメージを受けた。}}"),
+            ("{{r|You take 4 damage from a sharp edge!}}", "{{r|鋭利な刃で4ダメージを受けた！}}"),
+            ("{{r|You take 4 damage from the device.}}", "{{r|装置で4ダメージを受けた。}}"),
+            ("{{r|You take 4 damage from sitting!}}", "{{r|座ったことで4ダメージを受けた！}}"),
+            ("{{r|You take 4 damage from a nosebleed.}}", "{{r|鼻血で4ダメージを受けた。}}"),
+            ("{{r|You take 4 damage from a processor leak.}}", "{{r|プロセッサ漏れで4ダメージを受けた。}}"),
+            ("{{r|You take 4 damage from a hemorrhage.}}", "{{r|出血で4ダメージを受けた。}}"),
+            ("{{r|You take 4 damage from falling rock falling on you.}}", "{{r|falling rockがあなたに落下したことで4ダメージを受けた。}}"),
+            ("{{r|You take 4 damage from its fall.}}", "{{r|その落下で4ダメージを受けた。}}"),
+            ("{{r|You take 4 damage from geomagnetic disc flying into you!}}", "{{r|geomagnetic discがあなたに飛び込んだことで4ダメージを受けた！}}"),
+            ("{{r|You take 4 damage from scourging yourself.}}", "{{r|自分を鞭打ったことで4ダメージを受けた。}}"),
+            ("{{r|You take 4 damage from using your body as raw materials.}}", "{{r|あなたの体を原材料にしたことで4ダメージを受けた。}}"),
+            ("{{r|You take 4 damage from the cumulative trauma of your mental assault!}}", "{{r|あなたの精神攻撃による累積外傷で4ダメージを受けた！}}"),
+            ("{{r|You take 4 damage from the cumulative trauma of a goatfolk's mental assault!}}", "{{r|goatfolkの精神攻撃による累積外傷で4ダメージを受けた！}}"),
+            ("{{r|You take 4 damage from your failed assault on the structure of spacetime.}}", "{{r|あなたの時空構造への干渉失敗で4ダメージを受けた。}}"),
+            ("{{r|You take 4 damage from the fire you started!}}", "{{r|あなたが起こした火で4ダメージを受けた！}}"),
+            ("{{r|You take 4 damage from the fire a laser turret started!}}", "{{r|laser turretが起こした火で4ダメージを受けた！}}"),
+            ("The snapjaw takes 4 damage from the fire itself started!", "snapjawは自身が起こした火で4ダメージを受けた！"),
+            ("The target takes 4 damage from the fire started by snapjaw!", "targetはsnapjawが起こした火で4ダメージを受けた！"),
+            ("The snapjaw takes 4 damage from the fire started by itself!", "snapjawは自身が起こした火で4ダメージを受けた！"),
+            ("The target takes 4 damage from the fire started by the snapjaw!", "targetはsnapjawが起こした火で4ダメージを受けた！"),
+            ("{{r|You take 4 damage from {{G|drinking acid}}!}}", "{{r|{{G|酸を飲んだこと}}で4ダメージを受けた！}}"),
+            ("{{r|You take 4 damage from {{lava|drinking lava}}!}}", "{{r|{{lava|溶岩を飲んだこと}}で4ダメージを受けた！}}"),
+            ("{{r|You take 4 damage from {{K|drinking asphalt}}!}}", "{{r|{{K|アスファルトを飲んだこと}}で4ダメージを受けた！}}"),
+            ("{{r|You take 4 damage from the {{G|hulk}} {{w|honey}}!}}", "{{r|{{G|ハルク}} {{w|ハニー}}で4ダメージを受けた！}}"),
+        };
+
+        AssertPhysicsProcessTakeDamageQueuedMessages(cases);
     }
 
     [Test]
@@ -11080,6 +11088,44 @@ public sealed class CombatAndLogMessageQueuePatchTests
             target.ProcessTakeDamage(eventObject ?? new DummyGameEvent());
 
             Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertPhysicsProcessTakeDamageQueuedMessages(
+        IReadOnlyList<(string Source, string Expected)> cases)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(
+                    typeof(DummyPhysicsProcessTakeDamageTarget),
+                    nameof(DummyPhysicsProcessTakeDamageTarget.ProcessTakeDamage),
+                    typeof(DummyGameEvent)),
+                typeof(PhysicsProcessTakeDamageTranslationPatch));
+
+            Assert.Multiple(() =>
+            {
+                foreach (var testCase in cases)
+                {
+                    DummyMessageQueue.Reset();
+                    var target = new DummyPhysicsProcessTakeDamageTarget
+                    {
+                        MessageToSend = testCase.Source,
+                    };
+
+                    target.ProcessTakeDamage(new DummyGameEvent());
+
+                    Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(testCase.Expected), testCase.Source);
+                }
+            });
         }
         finally
         {

@@ -28,6 +28,12 @@ internal static class CookingEffectFragmentTranslator
     private static readonly IReadOnlyList<TranslationRule> Rules =
     [
         new(
+            "MetabolizingDisplayName",
+            new Regex(
+                "^metabolizing$",
+                RegexOptions.CultureInvariant | RegexOptions.Compiled),
+            static (_, spans) => ColorAwareTranslationComposer.Restore("代謝中", spans)),
+        new(
             "ElectricDischarge",
             new Regex(
                 "^@they release an electrical discharge per Electrical Generation at level (?<level>.+?)\\.$",
@@ -208,6 +214,12 @@ internal static class CookingEffectFragmentTranslator
                 "自然治癒速度+",
                 RestoreVisible(match.Groups["percent"], spans),
                 "%")),
+        new(
+            "LessThirst",
+            new Regex(
+                "^@thisCreature thirst@s at half rate\\.$",
+                RegexOptions.CultureInvariant | RegexOptions.Compiled),
+            static (_, _) => "喉の渇きが半減する。"),
         new(
             "BleedingSaveBonus",
             new Regex(

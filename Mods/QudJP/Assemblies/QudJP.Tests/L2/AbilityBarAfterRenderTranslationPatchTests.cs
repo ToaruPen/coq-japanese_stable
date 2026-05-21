@@ -191,6 +191,59 @@ public sealed class AbilityBarAfterRenderTranslationPatchTests
     }
 
     [Test]
+    public void Postfix_TranslatesObservedMetabolizingActiveEffectSummary()
+    {
+        WriteDictionary(
+            ("ACTIVE EFFECTS:", "発動中の効果:"),
+            ("metabolizing", "代謝中"));
+
+        RunWithPostfixPatch(() =>
+        {
+            var target = new DummyAbilityBarAfterRenderTarget
+            {
+                NextEffectText = "{{Y|<color=#508d75>ACTIVE EFFECTS:</color>}} {{W|metabolizing}}",
+            };
+
+            target.AfterRender(core: null, sb: null);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(
+                    target.GetEffectText(),
+                    Is.EqualTo("{{Y|<color=#508d75>発動中の効果:</color>}} {{W|代謝中}}"));
+                Assert.That(Translator.GetMissingKeyHitCountForTests("metabolizing"), Is.EqualTo(0));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(AbilityBarAfterRenderTranslationPatch),
+                        "AbilityBar.ActiveEffects"),
+                    Is.GreaterThan(0));
+            });
+        });
+    }
+
+    [Test]
+    public void Postfix_TranslatesObservedLongbladeStanceSummaries()
+    {
+        WriteDictionary(
+            ("ACTIVE EFFECTS:", "発動中の効果:"),
+            ("defensive stance", "防御姿勢"),
+            ("aggressive stance", "攻撃姿勢"),
+            ("dueling stance", "決闘姿勢"));
+
+        RunWithPostfixPatch(() =>
+        {
+            var target = new DummyAbilityBarAfterRenderTarget
+            {
+                NextEffectText = "ACTIVE EFFECTS: defensive stance, aggressive stance, dueling stance",
+            };
+
+            target.AfterRender(core: null, sb: null);
+
+            Assert.That(target.GetEffectText(), Is.EqualTo("発動中の効果: 防御姿勢、攻撃姿勢、決闘姿勢"));
+        });
+    }
+
+    [Test]
     public void Postfix_PreservesSeparatorTmpSegment_WhenCommaBelongsToPreviousEffectColor()
     {
         WriteDictionary(("ACTIVE EFFECTS:", "アクティブ効果:"));

@@ -22,6 +22,9 @@
     { "key": "cleaved ({{C|-{0} AV}})", "context": "XRL.World.Effects.ShatterArmor.GetDescription", "text": "裂かれた（{{C|-{0} AV}}）" },
     { "key": "psionically cleaved (-{0} MA)", "context": "XRL.World.Effects.ShatterMentalArmor.GetDescription", "text": "精神的に裂かれた（-{0} MA）" },
     { "key": "+{0} Quickness\n+1 rank to physical mutations", "context": "XRL.World.Effects.AdrenalControl2Boosted.GetDetails", "text": "+{0} Quickness\n肉体変異 +1ランク" },
-    { "key": "+{0} Quickness\n+{1} ranks to physical mutations", "context": "XRL.World.Effects.AdrenalControl2Boosted.GetDetails", "text": "+{0} Quickness\n肉体変異 +{1}ランク" }
+    { "key": "+{0} Quickness\n+{1} ranks to physical mutations", "context": "XRL.World.Effects.AdrenalControl2Boosted.GetDetails", "text": "+{0} Quickness\n肉体変異 +{1}ランク" },
+    { "key": "+{0} DV while wielding a long blade in the primary hand.", "context": "XRL.World.Effects.LongbladeStance_Defensive.GetDetails", "text": "主手に長剣を装備しているあいだDV+{0}。" },
+    { "key": "+{0} to your penetration roll and -{1} to hit while wielding a long blade in the primary hand.", "context": "XRL.World.Effects.LongbladeStance_Aggressive.GetDetails", "text": "主手に長剣を装備しているあいだ貫通判定+{0}、命中-{1}。" },
+    { "key": "+{0} to hit while wielding a long blade in the primary hand.", "context": "XRL.World.Effects.LongbladeStance_Dueling.GetDetails", "text": "主手に長剣を装備しているあいだ命中+{0}。" }
   ]
 }

@@ -49,6 +49,7 @@
     <Compile Include="../src/GameTypeResolver.cs" Link="Production/GameTypeResolver.cs" />
     <Compile Include="../src/Observability/*.cs" Link="Production/Observability/%(Filename)%(Extension)" />
     <Compile Include="../src/Patches/*.cs" Link="Production/Patches/%(Filename)%(Extension)" />
+    <Compile Include="../src/QudTest/*.cs" Link="Production/QudTest/%(Filename)%(Extension)" />
     <Compile Include="../src/QudJPMod.cs" Link="Production/QudJPMod.cs" />
     <Compile Include="../src/RuntimeDiagnostics.cs" Link="Production/RuntimeDiagnostics.cs" />
     <Compile Include="../src/RuntimeStartupTiming.cs" Link="Production/RuntimeStartupTiming.cs" />
