@@ -1742,6 +1742,7 @@ public sealed class TargetMethodResolutionTests
     })]
     [TestCase(typeof(CookingEffectTranslationPatch), new[]
     {
+        "XRL.World.Effects.ProceduralCookingEffect|GetDescription|System.String",
         "XRL.World.Effects.ProceduralCookingEffect|GetProceduralEffectDescription|System.String",
         "XRL.World.Effects.ProceduralCookingEffect|GetTemplatedProceduralEffectDescription|System.String",
         "XRL.World.Effects.CookingDomainElectric_Discharge_ProceduralCookingTriggeredAction|GetDescription|System.String",

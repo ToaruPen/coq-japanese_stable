@@ -185,6 +185,14 @@ internal static class ColorRouteCatalog
                 new(
                     1,
                     "Trade UI owner templates run first; this fallback is only for fixed/shared popup families after trade-specific ownership."),
+            ["Mods/QudJP/Assemblies/src/QudTest/QudTestRouteExecutor.cs|PopupTranslationPatch.TranslatePopupMenuItemTextForProducerRoute("] =
+                new(
+                    1,
+                    "QudTest route executor deliberately exposes shared popup menu-item routes for harness fixtures; it is not a production owner route."),
+            ["Mods/QudJP/Assemblies/src/QudTest/QudTestRouteExecutor.cs|PopupTranslationPatch.TranslatePopupTextForProducerRoute("] =
+                new(
+                    2,
+                    "QudTest route executor deliberately exposes shared popup text routes for harness fixtures; it is not a production owner route."),
         };
 
     internal static readonly SortedDictionary<string, int> ExpectedSymbolOccurrences =
@@ -271,6 +279,8 @@ internal static class ColorRouteCatalog
             ["Mods/QudJP/Assemblies/src/Patches/PopupTranslationPatch.cs|MessagePatternTranslator.Translate("] = 1,
             ["Mods/QudJP/Assemblies/src/Patches/QuestLifecyclePopupTranslationPatch.cs|ColorAwareTranslationComposer.TranslatePreservingColors("] = 1,
             ["Mods/QudJP/Assemblies/src/Patches/QudMenuBottomContextTranslationPatch.cs|PopupTranslationPatch.TranslatePopupMenuItemTextForProducerRoute("] = 1,
+            ["Mods/QudJP/Assemblies/src/QudTest/QudTestRouteExecutor.cs|PopupTranslationPatch.TranslatePopupMenuItemTextForProducerRoute("] = 1,
+            ["Mods/QudJP/Assemblies/src/QudTest/QudTestRouteExecutor.cs|PopupTranslationPatch.TranslatePopupTextForProducerRoute("] = 2,
             ["Mods/QudJP/Assemblies/src/Patches/SelectableTextMenuItemTranslationPatch.cs|PopupTranslationPatch.TranslatePopupMenuItemTextForProducerRoute("] = 1,
             ["Mods/QudJP/Assemblies/src/Patches/TradeUiPopupTranslationPatch.cs|MessagePatternTranslator.Translate("] = 1,
             ["Mods/QudJP/Assemblies/src/Patches/TradeUiPopupTranslationPatch.cs|PopupTranslationPatch.TranslatePopupTextForProducerRoute("] = 1,
