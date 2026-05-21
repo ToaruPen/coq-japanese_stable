@@ -176,8 +176,13 @@ public static class MutationGeneratedTextTranslationPatch
         var match = PhotosyntheticMetabolizePattern.Match(stripped);
         if (match.Success && OwnerMatches(ownerKey, PhotosyntheticSkinHandleEventOwner))
         {
-            translated = "食事を消化し始め、今日の残りの間、以下の効果を得る:\n\n"
-                + RestoreCapture(match, spans, "effect");
+            if (!CookingRuntimeTranslationPatch.TryTranslateMetabolizeMealPopup(source, out translated))
+            {
+                translated = source;
+                detail = string.Empty;
+                return false;
+            }
+
             detail = "PhotosyntheticSkinMetabolize";
             return true;
         }

@@ -2411,7 +2411,7 @@
         },
         {
             "key": "You start to metabolize the meal, gaining the following effect for the rest of the day:\n\n{{W|{0}}}",
-            "text": "食事を消化し始め、今日の残りの間、以下の効果を得る:\n\n{{W|{0}}}"
+            "text": "食事の代謝が始まり、一日中次の効果を得る:\n\n{{W|{0}}}"
         },
         {
             "key": "{0}: how many do you want to preserve? (max = {1})",
