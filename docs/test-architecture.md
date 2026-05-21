@@ -146,6 +146,71 @@ coverage は `just build` / CI の `Build QudJP` が担います。
 
 **目的**: 実際のゲーム起動環境で、レンダリング・フォント・UI の見え方を確認する。
 
+### QudTest — final-text and binding artifact smoke
+
+QudTest は、QudJP の実 runtime route を通し、最終的に sink へ渡る文字列を
+JSON artifact として記録する仕組みです。通常は `just qudtest-headless` で
+ゲームを起動せずに実行します。ゲーム内 wish command は、mod load と
+WishManager 経由の L3 補助線として残します。これは「実際のレンダリング」
+を検証するものではなく、既存 L1/L2 が誤った expected を固定化していないか、
+runtime helper 経由の最終テキストと fixture が一致するかを確認するための
+gate です。
+
+`qudtest:bindings` は同じ artifact 形式で patch binding を確認します。
+fixture の `patch` と `expectedTargets` から `TargetMethod()` /
+`TargetMethods()` を反射実行し、現在のゲーム DLL 上で解決された
+`DeclaringType|MethodName|ReturnType|ParamType...` シグネチャを比較します。
+これは「patch が当たるべき対象が現在の DLL で解決できるか」の検査であり、
+実ゲームで Harmony patch が適用済みか、または表示テキストが日本語化されるかは
+別途 final-text fixture または L3 で確認します。
+
+`qudtest:bindings-all` は fixture を使わず、QudJP assembly 内の全 patch
+型から `TargetMethod()` / `TargetMethods()` entrypoint を列挙します。既知の
+意図的ゼロ解決を除き、target set が空または例外になった patch は失敗します。
+これは「代表 fixture に入っていない patch が現在の DLL で解決不能になった」
+問題を検知するための広域 gate です。シグネチャの固定化が必要な重要 patch は、
+別途 `qudtest:bindings` の fixture に `expectedTargets` を追加してください。
+
+基本手順:
+
+```bash
+just qudtest-headless
+just qudtest-headless qudtest:bindings .artifacts/qudtest-bindings
+just qudtest-headless qudtest:bindings-all .artifacts/qudtest-bindings-all
+```
+
+ゲーム内 wish 経由も確認する場合:
+
+```bash
+just deploy-mod
+# ゲーム内 wish: qudtest または qudtest:runtime / qudtest:wish / qudtest:bindings / qudtest:bindings-all
+just qudtest-inspect-game
+```
+
+headless 出力先:
+
+```text
+.artifacts/qudtest/results.json
+.artifacts/qudtest/summary.txt
+.artifacts/qudtest/runs/
+```
+
+ゲーム内 wish 出力先:
+
+```text
+~/Library/Application Support/Freehold Games/CavesOfQud/Local/QudTest/results.json
+~/Library/Application Support/Freehold Games/CavesOfQud/Local/QudTest/summary.txt
+~/Library/Application Support/Freehold Games/CavesOfQud/Local/QudTest/runs/
+```
+
+`scripts/qudtest_inspect.py` は repository fixture と QudTest artifact の
+`expected` が一致しているか、artifact が新しいか、失敗 case がないか、
+必要に応じて `Player.log` に既知の fatal marker がないかを検査します。
+headless では `--skip-player-log` を使い、ゲーム内 wish 検証では
+`Player.log` も確認します。artifact の `actual` は QudJP の route helper
+から得られる最終テキストであり、Unity フォント、TMP fallback、画面上の
+折り返し、重なり、透明化は従来どおり手動 L3 の対象です。
+
 **L3 に残すもの**:
 - 日本語文字が透明にならないか
 - `TMP_Settings.defaultFontAsset` / fallback / OnEnable 適用が実際に効いているか

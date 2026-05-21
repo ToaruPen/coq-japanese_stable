@@ -112,6 +112,10 @@ class TestBuildRsyncCommand:
         assert "--include=Localization/**/*.json" in cmd
         assert "--include=Localization/**/*.txt" in cmd
         assert "--include=Localization/**" not in cmd
+        assert "--include=QudTest/" in cmd
+        assert "--include=QudTest/fixtures/" in cmd
+        assert "--include=QudTest/fixtures/*.json" in cmd
+        assert "--include=QudTest/**" not in cmd
 
     def test_exclude_fonts_before_wildcard_exclude(self) -> None:
         """--exclude=Fonts/ appears before --exclude=* when exclude_fonts is set."""
@@ -139,6 +143,13 @@ class TestBuildRsyncCommand:
         cmd = build_rsync_command(Path("/src"), Path("/dst"))
         assert "--include=Fonts/" in cmd
         assert "--include=Fonts/**" in cmd
+
+    def test_rsync_includes_contains_qudtest_fixtures(self) -> None:
+        """Only QudTest fixture JSON files are deployed for wish-command runtime checks."""
+        assert "QudTest/" in _RSYNC_INCLUDES
+        assert "QudTest/fixtures/" in _RSYNC_INCLUDES
+        assert "QudTest/fixtures/*.json" in _RSYNC_INCLUDES
+        assert "QudTest/**" not in _RSYNC_INCLUDES
 
 
 class TestRunSync:
@@ -219,6 +230,7 @@ class TestRunSync:
         (source / "Assemblies").mkdir(parents=True)
         (source / "Localization").mkdir()
         (source / "Fonts").mkdir()
+        (source / "QudTest" / "fixtures").mkdir(parents=True)
         (source / "manifest.json").write_text("{}", encoding="utf-8")
         (source / "preview.png").write_bytes(b"preview")
         (source / "Bootstrap.cs").write_text("// bootstrap", encoding="utf-8")
@@ -244,6 +256,11 @@ class TestRunSync:
         for doc_name in LOCALIZATION_DOC_NAMES:
             (source / "Localization" / doc_name).write_text("# docs", encoding="utf-8")
         (source / "Fonts" / "Font.otf").write_bytes(b"font")
+        (source / "QudTest" / "fixtures" / "runtime-smoke.json").write_text(
+            "{}",
+            encoding="utf-8",
+        )
+        (source / "QudTest" / "README.md").write_text("# dev docs", encoding="utf-8")
         (source / "Launch CavesOfQud (Rosetta).command").write_text(
             '#!/usr/bin/env bash\nexec arch -x86_64 "$HOME/game/CoQ"\n',
             encoding="utf-8",
@@ -280,6 +297,8 @@ class TestRunSync:
         for doc_name in LOCALIZATION_DOC_NAMES:
             assert not (destination / "Localization" / doc_name).exists()
         assert (destination / "Fonts" / "Font.otf").exists()
+        assert (destination / "QudTest" / "fixtures" / "runtime-smoke.json").exists()
+        assert not (destination / "QudTest" / "README.md").exists()
         assert not (destination / "src.cs").exists()
         assert not (destination / "stale.txt").exists()
 

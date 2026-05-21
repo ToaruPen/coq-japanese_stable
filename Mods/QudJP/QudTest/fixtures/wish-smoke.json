@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "suite": "wish",
+  "description": "Wish-command owner route smoke cases for in-game QudTest.",
+  "cases": [
+    {
+      "id": "wish-queue.reclamation-timer",
+      "route": "wish-queue",
+      "input": "Turns until nephal arrives: 7",
+      "expected": "ネファル到着までのターン数: 7"
+    }
+  ]
+}

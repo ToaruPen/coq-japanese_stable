@@ -1,0 +1,110 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <AnalysisLevel>latest-all</AnalysisLevel>
+    <NoWarn>$(NoWarn);CA1303</NoWarn>
+    <IsPackable>false</IsPackable>
+    <GameDir Condition="'$(GameDir)' == ''">$(HOME)/Games/CavesOfQud-stable-ref/CoQ.app/Contents/Resources/Data</GameDir>
+    <AssemblyCSharpPath Condition="'$(AssemblyCSharpPath)' == ''">$(GameDir)/Managed/Assembly-CSharp.dll</AssemblyCSharpPath>
+    <ManagedDir>$([System.IO.Path]::GetDirectoryName('$(AssemblyCSharpPath)'))</ManagedDir>
+    <DefineConstants>$(DefineConstants);QUDJP_DEV_BUILD</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="Exists('$(AssemblyCSharpPath)')">
+    <DefineConstants>$(DefineConstants);HAS_GAME_DLL</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="Exists('$(ManagedDir)/Unity.TextMeshPro.dll')">
+    <DefineConstants>$(DefineConstants);HAS_TMP</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="!Exists('$(ManagedDir)/Unity.TextMeshPro.dll')">
+    <UseUnityReferenceStubs>true</UseUnityReferenceStubs>
+    <DefineConstants>$(DefineConstants);UNITY_REFERENCE_STUBS</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Lib.Harmony" Version="2.4.2" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="SonarAnalyzer.CSharp" Version="10.8.0.113526">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="../../../Mods/QudJP/Assemblies/src/GameTypeResolver.cs" Link="Production/GameTypeResolver.cs" />
+    <Compile Include="../../../Mods/QudJP/Assemblies/src/Observability/*.cs" Link="Production/Observability/%(Filename)%(Extension)" />
+    <Compile Include="../../../Mods/QudJP/Assemblies/src/Patches/*.cs" Link="Production/Patches/%(Filename)%(Extension)" />
+    <Compile Include="../../../Mods/QudJP/Assemblies/src/QudTest/*.cs" Link="Production/QudTest/%(Filename)%(Extension)" />
+    <Compile Include="../../../Mods/QudJP/Assemblies/src/QudJPMod.cs" Link="Production/QudJPMod.cs" />
+    <Compile Include="../../../Mods/QudJP/Assemblies/src/RuntimeDiagnostics.cs" Link="Production/RuntimeDiagnostics.cs" />
+    <Compile Include="../../../Mods/QudJP/Assemblies/src/RuntimeStartupTiming.cs" Link="Production/RuntimeStartupTiming.cs" />
+    <Compile Include="../../../Mods/QudJP/Assemblies/src/Translation/*.cs" Link="Production/Translation/%(Filename)%(Extension)" />
+    <Compile Include="../../../Mods/QudJP/Assemblies/src/UI/*.cs" Link="Production/UI/%(Filename)%(Extension)" />
+  </ItemGroup>
+
+  <ItemGroup Condition="Exists('$(AssemblyCSharpPath)')">
+    <Reference Include="Assembly-CSharp">
+      <HintPath>$(AssemblyCSharpPath)</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup Condition="Exists('$(AssemblyCSharpPath)')">
+    <None Include="$(AssemblyCSharpPath)">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>Assembly-CSharp.dll</TargetPath>
+      <Visible>false</Visible>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup Condition="Exists('$(ManagedDir)/Unity.TextMeshPro.dll')">
+    <Reference Include="Unity.TextMeshPro">
+      <HintPath>$(ManagedDir)/Unity.TextMeshPro.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.UI">
+      <HintPath>$(ManagedDir)/UnityEngine.UI.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.UIModule">
+      <HintPath>$(ManagedDir)/UnityEngine.UIModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>$(ManagedDir)/UnityEngine.CoreModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.SharedInternalsModule">
+      <HintPath>$(ManagedDir)/UnityEngine.SharedInternalsModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.TextCoreFontEngineModule">
+      <HintPath>$(ManagedDir)/UnityEngine.TextCoreFontEngineModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.TextCoreTextEngineModule">
+      <HintPath>$(ManagedDir)/UnityEngine.TextCoreTextEngineModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.TextRenderingModule">
+      <HintPath>$(ManagedDir)/UnityEngine.TextRenderingModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(UseUnityReferenceStubs)' == 'true'">
+    <ProjectReference Include="../../../Mods/QudJP/Assemblies/ReferenceStubs/UnityEngine.CoreModule/UnityEngine.CoreModule.csproj" />
+    <ProjectReference Include="../../../Mods/QudJP/Assemblies/ReferenceStubs/UnityEngine.TextRenderingModule/UnityEngine.TextRenderingModule.csproj" />
+    <ProjectReference Include="../../../Mods/QudJP/Assemblies/ReferenceStubs/UnityEngine.TextCoreFontEngineModule/UnityEngine.TextCoreFontEngineModule.csproj" />
+    <ProjectReference Include="../../../Mods/QudJP/Assemblies/ReferenceStubs/UnityEngine.TextCoreTextEngineModule/UnityEngine.TextCoreTextEngineModule.csproj" />
+    <ProjectReference Include="../../../Mods/QudJP/Assemblies/ReferenceStubs/UnityEngine.UI/UnityEngine.UI.csproj" />
+    <ProjectReference Include="../../../Mods/QudJP/Assemblies/ReferenceStubs/Unity.TextMeshPro/Unity.TextMeshPro.csproj" />
+  </ItemGroup>
+</Project>

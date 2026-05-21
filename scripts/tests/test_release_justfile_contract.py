@@ -77,6 +77,22 @@ def test_agent_tool_recipes_have_readable_primary_names() -> None:
     assert 'lsp-diagnostics solution="Mods/QudJP/Assemblies/QudJP.sln":' in justfile
 
 
+def test_qudtest_recipes_use_runtime_artifact_inspector() -> None:
+    """QudTest recipes should expose the in-game artifact workflow without hand-copying paths."""
+    headless_recipe = _recipe_body("qudtest-headless")
+    inspect_recipe = _recipe_body("qudtest-inspect-game")
+    results_recipe = _recipe_body("qudtest-results")
+    history_recipe = _recipe_body("qudtest-history")
+
+    assert "scripts/tools/QudTestHeadless/QudTestHeadless.csproj" in headless_recipe
+    assert "--command {{quote(command)}}" in headless_recipe
+    assert "--skip-player-log" in headless_recipe
+    assert "scripts/qudtest_inspect.py" in inspect_recipe
+    assert "--skip-player-log" not in inspect_recipe
+    assert "Library/Application Support/Freehold Games/CavesOfQud/Local/QudTest/results.json" in results_recipe
+    assert "scripts/qudtest_inspect.py --list-runs" in history_recipe
+
+
 def test_issue737_runtime_closeout_recipe_uses_dedicated_checker() -> None:
     """Issue #737 runtime closeout should be executable without hand-copying report commands."""
     recipe = _recipe_body("issue737-runtime-closeout")
