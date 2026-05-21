@@ -996,6 +996,9 @@ public sealed class LocalizationCoverageTests
                 Does.Contain(new DictionaryEntry("{{W|metabolizing}}", "XRL.World.Effects.ProceduralCookingEffect.GetDescription", "{{W|代謝中}}")));
             Assert.That(
                 cookingEntries,
+                Does.Contain(new DictionaryEntry("{{w|metabolized effect}}", "XRL.World.Effects.BasicTriggeredCookingEffect.GetDescription", "{{w|代謝効果}}")));
+            Assert.That(
+                cookingEntries,
                 Does.Contain(new DictionaryEntry(
                     "@thisCreature thirst@s at half rate.",
                     "XRL.World.Effects.ProceduralCookingEffectUnit_LessThirst.GetDescription",

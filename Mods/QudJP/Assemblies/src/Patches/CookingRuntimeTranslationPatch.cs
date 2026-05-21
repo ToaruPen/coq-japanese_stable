@@ -372,20 +372,20 @@ public static class CookingRuntimeTranslationPatch
 
     private static string TranslateCookingEffectLines(string source)
     {
+        var (effectStripped, effectSpans) = ColorAwareTranslationComposer.Strip(source);
         if (source.IndexOf('\n') < 0)
         {
-            var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
-            return CookingEffectFragmentTranslator.TryTranslate(stripped, Context, "CookingRuntime.ApplyEffectsTo", out var translated)
+            return CookingEffectFragmentTranslator.TryTranslate(effectStripped, Context, "CookingRuntime.ApplyEffectsTo", out var translated)
                 ? ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
                     translated,
-                    spans,
-                    stripped.Length,
+                    effectSpans,
+                    effectStripped.Length,
                     source)
                 : source;
         }
 
         var changed = false;
-        var lines = source.Split('\n');
+        var lines = effectStripped.Split('\n');
         for (var index = 0; index < lines.Length; index++)
         {
             var (stripped, spans) = ColorAwareTranslationComposer.Strip(lines[index]);
@@ -400,7 +400,17 @@ public static class CookingRuntimeTranslationPatch
             }
         }
 
-        return changed ? string.Join("\n", lines) : source;
+        if (!changed)
+        {
+            return source;
+        }
+
+        var translatedLines = string.Join("\n", lines);
+        return ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+            translatedLines,
+            effectSpans,
+            effectStripped.Length,
+            source);
     }
 
     private static bool TryTranslateWellFedIntro(string source, out string translated)

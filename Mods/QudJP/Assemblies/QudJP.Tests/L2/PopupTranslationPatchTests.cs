@@ -858,9 +858,9 @@ public sealed class PopupTranslationPatchTests
         "{{|starapple stew}}の新しいレシピを生み出した！")]
     [TestCase(
         "You start to metabolize the meal, gaining the following effect for the rest of the day:\n\n{{W|{0}}}",
-        "食事を消化し始め、今日の残りの間、以下の効果を得る:\n\n{{W|{0}}}",
+        "食事の代謝が始まり、一日中次の効果を得る:\n\n{{W|{0}}}",
         "You start to metabolize the meal, gaining the following effect for the rest of the day:\n\n{{W|+5 to heat resistance}}",
-        "食事を消化し始め、今日の残りの間、以下の効果を得る:\n\n{{W|+5 to heat resistance}}")]
+        "食事の代謝が始まり、一日中次の効果を得る:\n\n{{W|+5 to heat resistance}}")]
     public void TranslatePopupTextForProducerRoute_TranslatesCampfireSinglePlaceholderPatterns(
         string templateKey,
         string templateText,

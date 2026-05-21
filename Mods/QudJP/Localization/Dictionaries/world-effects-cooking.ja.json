@@ -11,7 +11,7 @@
         {
             "key": "{{w|metabolized effect}}",
             "context": "XRL.World.Effects.BasicTriggeredCookingEffect.GetDescription",
-            "text": "{{w|代謝中の効果}}"
+            "text": "{{w|代謝効果}}"
         },
         {
             "key": "+10-15 Acid Resistance",
