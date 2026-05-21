@@ -991,6 +991,116 @@ public sealed class MessageFrameTranslatorTests
     }
 
     [Test]
+    public void TryTranslateXDidY_RepositoryDictionary_TranslatesIssue747SkillFrames()
+    {
+        UseRepositoryDictionary();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                MessageFrameTranslator.TryTranslateXDidYToZ(
+                    "あなた",
+                    "dive",
+                    "at",
+                    "スナップジョー",
+                    null,
+                    "!",
+                    out var deathFromAboveDive),
+                Is.True);
+            Assert.That(deathFromAboveDive, Is.EqualTo("あなたはスナップジョーへ急降下した！"));
+
+            Assert.That(
+                MessageFrameTranslator.TryTranslateXDidYToZ(
+                    "あなた",
+                    "leap",
+                    "at",
+                    "スナップジョー",
+                    null,
+                    "!",
+                    out var deathFromAboveLeap),
+                Is.True);
+            Assert.That(deathFromAboveLeap, Is.EqualTo("あなたはスナップジョーへ跳びかかった！"));
+
+            Assert.That(
+                MessageFrameTranslator.TryTranslateXDidYToZ(
+                    "あなた",
+                    "juke",
+                    "north, moving",
+                    "スナップジョー",
+                    "out of your way",
+                    null,
+                    out var jukeTarget),
+                Is.True);
+            Assert.That(jukeTarget, Is.EqualTo("あなたはスナップジョーの進路から北へ飛び退いた。"));
+
+            Assert.That(
+                MessageFrameTranslator.TryTranslateWDidXToYWithZ(
+                    "あなた",
+                    "hook",
+                    null,
+                    "スナップジョー",
+                    "with",
+                    "鋼の斧",
+                    null,
+                    "!",
+                    out var hookAndDrag),
+                Is.True);
+            Assert.That(hookAndDrag, Is.EqualTo("あなたは鋼の斧でスナップジョーを引っ掛けた！"));
+
+            Assert.That(
+                MessageFrameTranslator.TryTranslateXDidY("あなた", "make", "camp", ".", out var makeCamp),
+                Is.True);
+            Assert.That(makeCamp, Is.EqualTo("あなたは野営した。"));
+
+            Assert.That(
+                MessageFrameTranslator.TryTranslateXDidYToZ(
+                    "あなた",
+                    "attempt",
+                    "to hobble",
+                    "スナップジョー",
+                    null,
+                    ".",
+                    out var hobble),
+                Is.True);
+            Assert.That(hobble, Is.EqualTo("あなたはスナップジョーの足を狙おうとした。"));
+
+            Assert.That(
+                MessageFrameTranslator.TryTranslateXDidYToZ(
+                    "あなた",
+                    "shame",
+                    null,
+                    "スナップジョー",
+                    "with your words",
+                    ".",
+                    out var berate),
+                Is.True);
+            Assert.That(berate, Is.EqualTo("あなたはスナップジョーを言葉で辱めた。"));
+
+            Assert.That(
+                MessageFrameTranslator.TryTranslateXDidY("あなた", "work", "yourself into a blood frenzy", "!", out var berserk),
+                Is.True);
+            Assert.That(berserk, Is.EqualTo("あなたは血の狂乱へ身を駆り立てた！"));
+
+            Assert.That(
+                MessageFrameTranslator.TryTranslateXDidY("snapjaw", "reel", "from the force of your bludgeoning", ".", out var bludgeon),
+                Is.True);
+            Assert.That(bludgeon, Is.EqualTo("snapjawは殴打の衝撃でよろめいた。"));
+
+            Assert.That(
+                MessageFrameTranslator.TryTranslateXDidYToZ(
+                    "あなた",
+                    "accidentally",
+                    "destroy",
+                    "修理対象",
+                    null,
+                    "!",
+                    out var repairCriticalFailure),
+                Is.True);
+            Assert.That(repairCriticalFailure, Is.EqualTo("あなたは修理対象をうっかり破壊した！"));
+        });
+    }
+
+    [Test]
     public void MarkerHelpers_AddAndStripDirectTranslationMarker()
     {
         var marked = MessageFrameTranslator.MarkDirectTranslation("熊は防いだ。");

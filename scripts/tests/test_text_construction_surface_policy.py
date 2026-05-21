@@ -245,6 +245,14 @@ def test_policy_closes_reviewed_conversation_choice_tags_and_classifies_body_rou
 
 def test_policy_applies_reviewed_closure_overlay_for_high_risk_combat_lane() -> None:
     """High-risk text-construction lanes can carry reviewed owner-route closure evidence."""
+    shield_slam_family_id = (
+        "XRL.World.Parts.Skill/Shield_Slam.cs::"
+        "Shield_Slam.Slam(GameObject,GameObject,Cell,bool)"
+    )
+    cudgel_slam_cast_family_id = (
+        "XRL.World.Parts.Skill/Cudgel_Slam.cs::"
+        "Cudgel_Slam.Cast(GameObject,Cudgel_Slam,string,GameObject,bool,int,string)"
+    )
     inventory = _inventory(
         [
             _family(
@@ -259,6 +267,18 @@ def test_policy_applies_reviewed_closure_overlay_for_high_risk_combat_lane() -> 
                 "PerformBandaging",
                 {"MessageFrame": 1},
             ),
+            _family(
+                shield_slam_family_id,
+                "XRL.World.Parts.Skill/Shield_Slam.cs",
+                "Slam",
+                {"MessageFrame": 1},
+            ),
+            _family(
+                cudgel_slam_cast_family_id,
+                "XRL.World.Parts.Skill/Cudgel_Slam.cs",
+                "Cast",
+                {"Popup": 7, "MessageFrame": 3},
+            ),
         ]
     )
 
@@ -267,11 +287,92 @@ def test_policy_applies_reviewed_closure_overlay_for_high_risk_combat_lane() -> 
         "XRL.World.Parts/Combat.cs::Combat.MeleeAttackWithWeaponInternal(GameObject,GameObject,GameObject,BodyPart,string,int,int,int,int,int,bool,bool)"
     ]
     action_required = entries["XRL.World.Parts/BandageMedication.cs::BandageMedication.PerformBandaging()"]
+    shield_slam = entries[shield_slam_family_id]
+    cudgel_slam_cast = entries[cudgel_slam_cast_family_id]
 
     assert covered["closure_lane"] == "combat_message_frame_does"
     assert covered["closure_status"] == "covered_by_owner_route"
     assert "CombatAndLogMessageQueuePatchTests.cs" in " ".join(covered["closure_evidence"])
     assert action_required["closure_status"] == "action_required"
+    assert shield_slam["closure_status"] == "covered_by_owner_route"
+    assert "shield slam possessive capture" in " ".join(shield_slam["closure_evidence"])
+    assert cudgel_slam_cast["closure_status"] == "covered_by_owner_route"
+    assert "SingleCallsiteOwnerPopupTranslationPatchTests.cs" in " ".join(cudgel_slam_cast["closure_evidence"])
+    assert "Issue #747 skill-originated" in " ".join(cudgel_slam_cast["closure_evidence"])
+
+
+def test_policy_closes_issue747_journal_and_skill_rows_with_owner_route_evidence() -> None:
+    """Issue-747 scoped journal/quest and skill rows are no longer left as action items."""
+    journal_family_id = "XRL.World.Parts/LocationFinder.cs::LocationFinder.TriggerFind()"
+    unreviewed_journal_family_id = "XRL.World.Parts/UnreviewedJournal.cs::UnreviewedJournal.TriggerFind()"
+    tactics_charge_family_id = "XRL.World.Parts.Skill/Tactics_Charge.cs::Tactics_Charge.PerformCharge()"
+    tactics_death_from_above_family_id = (
+        "XRL.World.Parts.Skill/Tactics_DeathFromAbove.cs::"
+        "Tactics_DeathFromAbove.PerformDeathFromAbove(GameObject,GameObject,string)"
+    )
+    tinkering_mine_family_id = "XRL.World.Parts/Tinkering_Mine.cs::Tinkering_Mine.AttemptDisarm(GameObject,IEvent,bool)"
+    unreviewed_skill_family_id = "XRL.World.Parts.Skill/Unreviewed_Skill.cs::Unreviewed_Skill.FireEvent(Event)"
+    inventory = _inventory(
+        [
+            _family(
+                journal_family_id,
+                "XRL.World.Parts/LocationFinder.cs",
+                "TriggerFind",
+                {"JournalAPI": 1, "Popup": 1},
+            ),
+            _family(
+                unreviewed_journal_family_id,
+                "XRL.World.Parts/UnreviewedJournal.cs",
+                "TriggerFind",
+                {"JournalAPI": 1, "Popup": 1},
+            ),
+            _family(
+                tactics_charge_family_id,
+                "XRL.World.Parts.Skill/Tactics_Charge.cs",
+                "PerformCharge",
+                {"MessageFrame": 1, "Popup": 1},
+            ),
+            _family(
+                tactics_death_from_above_family_id,
+                "XRL.World.Parts.Skill/Tactics_DeathFromAbove.cs",
+                "PerformDeathFromAbove",
+                {"MessageFrame": 1},
+            ),
+            _family(
+                tinkering_mine_family_id,
+                "XRL.World.Parts/Tinkering_Mine.cs",
+                "AttemptDisarm",
+                {"MessageFrame": 1, "Popup": 1},
+            ),
+            _family(
+                unreviewed_skill_family_id,
+                "XRL.World.Parts.Skill/Unreviewed_Skill.cs",
+                "FireEvent",
+                {"MessageFrame": 1, "Popup": 1},
+            ),
+        ]
+    )
+
+    entries = {entry["family_id"]: entry for entry in valuable_surface_queue(inventory)}
+
+    assert entries[journal_family_id]["closure_lane"] == "journal_quest_routes"
+    assert entries[journal_family_id]["closure_status"] == "covered_by_owner_route"
+    journal_evidence = " ".join(entries[journal_family_id]["closure_evidence"])
+    assert journal_family_id in journal_evidence
+    assert "JournalApiAddTranslationPatchTests.cs" in journal_evidence
+    assert "PopupShowTranslationPatchTests.cs" in journal_evidence
+    assert entries[unreviewed_journal_family_id]["closure_lane"] == "journal_quest_routes"
+    assert entries[unreviewed_journal_family_id]["closure_status"] == "action_required"
+    assert entries[tactics_charge_family_id]["closure_status"] == "covered_by_owner_route"
+    assert entries[tactics_death_from_above_family_id]["closure_status"] == "covered_by_owner_route"
+    assert entries[tinkering_mine_family_id]["closure_status"] == "covered_by_owner_route"
+    assert entries[unreviewed_skill_family_id]["closure_status"] == "action_required"
+    skill_evidence = " ".join(entries[tactics_charge_family_id]["closure_evidence"])
+    assert tactics_charge_family_id in skill_evidence
+    assert "Issue #747 reviewed skill-originated static family" in skill_evidence
+    message_only_evidence = " ".join(entries[tactics_death_from_above_family_id]["closure_evidence"])
+    assert "MessageFrames/verbs.ja.json" in message_only_evidence
+    assert "SingleCallsiteOwnerPopupTranslationPatch.cs" not in message_only_evidence
 
 
 def test_policy_separates_reviewed_issue711_work_without_overclaiming_closure() -> None:
@@ -584,13 +685,11 @@ def test_policy_records_hse_journal_story_completion_routes() -> None:
         assert "JournalPatternTranslatorTests.cs" in " ".join(entries[family_id]["closure_evidence"])
 
     assert entries[village_surface_family_id]["closure_lane"] == "history_generated_text"
-    assert entries[village_surface_family_id]["closure_status"] == "partial_coverage"
+    assert entries[village_surface_family_id]["closure_status"] == "covered_by_owner_route"
     assert "JournalApiAddTranslationPatchTests.cs" in " ".join(
         entries[village_surface_family_id]["closure_evidence"]
     )
-    assert "VillageSurface.CheckReveal-specific runtime or patch evidence" in " ".join(
-        entries[village_surface_family_id]["closure_evidence"]
-    )
+    assert "RevealString data" in " ".join(entries[village_surface_family_id]["closure_evidence"])
 
     assert "SingleCallsiteOwnerPopupTranslationPatchTests.cs" in " ".join(
         entries[animator_family_id]["closure_evidence"]

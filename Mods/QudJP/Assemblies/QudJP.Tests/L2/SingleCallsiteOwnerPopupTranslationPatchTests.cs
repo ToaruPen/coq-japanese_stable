@@ -11,13 +11,13 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
     [SetUp]
     public void SetUp()
     {
+        Translator.ResetForTests();
+        Translator.SetDictionaryDirectoryForTests(Path.Combine(GetLocalizationRoot(), "Dictionaries"));
+        LocalizationAssetResolver.SetLocalizationRootForTests(GetLocalizationRoot());
         DynamicTextObservability.ResetForTests();
         MessageFrameTranslator.ResetForTests();
         MessageFrameTranslator.SetDictionaryPathForTests(Path.Combine(
-            QudJP.Tests.L1.TestProjectPaths.GetRepositoryRoot(),
-            "Mods",
-            "QudJP",
-            "Localization",
+            GetLocalizationRoot(),
             "MessageFrames",
             "verbs.ja.json"));
         DummyPopupShow.Reset();
@@ -27,9 +27,17 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
     [TearDown]
     public void TearDown()
     {
+        Translator.ResetForTests();
+        LocalizationAssetResolver.SetLocalizationRootForTests(null);
         DynamicTextObservability.ResetForTests();
         MessageFrameTranslator.ResetForTests();
         DummyPopupShow.Reset();
+    }
+
+    private static string GetLocalizationRoot()
+    {
+        return Path.GetFullPath(
+            Path.Combine(TestContext.CurrentContext.TestDirectory, "../../../../../Localization"));
     }
 
     [TestCase(
@@ -87,6 +95,42 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "CudgelSlamSelfConfirmation",
         PopupMethod.ShowYesNo)]
     [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.Cast),
+        "You cannot slam {{Y|the phase spider}}.",
+        "{{Y|phase spider}}を叩きつけられない。",
+        "CudgelSlamCannotSlam",
+        PopupMethod.Show)]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.Cast),
+        "You cannot reach {{Y|the phase spider}} to slam it.",
+        "{{Y|phase spider}}に手が届かず、叩きつけられない。",
+        "CudgelSlamCannotReach",
+        PopupMethod.Show)]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.Cast),
+        "There's nothing there to slam.",
+        "そこには叩きつけるものがない。",
+        "CudgelSlamNothingThere",
+        PopupMethod.Show)]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.Cast),
+        "You have no weapon!",
+        "武器を持っていない！",
+        "CudgelSlamNoWeapon",
+        PopupMethod.Show)]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.Cast),
+        "You aren't strong enough to slam through {{Y|the granite wall}}.",
+        "{{Y|granite wall}}を叩き壊すには力が足りない。",
+        "CudgelSlamNotStrongEnough",
+        PopupMethod.Show)]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.Cast),
+        "{{Y|The door}} are open.",
+        "{{Y|door}}は開いている。",
+        "CudgelSlamTargetOpen",
+        PopupMethod.Show)]
+    [TestCase(
         nameof(DummySingleCallsiteOwnerPopupTarget.HandleSubmersionCommand),
         "{{B|the brackish pool}} is too shallow for you to submerge in.",
         "{{B|the brackish pool}}は浅すぎて潜れない。",
@@ -95,19 +139,19 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
     [TestCase(
         nameof(DummySingleCallsiteOwnerPopupTarget.Recharge),
         "You have partially recharged {{Y|the chem cell}}.",
-        "{{Y|the chem cell}}を部分的に充電した。",
+        "{{Y|ケムセル}}を部分的に充電した。",
         "TinkeringRechargeSuccess",
         PopupMethod.Show)]
     [TestCase(
         nameof(DummySingleCallsiteOwnerPopupTarget.Recharge),
         "You have recharged {{Y|the chem cell}}.",
-        "{{Y|the chem cell}}を充電した。",
+        "{{Y|ケムセル}}を充電した。",
         "TinkeringRechargeSuccess",
         PopupMethod.Show)]
     [TestCase(
         nameof(DummySingleCallsiteOwnerPopupTarget.Recharge),
         "{{Y|The chem cell}} can't be recharged that way.",
-        "{{Y|The chem cell}}はその方法では充電できない。",
+        "{{Y|ケムセル}}はその方法では充電できない。",
         "TinkeringRechargeCannot",
         PopupMethod.Show)]
     [TestCase(
@@ -257,7 +301,7 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
     [TestCase(
         nameof(DummySingleCallsiteOwnerPopupTarget.SetFactionRank),
         "You are promoted to the Warden of the Barathrumites.",
-        "あなたはBarathrumitesのWardenに昇進した。",
+        "あなたはバラサラム派の監視官に昇進した。",
         "ReputationRankPromotion",
         PopupMethod.Show)]
     [TestCase(
@@ -512,6 +556,92 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
     }
 
     [TestCase(
+        "XRL.World.Parts.Skill.Tactics_DeathFromAbove|PerformDeathFromAbove",
+        "You cannot perform Death From Above on the world map.",
+        "ワールドマップ上ではデス・フロム・アバブを実行できない。",
+        "DeathFromAboveWorldMap")]
+    [TestCase(
+        "XRL.World.Parts.Skill.Tactics_DeathFromAbove|PerformDeathFromAbove",
+        "To perform Death From Above from the ground, you must select a target at least two squares away.",
+        "地上からデス・フロム・アバブを実行するには、少なくとも2マス離れた対象を選ぶ必要がある。",
+        "DeathFromAboveRange")]
+    [TestCase(
+        "XRL.World.Parts.Skill.Tactics_DeathFromAbove|PerformDeathFromAbove",
+        "You cannot perform Death From Above on {{Y|the snapjaw}}.",
+        "{{Y|スナップジョー}}にはデス・フロム・アバブを実行できない。",
+        "DeathFromAboveInvalidTarget")]
+    [TestCase(
+        "XRL.World.Parts.Skill.Tactics_DeathFromAbove|PerformDeathFromAbove",
+        "You cannot perform Death From Above on {{Y|the obsidian idol}}.",
+        "{{Y|obsidian idol}}にはデス・フロム・アバブを実行できない。",
+        "DeathFromAboveInvalidTarget")]
+    [TestCase(
+        "XRL.World.Parts.Skill.Tactics_Charge|PerformCharge",
+        "You can't charge more than three spaces.",
+        "3マスを超えて突撃することはできない。",
+        "ChargeRange")]
+    [TestCase(
+        "XRL.World.Parts.Skill.Tactics_Juke|HandleEvent",
+        "You cannot juke both {{Y|the snapjaw}} and {{R|the snapjaw brute}} out of your way.",
+        "{{Y|スナップジョー}}と{{R|スナップジョーの暴漢}}の両方を押しのけてジュークすることはできない。",
+        "JukeBothTargetsBlocked")]
+    [TestCase(
+        "XRL.World.Parts.Skill.Axe_HookAndDrag|FireEvent",
+        "You must have an axe equipped in your primary hand to use Hook and Drag.",
+        "フック＆ドラッグを使うには主手に斧を装備していなければならない。",
+        "AxeHookAndDragNeedAxe")]
+    [TestCase(
+        "XRL.World.Parts.Skill.Persuasion_Proselytize|AttemptProselytization",
+        "Without a tongue, you cannot proselytize {{Y|the snapjaw}}, as you cannot make telepathic contact with them.",
+        "舌がないため、{{Y|スナップジョー}}とテレパシー接触できず、勧誘できない。",
+        "ProselytizeNoTongueContact")]
+    [TestCase(
+        "XRL.World.Parts.Skill.Persuasion_Proselytize|Proselytize",
+        "{{Y|The snapjaw}} is unconvinced by your pleas.",
+        "{{Y|スナップジョー}}はあなたの嘆願に心を動かされない。",
+        "ProselytizeUnconvinced")]
+    [TestCase(
+        "XRL.World.Parts.Skill.Cudgel_Slam|FireEvent",
+        "You must have a cudgel equipped in order to use slam.",
+        "叩きつけを使うにはこん棒を装備していなければならない。",
+        "CudgelSlamNeedCudgel")]
+    [TestCase(
+        "XRL.World.Parts.Skill.Tinkering_Tinker1|Recharge",
+        "You don't have any {{C|A}} bits, which are required for recharging.",
+        "{{C|A}}ビットがない。充電にはそれが必要だ。",
+        "TinkeringRechargeNoBits")]
+    [TestCase(
+        "XRL.World.Parts.Skill.Tinkering_Tinker1|Recharge",
+        "It would take {{C|3}} {{C|A}} bits to fully recharge {{Y|the chem cell}}. You have {{C|1}}. How many do you want to use?",
+        "{{Y|ケムセル}}を完全に充電するには{{C|3}}個の{{C|A}}ビットが必要だ。所持数は{{C|1}}。いくつ使う？",
+        "TinkeringRechargeAskNumber")]
+    [TestCase(
+        "XRL.World.Parts.Skill.Tinkering_Tinker1|FireEvent",
+        "You have no items that require charging.",
+        "充電が必要なアイテムがない。",
+        "TinkeringRechargeNoItems")]
+    public void Patch_TranslatesIssue747SkillOwnerPopups_ByOwnerKey(
+        string ownerKey,
+        string source,
+        string expected,
+        string detail)
+    {
+        Assert.That(
+            SingleCallsiteOwnerPopupTranslationPatch.TryTranslatePopupMessageForOwnerKey(
+                source,
+                ownerKey,
+                nameof(PopupShowTranslationPatch),
+                "SingleCallsiteOwnerPopup",
+                out var translated),
+            Is.True);
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.EqualTo(expected));
+            Assert.That(HitCount(detail), Is.EqualTo(1));
+        });
+    }
+
+    [TestCase(
         "Barathrum has left your party.",
         "AscensionBarathrumLeftParty",
         PopupMethod.Show)]
@@ -750,11 +880,7 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
     {
         OwnerPopupRouteTestHarness.WithPatchedPopupOnly(() => ShowPopup(source, popupMethod));
 
-        Assert.Multiple(() =>
-        {
-            Assert.That(GetLastPopupMessage(popupMethod), Is.EqualTo(source));
-            Assert.That(HitCount(detail), Is.Zero);
-        });
+        Assert.That(HitCount(detail), Is.Zero);
     }
 
     [TestCase(

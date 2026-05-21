@@ -2,6 +2,7 @@ using System.Reflection;
 using HarmonyLib;
 using QudJP.Patches;
 using QudJP.Tests.DummyTargets;
+using QudJP.Tests.L1;
 
 namespace QudJP.Tests.L2;
 
@@ -14,6 +15,8 @@ public sealed class RepairTranslationPatchTests
     public void SetUp()
     {
         Translator.ResetForTests();
+        var localizationRoot = Path.Combine(TestProjectPaths.GetRepositoryRoot(), "Mods", "QudJP", "Localization");
+        Translator.SetDictionaryDirectoryForTests(Path.Combine(localizationRoot, "Dictionaries"));
         MessagePatternTranslator.ResetForTests();
         DynamicTextObservability.ResetForTests();
         SinkObservation.ResetForTests();
@@ -25,6 +28,7 @@ public sealed class RepairTranslationPatchTests
     public void TearDown()
     {
         Translator.ResetForTests();
+        LocalizationAssetResolver.SetLocalizationRootForTests(null);
         MessagePatternTranslator.ResetForTests();
         DynamicTextObservability.ResetForTests();
         SinkObservation.ResetForTests();
@@ -184,6 +188,14 @@ public sealed class RepairTranslationPatchTests
         "You cannot repair {{R|封印された機械}}.",
         "{{R|封印された機械}}は修理できない。",
         "CannotRepair")]
+    [TestCase(
+        "You cannot reach {{Y|the chem cell}} to repair it.",
+        "{{Y|ケムセル}}に手が届かず、修理できない。",
+        "CannotReach")]
+    [TestCase(
+        "You are out of phase with {{Y|the obsidian idol}} and cannot repair it.",
+        "{{Y|obsidian idol}}とは位相がずれているため、修理できない。",
+        "OutOfPhase")]
     public void TinkeringRepairPatch_TranslatesHandleEventShowFailMessages_WhenOwnerPatched(
         string source,
         string expected,
@@ -310,6 +322,36 @@ public sealed class RepairTranslationPatchTests
                 Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("{{R|壊れた測定器}}の修理方法がわからない。"));
                 Assert.That(RepairHitCount(nameof(PopupShowTranslationPatch), "PartialSuccess"), Is.EqualTo(1));
                 Assert.That(RepairHitCount(nameof(PopupShowTranslationPatch), "Failure"), Is.EqualTo(1));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void TinkeringRepairPatch_TranslatesCriticalFailurePopup_WhenOwnerPatched()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            PatchPopupShow(harmony);
+            PatchOwner(harmony, RequireOwnerMethod(nameof(DummyRepairProducerTarget.RepairResultCriticalFailure)));
+
+            var target = new DummyRepairProducerTarget
+            {
+                PopupMessageToShow = "You think you broke {{R|the eigenrifle}}...",
+            };
+
+            target.RepairResultCriticalFailure(new DummyGameObject(), new DummyGameObject());
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("{{R|eigenrifle}}を壊してしまったようだ..."));
+                Assert.That(RepairHitCount(nameof(PopupShowTranslationPatch), "CriticalFailure"), Is.EqualTo(1));
             });
         }
         finally

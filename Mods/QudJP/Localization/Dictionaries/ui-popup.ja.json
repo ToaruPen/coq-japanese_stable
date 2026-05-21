@@ -594,6 +594,11 @@
             "text": "どの手足を切断するか？"
         },
         {
+            "key": "Amputate whose limb?",
+            "context": "XRL.World.Parts.Skill.Physic_AmputateLimb.PickDirectionTitle",
+            "text": "誰の手足を切断するか？"
+        },
+        {
             "key": "Choose a body part to engrave.",
             "context": "XRL.UI.Popup.PickOption.Title",
             "text": "刻印する体の部位を選ぶ。"
@@ -1614,6 +1619,21 @@
             "key": "You have no items that require charging.",
             "context": "XRL.UI.Popup.ShowFail.Message",
             "text": "充電が必要なアイテムがない。"
+        },
+        {
+            "key": "You do not have a bow or rifle equipped!",
+            "context": "XRL.World.Parts.Skill.Rifle_SuppressiveFire.FireEvent",
+            "text": "弓またはライフルを装備していない！"
+        },
+        {
+            "key": "You must have a cudgel equipped in your primary hand to conk.",
+            "context": "XRL.World.Parts.Skill.Cudgel_Conk.PerformConk",
+            "text": "コンクするには主手にこん棒を装備していなければならない。"
+        },
+        {
+            "key": "There's nothing there you can conk.",
+            "context": "XRL.World.Parts.Skill.Cudgel_Conk.PerformConk",
+            "text": "そこにはコンクできるものがない。"
         },
         {
             "key": "You have no more usable options, so your haggling so far will determine the outcome.",
@@ -2746,6 +2766,31 @@
             "key": "There was a fatal exception attempting to save your game. Caves of Qud attempted to recover your prior save. You probably want to close the game and reload your most recent save. It'd be helpful to send the save and logs to support@freeholdgames.com",
             "context": "XRL.UI.Popup.Show.Message",
             "text": "ゲーム保存中に致命的な例外が発生した。Caves of Qud は以前のセーブの復元を試みた。ゲームを終了して直近のセーブを読み込み直すのがよいだろう。セーブデータとログを support@freeholdgames.com に送ると助かる。"
+        },
+        {
+            "key": "Death From Above",
+            "context": "XRL.World.Parts.Skill.Tactics_DeathFromAbove.PickerTitle",
+            "text": "デス・フロム・アバブ"
+        },
+        {
+            "key": "Juke where?",
+            "context": "XRL.World.Parts.Skill.Tactics_Juke.PickerTitle",
+            "text": "どこへジュークする？"
+        },
+        {
+            "key": "Slam what?",
+            "context": "XRL.World.Parts.Skill.Cudgel_Slam.PickerTitle",
+            "text": "何を叩きつける？"
+        },
+        {
+            "key": "Who would you like to proselytize?",
+            "context": "XRL.World.Parts.Skill.Persuasion_Proselytize.PickGameObjectTitle",
+            "text": "誰を勧誘する？"
+        },
+        {
+            "key": "Select an item to charge.",
+            "context": "XRL.World.Parts.Skill.Tinkering_Tinker1.PickGameObjectTitle",
+            "text": "充電するアイテムを選択。"
         }
     ]
 }

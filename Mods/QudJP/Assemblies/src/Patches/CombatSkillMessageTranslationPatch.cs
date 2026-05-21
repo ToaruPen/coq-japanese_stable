@@ -12,6 +12,12 @@ public static class CombatSkillMessageTranslationPatch
 {
     private const string Context = nameof(CombatSkillMessageTranslationPatch);
 
+    private static readonly IReadOnlyDictionary<string, string> CombatSkillCaptureTranslations =
+        new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["shield slam"] = "シールドスラム",
+        };
+
     private static readonly Regex KickPassesThroughYouPattern = new(
         "^(?<actor>.+?) kicks? at you, but the kick passes through you\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
@@ -484,7 +490,27 @@ public static class CombatSkillMessageTranslationPatch
             }
         }
 
-        return normalized;
+        return TranslateKnownCombatSkillCapture(normalized);
+    }
+
+    private static string TranslateKnownCombatSkillCapture(string source)
+    {
+        if (CombatSkillCaptureTranslations.TryGetValue(source, out var exact))
+        {
+            return exact;
+        }
+
+        var possessiveIndex = source.LastIndexOf("の", StringComparison.Ordinal);
+        if (possessiveIndex <= 0 || possessiveIndex == source.Length - 1)
+        {
+            return source;
+        }
+
+        var owner = source.Substring(0, possessiveIndex + 1);
+        var owned = source.Substring(possessiveIndex + 1);
+        return CombatSkillCaptureTranslations.TryGetValue(owned, out var translatedOwned)
+            ? owner + translatedOwned
+            : source;
     }
 
     private static string ReplaceLeadingPossessive(string source, string possessive, string replacement)

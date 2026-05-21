@@ -37,7 +37,53 @@ public sealed class SurvivalCampAttemptCampPopupTranslationPatchTests
         string source,
         string expected)
     {
-        AssertOwnerPopup(source, expected);
+        AssertOwnerPopup(source, expected, "ExistingCampfireNavigation");
+    }
+
+    [TestCase(
+        "You can't cook with hostiles nearby.",
+        "敵対者が近くにいると料理できない。",
+        "HostilesNearby")]
+    [TestCase(
+        "You can't cook on the world map.",
+        "ワールドマップ上では料理できない。",
+        "WorldMap")]
+    [TestCase(
+        "You can only build a campfire in the same zone you are in.",
+        "キャンプファイアは現在いるゾーンにしか作れない。",
+        "SameZone")]
+    [TestCase(
+        "There is nothing there you can build a campfire on.",
+        "そこにはキャンプファイアを作れるものがない。",
+        "NoBuildSurface")]
+    [TestCase(
+        "Something is in the way!",
+        "何かが邪魔をしている！",
+        "Blocked")]
+    public void AttemptCamp_TranslatesExactFailurePopup_WhenOwnerPatched(
+        string source,
+        string expected,
+        string routeDetail)
+    {
+        AssertOwnerPopup(source, expected, routeDetail);
+    }
+
+    [Test]
+    public void AttemptCamp_TranslatesExistingCampfireHerePrompt_WhenOwnerPatched()
+    {
+        AssertOwnerPopup(
+            "There is already a {{Y|campfire}} here.",
+            "ここにはすでに{{Y|campfire}}がある。",
+            "ExistingCampfireHere");
+    }
+
+    [Test]
+    public void AttemptCamp_TranslatesCampfireInPoolPrompt_WhenOwnerPatched()
+    {
+        AssertOwnerPopup(
+            "You cannot start a campfire in {{B|deep pools of water}}.",
+            "{{B|deep pools of water}}の中ではキャンプファイアを起こせない。",
+            "ExtinguishingPool");
     }
 
     [Test]
@@ -55,7 +101,7 @@ public sealed class SurvivalCampAttemptCampPopupTranslationPatchTests
         {
             Assert.That(claimed, Is.False);
             Assert.That(translated, Is.EqualTo(source));
-            Assert.That(HitCount(), Is.Zero);
+            Assert.That(HitCount("ExistingCampfireNavigation"), Is.Zero);
         });
     }
 
@@ -64,24 +110,28 @@ public sealed class SurvivalCampAttemptCampPopupTranslationPatchTests
     {
         const string source = "There is already a campfire to the north. Do you want to go to it?";
 
-        AssertOwnerPopup(MessageFrameTranslator.MarkDirectTranslation(source), source, expectedHits: 0);
+        AssertOwnerPopup(
+            MessageFrameTranslator.MarkDirectTranslation(source),
+            source,
+            "ExistingCampfireNavigation",
+            expectedHits: 0);
     }
 
     [Test]
     public void AttemptCamp_LeavesEmptyPopupUnchanged_WhenOwnerPatched()
     {
-        AssertOwnerPopup(string.Empty, string.Empty, expectedHits: 0);
+        AssertOwnerPopup(string.Empty, string.Empty, "ExistingCampfireNavigation", expectedHits: 0);
     }
 
     [Test]
     public void AttemptCamp_LeavesUnsupportedPopupUnchanged_WhenOwnerPatched()
     {
-        const string source = "There is already a {{Y|campfire}} here.";
+        const string source = "The camp refuses to become a tiny moon.";
 
-        AssertOwnerPopup(source, source, expectedHits: 0);
+        AssertOwnerPopup(source, source, "ExistingCampfireNavigation", expectedHits: 0);
     }
 
-    private static void AssertOwnerPopup(string source, string expected, int expectedHits = 1)
+    private static void AssertOwnerPopup(string source, string expected, string routeDetail, int expectedHits = 1)
     {
         OwnerPopupRouteTestHarness.WithPatchedPopupOwner(
             typeof(SurvivalCampAttemptCampPopupTranslationPatch),
@@ -95,7 +145,7 @@ public sealed class SurvivalCampAttemptCampPopupTranslationPatchTests
                 Assert.Multiple(() =>
                 {
                     Assert.That(DummyPopupShow.LastShowYesNoCancelMessage, Is.EqualTo(expected));
-                    Assert.That(HitCount(), Is.EqualTo(expectedHits));
+                    Assert.That(HitCount(routeDetail), Is.EqualTo(expectedHits));
                 });
             });
     }
@@ -108,10 +158,10 @@ public sealed class SurvivalCampAttemptCampPopupTranslationPatchTests
             typeof(DummyGameObject));
     }
 
-    private static int HitCount()
+    private static int HitCount(string routeDetail)
     {
         return OwnerPopupRouteTestHarness.RouteHitCount(
             typeof(SurvivalCampAttemptCampPopupTranslationPatch),
-            "ExistingCampfireNavigation");
+            routeDetail);
     }
 }

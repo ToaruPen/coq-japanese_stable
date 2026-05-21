@@ -41,6 +41,7 @@ public sealed class DynamicQuestGeneratedQuestTextTranslatorTests
     [TestCase("The sanctity of the Mechanimists", "メカニマス教団の聖性")]
     [TestCase("Travel to {{|the rust wells}} and pray at {{|the salt shrine}}.", "{{|錆の井戸}}へ行き、{{|塩の祠}}で祈る。")]
     [TestCase("Travel to {{|the rust wells}} and put something in {{|the chest}}.", "{{|錆の井戸}}へ行き、{{|chest}}に何かを入れる。")]
+    [TestCase("Locate the rusted relic at {{|the spindle}}.", "{{|スピンドル}}で錆びた遺物を見つける。")]
     public void TryTranslate_TranslatesGeneratedQuestText(string source, string expected)
     {
         var translated = DynamicQuestGeneratedQuestTextTranslator.TryTranslate(source, out var result);

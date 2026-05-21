@@ -78,6 +78,16 @@ public static class PopupAskNumberTranslationPatch
                 return;
             }
 
+            if (SingleCallsiteOwnerPopupTranslationPatch.TryTranslatePopupMessage(
+                    message,
+                    Context,
+                    "Popup.AskNumber",
+                    out var ownerTranslated))
+            {
+                __args[0] = ownerTranslated;
+                return;
+            }
+
             __args[0] = PopupTranslationPatch.TranslatePopupTextForProducerRoute(message, Context);
         }
         catch (Exception ex)

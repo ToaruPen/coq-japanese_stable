@@ -16,6 +16,14 @@ public static class SurvivalCampAttemptCampPopupTranslationPatch
         "^There (?<be>is|are) already (?:(?:a|an|some|the) )?(?<campfire>.+?) (?<direction>to the north|to the south|to the east|to the west|to the northeast|to the northwest|to the southeast|to the southwest)\\. Do you want to go to (?<pronoun>it|them)\\?$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex ExistingCampfireHerePattern = new(
+        "^There (?<be>is|are) already (?:(?:a|an|some|the) )?(?<campfire>.+?) here\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex CampfireInPoolPattern = new(
+        "^You cannot start a campfire in (?<liquid>.+?)\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     [ThreadStatic]
     private static int activeDepth;
 
@@ -88,22 +96,75 @@ public static class SurvivalCampAttemptCampPopupTranslationPatch
             return true;
         }
 
-        if (!TryTranslateExistingCampfireNavigation(source, out translated))
+        if (TryTranslateExactFailure(source, out translated, out var detail)
+            || TryTranslateExistingCampfireHere(source, out translated, out detail)
+            || TryTranslateExistingCampfireNavigation(source, out translated, out detail)
+            || TryTranslateCampfireInPool(source, out translated, out detail))
+        {
+            DynamicTextObservability.RecordTransform(
+                route,
+                "Popup.ProducerText." + Context + "." + detail,
+                source,
+                translated);
+            return true;
+        }
+
+        translated = source;
+        return false;
+    }
+
+    private static bool TryTranslateExactFailure(string source, out string translated, out string detail)
+    {
+        translated = source;
+        detail = string.Empty;
+
+        switch (source)
+        {
+            case "You can't cook with hostiles nearby.":
+                translated = "敵対者が近くにいると料理できない。";
+                detail = "HostilesNearby";
+                return true;
+            case "You can't cook on the world map.":
+                translated = "ワールドマップ上では料理できない。";
+                detail = "WorldMap";
+                return true;
+            case "You can only build a campfire in the same zone you are in.":
+                translated = "キャンプファイアは現在いるゾーンにしか作れない。";
+                detail = "SameZone";
+                return true;
+            case "There is nothing there you can build a campfire on.":
+                translated = "そこにはキャンプファイアを作れるものがない。";
+                detail = "NoBuildSurface";
+                return true;
+            case "Something is in the way!":
+                translated = "何かが邪魔をしている！";
+                detail = "Blocked";
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    private static bool TryTranslateExistingCampfireHere(string source, out string translated, out string detail)
+    {
+        detail = string.Empty;
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        var match = ExistingCampfireHerePattern.Match(stripped);
+        if (!match.Success)
         {
             translated = source;
             return false;
         }
 
-        DynamicTextObservability.RecordTransform(
-            route,
-            "Popup.ProducerText." + Context + ".ExistingCampfireNavigation",
-            source,
-            translated);
+        var campfire = RestoreCapture(match, spans, "campfire");
+        translated = $"ここにはすでに{campfire}がある。";
+        detail = "ExistingCampfireHere";
         return true;
     }
 
-    private static bool TryTranslateExistingCampfireNavigation(string source, out string translated)
+    private static bool TryTranslateExistingCampfireNavigation(string source, out string translated, out string detail)
     {
+        detail = string.Empty;
         var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
         var match = ExistingCampfireNavigationPattern.Match(stripped);
         if (!match.Success || !TryTranslateDirection(match.Groups["direction"].Value, out var direction))
@@ -114,6 +175,23 @@ public static class SurvivalCampAttemptCampPopupTranslationPatch
 
         var campfire = RestoreCapture(match, spans, "campfire");
         translated = $"{direction}にすでに{campfire}がある。そこへ向かう？";
+        detail = "ExistingCampfireNavigation";
+        return true;
+    }
+
+    private static bool TryTranslateCampfireInPool(string source, out string translated, out string detail)
+    {
+        detail = string.Empty;
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        var match = CampfireInPoolPattern.Match(stripped);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        translated = $"{RestoreCapture(match, spans, "liquid")}の中ではキャンプファイアを起こせない。";
+        detail = "ExtinguishingPool";
         return true;
     }
 

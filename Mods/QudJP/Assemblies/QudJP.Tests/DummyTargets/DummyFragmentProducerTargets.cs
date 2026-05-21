@@ -327,6 +327,12 @@ internal sealed class DummyRepairProducerTarget
         ShowRepairPopup(nameof(RepairResultFailure), who, obj);
     }
 
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public void RepairResultCriticalFailure(DummyGameObject who, DummyGameObject obj)
+    {
+        ShowRepairPopup(nameof(RepairResultCriticalFailure), who, obj);
+    }
+
     private void ShowRepairPopup(string methodName, DummyGameObject who, DummyGameObject obj)
     {
         _ = methodName;
