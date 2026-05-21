@@ -78,26 +78,37 @@ public sealed class SultanShrineWrapperTranslatorTests
         });
     }
 
-    [TestCase("Perfect", "完璧")]
-    [TestCase("Fine", "良好")]
-    [TestCase("Lightly Damaged", "軽微な損傷")]
-    [TestCase("Damaged", "損傷")]
-    [TestCase("Badly Damaged", "重度の損傷")]
-    [TestCase("Undamaged", "無傷")]
-    [TestCase("Badly Wounded", "重傷")]
-    [TestCase("Wounded", "負傷")]
-    [TestCase("Injured", "軽傷")]
-    public void Translate_TranslatesAllShippedQualityRatings(string qualityEn, string qualityJa)
+    [Test]
+    public void Translate_TranslatesAllShippedQualityRatings()
     {
-        var source =
-            "The shrine depicts a significant event from the life of the ancient sultan Resheph:"
-            + "\n\nIn 3 AR, Resheph cleansed the marshlands of the plagues of the Gyre and taught Abram to sow watervine along its fertile tracks."
-            + "\n\n{{Y|" + qualityEn + "}}";
+        (string English, string Japanese)[] qualities =
+        [
+            ("Perfect", "完璧"),
+            ("Fine", "良好"),
+            ("Lightly Damaged", "軽微な損傷"),
+            ("Damaged", "損傷"),
+            ("Badly Damaged", "重度の損傷"),
+            ("Undamaged", "無傷"),
+            ("Badly Wounded", "重傷"),
+            ("Wounded", "負傷"),
+            ("Injured", "軽傷"),
+        ];
 
-        var translated = MessagePatternTranslator.Translate(source, nameof(DescriptionLongDescriptionPatch));
+        Assert.Multiple(() =>
+        {
+            foreach (var quality in qualities)
+            {
+                var source =
+                    "The shrine depicts a significant event from the life of the ancient sultan Resheph:"
+                    + "\n\nIn 3 AR, Resheph cleansed the marshlands of the plagues of the Gyre and taught Abram to sow watervine along its fertile tracks."
+                    + "\n\n{{Y|" + quality.English + "}}";
 
-        Assert.That(translated, Does.EndWith("{{Y|" + qualityJa + "}}"));
-        Assert.That(translated, Does.Not.Contain(qualityEn));
+                var translated = MessagePatternTranslator.Translate(source, nameof(DescriptionLongDescriptionPatch));
+
+                Assert.That(translated, Does.EndWith("{{Y|" + quality.Japanese + "}}"), quality.English);
+                Assert.That(translated, Does.Not.Contain(quality.English), quality.English);
+            }
+        });
     }
 
     [Test]
