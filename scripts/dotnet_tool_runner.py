@@ -63,6 +63,26 @@ def run_cached_tool_project(
 ) -> subprocess.CompletedProcess[str]:
     """Build a repo-local tool in the shared artifacts root and execute its DLL."""
     resolved_project = project_path.resolve()
+    tool_dll = _build_cached_tool_project(resolved_project, configuration=configuration, timeout=timeout)
+    return _run_tool_dll(tool_dll, args, timeout=timeout)
+
+
+def build_tool_project(project_path: Path, *, configuration: str = "Release") -> Path:
+    """Build or reuse a repo-local dotnet tool and return the produced DLL path."""
+    resolved_project = project_path.resolve()
+    return _build_cached_tool_project(
+        resolved_project,
+        configuration=configuration,
+        timeout=BUILD_LOCK_TIMEOUT_SECONDS,
+    )
+
+
+def _build_cached_tool_project(
+    resolved_project: Path,
+    *,
+    configuration: str,
+    timeout: float,
+) -> Path:
     if not resolved_project.is_file():
         msg = f"dotnet tool project is missing: {resolved_project}"
         raise DotnetToolError(msg)
@@ -78,25 +98,8 @@ def run_cached_tool_project(
                 artifacts_root=artifacts_root,
                 timeout=timeout,
             )
-            stamp_path = _tool_sources_stamp_path(tool_dll)
-            try:
-                _ = stamp_path.write_text(_tool_sources_fingerprint(resolved_project), encoding="utf-8")
-            except OSError as exc:
-                msg = f"failed to write dotnet tool source fingerprint stamp: {stamp_path}: {exc}"
-                raise DotnetToolError(msg) from exc
-    return _run_tool_dll(tool_dll, args, timeout=timeout)
-
-
-def build_tool_project(project_path: Path, *, configuration: str = "Release") -> Path:
-    """Build a repo-local dotnet tool and return the produced DLL path."""
-    resolved_project = project_path.resolve()
-    return _build_tool_project(
-        resolved_project,
-        configuration=configuration,
-        artifacts_root=_artifacts_root(),
-        timeout=BUILD_LOCK_TIMEOUT_SECONDS,
-        use_lock=True,
-    )
+            _write_tool_sources_stamp(tool_dll, resolved_project)
+    return tool_dll
 
 
 def _build_tool_project(
@@ -163,6 +166,15 @@ def _cached_tool_is_stale(project_path: Path, tool_dll: Path) -> bool:
 
 def _tool_sources_stamp_path(tool_dll: Path) -> Path:
     return tool_dll.with_name(f"{tool_dll.name}.sources.sha256")
+
+
+def _write_tool_sources_stamp(tool_dll: Path, project_path: Path) -> None:
+    stamp_path = _tool_sources_stamp_path(tool_dll)
+    try:
+        _ = stamp_path.write_text(_tool_sources_fingerprint(project_path), encoding="utf-8")
+    except OSError as exc:
+        msg = f"failed to write dotnet tool source fingerprint stamp: {stamp_path}: {exc}"
+        raise DotnetToolError(msg) from exc
 
 
 def _tool_sources_fingerprint(project_path: Path) -> str:
