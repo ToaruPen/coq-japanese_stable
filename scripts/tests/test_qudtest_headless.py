@@ -7,7 +7,6 @@ from __future__ import annotations
 import json
 import os
 import subprocess
-import sys
 from pathlib import Path
 
 import pytest
@@ -55,7 +54,9 @@ def test_qudtest_headless_writes_inspectable_runtime_artifact(tmp_path: Path) ->
 
     inspected = subprocess.run(
         [
-            sys.executable,
+            "uv",
+            "run",
+            "python",
             str(INSPECTOR),
             "--fixtures",
             str(FIXTURES),
@@ -112,7 +113,9 @@ def test_qudtest_headless_writes_inspectable_binding_artifact(tmp_path: Path) ->
 
     inspected = subprocess.run(
         [
-            sys.executable,
+            "uv",
+            "run",
+            "python",
             str(INSPECTOR),
             "--fixtures",
             str(FIXTURES),
@@ -167,7 +170,9 @@ def test_qudtest_headless_writes_inspectable_all_patch_binding_artifact(tmp_path
 
     inspected = subprocess.run(
         [
-            sys.executable,
+            "uv",
+            "run",
+            "python",
             str(INSPECTOR),
             "--fixtures",
             str(FIXTURES),

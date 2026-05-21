@@ -282,7 +282,7 @@ jobs:
         run: echo "$PWD/node_modules/.bin" >> "$GITHUB_PATH"
 
       - name: Install Python test tools
-        run: pip install hypothesis pytest ruff
+        run: pip install hypothesis pytest ruff uv
 
       - name: Lint Python
         if: hashFiles('scripts/**/*.py') != ''
