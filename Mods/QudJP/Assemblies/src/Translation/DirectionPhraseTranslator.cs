@@ -6,6 +6,14 @@ internal static class DirectionPhraseTranslator
     {
         translated = source switch
         {
+            "north" => "北",
+            "south" => "南",
+            "east" => "東",
+            "west" => "西",
+            "northeast" => "北東",
+            "northwest" => "北西",
+            "southeast" => "南東",
+            "southwest" => "南西",
             "to the north" => "北側",
             "to the south" => "南側",
             "to the east" => "東側",

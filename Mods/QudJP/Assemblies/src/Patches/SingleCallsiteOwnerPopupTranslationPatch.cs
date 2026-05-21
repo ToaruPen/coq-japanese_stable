@@ -18,12 +18,19 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
     private const string BaetylRewardWishOwner = "XRL.World.Parts.RandomAltarBaetyl|HandleBaetylRewardWish";
     private const string AxeDismemberOwner = "XRL.World.Parts.Skill.Axe_Dismember|CastForceSuccess";
     private const string AxeDismemberCastOwner = "XRL.World.Parts.Skill.Axe_Dismember|Cast";
+    private const string AxeHookAndDragOwner = "XRL.World.Parts.Skill.Axe_HookAndDrag|FireEvent";
     private const string BiomeSurfaceDistributionOwner = "XRL.World.Biomes.BiomeManager|DisplaySurfaceDistribution";
     private const string CudgelSlamOwner = "XRL.World.Parts.Skill.Cudgel_Slam|Cast";
+    private const string CudgelSlamFireEventOwner = "XRL.World.Parts.Skill.Cudgel_Slam|FireEvent";
     private const string DynamicQuestRewardGameObjectOwner = "XRL.World.DynamicQuestRewardElement_GameObject|award";
     private const string FactionEncounterWishOwner = "XRL.World.ZoneBuilders.FactionEncounters|HandleFactionEncounterWish";
     private const string ProselytizeOwner = "XRL.World.Parts.Skill.Persuasion_Proselytize|AttemptProselytization";
+    private const string ProselytizeMentalAttackOwner = "XRL.World.Parts.Skill.Persuasion_Proselytize|Proselytize";
+    private const string TacticsChargeOwner = "XRL.World.Parts.Skill.Tactics_Charge|PerformCharge";
+    private const string TacticsDeathFromAboveOwner = "XRL.World.Parts.Skill.Tactics_DeathFromAbove|PerformDeathFromAbove";
+    private const string TacticsJukeOwner = "XRL.World.Parts.Skill.Tactics_Juke|HandleEvent";
     private const string TinkeringOwner = "XRL.World.Parts.Skill.Tinkering|LearnNewRecipe";
+    private const string TinkeringTinker1FireEventOwner = "XRL.World.Parts.Skill.Tinkering_Tinker1|FireEvent";
     private const string TinkeringTinker1RechargeOwner = "XRL.World.Parts.Skill.Tinkering_Tinker1|Recharge";
     private const string GameUniqueOwner = "XRL.World.Parts.GameUnique|OnCreated";
     private const string GenocideCurioOwner = "XRL.World.Parts.GenocideCurio|HandleEvent";
@@ -95,12 +102,76 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         "^Are you sure you want to dismember (?<target>.+?)\\?$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex DeathFromAboveRangePattern = new(
+        "^To perform Death From Above from the ground, you must select a target (?<bound>at least|no more than) (?<range>.+?) (?<unit>squares?) away\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex DeathFromAboveTargetPattern = new(
+        "^You cannot perform Death From Above on (?<target>.+?)\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex ChargeRangePattern = new(
+        "^You (?<kind>must charge at least|can't charge more than) (?<range>.+?) (?<unit>spaces?)\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex JukeIntoPattern = new(
+        "^You cannot juke into (?<target>.+?)\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex JukeTargetPattern = new(
+        "^You cannot juke (?<target>.+?) out of your way\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex JukeBothTargetsPattern = new(
+        "^You cannot juke both (?<first>.+?) and (?<second>.+?) out of your way\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     private static readonly Regex CudgelSlamSelfPattern = new(
         "^Are you sure you want to slam (?<target>.+?)\\?$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex CudgelSlamCannotSlamPattern = new(
+        "^You cannot slam (?<target>.+?)\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex CudgelSlamCannotReachPattern = new(
+        "^You cannot reach (?<target>.+?) to slam (?<pronoun>.+?)\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex CudgelSlamNotStrongEnoughPattern = new(
+        "^You aren't strong enough to slam through (?<target>.+?)\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex CudgelSlamTargetOpenPattern = new(
+        "^(?<target>.+?) (?:is|are) open\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     private static readonly Regex SubmersionTooShallowPattern = new(
         "^(?<liquid>.+?) (?:is|are) too shallow for you to submerge in\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex ProselytizeSelfPattern = new(
+        "^You can't proselytize (?<target>.+?)!$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex ProselytizeNoTongueContactPattern = new(
+        "^Without a tongue, you cannot proselytize (?<target>.+?), as you cannot make telepathic contact with (?<pronoun>.+?)\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex ProselytizeNoTonguePattern = new(
+        "^Without a tongue, you cannot proselytize (?<target>.+?)\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex ProselytizeFrozenPattern = new(
+        "^Frozen solid, you cannot proselytize (?<target>.+?)\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex ProselytizeAlreadyPattern = new(
+        "^You have already proselytized (?<target>.+?)\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex ProselytizeUnconvincedPattern = new(
+        "^(?<target>.+?) (?:is|are) unconvinced by your pleas\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     private static readonly Regex TinkeringLearnRecipePattern = new(
@@ -113,6 +184,14 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
 
     private static readonly Regex TinkeringRechargeCannotPattern = new(
         "^(?<item>.+?) can't be recharged that way\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex TinkeringRechargeNoBitsPattern = new(
+        "^You don't have any (?<bits>.+?) bits, which are required for recharging\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex TinkeringRechargeAskNumberPattern = new(
+        "^It would take (?<needed>.+?) (?<bits>.+?) (?<unit>bit|bits) to fully recharge (?<item>.+?)\\. You have (?<owned>.+?)\\. How many do you want to use\\?$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     private static readonly Regex GameUniqueWishConfirmationPattern = new(
@@ -323,6 +402,7 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         var beginBeingUnequippedEventType = AccessTools.TypeByName("XRL.World.BeginBeingUnequippedEvent");
         var axeDismemberType = AccessTools.TypeByName("XRL.World.Parts.Skill.Axe_Dismember");
         var cudgelSlamType = AccessTools.TypeByName("XRL.World.Parts.Skill.Cudgel_Slam");
+        var mentalAttackEventType = AccessTools.TypeByName("XRL.World.MentalAttackEvent");
         var cellType = AccessTools.TypeByName("XRL.World.Cell");
         if (gameObjectType is null
             || eventType is null
@@ -342,6 +422,7 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
             || beginBeingUnequippedEventType is null
             || axeDismemberType is null
             || cudgelSlamType is null
+            || mentalAttackEventType is null
             || cellType is null)
         {
             Trace.TraceError("QudJP: {0} target parameter types not found.", Context);
@@ -390,9 +471,19 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
             [gameObjectType, axeDismemberType, gameObjectType]);
         AddTarget(
             targets,
+            "XRL.World.Parts.Skill.Axe_HookAndDrag",
+            "FireEvent",
+            [eventType]);
+        AddTarget(
+            targets,
             "XRL.World.Parts.Skill.Cudgel_Slam",
             "Cast",
             [gameObjectType, cudgelSlamType, typeof(string), gameObjectType, typeof(bool), typeof(int), typeof(string)]);
+        AddTarget(
+            targets,
+            "XRL.World.Parts.Skill.Cudgel_Slam",
+            "FireEvent",
+            [eventType]);
         AddTarget(
             targets,
             "XRL.World.Parts.Skill.Submersion",
@@ -415,6 +506,26 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
             Type.EmptyTypes);
         AddTarget(
             targets,
+            "XRL.World.Parts.Skill.Persuasion_Proselytize",
+            "Proselytize",
+            [mentalAttackEventType]);
+        AddTarget(
+            targets,
+            "XRL.World.Parts.Skill.Tactics_DeathFromAbove",
+            "PerformDeathFromAbove",
+            [gameObjectType, gameObjectType, typeof(string)]);
+        AddTarget(
+            targets,
+            "XRL.World.Parts.Skill.Tactics_Charge",
+            "PerformCharge",
+            Type.EmptyTypes);
+        AddTarget(
+            targets,
+            "XRL.World.Parts.Skill.Tactics_Juke",
+            "HandleEvent",
+            [commandEventType]);
+        AddTarget(
+            targets,
             "XRL.World.Parts.Skill.Tinkering",
             "LearnNewRecipe",
             [gameObjectType, typeof(int), typeof(int)]);
@@ -423,6 +534,11 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
             "XRL.World.Parts.Skill.Tinkering_Tinker1",
             "Recharge",
             [gameObjectType, iEventType]);
+        AddTarget(
+            targets,
+            "XRL.World.Parts.Skill.Tinkering_Tinker1",
+            "FireEvent",
+            [eventType]);
         AddTarget(
             targets,
             "XRL.World.Parts.GameUnique",
@@ -774,11 +890,235 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
             return true;
         }
 
+        if (OwnerMatches(ownerKey, AxeDismemberCastOwner)
+            && source.Equals("You must have an axe equipped in your primary hand to dismember.", StringComparison.Ordinal))
+        {
+            translated = "切断するには主手に斧を装備していなければならない。";
+            detail = "AxeDismemberNeedAxe";
+            return true;
+        }
+
+        if (OwnerMatches(ownerKey, AxeHookAndDragOwner))
+        {
+            if (source.Equals("You must have an axe equipped in your primary hand to use Hook and Drag.", StringComparison.Ordinal))
+            {
+                translated = "フック＆ドラッグを使うには主手に斧を装備していなければならない。";
+                detail = "AxeHookAndDragNeedAxe";
+                return true;
+            }
+
+            if (source.Equals("There's nothing there you can hook.", StringComparison.Ordinal))
+            {
+                translated = "そこには引っ掛けられるものがない。";
+                detail = "AxeHookAndDragNothingThere";
+                return true;
+            }
+        }
+
+        if (OwnerMatches(ownerKey, TacticsDeathFromAboveOwner))
+        {
+            if (source.Equals("You cannot perform Death From Above on the world map.", StringComparison.Ordinal))
+            {
+                translated = "ワールドマップ上ではデス・フロム・アバブを実行できない。";
+                detail = "DeathFromAboveWorldMap";
+                return true;
+            }
+
+            if (source.Equals("You cannot perform Death From Above while overburdened.", StringComparison.Ordinal))
+            {
+                translated = "重量超過中はデス・フロム・アバブを実行できない。";
+                detail = "DeathFromAboveOverburdened";
+                return true;
+            }
+
+            if (source.Equals("There is nobody there to perform Death From Above on.", StringComparison.Ordinal))
+            {
+                translated = "そこにはデス・フロム・アバブの対象がいない。";
+                detail = "DeathFromAboveNoTarget";
+                return true;
+            }
+
+            if (source.Equals("While flying, you can only perform Death From Above on nearby targets.", StringComparison.Ordinal))
+            {
+                translated = "飛行中は近くの対象にしかデス・フロム・アバブを実行できない。";
+                detail = "DeathFromAboveFlyingRange";
+                return true;
+            }
+        }
+
+        match = DeathFromAboveRangePattern.Match(source);
+        if (match.Success && OwnerMatches(ownerKey, TacticsDeathFromAboveOwner))
+        {
+            translated = match.Groups["bound"].Value == "at least"
+                ? $"地上からデス・フロム・アバブを実行するには、少なくとも{NormalizeRange(match.Groups["range"].Value)}マス離れた対象を選ぶ必要がある。"
+                : $"地上からデス・フロム・アバブを実行するには、{NormalizeRange(match.Groups["range"].Value)}マス以内の対象を選ぶ必要がある。";
+            detail = "DeathFromAboveRange";
+            return true;
+        }
+
+        match = DeathFromAboveTargetPattern.Match(source);
+        if (match.Success && OwnerMatches(ownerKey, TacticsDeathFromAboveOwner))
+        {
+            var target = match.Groups["target"].Value;
+            translated = target switch
+            {
+                "yourself" => "自分自身にはデス・フロム・アバブを実行できない。",
+                "a wall" => "壁にはデス・フロム・アバブを実行できない。",
+                "a door" => "扉にはデス・フロム・アバブを実行できない。",
+                _ => $"{TranslatePopupDisplayNameCapture(target)}にはデス・フロム・アバブを実行できない。",
+            };
+            detail = "DeathFromAboveInvalidTarget";
+            return true;
+        }
+
+        if (OwnerMatches(ownerKey, TacticsChargeOwner))
+        {
+            if (source.Equals("You cannot charge on the world map.", StringComparison.Ordinal))
+            {
+                translated = "ワールドマップ上では突撃できない。";
+                detail = "ChargeWorldMap";
+                return true;
+            }
+
+            if (source.Equals("You cannot charge while flying.", StringComparison.Ordinal))
+            {
+                translated = "飛行中は突撃できない。";
+                detail = "ChargeFlying";
+                return true;
+            }
+
+            if (source.Equals("You cannot charge while overburdened.", StringComparison.Ordinal))
+            {
+                translated = "重量超過中は突撃できない。";
+                detail = "ChargeOverburdened";
+                return true;
+            }
+
+            if (source.Equals("You cannot charge while in melee combat.", StringComparison.Ordinal))
+            {
+                translated = "近接戦闘中は突撃できない。";
+                detail = "ChargeMeleeCombat";
+                return true;
+            }
+
+            if (source.Equals("You cannot charge a flying target.", StringComparison.Ordinal))
+            {
+                translated = "飛行している対象には突撃できない。";
+                detail = "ChargeFlyingTarget";
+                return true;
+            }
+
+            if (source.Equals("You must charge at a target!", StringComparison.Ordinal))
+            {
+                translated = "対象に向かって突撃しなければならない！";
+                detail = "ChargeNoTarget";
+                return true;
+            }
+        }
+
+        match = ChargeRangePattern.Match(source);
+        if (match.Success && OwnerMatches(ownerKey, TacticsChargeOwner))
+        {
+            translated = match.Groups["kind"].Value == "must charge at least"
+                ? $"少なくとも{NormalizeRange(match.Groups["range"].Value)}マスは突撃しなければならない。"
+                : $"{NormalizeRange(match.Groups["range"].Value)}マスを超えて突撃することはできない。";
+            detail = "ChargeRange";
+            return true;
+        }
+
+        if (OwnerMatches(ownerKey, TacticsJukeOwner)
+            && source.Equals("You cannot juke on the world map.", StringComparison.Ordinal))
+        {
+            translated = "ワールドマップ上ではジュークできない。";
+            detail = "JukeWorldMap";
+            return true;
+        }
+
+        match = JukeIntoPattern.Match(source);
+        if (match.Success && OwnerMatches(ownerKey, TacticsJukeOwner))
+        {
+            translated = $"{TranslatePopupDisplayNameCapture(match.Groups["target"].Value)}へジュークで入り込むことはできない。";
+            detail = "JukeIntoBlocked";
+            return true;
+        }
+
+        match = JukeBothTargetsPattern.Match(source);
+        if (match.Success && OwnerMatches(ownerKey, TacticsJukeOwner))
+        {
+            translated = $"{TranslatePopupDisplayNameCapture(match.Groups["first"].Value)}と{TranslatePopupDisplayNameCapture(match.Groups["second"].Value)}の両方を押しのけてジュークすることはできない。";
+            detail = "JukeBothTargetsBlocked";
+            return true;
+        }
+
+        match = JukeTargetPattern.Match(source);
+        if (match.Success && OwnerMatches(ownerKey, TacticsJukeOwner))
+        {
+            translated = $"{TranslatePopupDisplayNameCapture(match.Groups["target"].Value)}を押しのけてジュークすることはできない。";
+            detail = "JukeTargetBlocked";
+            return true;
+        }
+
         match = CudgelSlamSelfPattern.Match(source);
         if (match.Success && OwnerMatches(ownerKey, CudgelSlamOwner))
         {
-            translated = $"{match.Groups["target"].Value}を叩きつけてもよいか？";
+            translated = $"{TranslatePopupDisplayNameCapture(match.Groups["target"].Value)}を叩きつけてもよいか？";
             detail = "CudgelSlamSelfConfirmation";
+            return true;
+        }
+
+        if (OwnerMatches(ownerKey, CudgelSlamOwner, CudgelSlamFireEventOwner))
+        {
+            if (source.Equals("You must have a cudgel equipped in order to use slam.", StringComparison.Ordinal))
+            {
+                translated = "叩きつけを使うにはこん棒を装備していなければならない。";
+                detail = "CudgelSlamNeedCudgel";
+                return true;
+            }
+
+            if (source.Equals("There's nothing there to slam.", StringComparison.Ordinal))
+            {
+                translated = "そこには叩きつけるものがない。";
+                detail = "CudgelSlamNothingThere";
+                return true;
+            }
+
+            if (source.Equals("You have no weapon!", StringComparison.Ordinal))
+            {
+                translated = "武器を持っていない！";
+                detail = "CudgelSlamNoWeapon";
+                return true;
+            }
+        }
+
+        match = CudgelSlamCannotSlamPattern.Match(source);
+        if (match.Success && OwnerMatches(ownerKey, CudgelSlamOwner))
+        {
+            translated = $"{TranslatePopupDisplayNameCapture(match.Groups["target"].Value)}を叩きつけられない。";
+            detail = "CudgelSlamCannotSlam";
+            return true;
+        }
+
+        match = CudgelSlamCannotReachPattern.Match(source);
+        if (match.Success && OwnerMatches(ownerKey, CudgelSlamOwner))
+        {
+            translated = $"{TranslatePopupDisplayNameCapture(match.Groups["target"].Value)}に手が届かず、叩きつけられない。";
+            detail = "CudgelSlamCannotReach";
+            return true;
+        }
+
+        match = CudgelSlamNotStrongEnoughPattern.Match(source);
+        if (match.Success && OwnerMatches(ownerKey, CudgelSlamOwner))
+        {
+            translated = $"{TranslatePopupDisplayNameCapture(match.Groups["target"].Value)}を叩き壊すには力が足りない。";
+            detail = "CudgelSlamNotStrongEnough";
+            return true;
+        }
+
+        match = CudgelSlamTargetOpenPattern.Match(source);
+        if (match.Success && OwnerMatches(ownerKey, CudgelSlamOwner))
+        {
+            translated = $"{TranslatePopupDisplayNameCapture(match.Groups["target"].Value)}は開いている。";
+            detail = "CudgelSlamTargetOpen";
             return true;
         }
 
@@ -819,10 +1159,75 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
             return true;
         }
 
+        if (OwnerMatches(ownerKey, ProselytizeOwner))
+        {
+            if (source.Equals("You cannot proselytize without a tongue.", StringComparison.Ordinal))
+            {
+                translated = "舌がなければ勧誘できない。";
+                detail = "ProselytizeNoTongueSelf";
+                return true;
+            }
+
+            if (source.Equals("There are no valid targets in that square.", StringComparison.Ordinal))
+            {
+                translated = "そのマスに有効な対象はいない。";
+                detail = "ProselytizeNoTargets";
+                return true;
+            }
+        }
+
+        match = ProselytizeSelfPattern.Match(source);
+        if (match.Success && OwnerMatches(ownerKey, ProselytizeOwner))
+        {
+            translated = $"{TranslatePopupDisplayNameCapture(match.Groups["target"].Value)}を勧誘することはできない！";
+            detail = "ProselytizeSelf";
+            return true;
+        }
+
+        match = ProselytizeNoTongueContactPattern.Match(source);
+        if (match.Success && OwnerMatches(ownerKey, ProselytizeOwner))
+        {
+            translated = $"舌がないため、{TranslatePopupDisplayNameCapture(match.Groups["target"].Value)}とテレパシー接触できず、勧誘できない。";
+            detail = "ProselytizeNoTongueContact";
+            return true;
+        }
+
+        match = ProselytizeNoTonguePattern.Match(source);
+        if (match.Success && OwnerMatches(ownerKey, ProselytizeOwner))
+        {
+            translated = $"舌がないため、{TranslatePopupDisplayNameCapture(match.Groups["target"].Value)}を勧誘できない。";
+            detail = "ProselytizeNoTongueTarget";
+            return true;
+        }
+
+        match = ProselytizeFrozenPattern.Match(source);
+        if (match.Success && OwnerMatches(ownerKey, ProselytizeOwner))
+        {
+            translated = $"完全に凍りついているため、{TranslatePopupDisplayNameCapture(match.Groups["target"].Value)}を勧誘できない。";
+            detail = "ProselytizeFrozen";
+            return true;
+        }
+
+        match = ProselytizeAlreadyPattern.Match(source);
+        if (match.Success && OwnerMatches(ownerKey, ProselytizeOwner))
+        {
+            translated = $"{TranslatePopupDisplayNameCapture(match.Groups["target"].Value)}はすでに勧誘済みだ。";
+            detail = "ProselytizeAlready";
+            return true;
+        }
+
+        match = ProselytizeUnconvincedPattern.Match(source);
+        if (match.Success && OwnerMatches(ownerKey, ProselytizeMentalAttackOwner))
+        {
+            translated = $"{TranslatePopupDisplayNameCapture(match.Groups["target"].Value)}はあなたの嘆願に心を動かされない。";
+            detail = "ProselytizeUnconvinced";
+            return true;
+        }
+
         match = TinkeringLearnRecipePattern.Match(source);
         if (match.Success && OwnerMatches(ownerKey, TinkeringOwner))
         {
-            translated = $"ひらめきを得て{StringHelpers.StripLeadingEnglishArticle(match.Groups["item"].Value)}を記した。";
+            translated = $"ひらめきを得て{TranslatePopupDisplayNameCapture(match.Groups["item"].Value)}を記した。";
             detail = "TinkeringLearnRecipe";
             return true;
         }
@@ -831,8 +1236,8 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         if (match.Success && OwnerMatches(ownerKey, TinkeringTinker1RechargeOwner))
         {
             translated = match.Groups["partial"].Success
-                ? $"{match.Groups["item"].Value}を部分的に充電した。"
-                : $"{match.Groups["item"].Value}を充電した。";
+                ? $"{TranslatePopupDisplayNameCapture(match.Groups["item"].Value)}を部分的に充電した。"
+                : $"{TranslatePopupDisplayNameCapture(match.Groups["item"].Value)}を充電した。";
             detail = "TinkeringRechargeSuccess";
             return true;
         }
@@ -840,8 +1245,32 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         match = TinkeringRechargeCannotPattern.Match(source);
         if (match.Success && OwnerMatches(ownerKey, TinkeringTinker1RechargeOwner))
         {
-            translated = $"{match.Groups["item"].Value}はその方法では充電できない。";
+            translated = $"{TranslatePopupDisplayNameCapture(match.Groups["item"].Value)}はその方法では充電できない。";
             detail = "TinkeringRechargeCannot";
+            return true;
+        }
+
+        match = TinkeringRechargeNoBitsPattern.Match(source);
+        if (match.Success && OwnerMatches(ownerKey, TinkeringTinker1RechargeOwner))
+        {
+            translated = $"{match.Groups["bits"].Value}ビットがない。充電にはそれが必要だ。";
+            detail = "TinkeringRechargeNoBits";
+            return true;
+        }
+
+        match = TinkeringRechargeAskNumberPattern.Match(source);
+        if (match.Success && OwnerMatches(ownerKey, TinkeringTinker1RechargeOwner))
+        {
+            translated = $"{TranslatePopupDisplayNameCapture(match.Groups["item"].Value)}を完全に充電するには{match.Groups["needed"].Value}個の{match.Groups["bits"].Value}ビットが必要だ。所持数は{match.Groups["owned"].Value}。いくつ使う？";
+            detail = "TinkeringRechargeAskNumber";
+            return true;
+        }
+
+        if (OwnerMatches(ownerKey, TinkeringTinker1FireEventOwner)
+            && source.Equals("You have no items that require charging.", StringComparison.Ordinal))
+        {
+            translated = "充電が必要なアイテムがない。";
+            detail = "TinkeringRechargeNoItems";
             return true;
         }
 
@@ -1322,6 +1751,11 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
             "ten" => "10",
             _ => trimmed,
         };
+    }
+
+    private static string TranslatePopupDisplayNameCapture(string source)
+    {
+        return DisplayNameCaptureTranslator.TranslatePreservingColors(source, Context);
     }
 
     private static string TranslateAcquisitionAction(string source)

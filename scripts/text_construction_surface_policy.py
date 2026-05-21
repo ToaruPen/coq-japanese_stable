@@ -139,6 +139,14 @@ COMBAT_MELEE_ATTACK_FAMILY_ID: Final = (
     "XRL.World.Parts/Combat.cs::Combat.MeleeAttackWithWeaponInternal("
     "GameObject,GameObject,GameObject,BodyPart,string,int,int,int,int,int,bool,bool)"
 )
+CUDGEL_SLAM_CAST_FAMILY_ID: Final = (
+    "XRL.World.Parts.Skill/Cudgel_Slam.cs::"
+    "Cudgel_Slam.Cast(GameObject,Cudgel_Slam,string,GameObject,bool,int,string)"
+)
+SHIELD_SLAM_SLAM_FAMILY_ID: Final = (
+    "XRL.World.Parts.Skill/Shield_Slam.cs::"
+    "Shield_Slam.Slam(GameObject,GameObject,Cell,bool)"
+)
 CONVERSATION_CHOICE_TAG_EVIDENCE: Final = [
     "Mods/QudJP/Assemblies/src/Patches/ConversationDisplayTextPatch.cs",
     "Mods/QudJP/Assemblies/QudJP.Tests/L2/ConversationDisplayTextPatchTests.cs",
@@ -476,6 +484,325 @@ HSE_NAMESTYLE_XML_ROUTE_EVIDENCE: Final = [
     "Mods/QudJP/Assemblies/QudJP.Tests/L1/NamingXmlTests.cs",
     "docs/reports/2026-05-17-historic-string-expander-owner-plan.md",
 ]
+ISSUE747_CUDGEL_SLAM_ROUTE_EVIDENCE: Final = [
+    f"Issue #747 reviewed skill-originated static family: {CUDGEL_SLAM_CAST_FAMILY_ID}",
+    "Mods/QudJP/Assemblies/src/Patches/SingleCallsiteOwnerPopupTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/SingleCallsiteOwnerPopupTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+    (
+        "Cudgel_Slam.Cast owner popups/failures are translated for confirmed "
+        "decompiled source strings; Cudgel_Slam.Slam message-frame traffic remains "
+        "separate from this popup/failure route"
+    ),
+    "Issue #747 skill-originated Cudgel_Slam.Cast row is closed by exact owner-route evidence.",
+]
+ISSUE747_SHIELD_SLAM_ROUTE_EVIDENCE: Final = [
+    f"Issue #747 reviewed skill-originated static family: {SHIELD_SLAM_SLAM_FAMILY_ID}",
+    "Mods/QudJP/Assemblies/src/Patches/CombatSkillMessageTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+    (
+        "Shield_Slam.Slam owner message-log traffic covers the source-backed "
+        "shield slam possessive capture"
+    ),
+]
+ISSUE747_SKILL_MESSAGE_FRAME_ROUTE_EVIDENCE: Final = [
+    "Mods/QudJP/Assemblies/src/Patches/CombatSkillMessageTranslationPatch.cs",
+    "Mods/QudJP/Localization/MessageFrames/verbs.ja.json",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L1/MessageFrameTranslatorTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+    (
+        "Issue #747 skill-originated message-frame and AddPlayerMessage rows are "
+        "covered by source-backed owner routes plus MessageFrame verb/template leaves"
+    ),
+]
+ISSUE747_SKILL_SINGLE_CALLSITE_POPUP_ROUTE_EVIDENCE: Final = [
+    "Mods/QudJP/Assemblies/src/Patches/SingleCallsiteOwnerPopupTranslationPatch.cs",
+    "Mods/QudJP/Localization/Dictionaries/ui-popup.ja.json",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/SingleCallsiteOwnerPopupTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+    (
+        "Issue #747 source-backed single-callsite skill popups are translated by "
+        "owner keys before generic popup sinks"
+    ),
+]
+ISSUE747_SKILL_REPAIR_ROUTE_EVIDENCE: Final = [
+    "Mods/QudJP/Assemblies/src/Patches/RepairTranslationPatch.cs",
+    "Mods/QudJP/Localization/Dictionaries/ui-popup.ja.json",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/RepairTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+    "Issue #747 Tinkering_Repair popups/messages are translated at the repair owner route",
+]
+ISSUE747_SKILL_SURVIVAL_CAMP_ROUTE_EVIDENCE: Final = [
+    "Mods/QudJP/Assemblies/src/Patches/SurvivalCampAttemptCampPopupTranslationPatch.cs",
+    "Mods/QudJP/Localization/Dictionaries/ui-popup.ja.json",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/SurvivalCampAttemptCampPopupTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+    "Issue #747 Survival_Camp.AttemptCamp owner popups are translated by source-backed cases",
+]
+ISSUE747_SKILL_ASK_NUMBER_ROUTE_EVIDENCE: Final = [
+    "Mods/QudJP/Assemblies/src/Patches/PopupAskNumberTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/SingleCallsiteOwnerPopupTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/PopupAskNumberTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/SingleCallsiteOwnerPopupTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+    "Issue #747 Tinkering_Tinker1 recharge amount prompts are translated at the active owner route",
+]
+ISSUE747_SKILL_PHYSIC_ROUTE_EVIDENCE: Final = [
+    "Mods/QudJP/Assemblies/src/Patches/PhysicAmputateLimbTranslationPatch.cs",
+    "Mods/QudJP/Localization/Dictionaries/ui-popup.ja.json",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/SingleCallsiteOwnerPopupTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+    "Issue #747 Physic_AmputateLimb field-amputation owner popups/messages are source-backed",
+]
+ISSUE747_SKILL_FIXED_POPUP_ROUTE_EVIDENCE: Final = [
+    "Mods/QudJP/Assemblies/src/Patches/ShortBladesHobbleTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/ShortBladesShankTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/CudgelConkPopupTranslationPatch.cs",
+    "Mods/QudJP/Localization/Dictionaries/ui-popup.ja.json",
+    "Mods/QudJP/Localization/Dictionaries/ui-skillsandpowers.ja.json",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/SingleCallsiteOwnerPopupTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+    "Issue #747 fixed skill picker/failure leaves are translated only for stable source strings",
+]
+ISSUE747_SKILL_TINKERING_MINE_ROUTE_EVIDENCE: Final = [
+    "Mods/QudJP/Assemblies/src/Patches/CombatSkillMessageTranslationPatch.cs",
+    "Mods/QudJP/Localization/MessageFrames/verbs.ja.json",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+    "Issue #747 Tinkering_Mine arm/disarm message rows are translated through message-owner frames",
+]
+ISSUE747_SKILL_LONG_BLADES_ROUTE_EVIDENCE: Final = [
+    "Mods/QudJP/Assemblies/src/Patches/LongBladesCoreTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/LongBladesCoreTranslationPatchTests.cs",
+    "Mods/QudJP/Localization/Dictionaries/ui-popup.ja.json",
+    "Mods/QudJP/Localization/MessageFrames/verbs.ja.json",
+    "Issue #747 LongBladesCore stance popups/messages are translated by the LongBlades owner route",
+]
+ISSUE747_JOURNAL_QUEST_ROUTE_EVIDENCE: Final = [
+    "Mods/QudJP/Assemblies/src/Patches/JournalAccomplishmentAddTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/JournalMapNoteAddTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/JournalObservationAddTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/JournalTextTranslator.cs",
+    "Mods/QudJP/Assemblies/src/Translation/JournalPatternTranslator.cs",
+    "Mods/QudJP/Assemblies/src/Patches/DynamicQuestGeneratedQuestTextTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L1/JournalPatternTranslatorTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L1/JournalTextTranslatorTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/JournalApiAddTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/JournalEntryDisplayTextPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L1/DynamicQuestGeneratedQuestTextTranslatorTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+    "Mods/QudJP/Localization/Dictionaries/journal-patterns.ja.json",
+    (
+        "Issue #747 JournalAPI rows are covered by owner routes at journal entry "
+        "creation/display and dynamic quest text producers"
+    ),
+]
+ISSUE747_JOURNAL_QUEST_MIXED_SURFACE_EVIDENCE: Final = [
+    *ISSUE747_JOURNAL_QUEST_ROUTE_EVIDENCE,
+    "Mods/QudJP/Assemblies/src/Patches/PopupShowTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/MessageLogPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/XrlCorePlayerTurnTranslationPatch.cs",
+    "Mods/QudJP/Localization/Dictionaries/ui-popup.ja.json",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/PopupShowTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/MessageLogPatchTests.cs",
+    (
+        "Issue #747 mixed JournalAPI/Popup/AddPlayerMessage families carry "
+        "journal owner-route evidence plus popup/message sink-owner evidence for the same reviewed family"
+    ),
+]
+ISSUE747_JOURNAL_QUEST_REVIEWED_FAMILY_IDS: Final = frozenset(
+    {
+        "HistoryKit/HistoricEvent.cs::HistoricEvent.PerformRegionReveal()",
+        "XRL.Core/XRLCore.cs::XRLCore.CreateMarkOfDeath()",
+        "XRL.Core/XRLCore.cs::XRLCore.PlayerTurn()",
+        "XRL.Liquids/LiquidLava.cs::LiquidLava.Drank(LiquidVolume,int,GameObject,StringBuilder,ref bool)",
+        "XRL.Liquids/LiquidSunSlag.cs::LiquidSunSlag.Drank(LiquidVolume,int,GameObject,StringBuilder,ref bool)",
+        "XRL.Liquids/LiquidWarmStatic.cs::LiquidWarmStatic.GlitchMutations(GameObject)",
+        "XRL.Liquids/LiquidWarmStatic.cs::LiquidWarmStatic.GlitchSkills(GameObject)",
+        (
+            "XRL.Liquids/LiquidWarmStatic.cs::"
+            "LiquidWarmStatic.PourIntoCell(LiquidVolume,GameObject,Cell,ref int,bool,ref bool)"
+        ),
+        "XRL.UI/JournalScreen.cs::JournalScreen.HandleInsert(string,GameObject)",
+        "XRL.UI/JournalScreen.cs::JournalScreen.Show(GameObject)",
+        "XRL.World.Anatomy/BodyPart.cs::BodyPart.Implant(GameObject,bool,bool)",
+        "XRL.World.Capabilities/PsychicGlimmer.cs::PsychicGlimmer.Update(GameObject)",
+        "XRL.World.Conversations.Parts/ChavvahAttune.cs::ChavvahAttune.HandleEvent(GetTargetElementEvent)",
+        "XRL.World.Conversations.Parts/PaxInfectLimb.cs::PaxInfectLimb.InfectLimb(List<BodyPart>,BodyPart,string)",
+        "XRL.World.Conversations.Parts/WaterRitual.cs::WaterRitual.AddAccomplishment()",
+        "XRL.World.Effects/CookingDomainAttributes_UnitPermanentAllStats_25Percent.cs::CookingDomainAttributes_UnitPermanentAllStats_25Percent.Apply(GameObject,Effect)",
+        "XRL.World.Effects/CookingDomainDensity_UnitPermanentAV.cs::CookingDomainDensity_UnitPermanentAV.Apply(GameObject,Effect)",
+        "XRL.World.Effects/CookingDomainSpecial_UnitCrystalTransform.cs::CookingDomainSpecial_UnitCrystalTransform.ApplyTo(GameObject)",
+        "XRL.World.Effects/CookingDomainSpecial_UnitSlogTransform.cs::CookingDomainSpecial_UnitSlogTransform.ApplyTo(GameObject)",
+        "XRL.World.Effects/DeepDream.cs::DeepDream.Crungle()",
+        "XRL.World.Effects/FungalSporeInfection.cs::FungalSporeInfection.ApplyFungalInfection(GameObject,string,BodyPart)",
+        "XRL.World.Effects/Glotrot.cs::Glotrot.AdvanceGlotrot(int)",
+        "XRL.World.Effects/Glotrot.cs::Glotrot.Apply(GameObject)",
+        "XRL.World.Effects/Glotrot.cs::Glotrot.RegrowTongue()",
+        "XRL.World.Effects/Ironshank.cs::Ironshank.Apply(GameObject)",
+        "XRL.World.Effects/Ironshank.cs::Ironshank.FireEvent(Event)",
+        "XRL.World.Effects/Lovesick.cs::Lovesick.Remove(GameObject)",
+        "XRL.World.Effects/Monochrome.cs::Monochrome.Apply(GameObject)",
+        "XRL.World.Effects/Monochrome.cs::Monochrome.FireEvent(Event)",
+        "XRL.World.Effects/MutationInfection.cs::MutationInfection.FireEvent(Event)",
+        "XRL.World.Effects/WakingDream.cs::WakingDream.Remove(GameObject)",
+        "XRL.World.Parts.Mutation/Domination.cs::Domination.Metempsychosis(GameObject,bool)",
+        "XRL.World.Parts/AbsorbablePsyche.cs::AbsorbablePsyche.HandleEvent(BeforeDeathRemovalEvent)",
+        "XRL.World.Parts/BeyLahSurface.cs::BeyLahSurface.FireEvent(Event)",
+        "XRL.World.Parts/Book.cs::Book.HandleEvent(InventoryActionEvent)",
+        "XRL.World.Parts/Cookbook.cs::Cookbook.HandleEvent(InventoryActionEvent)",
+        "XRL.World.Parts/DromadCaravan.cs::DromadCaravan.Render(RenderEvent)",
+        "XRL.World.Parts/EatenAccomplishment.cs::EatenAccomplishment.HandleEvent(AfterInventoryActionEvent)",
+        "XRL.World.Parts/FungalInfection.cs::FungalInfection.Cure()",
+        "XRL.World.Parts/GiantClamProperties.cs::GiantClamProperties.TeleportToClamWorld(GameObject)",
+        "XRL.World.Parts/GolemQuestMound.cs::GolemQuestMound.Place(GameObject)",
+        "XRL.World.Parts/HydroponSurface.cs::HydroponSurface.FireEvent(Event)",
+        "XRL.World.Parts/LocationFinder.cs::LocationFinder.TriggerFind()",
+        "XRL.World.Parts/MarkovBook.cs::MarkovBook.HandleEvent(InventoryActionEvent)",
+        "XRL.World.Parts/PointedAsteriskBuilder.cs::PointedAsteriskBuilder.HandleEvent(AfterObjectCreatedEvent)",
+        "XRL.World.Parts/RandomAltarBaetyl.cs::RandomAltarBaetyl.BaetylWantsSacrifice()",
+        "XRL.World.Parts/RandomAltarBaetyl.cs::RandomAltarBaetyl.UpdateJournalNote()",
+        "XRL.World.Parts/SkrefCorpseLoot.cs::SkrefCorpseLoot.Render(RenderEvent)",
+        "XRL.World.Parts/SoupSludge.cs::SoupSludge.CatalyzeMessage(string,string)",
+        "XRL.World.Parts/StatOnEat.cs::StatOnEat.FireEvent(Event)",
+        "XRL.World.Parts/SultanRegionSurface.cs::SultanRegionSurface.FireEvent(Event)",
+        "XRL.World.Parts/TakenAccomplishment.cs::TakenAccomplishment.Trigger(GameObject)",
+        "XRL.World.Parts/ThinWorld.cs::ThinWorld.CrossIntoBrightsheol()",
+        "XRL.World.Parts/ThinWorld.cs::ThinWorld.ReturnToQud()",
+        "XRL.World.Parts/ThinWorld.cs::ThinWorld.RunThinWorldIntroSequence(bool)",
+        "XRL.World.Parts/ThinWorld.cs::ThinWorld.TransitToThinWorld(GameObject,bool)",
+        "XRL.World.QuestManagers/SpreadPax.cs::SpreadPax.Finish()",
+        "XRL.World.Quests.GolemQuest/GolemIncantationSelection.cs::GolemIncantationSelection.CreateAccomplishments()",
+        "XRL.World.Quests/LandingPadsSystem.cs::LandingPadsSystem.Finish()",
+        "XRL.World.ZoneBuilders/ChildrenOfTheTombQuestHandler.cs::ChildrenOfTheTombQuestHandler.AddAccomplishment(string)",
+        "XRL.World/KithAndKinGameState.cs::KithAndKinGameState.initItemClue(string,string,string,string,string)",
+        "XRL.World/KithAndKinGameState.cs::KithAndKinGameState.initLookClue(string,string,string,string,string,string)",
+        "XRL.World/KithAndKinGameState.cs::KithAndKinGameState.initRumorClue(string,string,string,string,string,string)",
+        "XRL/ChavvahSystem.cs::ChavvahSystem.Reveal(bool)",
+        "XRL/XRLGame.cs::XRLGame.FinishQuest(Quest)",
+    }
+)
+ISSUE747_SKILL_REVIEWED_FAMILY_IDS: Final = frozenset(
+    {
+        "XRL.World.Parts.Skill/Acrobatics_Jump.cs::Acrobatics_Jump.Jump(GameObject,int,Cell,string)",
+        "XRL.World.Parts.Skill/Axe_Berserk.cs::Axe_Berserk.FireEvent(Event)",
+        "XRL.World.Parts.Skill/Axe_Cleave.cs::Axe_Cleave.PerformCleave(GameObject,GameObject,GameObject,string,string,int,int,int?)",
+        "XRL.World.Parts.Skill/Axe_Decapitate.cs::Axe_Decapitate.Decapitate(GameObject,GameObject,Cell,BodyPart,GameObject,GameObject,bool,bool)",
+        "XRL.World.Parts.Skill/Axe_Dismember.cs::Axe_Dismember.Cast(GameObject,Axe_Dismember,GameObject)",
+        "XRL.World.Parts.Skill/Axe_Dismember.cs::Axe_Dismember.CastForceSuccess(GameObject,Axe_Dismember,GameObject)",
+        "XRL.World.Parts.Skill/Axe_Dismember.cs::Axe_Dismember.Dismember(GameObject,GameObject,Cell,BodyPart,GameObject,GameObject,string,bool,bool,bool,bool)",
+        "XRL.World.Parts.Skill/Axe_HookAndDrag.cs::Axe_HookAndDrag.FireEvent(Event)",
+        "XRL.World.Parts.Skill/BaseInitiatorySkill.cs::BaseInitiatorySkill.GetCompletedText(GameObject,GameObject,SkillEntry,string)",
+        "XRL.World.Parts.Skill/BaseInitiatorySkill.cs::BaseInitiatorySkill.GetExpendedText(GameObject,GameObject,SkillEntry,string)",
+        "XRL.World.Parts.Skill/BaseSkill.cs::BaseSkill.ShowAddPopup(BeforeAddSkillEvent)",
+        "XRL.World.Parts.Skill/Cudgel_Backswing.cs::Cudgel_Backswing.FireEvent(Event)",
+        "XRL.World.Parts.Skill/Cudgel_Bludgeon.cs::Cudgel_Bludgeon.FireEvent(Event)",
+        "XRL.World.Parts.Skill/Cudgel_Conk.cs::Cudgel_Conk.PerformConk()",
+        "XRL.World.Parts.Skill/Cudgel_Slam.cs::Cudgel_Slam.Cast(GameObject,Cudgel_Slam,string,GameObject,bool,int,string)",
+        "XRL.World.Parts.Skill/Cudgel_Slam.cs::Cudgel_Slam.Slam(GameObject,string,int,int,int,Dictionary<GameObject,string>)",
+        "XRL.World.Parts.Skill/Cudgel_SmashUp.cs::Cudgel_SmashUp.FireEvent(Event)",
+        "XRL.World.Parts.Skill/Discipline_IronMind.cs::Discipline_IronMind.FireEvent(Event)",
+        "XRL.World.Parts.Skill/Discipline_Meditate.cs::Discipline_Meditate.HandleEvent(CommandEvent)",
+        "XRL.World.Parts.Skill/Endurance_ShakeItOff.cs::Endurance_ShakeItOff.FireEvent(Event)",
+        "XRL.World.Parts.Skill/Endurance_ShakeItOff.cs::Endurance_ShakeItOff.TryToShakeItOff()",
+        "XRL.World.Parts.Skill/Multiweapon_Flurry.cs::Multiweapon_Flurry.PerformFlurry()",
+        "XRL.World.Parts.Skill/Persuasion_Berate.cs::Persuasion_Berate.ApplyBerate(GameObject,Cell,bool?,object)",
+        "XRL.World.Parts.Skill/Persuasion_Intimidate.cs::Persuasion_Intimidate.ApplyIntimidate(Cell,GameObject,bool)",
+        "XRL.World.Parts.Skill/Persuasion_Intimidate.cs::Persuasion_Intimidate.Terrify(MentalAttackEvent)",
+        "XRL.World.Parts.Skill/Persuasion_MenacingStare.cs::Persuasion_MenacingStare.ApplyStare(GameObject,Cell,string,int)",
+        "XRL.World.Parts.Skill/Persuasion_Proselytize.cs::Persuasion_Proselytize.AttemptProselytization()",
+        "XRL.World.Parts.Skill/Persuasion_Proselytize.cs::Persuasion_Proselytize.Proselytize(MentalAttackEvent)",
+        "XRL.World.Parts.Skill/Persuasion_RebukeRobot.cs::Persuasion_RebukeRobot.AttemptRebuke()",
+        "XRL.World.Parts.Skill/Persuasion_RebukeRobot.cs::Persuasion_RebukeRobot.Rebuke(MentalAttackEvent)",
+        "XRL.World.Parts.Skill/Physic_AmputateLimb.cs::Physic_AmputateLimb.FireEvent(Event)",
+        "XRL.World.Parts.Skill/Rifle_DrawABead.cs::Rifle_DrawABead.SetMark(GameObject)",
+        "XRL.World.Parts.Skill/Rifle_DrawABead.cs::Rifle_DrawABead.ValidateMark()",
+        "XRL.World.Parts.Skill/Rifle_SuppressiveFire.cs::Rifle_SuppressiveFire.FireEvent(Event)",
+        "XRL.World.Parts.Skill/Rifle_WoundingFire.cs::Rifle_WoundingFire.FireEvent(Event)",
+        "XRL.World.Parts.Skill/Shield_Slam.cs::Shield_Slam.Slam(GameObject,GameObject,Cell,bool)",
+        "XRL.World.Parts.Skill/ShortBlades_Hobble.cs::ShortBlades_Hobble.FireEvent(Event)",
+        "XRL.World.Parts.Skill/ShortBlades_Rejoinder.cs::ShortBlades_Rejoinder.FireEvent(Event)",
+        "XRL.World.Parts.Skill/ShortBlades_Shank.cs::ShortBlades_Shank.Cast(GameObject,ShortBlades_Shank,GameObject)",
+        "XRL.World.Parts.Skill/ShortBlades_Shank.cs::ShortBlades_Shank.FireEvent(Event)",
+        "XRL.World.Parts.Skill/SingleWeaponFighting_OpportuneAttacks.cs::SingleWeaponFighting_OpportuneAttacks.Refresh(int)",
+        "XRL.World.Parts.Skill/Smash_Floor.cs::Smash_Floor.FireEvent(Event)",
+        "XRL.World.Parts.Skill/Snapjaw_Howl.cs::Snapjaw_Howl.FireEvent(Event)",
+        "XRL.World.Parts.Skill/Submersion.cs::Submersion.HandleEvent(CommandEvent)",
+        "XRL.World.Parts.Skill/Survival_Camp.cs::Survival_Camp.AttemptCamp(GameObject)",
+        "XRL.World.Parts.Skill/Tactics_Charge.cs::Tactics_Charge.PerformCharge()",
+        "XRL.World.Parts.Skill/Tactics_DeathFromAbove.cs::Tactics_DeathFromAbove.PerformDeathFromAbove(GameObject,GameObject,string)",
+        "XRL.World.Parts.Skill/Tactics_Juke.cs::Tactics_Juke.HandleEvent(CommandEvent)",
+        "XRL.World.Parts.Skill/Tactics_Kickback.cs::Tactics_Kickback.HandleEvent(BeforeFireMissileWeaponsEvent)",
+        "XRL.World.Parts.Skill/TenfoldPath_Ket.cs::TenfoldPath_Ket.HandleEvent(BeforeDieEvent)",
+        "XRL.World.Parts.Skill/TenfoldPath_Ret.cs::TenfoldPath_Ret.HandleEvent(ApplyEffectEvent)",
+        "XRL.World.Parts.Skill/TenfoldPath_Ret.cs::TenfoldPath_Ret.HandleEvent(EndTurnEvent)",
+        "XRL.World.Parts.Skill/TenfoldPath_Vur.cs::TenfoldPath_Vur.FireEvent(Event)",
+        "XRL.World.Parts.Skill/TenfoldPath_Yis.cs::TenfoldPath_Yis.AddSkill(GameObject)",
+        "XRL.World.Parts.Skill/Tinkering.cs::Tinkering.LearnNewRecipe(GameObject,int,int)",
+        "XRL.World.Parts.Skill/Tinkering_DeployTurret.cs::Tinkering_DeployTurret.FireEvent(Event)",
+        "XRL.World.Parts.Skill/Tinkering_LayMine.cs::Tinkering_LayMine.AttemptLayMine(bool)",
+        "XRL.World.Parts.Skill/Tinkering_Repair.cs::Tinkering_Repair.HandleEvent(InventoryActionEvent)",
+        "XRL.World.Parts.Skill/Tinkering_Repair.cs::Tinkering_Repair.RepairResultCriticalFailure(GameObject,GameObject)",
+        "XRL.World.Parts.Skill/Tinkering_Repair.cs::Tinkering_Repair.RepairResultExceptionalSuccess(GameObject,GameObject)",
+        "XRL.World.Parts.Skill/Tinkering_Repair.cs::Tinkering_Repair.RepairResultFailure(GameObject,GameObject)",
+        "XRL.World.Parts.Skill/Tinkering_Repair.cs::Tinkering_Repair.RepairResultPartialSuccess(GameObject,GameObject)",
+        "XRL.World.Parts.Skill/Tinkering_Repair.cs::Tinkering_Repair.RepairResultSuccess(GameObject,GameObject)",
+        "XRL.World.Parts.Skill/Tinkering_Tinker1.cs::Tinkering_Tinker1.FireEvent(Event)",
+        "XRL.World.Parts.Skill/Tinkering_Tinker1.cs::Tinkering_Tinker1.Recharge(GameObject,IEvent)",
+        "XRL.World.Parts/LongBladesCore.cs::LongBladesCore.ChangeStance(string)",
+        "XRL.World.Parts/LongBladesCore.cs::LongBladesCore.FireEvent(Event)",
+        "XRL.World.Parts/Tinkering_Mine.cs::Tinkering_Mine.AttemptArm(GameObject)",
+        "XRL.World.Parts/Tinkering_Mine.cs::Tinkering_Mine.AttemptDisarm(GameObject,IEvent,bool)",
+        "XRL.World.Parts/Tinkering_Mine.cs::Tinkering_Mine.DisarmingResultExceptionalSuccess(GameObject,GameObject,bool)",
+        "XRL.World.Parts/Tinkering_Mine.cs::Tinkering_Mine.DisarmingResultPartialSuccess(GameObject,GameObject,bool)",
+        "XRL.World.Parts/Tinkering_Mine.cs::Tinkering_Mine.DisarmingResultSuccess(GameObject,GameObject,bool)",
+    }
+)
+ISSUE747_SKILL_EXACT_FAMILY_EVIDENCE: Final = {
+    CUDGEL_SLAM_CAST_FAMILY_ID: ISSUE747_CUDGEL_SLAM_ROUTE_EVIDENCE,
+    SHIELD_SLAM_SLAM_FAMILY_ID: ISSUE747_SHIELD_SLAM_ROUTE_EVIDENCE,
+}
+ISSUE747_SKILL_MARKER_ROUTE_EVIDENCE: Final = (
+    (("Physic_AmputateLimb.cs",), ISSUE747_SKILL_PHYSIC_ROUTE_EVIDENCE),
+    (("Survival_Camp.cs",), ISSUE747_SKILL_SURVIVAL_CAMP_ROUTE_EVIDENCE),
+    (("Tinkering_Repair.cs",), ISSUE747_SKILL_REPAIR_ROUTE_EVIDENCE),
+    (("Tinkering_Tinker1.cs::Tinkering_Tinker1.Recharge",), ISSUE747_SKILL_ASK_NUMBER_ROUTE_EVIDENCE),
+    (("LongBladesCore.cs",), ISSUE747_SKILL_LONG_BLADES_ROUTE_EVIDENCE),
+    (("Tinkering_Mine.cs",), ISSUE747_SKILL_TINKERING_MINE_ROUTE_EVIDENCE),
+    (
+        (
+            "Axe_Dismember.cs::Axe_Dismember.Cast",
+            "Axe_HookAndDrag.cs",
+            "Cudgel_Slam.cs::Cudgel_Slam.Cast",
+            "Cudgel_SmashUp.cs",
+            "Discipline_Meditate.cs",
+            "Persuasion_Proselytize.cs",
+            "Rifle_SuppressiveFire.cs",
+            "Rifle_WoundingFire.cs",
+            "ShortBlades_Shank.cs",
+            "Submersion.cs",
+            "Tactics_Charge.cs",
+            "Tactics_DeathFromAbove.cs",
+            "Tactics_Juke.cs",
+            "Tinkering.cs::Tinkering.LearnNewRecipe",
+            "Tinkering_DeployTurret.cs",
+            "Tinkering_LayMine.cs",
+            "Tinkering_Tinker1.cs::Tinkering_Tinker1.FireEvent",
+            "TenfoldPath_Yis.cs",
+        ),
+        ISSUE747_SKILL_SINGLE_CALLSITE_POPUP_ROUTE_EVIDENCE,
+    ),
+    (
+        (
+            "BaseSkill.cs",
+            "Cudgel_Conk.cs",
+            "ShortBlades_Hobble.cs",
+        ),
+        ISSUE747_SKILL_FIXED_POPUP_ROUTE_EVIDENCE,
+    ),
+)
 TEXT_CONSTRUCTION_CLOSURE_OVERLAY: Final[dict[str, ClosureOverlayEntry]] = {
     "XRL.World.Conversations.Parts/WaterRitual.cs::WaterRitual.HandleEvent(DisplayTextEvent)": {
         "closure_status": "covered_by_owner_route",
@@ -560,6 +887,14 @@ TEXT_CONSTRUCTION_CLOSURE_OVERLAY: Final[dict[str, ClosureOverlayEntry]] = {
             "Mods/QudJP/Assemblies/QudJP.Tests/L1/MessagePatternTranslatorTests.cs",
             "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
         ],
+    },
+    CUDGEL_SLAM_CAST_FAMILY_ID: {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE747_CUDGEL_SLAM_ROUTE_EVIDENCE,
+    },
+    SHIELD_SLAM_SLAM_FAMILY_ID: {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE747_SHIELD_SLAM_ROUTE_EVIDENCE,
     },
     (
         "XRL.World.Parts/MissileWeapon.cs::MissileWeapon.MissileHit("
@@ -656,10 +991,12 @@ TEXT_CONSTRUCTION_CLOSURE_OVERLAY: Final[dict[str, ClosureOverlayEntry]] = {
         ],
     },
     "XRL.World.Parts/LongBladesCore.cs::LongBladesCore.FireEvent(Event)": {
-        "closure_status": "partial_coverage",
+        "closure_status": "covered_by_owner_route",
         "closure_evidence": [
             "Mods/QudJP/Assemblies/src/Patches/LongBladesCoreTranslationPatch.cs",
             "Mods/QudJP/Assemblies/QudJP.Tests/L2/LongBladesCoreTranslationPatchTests.cs",
+            "Mods/QudJP/Localization/Dictionaries/ui-popup.ja.json",
+            "Mods/QudJP/Localization/MessageFrames/verbs.ja.json",
         ],
     },
     "XRL.World.Parts/LiquidVolume.cs::LiquidVolume.HandleEvent(InventoryActionEvent)": {
@@ -773,10 +1110,16 @@ TEXT_CONSTRUCTION_CLOSURE_OVERLAY: Final[dict[str, ClosureOverlayEntry]] = {
         ],
     },
     "XRL.World.Parts/VillageSurface.cs::VillageSurface.CheckReveal()": {
-        "closure_status": "partial_coverage",
+        "closure_status": "covered_by_owner_route",
         "closure_evidence": [
             *HSE_JOURNAL_STORY_ROUTE_EVIDENCE,
-            "remaining popup owner route requires VillageSurface.CheckReveal-specific runtime or patch evidence",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L1/JournalPatternTranslatorTests.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2/JournalApiAddTranslationPatchTests.cs",
+            (
+                "VillageSurface.CheckReveal visit accomplishments are covered by "
+                "JournalAPI owner patterns; reveal popups are preauthored RevealString "
+                "data rather than a generated English text-construction owner"
+            ),
         ],
     },
     "XRL.World.Parts/GenerateFriendOrFoe.cs::GenerateFriendOrFoe.replacePlaceholders(string)": {
@@ -1230,10 +1573,16 @@ TEXT_CONSTRUCTION_CLOSURE_OVERLAY: Final[dict[str, ClosureOverlayEntry]] = {
         ],
     },
     "XRL.World.Parts.Skill/Tactics_Charge.cs::Tactics_Charge.PerformCharge()": {
-        "closure_status": "likely_true_gap",
+        "closure_status": "covered_by_owner_route",
         "closure_evidence": [
-            "docs/reports/2026-05-15-static-uncovered-coverage-triage.md",
-            "docs/reports/2026-05-16-issue-711-text-construction-separation.md",
+            (
+                "Issue #747 reviewed skill-originated static family: "
+                "XRL.World.Parts.Skill/Tactics_Charge.cs::Tactics_Charge.PerformCharge()"
+            ),
+            "Mods/QudJP/Assemblies/src/Patches/SingleCallsiteOwnerPopupTranslationPatch.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2/SingleCallsiteOwnerPopupTranslationPatchTests.cs",
+            "Mods/QudJP/Localization/MessageFrames/verbs.ja.json",
+            "Issue #747 skill-originated Tactics_Charge popup failures and message-frame rows are owner-route covered.",
         ],
     },
     "XRL.World.Parts.Mutation/MultiHorns.cs::MultiHorns.PerformCharge(List<Cell>,bool)": {
@@ -1244,11 +1593,17 @@ TEXT_CONSTRUCTION_CLOSURE_OVERLAY: Final[dict[str, ClosureOverlayEntry]] = {
         ],
     },
     "XRL.World.Parts.Skill/Physic_AmputateLimb.cs::Physic_AmputateLimb.FireEvent(Event)": {
-        "closure_status": "partial_coverage",
+        "closure_status": "covered_by_owner_route",
         "closure_evidence": [
+            (
+                "Issue #747 reviewed skill-originated static family: "
+                "XRL.World.Parts.Skill/Physic_AmputateLimb.cs::"
+                "Physic_AmputateLimb.FireEvent(Event)"
+            ),
             "Mods/QudJP/Assemblies/src/Patches/PhysicAmputateLimbTranslationPatch.cs",
             "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
-            "docs/reports/2026-05-16-issue-711-text-construction-separation.md",
+            "Mods/QudJP/Localization/MessageFrames/verbs.ja.json",
+            "Mods/QudJP/Localization/Dictionaries/ui-popup.ja.json",
         ],
     },
 }
@@ -1618,7 +1973,7 @@ def main(argv: list[str] | None = None) -> int:
 def _queue_entry(family: TextConstructionFamily) -> SurfaceQueueEntry:
     classified = classify_family(family)
     closure_lane = _closure_lane(family, classified)
-    closure_status, closure_evidence = _closure_overlay(family["family_id"])
+    closure_status, closure_evidence = _closure_overlay(family, closure_lane)
     return {
         "classification": classified["classification"],
         "closure_lane": closure_lane,
@@ -1641,13 +1996,85 @@ def _queue_entry(family: TextConstructionFamily) -> SurfaceQueueEntry:
     }
 
 
-def _closure_overlay(family_id: str) -> tuple[ClosureStatus, list[str]]:
+def _closure_overlay(family: TextConstructionFamily, closure_lane: ClosureLane) -> tuple[ClosureStatus, list[str]]:
+    family_id = family["family_id"]
+    if closure_lane == "journal_quest_routes":
+        journal_evidence = _issue747_journal_quest_evidence_for(family)
+        if journal_evidence is not None:
+            return "covered_by_owner_route", journal_evidence
+
+    skill_evidence = _issue747_skill_evidence_for(family)
+    if skill_evidence is not None:
+        return "covered_by_owner_route", skill_evidence
+
     overlay = TEXT_CONSTRUCTION_CLOSURE_OVERLAY.get(family_id)
+    if overlay is not None:
+        return overlay["closure_status"], list(overlay["closure_evidence"])
+
     if overlay is None:
         if _is_conversation_choice_tag_family_id(family_id):
             return "covered_by_owner_route", list(CONVERSATION_CHOICE_TAG_EVIDENCE)
         return "action_required", []
     return overlay["closure_status"], list(overlay["closure_evidence"])
+
+
+def _issue747_journal_quest_evidence_for(family: TextConstructionFamily) -> list[str] | None:
+    family_id = family["family_id"]
+    if family_id not in ISSUE747_JOURNAL_QUEST_REVIEWED_FAMILY_IDS:
+        return None
+    surfaces = set(family["surface_counts"])
+    route_evidence = (
+        ISSUE747_JOURNAL_QUEST_MIXED_SURFACE_EVIDENCE
+        if surfaces & {"Popup", "AddPlayerMessage", "EmitMessage"}
+        else ISSUE747_JOURNAL_QUEST_ROUTE_EVIDENCE
+    )
+    return [
+        f"Issue #747 reviewed journal/quest static family: {family_id}",
+        f"Issue #747 reviewed surfaces: {', '.join(sorted(surfaces))}",
+        *route_evidence,
+    ]
+
+
+def _issue747_skill_evidence_for(family: TextConstructionFamily) -> list[str] | None:
+    family_id = family["family_id"]
+    if family_id not in ISSUE747_SKILL_REVIEWED_FAMILY_IDS:
+        return None
+
+    surfaces = set(family["surface_counts"])
+    exact_evidence = ISSUE747_SKILL_EXACT_FAMILY_EVIDENCE.get(family_id)
+    if exact_evidence is not None:
+        return [
+            f"Issue #747 reviewed surfaces: {', '.join(sorted(surfaces))}",
+            *exact_evidence,
+        ]
+
+    owner_evidence = next(
+        (
+            evidence
+            for markers, evidence in ISSUE747_SKILL_MARKER_ROUTE_EVIDENCE
+            if any(marker in family_id for marker in markers)
+        ),
+        ISSUE747_SKILL_MESSAGE_FRAME_ROUTE_EVIDENCE,
+    )
+    route_evidence = _issue747_skill_surface_evidence(surfaces, owner_evidence)
+
+    return [
+        f"Issue #747 reviewed skill-originated static family: {family_id}",
+        f"Issue #747 reviewed surfaces: {', '.join(sorted(surfaces))}",
+        *route_evidence,
+    ]
+
+
+def _issue747_skill_surface_evidence(surfaces: set[str], owner_evidence: list[str]) -> list[str]:
+    if surfaces & {"Popup", "TutorialManagerPopup"}:
+        if surfaces & {"AddPlayerMessage", "Does", "EmitMessage", "MessageFrame"}:
+            return _combine_evidence(owner_evidence, ISSUE747_SKILL_MESSAGE_FRAME_ROUTE_EVIDENCE)
+        return list(owner_evidence)
+    return _combine_evidence(owner_evidence, ISSUE747_SKILL_MESSAGE_FRAME_ROUTE_EVIDENCE)
+
+
+def _combine_evidence(*evidence_groups: list[str]) -> list[str]:
+    return list(dict.fromkeys(evidence for group in evidence_groups for evidence in group))
 
 
 def _is_conversation_choice_tag_family_id(family_id: str) -> bool:

@@ -37,6 +37,16 @@ public static class RepairTranslationPatch
             "^You cannot repair (?<target>.+?)\\.$",
             RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex CannotReachPattern =
+        new Regex(
+            "^You cannot reach (?<target>.+?) to repair (?<pronoun>.+?)\\.$",
+            RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex OutOfPhasePattern =
+        new Regex(
+            "^You are out of phase with (?<target>.+?) and cannot repair (?<pronoun>.+?)\\.$",
+            RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     private static readonly Regex MissingBitsPattern =
         new Regex(
             "^You don't have <(?<bits>.+?)> to repair (?<target>.+?)\\. You have:\\n\\n(?<owned>.*)$",
@@ -60,6 +70,11 @@ public static class RepairTranslationPatch
     private static readonly Regex FailurePattern =
         new Regex(
             "^You can't figure out how to fix (?<target>.+?)\\.$",
+            RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex CriticalFailurePattern =
+        new Regex(
+            "^You think you broke (?<target>.+?)\\.\\.\\.$",
             RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     [ThreadStatic]
@@ -101,6 +116,7 @@ public static class RepairTranslationPatch
                          "RepairResultExceptionalSuccess",
                          "RepairResultPartialSuccess",
                          "RepairResultFailure",
+                         "RepairResultCriticalFailure",
                      })
             {
                 var method = AccessTools.Method(repairType, methodName, [gameObjectType, gameObjectType]);
@@ -156,6 +172,8 @@ public static class RepairTranslationPatch
         var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
         return TryTranslateContainerOwnershipRisk(source, stripped, spans, route, family, out translated)
             || TryTranslateOwnershipRisk(source, stripped, spans, route, family, out translated)
+            || TryTranslateCannotReach(source, stripped, spans, route, family, out translated)
+            || TryTranslateOutOfPhase(source, stripped, spans, route, family, out translated)
             || TryTranslateCannotRepairUntilUnderstand(source, stripped, spans, route, family, out translated)
             || TryTranslateCannotRepair(source, stripped, spans, route, family, out translated)
             || TryTranslateMissingBits(source, stripped, spans, route, family, out translated)
@@ -163,7 +181,8 @@ public static class RepairTranslationPatch
             || TryTranslateSuccess(source, stripped, spans, route, family, out translated)
             || TryTranslateTinkeringBits(source, stripped, spans, route, family, out translated)
             || TryTranslatePartialSuccess(source, stripped, spans, route, family, out translated)
-            || TryTranslateFailure(source, stripped, spans, route, family, out translated);
+            || TryTranslateFailure(source, stripped, spans, route, family, out translated)
+            || TryTranslateCriticalFailure(source, stripped, spans, route, family, out translated);
     }
 
     private static bool TryTranslateOwnershipRisk(
@@ -183,11 +202,11 @@ public static class RepairTranslationPatch
 
         translated = RestoreWholeSourceBoundary(
             string.Concat(
-                RestoreCapture(match, spans, "owner"),
+                RestoreDisplayNameCapture(match, spans, "owner"),
                 "はあなたのものではなく、",
-                RestoreCapture(match, spans, "target"),
+                RestoreDisplayNameCapture(match, spans, "target"),
                 "を修理しようとすると",
-                RestoreCapture(match, spans, "risk"),
+                RestoreDisplayNameCapture(match, spans, "risk"),
                 "を損傷させる危険がある。本当に行いますか？"),
             stripped,
             spans);
@@ -212,11 +231,11 @@ public static class RepairTranslationPatch
 
         translated = RestoreWholeSourceBoundary(
             string.Concat(
-                RestoreCapture(match, spans, "owner"),
+                RestoreDisplayNameCapture(match, spans, "owner"),
                 "はあなたのものではなく、",
-                RestoreCapture(match, spans, "container"),
+                RestoreDisplayNameCapture(match, spans, "container"),
                 "の中にある",
-                RestoreCapture(match, spans, "target"),
+                RestoreDisplayNameCapture(match, spans, "target"),
                 "を修理しようとすると損傷を引き起こす危険がある。本当に行いますか？"),
             stripped,
             spans);
@@ -240,10 +259,56 @@ public static class RepairTranslationPatch
         }
 
         translated = RestoreWholeSourceBoundary(
-            string.Concat(RestoreCapture(match, spans, "target"), "について理解するまで、修理できない。"),
+            string.Concat(RestoreDisplayNameCapture(match, spans, "target"), "について理解するまで、修理できない。"),
             stripped,
             spans);
         Record(route, family, "CannotRepairUntilUnderstand", source, translated);
+        return true;
+    }
+
+    private static bool TryTranslateCannotReach(
+        string source,
+        string stripped,
+        IReadOnlyList<ColorSpan> spans,
+        string route,
+        string family,
+        out string translated)
+    {
+        var match = CannotReachPattern.Match(stripped);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        translated = RestoreWholeSourceBoundary(
+            string.Concat(RestoreDisplayNameCapture(match, spans, "target"), "に手が届かず、修理できない。"),
+            stripped,
+            spans);
+        Record(route, family, "CannotReach", source, translated);
+        return true;
+    }
+
+    private static bool TryTranslateOutOfPhase(
+        string source,
+        string stripped,
+        IReadOnlyList<ColorSpan> spans,
+        string route,
+        string family,
+        out string translated)
+    {
+        var match = OutOfPhasePattern.Match(stripped);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        translated = RestoreWholeSourceBoundary(
+            string.Concat(RestoreDisplayNameCapture(match, spans, "target"), "とは位相がずれているため、修理できない。"),
+            stripped,
+            spans);
+        Record(route, family, "OutOfPhase", source, translated);
         return true;
     }
 
@@ -263,7 +328,7 @@ public static class RepairTranslationPatch
         }
 
         translated = RestoreWholeSourceBoundary(
-            string.Concat(RestoreCapture(match, spans, "target"), "は修理できない。"),
+            string.Concat(RestoreDisplayNameCapture(match, spans, "target"), "は修理できない。"),
             stripped,
             spans);
         Record(route, family, "CannotRepair", source, translated);
@@ -287,7 +352,7 @@ public static class RepairTranslationPatch
 
         translated = RestoreWholeSourceBoundary(
             string.Concat(
-                RestoreCapture(match, spans, "target"),
+                RestoreDisplayNameCapture(match, spans, "target"),
                 "を修理するための<",
                 RestoreCapture(match, spans, "bits"),
                 ">がない。所持ビット:\n\n",
@@ -315,7 +380,7 @@ public static class RepairTranslationPatch
 
         translated = RestoreWholeSourceBoundary(
             string.Concat(
-                RestoreCapture(match, spans, "target"),
+                RestoreDisplayNameCapture(match, spans, "target"),
                 "を修理するために<",
                 RestoreCapture(match, spans, "bits"),
                 ">を消費しますか？所持ビット:\n\n",
@@ -342,7 +407,7 @@ public static class RepairTranslationPatch
         }
 
         translated = RestoreWholeSourceBoundary(
-            string.Concat(RestoreCapture(match, spans, "target"), "を修理した。"),
+            string.Concat(RestoreDisplayNameCapture(match, spans, "target"), "を修理した。"),
             stripped,
             spans);
         Record(route, family, "Success", source, translated);
@@ -388,7 +453,7 @@ public static class RepairTranslationPatch
         }
 
         translated = RestoreWholeSourceBoundary(
-            string.Concat(RestoreCapture(match, spans, "target"), "の修理が少し進んだ。"),
+            string.Concat(RestoreDisplayNameCapture(match, spans, "target"), "の修理が少し進んだ。"),
             stripped,
             spans);
         Record(route, family, "PartialSuccess", source, translated);
@@ -411,10 +476,33 @@ public static class RepairTranslationPatch
         }
 
         translated = RestoreWholeSourceBoundary(
-            string.Concat(RestoreCapture(match, spans, "target"), "の修理方法がわからない。"),
+            string.Concat(RestoreDisplayNameCapture(match, spans, "target"), "の修理方法がわからない。"),
             stripped,
             spans);
         Record(route, family, "Failure", source, translated);
+        return true;
+    }
+
+    private static bool TryTranslateCriticalFailure(
+        string source,
+        string stripped,
+        IReadOnlyList<ColorSpan> spans,
+        string route,
+        string family,
+        out string translated)
+    {
+        var match = CriticalFailurePattern.Match(stripped);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        translated = RestoreWholeSourceBoundary(
+            string.Concat(RestoreDisplayNameCapture(match, spans, "target"), "を壊してしまったようだ..."),
+            stripped,
+            spans);
+        Record(route, family, "CriticalFailure", source, translated);
         return true;
     }
 
@@ -422,6 +510,11 @@ public static class RepairTranslationPatch
     {
         var group = match.Groups[groupName];
         return ColorAwareTranslationComposer.RestoreCapture(group.Value, spans, group).Trim();
+    }
+
+    private static string RestoreDisplayNameCapture(Match match, IReadOnlyList<ColorSpan> spans, string groupName)
+    {
+        return DisplayNameCaptureTranslator.TranslatePreservingColors(RestoreCapture(match, spans, groupName), Context);
     }
 
     private static string RestoreWholeSourceBoundary(

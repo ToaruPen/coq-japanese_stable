@@ -183,6 +183,10 @@
       "text": "掘った"
     },
     {
+      "verb": "dive",
+      "text": "急襲した"
+    },
+    {
       "verb": "dim",
       "text": "薄暗くなった"
     },
@@ -363,6 +367,10 @@
       "text": "設置した"
     },
     {
+      "verb": "leap",
+      "text": "跳びかかった"
+    },
+    {
       "verb": "leave",
       "text": "離れた"
     },
@@ -377,6 +385,10 @@
     {
       "verb": "look",
       "text": "見えた"
+    },
+    {
+      "verb": "lop",
+      "text": "切り落とした"
     },
     {
       "verb": "loosen",
@@ -471,6 +483,10 @@
       "text": "充電した"
     },
     {
+      "verb": "reel",
+      "text": "よろめいた"
+    },
+    {
       "verb": "refract",
       "text": "屈折させた"
     },
@@ -493,6 +509,10 @@
     {
       "verb": "repair",
       "text": "修理した"
+    },
+    {
+      "verb": "resist",
+      "text": "抵抗した"
     },
     {
       "verb": "rise",
@@ -525,6 +545,10 @@
     {
       "verb": "shake",
       "text": "振り払った"
+    },
+    {
+      "verb": "shame",
+      "text": "恥じ入らせた"
     },
     {
       "verb": "shatter",
@@ -683,6 +707,10 @@
       "text": "目覚めた"
     },
     {
+      "verb": "wander",
+      "text": "立ち去った"
+    },
+    {
       "verb": "whine",
       "text": "キーンと鳴った"
     },
@@ -693,6 +721,10 @@
     {
       "verb": "whirl",
       "text": "グルグル回った"
+    },
+    {
+      "verb": "work",
+      "text": "駆り立てた"
     }
   ],
   "tier2": [
@@ -830,6 +862,11 @@
       "verb": "attempt",
       "extra": "to conk {0} on the head",
       "text": "{0}の頭を強打しようとした"
+    },
+    {
+      "verb": "amputate",
+      "extra": "{0} with {1}",
+      "text": "{1}で{0}を切断した"
     },
     {
       "verb": "begin",
@@ -1178,6 +1215,11 @@
     },
     {
       "verb": "assume",
+      "extra": "an intimidating posture",
+      "text": "威圧的な姿勢をとった"
+    },
+    {
+      "verb": "assume",
       "extra": "full corporeal form again",
       "text": "再び完全な肉体を取り戻した"
     },
@@ -1345,6 +1387,11 @@
       "verb": "draw",
       "extra": "a bead on",
       "text": "に照準を合わせた"
+    },
+    {
+      "verb": "dive",
+      "extra": "at {0}",
+      "text": "{0}へ急降下した"
     },
     {
       "verb": "drink",
@@ -1582,6 +1629,16 @@
       "text": "怒涛の連撃を繰り出した"
     },
     {
+      "verb": "leap",
+      "extra": "at {0}",
+      "text": "{0}へ跳びかかった"
+    },
+    {
+      "verb": "make",
+      "extra": "camp",
+      "text": "野営した"
+    },
+    {
       "verb": "lie",
       "extra": "down",
       "text": "横になった"
@@ -1685,6 +1742,11 @@
       "verb": "resist",
       "extra": "your shield slam",
       "text": "{subject}はあなたのシールドスラムに抵抗した"
+    },
+    {
+      "verb": "resist",
+      "extra": "becoming afraid",
+      "text": "恐怖に抵抗した"
     },
     {
       "verb": "return",
@@ -2460,6 +2522,31 @@
     },
     {
       "verb": "juke",
+      "extra": "{1}, moving {0} out of your way",
+      "text": "{0}の進路から{t1}へ飛び退いた"
+    },
+    {
+      "verb": "juke",
+      "extra": "{1}, moving {0} out of his way",
+      "text": "{0}の進路から{t1}へ飛び退いた"
+    },
+    {
+      "verb": "juke",
+      "extra": "{1}, moving {0} out of her way",
+      "text": "{0}の進路から{t1}へ飛び退いた"
+    },
+    {
+      "verb": "juke",
+      "extra": "{1}, moving {0} out of its way",
+      "text": "{0}の進路から{t1}へ飛び退いた"
+    },
+    {
+      "verb": "juke",
+      "extra": "{1}, moving {0} out of their way",
+      "text": "{0}の進路から{t1}へ飛び退いた"
+    },
+    {
+      "verb": "juke",
       "extra": "{0}",
       "text": "{0}にかわした"
     },
@@ -2867,6 +2954,121 @@
       "verb": "unlock",
       "extra": "(?:the |a |an )?(.+?)",
       "text": "{subject}が{0}の鍵を開けた"
+    },
+    {
+      "verb": "accidentally",
+      "extra": "destroy {0}",
+      "text": "{0}をうっかり破壊した"
+    },
+    {
+      "verb": "attempt",
+      "extra": "to hobble {0}",
+      "text": "{0}の足を狙おうとした"
+    },
+    {
+      "verb": "attempt",
+      "extra": "to shame {0} with your words, but they have no effect",
+      "text": "{0}を言葉で辱めようとしたが、効果はなかった"
+    },
+    {
+      "verb": "attempt",
+      "extra": "to shame {0} with his words, but they have no effect",
+      "text": "{0}を言葉で辱めようとしたが、効果はなかった"
+    },
+    {
+      "verb": "attempt",
+      "extra": "to shame {0} with her words, but they have no effect",
+      "text": "{0}を言葉で辱めようとしたが、効果はなかった"
+    },
+    {
+      "verb": "attempt",
+      "extra": "to shame {0} with its words, but they have no effect",
+      "text": "{0}を言葉で辱めようとしたが、効果はなかった"
+    },
+    {
+      "verb": "attempt",
+      "extra": "to shame {0} with their words, but they have no effect",
+      "text": "{0}を言葉で辱めようとしたが、効果はなかった"
+    },
+    {
+      "verb": "chop",
+      "extra": "off {0} {1}",
+      "text": "{0}の{1}を切り落とした"
+    },
+    {
+      "verb": "hook",
+      "extra": "{0} with {1}",
+      "text": "{1}で{0}を引っ掛けた"
+    },
+    {
+      "verb": "lop",
+      "extra": "off {0} {1}",
+      "text": "{0}の{1}を切り落とした"
+    },
+    {
+      "verb": "reel",
+      "extra": "from the force of (?:your|his|her|its|their|.+?'s) bludgeoning",
+      "text": "殴打の衝撃でよろめいた"
+    },
+    {
+      "verb": "shame",
+      "extra": "{0} with your words",
+      "text": "{0}を言葉で辱めた"
+    },
+    {
+      "verb": "shame",
+      "extra": "{0} with his words",
+      "text": "{0}を言葉で辱めた"
+    },
+    {
+      "verb": "shame",
+      "extra": "{0} with her words",
+      "text": "{0}を言葉で辱めた"
+    },
+    {
+      "verb": "shame",
+      "extra": "{0} with its words",
+      "text": "{0}を言葉で辱めた"
+    },
+    {
+      "verb": "shame",
+      "extra": "{0} with their words",
+      "text": "{0}を言葉で辱めた"
+    },
+    {
+      "verb": "stand",
+      "extra": "(?:your|his|her|its|their) ground",
+      "text": "踏みとどまった"
+    },
+    {
+      "verb": "stand",
+      "extra": "{0} ground",
+      "text": "{t0}の踏ん張りを見せた"
+    },
+    {
+      "verb": "try",
+      "extra": "to slam {0} but (?:your|his|her|its|their|.+?'s) attack passes through (?:him|her|it|them) harmlessly",
+      "text": "{0}に叩きつけを試みたが、攻撃は無害にすり抜けた"
+    },
+    {
+      "verb": "try",
+      "extra": "to amputate {0} with {1}, but .+? (?:passes|pass) through (?:him|her|it|them)",
+      "text": "{0}を{1}で切断しようとしたが、すり抜けた"
+    },
+    {
+      "verb": "try",
+      "extra": "to amputate {0} with {1}, but .+? (?:has|have) no effect",
+      "text": "{0}を{1}で切断しようとしたが、効果がなかった"
+    },
+    {
+      "verb": "wander",
+      "extra": "away disinterestedly",
+      "text": "興味を失って立ち去った"
+    },
+    {
+      "verb": "work",
+      "extra": "(?:yourself|himself|herself|itself|themselves) into a blood frenzy",
+      "text": "血の狂乱へ身を駆り立てた"
     },
     {
       "verb": "vibrate",

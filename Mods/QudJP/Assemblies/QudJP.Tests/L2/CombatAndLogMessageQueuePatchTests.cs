@@ -3627,7 +3627,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
     [TestCase("You lose sight of your mark.", "標的を見失った。")]
     [TestCase("Your tracking of your mark has been disrupted.", "印付けの追跡が乱された。")]
     [TestCase("The snapjaw resists your shield slam.", "snapjawはあなたのシールドスラムに抵抗した。")]
-    [TestCase("You resist {{R|the snapjaw's shield slam}}.", "{{R|snapjawのshield slam}}に抵抗した。")]
+    [TestCase("You resist {{R|the snapjaw's shield slam}}.", "{{R|snapjawのシールドスラム}}に抵抗した。")]
     [TestCase("You rejoinder with {{Y|your dagger}}.", "{{Y|あなたのdagger}}で反撃した。")]
     [TestCase("The snapjaw rejoinders with {{Y|its dagger}}.", "snapjawが{{Y|そのdagger}}で反撃した。")]
     public void CombatSkillMessages_TranslateInventoriedQueuedShapes_WhenOwnerPatched(string source, string expected)
@@ -5416,14 +5416,33 @@ public sealed class CombatAndLogMessageQueuePatchTests
         AssertGeneratedQueueDoesVerbMessage(methodName, source, expected);
     }
 
-    [TestCase("The snapjaw has no limbs.", "snapjawには四肢がない")]
-    [TestCase("{{Y|The snapjaw}} has no limbs.", "{{Y|snapjaw}}には四肢がない")]
+    [TestCase("The snapjaw has no limbs.", "スナップジョーには四肢がない")]
+    [TestCase("{{Y|The snapjaw}} has no limbs.", "{{Y|スナップジョー}}には四肢がない")]
+    [TestCase("{{Y|The snapjaw}} has no limbs that can be amputated.", "{{Y|スナップジョー}}には切断できる四肢がない")]
     [TestCase("You have no limbs.", "あなたには四肢がない")]
     [TestCase("{{Y|You}} have no limbs.", "{{Y|あなた}}には四肢がない")]
+    [TestCase("You can't perform field amputations with hostiles nearby!", "敵対者が近くにいると野外切断は行えない！")]
+    [TestCase(
+        "You must have an axe or a weapon capable of dismemberment equipped in order to perform a field amputation.",
+        "野外切断を行うには、斧か切断可能な武器を装備していなければならない。")]
+    [TestCase("You cannot reach {{Y|the snapjaw}} to amputate its limb.", "{{Y|スナップジョー}}に手が届かず、四肢を切断できない。")]
+    [TestCase("There is no one there for you to amputate their limb.", "そこには四肢を切断できる相手がいない。")]
+    [TestCase("{{Y|the snapjaw}} won't let you do that.", "{{Y|スナップジョー}}はそれを許さない。")]
+    [TestCase("You cannot amputate {{Y|the snapjaw's limbs}}.", "{{Y|スナップジョーの四肢}}は切断できない。")]
+    [TestCase("You cannot bring yourself to amputate your {{Y|left arm}}.", "自分の{{Y|左腕}}を切断する気にはなれない。")]
+    [TestCase(
+        "You cannot amputate the {{Y|right hand}} holding {{C|the chem cell}}.",
+        "{{C|ケムセル}}を持っている{{Y|右手}}は切断できない。")]
+    [TestCase(
+        "You cannot amputate the {{Y|left hand}} holding {{C|the obsidian idol}}.",
+        "{{C|obsidian idol}}を持っている{{Y|左手}}は切断できない。")]
+    [TestCase(
+        "{{Y|the snapjaw}} sees no reason for you to amputate its {{R|left arm}}.",
+        "{{Y|スナップジョー}}はあなたが{{R|左腕}}を切断する理由がないと考えている。")]
     [TestCase("The snapjaw keeps fighting.", "The snapjaw keeps fighting.")]
     [TestCase("", "")]
     [TestCase("\u0001The snapjaw has no limbs.", "The snapjaw has no limbs.")]
-    public void PhysicAmputateLimb_TranslatesNoLimbsPopup_WhenOwnerPatched(string source, string expected)
+    public void PhysicAmputateLimb_TranslatesOwnerPopups_WhenOwnerPatched(string source, string expected)
     {
         AssertPhysicAmputateLimbPopup(source, expected);
     }
@@ -8685,6 +8704,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
 
     private static void AssertPhysicAmputateLimbPopup(string message, string expected)
     {
+        UseRepositoryPatternDictionary();
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
         try
