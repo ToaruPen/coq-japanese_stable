@@ -337,6 +337,17 @@ def test_qudtest_inspect_can_skip_player_log(tmp_path: Path) -> None:
     assert completed.returncode == 0, completed.stderr
 
 
+def test_qudtest_inspect_prints_default_artifact_paths() -> None:
+    """The inspector owns default in-game artifact path rendering for just recipes."""
+    completed = _run("--print-default-paths")
+
+    assert completed.returncode == 0, completed.stderr
+    lines = completed.stdout.splitlines()
+    assert lines[-3].endswith("QudTest/results.json")
+    assert lines[-2].endswith("QudTest/summary.txt")
+    assert lines[-1].endswith("QudTest/runs")
+
+
 def test_qudtest_inspect_fails_for_fatal_player_log_marker(tmp_path: Path) -> None:
     """In-game inspections fail when Player.log contains known fatal mod markers."""
     fixtures = tmp_path / "fixtures"

@@ -36,8 +36,13 @@ public static class QudTestFixtureLoader
         return documents;
     }
 
-    private static void Validate(QudTestFixtureDocument document, string path)
+    private static void Validate(QudTestFixtureDocument? document, string path)
     {
+        if (document is null)
+        {
+            throw new SerializationException("QudTest fixture document is required in " + path);
+        }
+
         if (document.SchemaVersion != 1)
         {
             throw new SerializationException("Unsupported QudTest fixture schemaVersion in " + path);
@@ -55,6 +60,11 @@ public static class QudTestFixtureLoader
 
         foreach (var testCase in document.Cases)
         {
+            if (testCase is null)
+            {
+                throw new SerializationException("QudTest fixture case id and route are required in " + path);
+            }
+
             if (string.IsNullOrWhiteSpace(testCase.Id)
                 || string.IsNullOrWhiteSpace(testCase.Route))
             {

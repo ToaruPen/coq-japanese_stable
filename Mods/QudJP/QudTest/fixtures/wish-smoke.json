@@ -8,6 +8,30 @@
       "route": "wish-queue",
       "input": "Turns until nephal arrives: 7",
       "expected": "ネファル到着までのターン数: 7"
+    },
+    {
+      "id": "wish-queue.reclamation-timer-fallback",
+      "route": "wish-queue",
+      "input": "Turns until another thing arrives: 7",
+      "expected": "Turns until another thing arrives: 7"
+    },
+    {
+      "id": "wish-queue.empty",
+      "route": "wish-queue",
+      "input": "",
+      "expected": ""
+    },
+    {
+      "id": "wish-queue.direct-marker-prefix",
+      "route": "wish-queue",
+      "input": "\u0001Turns until nephal arrives: 7",
+      "expected": "Turns until nephal arrives: 7"
+    },
+    {
+      "id": "wish-queue.color-fallback-preserves-tag",
+      "route": "wish-queue",
+      "input": "{{R|Turns until nephal arrives: 7}}",
+      "expected": "{{R|Turns until nephal arrives: 7}}"
     }
   ]
 }

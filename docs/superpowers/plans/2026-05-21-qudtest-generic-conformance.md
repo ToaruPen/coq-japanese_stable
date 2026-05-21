@@ -118,20 +118,25 @@ The inspector needs a matching fixture-side normalization path for `expectedTarg
 Focused verification:
 
 ```bash
-dotnet test Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj --filter "FullyQualifiedName~QudTestRuntimeHarnessTests"
-uv run pytest scripts/tests/test_qudtest_headless.py scripts/tests/test_qudtest_inspect.py -q
+just build
+just test-l1
+just python-test
 just qudtest-headless qudtest:bindings .artifacts/qudtest-bindings
 ```
+
+For debugging only, the focused C# equivalent is
+`dotnet test Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj --filter "FullyQualifiedName~QudTestRuntimeHarnessTests"`.
 
 Regression verification:
 
 ```bash
-dotnet test Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj --filter "FullyQualifiedName~TargetMethodResolutionTests"
+just build
+just test-l1
+just test-l2g
+just python-check
+just python-test
 just qudtest-headless qudtest:runtime .artifacts/qudtest-runtime
 just qudtest-headless qudtest:wish .artifacts/qudtest-wish
-just python-check
-just test-l1
-just build
 git diff --check
 ```
 

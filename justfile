@@ -342,9 +342,7 @@ deploy-dev-to destination:
 
 # Print the default QudTest runtime artifact paths.
 qudtest-results:
-  @printf '%s\n' "${HOME}/Library/Application Support/Freehold Games/CavesOfQud/Local/QudTest/results.json"
-  @printf '%s\n' "${HOME}/Library/Application Support/Freehold Games/CavesOfQud/Local/QudTest/summary.txt"
-  @printf '%s\n' "${HOME}/Library/Application Support/Freehold Games/CavesOfQud/Local/QudTest/runs"
+  {{python}} scripts/qudtest_inspect.py --print-default-paths
 
 # Run QudTest without opening the game UI and inspect the generated artifact.
 qudtest-headless command="qudtest:runtime" output=".artifacts/qudtest":

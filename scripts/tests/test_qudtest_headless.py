@@ -5,8 +5,12 @@
 from __future__ import annotations
 
 import json
+import os
 import subprocess
+import sys
 from pathlib import Path
+
+import pytest
 
 PROJECT = Path("scripts/tools/QudTestHeadless/QudTestHeadless.csproj")
 FIXTURES = Path("Mods/QudJP/QudTest/fixtures")
@@ -51,9 +55,7 @@ def test_qudtest_headless_writes_inspectable_runtime_artifact(tmp_path: Path) ->
 
     inspected = subprocess.run(
         [
-            "uv",
-            "run",
-            "python",
+            sys.executable,
             str(INSPECTOR),
             "--fixtures",
             str(FIXTURES),
@@ -73,6 +75,7 @@ def test_qudtest_headless_writes_inspectable_runtime_artifact(tmp_path: Path) ->
 
 def test_qudtest_headless_writes_inspectable_binding_artifact(tmp_path: Path) -> None:
     """The headless runner should validate patch target bindings without opening the game UI."""
+    _skip_without_game_managed_dir()
     output = tmp_path / "QudTest"
 
     completed = subprocess.run(
@@ -109,9 +112,7 @@ def test_qudtest_headless_writes_inspectable_binding_artifact(tmp_path: Path) ->
 
     inspected = subprocess.run(
         [
-            "uv",
-            "run",
-            "python",
+            sys.executable,
             str(INSPECTOR),
             "--fixtures",
             str(FIXTURES),
@@ -131,6 +132,7 @@ def test_qudtest_headless_writes_inspectable_binding_artifact(tmp_path: Path) ->
 
 def test_qudtest_headless_writes_inspectable_all_patch_binding_artifact(tmp_path: Path) -> None:
     """The dynamic binding suite should resolve every patch TargetMethod(s) entrypoint."""
+    _skip_without_game_managed_dir()
     output = tmp_path / "QudTest"
 
     completed = subprocess.run(
@@ -165,9 +167,7 @@ def test_qudtest_headless_writes_inspectable_all_patch_binding_artifact(tmp_path
 
     inspected = subprocess.run(
         [
-            "uv",
-            "run",
-            "python",
+            sys.executable,
             str(INSPECTOR),
             "--fixtures",
             str(FIXTURES),
@@ -183,3 +183,18 @@ def test_qudtest_headless_writes_inspectable_all_patch_binding_artifact(tmp_path
 
     assert inspected.returncode == 0, inspected.stderr
     assert "QudTest passed" in inspected.stdout
+
+
+def _skip_without_game_managed_dir() -> None:
+    if _has_game_managed_dir():
+        return
+    pytest.skip("QudTest patch-binding headless checks require Caves of Qud managed DLLs.")
+
+
+def _has_game_managed_dir() -> bool:
+    env_dir = os.environ.get("COQ_MANAGED_DIR")
+    candidates = []
+    if env_dir:
+        candidates.append(Path(env_dir))
+    candidates.append(Path.home() / "Games/CavesOfQud-stable-ref/CoQ.app/Contents/Resources/Data/Managed")
+    return any((candidate / "Assembly-CSharp.dll").exists() for candidate in candidates)

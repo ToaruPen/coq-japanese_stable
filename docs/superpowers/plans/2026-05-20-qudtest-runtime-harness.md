@@ -10,7 +10,7 @@
 
 ---
 
-### Task 1: Python Artifact Inspector
+## Task 1: Python Artifact Inspector
 
 **Files:**
 - Create: `scripts/qudtest_inspect.py`
@@ -21,7 +21,7 @@
 - [x] Implement `scripts/qudtest_inspect.py` with `InspectionInputs`, fixture expectation loading, result validation, optional Player.log check, and `--list-runs`.
 - [x] Re-run `uv run pytest scripts/tests/test_qudtest_inspect.py -q` and verify it passes.
 
-### Task 2: C# QudTest Core
+## Task 2: C# QudTest Core
 
 **Files:**
 - Create: `Mods/QudJP/Assemblies/src/QudTest/QudTestModels.cs`
@@ -35,7 +35,7 @@
 - [x] Implement models, loader, runner, and writer using Newtonsoft-backed `JsonAssetLoader`.
 - [x] Re-run `just test-l1` and verify the new tests pass.
 
-### Task 3: Stable Runtime Route Executor
+## Task 3: Stable Runtime Route Executor
 
 **Files:**
 - Create: `Mods/QudJP/Assemblies/src/QudTest/QudTestRouteExecutor.cs`
@@ -46,7 +46,7 @@
 - [x] Implement route execution by calling existing production patch helpers and stripping direct markers before comparison.
 - [x] Re-run `just test-l1` and verify route tests pass.
 
-### Task 4: Wish Bridge and Deployment
+## Task 4: Wish Bridge and Deployment
 
 **Files:**
 - Modify: `Mods/QudJP/Bootstrap.cs`
@@ -62,7 +62,7 @@
 - [x] Add sync include patterns for `QudTest/fixtures/*.json`.
 - [x] Re-run focused pytest commands and verify they pass.
 
-### Task 5: Recipes and Docs
+## Task 5: Recipes and Docs
 
 **Files:**
 - Modify: `justfile`
@@ -75,7 +75,7 @@
 - [x] Add recipes and documentation.
 - [x] Run focused Python tests and `just --list | rg qudtest`.
 
-### Task 6: Verification
+## Task 6: Verification
 
 - [x] Run `just test-l1`.
 - [x] Run `uv run pytest scripts/tests/test_qudtest_inspect.py scripts/tests/test_sync_mod.py scripts/tests/test_qudtest_bootstrap_contract.py scripts/tests/test_release_justfile_contract.py -q`.

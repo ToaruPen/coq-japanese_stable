@@ -8,6 +8,36 @@ public static class QudTestRunner
 {
     public static QudTestRunResult Run(string command, string fixturesDirectory, string modLanguage)
     {
+        if (command is null)
+        {
+            throw new ArgumentNullException(nameof(command));
+        }
+
+        if (fixturesDirectory is null)
+        {
+            throw new ArgumentNullException(nameof(fixturesDirectory));
+        }
+
+        if (modLanguage is null)
+        {
+            throw new ArgumentNullException(nameof(modLanguage));
+        }
+
+        if (string.IsNullOrWhiteSpace(command))
+        {
+            throw new ArgumentException("command must be non-empty.", nameof(command));
+        }
+
+        if (string.IsNullOrWhiteSpace(fixturesDirectory))
+        {
+            throw new ArgumentException("fixturesDirectory must be non-empty.", nameof(fixturesDirectory));
+        }
+
+        if (string.IsNullOrWhiteSpace(modLanguage))
+        {
+            throw new ArgumentException("modLanguage must be non-empty.", nameof(modLanguage));
+        }
+
         var suite = ParseSuite(command);
         var startedAt = DateTimeOffset.UtcNow;
         var result = new QudTestRunResult

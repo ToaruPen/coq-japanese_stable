@@ -89,7 +89,8 @@ def test_qudtest_recipes_use_runtime_artifact_inspector() -> None:
     assert "--skip-player-log" in headless_recipe
     assert "scripts/qudtest_inspect.py" in inspect_recipe
     assert "--skip-player-log" not in inspect_recipe
-    assert "Library/Application Support/Freehold Games/CavesOfQud/Local/QudTest/results.json" in results_recipe
+    assert "scripts/qudtest_inspect.py --print-default-paths" in results_recipe
+    assert "Library/Application Support/Freehold Games/CavesOfQud/Local/QudTest" not in results_recipe
     assert "scripts/qudtest_inspect.py --list-runs" in history_recipe
 
 

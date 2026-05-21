@@ -4,14 +4,14 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
+import platform
 import sys
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import cast
 
-DEFAULT_RESULTS_ROOT = Path.home() / "Library/Application Support/Freehold Games/CavesOfQud/Local/QudTest"
-DEFAULT_PLAYER_LOG = Path.home() / "Library/Logs/Freehold Games/CavesOfQud/Player.log"
 type JsonObject = dict[str, object]
 FATAL_PLAYER_LOG_PATTERNS = (
     "QudJP: compile error",
@@ -23,6 +23,42 @@ FATAL_PLAYER_LOG_PATTERNS = (
     "TypeLoadException",
 )
 DYNAMIC_RESULT_SUITES = frozenset({"bindings-all"})
+
+
+def _default_results_root() -> Path:
+    system = platform.system()
+    if system == "Darwin":
+        return Path.home() / "Library/Application Support/Freehold Games/CavesOfQud/Local/QudTest"
+    if system == "Linux":
+        return Path.home() / ".local/share/CavesOfQud/Local/QudTest"
+    if system == "Windows":
+        appdata = os.getenv("APPDATA")
+        if not appdata:
+            msg = "APPDATA is required to resolve the default QudTest results path on Windows"
+            raise RuntimeError(msg)
+        return Path(appdata) / "Freehold Games/CavesOfQud/Local/QudTest"
+    msg = f"Unsupported platform for QudTest default paths: {system}"
+    raise RuntimeError(msg)
+
+
+def _default_player_log() -> Path:
+    system = platform.system()
+    if system == "Darwin":
+        return Path.home() / "Library/Logs/Freehold Games/CavesOfQud/Player.log"
+    if system == "Linux":
+        return Path.home() / ".local/share/CavesOfQud/Player.log"
+    if system == "Windows":
+        local_appdata = os.getenv("LOCALAPPDATA") or os.getenv("APPDATA")
+        if not local_appdata:
+            msg = "LOCALAPPDATA or APPDATA is required to resolve the default Player.log path on Windows"
+            raise RuntimeError(msg)
+        return Path(local_appdata) / "Freehold Games/CavesOfQud/Player.log"
+    msg = f"Unsupported platform for QudTest default paths: {system}"
+    raise RuntimeError(msg)
+
+
+DEFAULT_RESULTS_ROOT = _default_results_root()
+DEFAULT_PLAYER_LOG = _default_player_log()
 
 
 @dataclass(frozen=True)
@@ -264,6 +300,15 @@ def list_runs(runs_dir: Path, limit: int) -> list[str]:
     return lines
 
 
+def default_path_lines() -> list[str]:
+    """Return the default in-game QudTest artifact paths."""
+    return [
+        str(DEFAULT_RESULTS_ROOT / "results.json"),
+        str(DEFAULT_RESULTS_ROOT / "summary.txt"),
+        str(DEFAULT_RESULTS_ROOT / "runs"),
+    ]
+
+
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--fixtures", type=Path, default=Path("Mods/QudJP/QudTest/fixtures"))
@@ -272,6 +317,7 @@ def _build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--expected-mod-language", default="ja")
     parser.add_argument("--max-age-seconds", type=int, default=1800)
     parser.add_argument("--skip-player-log", action="store_true")
+    parser.add_argument("--print-default-paths", action="store_true")
     parser.add_argument("--list-runs", action="store_true")
     parser.add_argument("--runs-dir", type=Path, default=DEFAULT_RESULTS_ROOT / "runs")
     parser.add_argument("--limit", type=int, default=10)
@@ -283,6 +329,11 @@ def main(argv: list[str] | None = None) -> int:
     parser = _build_parser()
     args = parser.parse_args(argv)
     try:
+        if args.print_default_paths:
+            for line in default_path_lines():
+                sys.stdout.write(line + "\n")
+            return 0
+
         if args.list_runs:
             for line in list_runs(args.runs_dir, args.limit):
                 sys.stdout.write(line + "\n")

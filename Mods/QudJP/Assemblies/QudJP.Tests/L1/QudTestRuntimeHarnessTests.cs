@@ -62,6 +62,41 @@ public sealed class QudTestRuntimeHarnessTests
         });
     }
 
+    [Test]
+    public void LoadFixtures_RejectsNullCaseEntries()
+    {
+        File.WriteAllText(
+            Path.Combine(fixturesDirectory, "runtime-smoke.json"),
+            """
+            {
+              "schemaVersion": 1,
+              "suite": "runtime",
+              "description": "runtime smoke",
+              "cases": [null]
+            }
+            """,
+            System.Text.Encoding.UTF8);
+
+        Assert.That(
+            () => QudTestFixtureLoader.LoadDirectory(fixturesDirectory),
+            Throws.InstanceOf<System.Runtime.Serialization.SerializationException>()
+                .With.Message.Contains("case id and route are required"));
+    }
+
+    [Test]
+    public void Run_RejectsNullArguments()
+    {
+        Assert.Multiple(() =>
+        {
+            Assert.That(() => QudTestRunner.Run(null!, fixturesDirectory, "ja"), Throws.ArgumentNullException);
+            Assert.That(() => QudTestRunner.Run("qudtest:runtime", null!, "ja"), Throws.ArgumentNullException);
+            Assert.That(() => QudTestRunner.Run("qudtest:runtime", fixturesDirectory, null!), Throws.ArgumentNullException);
+            Assert.That(() => QudTestRunner.Run("", fixturesDirectory, "ja"), Throws.ArgumentException);
+            Assert.That(() => QudTestRunner.Run("qudtest:runtime", "", "ja"), Throws.ArgumentException);
+            Assert.That(() => QudTestRunner.Run("qudtest:runtime", fixturesDirectory, ""), Throws.ArgumentException);
+        });
+    }
+
     [TestCase(
         "start-replace",
         "{{K|=subject.T= =verb:slip= on the ink!}}",
@@ -69,6 +104,10 @@ public sealed class QudTestRuntimeHarnessTests
     [TestCase("message-log", "\u0001ログに出る", "ログに出る")]
     [TestCase("message-queue", "\u0001キューに出る", "キューに出る")]
     [TestCase("wish-queue", "Turns until nephal arrives: 7", "ネファル到着までのターン数: 7")]
+    [TestCase("wish-queue", "Turns until another thing arrives: 7", "Turns until another thing arrives: 7")]
+    [TestCase("wish-queue", "", "")]
+    [TestCase("wish-queue", "\u0001Turns until nephal arrives: 7", "Turns until nephal arrives: 7")]
+    [TestCase("wish-queue", "{{R|Turns until nephal arrives: 7}}", "{{R|Turns until nephal arrives: 7}}")]
     [TestCase(
         "popup-text",
         "You can't find a way to flee from {{C|salt kraken}}.",
