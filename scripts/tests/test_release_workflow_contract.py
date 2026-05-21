@@ -39,7 +39,7 @@ def test_release_workflow_installs_python_test_tooling() -> None:
     workflow = _workflow_text()
     node_bin_path_step = 'echo "$PWD/node_modules/.bin" >> "$GITHUB_PATH"'
 
-    assert "pip install hypothesis pytest ruff" in workflow
+    assert "pip install hypothesis pytest ruff uv" in workflow
     assert "npm ci" in workflow
     assert node_bin_path_step in workflow
     assert "npm install -g @ast-grep/cli" not in workflow
