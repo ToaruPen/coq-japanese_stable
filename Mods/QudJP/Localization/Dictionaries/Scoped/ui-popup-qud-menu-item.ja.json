@@ -8,5 +8,10 @@
     "protectColorTags": true,
     "protectHtmlEntities": true
   },
-  "entries": []
+  "entries": [
+    { "key": "Abandon Character", "text": "キャラクターを放棄" },
+    { "key": "Hold to Accept", "text": "長押しして決定" },
+    { "key": "Quit Without Saving", "text": "セーブせずに終了" },
+    { "key": "Save and Quit", "text": "セーブして終了" }
+  ]
 }

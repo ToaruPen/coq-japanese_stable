@@ -37,6 +37,9 @@ _RSYNC_INCLUDES: tuple[str, ...] = (
     "Localization/**/*.xml",
     "Localization/**/*.json",
     "Localization/**/*.txt",
+    "QudTest/",
+    "QudTest/fixtures/",
+    "QudTest/fixtures/*.json",
     "Fonts/",
     "Fonts/**",
 )
@@ -221,6 +224,14 @@ def _iter_sync_files(source: Path, *, exclude_fonts: bool) -> list[Path]:
                 for file_path in sorted(fonts_dir.rglob("*"))
                 if file_path.is_file()
             )
+
+    qudtest_fixtures_dir = source / "QudTest" / "fixtures"
+    if qudtest_fixtures_dir.is_dir():
+        file_paths.extend(
+            file_path
+            for file_path in sorted(qudtest_fixtures_dir.glob("*.json"))
+            if file_path.is_file()
+        )
 
     return file_paths
 

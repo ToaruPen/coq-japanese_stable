@@ -1,0 +1,121 @@
+{
+  "schemaVersion": 1,
+  "suite": "runtime",
+  "description": "Stable runtime route smoke cases for final text emitted through QudJP helpers.",
+  "cases": [
+    {
+      "id": "start-replace.slip-ink",
+      "route": "start-replace",
+      "input": "{{K|=subject.T= =verb:slip= on the ink!}}",
+      "expected": "{{K|=subject.T=はインクで滑った！}}"
+    },
+    {
+      "id": "message-log.direct-marker",
+      "route": "message-log",
+      "input": "\u0001ログに出る",
+      "expected": "ログに出る"
+    },
+    {
+      "id": "message-queue.direct-marker",
+      "route": "message-queue",
+      "input": "\u0001キューに出る",
+      "expected": "キューに出る"
+    },
+    {
+      "id": "popup-text.xrlcore-flee",
+      "route": "popup-text",
+      "input": "You can't find a way to flee from {{C|salt kraken}}.",
+      "expected": "{{C|salt kraken}}から逃げる経路が見つからない。"
+    },
+    {
+      "id": "popup-text.static-already-have-power",
+      "route": "popup-text",
+      "input": "You already have that power.",
+      "expected": "その能力はすでに習得している。"
+    },
+    {
+      "id": "popup-text.static-frozen-solid",
+      "route": "popup-text",
+      "input": "You are frozen solid!",
+      "expected": "あなたは完全に凍りついた！"
+    },
+    {
+      "id": "popup-text.static-walk-stairs-down",
+      "route": "popup-text",
+      "input": "Would you like to walk to the nearest stairway down?",
+      "expected": "最寄りの下り階段まで移動しますか？"
+    },
+    {
+      "id": "popup-text.campfire-staunch-wounds",
+      "route": "popup-text",
+      "input": "You staunch the wounds of {{Y|warden}}, though some are too deep to treat.",
+      "expected": "{{Y|warden}}の傷を止血したが、深すぎて処置できないものもある。"
+    },
+    {
+      "id": "popup-text.campfire-new-recipe",
+      "route": "popup-text",
+      "input": "You create a new recipe for {{|starapple stew}}!",
+      "expected": "{{|starapple stew}}の新しいレシピを生み出した！"
+    },
+    {
+      "id": "popup-text.campfire-metabolize-meal",
+      "route": "popup-text",
+      "input": "You start to metabolize the meal, gaining the following effect for the rest of the day:\n\n{{W|+5 to heat resistance}}",
+      "expected": "食事の代謝が始まり、一日中次の効果を得る:\n\n{{W|+5 to heat resistance}}"
+    },
+    {
+      "id": "popup-askstring.quit-without-saving-confirm",
+      "route": "popup-askstring-prompt",
+      "input": "If you quit without saving, you will lose all your unsaved progress. Are you sure you want to QUIT and LOSE YOUR PROGRESS?\n\n Type 'QUIT' to confirm.",
+      "expected": "セーブせずに終了すると保存されていない進行状況がすべて失われます。本当に終了しますか？\\n\\n「QUIT」と入力すると確定します。"
+    },
+    {
+      "id": "popup-message-button.quit-hold-to-accept",
+      "route": "popup-message-button",
+      "input": "{{W|[Tab]}} {{y|Hold to Accept}}",
+      "expected": "{{W|[Tab]}} {{y|長押しして決定}}"
+    },
+    {
+      "id": "popup-message-button.quit-without-saving-cancel",
+      "route": "popup-message-button",
+      "input": "{{W|[Esc]}} {{y|Quit Without Saving}}",
+      "expected": "{{W|[Esc]}} {{y|セーブせずに終了}}"
+    },
+    {
+      "id": "popup-menu-item.hotkey-space-continue",
+      "route": "popup-menu-item",
+      "input": "{{W|[space]}} {{y|Continue}}",
+      "expected": "{{W|[Space]}} {{y|続ける}}"
+    },
+    {
+      "id": "popup-menu-item.hotkey-esc-cancel",
+      "route": "popup-menu-item",
+      "input": "{{W|[Esc]}} {{y|Cancel}}",
+      "expected": "{{W|[Esc]}} {{y|キャンセル}}"
+    },
+    {
+      "id": "bottom-context-item.hotkey-space-continue",
+      "route": "bottom-context-item",
+      "input": "{{W|[space]}} {{y|Continue}}",
+      "expected": "{{W|[Space]}} {{y|続ける}}"
+    },
+    {
+      "id": "bottom-context-item.nested-hotkey-space-continue",
+      "route": "bottom-context-item",
+      "input": "{{y|{{W|[space]}} Continue}}",
+      "expected": "{{W|[Space]}} {{y|続ける}}"
+    },
+    {
+      "id": "game-summary-menu.save-tombstone",
+      "route": "game-summary-menu-literal",
+      "input": "Save Tombstone File",
+      "expected": "墓碑ファイルを保存"
+    },
+    {
+      "id": "game-summary-menu.exit",
+      "route": "game-summary-menu-literal",
+      "input": "Exit",
+      "expected": "終了"
+    }
+  ]
+}
