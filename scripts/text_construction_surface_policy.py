@@ -2068,9 +2068,13 @@ def _issue747_skill_evidence_for(family: TextConstructionFamily) -> list[str] | 
 def _issue747_skill_surface_evidence(surfaces: set[str], owner_evidence: list[str]) -> list[str]:
     if surfaces & {"Popup", "TutorialManagerPopup"}:
         if surfaces & {"AddPlayerMessage", "Does", "EmitMessage", "MessageFrame"}:
-            return [*owner_evidence, *ISSUE747_SKILL_MESSAGE_FRAME_ROUTE_EVIDENCE]
+            return _combine_evidence(owner_evidence, ISSUE747_SKILL_MESSAGE_FRAME_ROUTE_EVIDENCE)
         return list(owner_evidence)
-    return list(ISSUE747_SKILL_MESSAGE_FRAME_ROUTE_EVIDENCE)
+    return _combine_evidence(owner_evidence, ISSUE747_SKILL_MESSAGE_FRAME_ROUTE_EVIDENCE)
+
+
+def _combine_evidence(*evidence_groups: list[str]) -> list[str]:
+    return list(dict.fromkeys(evidence for group in evidence_groups for evidence in group))
 
 
 def _is_conversation_choice_tag_family_id(family_id: str) -> bool:

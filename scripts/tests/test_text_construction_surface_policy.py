@@ -310,6 +310,7 @@ def test_policy_closes_issue747_journal_and_skill_rows_with_owner_route_evidence
         "XRL.World.Parts.Skill/Tactics_DeathFromAbove.cs::"
         "Tactics_DeathFromAbove.PerformDeathFromAbove(GameObject,GameObject,string)"
     )
+    physic_amputate_family_id = "XRL.World.Parts.Skill/Physic_AmputateLimb.cs::Physic_AmputateLimb.FireEvent(Event)"
     tinkering_mine_family_id = "XRL.World.Parts/Tinkering_Mine.cs::Tinkering_Mine.AttemptDisarm(GameObject,IEvent,bool)"
     unreviewed_skill_family_id = "XRL.World.Parts.Skill/Unreviewed_Skill.cs::Unreviewed_Skill.FireEvent(Event)"
     inventory = _inventory(
@@ -339,6 +340,12 @@ def test_policy_closes_issue747_journal_and_skill_rows_with_owner_route_evidence
                 {"MessageFrame": 1},
             ),
             _family(
+                physic_amputate_family_id,
+                "XRL.World.Parts.Skill/Physic_AmputateLimb.cs",
+                "FireEvent",
+                {"MessageFrame": 1},
+            ),
+            _family(
                 tinkering_mine_family_id,
                 "XRL.World.Parts/Tinkering_Mine.cs",
                 "AttemptDisarm",
@@ -365,6 +372,7 @@ def test_policy_closes_issue747_journal_and_skill_rows_with_owner_route_evidence
     assert entries[unreviewed_journal_family_id]["closure_status"] == "action_required"
     assert entries[tactics_charge_family_id]["closure_status"] == "covered_by_owner_route"
     assert entries[tactics_death_from_above_family_id]["closure_status"] == "covered_by_owner_route"
+    assert entries[physic_amputate_family_id]["closure_status"] == "covered_by_owner_route"
     assert entries[tinkering_mine_family_id]["closure_status"] == "covered_by_owner_route"
     assert entries[unreviewed_skill_family_id]["closure_status"] == "action_required"
     skill_evidence = " ".join(entries[tactics_charge_family_id]["closure_evidence"])
@@ -372,7 +380,10 @@ def test_policy_closes_issue747_journal_and_skill_rows_with_owner_route_evidence
     assert "Issue #747 reviewed skill-originated static family" in skill_evidence
     message_only_evidence = " ".join(entries[tactics_death_from_above_family_id]["closure_evidence"])
     assert "MessageFrames/verbs.ja.json" in message_only_evidence
-    assert "SingleCallsiteOwnerPopupTranslationPatch.cs" not in message_only_evidence
+    assert "SingleCallsiteOwnerPopupTranslationPatch.cs" in message_only_evidence
+    physic_message_only_evidence = " ".join(entries[physic_amputate_family_id]["closure_evidence"])
+    assert "PhysicAmputateLimbTranslationPatch.cs" in physic_message_only_evidence
+    assert "MessageFrames/verbs.ja.json" in physic_message_only_evidence
 
 
 def test_policy_separates_reviewed_issue711_work_without_overclaiming_closure() -> None:

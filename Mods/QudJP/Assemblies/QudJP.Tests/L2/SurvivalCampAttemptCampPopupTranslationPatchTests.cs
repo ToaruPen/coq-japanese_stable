@@ -9,6 +9,18 @@ namespace QudJP.Tests.L2;
 [NonParallelizable]
 public sealed class SurvivalCampAttemptCampPopupTranslationPatchTests
 {
+    private static readonly string[] AllRouteDetails =
+    {
+        "ExistingCampfireNavigation",
+        "HostilesNearby",
+        "WorldMap",
+        "SameZone",
+        "NoBuildSurface",
+        "Blocked",
+        "ExistingCampfireHere",
+        "ExtinguishingPool",
+    };
+
     [SetUp]
     public void SetUp()
     {
@@ -101,7 +113,7 @@ public sealed class SurvivalCampAttemptCampPopupTranslationPatchTests
         {
             Assert.That(claimed, Is.False);
             Assert.That(translated, Is.EqualTo(source));
-            Assert.That(HitCount("ExistingCampfireNavigation"), Is.Zero);
+            AssertAllRouteHitsZero();
         });
     }
 
@@ -146,6 +158,10 @@ public sealed class SurvivalCampAttemptCampPopupTranslationPatchTests
                 {
                     Assert.That(DummyPopupShow.LastShowYesNoCancelMessage, Is.EqualTo(expected));
                     Assert.That(HitCount(routeDetail), Is.EqualTo(expectedHits));
+                    if (expectedHits == 0)
+                    {
+                        AssertAllRouteHitsZero();
+                    }
                 });
             });
     }
@@ -163,5 +179,13 @@ public sealed class SurvivalCampAttemptCampPopupTranslationPatchTests
         return OwnerPopupRouteTestHarness.RouteHitCount(
             typeof(SurvivalCampAttemptCampPopupTranslationPatch),
             routeDetail);
+    }
+
+    private static void AssertAllRouteHitsZero()
+    {
+        foreach (var routeDetail in AllRouteDetails)
+        {
+            Assert.That(HitCount(routeDetail), Is.Zero, $"Unexpected route claim: {routeDetail}");
+        }
     }
 }
