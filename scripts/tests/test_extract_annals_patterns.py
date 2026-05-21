@@ -11,10 +11,10 @@ from typing import Protocol, cast
 
 import pytest
 
+from scripts.dotnet_tool_runner import build_tool_project
+
 _REPO_ROOT = Path(__file__).resolve().parents[2]
 PROJECT_PATH = _REPO_ROOT / "scripts" / "tools" / "AnnalsPatternExtractor" / "AnnalsPatternExtractor.csproj"
-BUILD_CONFIGURATION = "Release"
-TOOL_DLL = PROJECT_PATH.parent / "bin" / BUILD_CONFIGURATION / "net10.0" / "AnnalsPatternExtractor.dll"
 FIXTURES = Path(__file__).resolve().parent / "fixtures" / "annals"
 
 
@@ -24,19 +24,6 @@ class AnnalsTranslator(Protocol):
     def compute_en_template_hash(self, candidate: dict[str, object]) -> str:
         """Compute the stable template hash for an annals candidate."""
         ...
-
-
-def _tool_sources_are_newer_than(dll_path: Path) -> bool:
-    """Return whether the checked-in tool sources are newer than the built DLL."""
-    if not dll_path.exists():
-        return True
-
-    dll_mtime = dll_path.stat().st_mtime
-    sources = [
-        PROJECT_PATH,
-        *(path for path in PROJECT_PATH.parent.rglob("*.cs") if "bin" not in path.parts and "obj" not in path.parts),
-    ]
-    return any(path.stat().st_mtime > dll_mtime for path in sources)
 
 
 def _has_dotnet_10_sdk() -> bool:
@@ -51,30 +38,10 @@ def _has_dotnet_10_sdk() -> bool:
 
 
 def _ensure_extractor_dll() -> Path:
-    """Use the CI-built extractor when available, otherwise build it once for local tests."""
-    if not _tool_sources_are_newer_than(TOOL_DLL):
-        return TOOL_DLL
-
+    """Build or reuse the extractor through the shared repo-local tool cache."""
     if not _has_dotnet_10_sdk():
         pytest.skip("dotnet 10.0 SDK not available")
-
-    result = subprocess.run(
-        [
-            "dotnet",
-            "build",
-            str(PROJECT_PATH),
-            "--configuration",
-            BUILD_CONFIGURATION,
-        ],
-        capture_output=True,
-        text=True,
-        check=False,
-    )
-    assert result.returncode == 0, (
-        f"extractor build failed (exit {result.returncode}). stdout:\n{result.stdout}\nstderr:\n{result.stderr}"
-    )
-    assert TOOL_DLL.exists(), f"extractor build succeeded but did not produce {TOOL_DLL}"
-    return TOOL_DLL
+    return build_tool_project(PROJECT_PATH)
 
 
 def _run_extractor_batch(output: Path) -> subprocess.CompletedProcess[str]:

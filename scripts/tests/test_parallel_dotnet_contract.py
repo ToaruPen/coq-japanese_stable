@@ -94,6 +94,15 @@ def test_roslyn_tool_wrappers_use_run_scoped_dotnet_runner() -> None:
     assert "_remove_stale_lock" in helper
 
 
+def test_annals_golden_tests_use_shared_tool_build_cache() -> None:
+    """The Roslyn CI lane should not rebuild Annals fixtures outside the shared cache."""
+    text = _read_repo_file("scripts/tests/test_extract_annals_patterns.py")
+
+    assert "build_tool_project" in text
+    assert 'dotnet", "build"' not in text
+    assert 'PROJECT_PATH.parent / "bin"' not in text
+
+
 def test_text_construction_recipe_runs_prebuilt_tool_dll() -> None:
     """The text construction just recipe should build then execute the DLL directly."""
     justfile = "\n" + _read_repo_file("justfile")
@@ -343,6 +352,33 @@ def test_run_cached_tool_project_skips_build_when_cached_dll_is_fresh(
     result = dotnet_tool_runner.run_cached_tool_project(project_path, ["--cached"], timeout=5)
 
     assert result.stdout == "cached"
+
+
+def test_build_tool_project_skips_build_when_cached_dll_is_fresh(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Smoke-test fixtures should share the same fingerprinted tool build cache."""
+    project_path = _write_probe_project(tmp_path)
+    artifacts_root = tmp_path / "artifacts"
+    dll = _write_cached_probe_dll(artifacts_root, project_path)
+    monkeypatch.setattr(dotnet_tool_runner, "_dotnet_path", lambda: "dotnet")
+    monkeypatch.setattr(dotnet_tool_runner, "_artifacts_root", lambda: artifacts_root)
+
+    def fail_build(
+        command: list[str],
+        *,
+        timeout: float,
+        artifacts_root: Path,
+        assembly_name: str,
+        use_lock: bool,
+    ) -> subprocess.CompletedProcess[str]:
+        _ = command, timeout, artifacts_root, assembly_name, use_lock
+        pytest.fail("fresh cached build fixture should not invoke dotnet build")
+
+    monkeypatch.setattr(dotnet_tool_runner, "_run_build_command", fail_build)
+
+    assert dotnet_tool_runner.build_tool_project(project_path) == dll
 
 
 def test_run_cached_tool_project_rebuilds_when_source_file_is_deleted(

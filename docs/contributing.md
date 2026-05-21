@@ -442,10 +442,10 @@ L3 検証や "再現するか?" の判断は Caves of Qud のランタイムロ�
 PR を出すと GitHub Actions (`.github/workflows/ci.yml`) が変更ファイルを見て必要なゲートだけを実行します。`.github/workflows/ci.yml` 自体が変わった場合は全ゲートを実行します。
 
 - `Mods/QudJP/Assemblies/` 変更: `.NET SDK 8.0.x + 10.0.x` をインストールし、QudJP / QudJP.Tests を Release build します。build artifact を作成した後、C# テストは `L1` / `L2` / `L2G` の matrix job で並列実行します。L2G は `QudJP.Tests.csproj` の `<Exists('$(AssemblyCSharpPath)')>` 条件付き参照により、CI 環境に `Assembly-CSharp.dll` が存在しないため自動的にスキップされます。
-- `scripts/tools/` または Annals extractor のテスト / fixture 変更: `scripts/tools/**/*.csproj` を列挙し、見つかった tool projects をすべて Release build します。
-- `scripts/` (`scripts/tools/` を除く) / `.codex/hooks/**` / `.codex/hooks.json` / `dotnet-tools.json` / `package.json` / `package-lock.json` / `CHANGELOG.md` / `Mods/QudJP/manifest.json` / `docs/release-notes/` 変更: `npm ci` で Node tool dependencies を復元し、`ruff`、`pytest` をセットアップして `ruff check scripts/` と `pytest scripts/tests/` を実行します。この Python lane は QudJP C# test matrix を待たずに並列実行されます。
+- `scripts/tools/`、`docs/static-producer-inventory.json`、または Roslyn / scan 系 wrapper・テスト・fixture 変更: `scripts/tools/**/*.csproj` を列挙し、見つかった tool projects を shared artifacts cache に Release build したうえで、Roslyn-backed pytest (`test_roslyn_*`, static producer / text construction surface など) を `--durations=20` 付きで実行します。
+- `scripts/` (`scripts/tools/` を除く) / `.codex/hooks/**` / `.codex/hooks.json` / `dotnet-tools.json` / `package.json` / `package-lock.json` / `CHANGELOG.md` / `Mods/QudJP/manifest.json` / `docs/release-notes/` 変更: `npm ci` で Node tool dependencies を復元し、`ruff`、`pytest` をセットアップして Roslyn / scan 系 pytest を除く `pytest scripts/tests/ --durations=30` を実行します。この Python lane は QudJP C# test matrix と Roslyn / scan lane を待たずに並列実行され、ログに遅い pytest case を残します。
 - `Mods/QudJP/Localization/` 変更: release-note fragment requirement、translation-token check、glossary consistency check を実行します。
-- `pyproject.toml` / `uv.lock` 変更: Python tooling 変更として `ruff check scripts/` と `pytest scripts/tests/` を実行します。
+- `pyproject.toml` / `uv.lock` 変更: Python tooling 変更として core Python lane と Roslyn / scan lane の両方を実行します。
 - CI は同一 ref の古い実行を自動キャンセルし、NuGet / pip キャッシュを使います。branch protection 用の `build` job は最後に各 lane の結果を集約する互換チェックです。
 
 **全ジョブがパスしないとマージできません。**

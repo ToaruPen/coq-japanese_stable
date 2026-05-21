@@ -34,46 +34,38 @@ def annals_tool_dll() -> Path:
     return build_tool_project(ANNALS_PROJECT_PATH)
 
 
+@pytest.fixture(scope="session")
+def static_producer_tool_dll() -> Path:
+    """Build the static producer scanner once for smoke validation."""
+    if not shutil.which("dotnet"):
+        pytest.skip("dotnet SDK not available")
+    return build_tool_project(STATIC_PRODUCER_PROJECT_PATH)
+
+
+@pytest.fixture(scope="session")
+def semantic_probe_tool_dll() -> Path:
+    """Build the semantic probe once for smoke validation."""
+    if not shutil.which("dotnet"):
+        pytest.skip("dotnet SDK not available")
+    return build_tool_project(SEMANTIC_PROBE_PROJECT_PATH)
+
+
 @pytest.mark.skipif(not shutil.which("dotnet"), reason="dotnet SDK not available")
-def test_extractor_csproj_builds_in_release() -> None:
+def test_extractor_csproj_builds_in_release(annals_tool_dll: Path) -> None:
     """The Roslyn extractor csproj must build cleanly so the CI step does not rot."""
-    result = subprocess.run(
-        ["dotnet", "build", str(ANNALS_PROJECT_PATH), "--configuration", "Release"],
-        capture_output=True,
-        text=True,
-        check=False,
-    )
-    assert result.returncode == 0, (
-        f"dotnet build failed (exit {result.returncode}).\nstdout:\n{result.stdout}\nstderr:\n{result.stderr}"
-    )
+    assert annals_tool_dll.is_file()
 
 
 @pytest.mark.skipif(not shutil.which("dotnet"), reason="dotnet SDK not available")
-def test_static_producer_inventory_scanner_csproj_builds_in_release() -> None:
+def test_static_producer_inventory_scanner_csproj_builds_in_release(static_producer_tool_dll: Path) -> None:
     """The Roslyn static producer scanner csproj must build cleanly."""
-    result = subprocess.run(
-        ["dotnet", "build", str(STATIC_PRODUCER_PROJECT_PATH), "--configuration", "Release"],
-        capture_output=True,
-        text=True,
-        check=False,
-    )
-    assert result.returncode == 0, (
-        f"dotnet build failed (exit {result.returncode}).\nstdout:\n{result.stdout}\nstderr:\n{result.stderr}"
-    )
+    assert static_producer_tool_dll.is_file()
 
 
 @pytest.mark.skipif(not shutil.which("dotnet"), reason="dotnet SDK not available")
-def test_semantic_probe_csproj_builds_in_release() -> None:
+def test_semantic_probe_csproj_builds_in_release(semantic_probe_tool_dll: Path) -> None:
     """The Roslyn semantic probe csproj must build cleanly."""
-    result = subprocess.run(
-        ["dotnet", "build", str(SEMANTIC_PROBE_PROJECT_PATH), "--configuration", "Release"],
-        capture_output=True,
-        text=True,
-        check=False,
-    )
-    assert result.returncode == 0, (
-        f"dotnet build failed (exit {result.returncode}).\nstdout:\n{result.stdout}\nstderr:\n{result.stderr}"
-    )
+    assert semantic_probe_tool_dll.is_file()
 
 
 @pytest.mark.skipif(not shutil.which("dotnet"), reason="dotnet SDK not available")

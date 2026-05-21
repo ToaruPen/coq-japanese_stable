@@ -34,7 +34,7 @@ def test_ci_keeps_required_build_check_as_aggregator() -> None:
     build_job = _job_block(workflow, "build", None)
 
     assert "Check required jobs" in build_job
-    for job_name in ("qudjp-dotnet-build", "qudjp-dotnet-test", "python"):
+    for job_name in ("qudjp-dotnet-build", "qudjp-dotnet-test", "roslyn-tools", "python"):
         assert f"      - {job_name}" in build_job
         assert f'check_result {job_name} "${{{{ needs.{job_name}.result }}}}"' in build_job
 
@@ -75,13 +75,14 @@ def test_ci_checks_out_repo_for_qudjp_test_matrix() -> None:
 
 
 def test_ci_runs_python_and_dotnet_lanes_as_independent_jobs() -> None:
-    """Python tests should not wait for the QudJP C# test matrix."""
+    """Core Python tests should not wait for QudJP C# or Roslyn scan lanes."""
     workflow = _workflow_text()
     python_job = _job_block(workflow, "python", "localization")
 
     assert "\n  detect-changes:\n" in workflow
     assert "pytest scripts/tests/" in python_job
     assert "qudjp-dotnet-test" not in python_job
+    assert "roslyn-tools" not in python_job
 
 
 def test_ci_python_lane_restores_repo_local_node_tools() -> None:
@@ -96,6 +97,43 @@ def test_ci_python_lane_restores_repo_local_node_tools() -> None:
     assert python_job.index("npm ci") < python_job.index(node_bin_path_step)
     assert python_job.index(node_bin_path_step) < python_job.index("pytest scripts/tests/")
     assert "npm install -g @ast-grep/cli" not in python_job
+
+
+def test_ci_python_lane_reports_slowest_test_durations() -> None:
+    """CI logs should keep enough timing detail to diagnose future pytest slowdowns."""
+    workflow = _workflow_text()
+    python_job = _job_block(workflow, "python", "localization")
+
+    assert "pytest scripts/tests/" in python_job
+    assert "--durations=30" in python_job
+    assert "--ignore=scripts/tests/test_roslyn_extractor_smoke.py" in python_job
+    assert "--ignore=scripts/tests/test_scan_static_producer_inventory.py" in python_job
+
+
+def test_ci_roslyn_lane_runs_scan_backed_pytest_separately() -> None:
+    """Roslyn/scan pytest coverage should run in the Roslyn lane, not the core Python lane."""
+    workflow = _workflow_text()
+    roslyn_job = _job_block(workflow, "roslyn-tools", "python")
+
+    assert "uses: actions/setup-dotnet@v5" in roslyn_job
+    assert "uses: actions/setup-python@v6" in roslyn_job
+    assert "from scripts.dotnet_tool_runner import build_tool_project" in roslyn_job
+    assert "Test Roslyn-backed Python tools" in roslyn_job
+    assert "scripts/tests/test_roslyn_semantic_probe.py" in roslyn_job
+    assert "scripts/tests/test_scan_static_producer_inventory.py" in roslyn_job
+    assert "--durations=20" in roslyn_job
+
+
+def test_ci_roslyn_gate_covers_scan_wrapper_changes() -> None:
+    """Changes to Roslyn-backed Python wrappers and tests should trigger the Roslyn lane."""
+    workflow = _workflow_text()
+
+    assert "matches_roslyn_python_tests" in workflow
+    assert "dotnet_tool_runner" in workflow
+    assert "docs/static-producer-inventory\\.json" in workflow
+    assert "roslyn_semantic_probe" in workflow
+    assert "scan_static_producer_inventory" in workflow
+    assert "test_roslyn_text_construction_inventory" in workflow
 
 
 def test_ci_qudjp_test_matrix_uploads_category_test_results() -> None:
