@@ -1,0 +1,29 @@
+{
+  "meta": {
+    "id": "descriptions",
+    "lang": "ja",
+    "version": "0.1.0"
+  },
+  "rules": {
+    "protectColorTags": true,
+    "protectHtmlEntities": true
+  },
+  "entries": [
+    {
+      "key": "Ground material splinters and opens onto a void.",
+      "text": "地面の素材が砕け、虚空へと口を開けている。"
+    },
+    {
+      "key": "It's evil you.",
+      "text": "それは邪悪なあなた自身だ。"
+    },
+    {
+      "key": "It's negative you.",
+      "text": "それは負のあなた自身だ。"
+    },
+    {
+      "key": "It's refracted you.",
+      "text": "それは屈折したあなた自身だ。"
+    }
+  ]
+}

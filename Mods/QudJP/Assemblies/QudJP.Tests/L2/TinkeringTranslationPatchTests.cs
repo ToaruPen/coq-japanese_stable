@@ -153,7 +153,13 @@ public sealed partial class Issue201OtherUiBindingPatchTests
                 Assert.That(modTarget.modBitCostText.Text, Does.Contain("{{K|| 素材 |}}"));
                 Assert.That(modTarget.modBitCostText.Text, Does.Contain("-または-"));
                 Assert.That(
+                    modTarget.modDescriptionText.Text,
+                    Is.EqualTo("{{rules|巨大: この武器はダメージ+3、装甲切断でAV-3を与える。これは巨大な生物しか装備できない。}}"));
+                Assert.That(
                     DynamicTextObservability.GetRouteFamilyHitCountForTests(nameof(TinkeringDetailsLineTranslationPatch), "TinkeringDetails.ModBitCostText"),
+                    Is.GreaterThan(0));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(nameof(TinkeringDetailsLineTranslationPatch), "TinkeringDetails.ModDescriptionText"),
                     Is.GreaterThan(0));
             });
         }

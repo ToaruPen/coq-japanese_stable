@@ -127,6 +127,32 @@ internal static class GetDisplayNameRouteTranslator
         new Regex(
             "^(?<prefix>advertisement for|ruined mural of|mural of|shrine to|clone of|hologram of|phylactery of|villagers of|Cult of) (?<target>.+)$",
             RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.Singleline);
+    private static readonly Regex EvilTwinSpacedPrefixDisplayNamePattern =
+        new Regex(
+            "^(?<prefix>Evil|Refracted) (?<target>.+)$",
+            RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.Singleline);
+    private static readonly Regex EvilTwinAntiPrefixDisplayNamePattern =
+        new Regex(
+            "^anti-(?<target>.+)$",
+            RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.Singleline);
+    private static readonly Regex CyberneticsSchemasoftDisplayNamePattern =
+        new Regex(
+            "^Schemasoft \\[(?<category>.+?), (?<tier>Low Tier|Mid Tier|High Tier)\\]$",
+            RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex CyberneticsSchemasoftWrappedDisplayNamePattern =
+        new Regex(
+            "^\\{\\{(?<outer>[^|}]+)\\|Schemasoft \\[\\{\\{(?<inner>[^|}]+)\\|(?<category>.+?), (?<tier>Low Tier|Mid Tier|High Tier)\\}\\}\\]\\}\\}$",
+            RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Dictionary<string, string> CyclopeanPrismDisplayNames =
+        new Dictionary<string, string>(StringComparer.Ordinal)
+        {
+            ["{{K|amaranthine}} prism"] = "{{K|アマランス色}}のプリズム",
+            ["{{K|amara{{y|n}}thine}} prism"] = "{{K|アマラ}}{{y|ン}}{{K|ス色}}のプリズム",
+            ["{{K|amar{{y|a{{Y|n}}t}}hine}} prism"] = "{{K|アマラ}}{{y|ン}}{{Y|ス}}{{K|色}}のプリズム",
+            ["{{K|am{{y|ar{{Y|a{{R|n}}t}}hi}}ne}} prism"] = "{{K|アマ}}{{y|ラ}}{{Y|ン}}{{R|ス}}{{K|色}}のプリズム",
+            ["{{y|am{{Y|a{{y|r{{r|a{{R|n}}t}}h}}i}}ne}} prism"] = "{{y|アマ}}{{Y|ラ}}{{y|ン}}{{r|ス}}{{R|色}}のプリズム",
+            ["{{r|a{{R|m{{Y|a{{y|r{{r|a{{R|n}}t}}h}}i}}n}}e}} prism"] = "{{r|ア}}{{R|マ}}{{Y|ラ}}{{y|ン}}{{r|ス}}{{R|色}}のプリズム",
+        };
     private static readonly Regex JapaneseCharacterPattern =
         new Regex("[\\p{IsHiragana}\\p{IsKatakana}\\p{IsCJKUnifiedIdeographs}]", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex EnglishWordPattern =
@@ -175,6 +201,11 @@ internal static class GetDisplayNameRouteTranslator
             return source!;
         }
 
+        if (TryTranslateCyclopeanPrismDisplayName(source!, route, out var cyclopeanPrismTranslation))
+        {
+            return cyclopeanPrismTranslation;
+        }
+
         if (TryTranslateSourceWithClausePrefixPreservingSuffix(source!, route, out var sourceWithClauseTranslation))
         {
             return sourceWithClauseTranslation;
@@ -192,9 +223,19 @@ internal static class GetDisplayNameRouteTranslator
             source = chargeStatusTranslation;
         }
 
+        if (TryTranslateCyberneticsSchemasoftWrappedDisplayName(source!, route, out var schemasoftTranslation))
+        {
+            return schemasoftTranslation;
+        }
+
         if (TryTranslateGeneratedEnglishPrefixDisplayName(source!, route, out var prefixTranslation))
         {
             return prefixTranslation;
+        }
+
+        if (TryTranslateEvilTwinSpacedPrefixDisplayName(source!, route, out var evilTwinPrefixTranslation))
+        {
+            return evilTwinPrefixTranslation;
         }
 
         var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
@@ -429,6 +470,21 @@ internal static class GetDisplayNameRouteTranslator
         }
 
         if (TryTranslateTrimmedDisplayNameLookup(source, route, out translated))
+        {
+            return true;
+        }
+
+        if (TryTranslateCyberneticsSchemasoftDisplayName(source, route, out translated))
+        {
+            return true;
+        }
+
+        if (TryTranslateEvilTwinSpacedPrefixDisplayName(source, route, out translated))
+        {
+            return true;
+        }
+
+        if (TryTranslateEvilTwinAntiPrefixDisplayName(source, route, out translated))
         {
             return true;
         }
@@ -1881,6 +1937,172 @@ internal static class GetDisplayNameRouteTranslator
         translated = translatedModifier + rest;
         DynamicTextObservability.RecordTransform(route, "DisplayName.ProperNameModifier", source, translated);
         return true;
+    }
+
+    private static bool TryTranslateCyberneticsSchemasoftDisplayName(string source, string route, out string translated)
+    {
+        var match = CyberneticsSchemasoftDisplayNamePattern.Match(source);
+        if (!match.Success
+            || !TryTranslateSchemasoftCategory(match.Groups["category"].Value, out var category)
+            || !TryTranslateSchemasoftTier(match.Groups["tier"].Value, out var tier))
+        {
+            translated = source;
+            return false;
+        }
+
+        translated = "スキーマソフト [" + category + ", " + tier + "]";
+        DynamicTextObservability.RecordTransform(
+            route,
+            "DisplayName.CyberneticsSchemasoft",
+            source,
+            translated);
+        return true;
+    }
+
+    private static bool TryTranslateCyclopeanPrismDisplayName(string source, string route, out string translated)
+    {
+        if (!CyclopeanPrismDisplayNames.TryGetValue(source, out var candidate))
+        {
+            translated = source;
+            return false;
+        }
+
+        translated = candidate;
+        DynamicTextObservability.RecordTransform(
+            route,
+            "DisplayName.CyclopeanPrism",
+            source,
+            translated);
+        return true;
+    }
+
+    private static bool TryTranslateEvilTwinSpacedPrefixDisplayName(string source, string route, out string translated)
+    {
+        var match = EvilTwinSpacedPrefixDisplayNamePattern.Match(source);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        var target = PrepareGeneratedEvilTwinDisplayNameTarget(match.Groups["target"].Value);
+        var translatedTarget = TranslateDisplayNameFragmentPreservingColors(target, route);
+        translated = BuildEvilTwinGeneratedDisplayName(match.Groups["prefix"].Value, translatedTarget);
+        if (string.Equals(translated, source, StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        DynamicTextObservability.RecordTransform(
+            route,
+            "DisplayName.EvilTwinGeneratedName",
+            source,
+            translated);
+        return true;
+    }
+
+    private static bool TryTranslateEvilTwinAntiPrefixDisplayName(string source, string route, out string translated)
+    {
+        var match = EvilTwinAntiPrefixDisplayNamePattern.Match(source);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        var target = PrepareGeneratedEvilTwinDisplayNameTarget(match.Groups["target"].Value);
+        var translatedTarget = TranslateDisplayNameFragmentPreservingColors(target, route);
+        if (string.Equals(translatedTarget, target, StringComparison.Ordinal))
+        {
+            translated = source;
+            return false;
+        }
+
+        translated = BuildEvilTwinGeneratedDisplayName("anti-", translatedTarget);
+        DynamicTextObservability.RecordTransform(
+            route,
+            "DisplayName.EvilTwinGeneratedName",
+            source,
+            translated);
+        return true;
+    }
+
+    private static string PrepareGeneratedEvilTwinDisplayNameTarget(string source)
+    {
+        var target = MessageFrameTranslator.StripAllDirectTranslationMarkers(source);
+        return StringHelpers.StripLeadingEnglishArticle(
+            target,
+            includeCapitalizedDefiniteArticle: true,
+            includeCapitalizedIndefiniteArticle: true);
+    }
+
+    private static string BuildEvilTwinGeneratedDisplayName(string prefix, string translatedTarget)
+    {
+        return prefix switch
+        {
+            "Evil" => "邪悪な" + translatedTarget,
+            "Refracted" => "屈折した" + translatedTarget,
+            "anti-" => "反" + translatedTarget,
+            _ => string.Empty,
+        };
+    }
+
+    private static bool TryTranslateCyberneticsSchemasoftWrappedDisplayName(string source, string route, out string translated)
+    {
+        var match = CyberneticsSchemasoftWrappedDisplayNamePattern.Match(source);
+        if (!match.Success
+            || !TryTranslateSchemasoftCategory(match.Groups["category"].Value, out var category)
+            || !TryTranslateSchemasoftTier(match.Groups["tier"].Value, out var tier))
+        {
+            translated = source;
+            return false;
+        }
+
+        translated = "{{"
+            + match.Groups["outer"].Value
+            + "|スキーマソフト [{{"
+            + match.Groups["inner"].Value
+            + "|"
+            + category
+            + ", "
+            + tier
+            + "}}]}}";
+        DynamicTextObservability.RecordTransform(
+            route,
+            "DisplayName.CyberneticsSchemasoft",
+            source,
+            translated);
+        return true;
+    }
+
+    private static bool TryTranslateSchemasoftCategory(string source, out string translated)
+    {
+        translated = source switch
+        {
+            "Ammo and Energy Cells" => "弾薬とエネルギーセル",
+            "Pistols" => "ピストル",
+            "Rifles" => "ライフル",
+            "Melee Weapons" => "近接武器",
+            "Grenades" => "グレネード",
+            "Tonics" => "トニック",
+            "Utility" => "ユーティリティ",
+            "Armor" => "防具",
+            "Heavy Weapons" => "重火器",
+            _ => string.Empty,
+        };
+        return translated.Length > 0;
+    }
+
+    private static bool TryTranslateSchemasoftTier(string source, out string translated)
+    {
+        translated = source switch
+        {
+            "Low Tier" => "下位",
+            "Mid Tier" => "中位",
+            "High Tier" => "上位",
+            _ => string.Empty,
+        };
+        return translated.Length > 0;
     }
 
     private static bool TryTranslateGeneratedTitleSuffix(string source, string route, out string translated)

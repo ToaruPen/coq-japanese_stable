@@ -19,6 +19,9 @@ internal static class ActivatedAbilityNameTranslator
     private static readonly Regex LaseChargesPattern =
         new Regex("^Lase \\((?<count>\\d+) charges\\)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex TinkerTurretRemainingPattern =
+        new Regex("^Tinker Turret\\s+\\[(?<count>\\d+) remaining\\]$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     internal static string TranslatePreservingColors(string source, string route, string family)
     {
         if (string.IsNullOrEmpty(source))
@@ -75,6 +78,13 @@ internal static class ActivatedAbilityNameTranslator
             && TryTranslateBaseAbilityName("Lase", out var lase))
         {
             translated = lase + " (" + laseMatch.Groups["count"].Value + "チャージ)";
+            return true;
+        }
+
+        var tinkerTurretMatch = TinkerTurretRemainingPattern.Match(source);
+        if (tinkerTurretMatch.Success)
+        {
+            translated = "タレット製作 [残り" + tinkerTurretMatch.Groups["count"].Value + "]";
             return true;
         }
 

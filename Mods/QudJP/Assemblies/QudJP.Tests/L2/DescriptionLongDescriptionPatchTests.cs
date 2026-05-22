@@ -203,6 +203,33 @@ public sealed class DescriptionLongDescriptionPatchTests
     }
 
     [Test]
+    public void Postfix_TranslatesGiganticGeneratedWorldModDescription_WhenPatched()
+    {
+        WriteScopedDictionary(
+            ("Gigantic: This item is much heavier than usual and can only be equipped by gigantic creatures.", "巨大: 通常より大幅に重く、巨大な生物しか装備できない。"));
+
+        RunWithDescriptionPatch(() =>
+        {
+            const string source = "{{rules|Gigantic: This weapon has +3 damage and cleaves for -3 AV. It can only be equipped by gigantic creatures.}}";
+            var target = new DummyDescriptionTarget(source);
+            var builder = new StringBuilder();
+            target.GetLongDescription(builder);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(
+                    builder.ToString(),
+                    Is.EqualTo("{{rules|巨大: この武器はダメージ+3、装甲切断でAV-3を与える。これは巨大な生物しか装備できない。}}"));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(DescriptionLongDescriptionPatch),
+                        "Description.WorldMods"),
+                    Is.GreaterThan(0));
+            });
+        });
+    }
+
+    [Test]
     public void Postfix_PreservesExistingPrefix_WhenPatched()
     {
         WriteDictionary(("It crackles with static.", "それは静電気を散らしている。"));

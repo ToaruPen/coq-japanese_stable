@@ -135,6 +135,113 @@ public sealed class DescriptionShortDescriptionPatchTests
     }
 
     [Test]
+    public void DescriptionShortDescriptionPatch_TranslatesGiganticGeneratedWorldModDescription_WhenPatched()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyDescriptionShortDescriptionTarget), nameof(DummyDescriptionShortDescriptionTarget.GetShortDescription)),
+                postfix: new HarmonyMethod(RequirePostfix(typeof(DescriptionShortDescriptionPatch), nameof(DescriptionShortDescriptionPatch.Postfix))));
+
+            const string source = "{{rules|Gigantic: This weapon has +3 damage and cleaves for -3 AV. It can only be equipped by gigantic creatures.}}";
+            var target = new DummyDescriptionShortDescriptionTarget(source);
+            var result = target.GetShortDescription(useShort: true, useLong: false, prefix: string.Empty);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(
+                    result,
+                    Is.EqualTo("{{rules|巨大: この武器はダメージ+3、装甲切断でAV-3を与える。これは巨大な生物しか装備できない。}}"));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(DescriptionShortDescriptionPatch),
+                        "Description.WorldMods"),
+                    Is.GreaterThan(0));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void DescriptionShortDescriptionPatch_TranslatesPitMaterialRuntimeDescription_WhenPatched()
+    {
+        WriteDictionary((
+            "Ground material splinters and opens onto a void.",
+            "地面の素材が砕け、虚空へと口を開けている。"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyDescriptionShortDescriptionTarget), nameof(DummyDescriptionShortDescriptionTarget.GetShortDescription)),
+                postfix: new HarmonyMethod(RequirePostfix(typeof(DescriptionShortDescriptionPatch), nameof(DescriptionShortDescriptionPatch.Postfix))));
+
+            const string source = "Ground material splinters and opens onto a void.";
+            var target = new DummyDescriptionShortDescriptionTarget(source);
+            var result = target.GetShortDescription(useShort: true, useLong: false, prefix: string.Empty);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(result, Is.EqualTo("地面の素材が砕け、虚空へと口を開けている。"));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(DescriptionShortDescriptionPatch),
+                        "Description.ExactLeaf"),
+                    Is.GreaterThan(0));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [TestCase("It's evil you.", "それは邪悪なあなた自身だ。")]
+    [TestCase("It's negative you.", "それは負のあなた自身だ。")]
+    [TestCase("It's refracted you.", "それは屈折したあなた自身だ。")]
+    public void DescriptionShortDescriptionPatch_TranslatesEvilTwinRuntimeDescriptions_WhenPatched(
+        string source,
+        string expected)
+    {
+        WriteDictionary(
+            ("It's evil you.", "それは邪悪なあなた自身だ。"),
+            ("It's negative you.", "それは負のあなた自身だ。"),
+            ("It's refracted you.", "それは屈折したあなた自身だ。"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyDescriptionShortDescriptionTarget), nameof(DummyDescriptionShortDescriptionTarget.GetShortDescription)),
+                postfix: new HarmonyMethod(RequirePostfix(typeof(DescriptionShortDescriptionPatch), nameof(DescriptionShortDescriptionPatch.Postfix))));
+
+            var target = new DummyDescriptionShortDescriptionTarget(source);
+            var result = target.GetShortDescription(useShort: true, useLong: false, prefix: string.Empty);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(result, Is.EqualTo(expected));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(DescriptionShortDescriptionPatch),
+                        "Description.ExactLeaf"),
+                    Is.GreaterThan(0));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void DescriptionShortDescriptionPatch_RecordsOwnerRouteTransforms_WithoutUITextSkinSinkObservation_WhenPatched()
     {
         WriteDictionary(("Charged item", "帯電したアイテム"));

@@ -54,6 +54,8 @@ public sealed class AbilityBarButtonTextTranslationPatchTests
             ("Sense", "感知"),
             ("Discharge", "放電"),
             ("Lase", "レーザー照射"),
+            ("Aggressive Stance", "攻勢の構え"),
+            ("Defensive Stance", "守勢の構え"),
             ("Rebuke Robot", "ロボットを叱責"),
             ("Recoil", "帰還"),
             ("Joppa", "ジョッパ"),
@@ -77,6 +79,10 @@ public sealed class AbilityBarButtonTextTranslationPatchTests
             var sense = new DummyAbilityBarButton("&CSense {{K|[condition]}} {{K|[{{g|on}}]}}");
             var discharge = new DummyAbilityBarButton("&CDischarge [3 charge]");
             var lase = new DummyAbilityBarButton("&CLase (4 charges)");
+            var aggressiveStance = new DummyAbilityBarButton("&CAggressive Stance");
+            var defensiveStance = new DummyAbilityBarButton("Defensive Stance");
+            var tinkerTurret = new DummyAbilityBarButton("&CTinker Turret  [2 remaining]");
+            var tinkerTurretZero = new DummyAbilityBarButton("Tinker Turret  [0 remaining]");
             var rebukeRobot = new DummyAbilityBarButton("&CRebuke Robot {{Y|<{{w|R}}>}}");
             var recoil = new DummyAbilityBarButton("Recoil");
             var recoilToJoppa = new DummyAbilityBarButton("Recoil to Joppa");
@@ -91,6 +97,10 @@ public sealed class AbilityBarButtonTextTranslationPatchTests
             target.AbilityButtons.Add(sense);
             target.AbilityButtons.Add(discharge);
             target.AbilityButtons.Add(lase);
+            target.AbilityButtons.Add(aggressiveStance);
+            target.AbilityButtons.Add(defensiveStance);
+            target.AbilityButtons.Add(tinkerTurret);
+            target.AbilityButtons.Add(tinkerTurretZero);
             target.AbilityButtons.Add(rebukeRobot);
             target.AbilityButtons.Add(recoil);
             target.AbilityButtons.Add(recoilToJoppa);
@@ -110,6 +120,10 @@ public sealed class AbilityBarButtonTextTranslationPatchTests
                 Assert.That(sense.Text.text, Is.EqualTo("&C感知 {{K|[condition]}} {{K|[{{g|オン}}]}}"));
                 Assert.That(discharge.Text.text, Is.EqualTo("&C放電 [3チャージ]"));
                 Assert.That(lase.Text.text, Is.EqualTo("&Cレーザー照射 (4チャージ)"));
+                Assert.That(aggressiveStance.Text.text, Is.EqualTo("&C攻勢の構え"));
+                Assert.That(defensiveStance.Text.text, Is.EqualTo("守勢の構え"));
+                Assert.That(tinkerTurret.Text.text, Is.EqualTo("&Cタレット製作 [残り2]"));
+                Assert.That(tinkerTurretZero.Text.text, Is.EqualTo("タレット製作 [残り0]"));
                 Assert.That(rebukeRobot.Text.text, Is.EqualTo("&Cロボットを叱責 {{Y|<{{w|R}}>}}"));
                 Assert.That(recoil.Text.text, Is.EqualTo("帰還"));
                 Assert.That(recoilToJoppa.Text.text, Is.EqualTo("ジョッパへ帰還"));
@@ -122,7 +136,7 @@ public sealed class AbilityBarButtonTextTranslationPatchTests
                     DynamicTextObservability.GetRouteFamilyHitCountForTests(
                         nameof(AbilityBarButtonTextTranslationPatch),
                         "AbilityBar.ButtonText"),
-                    Is.EqualTo(11));
+                    Is.EqualTo(15));
                 Assert.That(
                     SinkObservation.GetHitCountForTests(
                         nameof(UITextSkinTranslationPatch),

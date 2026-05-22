@@ -764,6 +764,11 @@
       "text": "混乱した"
     },
     {
+      "verb": "are",
+      "extra": "stopped in its tracks by {0}",
+      "text": "{0}に進路を阻まれた"
+    },
+    {
       "verb": "beat",
       "extra": "at the flames on {0} with its fists",
       "text": "{0}の炎を拳で叩いた"
@@ -812,6 +817,11 @@
       "verb": "beat",
       "extra": "at the flames with your fists",
       "text": "炎を拳で叩いた"
+    },
+    {
+      "verb": "bandage",
+      "extra": "{0} wounds",
+      "text": "{0}傷に包帯を巻いた"
     },
     {
       "verb": "breath",
@@ -3089,6 +3099,11 @@
       "verb": "were",
       "extra": "relieved of your vital anatomy by {0}",
       "text": "{0}に重要な器官を奪われた"
+    },
+    {
+      "verb": "staunch",
+      "extra": "{0} wounds with {1}",
+      "text": "{1}で{0}傷を止血した"
     },
     {
       "verb": "wade",

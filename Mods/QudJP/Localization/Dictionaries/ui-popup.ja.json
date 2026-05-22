@@ -2791,6 +2791,10 @@
             "key": "Select an item to charge.",
             "context": "XRL.World.Parts.Skill.Tinkering_Tinker1.PickGameObjectTitle",
             "text": "充電するアイテムを選択。"
+        },
+        {
+            "key": "{{c|You sense a sinister presence nearby.}}",
+            "text": "{{c|近くに邪悪な気配を感じる。}}"
         }
     ]
 }
