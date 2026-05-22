@@ -1,1 +1,3 @@
-- Added display-name modifier coverage for Caves of Qud item modification prefixes and with-clauses, including flexiweaved modifier levels and source-owned with-clause color spans.
+### Fixed
+
+- Improved Japanese item names for Caves of Qud item modification prefixes and with-clauses, including flexiweaved modifier levels and source-owned with-clause color spans.
