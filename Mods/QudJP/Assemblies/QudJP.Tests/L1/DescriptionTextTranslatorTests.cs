@@ -150,6 +150,7 @@ public sealed class DescriptionTextTranslatorTests
             "{{cyan|Engraved: This item is engraved with a scene from the life of the ancient sultan {{magenta|イシル III}}:\n\n" + annalsLine + "}}\n" +
             "{{cyan|Painted: This item is painted with a scene from the life of the ancient sultan {{magenta|\nイシル III}}:\n\n" + annalsLine + "}}\n" +
             "{{cyan|Engraved: This item is engraved with a scene from the life of the ancient sultan {{magenta|\nイシル III}}:\n\n" + annalsLine + "}}\n" +
+            "<color=#44ff88>Engraved: This item is engraved with a scene from the life of the ancient sultan {{magenta|\nイシル III}}:\n\n" + annalsLine + "</color>\n" +
             "{{cyan|The tomb mural depicts a significant event from the life of the ancient sultan {{magenta|\nイシル III}}:\n\n" + annalsLine + "}}\n" +
             "{{cyan|The tomb mural depicts a significant event from the life of the ancient sultan {{magenta|イシル III}}:\n\n" + annalsLine + "}}\n" +
             "{{cyan|The tomb mural depicts a significant event from the life of the sultan {{magenta|イシル III}}:\n\n" + annalsLine + "}}\n" +
@@ -159,7 +160,8 @@ public sealed class DescriptionTextTranslatorTests
             "{{C|Painted: This object is painted with a scene from the history of the village {{M|\nテッガトゥム}}:\n\n" + villageBody + "}}\n" +
             "{{C|Engraved: This object is engraved with a scene from the history of the village {{M|\nテッガトゥム}}:\n\n" + villageBody + "}}\n" +
             "{{C|Holographic: This hologram depicts a scene from the history of the village {{M|\nテッガトゥム}}:\n\n" + villageBody + "}}\n" +
-            "Its face bears a tattoo of a scene from the history of the village {{M|テッガトゥム}}{{C|: The sanctity of the 商人ギルド was revealed to the people of テッガトゥム through the dish known as Brisket Spreading.}}";
+            "Its face bears a tattoo of a scene from the history of the village {{M|テッガトゥム}}{{C|: The sanctity of the 商人ギルド was revealed to the people of テッガトゥム through the dish known as Brisket Spreading.}}\n" +
+            "{{C|Its face bears a tattoo of a scene from the history of the village {{M|テッガトゥム}}: The sanctity of the 商人ギルド was revealed to the people of テッガトゥム through the dish known as Brisket Spreading.}}";
 
         var translated = DescriptionTextTranslator.TranslateLongDescription(
             source,
@@ -172,6 +174,7 @@ public sealed class DescriptionTextTranslatorTests
                 "{{cyan|彫刻: この品には古代のスルタン {{magenta|イシル III}}の生涯の一場面が彫り刻まれている:\n\n" + translatedAnnalsLine + "}}\n" +
                 "{{cyan|彩色: この品には古代のスルタン {{magenta|\nイシル III}}の生涯の一場面が描かれている:\n\n" + translatedAnnalsLine + "}}\n" +
                 "{{cyan|彫刻: この品には古代のスルタン {{magenta|\nイシル III}}の生涯の一場面が彫り刻まれている:\n\n" + translatedAnnalsLine + "}}\n" +
+                "<color=#44ff88>彫刻: この品には古代のスルタン {{magenta|\nイシル III}}の生涯の一場面が彫り刻まれている:\n\n" + translatedAnnalsLine + "</color>\n" +
                 "{{cyan|墓所の壁画には、古代のスルタン {{magenta|\nイシル III}}の生涯における重要な出来事が描かれている:\n\n" + translatedAnnalsLine + "}}\n" +
                 "{{cyan|墓所の壁画には、古代のスルタン {{magenta|イシル III}}の生涯における重要な出来事が描かれている:\n\n" + translatedAnnalsLine + "}}\n" +
                 "{{cyan|墓所の壁画には、スルタン {{magenta|イシル III}}の生涯における重要な出来事が描かれている:\n\n" + translatedAnnalsLine + "}}\n" +
@@ -181,7 +184,8 @@ public sealed class DescriptionTextTranslatorTests
                 "{{C|この物体には{{M|\nテッガトゥム}}村の歴史の一場面が描かれている:\n\n" + translatedVillageBody + "}}\n" +
                 "{{C|この物体には{{M|\nテッガトゥム}}村の歴史の一場面が彫り刻まれている:\n\n" + translatedVillageBody + "}}\n" +
                 "{{C|このホログラムには{{M|\nテッガトゥム}}村の歴史の一場面が描かれている:\n\n" + translatedVillageBody + "}}\n" +
-                "その顔には{{M|テッガトゥム}}村の歴史の一場面を描いた刺青がある{{C|: ブリスケットスプレッディングとして知られる料理を通じて、商人ギルドの聖性がテッガトゥムの人々に示された。}}"));
+                "その顔には{{M|テッガトゥム}}村の歴史の一場面を描いた刺青がある{{C|: ブリスケットスプレッディングとして知られる料理を通じて、商人ギルドの聖性がテッガトゥムの人々に示された。}}\n" +
+                "{{C|その顔には{{M|テッガトゥム}}村の歴史の一場面を描いた刺青がある: ブリスケットスプレッディングとして知られる料理を通じて、商人ギルドの聖性がテッガトゥムの人々に示された。}}"));
     }
 
     [Test]

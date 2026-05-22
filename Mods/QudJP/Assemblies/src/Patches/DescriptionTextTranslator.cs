@@ -170,7 +170,7 @@ internal static class DescriptionTextTranslator
         translated = source;
         continuationSuffix = null;
         outerBoundaryToken = null;
-        var (stripped, _) = ColorAwareTranslationComposer.Strip(source);
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
         if (stripped.EndsWith(":", StringComparison.Ordinal))
         {
             return false;
@@ -186,7 +186,7 @@ internal static class DescriptionTextTranslator
                 ? "の生涯の一場面が彫り刻まれている:"
                 : "の生涯の一場面が描かれている:";
 
-            translated = RewrapSplitHistoryHeaderStartLine(source, visible);
+            translated = RewrapSplitHistoryHeaderStartLine(source, visible, spans, stripped.Length);
             outerBoundaryToken = TryGetLeadingBoundaryOpeningToken(source);
             return true;
         }
@@ -198,7 +198,9 @@ internal static class DescriptionTextTranslator
             var sultanPrefix = TranslateTombMuralSultanNamePrefix(match.Groups["sultanPrefix"].Value);
             translated = RewrapSplitHistoryHeaderStartLine(
                 source,
-                "墓所の壁画には、" + ancientPrefix + "スルタン " + sultanPrefix);
+                "墓所の壁画には、" + ancientPrefix + "スルタン " + sultanPrefix,
+                spans,
+                stripped.Length);
             continuationSuffix = "の生涯における重要な出来事が描かれている:";
             outerBoundaryToken = TryGetLeadingBoundaryOpeningToken(source);
             return true;
@@ -217,7 +219,7 @@ internal static class DescriptionTextTranslator
                 ? "村の歴史の一場面が彫り刻まれている:"
                 : "村の歴史の一場面が描かれている:";
 
-            translated = RewrapSplitHistoryHeaderStartLine(source, visible);
+            translated = RewrapSplitHistoryHeaderStartLine(source, visible, spans, stripped.Length);
             outerBoundaryToken = TryGetLeadingBoundaryOpeningToken(source);
             return true;
         }
@@ -248,34 +250,107 @@ internal static class DescriptionTextTranslator
         return hasTrailingSpace ? translated + " " : translated;
     }
 
-    private static string RewrapSplitHistoryHeaderStartLine(string source, string visible)
+    private static string RewrapSplitHistoryHeaderStartLine(
+        string source,
+        string visible,
+        IReadOnlyList<ColorSpan>? spans,
+        int sourceLength)
     {
-        var leading = string.Empty;
-        var leadingMatch = Regex.Match(source, "^(?:(?:\\{\\{[A-Za-z]+\\|)|(?:&[A-Za-z])|(?:\\^[A-Za-z]))+");
-        if (leadingMatch.Success)
+        var restored = RestoreWholeLineBoundaryWrappers(visible, spans, sourceLength);
+        var leading = CollectLeadingBoundaryOpeningTokens(source);
+        if (leading.Length > 0 && !restored.StartsWith(leading, StringComparison.Ordinal))
         {
-            leading = leadingMatch.Value;
+            restored = leading + restored;
         }
 
-        var trailing = string.Empty;
-        var trailingMatch = Regex.Match(source, "(\\{\\{[A-Za-z]+\\|)$");
-        if (trailingMatch.Success)
+        if (TryGetTrailingBoundaryOpeningToken(source, out var trailing)
+            && !restored.EndsWith(trailing, StringComparison.Ordinal))
         {
-            trailing = trailingMatch.Value;
+            restored += trailing;
         }
 
-        return leading + visible + trailing;
+        return restored;
     }
 
     private static string? TryGetLeadingBoundaryOpeningToken(string source)
     {
-        if (!source.StartsWith("{{", StringComparison.Ordinal))
+        if (source.StartsWith("{{", StringComparison.Ordinal))
         {
-            return null;
+            var pipeIndex = source.IndexOf('|');
+            return pipeIndex > 1 ? source.Substring(0, pipeIndex + 1) : null;
         }
 
-        var pipeIndex = source.IndexOf('|');
-        return pipeIndex > 1 ? source.Substring(0, pipeIndex + 1) : null;
+        if (source.StartsWith("<color=", StringComparison.OrdinalIgnoreCase))
+        {
+            var closeIndex = source.IndexOf('>');
+            return closeIndex > "<color=".Length ? source.Substring(0, closeIndex + 1) : null;
+        }
+
+        return null;
+    }
+
+    private static string CollectLeadingBoundaryOpeningTokens(string source)
+    {
+        var index = 0;
+        var tokens = new List<string>();
+        while (index < source.Length)
+        {
+            if (source.IndexOf("{{", index, StringComparison.Ordinal) == index)
+            {
+                var pipeIndex = source.IndexOf('|', index + 2);
+                if (pipeIndex < 0)
+                {
+                    break;
+                }
+
+                tokens.Add(source.Substring(index, (pipeIndex - index) + 1));
+                index = pipeIndex + 1;
+                continue;
+            }
+
+            if (source.IndexOf("<color=", index, StringComparison.OrdinalIgnoreCase) == index)
+            {
+                var closeIndex = source.IndexOf('>', index + "<color=".Length);
+                if (closeIndex < 0)
+                {
+                    break;
+                }
+
+                tokens.Add(source.Substring(index, (closeIndex - index) + 1));
+                index = closeIndex + 1;
+                continue;
+            }
+
+            if (index + 1 < source.Length
+                && (source[index] == '&' || source[index] == '^')
+                && source[index + 1] != source[index])
+            {
+                tokens.Add(source.Substring(index, 2));
+                index += 2;
+                continue;
+            }
+
+            break;
+        }
+
+        return string.Concat(tokens);
+    }
+
+    private static bool TryGetTrailingBoundaryOpeningToken(string source, out string token)
+    {
+        token = string.Empty;
+        if (!TryFindDanglingBoundaryOpening(source, out var danglingToken))
+        {
+            return false;
+        }
+
+        if (!source.TrimEnd().EndsWith(danglingToken, StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        token = danglingToken;
+        return true;
     }
 
     private static bool TryTranslateSplitHistoryHeaderContinuationLine(
@@ -752,6 +827,7 @@ internal static class DescriptionTextTranslator
             match.Groups["body"]);
 
         translated = $"{owner}{part}には{village}村の歴史の一場面を描いた{kind}がある{bodyWithColon}";
+        translated = RestoreWholeLineBoundaryWrappers(translated, spans, stripped.Length);
         DynamicTextObservability.RecordTransform(route, "Description.VillageHistoryTattoo", source, translated);
         return true;
     }
