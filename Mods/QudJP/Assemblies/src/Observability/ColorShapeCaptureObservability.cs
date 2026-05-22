@@ -128,8 +128,8 @@ internal static class ColorShapeCaptureObservability
                 + "; final_color_spans=" + ObservabilityHelpers.EscapeStructuredValue(capture.FinalColorSpans)
                 + "; source_visible_sha256=" + capture.SourceVisibleSha256
                 + "; final_visible_sha256=" + capture.FinalVisibleSha256
-                + "; markup_semantic_status=" + capture.MarkupSemanticStatus
-                + "; markup_semantic_flags=" + capture.MarkupSemanticFlags;
+                + "; markup_semantic_status=" + ObservabilityHelpers.EscapeStructuredValue(capture.MarkupSemanticStatus)
+                + "; markup_semantic_flags=" + ObservabilityHelpers.EscapeStructuredValue(capture.MarkupSemanticFlags);
         });
     }
 
