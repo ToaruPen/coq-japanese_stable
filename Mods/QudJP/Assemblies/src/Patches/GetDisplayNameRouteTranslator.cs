@@ -210,6 +210,12 @@ internal static class GetDisplayNameRouteTranslator
             return zeroWidthPrefixTranslation;
         }
 
+        if ((source![0] == '{' || source[0] == '[')
+            && TryTranslateLeadingModifierChain(source, route, out var modifierChainTranslation))
+        {
+            return modifierChainTranslation;
+        }
+
         if (TryTranslateLeadingMarkupWrappedModifier(source!, route, out var markupLeadingTranslation))
         {
             return markupLeadingTranslation;
@@ -469,6 +475,12 @@ internal static class GetDisplayNameRouteTranslator
         if (TryTranslateGeneratedCanvasTentName(transformed, route, out var canvasTentTranslated))
         {
             translated = canvasTentTranslated;
+            return true;
+        }
+
+        if (TryTranslateLeadingModifierChain(transformed, route, out var modifierChainTranslated))
+        {
+            translated = modifierChainTranslated;
             return true;
         }
 
@@ -957,6 +969,233 @@ internal static class GetDisplayNameRouteTranslator
         translated = translatedModifier + GetModifierRestSeparator(modifier, restSource) + rest;
         DynamicTextObservability.RecordTransform(route, "DisplayName.MarkupLeadingModifier", source, translated);
         return true;
+    }
+
+    private static bool TryTranslateLeadingModifierChain(string source, string route, out string translated)
+    {
+        translated = source;
+        var translatedModifiers = new List<string>();
+        var sourceModifiers = new List<string>();
+        var position = 0;
+
+        while (TryReadLeadingModifierToken(source, position, out var modifier, out var restStart))
+        {
+            var translatedModifier = TranslateDisplayNameModifierForChain(modifier);
+            if (translatedModifier is null)
+            {
+                break;
+            }
+
+            translatedModifiers.Add(translatedModifier);
+            sourceModifiers.Add(modifier);
+            position = restStart;
+
+            if (position >= source.Length)
+            {
+                break;
+            }
+        }
+
+        if (translatedModifiers.Count == 0 || position >= source.Length)
+        {
+            return false;
+        }
+
+        if (translatedModifiers.Count == 1 && source[0] != '{' && source[0] != '[')
+        {
+            return false;
+        }
+
+        var restSource = source.Substring(position);
+        var rest = TranslatePreservingColors(restSource, route);
+        var builder = new StringBuilder();
+        for (var index = 0; index < translatedModifiers.Count; index++)
+        {
+            if (index > 0)
+            {
+                builder.Append(' ');
+            }
+
+            builder.Append(translatedModifiers[index]);
+        }
+
+        builder.Append(GetModifierRestSeparator(sourceModifiers[sourceModifiers.Count - 1], restSource));
+        builder.Append(rest);
+        translated = builder.ToString();
+
+        if (string.Equals(translated, source, StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        DynamicTextObservability.RecordTransform(route, "DisplayName.LeadingModifierChain", source, translated);
+        return true;
+    }
+
+    private static bool TryReadLeadingModifierToken(
+        string source,
+        int start,
+        out string modifier,
+        out int restStart)
+    {
+        modifier = string.Empty;
+        restStart = start;
+        int modifierEnd;
+
+        if (start < 0 || start >= source.Length)
+        {
+            return false;
+        }
+
+        if (source[start] == '['
+            && start + 2 < source.Length
+            && source[start + 1] == '{'
+            && source[start + 2] == '{')
+        {
+            var wrappedEnd = FindQudMarkupEnd(source, start + 1);
+            if (wrappedEnd < 0 || wrappedEnd >= source.Length || source[wrappedEnd] != ']')
+            {
+                return false;
+            }
+
+            modifierEnd = wrappedEnd + 1;
+        }
+        else if (source[start] == '['
+            && start + 2 < source.Length
+            && IsAsciiModifierStart(source[start + 1]))
+        {
+            var close = source.IndexOf(']', start + 2);
+            if (close < 0)
+            {
+                return false;
+            }
+
+            for (var index = start + 1; index < close; index++)
+            {
+                if (!IsAsciiModifierCharacter(source[index]) && source[index] != ' ')
+                {
+                    return false;
+                }
+            }
+
+            modifierEnd = close + 1;
+        }
+        else if (start + 1 < source.Length && source[start] == '{' && source[start + 1] == '{')
+        {
+            var wrappedEnd = FindQudMarkupEnd(source, start);
+            if (wrappedEnd < 0)
+            {
+                return false;
+            }
+
+            modifierEnd = wrappedEnd;
+        }
+        else if (IsAsciiModifierStart(source[start]))
+        {
+            modifierEnd = start + 1;
+            while (modifierEnd < source.Length && IsAsciiModifierCharacter(source[modifierEnd]))
+            {
+                modifierEnd++;
+            }
+
+            if (modifierEnd < source.Length && source[modifierEnd] == '(')
+            {
+                var close = source.IndexOf(')', modifierEnd + 1);
+                if (close > modifierEnd + 1)
+                {
+                    var digitsOnly = true;
+                    for (var index = modifierEnd + 1; index < close; index++)
+                    {
+                        if (source[index] < '0' || source[index] > '9')
+                        {
+                            digitsOnly = false;
+                            break;
+                        }
+                    }
+
+                    if (digitsOnly)
+                    {
+                        modifierEnd = close + 1;
+                    }
+                }
+            }
+        }
+        else
+        {
+            return false;
+        }
+
+        if (modifierEnd <= start || modifierEnd >= source.Length || source[modifierEnd] != ' ')
+        {
+            return false;
+        }
+
+        restStart = modifierEnd + 1;
+        while (restStart < source.Length && source[restStart] == ' ')
+        {
+            restStart++;
+        }
+
+        if (restStart >= source.Length)
+        {
+            return false;
+        }
+
+        modifier = source.Substring(start, modifierEnd - start);
+        return true;
+    }
+
+    private static int FindQudMarkupEnd(string source, int start)
+    {
+        if (start < 0
+            || start + 1 >= source.Length
+            || source[start] != '{'
+            || source[start + 1] != '{')
+        {
+            return -1;
+        }
+
+        var depth = 0;
+        for (var index = start; index < source.Length - 1; index++)
+        {
+            if (source[index] == '{' && source[index + 1] == '{')
+            {
+                depth++;
+                index++;
+                continue;
+            }
+
+            if (source[index] == '}' && source[index + 1] == '}')
+            {
+                depth--;
+                index++;
+                if (depth == 0)
+                {
+                    return index + 1;
+                }
+            }
+        }
+
+        return -1;
+    }
+
+    private static bool IsAsciiModifierStart(char character)
+    {
+        return character >= 'A' && character <= 'Z'
+            || character >= 'a' && character <= 'z';
+    }
+
+    private static bool IsAsciiModifierCharacter(char character)
+    {
+        return character >= 'A' && character <= 'Z'
+            || character >= 'a' && character <= 'z'
+            || character == '-'
+            || character == '\'';
+    }
+
+    private static string? TranslateDisplayNameModifierForChain(string source)
+    {
+        return TranslateDisplayNameModifierCore(source, allowGlobalFallback: false);
     }
 
     private static bool TryTranslateLeadingZeroWidthMarkupPrefix(string source, string route, out string translated)
@@ -2469,6 +2708,17 @@ internal static class GetDisplayNameRouteTranslator
 
     private static string? TranslateDisplayNameModifier(string source)
     {
+        return TranslateDisplayNameModifierCore(source, allowGlobalFallback: true);
+    }
+
+    private static string? TranslateDisplayNameModifierCore(string source, bool allowGlobalFallback)
+    {
+        var directSource = TranslateDisplayNameModifierExact(source);
+        if (directSource is not null)
+        {
+            return directSource;
+        }
+
         var bracketWrapped = source.Length >= 2
             && source[0] == '['
             && source[source.Length - 1] == ']';
@@ -2477,8 +2727,23 @@ internal static class GetDisplayNameRouteTranslator
             : source;
 
         var direct = TranslateDisplayNameModifierExact(core);
+        if (direct is null && bracketWrapped && TryReadWrappedModifierVisible(core, out var visible))
+        {
+            var bracketedVisible = "[" + visible + "]";
+            var bracketedDirect = TranslateDisplayNameExactOrLowerAscii(bracketedVisible, DisplayNameAdjectiveContext);
+            if (bracketedDirect is not null)
+            {
+                return bracketedDirect;
+            }
+        }
+
         if (direct is null)
         {
+            if (!allowGlobalFallback)
+            {
+                return null;
+            }
+
             var global = Translator.Translate(source);
             if (string.Equals(global, source, StringComparison.Ordinal))
             {
@@ -2532,6 +2797,28 @@ internal static class GetDisplayNameRouteTranslator
     private static bool TryTranslateMarkupWrappedDisplayNameModifier(string source, out string translated)
     {
         translated = source;
+        if (!TryReadWrappedModifierVisible(source, out var visible))
+        {
+            return false;
+        }
+
+        var separator = source.IndexOf('|', 2);
+        var tag = source.Substring(2, separator - 2);
+        var direct = TranslateDisplayNameExactOrLowerAscii(visible, DisplayNameAdjectiveContext);
+        if (direct is null)
+        {
+            return false;
+        }
+
+        translated = ColorAwareTranslationComposer.HasColorMarkup(direct)
+            ? direct
+            : "{{" + tag + "|" + direct + "}}";
+        return true;
+    }
+
+    private static bool TryReadWrappedModifierVisible(string source, out string visible)
+    {
+        visible = string.Empty;
         if (!source.StartsWith("{{", StringComparison.Ordinal) || !source.EndsWith("}}", StringComparison.Ordinal))
         {
             return false;
@@ -2543,23 +2830,8 @@ internal static class GetDisplayNameRouteTranslator
             return false;
         }
 
-        var tag = source.Substring(2, separator - 2);
-        var visible = source.Substring(separator + 1, source.Length - separator - 3);
-        if (visible.Length == 0)
-        {
-            return false;
-        }
-
-        var direct = TranslateDisplayNameExactOrLowerAscii(visible, DisplayNameAdjectiveContext);
-        if (direct is null)
-        {
-            return false;
-        }
-
-        translated = ColorAwareTranslationComposer.HasColorMarkup(direct)
-            ? direct
-            : "{{" + tag + "|" + direct + "}}";
-        return true;
+        visible = source.Substring(separator + 1, source.Length - separator - 3);
+        return visible.Length > 0;
     }
 
     private static bool IsAlreadyLocalizedBracketedDisplayName(string source)

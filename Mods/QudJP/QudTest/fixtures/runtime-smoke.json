@@ -116,6 +116,12 @@
       "route": "game-summary-menu-literal",
       "input": "Exit",
       "expected": "終了"
+    },
+    {
+      "id": "inventory-display-name.game-object-colored-state",
+      "route": "inventory-display-name",
+      "input": "{{c|copper nugget}} {{y|[empty]}}",
+      "expected": "{{c|銅塊}} {{y|[空]}}"
     }
   ]
 }

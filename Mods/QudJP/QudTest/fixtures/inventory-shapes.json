@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "suite": "inventory-shapes",
+  "description": "Producer-derived inventory display-name shape capture cases.",
+  "cases": [
+    {
+      "id": "inventory-display-name-game-object.copper-nugget",
+      "route": "inventory-display-name-game-object",
+      "input": "Copper Nugget",
+      "expected": "{{w|銅のナゲット}}"
+    },
+    {
+      "id": "inventory-display-name-game-object.grit-gate-recoiler",
+      "route": "inventory-display-name-game-object",
+      "input": "Grit Gate Recoiler",
+      "expected": "{{c|グリット・ゲート}}リコイラー"
+    },
+    {
+      "id": "inventory-display-name.producer-derived-long-prefix-chain",
+      "route": "inventory-display-name",
+      "input": "{{B|wet}} {{slimy|slimy}} {{r|bloody}} {{Y|masterwork}} scoped {{electrical|electrified}} {{fiery|flaming}} {{freezing|freezing}} {{freezing|frozen}} {{painted|painted}} {{lacquered|lacquered}} {{phase-harmonic|phase-harmonic}} チェーンピストル \u001a8 \u00031d6 [empty]",
+      "expected": "{{B|濡れた}} {{slimy|粘液質の}} {{r|血まみれの}} {{Y|傑作}} スコープ付き {{electrical|帯電}} {{fiery|燃え盛る}} {{freezing|凍結した}} {{freezing|凍結した}} {{painted|彩色された}} {{lacquered|漆仕上げ}} {{phase-harmonic|位相調和}} チェーンピストル {{c|\u001a}}8 {{r|\u0003}}1d6 [空]"
+    },
+    {
+      "id": "inventory-display-name.producer-derived-bracketed-prefix",
+      "route": "inventory-display-name",
+      "input": "[{{illuminated|illuminated}}] チェーンピストル \u001a8 \u00031d6 [empty]",
+      "expected": "[{{illuminated|彩飾}}] チェーンピストル {{c|\u001a}}8 {{r|\u0003}}1d6 [空]"
+    }
+  ]
+}

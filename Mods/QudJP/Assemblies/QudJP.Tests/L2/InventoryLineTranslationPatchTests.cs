@@ -21,6 +21,7 @@ public sealed partial class Issue201StatusScreensBatch2Tests
 
         Translator.ResetForTests();
         Translator.SetDictionaryDirectoryForTests(tempDirectory);
+        ColorShapeCaptureObservability.ResetForTests();
         DynamicTextObservability.ResetForTests();
         SinkObservation.ResetForTests();
     }
@@ -29,6 +30,7 @@ public sealed partial class Issue201StatusScreensBatch2Tests
     public void TearDown()
     {
         Translator.ResetForTests();
+        ColorShapeCaptureObservability.ResetForTests();
         DynamicTextObservability.ResetForTests();
         SinkObservation.ResetForTests();
 
@@ -231,6 +233,59 @@ public sealed partial class Issue201StatusScreensBatch2Tests
             Assert.That(
                 itemTarget.text.Text,
                 Is.EqualTo("クローム・リボルバー {{c|\u001a}}7 {{r|\u0003}}1d6 {{y|[鉛スラッグ x6]}} [{{r|錆びた}}] [{{r|破損}}] {{y|<{{|{{B|C}}{{B|C}}{{g|2}}}}>}}"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void InventoryLinePostfix_EmitsColorShapeCaptureArtifact_ForProducerDisplayName()
+    {
+        WriteDictionary(
+            ("items", "個"));
+        WriteDictionaryFile(
+            "ui-displayname-atomic.ja.json",
+            ("chem cell", "ケムセル"));
+        WriteDictionaryFile(
+            "ui-displayname-adjectives.ja.json",
+            ("[fresh water]", "[清水]"));
+
+        const string source = "{{c|chem cell}} {{y|[{{g|fresh water}}]}}";
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyInventoryLineTarget), nameof(DummyInventoryLineTarget.setData)),
+                postfix: new HarmonyMethod(RequireMethod(typeof(InventoryLineTranslationPatch), nameof(InventoryLineTranslationPatch.Postfix))));
+
+            var itemTarget = new DummyInventoryLineTarget();
+            var output = TestTraceHelper.CaptureTrace(() =>
+                itemTarget.setData(new DummyInventoryLineDataTarget
+                {
+                    category = false,
+                    go = new DummyStatusGameObject { DisplayName = source, Weight = 7 },
+                }));
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(itemTarget.OriginalExecuted, Is.True);
+                Assert.That(itemTarget.text.Text, Is.EqualTo("{{c|ケムセル}} {{y|[清水]}}"));
+                Assert.That(output, Does.Contain("ColorShapeProbe/v1"));
+                Assert.That(output, Does.Contain("producer='InventoryLine.GameObjectDisplayName'"));
+                Assert.That(output, Does.Contain("source_visible='chem cell [fresh water]'"));
+                Assert.That(output, Does.Contain("final_visible='ケムセル [清水]'"));
+                Assert.That(itemTarget.text.Text, Does.Not.Contain("{{c|{{c|"));
+                Assert.That(itemTarget.text.Text, Does.Not.Contain("[{{g|清水]}}"));
+                Assert.That(
+                    ColorShapeCaptureObservability.GetRouteProducerHitCountForTests(
+                        nameof(InventoryLineTranslationPatch),
+                        "InventoryLine.GameObjectDisplayName"),
+                    Is.EqualTo(1));
+            });
         }
         finally
         {

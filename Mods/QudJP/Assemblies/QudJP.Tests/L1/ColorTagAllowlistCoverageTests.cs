@@ -99,6 +99,8 @@ public sealed class ColorTagAllowlistCoverageTests
         new(StringComparer.Ordinal)
         {
             // Keys identify the ColorAwareTranslationComposer.Strip call site, not the containing method declaration.
+            ["Mods/QudJP/Assemblies/src/Observability/ColorShapeCaptureObservability.cs:116:Capture"] = "Audited Strip call: observation-only shape capture, color ownership is not modified.",
+            ["Mods/QudJP/Assemblies/src/Observability/ColorShapeCaptureObservability.cs:117:Capture"] = "Audited Strip call: observation-only shape capture, color ownership is not modified.",
             ["Mods/QudJP/Assemblies/src/Observability/FinalOutputObservability.cs:109:RecordDirectMarker"] = "Audited Strip call: color ownership is restored in a downstream branch/helper or the call is predicate/observation-only.",
             ["Mods/QudJP/Assemblies/src/Patches/AbilityBarAfterRenderTranslationPatch.cs:264:HasColorMarkup"] = "Audited Strip call: color ownership is restored in a downstream branch/helper or the call is predicate/observation-only.",
             ["Mods/QudJP/Assemblies/src/Patches/ActionManagerRunSegmentTranslationPatch.cs:113:TryTranslatePopupMessage"] = "Audited Strip call: popup target colors are restored through the local MarkupAwareRestoreCapture helper.",
@@ -158,7 +160,8 @@ public sealed class ColorTagAllowlistCoverageTests
             ["Mods/QudJP/Assemblies/src/Patches/GameObjectStatPopupTranslationPatch.cs:111:TryTranslatePopupMessage"] = "Audited Strip call: color ownership is restored in a downstream branch/helper or the call is predicate/observation-only.",
             ["Mods/QudJP/Assemblies/src/Patches/GeneratedQueueDoesVerbTranslationPatch.cs:145:TryTranslateQueuedMessage"] = "Audited Strip call: color ownership is restored in a downstream branch/helper or the call is predicate/observation-only.",
             ["Mods/QudJP/Assemblies/src/Patches/GeneratedSubjectQueueTranslationPatch.cs:144:TryTranslateQueuedMessage"] = "Audited Strip call: color ownership is restored in a downstream branch/helper or the call is predicate/observation-only.",
-            ["Mods/QudJP/Assemblies/src/Patches/GetDisplayNameRouteTranslator.cs:1267:TranslateDisplayNameWithClause"] = "Audited Strip call: with-clause colors are restored by source-markup-aware clause helpers after dictionary lookup.",
+            ["Mods/QudJP/Assemblies/src/Patches/GetDisplayNameRouteTranslator.cs:190:TranslatePreservingColors"] = "Audited Strip call: display-name route colors are restored by route-specific suffix/fragment branches or preserved by source-markup-aware helpers.",
+            ["Mods/QudJP/Assemblies/src/Patches/GetDisplayNameRouteTranslator.cs:1506:TranslateDisplayNameWithClause"] = "Audited Strip call: with-clause colors are restored by source-markup-aware clause helpers after dictionary lookup.",
             ["Mods/QudJP/Assemblies/src/Patches/HiddenRenderTranslationPatch.cs:95:TryTranslateRevealMessage"] = "Audited Strip call: color ownership is restored in a downstream branch/helper or the call is predicate/observation-only.",
             ["Mods/QudJP/Assemblies/src/Patches/IExamineEventProcessIdentifyTranslationPatch.cs:85:TryTranslatePopupMessage"] = "Audited Strip call: color ownership is restored in a downstream branch/helper or the call is predicate/observation-only.",
             ["Mods/QudJP/Assemblies/src/Patches/ITeleporterTranslationPatch.cs:131:TryTranslatePopupMessage"] = "Audited Strip call: generated subject/plane colors are restored through the local MarkupAwareRestoreCapture helper.",

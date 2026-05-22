@@ -98,4 +98,46 @@ public sealed class QudTestCaseResult
 
     [JsonProperty("diagnostic")]
     public string Diagnostic { get; set; } = string.Empty;
+
+    [JsonProperty("colorShape", NullValueHandling = NullValueHandling.Ignore)]
+    public QudTestColorShapeCapture? ColorShape { get; set; }
+}
+
+public sealed class QudTestColorShapeCapture
+{
+    [JsonProperty("route")]
+    public string Route { get; set; } = string.Empty;
+
+    [JsonProperty("producer")]
+    public string Producer { get; set; } = string.Empty;
+
+    [JsonProperty("source")]
+    public string Source { get; set; } = string.Empty;
+
+    [JsonProperty("sourceVisible")]
+    public string SourceVisible { get; set; } = string.Empty;
+
+    [JsonProperty("final")]
+    public string Final { get; set; } = string.Empty;
+
+    [JsonProperty("finalVisible")]
+    public string FinalVisible { get; set; } = string.Empty;
+
+    [JsonProperty("sourceColorSpans")]
+    public string SourceColorSpans { get; set; } = string.Empty;
+
+    [JsonProperty("finalColorSpans")]
+    public string FinalColorSpans { get; set; } = string.Empty;
+
+    [JsonProperty("sourceVisibleSha256")]
+    public string SourceVisibleSha256 { get; set; } = string.Empty;
+
+    [JsonProperty("finalVisibleSha256")]
+    public string FinalVisibleSha256 { get; set; } = string.Empty;
+
+    [JsonProperty("markupSemanticStatus")]
+    public string MarkupSemanticStatus { get; set; } = string.Empty;
+
+    [JsonProperty("markupSemanticFlags")]
+    public string MarkupSemanticFlags { get; set; } = string.Empty;
 }
