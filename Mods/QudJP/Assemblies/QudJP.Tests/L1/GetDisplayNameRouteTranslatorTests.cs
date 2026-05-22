@@ -185,6 +185,30 @@ public sealed class GetDisplayNameRouteTranslatorTests
             Is.EqualTo("クローム・リボルバー {{c|\u001a}}7 {{r|\u0003}}1d6 {{y|[鉛スラッグ x6]}} [{{r|錆びた}}] {{y|<{{|{{B|C}}{{B|C}}{{g|2}}}}>}}"));
     }
 
+    [TestCase(
+        "{{c|ケムセル}} [{{r|rusted}}] {{y|<{{|{{G|B}}{{C|D}}{{r|1}}}}>}}",
+        "{{c|ケムセル}} [{{r|錆びた}}] {{y|<{{|{{G|B}}{{C|D}}{{r|1}}}}>}}")]
+    [TestCase(
+        "{{c|ケムセル}} [{{r|錆びた}}] {{y|<{{|{{G|B}}{{C|D}}{{r|1}}}}>}}",
+        "{{c|ケムセル}} [{{r|錆びた}}] {{y|<{{|{{G|B}}{{C|D}}{{r|1}}}}>}}")]
+    [TestCase(
+        "{{y|ケムセル [{{r|rusted}}] <{{|{{G|B}}{{C|D}}{{r|1}}}}>}}",
+        "{{y|ケムセル [{{r|錆びた}}] <{{|{{G|B}}{{C|D}}{{r|1}}}}>}}")]
+    public void TranslatePreservingColors_PreservesSourceOwnedColorSpansInAngleCodeBase(
+        string source,
+        string expected)
+    {
+        WriteDictionaryFile(
+            "ui-displayname-adjectives.ja.json",
+            ("[rusted]", "[{{r|錆びた}}]"));
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            source,
+            nameof(GetDisplayNamePatch));
+
+        Assert.That(translated, Is.EqualTo(expected));
+    }
+
     [Test]
     public void TranslatePreservingColors_PreservesColoredBitTagsInsideAngleCodeSuffix()
     {

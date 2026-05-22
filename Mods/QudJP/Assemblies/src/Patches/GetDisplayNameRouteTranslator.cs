@@ -942,8 +942,11 @@ internal static class GetDisplayNameRouteTranslator
 
         var baseGroup = match.Groups["base"];
         var baseSource = baseGroup.Value;
-        var translatedBase = RestoreWholeSlice(TranslateDisplayNameFragment(baseSource, route), spans, baseGroup);
-        var angle = RestoreVisibleSlice(match.Groups["angle"], spans);
+        var innerSpans = ColorAwareTranslationComposer.WithoutTrueWholeSourceBoundarySpans(spans, source.Length);
+        var translatedBase = TranslateDisplayNameFragmentPreservingColors(
+            RestoreVisibleSlice(baseGroup, innerSpans),
+            route);
+        var angle = RestoreVisibleSlice(match.Groups["angle"], innerSpans);
 
         if (string.Equals(translatedBase, baseSource, StringComparison.Ordinal)
             && string.Equals(angle, match.Groups["angle"].Value, StringComparison.Ordinal))
