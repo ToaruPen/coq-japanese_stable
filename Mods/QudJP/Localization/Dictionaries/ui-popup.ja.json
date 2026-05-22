@@ -327,7 +327,7 @@
         {
             "key": "Describe your engraving. For example: \"a tiny snail\".",
             "context": "Popup.AskString.Prompt",
-            "text": "刻印の内容を入力せよ。例: \\\"小さな巻貝\\\"。"
+            "text": "刻印の内容を入力せよ。例: \"小さな巻貝\"。"
         },
         {
             "key": "[~Accept] Continue",

@@ -438,6 +438,16 @@ public static class SkillsAndPowersStatusScreenTranslationPatch
             return (true, captureColored);
         }
 
+        if (TryTranslateSkillNameListPreservingColors(source, out var listTranslated))
+        {
+            if (recordTransform)
+            {
+                DynamicTextObservability.RecordTransform(route, "SkillsAndPowers.SkillNameList.CaptureColors", source, listTranslated);
+            }
+
+            return (true, listTranslated);
+        }
+
         var translated = ColorAwareTranslationComposer.TranslatePreservingColors(
             source,
             visible => TryTranslateText(visible, route, out var structured) ? structured : TranslateLeaf(visible));
@@ -718,6 +728,49 @@ public static class SkillsAndPowersStatusScreenTranslationPatch
 
         translated = string.Join(Separator, parts);
         return changed;
+    }
+
+    private static bool TryTranslateSkillNameListPreservingColors(string source, out string translated)
+    {
+        const string Separator = ", ";
+        if (source.IndexOf(Separator, StringComparison.Ordinal) < 0)
+        {
+            translated = source;
+            return false;
+        }
+
+        var parts = source.Split(new[] { Separator }, StringSplitOptions.None);
+        var changed = false;
+        for (var index = 0; index < parts.Length; index++)
+        {
+            if (parts[index].Length == 0)
+            {
+                translated = source;
+                return false;
+            }
+
+            parts[index] = TranslateSkillNameListPartPreservingColors(parts[index], out var partChanged);
+            changed |= partChanged;
+        }
+
+        translated = string.Join(Separator, parts);
+        return changed;
+    }
+
+    private static string TranslateSkillNameListPartPreservingColors(string source, out bool changed)
+    {
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var withoutMarker))
+        {
+            var translatedWithoutMarker = ColorAwareTranslationComposer.TranslatePreservingColors(withoutMarker, TranslateLeaf);
+            changed = !string.Equals(withoutMarker, translatedWithoutMarker, StringComparison.Ordinal);
+            return changed
+                ? MessageFrameTranslator.MarkDirectTranslation(translatedWithoutMarker)
+                : source;
+        }
+
+        var translated = ColorAwareTranslationComposer.TranslatePreservingColors(source, TranslateLeaf);
+        changed = !string.Equals(source, translated, StringComparison.Ordinal);
+        return translated;
     }
 
     private static (bool changed, string translated) TryTranslateLineCollection(

@@ -179,6 +179,12 @@ internal static class PickTargetWindowTextTranslator
         {
             var label = markupWrappedHotkeyMatch.Groups["label"].Value;
             var visibleLabel = ColorAwareTranslationComposer.GetVisibleText(label);
+            if (IsOwnerRouteCommandBarToken(visibleLabel))
+            {
+                translated = source;
+                return true;
+            }
+
             var translatedLabel = TranslatePickTargetCommandBarToken(visibleLabel);
             if (translatedLabel is not null)
             {

@@ -503,6 +503,19 @@ public sealed class UITextSkinTranslationPatchTests
         Assert.That(translated, Is.EqualTo("Shield Slam"));
     }
 
+    [Test]
+    public void TranslatePreservingColors_PreservesOwnerRouteTokensInMarkupWrappedPickTargetCommandBarLabels()
+    {
+        WriteDictionary(("Reload", "リロード"));
+
+        var source = "{{W|r}}-Reload | ESC";
+        var translated = UITextSkinTranslationPatch.TranslatePreservingColors(
+            source,
+            nameof(PickTargetWindowTextTranslator));
+
+        Assert.That(translated, Is.EqualTo(source));
+    }
+
     [TestCase("navigate", "移動")]
     [TestCase("Navigate", "移動")]
     [TestCase("select", "選択")]
