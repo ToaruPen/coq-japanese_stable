@@ -196,11 +196,36 @@ public static class CherubimSpawnerBestowElementTranslationPatch
         AccessTools.Method(gameObject.GetType(), "ResetNameCache", Type.EmptyTypes)?.Invoke(gameObject, null);
     }
 
-    private readonly record struct ElementTranslation(
-        string SourceDisplayPrefix,
-        string JapaneseDisplayPrefix,
-        string SourceRulesText,
-        string JapaneseRulesText);
+    private sealed class ElementTranslation
+    {
+        internal ElementTranslation(
+            string sourceDisplayPrefix,
+            string japaneseDisplayPrefix,
+            string sourceRulesText,
+            string japaneseRulesText)
+        {
+            SourceDisplayPrefix = sourceDisplayPrefix;
+            JapaneseDisplayPrefix = japaneseDisplayPrefix;
+            SourceRulesText = sourceRulesText;
+            JapaneseRulesText = japaneseRulesText;
+        }
+
+        internal string SourceDisplayPrefix { get; }
+
+        internal string JapaneseDisplayPrefix { get; }
+
+        internal string SourceRulesText { get; }
+
+        internal string JapaneseRulesText { get; }
+    }
 }
 
-public readonly record struct CherubimSpawnerRulesDescriptionState(int Count);
+public sealed class CherubimSpawnerRulesDescriptionState
+{
+    public CherubimSpawnerRulesDescriptionState(int count)
+    {
+        Count = count;
+    }
+
+    public int Count { get; }
+}
