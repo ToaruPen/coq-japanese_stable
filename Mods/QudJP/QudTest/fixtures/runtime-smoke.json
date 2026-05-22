@@ -64,6 +64,12 @@
       "expected": "食事の代謝が始まり、一日中次の効果を得る:\n\n{{W|+5 to heat resistance}}"
     },
     {
+      "id": "givesrep-popup.water-ritual-curse-preserves-reputation-line",
+      "route": "givesrep-popup",
+      "input": "You violated the covenant of the water ritual and killed your bonded kith. You are cursed.\n\nYour reputation with the Fellowship of Wardens decreases by 100.",
+      "expected": "水の契りを破り、結んだ仲間を殺した。あなたは呪われている。\n\nYour reputation with the Fellowship of Wardens decreases by 100."
+    },
+    {
       "id": "popup-askstring.quit-without-saving-confirm",
       "route": "popup-askstring-prompt",
       "input": "If you quit without saving, you will lose all your unsaved progress. Are you sure you want to QUIT and LOSE YOUR PROGRESS?\n\n Type 'QUIT' to confirm.",
