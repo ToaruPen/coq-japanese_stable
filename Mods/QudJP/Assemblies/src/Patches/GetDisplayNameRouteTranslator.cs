@@ -1475,7 +1475,9 @@ internal static class GetDisplayNameRouteTranslator
                         route);
                     var restoredSuffix = suffix.Length == 0
                         ? string.Empty
-                        : RestoreVisibleSlice(suffix, spans, tailStart + splitIndex, suffix.Length);
+                        : TranslateDisplayNameSuffixPreservingStats(
+                            RestoreVisibleSlice(suffix, spans, tailStart + splitIndex, suffix.Length),
+                            route);
 
                     translated = translatedBase + "（" + translatedClause + "）" + restoredSuffix;
                     translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
@@ -1557,13 +1559,15 @@ internal static class GetDisplayNameRouteTranslator
             return string.Empty;
         }
 
-        const string dummyBase = "基底";
         if (StartsWithMarkupSuffixToken(suffix)
             && (StringHelpers.ContainsOrdinal(suffix, "\u001a") || StringHelpers.ContainsOrdinal(suffix, "\u0003")))
         {
             return TranslateBracketedStateInDisplayNameSuffix(suffix, route);
         }
 
+        // A temporary Japanese base lets the compact-stat suffix parsers reuse
+        // their normal display-name shape and is removed before returning.
+        const string dummyBase = "基底";
         var emptySpans = Array.Empty<ColorSpan>();
         if (TryTranslateCompactWeaponStatsOnlySuffix(suffix, emptySpans, route, out var compactStatsOnlySuffix))
         {

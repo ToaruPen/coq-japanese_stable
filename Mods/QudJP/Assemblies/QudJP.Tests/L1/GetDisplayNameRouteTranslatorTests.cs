@@ -391,6 +391,40 @@ public sealed class GetDisplayNameRouteTranslatorTests
     }
 
     [Test]
+    public void TranslatePreservingColors_FallsBackFromSourceOwnedWithClauseReaderForPlainTails()
+    {
+        WriteDictionary(("laser rifle", "レーザーライフル"));
+        WriteContextDictionaryFile(
+            "ui-displayname-adjectives.ja.json",
+            ("filters", "GetDisplayName.Adjective", "フィルター付き"),
+            ("[empty]", null, "[空]"));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                GetDisplayNameRouteTranslator.TranslatePreservingColors(
+                    "laser rifle with filters {{W|\u001a}}8 {{r|\u0003}}1d12 [empty]",
+                    nameof(GetDisplayNamePatch)),
+                Is.EqualTo("レーザーライフル（フィルター付き） {{W|\u001a}}8 {{r|\u0003}}1d12 [空]"));
+            Assert.That(
+                GetDisplayNameRouteTranslator.TranslatePreservingColors(
+                    "laser rifle with filters [empty]",
+                    nameof(GetDisplayNamePatch)),
+                Is.EqualTo("レーザーライフル（フィルター付き） [空]"));
+            Assert.That(
+                GetDisplayNameRouteTranslator.TranslatePreservingColors(
+                    "laser rifle with ",
+                    nameof(GetDisplayNamePatch)),
+                Is.EqualTo("laser rifle with "));
+            Assert.That(
+                GetDisplayNameRouteTranslator.TranslatePreservingColors(
+                    "laser rifle with filters {later}",
+                    nameof(GetDisplayNamePatch)),
+                Is.EqualTo("laser rifle with filters {later}"));
+        });
+    }
+
+    [Test]
     public void TranslatePreservingColors_UsesScopedStateTemplateLookup()
     {
         WriteDictionary(
