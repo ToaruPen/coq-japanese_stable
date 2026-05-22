@@ -983,7 +983,12 @@ internal static class GetDisplayNameRouteTranslator
             var translatedModifier = TranslateDisplayNameModifierForChain(modifier);
             if (translatedModifier is null)
             {
-                break;
+                if (!IsMarkupOrBracketedModifierToken(modifier))
+                {
+                    break;
+                }
+
+                translatedModifier = modifier;
             }
 
             translatedModifiers.Add(translatedModifier);
@@ -1191,6 +1196,49 @@ internal static class GetDisplayNameRouteTranslator
             || character >= 'a' && character <= 'z'
             || character == '-'
             || character == '\'';
+    }
+
+    private static bool IsMarkupOrBracketedModifierToken(string modifier)
+    {
+        if (modifier.StartsWith("{{", StringComparison.Ordinal))
+        {
+            return TryReadWrappedModifierVisible(modifier, out var visible)
+                && IsAsciiModifierPhrase(visible);
+        }
+
+        if (modifier.Length >= 4
+            && modifier[0] == '['
+            && modifier[1] == '{'
+            && modifier[2] == '{'
+            && modifier[modifier.Length - 1] == ']')
+        {
+            var core = modifier.Substring(1, modifier.Length - 2);
+            return TryReadWrappedModifierVisible(core, out var visible)
+                && IsAsciiModifierPhrase(visible);
+        }
+
+        return modifier.Length >= 3
+            && modifier[0] == '['
+            && modifier[modifier.Length - 1] == ']'
+            && IsAsciiModifierPhrase(modifier.Substring(1, modifier.Length - 2));
+    }
+
+    private static bool IsAsciiModifierPhrase(string value)
+    {
+        if (value.Length == 0 || !IsAsciiModifierStart(value[0]))
+        {
+            return false;
+        }
+
+        for (var index = 1; index < value.Length; index++)
+        {
+            if (!IsAsciiModifierCharacter(value[index]) && value[index] != ' ')
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private static string? TranslateDisplayNameModifierForChain(string source)

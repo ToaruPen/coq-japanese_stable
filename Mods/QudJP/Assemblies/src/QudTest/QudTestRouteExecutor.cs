@@ -21,7 +21,9 @@ public static class QudTestRouteExecutor
     private const string InventoryDisplayNameGameObjectRoute = "inventory-display-name-game-object";
     private const string InventoryLineColorShapeRoute = "InventoryLineTranslationPatch > field=text";
     private const string InventoryLineFixtureDisplayNameProducer = "QudTest.InventoryDisplayNameFixture";
+#if HAS_GAME_DLL
     private const string InventoryLineGameObjectDisplayNameProducer = "InventoryLine.GameObjectDisplayName";
+#endif
 
     public static string Execute(QudTestCase testCase)
     {

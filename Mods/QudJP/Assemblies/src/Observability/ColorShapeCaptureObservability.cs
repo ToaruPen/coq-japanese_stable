@@ -8,29 +8,57 @@ namespace QudJP;
 
 internal sealed class ColorShapeCapture
 {
-    internal string Route { get; init; } = string.Empty;
+    internal ColorShapeCapture(
+        string route,
+        string producer,
+        string sourceText,
+        string sourceVisibleText,
+        string finalText,
+        string finalVisibleText,
+        string sourceColorSpans,
+        string finalColorSpans,
+        string sourceVisibleSha256,
+        string finalVisibleSha256,
+        string markupSemanticStatus,
+        string markupSemanticFlags)
+    {
+        Route = route;
+        Producer = producer;
+        SourceText = sourceText;
+        SourceVisibleText = sourceVisibleText;
+        FinalText = finalText;
+        FinalVisibleText = finalVisibleText;
+        SourceColorSpans = sourceColorSpans;
+        FinalColorSpans = finalColorSpans;
+        SourceVisibleSha256 = sourceVisibleSha256;
+        FinalVisibleSha256 = finalVisibleSha256;
+        MarkupSemanticStatus = markupSemanticStatus;
+        MarkupSemanticFlags = markupSemanticFlags;
+    }
 
-    internal string Producer { get; init; } = string.Empty;
+    internal string Route { get; }
 
-    internal string SourceText { get; init; } = string.Empty;
+    internal string Producer { get; }
 
-    internal string SourceVisibleText { get; init; } = string.Empty;
+    internal string SourceText { get; }
 
-    internal string FinalText { get; init; } = string.Empty;
+    internal string SourceVisibleText { get; }
 
-    internal string FinalVisibleText { get; init; } = string.Empty;
+    internal string FinalText { get; }
 
-    internal string SourceColorSpans { get; init; } = string.Empty;
+    internal string FinalVisibleText { get; }
 
-    internal string FinalColorSpans { get; init; } = string.Empty;
+    internal string SourceColorSpans { get; }
 
-    internal string SourceVisibleSha256 { get; init; } = string.Empty;
+    internal string FinalColorSpans { get; }
 
-    internal string FinalVisibleSha256 { get; init; } = string.Empty;
+    internal string SourceVisibleSha256 { get; }
 
-    internal string MarkupSemanticStatus { get; init; } = string.Empty;
+    internal string FinalVisibleSha256 { get; }
 
-    internal string MarkupSemanticFlags { get; init; } = string.Empty;
+    internal string MarkupSemanticStatus { get; }
+
+    internal string MarkupSemanticFlags { get; }
 }
 
 internal static class ColorShapeCaptureObservability
@@ -117,21 +145,19 @@ internal static class ColorShapeCaptureObservability
         var (finalVisible, finalSpans) = ColorAwareTranslationComposer.Strip(finalValue);
         var semanticDiagnostics = MarkupSemanticDiagnostics.Analyze(finalValue);
 
-        return new ColorShapeCapture
-        {
-            Route = normalizedRoute,
-            Producer = normalizedProducer,
-            SourceText = sourceValue,
-            SourceVisibleText = sourceVisible,
-            FinalText = finalValue,
-            FinalVisibleText = finalVisible,
-            SourceColorSpans = BuildSpanSignature(sourceSpans),
-            FinalColorSpans = BuildSpanSignature(finalSpans),
-            SourceVisibleSha256 = ObservabilityHelpers.ComputeSha256Hex(sourceVisible),
-            FinalVisibleSha256 = ObservabilityHelpers.ComputeSha256Hex(finalVisible),
-            MarkupSemanticStatus = semanticDiagnostics.Status,
-            MarkupSemanticFlags = semanticDiagnostics.Flags,
-        };
+        return new ColorShapeCapture(
+            normalizedRoute,
+            normalizedProducer,
+            sourceValue,
+            sourceVisible,
+            finalValue,
+            finalVisible,
+            BuildSpanSignature(sourceSpans),
+            BuildSpanSignature(finalSpans),
+            ObservabilityHelpers.ComputeSha256Hex(sourceVisible),
+            ObservabilityHelpers.ComputeSha256Hex(finalVisible),
+            semanticDiagnostics.Status,
+            semanticDiagnostics.Flags);
     }
 
     private static string BuildCounterKey(string route, string producer)

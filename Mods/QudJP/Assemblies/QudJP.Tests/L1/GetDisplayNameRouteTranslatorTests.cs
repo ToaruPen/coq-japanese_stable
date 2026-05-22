@@ -977,6 +977,43 @@ public sealed class GetDisplayNameRouteTranslatorTests
     }
 
     [Test]
+    public void TranslatePreservingColors_PreservesUnknownModifierInProducerDerivedPrefixChain()
+    {
+        WriteContextDictionaryFile(
+            "ui-displayname-adjectives.ja.json",
+            ("{{B|wet}}", "GetDisplayName.Adjective", "{{B|接頭辞wet}}"),
+            ("{{Y|masterwork}}", "GetDisplayName.Adjective", "{{Y|接頭辞masterwork}}"),
+            ("[empty]", "GetDisplayName.Adjective", "[空]"),
+            ("steel long sword", null, "鋼のロングソード"));
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            "{{B|wet}} {{unmapped|slick}} {{Y|masterwork}} steel long sword [empty]",
+            nameof(GetDisplayNamePatch));
+
+        Assert.That(
+            translated,
+            Is.EqualTo("{{B|接頭辞wet}} {{unmapped|slick}} {{Y|接頭辞masterwork}} 鋼のロングソード [空]"));
+    }
+
+    [Test]
+    public void TranslatePreservingColors_PreservesDirectMarkerSegmentInProducerDerivedPrefixChain()
+    {
+        WriteContextDictionaryFile(
+            "ui-displayname-adjectives.ja.json",
+            ("{{B|wet}}", "GetDisplayName.Adjective", "{{B|接頭辞wet}}"),
+            ("[empty]", "GetDisplayName.Adjective", "[空]"),
+            ("steel long sword", null, "鋼のロングソード"));
+        var source = MessageFrameTranslator.DirectTranslationMarker
+            + "{{B|wet}} steel long sword [empty]";
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            source,
+            nameof(GetDisplayNamePatch));
+
+        Assert.That(translated, Is.EqualTo(source));
+    }
+
+    [Test]
     public void TranslatePreservingColors_UsesDisplayNameAdjectiveContextForBracketedMarkupWeaponModifiers()
     {
         WriteContextDictionaryFile(
