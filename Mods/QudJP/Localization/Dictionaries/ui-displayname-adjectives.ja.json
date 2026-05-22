@@ -1963,6 +1963,26 @@
       "key": "liquid-cooled",
       "context": "GetDisplayName.Adjective",
       "text": "液冷式"
+    },
+    {
+      "key": "flexiweaved",
+      "context": "GetDisplayName.Adjective",
+      "text": "フレキシ織りの"
+    },
+    {
+      "key": "electromagnetic",
+      "context": "GetDisplayName.Adjective",
+      "text": "電磁"
+    },
+    {
+      "key": "terrifying",
+      "context": "GetDisplayName.Adjective",
+      "text": "恐怖の"
+    },
+    {
+      "key": "serene",
+      "context": "GetDisplayName.Adjective",
+      "text": "静穏"
     }
   ]
 }

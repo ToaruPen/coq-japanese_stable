@@ -157,6 +157,28 @@ def test_qudtest_headless_captures_inventory_shape_from_game_object(tmp_path: Pa
     assert bracketed_prefix_case["colorShape"]["markupSemanticStatus"] == "clean"
     assert "illuminated" not in bracketed_prefix_case["colorShape"]["finalVisible"]
 
+    beamsplitter_loaded_cell_case = next(
+        case
+        for case in payload["cases"]
+        if case["id"] == "inventory-display-name.producer-derived-with-beamsplitter-loaded-cell"
+    )
+    assert beamsplitter_loaded_cell_case["actual"] == beamsplitter_loaded_cell_case["expected"]
+    assert beamsplitter_loaded_cell_case["colorShape"]["markupSemanticStatus"] == "clean"
+    assert "beamsplitter" not in beamsplitter_loaded_cell_case["colorShape"]["finalVisible"]
+    assert "フィジェット セル" in beamsplitter_loaded_cell_case["colorShape"]["finalVisible"]
+
+    prefix_chain_with_clause_case = next(
+        case
+        for case in payload["cases"]
+        if case["id"] == "inventory-display-name.producer-derived-prefix-chain-with-clause"
+    )
+    assert prefix_chain_with_clause_case["actual"] == prefix_chain_with_clause_case["expected"]
+    assert prefix_chain_with_clause_case["colorShape"]["markupSemanticStatus"] == "clean"
+    assert not any(
+        token in prefix_chain_with_clause_case["colorShape"]["finalVisible"]
+        for token in ("masterwork", "scoped", "filters")
+    )
+
 
 def test_qudtest_headless_writes_inspectable_binding_artifact(tmp_path: Path) -> None:
     """The headless runner should validate patch target bindings without opening the game UI."""
