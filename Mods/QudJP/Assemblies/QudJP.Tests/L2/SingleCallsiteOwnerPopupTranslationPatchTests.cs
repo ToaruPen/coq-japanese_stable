@@ -1110,6 +1110,42 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         });
     }
 
+    [Test]
+    public void Patch_TranslatesGivesRepWaterRitualCursePrefixAndPreservesAppendedLines_WhenOwnerPatched()
+    {
+        const string appendedLine = "Your reputation with the Fellowship of Wardens decreases by 100.";
+        const string source =
+            "You violated the covenant of the water ritual and killed your bonded kith. You are cursed.\n\n"
+            + appendedLine;
+
+        Assert.That(TryTranslateForOwner(nameof(DummySingleCallsiteOwnerPopupTarget.HandleGivesRepBeforeDeathRemoval), source, out var translated), Is.True);
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                translated,
+                Is.EqualTo("水の契りを破り、結んだ仲間を殺した。あなたは呪われている。\n\n" + appendedLine));
+            Assert.That(translated, Does.Not.Contain("You violated the covenant of the water ritual"));
+            Assert.That(translated, Does.Contain(appendedLine));
+            Assert.That(HitCount("GivesRepWaterRitualCurse"), Is.EqualTo(1));
+        });
+    }
+
+    [Test]
+    public void Patch_DoesNotTranslateGivesRepWaterRitualCursePrefix_WhenOwnerAbsent()
+    {
+        const string appendedLine = "Your reputation with the Fellowship of Wardens decreases by 100.";
+        const string source =
+            "You violated the covenant of the water ritual and killed your bonded kith. You are cursed.\n\n"
+            + appendedLine;
+
+        Assert.That(TryTranslateForOwner(nameof(DummySingleCallsiteOwnerPopupTarget.CreateHolograms), source, out var translated), Is.False);
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.EqualTo(source));
+            Assert.That(HitCount("GivesRepWaterRitualCurse"), Is.Zero);
+        });
+    }
+
     [TestCase(
         nameof(DummySingleCallsiteOwnerPopupTarget.HandleMagnetizedApplicator),
         "{{Y|The steel boots}} become magnetized!",
@@ -1298,6 +1334,8 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
                 "XRL.World.Parts.CursedCellSocket|HandleEvent",
             nameof(DummySingleCallsiteOwnerPopupTarget.HandleNephalPropertiesBeforeDeathRemoval) =>
                 "XRL.World.Parts.NephalProperties|HandleEvent",
+            nameof(DummySingleCallsiteOwnerPopupTarget.HandleGivesRepBeforeDeathRemoval) =>
+                "XRL.World.Parts.GivesRep|HandleEvent",
             nameof(DummySingleCallsiteOwnerPopupTarget.WishMutation) =>
                 "XRL.World.Parts.Mutations|WishMutation",
             nameof(DummySingleCallsiteOwnerPopupTarget.HandleBlueprintXML) =>
