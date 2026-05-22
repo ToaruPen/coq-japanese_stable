@@ -132,6 +132,8 @@ internal sealed class DummyTinkeringDetailsLineTarget
 
     public DummyUITextSkin modBitCostText = new DummyUITextSkin();
 
+    public DummyUITextSkin modDescriptionText = new DummyUITextSkin();
+
     public void setData(object data)
     {
         OriginalExecuted = true;
@@ -149,6 +151,7 @@ internal sealed class DummyTinkeringDetailsLineTarget
         gameObject.SetActive(true);
         if (tinkeringLineData.data.Type == "Mod")
         {
+            modDescriptionText.SetText("{{rules|Gigantic: This weapon has +3 damage and cleaves for -3 AV. It can only be equipped by gigantic creatures.}}");
             modBitCostText.SetText("{{K || Bit Cost |}}\n{{R|A}}{{C|C}}\n\n{{K|| Ingredients |}}\n{{G|u}} item A\n-or-\n{{R|X}} item B");
             return;
         }

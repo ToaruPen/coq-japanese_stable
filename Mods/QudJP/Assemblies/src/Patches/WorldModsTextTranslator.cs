@@ -29,6 +29,9 @@ internal static class WorldModsTextTranslator
     private static readonly Regex DataDiskItemModificationPattern = new Regex(
         "^Adds item modification: (?<description>.+)$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex GiganticDescriptionPattern = new Regex(
+        "^Gigantic: (?<body>.+)\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex AntiGravityPattern = new Regex(
         "^Anti-gravity: When powered, this item's weight is reduced by (?<percent>\\d+)% plus (?<force>\\d+) (?<unit>lb|lbs)\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
@@ -212,6 +215,11 @@ internal static class WorldModsTextTranslator
         }
 
         if (TryTranslateOffhandAttackChanceTemplate(source, route, family, out translated))
+        {
+            return true;
+        }
+
+        if (TryTranslateGiganticDescriptionTemplate(source, route, family, out translated))
         {
             return true;
         }
@@ -836,6 +844,157 @@ internal static class WorldModsTextTranslator
         return formatted;
     }
 
+    private static bool TryTranslateGiganticDescriptionTemplate(string source, string route, string family, out string translated)
+    {
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        var match = GiganticDescriptionPattern.Match(stripped);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        var body = match.Groups["body"].Value;
+        var rawSentences = body.Split(new[] { ". " }, StringSplitOptions.None);
+        if (rawSentences.Length == 0)
+        {
+            translated = source;
+            return false;
+        }
+
+        var translatedSentences = new List<string>();
+        for (var index = 0; index < rawSentences.Length; index++)
+        {
+            if (!TryTranslateGiganticSentence(rawSentences[index], out var translatedSentence))
+            {
+                translated = source;
+                return false;
+            }
+
+            translatedSentences.Add(translatedSentence);
+        }
+
+        var visible = "巨大: " + string.Join(string.Empty, translatedSentences);
+        translated = RestoreTemplateBoundarySpans(stripped, spans, match, visible);
+        translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+            translated,
+            spans,
+            stripped.Length);
+
+        DynamicTextObservability.RecordTransform(route, family, source, translated);
+        return !string.Equals(source, translated, StringComparison.Ordinal);
+    }
+
+    private static bool TryTranslateGiganticSentence(string source, out string translated)
+    {
+        if (!TryExtractGiganticSubject(source, out var subject, out var clauseText))
+        {
+            translated = source;
+            return false;
+        }
+
+        var clauses = SplitGiganticClauses(clauseText);
+        if (clauses.Count == 0)
+        {
+            translated = source;
+            return false;
+        }
+
+        var translatedClauses = new List<string>();
+        for (var index = 0; index < clauses.Count; index++)
+        {
+            if (!TryTranslateGiganticClause(clauses[index], out var translatedClause))
+            {
+                translated = source;
+                return false;
+            }
+
+            translatedClauses.Add(translatedClause);
+        }
+
+        translated = subject + JoinGiganticClauses(translatedClauses) + "。";
+        return true;
+    }
+
+    private static string JoinGiganticClauses(List<string> clauses)
+    {
+        for (var index = 0; index < clauses.Count - 1; index++)
+        {
+            if (clauses[index].EndsWith("になる", StringComparison.Ordinal))
+            {
+                clauses[index] = clauses[index].Substring(0, clauses[index].Length - "になる".Length) + "になり";
+            }
+            else if (clauses[index].EndsWith("くなる", StringComparison.Ordinal))
+            {
+                clauses[index] = clauses[index].Substring(0, clauses[index].Length - "くなる".Length) + "くなり";
+            }
+        }
+
+        return string.Join("、", clauses);
+    }
+
+    private static bool TryExtractGiganticSubject(string source, out string subject, out string clauseText)
+    {
+        foreach (var candidate in GiganticSubjectPrefixes)
+        {
+            if (!source.StartsWith(candidate.Source, StringComparison.Ordinal))
+            {
+                continue;
+            }
+
+            subject = candidate.Translated;
+            clauseText = source.Substring(candidate.Source.Length);
+            return true;
+        }
+
+        subject = string.Empty;
+        clauseText = string.Empty;
+        return false;
+    }
+
+    private static List<string> SplitGiganticClauses(string source)
+    {
+        var normalized = source
+            .Replace(", and ", "|")
+            .Replace(", ", "|")
+            .Replace(" and ", "|");
+        var rawParts = normalized.Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
+        var parts = new List<string>();
+        for (var index = 0; index < rawParts.Length; index++)
+        {
+            var part = rawParts[index].Trim();
+            if (part.Length > 0)
+            {
+                parts.Add(part);
+            }
+        }
+
+        return parts;
+    }
+
+    private static bool TryTranslateGiganticClause(string source, out string translated)
+    {
+        translated = source switch
+        {
+            "holds twice as much liquid" or "hold twice as much liquid" => "液体容量が2倍になる",
+            "has twice the energy capacity" or "have twice the energy capacity" => "エネルギー容量が2倍になる",
+            "has twice as large a radius of effect" or "have twice as large a radius of effect" => "効果半径が2倍になる",
+            "contains double the tonic dosage" or "contain double the tonic dosage" => "トニック用量が2倍になる",
+            "is much more valuable" or "are much more valuable" => "価値が大幅に高くなる",
+            "is much heavier than usual" or "are much heavier than usual" => "通常より大幅に重くなる",
+            "has +3 damage" or "have +3 damage" => "ダメージ+3",
+            "is twice as effective when you Slam with it" or "are twice as effective when you Slam with them" => "スラム時の効果が2倍になる",
+            "cleaves for -3 AV" or "cleave for -3 AV" => "装甲切断でAV-3を与える",
+            "can only be equipped by gigantic creatures" => "巨大な生物しか装備できない",
+            "must be wielded two-handed by non-gigantic creatures" => "巨大でない生物が扱うには二手持ちが必要",
+            "must be wielded four-handed by non-gigantic creatures" => "巨大でない生物が扱うには四手持ちが必要",
+            "digs twice as fast" or "dig twice as fast" => "掘削速度が2倍になる",
+            _ => source,
+        };
+
+        return !string.Equals(translated, source, StringComparison.Ordinal);
+    }
+
     private static bool TryTranslateDisguiseReputationTemplate(string source, string route, string family, out string translated)
     {
         var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
@@ -1398,4 +1557,14 @@ internal static class WorldModsTextTranslator
     private static readonly Regex WhitespacePattern = new Regex(
         "\\s+",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly (string Source, string Translated)[] GiganticSubjectPrefixes =
+    {
+        ("This item ", "この品は"),
+        ("These items ", "これらの品は"),
+        ("This weapon ", "この武器は"),
+        ("These weapons ", "これらの武器は"),
+        ("It ", "これは"),
+        ("They ", "これらは"),
+    };
 }

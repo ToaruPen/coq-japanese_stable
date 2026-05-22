@@ -999,6 +999,20 @@ TEXT_CONSTRUCTION_CLOSURE_OVERLAY: Final[dict[str, ClosureOverlayEntry]] = {
             "Mods/QudJP/Localization/MessageFrames/verbs.ja.json",
         ],
     },
+    "XRL.World.Parts/LongBladesCore.cs::LongBladesCore.Initialize()": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": [
+            (
+                "Issue #762 covers LongBladesCore generated activated ability "
+                "names, class, and descriptions for Aggressive/Defensive Stance."
+            ),
+            "Mods/QudJP/Assemblies/src/Patches/ActivatedAbilityNameTranslator.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2/AbilityBarButtonTextTranslationPatchTests.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2/AbilityManagerLineTranslationPatchTests.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2/AbilityManagerScreenTranslationPatchTests.cs",
+            "Mods/QudJP/Localization/Dictionaries/ui-skillsandpowers.ja.json",
+        ],
+    },
     "XRL.World.Parts/LiquidVolume.cs::LiquidVolume.HandleEvent(InventoryActionEvent)": {
         "closure_status": "partial_coverage",
         "closure_evidence": [
@@ -1430,8 +1444,15 @@ TEXT_CONSTRUCTION_CLOSURE_OVERLAY: Final[dict[str, ClosureOverlayEntry]] = {
     "XRL.World.Parts/CherubimSpawner.cs::CherubimSpawner.HandleEvent(BeforeObjectCreatedEvent)": {
         "closure_status": "partial_coverage",
         "closure_evidence": [
+            (
+                "Issue #762 covers the generated element display/rules text via "
+                "BestowElement; the base cherub description route remains split."
+            ),
             "Mods/QudJP/Assemblies/src/Patches/CherubimSpawnerReplaceDescriptionPatch.cs",
             "Mods/QudJP/Assemblies/QudJP.Tests/L2/CherubimSpawnerReplaceDescriptionPatchTests.cs",
+            "Mods/QudJP/Assemblies/src/Patches/CherubimSpawnerHandleEventTranslationPatch.cs",
+            "Mods/QudJP/Assemblies/src/Patches/CherubimSpawnerBestowElementTranslationPatch.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2/CherubimSpawnerGeneratedTextTranslationPatchTests.cs",
         ],
     },
     "XRL.World.Parts/SultanShrine.cs::SultanShrine.ShrineInitialize()": {
@@ -1535,15 +1556,72 @@ TEXT_CONSTRUCTION_CLOSURE_OVERLAY: Final[dict[str, ClosureOverlayEntry]] = {
         "closure_evidence": HSE_VILLAGE_DESCRIPTION_ROUTE_EVIDENCE,
     },
     "XRL.World.Parts/CherubimSpawner.cs::CherubimSpawner.BestowElement(GameObject,string,bool)": {
-        "closure_status": "likely_true_gap",
+        "closure_status": "covered_by_owner_route",
         "closure_evidence": [
-            "docs/reports/2026-05-15-static-uncovered-coverage-triage.md",
+            (
+                "Issue #762 covers the finite cherubim element display-name "
+                "prefixes and RulesDescription caste text added by "
+                "BestowElement(GameObject,string,bool); PrependName=false "
+                "intentionally leaves display names unchanged while translating "
+                "the added rules part."
+            ),
+            "Mods/QudJP/Assemblies/src/Patches/CherubimSpawnerBestowElementTranslationPatch.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2/CherubimSpawnerGeneratedTextTranslationPatchTests.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
             "docs/reports/2026-05-16-issue-711-text-construction-separation.md",
         ],
     },
-    "XRL.World.Parts/TurretTinker.cs::TurretTinker.FireEvent(Event)": {
-        "closure_status": "likely_true_gap",
+    "XRL.World.Parts/HexacherubimSpawner.cs::HexacherubimSpawner.HandleEvent(BeforeObjectCreatedEvent)": {
+        "closure_status": "covered_by_owner_route",
         "closure_evidence": [
+            (
+                "Issue #762 covers the hexacherubim generated display name, "
+                "localized base description, and delegated BestowElement "
+                "RulesDescription text."
+            ),
+            "Mods/QudJP/Assemblies/src/Patches/HexacherubimSpawnerHandleEventTranslationPatch.cs",
+            "Mods/QudJP/Assemblies/src/Patches/CherubimSpawnerBestowElementTranslationPatch.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2/CherubimSpawnerGeneratedTextTranslationPatchTests.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+        ],
+    },
+    "XRL.World.Parts/CyberneticsSchemasoft.cs::CyberneticsSchemasoft.InitChip(bool)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": [
+            (
+                "Issue #762 covers finite generated schemasoft display names from "
+                "InitChip(bool); behavior-description text remains a separate family."
+            ),
+            "Mods/QudJP/Assemblies/src/Patches/GetDisplayNameRouteTranslator.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L1/GetDisplayNameRouteTranslatorTests.cs",
+        ],
+    },
+    (
+        "XRL.World.Parts/CyberneticsSchemasoft.cs::"
+        "CyberneticsSchemasoft.HandleEvent(GetCyberneticsBehaviorDescriptionEvent)"
+    ): {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": [
+            (
+                "Issue #762 covers finite generated schemasoft behavior-description "
+                "text after GetCyberneticsBehaviorDescriptionEvent.GetFor composes "
+                "base and AddOn lines."
+            ),
+            "Mods/QudJP/Assemblies/src/Patches/CyberneticsBehaviorDescriptionTranslationPatch.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2/CyberneticsBehaviorDescriptionTranslationPatchTests.cs",
+            "scripts/tests/test_cybernetics_behavior_descriptions.py",
+        ],
+    },
+    "XRL.World.Parts/TurretTinker.cs::TurretTinker.FireEvent(Event)": {
+        "closure_status": "partial_coverage",
+        "closure_evidence": [
+            (
+                "Issue #762 covers the generated activated ability display name "
+                "`Tinker Turret [N remaining]`; remaining prompt/failure branches "
+                "need separate route review."
+            ),
+            "Mods/QudJP/Assemblies/src/Patches/ActivatedAbilityNameTranslator.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2/AbilityBarButtonTextTranslationPatchTests.cs",
             "docs/reports/2026-05-16-issue-711-text-construction-separation.md",
         ],
     },
@@ -1553,21 +1631,167 @@ TEXT_CONSTRUCTION_CLOSURE_OVERLAY: Final[dict[str, ClosureOverlayEntry]] = {
             "docs/reports/2026-05-16-issue-711-text-construction-separation.md",
         ],
     },
-    "XRL.World/RandomAltarBaetylRewardManager.cs::RandomAltarBaetylRewardManager.HandleRewardNode(XmlDataHelper)": {
-        "closure_status": "likely_true_gap",
+    "XRL.World.Parts/CyclopeanPrism.cs::CyclopeanPrism.HandleEvent(BeginTakeActionEvent)": {
+        "closure_status": "covered_by_owner_route",
         "closure_evidence": [
+            (
+                "Issue #762 covers the six finite CyclopeanPrism runtime "
+                "DisplayName assignments through the display-name owner route; "
+                "PtohAnnoyed popup and Die text remain separate."
+            ),
+            "Mods/QudJP/Assemblies/src/Patches/GetDisplayNameRouteTranslator.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L1/GetDisplayNameRouteTranslatorTests.cs",
             "docs/reports/2026-05-16-issue-711-text-construction-separation.md",
         ],
     },
-    "XRL.World.Parts/ModGigantic.cs::ModGigantic.GetDescription(int,GameObject)": {
-        "closure_status": "likely_true_gap",
+    "XRL.World.Parts/CyclopeanPrism.cs::CyclopeanPrism.ResetPrism()": {
+        "closure_status": "covered_by_owner_route",
         "closure_evidence": [
+            (
+                "Issue #762 covers ResetPrism's finite amaranthine prism "
+                "DisplayName assignment through the same CyclopeanPrism "
+                "display-name owner route."
+            ),
+            "Mods/QudJP/Assemblies/src/Patches/GetDisplayNameRouteTranslator.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L1/GetDisplayNameRouteTranslatorTests.cs",
+            "docs/reports/2026-05-16-issue-711-text-construction-separation.md",
+        ],
+    },
+    "XRL.World.Parts/PitMaterial.cs::PitMaterial.PaintPit()": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": [
+            (
+                "Issue #762 covers PitMaterial's finite open-air/craggy-ledge "
+                "DisplayName assignments and runtime short description; "
+                "paint/color properties are not localization text."
+            ),
+            "Mods/QudJP/Localization/Dictionaries/ui-displayname-atomic.ja.json",
+            "Mods/QudJP/Localization/Dictionaries/descriptions.ja.json",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L1/GetDisplayNameRouteTranslatorTests.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2/DescriptionShortDescriptionPatchTests.cs",
+        ],
+    },
+    "XRL.World.Parts/PitMaterial.cs::PitMaterial.FireEvent(Event)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": [
+            (
+                "Issue #762 covers the FirmPitEdges finite open-air/craggy-ledge "
+                "DisplayName assignments and runtime short description; "
+                "PaintPit and FireEvent are tracked separately to avoid overclaiming."
+            ),
+            "Mods/QudJP/Localization/Dictionaries/ui-displayname-atomic.ja.json",
+            "Mods/QudJP/Localization/Dictionaries/descriptions.ja.json",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L1/GetDisplayNameRouteTranslatorTests.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2/DescriptionShortDescriptionPatchTests.cs",
+        ],
+    },
+    (
+        "XRL.World.Parts.Mutation/EvilTwin.cs::"
+        "EvilTwin.CreateEvilTwin(GameObject,string,Cell,string,string,GameObject,string,bool,string,string)"
+    ): {
+        "closure_status": "partial_coverage",
+        "closure_evidence": [
+            (
+                "Issue #762 covers the known finite EvilTwin/HexCrystal/"
+                "EngulfingClones generated display-name prefixes and runtime "
+                "short descriptions; arbitrary caller-supplied Prefix, Message, "
+                "and MessageForActor values remain split from this route proof."
+            ),
+            "Mods/QudJP/Assemblies/src/Patches/GetDisplayNameRouteTranslator.cs",
+            "Mods/QudJP/Localization/Dictionaries/descriptions.ja.json",
+            "Mods/QudJP/Localization/Dictionaries/ui-popup.ja.json",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L1/GetDisplayNameRouteTranslatorTests.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2/DescriptionShortDescriptionPatchTests.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2/PopupShowTranslationPatchTests.cs",
+            "docs/reports/2026-05-16-issue-711-text-construction-separation.md",
+        ],
+    },
+    "XRL.World.Parts.Mutation/EvilTwin.cs::EvilTwin.GetDescription()": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": [
+            (
+                "Issue #762 verified the Evil Twin mutation long description is "
+                "already covered by mutation-description owner routes; runtime "
+                "clone creation display/popup text is tracked separately."
+            ),
+            "Mods/QudJP/Localization/Dictionaries/mutation-descriptions.ja.json",
+            "Mods/QudJP/Assemblies/src/Patches/CharacterStatusScreenTextTranslator.cs",
+            "Mods/QudJP/Assemblies/src/Patches/ChargenStructuredTextTranslator.cs",
+            "scripts/tests/test_mutation_description_semantics.py",
+        ],
+    },
+    "XRL.World.Parts/TemplarPhylactery.cs::TemplarPhylactery.HandleEvent(AfterObjectCreatedEvent)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": [
+            (
+                "Issue #762 verified the `phylactery of <target>` runtime "
+                "DisplayName composition is already handled by the generated "
+                "English-prefix display-name route; hacking popup and spawn "
+                "message families remain separate."
+            ),
+            "Mods/QudJP/Assemblies/src/Patches/GetDisplayNameRouteTranslator.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L1/GetDisplayNameRouteTranslatorTests.cs",
+            "Mods/QudJP/Localization/ObjectBlueprints/Creatures.jp.xml",
+            "Mods/QudJP/Localization/Naming.jp.xml",
+        ],
+    },
+    "XRL.World/RandomAltarBaetylRewardManager.cs::RandomAltarBaetylRewardManager.HandleRewardNode(XmlDataHelper)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": [
+            (
+                "Issue #762 covers the sparking baetyl reward Description "
+                "data source through the localized SparkingBaetyls owner XML; "
+                "baetyl popup and wish routes remain separate."
+            ),
+            "Mods/QudJP/Localization/SparkingBaetyls.jp.xml",
+            "scripts/tests/test_sparking_baetyl_rewards.py",
+            "scripts/tests/test_text_construction_surface_policy.py",
+            "docs/reports/2026-05-16-issue-711-text-construction-separation.md",
+        ],
+    },
+    "XRL.World.Parts/ModGigantic.cs::ModGigantic.GetDescription(int)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": [
+            (
+                "Issue #762 covers the fixed ModGigantic data-disk/short-description "
+                "leaf through the existing world-mods dictionary and description "
+                "owner route."
+            ),
+            "Mods/QudJP/Localization/Dictionaries/world-mods.ja.json",
+            "Mods/QudJP/Assemblies/src/Patches/WorldModsTextTranslator.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L1/WorldModsTextTranslatorTests.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2/DescriptionShortDescriptionPatchTests.cs",
+            "scripts/tests/test_text_construction_surface_policy.py",
+        ],
+    },
+    "XRL.World.Parts/ModGigantic.cs::ModGigantic.GetDescription(int,GameObject)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": [
+            (
+                "Issue #762 covers ModGigantic generated item modification "
+                "descriptions through WorldModsTextTranslator on both description "
+                "owner text and the tinkering details modDescriptionText sink."
+            ),
+            "Mods/QudJP/Assemblies/src/Patches/WorldModsTextTranslator.cs",
+            "Mods/QudJP/Assemblies/src/Patches/TinkeringDetailsLineTranslationPatch.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L1/WorldModsTextTranslatorTests.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2/DescriptionShortDescriptionPatchTests.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2/DescriptionLongDescriptionPatchTests.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2/TinkeringTranslationPatchTests.cs",
+            "scripts/tests/test_text_construction_surface_policy.py",
             "docs/reports/2026-05-16-issue-711-text-construction-separation.md",
         ],
     },
     "XRL.World.Parts/BandageMedication.cs::BandageMedication.PerformBandaging(GameObject,GameObject)": {
-        "closure_status": "likely_true_gap",
+        "closure_status": "partial_coverage",
         "closure_evidence": [
+            (
+                "Issue #762 covers the successful bandage/staunch MessageFrame "
+                "shapes; failure prompt and phase/stasis branches remain split "
+                "for focused owner-route review."
+            ),
+            "Mods/QudJP/Assemblies/QudJP.Tests/L1/MessageFrameTranslatorTests.cs",
+            "Mods/QudJP/Localization/MessageFrames/verbs.ja.json",
             "docs/reports/2026-05-15-static-uncovered-coverage-triage.md",
             "docs/reports/2026-05-16-issue-711-text-construction-separation.md",
         ],
@@ -1586,8 +1810,15 @@ TEXT_CONSTRUCTION_CLOSURE_OVERLAY: Final[dict[str, ClosureOverlayEntry]] = {
         ],
     },
     "XRL.World.Parts.Mutation/MultiHorns.cs::MultiHorns.PerformCharge(List<Cell>,bool)": {
-        "closure_status": "likely_true_gap",
+        "closure_status": "partial_coverage",
         "closure_evidence": [
+            (
+                "Issue #762 covers the `charge`, `stomp with bestial fury`, and "
+                "`stopped in its tracks by` MessageFrame shapes; damage/shoved "
+                "side effects remain split from this route proof."
+            ),
+            "Mods/QudJP/Assemblies/QudJP.Tests/L1/MessageFrameTranslatorTests.cs",
+            "Mods/QudJP/Localization/MessageFrames/verbs.ja.json",
             "docs/reports/2026-05-15-static-uncovered-coverage-triage.md",
             "docs/reports/2026-05-16-issue-711-text-construction-separation.md",
         ],

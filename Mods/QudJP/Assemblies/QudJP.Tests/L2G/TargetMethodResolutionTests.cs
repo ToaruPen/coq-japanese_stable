@@ -50,6 +50,7 @@ public sealed class TargetMethodResolutionTests
         "System.Boolean",
         "System.Boolean",
     })]
+    [TestCase(typeof(CyberneticsBehaviorDescriptionTranslationPatch), "GetFor", "XRL.World.GetCyberneticsBehaviorDescriptionEvent", "System.String", new[] { "XRL.World.GameObject", "System.String" })]
     [TestCase(typeof(GetDisplayNameProcessPatch), "ProcessFor", "XRL.World.GetDisplayNameEvent", "System.String", new[] { "XRL.World.GameObject", "System.Boolean" })]
     [TestCase(typeof(LookTooltipContentPatch), "GenerateTooltipContent", "XRL.UI.Look", "System.String", new[] { "XRL.World.GameObject" })]
     [TestCase(typeof(LookTooltipInformationWrapPatch), "GenerateTooltipInformation", "XRL.UI.Look", "XRL.UI.Look+TooltipInformation", new[] { "XRL.World.GameObject" })]
@@ -191,6 +192,9 @@ public sealed class TargetMethodResolutionTests
     [TestCase(typeof(SelectableTextMenuItemTranslationPatch), "SelectChanged", "Qud.UI.SelectableTextMenuItem", "System.Void", new[] { "System.Boolean" })]
     [TestCase(typeof(MissileWeaponAreaTranslationPatch), "AfterRender", "Qud.UI.MissileWeaponArea", "System.Void", new[] { "XRL.Core.XRLCore", "ConsoleLib.Console.ScreenBuffer" })]
     [TestCase(typeof(CherubimSpawnerReplaceDescriptionPatch), "ReplaceDescription", "XRL.World.Parts.CherubimSpawner", "System.Void", new[] { "XRL.World.GameObject", "System.String", "System.String" })]
+    [TestCase(typeof(CherubimSpawnerHandleEventTranslationPatch), "HandleEvent", "XRL.World.Parts.CherubimSpawner", "System.Boolean", new[] { "XRL.World.BeforeObjectCreatedEvent" })]
+    [TestCase(typeof(CherubimSpawnerBestowElementTranslationPatch), "BestowElement", "XRL.World.Parts.CherubimSpawner", "System.Void", new[] { "XRL.World.GameObject", "System.String", "System.Boolean" })]
+    [TestCase(typeof(HexacherubimSpawnerHandleEventTranslationPatch), "HandleEvent", "XRL.World.Parts.HexacherubimSpawner", "System.Boolean", new[] { "XRL.World.BeforeObjectCreatedEvent" })]
     [TestCase(typeof(CharacterStatusScreenHighlightEffectPatch), "HandleHighlightEffect", "Qud.UI.CharacterStatusScreen", "System.Void", new[] { "XRL.UI.Framework.FrameworkDataElement" })]
     [TestCase(typeof(GameObjectShowActiveEffectsPatch), "ShowActiveEffects", "XRL.World.GameObject", "System.Void", new string[0])]
     [TestCase(typeof(DescriptionShortDescriptionPatch), "GetShortDescription", "XRL.World.Parts.Description", "System.String", new[] { "System.Boolean", "System.Boolean", "System.String" })]

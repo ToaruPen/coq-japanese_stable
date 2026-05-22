@@ -921,6 +921,71 @@ public sealed class MessageFrameTranslatorTests
     }
 
     [Test]
+    public void TryTranslateXDidYToZ_RepositoryDictionary_TranslatesBandageMedicationSuccessFrame()
+    {
+        UseRepositoryDictionary();
+
+        var ok = MessageFrameTranslator.TryTranslateXDidYToZ(
+            "あなた",
+            "bandage",
+            preposition: null,
+            objectText: "タムの",
+            extra: "wounds",
+            endMark: ".",
+            out var sentence);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(sentence, Is.EqualTo("あなたはタムの傷に包帯を巻いた。"));
+        });
+    }
+
+    [Test]
+    public void TryTranslateWDidXToYWithZ_RepositoryDictionary_TranslatesBandageMedicationStaunchFrame()
+    {
+        UseRepositoryDictionary();
+
+        var ok = MessageFrameTranslator.TryTranslateWDidXToYWithZ(
+            "あなた",
+            "staunch",
+            directPreposition: null,
+            directObject: "タムの",
+            indirectPreposition: "wounds with",
+            indirectObject: "包帯",
+            extra: null,
+            endMark: ".",
+            out var sentence);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(sentence, Is.EqualTo("あなたは包帯でタムの傷を止血した。"));
+        });
+    }
+
+    [Test]
+    public void TryTranslateXDidYToZ_RepositoryDictionary_TranslatesMultiHornsStoppedInTracksFrame()
+    {
+        UseRepositoryDictionary();
+
+        var ok = MessageFrameTranslator.TryTranslateXDidYToZ(
+            "多重角の変異体",
+            "are",
+            "stopped in its tracks by",
+            "壁",
+            extra: null,
+            endMark: "!",
+            out var sentence);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(sentence, Is.EqualTo("多重角の変異体は壁に進路を阻まれた！"));
+        });
+    }
+
+    [Test]
     public void TryTranslateXDidY_Tier3_TakeAdvantageRefresh()
     {
         WriteDictionary(tier3: new[]

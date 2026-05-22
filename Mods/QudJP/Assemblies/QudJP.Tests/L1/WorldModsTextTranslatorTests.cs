@@ -181,6 +181,18 @@ public sealed class WorldModsTextTranslatorTests
     [TestCase(
         "{{rules|25% chance per turn to repel gases near its wielderまたはwearer.}}",
         "{{rules|使用者または着用者近くのガスを毎ターン25%の確率で退ける。}}")]
+    [TestCase(
+        "Gigantic: This item is much heavier than usual and can only be equipped by gigantic creatures.",
+        "巨大: この品は通常より大幅に重くなり、巨大な生物しか装備できない。")]
+    [TestCase(
+        "Gigantic: This weapon has +3 damage and cleaves for -3 AV. It can only be equipped by gigantic creatures.",
+        "巨大: この武器はダメージ+3、装甲切断でAV-3を与える。これは巨大な生物しか装備できない。")]
+    [TestCase(
+        "{{rules|Gigantic: This weapon has +3 damage and is twice as effective when you Slam with it. It must be wielded four-handed by non-gigantic creatures.}}",
+        "{{rules|巨大: この武器はダメージ+3、スラム時の効果が2倍になる。これは巨大でない生物が扱うには四手持ちが必要。}}")]
+    [TestCase(
+        "Gigantic: These items hold twice as much liquid, have twice the energy capacity, contain double the tonic dosage, and dig twice as fast.",
+        "巨大: これらの品は液体容量が2倍になり、エネルギー容量が2倍になり、トニック用量が2倍になり、掘削速度が2倍になる。")]
     public void TryTranslate_TranslatesDynamicWorldModsTemplates(string source, string expected)
     {
         WriteDynamicWorldModsDictionary();

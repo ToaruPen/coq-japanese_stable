@@ -2416,6 +2416,26 @@
       "text": "破壊的な突進"
     },
     {
+      "key": "Aggressive Stance",
+      "text": "攻勢の構え"
+    },
+    {
+      "key": "Defensive Stance",
+      "text": "守勢の構え"
+    },
+    {
+      "key": "Stances",
+      "text": "構え"
+    },
+    {
+      "key": "+1/2 to penetration rolls, -2/-3 to hit while wielding a long blade in your primary hand",
+      "text": "主手に長剣を持っている間、貫通判定+1/+2、命中-2/-3。"
+    },
+    {
+      "key": "+2/3 DV while wielding a long blade in your primary hand",
+      "text": "主手に長剣を持っている間、DV+2/+3。"
+    },
+    {
       "key": "Required Skills",
       "context": "TMP.Skill Requirement",
       "text": "前提スキル"

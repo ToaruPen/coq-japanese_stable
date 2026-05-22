@@ -87,6 +87,8 @@ public sealed partial class Issue201OtherUiBindingPatchTests
     public void AbilityManagerLinePatch_TranslatesGeneratedReleaseGasAbilityName_FromMutationDisplayName()
     {
         WriteDictionary(
+            ("Aggressive Stance", "攻勢の構え"),
+            ("Defensive Stance", "守勢の構え"),
             ("Lase", "レーザー照射"),
             ("Rebuke Robot", "ロボットを叱責"),
             ("turn cooldown", "ターンのクールダウン"),
@@ -131,6 +133,24 @@ public sealed partial class Issue201OtherUiBindingPatchTests
                 },
             });
 
+            var aggressiveStanceTarget = new DummyAbilityManagerLineTarget();
+            aggressiveStanceTarget.setData(new DummyAbilityManagerLineDataTarget
+            {
+                ability = new DummyAbilityEntryTarget
+                {
+                    DisplayName = "Aggressive Stance",
+                },
+            });
+
+            var defensiveStanceTarget = new DummyAbilityManagerLineTarget();
+            defensiveStanceTarget.setData(new DummyAbilityManagerLineDataTarget
+            {
+                ability = new DummyAbilityEntryTarget
+                {
+                    DisplayName = "Defensive Stance",
+                },
+            });
+
             Assert.Multiple(() =>
             {
                 Assert.That(abilityTarget.text.Text, Does.Contain("腐食性ガス放出"));
@@ -139,6 +159,10 @@ public sealed partial class Issue201OtherUiBindingPatchTests
                 Assert.That(laseTarget.text.Text, Does.Not.Contain("Lase (4 charges)"));
                 Assert.That(rebukeRobotTarget.text.Text, Does.Contain("ロボットを叱責"));
                 Assert.That(rebukeRobotTarget.text.Text, Does.Not.Contain("Rebuke Robot"));
+                Assert.That(aggressiveStanceTarget.text.Text, Does.Contain("攻勢の構え"));
+                Assert.That(aggressiveStanceTarget.text.Text, Does.Not.Contain("Aggressive Stance"));
+                Assert.That(defensiveStanceTarget.text.Text, Does.Contain("守勢の構え"));
+                Assert.That(defensiveStanceTarget.text.Text, Does.Not.Contain("Defensive Stance"));
                 Assert.That(
                     DynamicTextObservability.GetRouteFamilyHitCountForTests(nameof(AbilityManagerLineTranslationPatch), "AbilityManagerLine.AbilityText"),
                     Is.GreaterThan(0));

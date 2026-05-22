@@ -291,6 +291,16 @@ public sealed class PopupShowTranslationPatchTests
     }
 
     [Test]
+    public void Prefix_TranslatesEvilTwinFiniteDefectPopup()
+    {
+        WriteDictionary(("{{c|You sense a sinister presence nearby.}}", "{{c|近くに邪悪な気配を感じる。}}"));
+
+        var translated = RunShowWithPopupPatch("{{c|You sense a sinister presence nearby.}}");
+
+        Assert.That(translated, Is.EqualTo("{{c|近くに邪悪な気配を感じる。}}"));
+    }
+
+    [Test]
     public void Prefix_ReturnsEmptyInputUnchanged()
     {
         var translated = RunShowWithPopupPatch(string.Empty);

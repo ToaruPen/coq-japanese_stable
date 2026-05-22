@@ -646,6 +646,101 @@ public sealed class GetDisplayNameRouteTranslatorTests
         Assert.That(translated, Is.EqualTo(expected));
     }
 
+    [TestCase(
+        "{{K|amaranthine}} prism",
+        "{{K|アマランス色}}のプリズム")]
+    [TestCase(
+        "{{K|amara{{y|n}}thine}} prism",
+        "{{K|アマラ}}{{y|ン}}{{K|ス色}}のプリズム")]
+    [TestCase(
+        "{{K|amar{{y|a{{Y|n}}t}}hine}} prism",
+        "{{K|アマラ}}{{y|ン}}{{Y|ス}}{{K|色}}のプリズム")]
+    [TestCase(
+        "{{K|am{{y|ar{{Y|a{{R|n}}t}}hi}}ne}} prism",
+        "{{K|アマ}}{{y|ラ}}{{Y|ン}}{{R|ス}}{{K|色}}のプリズム")]
+    [TestCase(
+        "{{y|am{{Y|a{{y|r{{r|a{{R|n}}t}}h}}i}}ne}} prism",
+        "{{y|アマ}}{{Y|ラ}}{{y|ン}}{{r|ス}}{{R|色}}のプリズム")]
+    [TestCase(
+        "{{r|a{{R|m{{Y|a{{y|r{{r|a{{R|n}}t}}h}}i}}n}}e}} prism",
+        "{{r|ア}}{{R|マ}}{{Y|ラ}}{{y|ン}}{{r|ス}}{{R|色}}のプリズム")]
+    public void TranslatePreservingColors_TranslatesCyclopeanPrismGeneratedDisplayNames(
+        string source,
+        string expected)
+    {
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            source,
+            nameof(GetDisplayNamePatch));
+
+        Assert.That(translated, Is.EqualTo(expected));
+    }
+
+    [TestCase("open air", "開けた空間")]
+    [TestCase("craggy ledge", "険しい岩棚")]
+    public void TranslatePreservingColors_TranslatesPitMaterialRuntimeDisplayNames(
+        string source,
+        string expected)
+    {
+        WriteDictionary(
+            ("open air", "開けた空間"),
+            ("craggy ledge", "険しい岩棚"));
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            source,
+            nameof(GetDisplayNamePatch));
+
+        Assert.That(translated, Is.EqualTo(expected));
+    }
+
+    [TestCase("Evil snapjaw", "邪悪なスナップジョー")]
+    [TestCase("Refracted {{Y|snapjaw}}", "屈折した{{Y|スナップジョー}}")]
+    [TestCase("anti-snapjaw", "反スナップジョー")]
+    [TestCase("anti-{{Y|スナップジョー}}", "反スナップジョー")]
+    public void TranslatePreservingColors_TranslatesEvilTwinGeneratedDisplayNames(
+        string source,
+        string expected)
+    {
+        WriteDictionary(("snapjaw", "スナップジョー"));
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            source,
+            nameof(GetDisplayNamePatch));
+
+        Assert.That(translated, Is.EqualTo(expected));
+    }
+
+    [TestCase(
+        "{{Y|Schemasoft [{{C|Pistols, Mid Tier}}]}}",
+        "{{Y|スキーマソフト [{{C|ピストル, 中位}}]}}")]
+    [TestCase(
+        "Schemasoft [Ammo and Energy Cells, Low Tier]",
+        "スキーマソフト [弾薬とエネルギーセル, 下位]")]
+    [TestCase(
+        "{{Y|Schemasoft [{{C|Heavy Weapons, High Tier}}]}}",
+        "{{Y|スキーマソフト [{{C|重火器, 上位}}]}}")]
+    public void TranslatePreservingColors_TranslatesCyberneticsSchemasoftGeneratedDisplayName(
+        string source,
+        string expected)
+    {
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            source,
+            nameof(GetDisplayNamePatch));
+
+        Assert.That(translated, Is.EqualTo(expected));
+    }
+
+    [TestCase("Schemasoft [Unknown, Low Tier]")]
+    [TestCase("{{Y|Schemasoft [{{C|Pistols, Unknown Tier}}]}}")]
+    public void TranslatePreservingColors_LeavesUnknownCyberneticsSchemasoftGeneratedDisplayNameUnchanged(
+        string source)
+    {
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            source,
+            nameof(GetDisplayNamePatch));
+
+        Assert.That(translated, Is.EqualTo(source));
+    }
+
     [Test]
     public void TranslatePreservingColors_PrefersTrimmedExactLookupBeforeProperNameModifierHeuristic()
     {

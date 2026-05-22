@@ -395,7 +395,8 @@ def test_policy_separates_reviewed_issue711_work_without_overclaiming_closure() 
     )
     inventory_family_id = "XRL.World.Parts/Inventory.cs::Inventory.FireEvent(Event)"
     tombstone_family_id = "XRL.World.Parts/Tombstone.cs::Tombstone.GenerateTombstone()"
-    mod_gigantic_family_id = "XRL.World.Parts/ModGigantic.cs::ModGigantic.GetDescription(int,GameObject)"
+    mod_gigantic_fixed_family_id = "XRL.World.Parts/ModGigantic.cs::ModGigantic.GetDescription(int)"
+    mod_gigantic_dynamic_family_id = "XRL.World.Parts/ModGigantic.cs::ModGigantic.GetDescription(int,GameObject)"
 
     inventory = _inventory(
         [
@@ -418,7 +419,13 @@ def test_policy_separates_reviewed_issue711_work_without_overclaiming_closure() 
                 {"HistoricStringExpander": 1},
             ),
             _family(
-                mod_gigantic_family_id,
+                mod_gigantic_fixed_family_id,
+                "XRL.World.Parts/ModGigantic.cs",
+                "GetDescription",
+                {"EffectDescriptionReturn": 1},
+            ),
+            _family(
+                mod_gigantic_dynamic_family_id,
                 "XRL.World.Parts/ModGigantic.cs",
                 "GetDescription",
                 {"EffectDescriptionReturn": 1},
@@ -431,7 +438,290 @@ def test_policy_separates_reviewed_issue711_work_without_overclaiming_closure() 
     assert entries[missile_hit_family_id]["closure_status"] == "covered_by_owner_route"
     assert entries[inventory_family_id]["closure_status"] == "partial_coverage"
     assert entries[tombstone_family_id]["closure_status"] == "covered_by_owner_route"
-    assert entries[mod_gigantic_family_id]["closure_status"] == "likely_true_gap"
+    assert entries[mod_gigantic_fixed_family_id]["closure_status"] == "covered_by_owner_route"
+    assert entries[mod_gigantic_dynamic_family_id]["closure_status"] == "covered_by_owner_route"
+
+    mod_gigantic_fixed_evidence = " ".join(entries[mod_gigantic_fixed_family_id]["closure_evidence"])
+    assert "world-mods.ja.json" in mod_gigantic_fixed_evidence
+    assert "DescriptionShortDescriptionPatchTests.cs" in mod_gigantic_fixed_evidence
+
+    mod_gigantic_dynamic_evidence = " ".join(entries[mod_gigantic_dynamic_family_id]["closure_evidence"])
+    assert "WorldModsTextTranslator.cs" in mod_gigantic_dynamic_evidence
+    assert "TinkeringDetailsLineTranslationPatch.cs" in mod_gigantic_dynamic_evidence
+    assert "TinkeringTranslationPatchTests.cs" in mod_gigantic_dynamic_evidence
+
+
+def test_policy_records_issue762_first_slice_without_overclaiming_family_closure() -> None:
+    """Issue-762 first slices are partial coverage until sibling route shapes are split."""
+    schemasoft_init_family_id = "XRL.World.Parts/CyberneticsSchemasoft.cs::CyberneticsSchemasoft.InitChip(bool)"
+    schemasoft_description_family_id = (
+        "XRL.World.Parts/CyberneticsSchemasoft.cs::"
+        "CyberneticsSchemasoft.HandleEvent(GetCyberneticsBehaviorDescriptionEvent)"
+    )
+    longblades_initialize_family_id = "XRL.World.Parts/LongBladesCore.cs::LongBladesCore.Initialize()"
+    sparking_baetyl_rewards_family_id = (
+        "XRL.World/RandomAltarBaetylRewardManager.cs::"
+        "RandomAltarBaetylRewardManager.HandleRewardNode(XmlDataHelper)"
+    )
+    turret_family_id = "XRL.World.Parts/TurretTinker.cs::TurretTinker.FireEvent(Event)"
+    bandage_family_id = (
+        "XRL.World.Parts/BandageMedication.cs::BandageMedication.PerformBandaging(GameObject,GameObject)"
+    )
+    multihorns_family_id = (
+        "XRL.World.Parts.Mutation/MultiHorns.cs::MultiHorns.PerformCharge(List<Cell>,bool)"
+    )
+    inventory = _inventory(
+        [
+            _family(
+                schemasoft_init_family_id,
+                "XRL.World.Parts/CyberneticsSchemasoft.cs",
+                "InitChip",
+                {"DisplayNameAssignment": 1},
+            ),
+            _family(
+                schemasoft_description_family_id,
+                "XRL.World.Parts/CyberneticsSchemasoft.cs",
+                "HandleEvent",
+                {"EffectDescriptionReturn": 1},
+            ),
+            _family(
+                longblades_initialize_family_id,
+                "XRL.World.Parts/LongBladesCore.cs",
+                "Initialize",
+                {"ActivatedAbility": 3},
+            ),
+            _family(
+                sparking_baetyl_rewards_family_id,
+                "XRL.World/RandomAltarBaetylRewardManager.cs",
+                "HandleRewardNode",
+                {"DescriptionAssignment": 1},
+            ),
+            _family(
+                turret_family_id,
+                "XRL.World.Parts/TurretTinker.cs",
+                "FireEvent",
+                {"ActivatedAbility": 1, "Popup": 1},
+            ),
+            _family(
+                bandage_family_id,
+                "XRL.World.Parts/BandageMedication.cs",
+                "PerformBandaging",
+                {"MessageFrame": 2, "Does": 2},
+            ),
+            _family(
+                multihorns_family_id,
+                "XRL.World.Parts.Mutation/MultiHorns.cs",
+                "PerformCharge",
+                {"MessageFrame": 3},
+            ),
+        ]
+    )
+
+    entries = {entry["family_id"]: entry for entry in valuable_surface_queue(inventory)}
+
+    assert entries[schemasoft_init_family_id]["closure_status"] == "covered_by_owner_route"
+    assert entries[schemasoft_description_family_id]["closure_status"] == "covered_by_owner_route"
+    assert entries[longblades_initialize_family_id]["closure_status"] == "covered_by_owner_route"
+    assert entries[sparking_baetyl_rewards_family_id]["closure_status"] == "covered_by_owner_route"
+
+    schemasoft_evidence = " ".join(entries[schemasoft_init_family_id]["closure_evidence"])
+    assert "GetDisplayNameRouteTranslator.cs" in schemasoft_evidence
+    assert "GetDisplayNameRouteTranslatorTests.cs" in schemasoft_evidence
+
+    schemasoft_description_evidence = " ".join(entries[schemasoft_description_family_id]["closure_evidence"])
+    assert "CyberneticsBehaviorDescriptionTranslationPatch.cs" in schemasoft_description_evidence
+    assert "CyberneticsBehaviorDescriptionTranslationPatchTests.cs" in schemasoft_description_evidence
+
+    longblades_evidence = " ".join(entries[longblades_initialize_family_id]["closure_evidence"])
+    assert "ActivatedAbilityNameTranslator.cs" in longblades_evidence
+    assert "AbilityBarButtonTextTranslationPatchTests.cs" in longblades_evidence
+    assert "AbilityManagerLineTranslationPatchTests.cs" in longblades_evidence
+    assert "AbilityManagerScreenTranslationPatchTests.cs" in longblades_evidence
+    assert "ui-skillsandpowers.ja.json" in longblades_evidence
+
+    sparking_baetyl_rewards_evidence = " ".join(entries[sparking_baetyl_rewards_family_id]["closure_evidence"])
+    assert "SparkingBaetyls.jp.xml" in sparking_baetyl_rewards_evidence
+    assert "test_sparking_baetyl_rewards.py" in sparking_baetyl_rewards_evidence
+    assert "popup and wish routes remain separate" in sparking_baetyl_rewards_evidence
+
+    for family_id in [turret_family_id, bandage_family_id, multihorns_family_id]:
+        assert entries[family_id]["closure_status"] == "partial_coverage"
+
+    turret_evidence = " ".join(entries[turret_family_id]["closure_evidence"])
+    assert "ActivatedAbilityNameTranslator.cs" in turret_evidence
+    assert "AbilityBarButtonTextTranslationPatchTests.cs" in turret_evidence
+
+    bandage_evidence = " ".join(entries[bandage_family_id]["closure_evidence"])
+    assert "MessageFrameTranslatorTests.cs" in bandage_evidence
+    assert "MessageFrames/verbs.ja.json" in bandage_evidence
+
+    multihorns_evidence = " ".join(entries[multihorns_family_id]["closure_evidence"])
+    assert "MessageFrameTranslatorTests.cs" in multihorns_evidence
+    assert "MessageFrames/verbs.ja.json" in multihorns_evidence
+
+
+def test_policy_records_issue762_generated_display_and_pit_routes() -> None:
+    """Issue-762 finite display/description owner routes are closed without sibling overclaiming."""
+    cyclopean_prism_action_family_id = (
+        "XRL.World.Parts/CyclopeanPrism.cs::CyclopeanPrism.HandleEvent(BeginTakeActionEvent)"
+    )
+    cyclopean_prism_reset_family_id = "XRL.World.Parts/CyclopeanPrism.cs::CyclopeanPrism.ResetPrism()"
+    pit_material_paint_family_id = "XRL.World.Parts/PitMaterial.cs::PitMaterial.PaintPit()"
+    pit_material_fire_family_id = "XRL.World.Parts/PitMaterial.cs::PitMaterial.FireEvent(Event)"
+    templar_phylactery_family_id = (
+        "XRL.World.Parts/TemplarPhylactery.cs::"
+        "TemplarPhylactery.HandleEvent(AfterObjectCreatedEvent)"
+    )
+    inventory = _inventory(
+        [
+            _family(
+                cyclopean_prism_action_family_id,
+                "XRL.World.Parts/CyclopeanPrism.cs",
+                "HandleEvent",
+                {"DisplayNameAssignment": 1},
+            ),
+            _family(
+                cyclopean_prism_reset_family_id,
+                "XRL.World.Parts/CyclopeanPrism.cs",
+                "ResetPrism",
+                {"DisplayNameAssignment": 1},
+            ),
+            _family(
+                pit_material_paint_family_id,
+                "XRL.World.Parts/PitMaterial.cs",
+                "PaintPit",
+                {"DisplayNameAssignment": 2, "DescriptionAssignment": 1},
+            ),
+            _family(
+                pit_material_fire_family_id,
+                "XRL.World.Parts/PitMaterial.cs",
+                "FireEvent",
+                {"DisplayNameAssignment": 2, "DescriptionAssignment": 1},
+            ),
+            _family(
+                templar_phylactery_family_id,
+                "XRL.World.Parts/TemplarPhylactery.cs",
+                "HandleEvent",
+                {"DisplayNameAssignment": 1},
+            ),
+        ]
+    )
+
+    entries = {entry["family_id"]: entry for entry in valuable_surface_queue(inventory)}
+
+    assert entries[cyclopean_prism_action_family_id]["closure_status"] == "covered_by_owner_route"
+    assert entries[cyclopean_prism_reset_family_id]["closure_status"] == "covered_by_owner_route"
+    assert entries[pit_material_paint_family_id]["closure_status"] == "covered_by_owner_route"
+    assert entries[pit_material_fire_family_id]["closure_status"] == "covered_by_owner_route"
+    assert entries[templar_phylactery_family_id]["closure_status"] == "covered_by_owner_route"
+
+    cyclopean_prism_evidence = " ".join(entries[cyclopean_prism_action_family_id]["closure_evidence"])
+    assert "GetDisplayNameRouteTranslator.cs" in cyclopean_prism_evidence
+    assert "PtohAnnoyed popup and Die text remain separate" in cyclopean_prism_evidence
+
+    pit_material_evidence = " ".join(entries[pit_material_paint_family_id]["closure_evidence"])
+    assert "ui-displayname-atomic.ja.json" in pit_material_evidence
+    assert "descriptions.ja.json" in pit_material_evidence
+    assert "DescriptionShortDescriptionPatchTests.cs" in pit_material_evidence
+
+    templar_phylactery_evidence = " ".join(entries[templar_phylactery_family_id]["closure_evidence"])
+    assert "generated English-prefix display-name route" in templar_phylactery_evidence
+    assert "hacking popup and spawn message families remain separate" in templar_phylactery_evidence
+
+
+def test_policy_records_issue762_evil_twin_route_split() -> None:
+    """EvilTwin display/description coverage is split from arbitrary caller popup routes."""
+    create_family_id = (
+        "XRL.World.Parts.Mutation/EvilTwin.cs::"
+        "EvilTwin.CreateEvilTwin(GameObject,string,Cell,string,string,GameObject,string,bool,string,string)"
+    )
+    description_family_id = "XRL.World.Parts.Mutation/EvilTwin.cs::EvilTwin.GetDescription()"
+    inventory = _inventory(
+        [
+            _family(
+                create_family_id,
+                "XRL.World.Parts.Mutation/EvilTwin.cs",
+                "CreateEvilTwin",
+                {"DisplayNameAssignment": 3, "Assignment": 5},
+            ),
+            _family(
+                description_family_id,
+                "XRL.World.Parts.Mutation/EvilTwin.cs",
+                "GetDescription",
+                {"EffectDescriptionReturn": 1},
+            ),
+        ]
+    )
+
+    entries = {entry["family_id"]: entry for entry in valuable_surface_queue(inventory)}
+
+    assert entries[create_family_id]["closure_status"] == "partial_coverage"
+    assert entries[description_family_id]["closure_status"] == "covered_by_owner_route"
+
+    create_evidence = " ".join(entries[create_family_id]["closure_evidence"])
+    assert "GetDisplayNameRouteTranslator.cs" in create_evidence
+    assert "descriptions.ja.json" in create_evidence
+    assert "ui-popup.ja.json" in create_evidence
+    assert "arbitrary caller-supplied Prefix, Message, and MessageForActor values remain split" in create_evidence
+
+    description_evidence = " ".join(entries[description_family_id]["closure_evidence"])
+    assert "mutation-descriptions.ja.json" in description_evidence
+    assert "runtime clone creation display/popup text is tracked separately" in description_evidence
+
+
+def test_policy_records_issue762_cherubim_generated_text_routes() -> None:
+    """Cherubim element and hexacherubim generation routes have owner-route coverage."""
+    cherubim_handle_family_id = (
+        "XRL.World.Parts/CherubimSpawner.cs::CherubimSpawner.HandleEvent(BeforeObjectCreatedEvent)"
+    )
+    cherubim_bestow_family_id = (
+        "XRL.World.Parts/CherubimSpawner.cs::CherubimSpawner.BestowElement(GameObject,string,bool)"
+    )
+    hexacherubim_family_id = (
+        "XRL.World.Parts/HexacherubimSpawner.cs::HexacherubimSpawner.HandleEvent(BeforeObjectCreatedEvent)"
+    )
+    inventory = _inventory(
+        [
+            _family(
+                cherubim_handle_family_id,
+                "XRL.World.Parts/CherubimSpawner.cs",
+                "HandleEvent",
+                {"DisplayNameAssignment": 1, "DescriptionAssignment": 1},
+            ),
+            _family(
+                cherubim_bestow_family_id,
+                "XRL.World.Parts/CherubimSpawner.cs",
+                "BestowElement",
+                {"DisplayNameAssignment": 1, "PartTextAssignment": 1},
+            ),
+            _family(
+                hexacherubim_family_id,
+                "XRL.World.Parts/HexacherubimSpawner.cs",
+                "HandleEvent",
+                {"DisplayNameAssignment": 1, "DescriptionAssignment": 1},
+            ),
+        ]
+    )
+
+    entries = {entry["family_id"]: entry for entry in valuable_surface_queue(inventory)}
+
+    assert entries[cherubim_handle_family_id]["closure_status"] == "partial_coverage"
+    assert entries[cherubim_bestow_family_id]["closure_status"] == "covered_by_owner_route"
+    assert entries[hexacherubim_family_id]["closure_status"] == "covered_by_owner_route"
+
+    handle_evidence = " ".join(entries[cherubim_handle_family_id]["closure_evidence"])
+    assert "CherubimSpawnerHandleEventTranslationPatch.cs" in handle_evidence
+    assert "CherubimSpawnerBestowElementTranslationPatch.cs" in handle_evidence
+    assert "base cherub description route remains split" in handle_evidence
+
+    bestow_evidence = " ".join(entries[cherubim_bestow_family_id]["closure_evidence"])
+    assert "CherubimSpawnerBestowElementTranslationPatch.cs" in bestow_evidence
+    assert "CherubimSpawnerGeneratedTextTranslationPatchTests.cs" in bestow_evidence
+    assert "PrependName=false intentionally leaves display names unchanged" in bestow_evidence
+
+    hexacherubim_evidence = " ".join(entries[hexacherubim_family_id]["closure_evidence"])
+    assert "HexacherubimSpawnerHandleEventTranslationPatch.cs" in hexacherubim_evidence
+    assert "delegated BestowElement RulesDescription text" in hexacherubim_evidence
 
 
 def test_policy_records_issue737_hse_runtime_gap_progress_and_journal_route_closure() -> None:

@@ -597,6 +597,72 @@ public sealed class AbilityManagerScreenTranslationPatchTests
     }
 
     [Test]
+    public void Postfix_TranslatesLongBladesCoreGeneratedStanceAbilityDetails_WhenHighlightChanges()
+    {
+        WriteDictionary(
+            ("Aggressive Stance", "攻勢の構え"),
+            ("Defensive Stance", "守勢の構え"),
+            ("Stances", "構え"),
+            ("Type: ", "種別: "),
+            (
+                "+1/2 to penetration rolls, -2/-3 to hit while wielding a long blade in your primary hand",
+                "主手に長剣を持っている間、貫通判定+1/+2、命中-2/-3。"),
+            (
+                "+2/3 DV while wielding a long blade in your primary hand",
+                "主手に長剣を持っている間、DV+2/+3。"));
+
+        var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyAbilityManagerScreenTarget), nameof(DummyAbilityManagerScreenTarget.HandleHighlightLeft)),
+                postfix: new HarmonyMethod(RequirePatchPostfix()));
+
+            var screen = new DummyAbilityManagerScreenTarget();
+            screen.HandleHighlightLeft(new DummyAbilityManagerScreenLineData
+            {
+                Id = "ability",
+                ability = new DummyAbilityManagerEntryTarget
+                {
+                    DisplayName = "Aggressive Stance",
+                    Class = "Stances",
+                    Description = "+1/2 to penetration rolls, -2/-3 to hit while wielding a long blade in your primary hand",
+                },
+            });
+
+            var defensiveScreen = new DummyAbilityManagerScreenTarget();
+            defensiveScreen.HandleHighlightLeft(new DummyAbilityManagerScreenLineData
+            {
+                Id = "ability",
+                ability = new DummyAbilityManagerEntryTarget
+                {
+                    DisplayName = "Defensive Stance",
+                    Class = "Stances",
+                    Description = "+2/3 DV while wielding a long blade in your primary hand",
+                },
+            });
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(screen.rightSideHeaderText.text, Is.EqualTo("攻勢の構え"));
+                Assert.That(
+                    screen.rightSideDescriptionArea.text,
+                    Is.EqualTo("{{y|種別: }}構え\n\n主手に長剣を持っている間、貫通判定+1/+2、命中-2/-3。"));
+                Assert.That(defensiveScreen.rightSideHeaderText.text, Is.EqualTo("守勢の構え"));
+                Assert.That(
+                    defensiveScreen.rightSideDescriptionArea.text,
+                    Is.EqualTo("{{y|種別: }}構え\n\n主手に長剣を持っている間、DV+2/+3。"));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void PopupPrefix_TranslatesNoFilteredAbilitiesMessage_WhenOwnerPatched()
     {
         AssertOwnerPopupMessage(
