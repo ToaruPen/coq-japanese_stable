@@ -50,6 +50,8 @@ public static class QudTestRouteExecutor
                 return PopupTranslationPatch.TranslatePopupMenuItemTextForProducerRoute(source, nameof(PopupTranslationPatch));
             case "popup-message-button":
                 return PopupTranslationPatch.TranslatePopupTextForProducerRoute(source, nameof(PopupMessageTranslationPatch));
+            case "givesrep-popup":
+                return ExecuteGivesRepPopup(source);
             case "bottom-context-item":
                 return ExecuteBottomContextItem(source);
             case "game-summary-menu-literal":
@@ -302,6 +304,18 @@ public static class QudTestRouteExecutor
         var message = source;
         PopupAskStringTranslationPatch.Prefix(ref message);
         return message;
+    }
+
+    private static string ExecuteGivesRepPopup(string source)
+    {
+        return SingleCallsiteOwnerPopupTranslationPatch.TryTranslatePopupMessageForOwnerKey(
+            source,
+            "XRL.World.Parts.GivesRep|HandleEvent",
+            nameof(PopupShowTranslationPatch),
+            "SingleCallsiteOwnerPopup",
+            out var translated)
+            ? translated
+            : source;
     }
 
     private static string ExecuteBottomContextItem(string source)

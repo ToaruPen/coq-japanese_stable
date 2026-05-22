@@ -12826,6 +12826,47 @@ COVERED_OWNER_FAMILIES: Final = (
     *_object_blueprint_template_emit_families(),
     *_power_switch_template_emit_families(),
     CoveredOwnerFamily(
+        family_id="XRL.World.Parts/GivesRep.cs::XRL.World.Parts.GivesRep.HandleEvent",
+        inventory_statuses=("runtime_required",),
+        evidence_files=(
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/SingleCallsiteOwnerPopupTranslationPatch.cs",
+                (
+                    "GivesRepOwner",
+                    "GivesRepWaterRitualCursePrefix",
+                    "GivesRepWaterRitualCurse",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                ("SingleCallsiteOwnerPopupTranslationPatch.TryTranslatePopupMessage",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/SingleCallsiteOwnerPopupTranslationPatchTests.cs",
+                (
+                    "Patch_TranslatesGivesRepWaterRitualCursePrefixAndPreservesAppendedLines_WhenOwnerPatched",
+                    "Patch_DoesNotTranslateGivesRepWaterRitualCursePrefix_WhenOwnerAbsent",
+                    "nameof(DummySingleCallsiteOwnerPopupTarget.HandleGivesRepBeforeDeathRemoval)",
+                    "GivesRepWaterRitualCurse",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                (
+                    "typeof(SingleCallsiteOwnerPopupTranslationPatch)",
+                    "XRL.World.Parts.GivesRep|HandleEvent|System.Boolean|XRL.World.BeforeDeathRemovalEvent",
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/QudTest/fixtures/runtime-smoke.json",
+                (
+                    "givesrep-popup.water-ritual-curse-preserves-reputation-line",
+                    "Your reputation with the Fellowship of Wardens decreases by 100.",
+                ),
+            ),
+        ),
+    ),
+    CoveredOwnerFamily(
         family_id="XRL.World.Parts/LiquidVolume.cs::XRL.World.Parts.LiquidVolume.Pour",
         inventory_statuses=("owner_patch_required",),
         evidence_files=(

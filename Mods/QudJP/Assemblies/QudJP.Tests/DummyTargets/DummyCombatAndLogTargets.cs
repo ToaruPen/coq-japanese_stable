@@ -2158,6 +2158,13 @@ internal sealed class DummySingleCallsiteOwnerPopupTarget
         return true;
     }
 
+    public bool HandleGivesRepBeforeDeathRemoval(DummyBeforeDeathRemovalEvent? e = null)
+    {
+        _ = e;
+        DummyPopupShow.Show(PopupMessageToShow);
+        return true;
+    }
+
     public static void WishMutation(string? argument = null)
     {
         _ = argument;

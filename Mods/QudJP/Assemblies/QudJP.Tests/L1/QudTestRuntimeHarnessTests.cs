@@ -139,6 +139,10 @@ public sealed class QudTestRuntimeHarnessTests
         "セーブせずに終了すると保存されていない進行状況がすべて失われます。本当に終了しますか？\\n\\n「QUIT」と入力すると確定します。")]
     [TestCase("popup-message-button", "{{W|[Tab]}} {{y|Hold to Accept}}", "{{W|[Tab]}} {{y|長押しして決定}}")]
     [TestCase("popup-message-button", "{{W|[Esc]}} {{y|Quit Without Saving}}", "{{W|[Esc]}} {{y|セーブせずに終了}}")]
+    [TestCase(
+        "givesrep-popup",
+        "You violated the covenant of the water ritual and killed your bonded kith. You are cursed.\n\nYour reputation with the Fellowship of Wardens decreases by 100.",
+        "水の契りを破り、結んだ仲間を殺した。あなたは呪われている。\n\nYour reputation with the Fellowship of Wardens decreases by 100.")]
     [TestCase("popup-menu-item", "{{W|[space]}} {{y|Continue}}", "{{W|[Space]}} {{y|続ける}}")]
     [TestCase("popup-menu-item", "{{W|[Esc]}} {{y|Cancel}}", "{{W|[Esc]}} {{y|キャンセル}}")]
     [TestCase("bottom-context-item", "{{W|[space]}} {{y|Continue}}", "{{W|[Space]}} {{y|続ける}}")]

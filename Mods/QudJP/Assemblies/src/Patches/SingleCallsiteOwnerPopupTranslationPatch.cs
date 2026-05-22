@@ -73,6 +73,11 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
     private const string XrlGameLoadGameOwner = "XRL.XRLGame|LoadGame";
     private const string ThinWorldTransitOwner = "XRL.World.Parts.ThinWorld|TransitToThinWorld";
     private const string PlayerMuralControllerOwner = "XRL.World.Parts.PlayerMuralController|HandleEvent";
+    private const string GivesRepOwner = "XRL.World.Parts.GivesRep|HandleEvent";
+    private const string GivesRepWaterRitualCursePrefix =
+        "You violated the covenant of the water ritual and killed your bonded kith. You are cursed.\n\n";
+    private const string GivesRepWaterRitualCursePrefixJa =
+        "水の契りを破り、結んだ仲間を殺した。あなたは呪われている。\n\n";
 
     private static readonly Regex DecoyOutOfRangePattern = new(
         "^That is out of range \\((?<range>.+?) (?<unit>squares?)\\)$",
@@ -759,6 +764,11 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
             "XRL.World.Parts.PlayerMuralController",
             "HandleEvent",
             [endTurnEventType]);
+        AddTarget(
+            targets,
+            "XRL.World.Parts.GivesRep",
+            "HandleEvent",
+            [beforeDeathRemovalEventType]);
         return targets;
     }
 
@@ -842,6 +852,14 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
 
     private static bool TryTranslateCore(string source, string? ownerKey, out string translated, out string detail)
     {
+        if (OwnerMatches(ownerKey, GivesRepOwner)
+            && source.StartsWith(GivesRepWaterRitualCursePrefix, StringComparison.Ordinal))
+        {
+            translated = GivesRepWaterRitualCursePrefixJa + source.Substring(GivesRepWaterRitualCursePrefix.Length);
+            detail = "GivesRepWaterRitualCurse";
+            return true;
+        }
+
         if (OwnerMatches(ownerKey, AscensionBarathrumOwner)
             && source.EndsWith(" left your party.", StringComparison.Ordinal)
             && DoesVerbRouteTranslator.TryTranslatePlainSentence(source, out translated))
