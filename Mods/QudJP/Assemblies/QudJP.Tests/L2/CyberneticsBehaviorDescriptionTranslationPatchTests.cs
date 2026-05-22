@@ -68,4 +68,15 @@ public sealed class CyberneticsBehaviorDescriptionTranslationPatchTests
 
         Assert.That(result, Is.EqualTo(source));
     }
+
+    [Test]
+    public void Postfix_StripsDirectTranslationMarkerWithoutReapplyingPatterns()
+    {
+        string? result = MessageFrameTranslator.DirectTranslationMarker
+            + "You gain access to every schematic of low tier pistols.";
+
+        CyberneticsBehaviorDescriptionTranslationPatch.Postfix(ref result);
+
+        Assert.That(result, Is.EqualTo("You gain access to every schematic of low tier pistols."));
+    }
 }

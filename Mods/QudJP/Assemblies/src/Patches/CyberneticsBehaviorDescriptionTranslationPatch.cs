@@ -48,22 +48,25 @@ public static class CyberneticsBehaviorDescriptionTranslationPatch
 
     internal static bool TryTranslate(string? source, out string translated)
     {
-        if (string.IsNullOrEmpty(source)
-            || MessageFrameTranslator.TryStripDirectTranslationMarker(source, out _))
+        if (source is null)
         {
-            if (source is null)
-            {
-                translated = string.Empty;
-            }
-            else
-            {
-                translated = source;
-            }
-
+            translated = string.Empty;
             return false;
         }
 
-        var original = source!;
+        if (source.Length == 0)
+        {
+            translated = source;
+            return false;
+        }
+
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
+        {
+            translated = markedText;
+            return true;
+        }
+
+        var original = source;
         var lines = original.Split('\n');
         var changed = false;
         for (var index = 0; index < lines.Length; index++)
