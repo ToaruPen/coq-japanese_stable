@@ -698,6 +698,60 @@ public sealed class LocalizationCoverageTests
     }
 
     [Test]
+    public void ObjectBlueprintDescriptionText_DoesNotUsePoliteNarration()
+    {
+        var objectBlueprintRoot = Path.Combine(localizationRoot, "ObjectBlueprints");
+        var politePattern = new Regex(
+            "(?:でした|ました|でしょう|ません|ください|かもしれません|です(?=[。！？?？、,]|$))",
+            RegexOptions.CultureInvariant);
+        var offenders = Directory.EnumerateFiles(objectBlueprintRoot, "*.jp.xml")
+            .SelectMany(file => XDocument.Load(file).Root!
+                .Elements("object")
+                .SelectMany(obj => obj.Elements("part")
+                    .Where(static part =>
+                        string.Equals(part.Attribute("Name")?.Value, "Description", StringComparison.Ordinal)
+                        || string.Equals(part.Attribute("Name")?.Value, "RulesDescription", StringComparison.Ordinal))
+                    .SelectMany(part => new[] { "Short", "Text", "GenotypeAlt" }
+                        .Select(attributeName => new
+                        {
+                            FileName = Path.GetFileName(file),
+                            ObjectName = obj.Attribute("Name")?.Value ?? string.Empty,
+                            PartName = part.Attribute("Name")?.Value ?? string.Empty,
+                            AttributeName = attributeName,
+                            Value = part.Attribute(attributeName)?.Value ?? string.Empty,
+                        }))))
+            .Where(row => !string.IsNullOrEmpty(row.Value) && politePattern.IsMatch(row.Value))
+            .Select(row => $"{row.FileName}#{row.ObjectName}:{row.PartName}.{row.AttributeName}={row.Value}")
+            .ToArray();
+
+        Assert.That(
+            offenders,
+            Is.Empty,
+            "Object and rules descriptions should use plain descriptive narration; dialogue/chat commands are outside this check.");
+    }
+
+    [Test]
+    public void CrackedLensHistorySpiceToken_MatchesObjectDisplayName()
+    {
+        var itemsDocument = XDocument.Load(Path.Combine(localizationRoot, "ObjectBlueprints", "Items.jp.xml"));
+        var crackedLensDisplayName = itemsDocument.Root!
+            .Elements("object")
+            .Single(element => string.Equals(element.Attribute("Name")?.Value, "Scrap Crystal", StringComparison.Ordinal))
+            .Elements("part")
+            .Single(element => string.Equals(element.Attribute("Name")?.Value, "Render", StringComparison.Ordinal))
+            .Attribute("DisplayName")?.Value;
+        var historySpiceTokenText = LoadEntries(Path.Combine(localizationRoot, "Dictionaries", "world-gospels.ja.json"))
+            .Single(entry => string.Equals(entry.Key, "cracked lens", StringComparison.Ordinal))
+            .Text;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(crackedLensDisplayName, Is.EqualTo("ひび割れたレンズ"));
+            Assert.That(historySpiceTokenText, Is.EqualTo(crackedLensDisplayName));
+        });
+    }
+
+    [Test]
     public void TreatAsSolidMessages_AreLocalizedInObjectBlueprintOverlays()
     {
         var objectBlueprintRoot = Path.Combine(localizationRoot, "ObjectBlueprints");

@@ -351,7 +351,7 @@ jobs:
           --expect-count emit-message=342
           --expect-count does-verb=0
           --expect-count message-log=1
-          --expect-count description=10
+          --expect-count description=13
           --expect-count effect-cripple=1
           --expect-count needs-harmony-patch=0
           --expect-count unclassified=0

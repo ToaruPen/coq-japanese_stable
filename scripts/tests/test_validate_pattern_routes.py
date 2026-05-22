@@ -15,7 +15,7 @@ _EXPECTED_MESSAGE_ROUTE_COUNTS = {
     "emit-message": 342,
     "does-verb": 0,
     "message-log": 1,
-    "description": 10,
+    "description": 13,
     "effect-cripple": 1,
     "needs-harmony-patch": 0,
     "unclassified": 0,

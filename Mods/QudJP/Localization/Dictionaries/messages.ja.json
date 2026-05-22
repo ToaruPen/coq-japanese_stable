@@ -38,6 +38,21 @@
       "route": "description"
     },
     {
+      "pattern": "^(?:\\{\\{C\\|)?Painted: This object is painted with a scene from the history of the village (.+?):(?:\\}\\})?$",
+      "template": "この物体には{0}村の歴史の一場面が描かれている:",
+      "route": "description"
+    },
+    {
+      "pattern": "^(?:\\{\\{C\\|)?Engraved: This object is engraved with a scene from the history of the village (.+?):(?:\\}\\})?$",
+      "template": "この物体には{0}村の歴史の一場面が彫り刻まれている:",
+      "route": "description"
+    },
+    {
+      "pattern": "^(?:\\{\\{C\\|)?Holographic: This hologram depicts a scene from the history of the village (.+?):(?:\\}\\})?$",
+      "template": "このホログラムには{0}村の歴史の一場面が描かれている:",
+      "route": "description"
+    },
+    {
       "pattern": "^The sanctity of (?:the )?(.+?) was revealed to the people of (.+?) through the dish known as (.+?)\\.(?:\\}\\})?$",
       "template": "{t2}として知られる料理を通じて、{0}の聖性が{1}の人々に示された。",
       "route": "description"

@@ -23,6 +23,9 @@ internal static class WorldModsTextTranslator
     private static readonly Regex PaintedPattern = new Regex(
         "^Painted: This item is painted with a scene from the life of the ancient (?<subject>.+):$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex EngravedPattern = new Regex(
+        "^Engraved: This item is engraved with a scene from the life of the ancient (?<subject>.+):$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex DataDiskItemModificationPattern = new Regex(
         "^Adds item modification: (?<description>.+)$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
@@ -335,7 +338,19 @@ internal static class WorldModsTextTranslator
             family,
             PaintedPattern,
             "Painted: This item is painted with a scene from the life of the ancient {0}:",
-            (match, spans) => new[] { GetTranslatedCapture(match, spans, "subject", TranslatePaintedSubject) },
+            (match, spans) => new[] { GetTranslatedHistoricSceneSubject(match, spans, "subject") },
+            out translated))
+        {
+            return true;
+        }
+
+        if (TryTranslateTemplate(
+            source,
+            route,
+            family,
+            EngravedPattern,
+            "Engraved: This item is engraved with a scene from the life of the ancient {0}:",
+            (match, spans) => new[] { GetTranslatedHistoricSceneSubject(match, spans, "subject") },
             out translated))
         {
             return true;
@@ -1000,6 +1015,48 @@ internal static class WorldModsTextTranslator
 
         var restored = RestoreTrueWholeBoundary(value, spans, group.Index, group.Length);
         return HasUnbalancedQudSpan(restored) ? value : restored;
+    }
+
+    private static string GetTranslatedHistoricSceneSubject(Match match, IReadOnlyList<ColorSpan> spans, string groupName)
+    {
+        var group = match.Groups[groupName];
+        var translatedVisible = TranslatePaintedSubject(group.Value);
+        if (spans.Count == 0)
+        {
+            return translatedVisible;
+        }
+
+        var restored = ColorAwareTranslationComposer.RestoreCapture(group.Value, spans, group);
+        if (!ColorAwareTranslationComposer.HasColorMarkup(restored))
+        {
+            return translatedVisible;
+        }
+
+        var translated = TranslatePaintedSubjectPreservingMarkup(restored, group.Value, translatedVisible);
+        return HasUnbalancedQudSpan(translated) ? translatedVisible : translated;
+    }
+
+    private static string TranslatePaintedSubjectPreservingMarkup(string restored, string visible, string translatedVisible)
+    {
+        if (string.Equals(translatedVisible, visible, StringComparison.Ordinal))
+        {
+            return restored;
+        }
+
+        var separator = visible.IndexOf(' ');
+        if (separator > 0)
+        {
+            var head = visible.Substring(0, separator);
+            var headTranslation = TranslateTemplateCapture(head);
+            if (!string.Equals(headTranslation, head, StringComparison.Ordinal)
+                && string.Equals(translatedVisible, headTranslation + visible.Substring(separator), StringComparison.Ordinal)
+                && restored.StartsWith(head, StringComparison.Ordinal))
+            {
+                return headTranslation + restored.Substring(head.Length);
+            }
+        }
+
+        return ColorAwareTranslationComposer.TranslatePreservingColors(restored, TranslatePaintedSubject);
     }
 
     private static string RestoreTrueWholeBoundary(
