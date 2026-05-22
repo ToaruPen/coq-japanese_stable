@@ -51,7 +51,15 @@ public static class CyberneticsBehaviorDescriptionTranslationPatch
         if (string.IsNullOrEmpty(source)
             || MessageFrameTranslator.TryStripDirectTranslationMarker(source, out _))
         {
-            translated = source ?? string.Empty;
+            if (source is null)
+            {
+                translated = string.Empty;
+            }
+            else
+            {
+                translated = source;
+            }
+
             return false;
         }
 

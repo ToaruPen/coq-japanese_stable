@@ -1,3 +1,9 @@
 ### Fixed
 
-- Translated additional generated ability, display-name, behavior-description, item-modification, sparking baetyl reward, and combat action text for turret tinkering, long blade stances, gigantic item mods, schemasoft chips, Cyclopean Prism/PitMaterial/Evil Twin display text, Cherubim/Hexacherubim element text, bandaging, and multi-horns charge messages.
+- Translated additional generated text across issue #762 surfaces:
+  - Abilities: turret tinkering and long blade stances.
+  - Display names: schemasoft chips, Cyclopean Prism, PitMaterial, Evil Twin, and Cherubim/Hexacherubim element text.
+  - Behavior descriptions: schemasoft chip effects.
+  - Item modifications: gigantic item mod descriptions.
+  - Rewards: sparking baetyl reward descriptions.
+  - Combat actions: bandaging and multi-horns charge messages.

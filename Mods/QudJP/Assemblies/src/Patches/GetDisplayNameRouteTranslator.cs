@@ -2015,12 +2015,6 @@ internal static class GetDisplayNameRouteTranslator
 
         var target = PrepareGeneratedEvilTwinDisplayNameTarget(match.Groups["target"].Value);
         var translatedTarget = TranslateDisplayNameFragmentPreservingColors(target, route);
-        if (string.Equals(translatedTarget, target, StringComparison.Ordinal))
-        {
-            translated = source;
-            return false;
-        }
-
         translated = BuildEvilTwinGeneratedDisplayName("anti-", translatedTarget);
         DynamicTextObservability.RecordTransform(
             route,

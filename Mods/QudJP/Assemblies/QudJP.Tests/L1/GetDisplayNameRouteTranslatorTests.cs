@@ -695,6 +695,7 @@ public sealed class GetDisplayNameRouteTranslatorTests
     [TestCase("Evil snapjaw", "邪悪なスナップジョー")]
     [TestCase("Refracted {{Y|snapjaw}}", "屈折した{{Y|スナップジョー}}")]
     [TestCase("anti-snapjaw", "反スナップジョー")]
+    [TestCase("anti-{{Y|スナップジョー}}", "反スナップジョー")]
     public void TranslatePreservingColors_TranslatesEvilTwinGeneratedDisplayNames(
         string source,
         string expected)
