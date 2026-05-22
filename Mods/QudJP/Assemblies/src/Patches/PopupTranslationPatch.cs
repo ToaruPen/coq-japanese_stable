@@ -306,32 +306,6 @@ public static class PopupTranslationPatch
         return TranslatePopupTextForProducerRoute(source, nameof(PopupTranslationPatch));
     }
 
-    internal static string TranslatePopupMenuItemTextForRoute(string source, string route)
-    {
-        if (string.IsNullOrEmpty(source))
-        {
-            return source ?? string.Empty;
-        }
-
-        if (TryStripPopupDirectTranslationMarker(source, out var markedText))
-        {
-            return markedText;
-        }
-
-        var (stripped, _) = ColorAwareTranslationComposer.Strip(source);
-        if (!IsAlreadyLocalizedPopupTextCore(stripped))
-        {
-            SinkObservation.LogUnclaimed(
-                nameof(PopupTranslationPatch),
-                route,
-                SinkObservation.ObservationOnlyDetail,
-                source,
-                stripped);
-        }
-
-        return source;
-    }
-
     private static string TranslatePopupProducerText(string source, string route, string family, string? popupId)
     {
         if (string.IsNullOrEmpty(source))

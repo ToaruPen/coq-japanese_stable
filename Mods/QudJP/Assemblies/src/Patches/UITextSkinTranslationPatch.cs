@@ -437,17 +437,6 @@ public static class UITextSkinTranslationPatch
         return IsAlreadyLocalizedDirectRouteText(source, context);
     }
 
-    internal static bool IsAlreadyLocalizedDisplayNameText(string source, string? context)
-    {
-        _ = context;
-        return GetDisplayNameRouteTranslator.IsAlreadyLocalizedDisplayNameText(source);
-    }
-
-    internal static bool IsAlreadyLocalizedDisplayNameStateText(string source)
-    {
-        return GetDisplayNameRouteTranslator.IsAlreadyLocalizedDisplayNameStateText(source);
-    }
-
     internal static string? ResolveObservabilityContextForTests(string? context, params string[] stackTypeNames)
     {
         return ResolveObservabilityContext(context, stackTypeNames);
@@ -481,32 +470,6 @@ public static class UITextSkinTranslationPatch
         if (!string.Equals(current, translated, StringComparison.Ordinal))
         {
             field.SetValue(instance, translated);
-        }
-    }
-
-    internal static void TranslateStringFieldsInCollection(object? maybeCollection, string? context = null, params string[] fieldNames)
-    {
-        if (maybeCollection is null || maybeCollection is string || fieldNames is null || fieldNames.Length == 0)
-        {
-            return;
-        }
-
-        if (maybeCollection is not IEnumerable enumerable)
-        {
-            return;
-        }
-
-        foreach (var item in enumerable)
-        {
-            if (item is null)
-            {
-                continue;
-            }
-
-            for (var index = 0; index < fieldNames.Length; index++)
-            {
-                TranslateStringField(item, fieldNames[index], context);
-            }
         }
     }
 

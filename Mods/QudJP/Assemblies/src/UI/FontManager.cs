@@ -262,11 +262,6 @@ public static class FontManager
         }
     }
 
-    internal static TMP_FontAsset? GetPrimaryFontAssetForDiagnostics()
-    {
-        return primaryFontAsset;
-    }
-
     internal static void ApplyToInputField(TMP_InputField inputField)
     {
         if (inputField is null)

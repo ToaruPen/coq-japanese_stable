@@ -20,8 +20,6 @@ internal static class FinalOutputObservability
     internal const string MarkupStatusMismatch = "mismatch";
     internal const string MarkupStatusNoMarkup = "no_markup";
     internal const string MarkupStatusSourceOnly = "source_only";
-    internal const string MarkupSemanticStatusClean = "clean";
-    internal const string MarkupSemanticStatusDrift = "drift";
     internal const string MarkupSpanStatusSpanMismatch = "span_mismatch";
     internal const string MarkupSpanStatusTokenMismatch = "token_mismatch";
     internal const string NotEvaluatedStatus = "not_evaluated";

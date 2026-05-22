@@ -90,13 +90,6 @@ public static class MerchantAdvertisementTextTranslationPatch
         }
     }
 
-    internal static string TranslateBookTitleForDisplay(string source)
-    {
-        return MerchantAdvertisementTextTranslator.TryTranslateBookTitle(source, out var translated)
-            ? translated
-            : source;
-    }
-
     private static void TranslateGeneratedBookTitle(object? instance)
     {
         if (instance is null)

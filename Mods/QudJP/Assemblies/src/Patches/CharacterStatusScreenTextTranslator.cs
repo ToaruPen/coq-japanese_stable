@@ -233,15 +233,6 @@ internal static class CharacterStatusScreenTextTranslator
         return TryTranslateSimpleDetails(source, route, description, currentRank, out translated);
     }
 
-    internal static bool ShouldSuppressMissingKeyLogging(string source)
-    {
-#pragma warning disable CA2249
-        return source.IndexOf("\n\n", StringComparison.Ordinal) >= 0
-            || source.IndexOf("This rank", StringComparison.Ordinal) >= 0
-            || source.IndexOf("Next rank", StringComparison.Ordinal) >= 0;
-#pragma warning restore CA2249
-    }
-
     private static bool TryTranslateExactLookup(string source, string route, out string translated)
     {
         if (Translator.TryGetTranslation(source, out translated)

@@ -1,0 +1,55 @@
+{
+  "schema_version": "1.0",
+  "include_path_prefixes": [
+    "Mods/QudJP/Assemblies/src/",
+    "Mods/QudJP/Assemblies/QudJP.Tests/",
+    "Mods/QudJP/Assemblies/QudJP.Analyzers/",
+    "Mods/QudJP/Assemblies/QudJP.Analyzers.Tests/"
+  ],
+  "exclude_path_contains": [
+    "/bin/",
+    "/obj/"
+  ],
+  "report_path_prefixes": [
+    "Mods/QudJP/Assemblies/src/",
+    "Mods/QudJP/Assemblies/QudJP.Analyzers/"
+  ],
+  "candidate_accessibilities": [
+    "private",
+    "internal"
+  ],
+  "preprocessor_symbols": [
+    "HAS_GAME_DLL",
+    "HAS_TMP",
+    "QUDJP_DEV_BUILD"
+  ],
+  "root_attribute_type_suffixes": [
+    "HarmonyPatch",
+    "HarmonyPatchAttribute",
+    "HarmonyPrefix",
+    "HarmonyPrefixAttribute",
+    "HarmonyPostfix",
+    "HarmonyPostfixAttribute",
+    "HarmonyTranspiler",
+    "HarmonyTranspilerAttribute",
+    "HarmonyFinalizer",
+    "HarmonyFinalizerAttribute",
+    "ModuleInitializerAttribute"
+  ],
+  "root_member_names_in_attribute_rooted_types": [
+    "Cleanup",
+    "Finalizer",
+    "Postfix",
+    "Prefix",
+    "Prepare",
+    "TargetMethod",
+    "TargetMethods",
+    "Transpiler"
+  ],
+  "exclude_symbol_patterns": [
+    "QudJP.AssemblyInfo.*"
+  ],
+  "exclude_declaration_name_suffixes": [
+    "ForTests"
+  ]
+}

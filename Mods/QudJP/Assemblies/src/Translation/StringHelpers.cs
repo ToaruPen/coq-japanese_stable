@@ -147,8 +147,4 @@ internal static class StringHelpers
 #endif
     }
 
-    internal static bool EqualsOrdinalIgnoreCase(string source, string value)
-    {
-        return string.Equals(source, value, StringComparison.OrdinalIgnoreCase);
-    }
 }

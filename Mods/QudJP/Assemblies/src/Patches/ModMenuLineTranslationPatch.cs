@@ -85,9 +85,6 @@ public static class ModMenuLineTranslationPatch
         }
     }
 
-    internal static string TranslateTagText(string source) =>
-        ModManagementSemanticPipeline.TranslateTagText(source);
-
     internal static string TranslateAuthorLabel(string source) =>
         ModManagementSemanticPipeline.TranslateAuthorLabel(source);
 }

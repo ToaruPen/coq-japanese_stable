@@ -321,6 +321,8 @@ uv run python scripts/sync_mod.py \
 - `just ast-search-cs '<pattern>' [path]` — C# structural search (`sg-cs` は後方互換 alias)
 - `just ast-search-py '<pattern>' [path]` — Python structural search (`sg-py` は後方互換 alias)
 - `just lsp-check` — repo-local `csharp-ls` による C# solution-load diagnostics
+- `just unused-code-preview` — Roslyn による private / internal C# 宣言の未参照候補 inventory
+- `just unused-code-check` — unused-code scanner 自体の build / pytest / Ruff / basedpyright gate
 
 `just lsp-check` は `.sln` / `.csproj` / reference stub / dotnet tool manifest
 の変更時、または editor の診断と `dotnet build` の結果が食い違う時に使います。

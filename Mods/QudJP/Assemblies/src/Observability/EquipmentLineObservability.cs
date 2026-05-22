@@ -87,53 +87,6 @@ internal static class EquipmentLineObservability
     }
 #endif
 
-    internal static bool TryBuildCompactChildSummary(object? lineInstance, out string? logLine)
-    {
-        logLine = null;
-#if HAS_TMP
-        if (lineInstance is not Component component)
-        {
-            return false;
-        }
-
-        var texts = component.GetComponentsInChildren<TextMeshProUGUI>(includeInactive: true);
-        if (texts.Length == 0)
-        {
-            return false;
-        }
-
-        var builder = new StringBuilder();
-        builder.Append("[QudJP] EquipmentLineCompactChildren/v1: root='");
-        builder.Append(component.gameObject.name);
-        builder.Append('\'');
-        for (var index = 0; index < texts.Length; index++)
-        {
-            var text = texts[index];
-            text.ForceMeshUpdate(ignoreActiveState: true, forceTextReparsing: true);
-            builder.Append("; child[");
-            builder.Append(index);
-            builder.Append("]='");
-            builder.Append(text.gameObject.name);
-            builder.Append("' text='");
-            builder.Append(CompactTruncate(text.text ?? string.Empty));
-            builder.Append("' chars=");
-            builder.Append(text.textInfo.characterCount);
-            builder.Append(" pageCount=");
-            builder.Append(text.textInfo.pageCount);
-            builder.Append(" active=");
-            builder.Append(text.gameObject.activeInHierarchy ? "True" : "False");
-            builder.Append(" enabled=");
-            builder.Append(text.enabled ? "True" : "False");
-        }
-
-        logLine = builder.ToString();
-        return true;
-#else
-        _ = lineInstance;
-        return false;
-#endif
-    }
-
 #if QUDJP_DEV_BUILD
     private static void AppendObjectEntries(List<string> entries, string prefix, object instance)
     {
@@ -298,24 +251,4 @@ internal static class EquipmentLineObservability
     }
 #endif
 
-    #if HAS_TMP
-    private static string CompactTruncate(string value)
-    {
-        var normalized = value.Replace("\r", "\\r")
-            .Replace("\n", "\\n");
-        if (normalized.Length == 0)
-        {
-            return "<empty>";
-        }
-
-        if (normalized.Length <= 28)
-        {
-            return normalized;
-        }
-
-#pragma warning disable CA1845
-        return normalized.Substring(0, 28) + "...";
-#pragma warning restore CA1845
-    }
-    #endif
 }
