@@ -10,6 +10,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+## [0.3.20] - 2026-05-22
+
+### Fixed
+
+- item modifier の prefix、with-clause、flexiweaved の段階表示など、アイテム名に残っていた英語断片を追加で日本語化しました。
+- インベントリ操作名と、歴史的な場面説明文の一部に残っていた英語表示を日本語化しました。
+- 固定アイテム、effect、ability、option、object description の訳文を見直し、不自然な表現や残っていた英語用語を改善しました。
+
+---
+
 ## [0.3.01] - 2026-05-22
 
 ### Fixed
@@ -351,7 +361,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
-[Unreleased]: https://github.com/ToaruPen/coq-japanese_stable/compare/v0.3.01...HEAD
+[Unreleased]: https://github.com/ToaruPen/coq-japanese_stable/compare/v0.3.20...HEAD
+[0.3.20]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.3.20
 [0.3.01]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.3.01
 [0.3.00]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.3.00
 [0.2.52]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.2.52
