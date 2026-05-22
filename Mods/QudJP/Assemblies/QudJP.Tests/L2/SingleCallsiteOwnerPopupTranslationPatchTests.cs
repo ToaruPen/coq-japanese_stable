@@ -1131,6 +1131,22 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
     }
 
     [Test]
+    public void Patch_DoesNotRetranslateDirectMarkedGivesRepWaterRitualCurse_WhenOwnerPatched()
+    {
+        const string source =
+            "You violated the covenant of the water ritual and killed your bonded kith. You are cursed.\n\n"
+            + "Your reputation with the Fellowship of Wardens decreases by 100.";
+        var marked = MessageFrameTranslator.MarkDirectTranslation(source);
+
+        Assert.That(TryTranslateForOwner(nameof(DummySingleCallsiteOwnerPopupTarget.HandleGivesRepBeforeDeathRemoval), marked, out var translated), Is.True);
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.EqualTo(source));
+            Assert.That(HitCount("GivesRepWaterRitualCurse"), Is.Zero);
+        });
+    }
+
+    [Test]
     public void Patch_DoesNotTranslateGivesRepWaterRitualCursePrefix_WhenOwnerAbsent()
     {
         const string appendedLine = "Your reputation with the Fellowship of Wardens decreases by 100.";
