@@ -43,11 +43,44 @@ internal static class DescriptionTextTranslator
     private static readonly Regex MakersMarkDescriptionPattern =
         new Regex("^(?:(?<markPrefix>.+?):\\s*|:\\s*)?(?<subject>This|These|That|Those) (?<category>.+?) (?<verb>bears|bear) the (?<mark>mark|marks) of (?<crafter>.+?)\\.$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex VillageHistoryTattooPattern =
+        new Regex("^(?<owner>Its|its|Your|your|His|his|Her|her|Their|their) (?<part>.+?) (?<verb>bears|bear) (?<kind>a tattoo|tattoos|an engraving|engravings) of a scene from the history of the village (?<village>.+?)(?<body>: .+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     private static readonly Regex MultipleAmmoUsedPerShotPattern =
         new Regex("^Multiple ammo used per shot: (?<count>\\d+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     private static readonly Regex MultipleProjectilesPerShotPattern =
         new Regex("^Multiple projectiles per shot: (?<count>\\d+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex HistoricNarrativeLinePattern =
+        new Regex(
+            "^(?:In\\s+.+?\\s+(?:BR|AR),|At\\s+.+?,|Around\\s+.+?,|Through(?:out)?\\s+.+?,|Sometime\\s+in\\s+.+?,|While\\s+.+?,|Deep\\s+in\\s+.+?,|Acting\\s+against\\s+.+?,|Near\\s+the\\s+location\\s+of\\s+.+?,)",
+            RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex TombMuralWrapperPattern =
+        new Regex(
+            "^The tomb mural depicts a significant event from the life of the (?<ancient>ancient )?sultan (?<sultan>.+?):\\n\\n(?<body>.+)$",
+            RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.Singleline);
+
+    private static readonly Regex TombMuralHeaderPattern =
+        new Regex(
+            "^The tomb mural depicts a significant event from the life of the (?<ancient>ancient )?sultan (?<sultan>.+?):$",
+            RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex SplitHistoricSceneHeaderStartPattern =
+        new Regex(
+            "^(?<kind>Painted|Engraved): This item is (?:painted|engraved) with a scene from the life of the ancient (?<subjectPrefix>.+)$",
+            RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex SplitTombMuralHeaderStartPattern =
+        new Regex(
+            "^The tomb mural depicts a significant event from the life of the (?<ancient>ancient )?sultan (?<sultanPrefix>.*)$",
+            RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex SplitVillageHistoryHeaderStartPattern =
+        new Regex(
+            "^(?<kind>Painted|Engraved|Holographic): (?:(?:This object is (?:painted|engraved) with)|(?:This hologram depicts)) a scene from the history of the village (?<villagePrefix>.*)$",
+            RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     // Keep TranslateShortDescription and TranslateLongDescription separate even though they
     // currently delegate to TranslateDescriptionText, so short/long description routes can
@@ -87,8 +120,35 @@ internal static class DescriptionTextTranslator
         var lines = source.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
         var changed = false;
         string? activeBoundaryToken = null;
+        string? pendingHistoryHeaderSuffix = null;
+        string? pendingHistoryHeaderOuterBoundaryToken = null;
         for (var index = 0; index < lines.Length; index++)
         {
+            if (pendingHistoryHeaderSuffix is not null
+                && TryTranslateSplitHistoryHeaderContinuationLine(
+                    lines[index],
+                    pendingHistoryHeaderSuffix,
+                    out var continuedHeaderLine))
+            {
+                lines[index] = continuedHeaderLine;
+                activeBoundaryToken = pendingHistoryHeaderOuterBoundaryToken;
+                pendingHistoryHeaderSuffix = null;
+                pendingHistoryHeaderOuterBoundaryToken = null;
+                changed = true;
+                continue;
+            }
+
+            if (TryTranslateSplitHistoryHeaderStartLine(
+                    lines[index],
+                    out var translatedHeaderStartLine,
+                    out pendingHistoryHeaderSuffix,
+                    out pendingHistoryHeaderOuterBoundaryToken))
+            {
+                lines[index] = translatedHeaderStartLine;
+                changed = true;
+                continue;
+            }
+
             if (!TryTranslatePossiblySplitColorLine(lines[index], route, ref activeBoundaryToken, out var translatedLine))
             {
                 continue;
@@ -99,6 +159,145 @@ internal static class DescriptionTextTranslator
         }
 
         return changed ? string.Join(newline, lines) : source;
+    }
+
+    private static bool TryTranslateSplitHistoryHeaderStartLine(
+        string source,
+        out string translated,
+        out string? continuationSuffix,
+        out string? outerBoundaryToken)
+    {
+        translated = source;
+        continuationSuffix = null;
+        outerBoundaryToken = null;
+        var (stripped, _) = ColorAwareTranslationComposer.Strip(source);
+        if (stripped.EndsWith(":", StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        var match = SplitHistoricSceneHeaderStartPattern.Match(stripped);
+        if (match.Success)
+        {
+            var subjectPrefix = TranslateHistoricSceneSubjectPrefix(match.Groups["subjectPrefix"].Value);
+            var isEngraved = string.Equals(match.Groups["kind"].Value, "Engraved", StringComparison.Ordinal);
+            var visible = (isEngraved ? "彫刻" : "彩色") + ": この品には古代の" + subjectPrefix;
+            continuationSuffix = isEngraved
+                ? "の生涯の一場面が彫り刻まれている:"
+                : "の生涯の一場面が描かれている:";
+
+            translated = RewrapSplitHistoryHeaderStartLine(source, visible);
+            outerBoundaryToken = TryGetLeadingBoundaryOpeningToken(source);
+            return true;
+        }
+
+        match = SplitTombMuralHeaderStartPattern.Match(stripped);
+        if (match.Success)
+        {
+            var ancientPrefix = match.Groups["ancient"].Success ? "古代の" : string.Empty;
+            var sultanPrefix = TranslateTombMuralSultanNamePrefix(match.Groups["sultanPrefix"].Value);
+            translated = RewrapSplitHistoryHeaderStartLine(
+                source,
+                "墓所の壁画には、" + ancientPrefix + "スルタン " + sultanPrefix);
+            continuationSuffix = "の生涯における重要な出来事が描かれている:";
+            outerBoundaryToken = TryGetLeadingBoundaryOpeningToken(source);
+            return true;
+        }
+
+        match = SplitVillageHistoryHeaderStartPattern.Match(stripped);
+        if (match.Success)
+        {
+            var kind = match.Groups["kind"].Value;
+            var villagePrefix = match.Groups["villagePrefix"].Value;
+            var isEngraved = string.Equals(kind, "Engraved", StringComparison.Ordinal);
+            var visible = string.Equals(kind, "Holographic", StringComparison.Ordinal)
+                ? "このホログラムには" + villagePrefix
+                : "この物体には" + villagePrefix;
+            continuationSuffix = isEngraved
+                ? "村の歴史の一場面が彫り刻まれている:"
+                : "村の歴史の一場面が描かれている:";
+
+            translated = RewrapSplitHistoryHeaderStartLine(source, visible);
+            outerBoundaryToken = TryGetLeadingBoundaryOpeningToken(source);
+            return true;
+        }
+
+        return false;
+    }
+
+    private static string TranslateHistoricSceneSubjectPrefix(string source)
+    {
+        var hasTrailingSpace = source.EndsWith(" ", StringComparison.Ordinal);
+        var trimmed = source.TrimEnd();
+        var translated = StringHelpers.TryGetTranslationExactOrLowerAscii(trimmed, out var exact)
+            ? exact
+            : trimmed;
+        return hasTrailingSpace ? translated + " " : translated;
+    }
+
+    private static string TranslateTombMuralSultanNamePrefix(string source)
+    {
+        if (string.IsNullOrEmpty(source))
+        {
+            return source;
+        }
+
+        var hasTrailingSpace = source.EndsWith(" ", StringComparison.Ordinal);
+        var trimmed = source.TrimEnd();
+        var translated = TranslateTombMuralSultanName(trimmed);
+        return hasTrailingSpace ? translated + " " : translated;
+    }
+
+    private static string RewrapSplitHistoryHeaderStartLine(string source, string visible)
+    {
+        var leading = string.Empty;
+        var leadingMatch = Regex.Match(source, "^(?:(?:\\{\\{[A-Za-z]+\\|)|(?:&[A-Za-z])|(?:\\^[A-Za-z]))+");
+        if (leadingMatch.Success)
+        {
+            leading = leadingMatch.Value;
+        }
+
+        var trailing = string.Empty;
+        var trailingMatch = Regex.Match(source, "(\\{\\{[A-Za-z]+\\|)$");
+        if (trailingMatch.Success)
+        {
+            trailing = trailingMatch.Value;
+        }
+
+        return leading + visible + trailing;
+    }
+
+    private static string? TryGetLeadingBoundaryOpeningToken(string source)
+    {
+        if (!source.StartsWith("{{", StringComparison.Ordinal))
+        {
+            return null;
+        }
+
+        var pipeIndex = source.IndexOf('|');
+        return pipeIndex > 1 ? source.Substring(0, pipeIndex + 1) : null;
+    }
+
+    private static bool TryTranslateSplitHistoryHeaderContinuationLine(
+        string source,
+        string continuationSuffix,
+        out string translated)
+    {
+        translated = source;
+        var colonIndex = source.LastIndexOf(':');
+        if (colonIndex < 0)
+        {
+            return false;
+        }
+
+        var (stripped, _) = ColorAwareTranslationComposer.Strip(source);
+        if (!stripped.EndsWith(":", StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        translated = source.Substring(0, colonIndex) + continuationSuffix;
+        return true;
     }
 
     private static bool TryTranslatePossiblySplitColorLine(
@@ -342,6 +541,31 @@ internal static class DescriptionTextTranslator
             return true;
         }
 
+        if (TryTranslateTombMuralWrapperPreservingColors(source, route, out translated))
+        {
+            return true;
+        }
+
+        if (TryTranslateTombMuralHeaderPreservingColors(source, route, out translated))
+        {
+            return true;
+        }
+
+        if (WorldModsTextTranslator.TryTranslate(source, route, "Description.WorldMods", out translated))
+        {
+            return true;
+        }
+
+        if (TryTranslateVillageHistoryTattooPreservingColors(source, route, out translated))
+        {
+            return true;
+        }
+
+        if (TryTranslateVillageHistoryPatternPreservingColors(source, route, allowMessagePatternTranslation, out translated))
+        {
+            return true;
+        }
+
         translated = ColorAwareTranslationComposer.TranslatePreservingColors(
             source,
             visible => TryTranslateVisibleSegment(visible, route, allowMessagePatternTranslation, out var candidate)
@@ -362,6 +586,62 @@ internal static class DescriptionTextTranslator
         return false;
     }
 
+    private static bool TryTranslateTombMuralWrapperPreservingColors(string source, string route, out string translated)
+    {
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        var match = TombMuralWrapperPattern.Match(stripped);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        var sultan = TranslateTombMuralSultanName(match.Groups["sultan"].Value);
+        sultan = ColorAwareTranslationComposer.MarkupAwareRestoreCapture(sultan, spans, match.Groups["sultan"]);
+        var body = HistoricNarrativeTextTranslator.Translate(match.Groups["body"].Value, route);
+        body = ColorAwareTranslationComposer.RestoreCaptureWholeBoundaryWrappersPreservingTranslatedOwnership(
+            body,
+            spans,
+            match.Groups["body"]);
+
+        var ancientPrefix = match.Groups["ancient"].Success ? "古代の" : string.Empty;
+        translated = $"墓所の壁画には、{ancientPrefix}スルタン {sultan}の生涯における重要な出来事が描かれている:\n\n{body}";
+        translated = RestoreWholeLineBoundaryWrappers(translated, spans, stripped.Length);
+        DynamicTextObservability.RecordTransform(route, "Description.TombMuralWrapper", source, translated);
+        return true;
+    }
+
+    private static string TranslateTombMuralSultanName(string source)
+    {
+        if (string.IsNullOrEmpty(source))
+        {
+            return source;
+        }
+
+        using var _ = Translator.PushMissingKeyLoggingSuppression(true);
+        var translated = Translator.Translate(source);
+        return string.Equals(translated, source, StringComparison.Ordinal) ? source : translated;
+    }
+
+    private static bool TryTranslateTombMuralHeaderPreservingColors(string source, string route, out string translated)
+    {
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        var match = TombMuralHeaderPattern.Match(stripped);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        var sultan = TranslateTombMuralSultanName(match.Groups["sultan"].Value);
+        sultan = ColorAwareTranslationComposer.MarkupAwareRestoreCapture(sultan, spans, match.Groups["sultan"]);
+        var ancientPrefix = match.Groups["ancient"].Success ? "古代の" : string.Empty;
+        translated = $"墓所の壁画には、{ancientPrefix}スルタン {sultan}の生涯における重要な出来事が描かれている:";
+        translated = RestoreWholeLineBoundaryWrappers(translated, spans, stripped.Length);
+        DynamicTextObservability.RecordTransform(route, "Description.TombMuralHeader", source, translated);
+        return true;
+    }
+
     private static bool TryTranslateVisibleSegment(
         string source,
         string route,
@@ -374,6 +654,11 @@ internal static class DescriptionTextTranslator
         }
 
         if (WorldModsTextTranslator.TryTranslate(source, route, "Description.WorldMods", out translated))
+        {
+            return true;
+        }
+
+        if (TryTranslateTombMuralHeaderPreservingColors(source, route, out translated))
         {
             return true;
         }
@@ -408,6 +693,11 @@ internal static class DescriptionTextTranslator
             return true;
         }
 
+        if (TryTranslateHistoricNarrativeLine(source, route, out translated))
+        {
+            return true;
+        }
+
         if (ShouldSkipExactLeafTranslation(source))
         {
             translated = source;
@@ -436,6 +726,143 @@ internal static class DescriptionTextTranslator
 
         translated = source;
         return false;
+    }
+
+    private static bool TryTranslateVillageHistoryTattooPreservingColors(string source, string route, out string translated)
+    {
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        var match = VillageHistoryTattooPattern.Match(stripped);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        var owner = TranslateTattooOwner(match.Groups["owner"].Value);
+        var part = TranslateTattooBodyPart(match.Groups["part"].Value);
+        var kind = TranslateTattooKind(match.Groups["kind"].Value);
+        var village = ColorAwareTranslationComposer.MarkupAwareRestoreCapture(
+            match.Groups["village"].Value,
+            spans,
+            match.Groups["village"]);
+        var body = TranslateTattooStoryBody(match.Groups["body"].Value.Substring(2), route);
+        var bodyWithColon = ColorAwareTranslationComposer.RestoreCaptureWholeBoundaryWrappersPreservingTranslatedOwnership(
+            ": " + body,
+            spans,
+            match.Groups["body"]);
+
+        translated = $"{owner}{part}には{village}村の歴史の一場面を描いた{kind}がある{bodyWithColon}";
+        DynamicTextObservability.RecordTransform(route, "Description.VillageHistoryTattoo", source, translated);
+        return true;
+    }
+
+    private static string TranslateTattooStoryBody(string source, string route)
+    {
+        var message = MessagePatternTranslator.Translate(source, route);
+        if (!string.Equals(message, source, StringComparison.Ordinal))
+        {
+            return message;
+        }
+
+        var historic = HistoricNarrativeTextTranslator.Translate(source, route);
+        return !string.Equals(historic, source, StringComparison.Ordinal) ? historic : source;
+    }
+
+    private static string TranslateTattooOwner(string source)
+    {
+        return source.ToUpperInvariant() switch
+        {
+            "YOUR" => "あなたの",
+            "HIS" => "彼の",
+            "HER" => "彼女の",
+            "THEIR" => "彼らの",
+            _ => "その",
+        };
+    }
+
+    private static string TranslateTattooKind(string source)
+    {
+        return source.Contains("engraving") ? "刻印" : "刺青";
+    }
+
+    private static string TranslateTattooBodyPart(string source)
+    {
+        return source.ToUpperInvariant() switch
+        {
+            "RIGHT HAND" => "右手",
+            "LEFT HAND" => "左手",
+            "RIGHT FOOT" => "右足",
+            "LEFT FOOT" => "左足",
+            "RIGHT ARM" => "右腕",
+            "LEFT ARM" => "左腕",
+            "HAND" => "手",
+            "FOOT" => "足",
+            "HEAD" => "頭",
+            "FACE" => "顔",
+            "ARM" => "腕",
+            "LEG" => "脚",
+            "TAIL" => "尾",
+            "WING" => "翼",
+            "HORN" => "角",
+            "LIMBS" => "肢",
+            _ => source,
+        };
+    }
+
+    private static bool TryTranslateVillageHistoryPatternPreservingColors(
+        string source,
+        string route,
+        bool allowMessagePatternTranslation,
+        out string translated)
+    {
+        if (!allowMessagePatternTranslation)
+        {
+            translated = source;
+            return false;
+        }
+
+        var visible = ColorAwareTranslationComposer.GetVisibleText(source);
+        if (!IsVillageHistoryDescriptionPattern(visible) || ShouldSkipMessagePatternTranslation(visible))
+        {
+            translated = source;
+            return false;
+        }
+
+        translated = MessagePatternTranslator.Translate(source, route);
+        if (string.Equals(source, translated, StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        DynamicTextObservability.RecordTransform(route, "Description.Pattern", source, translated);
+        return true;
+    }
+
+    private static bool IsVillageHistoryDescriptionPattern(string visible)
+    {
+        return visible.StartsWith("This object is a monument to a scene from the history of the village ", StringComparison.Ordinal)
+            || visible.StartsWith("Painted: This object is painted with a scene from the history of the village ", StringComparison.Ordinal)
+            || visible.StartsWith("Engraved: This object is engraved with a scene from the history of the village ", StringComparison.Ordinal)
+            || visible.StartsWith("Holographic: This hologram depicts a scene from the history of the village ", StringComparison.Ordinal);
+    }
+
+    private static bool TryTranslateHistoricNarrativeLine(string source, string route, out string translated)
+    {
+        translated = source;
+        if (!HistoricNarrativeLinePattern.IsMatch(source))
+        {
+            return false;
+        }
+
+        var candidate = HistoricNarrativeTextTranslator.Translate(source, route);
+        if (string.Equals(candidate, source, StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        translated = candidate;
+        DynamicTextObservability.RecordTransform(route, "Description.HistoricNarrative", source, translated);
+        return true;
     }
 
     private static bool TryTranslateAddsCookingEffectsLine(string source, string route, out string translated)

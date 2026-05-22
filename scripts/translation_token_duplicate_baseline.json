@@ -2790,6 +2790,28 @@
     {
       "scope": "cross_file",
       "path": "Dictionaries",
+      "key": "seal",
+      "entry_count": 2,
+      "texts": [
+        "印章",
+        "封をする"
+      ],
+      "occurrences": [
+        {
+          "path": "Dictionaries/ui-inventory-actions.ja.json",
+          "entry_index": 7,
+          "text": "封をする"
+        },
+        {
+          "path": "Dictionaries/ui-zone-display.ja.json",
+          "entry_index": 203,
+          "text": "印章"
+        }
+      ]
+    },
+    {
+      "scope": "cross_file",
+      "path": "Dictionaries",
       "key": "select",
       "entry_count": 3,
       "texts": [
@@ -7115,12 +7137,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/world-mods.ja.json",
-          "entry_index": 196,
+          "entry_index": 197,
           "text": "命中率: 高い"
         },
         {
           "path": "Dictionaries/world-mods.ja.json",
-          "entry_index": 204,
+          "entry_index": 205,
           "text": "命中率: 高い"
         }
       ]
@@ -7137,12 +7159,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/world-mods.ja.json",
-          "entry_index": 198,
+          "entry_index": 199,
           "text": "命中率: 低い"
         },
         {
           "path": "Dictionaries/world-mods.ja.json",
-          "entry_index": 206,
+          "entry_index": 207,
           "text": "命中率: 低い"
         }
       ]
@@ -7159,12 +7181,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/world-mods.ja.json",
-          "entry_index": 197,
+          "entry_index": 198,
           "text": "命中率: 普通"
         },
         {
           "path": "Dictionaries/world-mods.ja.json",
-          "entry_index": 205,
+          "entry_index": 206,
           "text": "命中率: 普通"
         }
       ]
@@ -7181,12 +7203,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/world-mods.ja.json",
-          "entry_index": 195,
+          "entry_index": 196,
           "text": "命中率: 非常に高い"
         },
         {
           "path": "Dictionaries/world-mods.ja.json",
-          "entry_index": 203,
+          "entry_index": 204,
           "text": "命中率: 非常に高い"
         }
       ]
@@ -7203,12 +7225,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/world-mods.ja.json",
-          "entry_index": 199,
+          "entry_index": 200,
           "text": "命中率: 非常に低い"
         },
         {
           "path": "Dictionaries/world-mods.ja.json",
-          "entry_index": 207,
+          "entry_index": 208,
           "text": "命中率: 非常に低い"
         }
       ]
@@ -7225,12 +7247,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/world-mods.ja.json",
-          "entry_index": 193,
+          "entry_index": 194,
           "text": "武器カテゴリ: 弓 && ライフル"
         },
         {
           "path": "Dictionaries/world-mods.ja.json",
-          "entry_index": 201,
+          "entry_index": 202,
           "text": "武器カテゴリ: 弓 && ライフル"
         }
       ]
@@ -7247,12 +7269,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/world-mods.ja.json",
-          "entry_index": 194,
+          "entry_index": 195,
           "text": "武器カテゴリ: 重火器"
         },
         {
           "path": "Dictionaries/world-mods.ja.json",
-          "entry_index": 202,
+          "entry_index": 203,
           "text": "武器カテゴリ: 重火器"
         }
       ]
@@ -7269,12 +7291,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/world-mods.ja.json",
-          "entry_index": 192,
+          "entry_index": 193,
           "text": "武器カテゴリ: ピストル"
         },
         {
           "path": "Dictionaries/world-mods.ja.json",
-          "entry_index": 200,
+          "entry_index": 201,
           "text": "武器カテゴリ: ピストル"
         }
       ]

@@ -10,6 +10,11 @@
   },
   "entries": [
     {
+      "key": "equip (manual)",
+      "context": "XRL.World.IInventoryActionsEvent",
+      "text": "手動で装備"
+    },
+    {
       "key": "mark important",
       "context": "XRL.World.IInventoryActionsEvent",
       "text": "重要にする"
@@ -33,6 +38,171 @@
       "key": "remove",
       "context": "XRL.World.IInventoryActionsEvent",
       "text": "外す"
+    },
+    {
+      "key": "seal",
+      "context": "XRL.World.IInventoryActionsEvent",
+      "text": "封をする"
+    },
+    {
+      "key": "unseal",
+      "context": "XRL.World.IInventoryActionsEvent",
+      "text": "封を解く"
+    },
+    {
+      "key": "pray",
+      "context": "XRL.World.IInventoryActionsEvent",
+      "text": "祈る"
+    },
+    {
+      "key": "desecrate",
+      "context": "XRL.World.IInventoryActionsEvent",
+      "text": "冒涜する"
+    },
+    {
+      "key": "deactivate",
+      "context": "XRL.World.IInventoryActionsEvent",
+      "text": "停止する"
+    },
+    {
+      "key": "repair",
+      "context": "XRL.World.IInventoryActionsEvent",
+      "text": "修理する"
+    },
+    {
+      "key": "recharge",
+      "context": "XRL.World.IInventoryActionsEvent",
+      "text": "充電する"
+    },
+    {
+      "key": "disassemble all",
+      "context": "XRL.World.IInventoryActionsEvent",
+      "text": "すべて分解"
+    },
+    {
+      "key": "clean",
+      "context": "XRL.World.IInventoryActionsEvent",
+      "text": "掃除する"
+    },
+    {
+      "key": "show internals",
+      "context": "XRL.World.IInventoryActionsEvent",
+      "text": "内部構造を表示"
+    },
+    {
+      "key": "mod with tinkering",
+      "context": "XRL.World.IInventoryActionsEvent",
+      "text": "工作で改造"
+    },
+    {
+      "key": "drop all",
+      "context": "XRL.World.IInventoryActionsEvent",
+      "text": "すべて落とす"
+    },
+    {
+      "key": "replace cell",
+      "context": "XRL.World.IInventoryActionsEvent",
+      "text": "セルを交換"
+    },
+    {
+      "key": "install cell",
+      "context": "XRL.World.IInventoryActionsEvent",
+      "text": "セルを装着"
+    },
+    {
+      "key": "direct to attack target",
+      "context": "XRL.World.IInventoryActionsEvent",
+      "text": "攻撃対象を指示"
+    },
+    {
+      "key": "direct to engage aggressively",
+      "context": "XRL.World.IInventoryActionsEvent",
+      "text": "攻撃的に交戦させる"
+    },
+    {
+      "key": "direct to engage defensively only",
+      "context": "XRL.World.IInventoryActionsEvent",
+      "text": "防御的に交戦させる"
+    },
+    {
+      "key": "direct to come along",
+      "context": "XRL.World.IInventoryActionsEvent",
+      "text": "ついて来させる"
+    },
+    {
+      "key": "give items",
+      "context": "XRL.World.IInventoryActionsEvent",
+      "text": "アイテムを渡してもらう"
+    },
+    {
+      "key": "direct to move",
+      "context": "XRL.World.IInventoryActionsEvent",
+      "text": "移動を指示"
+    },
+    {
+      "key": "direct to change follow distance",
+      "context": "XRL.World.IInventoryActionsEvent",
+      "text": "追従距離を変更"
+    },
+    {
+      "key": "direct to stay there",
+      "context": "XRL.World.IInventoryActionsEvent",
+      "text": "その場で待機させる"
+    },
+    {
+      "key": "direct ability use",
+      "context": "XRL.World.IInventoryActionsEvent",
+      "text": "能力使用設定を変更"
+    },
+    {
+      "key": "rename",
+      "context": "XRL.World.IInventoryActionsEvent",
+      "text": "名前を変更"
+    },
+    {
+      "key": "untarget",
+      "context": "XRL.World.IInventoryActionsEvent",
+      "text": "ターゲット解除"
+    },
+    {
+      "key": "telekinetically pull toward you",
+      "context": "XRL.World.IInventoryActionsEvent",
+      "text": "念動力で引き寄せる"
+    },
+    {
+      "key": "telekinetically pull one toward you",
+      "context": "XRL.World.IInventoryActionsEvent",
+      "text": "念動力で1つ引き寄せる"
+    },
+    {
+      "key": "telekinetically pull towards you and take",
+      "context": "XRL.World.IInventoryActionsEvent",
+      "text": "念動力で引き寄せて拾う"
+    },
+    {
+      "key": "telekinetically pull one towards you and take",
+      "context": "XRL.World.IInventoryActionsEvent",
+      "text": "念動力で1つ引き寄せて拾う"
+    },
+    {
+      "key": "telekinetically hurl",
+      "context": "XRL.World.IInventoryActionsEvent",
+      "text": "念動力で投げる"
+    },
+    {
+      "key": "telekinetically move",
+      "context": "XRL.World.IInventoryActionsEvent",
+      "text": "念動力で移動"
+    },
+    {
+      "key": "telekinetically hurl one",
+      "context": "XRL.World.IInventoryActionsEvent",
+      "text": "念動力で1つ投げる"
+    },
+    {
+      "key": "telekinetically move one",
+      "context": "XRL.World.IInventoryActionsEvent",
+      "text": "念動力で1つ移動"
     },
     {
       "key": "Eat fresh apple matz.",

@@ -890,6 +890,11 @@
       "text": "彩色: この品には古代の{0}の生涯の一場面が描かれている:"
     },
     {
+      "context": "XRL.World.Parts.ModEngraved.GetShortDescription",
+      "key": "Engraved: This item is engraved with a scene from the life of the ancient {0}:",
+      "text": "彫刻: この品には古代の{0}の生涯の一場面が彫り刻まれている:"
+    },
+    {
       "context": "XRL.World.Parts.ModPhaseConjugate.GetShortDescription",
       "key": "Phase-conjugate: This explosive shifts phase immediately before detonating.",
       "text": "位相共役: この爆発物は爆発直前に位相をずらす。"

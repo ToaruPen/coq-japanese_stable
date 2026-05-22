@@ -13,6 +13,7 @@ public sealed class DescriptionTextTranslatorTests
     private string tempDirectory = null!;
     private string dictionaryDirectory = null!;
     private string patternFilePath = null!;
+    private string journalPatternFilePath = null!;
 
     [SetUp]
     public void SetUp()
@@ -22,12 +23,16 @@ public sealed class DescriptionTextTranslatorTests
         dictionaryDirectory = Path.Combine(tempDirectory, "dict");
         Directory.CreateDirectory(dictionaryDirectory);
         patternFilePath = Path.Combine(tempDirectory, "messages.ja.json");
+        journalPatternFilePath = Path.Combine(tempDirectory, "journal-patterns.ja.json");
 
         Translator.ResetForTests();
         Translator.SetDictionaryDirectoryForTests(dictionaryDirectory);
         MessagePatternTranslator.ResetForTests();
         MessagePatternTranslator.SetPatternFileForTests(patternFilePath);
+        JournalPatternTranslator.ResetForTests();
+        JournalPatternTranslator.SetPatternFileForTests(journalPatternFilePath);
         File.WriteAllText(patternFilePath, "{\"patterns\":[]}\n", Utf8WithoutBom);
+        File.WriteAllText(journalPatternFilePath, "{\"patterns\":[]}\n", Utf8WithoutBom);
     }
 
     [TearDown]
@@ -35,6 +40,7 @@ public sealed class DescriptionTextTranslatorTests
     {
         Translator.ResetForTests();
         MessagePatternTranslator.ResetForTests();
+        JournalPatternTranslator.ResetForTests();
 
         if (Directory.Exists(tempDirectory))
         {
@@ -93,6 +99,89 @@ public sealed class DescriptionTextTranslatorTests
                 "{{C|これはテッガトゥム村の歴史の一場面を記念する碑である:\n" +
                 "ブリスケットスプレッディングとして知られる料理を通じて、商人ギルドの聖性がテッガトゥムの人々に示された。\n" +
                 "最初の旅する祈りのカーニバル以来、テッガトゥムの村人たちはブリスケットスプレッディングを喜んで食してきた。}}"));
+    }
+
+    [Test]
+    public void TranslateLongDescription_TranslatesHistoricSceneWrappersAndNarrativeBodies()
+    {
+        WriteHistorySpiceDictionary(
+            ("brisket", "ブリスケット"),
+            ("spreading", "スプレッディング"),
+            ("carnival", "カーニバル"),
+            ("traveling", "旅する"),
+            ("prayer", "祈り"),
+            ("gleefully", "喜んで"));
+        WriteDictionary(
+            "world-mods.ja.json",
+            ("Painted: This item is painted with a scene from the life of the ancient {0}:", "彩色: この品には古代の{0}の生涯の一場面が描かれている:"),
+            ("Engraved: This item is engraved with a scene from the life of the ancient {0}:", "彫刻: この品には古代の{0}の生涯の一場面が彫り刻まれている:"),
+            ("sultan", "スルタン"));
+        WritePatternDictionary(
+            (
+                "^(?:\\{\\{C\\|)?Painted: This object is painted with a scene from the history of the village (.+?):(?:\\}\\})?$",
+                "この物体には{0}村の歴史の一場面が描かれている:"),
+            (
+                "^(?:\\{\\{C\\|)?Engraved: This object is engraved with a scene from the history of the village (.+?):(?:\\}\\})?$",
+                "この物体には{0}村の歴史の一場面が彫り刻まれている:"),
+            (
+                "^(?:\\{\\{C\\|)?Holographic: This hologram depicts a scene from the history of the village (.+?):(?:\\}\\})?$",
+                "このホログラムには{0}村の歴史の一場面が描かれている:"),
+            (
+                "^The sanctity of (?:the )?(.+?) was revealed to the people of (.+?) through the dish known as (.+?)\\.(?:\\}\\})?$",
+                "{t2}として知られる料理を通じて、{0}の聖性が{1}の人々に示された。"),
+            (
+                "^Since the first (.+?), the villagers of (.+?) have (.+?) feasted on (.+?)\\.(?:\\}\\})?$",
+                "最初の{t0}以来、{1}の村人たちは{t3}を{t2}食してきた。"));
+        WriteJournalPatternDictionary((
+            "^In\\ (.+?)\\ (?:BR|AR),\\ (.+?)\\ won\\ a\\ decisive\\ victory\\ against\\ the\\ combined\\ forces\\ of\\ (.+?)\\ at\\ the\\ bloody\\ Battle\\ of\\ (.+?)\\.\\ As\\ a\\ result\\ of\\ the\\ battle,\\ (.+?)\\ was\\ so\\ (.+?)\\ that\\ it\\ was\\ renamed\\ (.+)\\.$",
+            "{t0}年、{t1}は血塗られし{t3}の戦いにて、{t2}の連合軍に決定的勝利を収めた。この戦いの結果、{t4}はあまりに{t5}となり、{t6}と改め名づけられた。"));
+
+        const string annalsLine = "In 1886 BR, イシル III won a decisive victory against the combined forces of アムル Manor at the bloody Battle of シェケスフ Hollow. As a result of the battle, シェケスフ Hollow was so rife with stray portals to other places and times that it was renamed Perpetualwreck.";
+        const string translatedAnnalsLine = "1886年、イシル IIIは血塗られしシェケスフ Hollowの戦いにて、アムル Manorの連合軍に決定的勝利を収めた。この戦いの結果、シェケスフ Hollowはあまりにrife with stray portals to other places and timesとなり、Perpetualwreckと改め名づけられた。";
+        const string villageBody =
+            "The sanctity of the 商人ギルド was revealed to the people of テッガトゥム through the dish known as Brisket Spreading.\n" +
+            "Since the first Carnival of the Traveling Prayer, the villagers of テッガトゥム have gleefully feasted on Brisket Spreading.";
+        const string translatedVillageBody =
+            "ブリスケットスプレッディングとして知られる料理を通じて、商人ギルドの聖性がテッガトゥムの人々に示された。\n" +
+            "最初の旅する祈りのカーニバル以来、テッガトゥムの村人たちはブリスケットスプレッディングを喜んで食してきた。";
+
+        var source =
+            "{{cyan|Painted: This item is painted with a scene from the life of the ancient sultan {{magenta|イシル III}}:\n\n" + annalsLine + "}}\n" +
+            "{{cyan|Engraved: This item is engraved with a scene from the life of the ancient sultan {{magenta|イシル III}}:\n\n" + annalsLine + "}}\n" +
+            "{{cyan|Painted: This item is painted with a scene from the life of the ancient sultan {{magenta|\nイシル III}}:\n\n" + annalsLine + "}}\n" +
+            "{{cyan|Engraved: This item is engraved with a scene from the life of the ancient sultan {{magenta|\nイシル III}}:\n\n" + annalsLine + "}}\n" +
+            "{{cyan|The tomb mural depicts a significant event from the life of the ancient sultan {{magenta|\nイシル III}}:\n\n" + annalsLine + "}}\n" +
+            "{{cyan|The tomb mural depicts a significant event from the life of the ancient sultan {{magenta|イシル III}}:\n\n" + annalsLine + "}}\n" +
+            "{{cyan|The tomb mural depicts a significant event from the life of the sultan {{magenta|イシル III}}:\n\n" + annalsLine + "}}\n" +
+            "{{C|Painted: This object is painted with a scene from the history of the village {{M|テッガトゥム}}:\n\n" + villageBody + "}}\n" +
+            "{{C|Engraved: This object is engraved with a scene from the history of the village {{M|テッガトゥム}}:\n\n" + villageBody + "}}\n" +
+            "{{C|Holographic: This hologram depicts a scene from the history of the village {{M|テッガトゥム}}:\n\n" + villageBody + "}}\n" +
+            "{{C|Painted: This object is painted with a scene from the history of the village {{M|\nテッガトゥム}}:\n\n" + villageBody + "}}\n" +
+            "{{C|Engraved: This object is engraved with a scene from the history of the village {{M|\nテッガトゥム}}:\n\n" + villageBody + "}}\n" +
+            "{{C|Holographic: This hologram depicts a scene from the history of the village {{M|\nテッガトゥム}}:\n\n" + villageBody + "}}\n" +
+            "Its face bears a tattoo of a scene from the history of the village {{M|テッガトゥム}}{{C|: The sanctity of the 商人ギルド was revealed to the people of テッガトゥム through the dish known as Brisket Spreading.}}";
+
+        var translated = DescriptionTextTranslator.TranslateLongDescription(
+            source,
+            "DescriptionTextTranslatorTests");
+
+        Assert.That(
+            translated,
+            Is.EqualTo(
+                "{{cyan|彩色: この品には古代のスルタン {{magenta|イシル III}}の生涯の一場面が描かれている:\n\n" + translatedAnnalsLine + "}}\n" +
+                "{{cyan|彫刻: この品には古代のスルタン {{magenta|イシル III}}の生涯の一場面が彫り刻まれている:\n\n" + translatedAnnalsLine + "}}\n" +
+                "{{cyan|彩色: この品には古代のスルタン {{magenta|\nイシル III}}の生涯の一場面が描かれている:\n\n" + translatedAnnalsLine + "}}\n" +
+                "{{cyan|彫刻: この品には古代のスルタン {{magenta|\nイシル III}}の生涯の一場面が彫り刻まれている:\n\n" + translatedAnnalsLine + "}}\n" +
+                "{{cyan|墓所の壁画には、古代のスルタン {{magenta|\nイシル III}}の生涯における重要な出来事が描かれている:\n\n" + translatedAnnalsLine + "}}\n" +
+                "{{cyan|墓所の壁画には、古代のスルタン {{magenta|イシル III}}の生涯における重要な出来事が描かれている:\n\n" + translatedAnnalsLine + "}}\n" +
+                "{{cyan|墓所の壁画には、スルタン {{magenta|イシル III}}の生涯における重要な出来事が描かれている:\n\n" + translatedAnnalsLine + "}}\n" +
+                "{{C|この物体には{{M|テッガトゥム}}村の歴史の一場面が描かれている:\n\n" + translatedVillageBody + "}}\n" +
+                "{{C|この物体には{{M|テッガトゥム}}村の歴史の一場面が彫り刻まれている:\n\n" + translatedVillageBody + "}}\n" +
+                "{{C|このホログラムには{{M|テッガトゥム}}村の歴史の一場面が描かれている:\n\n" + translatedVillageBody + "}}\n" +
+                "{{C|この物体には{{M|\nテッガトゥム}}村の歴史の一場面が描かれている:\n\n" + translatedVillageBody + "}}\n" +
+                "{{C|この物体には{{M|\nテッガトゥム}}村の歴史の一場面が彫り刻まれている:\n\n" + translatedVillageBody + "}}\n" +
+                "{{C|このホログラムには{{M|\nテッガトゥム}}村の歴史の一場面が描かれている:\n\n" + translatedVillageBody + "}}\n" +
+                "その顔には{{M|テッガトゥム}}村の歴史の一場面を描いた刺青がある{{C|: ブリスケットスプレッディングとして知られる料理を通じて、商人ギルドの聖性がテッガトゥムの人々に示された。}}"));
     }
 
     [Test]
@@ -525,6 +614,29 @@ public sealed class DescriptionTextTranslatorTests
         builder.Append("]}");
         builder.AppendLine();
         File.WriteAllText(patternFilePath, builder.ToString(), Utf8WithoutBom);
+    }
+
+    private void WriteJournalPatternDictionary(params (string pattern, string template)[] patterns)
+    {
+        var builder = new StringBuilder();
+        builder.Append("{\"patterns\":[");
+        for (var index = 0; index < patterns.Length; index++)
+        {
+            if (index > 0)
+            {
+                builder.Append(',');
+            }
+
+            builder.Append("{\"pattern\":\"");
+            builder.Append(EscapeJson(patterns[index].pattern));
+            builder.Append("\",\"template\":\"");
+            builder.Append(EscapeJson(patterns[index].template));
+            builder.Append("\"}");
+        }
+
+        builder.Append("]}");
+        builder.AppendLine();
+        File.WriteAllText(journalPatternFilePath, builder.ToString(), Utf8WithoutBom);
     }
 
     private void WriteExactDictionary(params (string key, string text)[] entries)

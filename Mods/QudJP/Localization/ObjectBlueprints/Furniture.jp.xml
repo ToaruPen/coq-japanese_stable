@@ -294,7 +294,7 @@
   <object Name="ImplantedEaterStatue" Inherits="Statue" Replace="true">
     <part Name="Render" DisplayName="埋め込まれた喰らう者の像" RenderString="|" ColorString="&amp;Y" DetailColor="g" Occluding="true" Tile="Terrain/sw_ueater1.bmp" />
     <stat Name="Hitpoints" Value="6000" />
-    <part Name="Description" Short="浸食によってその特徴は抽象化されましたが、かつては機械と民俗の結合の記念碑として立っていたものだ。" />
+    <part Name="Description" Short="浸食によってその特徴は抽象化されたが、かつては機械と民俗の結合の記念碑として立っていたものだ。" />
     <builder Name="RandomTile" Tiles="Terrain/sw_ueater1.bmp,Terrain/sw_ueater2.bmp,Terrain/sw_ueater3.bmp,Terrain/sw_ueater4.bmp" />
     <tag Name="NoVillageStrip" />
     <part Name="Shrine" />
@@ -659,7 +659,7 @@
 
   <object Name="Village Monument Sculpture" Inherits="Village Monument" Replace="true">
     <part Name="Render" DisplayName="クローム彫刻" Tile="Terrain/sw_monument7.bmp" />
-    <part Name="Description" Short="金属細工師の手から棒と細片が噴出し、冷却されて形が整えられました。" />
+    <part Name="Description" Short="金属細工師の手から棒と細片が噴出し、冷却されて形が整えられた。" />
     <part Name="Examiner" Unknown="UnknownBizarreContraption" Alternate="UnknownBizarreContraption" Complexity="2" Difficulty="1" />
     <part Name="TinkerItem" Bits="00" CanDisassemble="false" CanBuild="false" />
     <part Name="Metal" />
@@ -668,7 +668,7 @@
 
   <object Name="Village Monument Orb" Inherits="Village Monument" Replace="true">
     <part Name="Render" DisplayName="巨大な球体" Tile="Terrain/sw_monument8.bmp" />
-    <part Name="Description" Short="理想に向けて滑らかに仕上げられ、真鍮の脚で吊り上げられたオーブに敬意が払われました。" />
+    <part Name="Description" Short="理想に向けて滑らかに仕上げられ、真鍮の脚で吊り上げられたオーブに敬意が払われた。" />
   </object>
 
 
@@ -706,7 +706,7 @@
 
   <object Name="Kyakukya Monument 2" Inherits="Village Monument Birdhouse" Replace="true">
     <part Name="Render" ColorString="&amp;M" TileColor="&amp;W" />
-    <part Name="RulesDescription" Text="このオブジェクトは、{{M|Kyakukya}} の歴史のシーンの記念碑だ。&amp;#10;&amp;#10;979 年、伝説のアルビノ猿であるヌントゥは、物を撲殺することに飽きて、スヴィ川の根で絞められた場所へ旅しました。そこで彼はキャクキャとその住民に出会った。キャクキャの村人たちはヌントゥに行政官としての才能を発揮して村を率いるよう頼んだ。" />
+    <part Name="RulesDescription" Text="このオブジェクトは、{{M|Kyakukya}} の歴史のシーンの記念碑だ。&amp;#10;&amp;#10;979 年、伝説のアルビノ猿であるヌントゥは、物を撲殺することに飽きて、スヴィ川の根で絞められた場所へ旅した。そこで彼はキャクキャとその住民に出会った。キャクキャの村人たちはヌントゥに行政官としての才能を発揮して村を率いるよう頼んだ。" />
     <part Name="RevealVillageHistoryOnLook" HistoryId="KyakukyaSecret2" />
     <part Name="Interesting" />
   </object>
@@ -714,7 +714,7 @@
 
   <object Name="Yd Village Monument 1" Inherits="Village Monument Diptych" Replace="true">
     <part Name="Render" ColorString="&amp;M" TileColor="&amp;W" />
-    <part Name="RulesDescription" Text="このオブジェクトは、{{M|イド}} の歴史のシーンの記念碑だ。&amp;#10;&amp;#10;環流の最盛期から数世紀後、スワルディムのギョク、マック、ジーウブはサンゴ礁の海綿の中で苦しんでいたときにガルガルのメニー・アイズに出会いました。彼らは残りの人生を生きるために一緒にイドを設立した。" />
+    <part Name="RulesDescription" Text="このオブジェクトは、{{M|イド}} の歴史のシーンの記念碑だ。&amp;#10;&amp;#10;環流の最盛期から数世紀後、スワルディムのギョク、マック、ジーウブはサンゴ礁の海綿の中で苦しんでいたときにガルガルのメニー・アイズに出会った。彼らは残りの人生を生きるために一緒にイドを設立した。" />
     <part Name="RevealVillageHistoryOnLook" HistoryId="YdFreeholdSecret1" />
     <part Name="Interesting" />
   </object>
@@ -1254,7 +1254,7 @@
 
   <object Name="Sarcophagus" Inherits="MountedFurniture" Replace="true">
     <part Name="Render" DisplayName="石棺" RenderString="194" Tile="Items/sw_tomb_opened.bmp" ColorString="&amp;K" TileColor="&amp;K" DetailColor="C" />
-    <part Name="Description" Short="黒い大理石は地下の広大な範囲から切り出され、死者のために石の毛布に彫刻されました。" />
+    <part Name="Description" Short="黒い大理石は地下の広大な範囲から切り出され、死者のために石の毛布へ彫刻された。" />
     <part Name="Physics" Weight="500" />
     <part Name="Enclosing" OpenTile="Items/sw_tomb_opened.bmp" ClosedTile="Items/sw_tomb_closed.bmp" OpenColor="&amp;K" ClosedColor="&amp;C" OpenLayer="5" ClosedLayer="11" AVBonus="3" DVPenalty="14" ExitSaveTarget="14" ExitSaveStat="Strength" DamageChance="0" EnterDamageChance="0" ExitDamageChance="0" Damage="0" NoDamageWhenDisabled="false" IsTechScannable="false" />
     <part Name="Metal" />
@@ -1372,7 +1372,7 @@
 
   <object Name="VehicleGolemSupportColumn" Inherits="TombHalfWall" Replace="true">
     <part Name="Render" DisplayName="サポートビーム" />
-    <part Name="Description" Short="粘土は鋼鉄の周囲で焼成され、構造的支持のために胸郭内に組み立てられました。" />
+    <part Name="Description" Short="粘土は鋼鉄の周囲で焼成され、構造的支持のために胸郭内に組み立てられた。" />
   </object>
 
 
@@ -1678,7 +1678,7 @@
 
   <object Name="Windowed Door" Inherits="Door" Replace="true">
     <part Name="Render" Tile="Tiles/sw_door_window.bmp" RenderLayer="6" DisplayName="ドア" RenderString="+" Occluding="false" RenderIfDark="true" />
-    <part Name="Description" Short="ドアの過去のある時点で、住人が好奇心に駆られ、境界線に視界を確保するための開口部を切り開きました。" />
+    <part Name="Description" Short="ドアの過去のある時点で、住人が好奇心に駆られ、境界線に視界を確保するための開口部を切り開いた。" />
     <part Name="Door" ClosedTile="Tiles/sw_door_window.bmp" />
     <tag Name="Tier" Value="2" />
   </object>
@@ -1734,7 +1734,7 @@
 
   <object Name="Double Windowed Door" Inherits="Double Door" Replace="true">
     <tag Name="BaseObject" Value="*noinherit" />
-    <part Name="Description" Short="二重扉の過去のある時点で、住人が好奇心の糸を解き放ち、境界線に視界を確保するための開口部を切り開きました。" />
+    <part Name="Description" Short="二重扉の過去のある時点で、住人が好奇心の糸を解き放ち、境界線に視界を確保するための開口部を切り開いた。" />
     <tag Name="Tier" Value="2" />
   </object>
 
@@ -1813,7 +1813,7 @@
 
   <object Name="Tinted Glass Door E" Inherits="Glass Door E" Replace="true">
     <part Name="Render" DisplayName="色付きガラスのドア" ColorString="&amp;K^k" Occluding="true" />
-    <part Name="Description" Short="磨かれたガラスは暗色に曇らされており、スライド レールにはめ込まれていました。" />
+    <part Name="Description" Short="磨かれたガラスは暗色に曇らされ、スライドレールにはめ込まれている。" />
   </object>
 
 
@@ -2065,7 +2065,7 @@
   <object Name="PowerLine" Inherits="MountedFurniture" Replace="true">
     <part Name="Render" DisplayName="電力線" RenderString="197" ColorString="&amp;c" TileColor="&amp;W" DetailColor="c" Occluding="false" RenderLayer="4" />
     <part Name="Physics" Weight="1" />
-    <part Name="Description" Short="銅、アルミニウム、ガラス繊維を丸めて電線管にしました。" />
+    <part Name="Description" Short="銅、アルミニウム、ガラス繊維を丸めて電線管にしている。" />
     <part Name="ElectricalPowerTransmission" ChargeRate="1000" IsConduit="true" />
     <part Name="MergeConduit" ModPart="ModWired" DestroyIfPart="ElectricalPowerTransmission" />
     <part Name="Metal" />
@@ -2085,7 +2085,7 @@
 
   <object Name="HeavyPowerLine" Inherits="PowerLine" Replace="true">
     <part Name="Render" DisplayName="高圧送電線" ColorString="&amp;r" TileColor="&amp;r" DetailColor="g" />
-    <part Name="Description" Short="銅、カーボン、ガラス繊維を丸めて丈夫な電線管に仕上げました。" />
+    <part Name="Description" Short="銅、カーボン、ガラス繊維を丸めて丈夫な電線管に仕上げている。" />
     <part Name="ElectricalPowerTransmission" ChargeRate="10000" />
     <part Name="Examiner" Complexity="3" />
     <stat Name="AV" Value="5" />
@@ -2097,7 +2097,7 @@
   <object Name="GlassHydraulicPipe" Inherits="BaseHydraulicPipe" Replace="true">
     <part Name="Render" DisplayName="ガラス製油圧パイプ" RenderString="216" ColorString="&amp;y" TileColor="&amp;y" DetailColor="K" Occluding="false" />
     <part Name="Physics" Weight="20" FlameTemperature="1200" VaporTemperature="5000" />
-    <part Name="Description" Short="ガラスが機械の動脈に吹き込まれました。" />
+    <part Name="Description" Short="ガラスが機械の動脈に吹き込まれている。" />
     <part Name="HydraulicPowerTransmission" ChargeRate="40000" TileAppendWhenPowered="_flowing" TileAppendWhenUnpowered="_still" TileAppendWhenBroken="_intact" TileAppendWhenUnbroken="_intact" TileAnimateWhenPowered="true" />
     <part Name="LiquidVolume" LiquidVisibleWhenSealed="true" />
     <part Name="Examiner" Unknown="UnknownStrangeTubes" Complexity="1" />
@@ -2116,7 +2116,7 @@
 
   <object Name="YdFreeholdGlassHydraulicPipe1" Inherits="GlassHydraulicPipe" Replace="true">
     <part Name="Render" ColorString="&amp;W" TileColor="&amp;g" DetailColor="W" Occluding="false" />
-    <part Name="Description" Short="ガラスを機械の動脈に吹き込み、ウランで蛍光緑黄色にイオン着色しました。" />
+    <part Name="Description" Short="ガラスを機械の動脈に吹き込み、ウランで蛍光緑黄色にイオン着色している。" />
     <part Name="LightSource" Lit="true" Radius="8" />
     <part Name="ModLacquered" />
     <tag Name="DetailColorByLiquid" Value="*delete" />
@@ -2127,7 +2127,7 @@
   <object Name="WoodenMechanicalTransmission" Inherits="BaseMechanicalTransmission" Replace="true">
     <part Name="Render" DisplayName="木製機械" RenderString="216" ColorString="&amp;w" DetailColor="w" Occluding="false" />
     <part Name="Physics" Weight="200" />
-    <part Name="Description" Short="木材を削り、滑らかなボリュームのシャフトに切断し、ギアボックスの内側に取​​り付けて動きを連続的に伝えました。" />
+    <part Name="Description" Short="木材を削り、滑らかなボリュームのシャフトに切断し、ギアボックスの内側に取り付けて動きを連続的に伝えている。" />
     <part Name="MechanicalPowerTransmission" ChargeRate="100" IsTechScannable="false" />
     <part Name="Examiner" Complexity="1" Difficulty="1" />
     <part Name="TinkerItem" Bits="B" CanDisassemble="false" CanBuild="false" />
@@ -3718,7 +3718,7 @@
 
   <object Name="Bed" Inherits="BaseBed" Replace="true">
     <part Name="Render" DisplayName="ベッド" ColorString="&amp;w" DetailColor="Y" Tile="Items/sw_bed.bmp" Occluding="false" RenderIfDark="true" />
-    <part Name="Description" Short="布地にはウォーターヴァインの殻が詰められ、丘の民のスタイルで木の板の上に置かれました。" />
+    <part Name="Description" Short="布地にはウォーターヴァインの殻が詰められ、丘の民の流儀で木のすのこに敷かれている。" />
     <tag Name="Tier" Value="0" />
     <stag Name="Basic" />
   </object>
@@ -3772,7 +3772,7 @@
   <object Name="Four-Poster Bed" Inherits="BaseBed" Replace="true">
     <part Name="Render" DisplayName="四柱式ベッド" ColorString="&amp;r" TileColor="&amp;w" DetailColor="r" Tile="Items/sw_bed_four.bmp" Occluding="false" RenderIfDark="true" />
     <part Name="Physics" Weight="400" />
-    <part Name="Description" Short="木材は細心の注意を払って柱に加工され、装飾的に削られました。キルトのダウンはスヴィ川のほとりの裁縫師たちから物々交換され、ケーキのように重ねられ、枕でつや消しにされた。ここで、金持ちのまどろみ人は、夢見る谷への有利な入口を見つける。" />
+    <part Name="Description" Short="木材は細心の注意を払って柱に加工され、装飾的に削られた。キルトのダウンはスヴィ川のほとりの裁縫師たちから物々交換され、ケーキのように重ねられ、枕でつや消しにされた。ここで、金持ちのまどろみ人は、夢見る谷への有利な入口を見つける。" />
     <stat Name="Hitpoints" Value="180" />
     <tag Name="HeroNameTitleDescriptor" Value="Restful,Soft,Lumpy,Firm,Luxurious,Splendid,Dreamy" />
     <tag Name="Tier" Value="1" />
@@ -3784,7 +3784,7 @@
   <object Name="Medical Bed" Inherits="BaseBed" Replace="true">
     <part Name="Render" DisplayName="消化性ベッド" ColorString="&amp;c" TileColor="&amp;C" DetailColor="Y" Tile="Items/sw_bed_medical.bmp" Occluding="false" RenderIfDark="true" />
     <part Name="Physics" Organic="false" Weight="260" />
-    <part Name="Description" Short="塩漂白剤のようなプラスチックの白は、安らかな眠り、回復期、気分の再調整のために輪郭を描かれていました。" />
+    <part Name="Description" Short="塩漂白剤のような白いプラスチックは、安らかな眠り、回復期、気分の再調整のために輪郭づけられている。" />
     <part Name="Metal" />
     <part Name="Examiner" Complexity="3" />
     <part Name="TinkerItem" Bits="BB" CanDisassemble="false" CanBuild="false" />
@@ -3976,7 +3976,7 @@
   <object Name="Armchair" Inherits="BaseChair" Replace="true">
     <part Name="Render" DisplayName="肘掛け椅子" ColorString="&amp;w" DetailColor="y" Tile="Items/sw_chair_arm.bmp" />
     <part Name="Physics" Weight="60" />
-    <part Name="Description" Short="革職人が塩の太陽の下で練り上げ、持ち主の鎮魂のためにグロクロウの羽を詰めました。" />
+    <part Name="Description" Short="革職人が塩の太陽の下で練り上げ、持ち主の鎮魂のためにグロクロウの羽を詰めた。" />
     <part Name="Chair" Level="1" />
     <stat Name="Hitpoints" Value="50" />
     <tag Name="HeroNameTitleDescriptor" Value="Luxurious,Decadent,Comfy,Reclined,Lazy,Sybaritic,Soft,Voluptuous,Epicurean" />
@@ -4040,7 +4040,7 @@
   <object Name="Ergomax Chair" Inherits="BasePortableChair" Replace="true">
     <part Name="Render" DisplayName="エルゴチェア" ColorString="&amp;Y" DetailColor="B" Tile="Items/sw_chair_ergo.bmp" />
     <part Name="Physics" Organic="false" Weight="30" />
-    <part Name="Description" Short="塩漂白剤のようなプラスチックの白は、理想的な反芻のための姿勢に合わせて形作られました。" />
+    <part Name="Description" Short="塩漂白剤のような白いプラスチックは、理想的な反芻のための姿勢に合わせて形作られている。" />
     <part Name="Chair" Level="4" LevelWhenDisabled="0" ChargeUse="1" IsEMPSensitive="true" IsTechScannable="true" NameForStatus="ErgonomicSystems" />
     <part Name="EnergyCellSocket" SlotType="EnergyCell" />
     <part Name="Metal" />
@@ -4138,7 +4138,7 @@
   <object Name="Gravchair" Inherits="BaseChair" Replace="true">
     <part Name="Render" DisplayName="{{K|grav}} 椅子" ColorString="&amp;C" DetailColor="c" Tile="Items/sw_chair_grav.bmp" />
     <part Name="Physics" Organic="false" Weight="80" />
-    <part Name="Description" Short="熱旋盤で滑らかにされたプラスチックは、完璧なボールがそれ自身の周りの時空をどのように歪ませるかについての喰らう者の直観を呼び起こすデザインに練り込まれました。" />
+    <part Name="Description" Short="熱旋盤で滑らかにされたプラスチックは、完璧なボールがそれ自身の周りの時空をどのように歪ませるかについての喰らう者の直観を呼び起こすデザインに練り込まれている。" />
     <part Name="Chair" Level="2" LevelWhenDisabled="-2" IsEMPSensitive="true" IsTechScannable="true" NameForStatus="ContragravSystems" />
     <part Name="Capacitor" Charge="5" MaxCharge="5" ChargeDisplayStyle="" />
     <part Name="ZeroPointEnergyCollector" ChargeRate="5" />
@@ -4467,7 +4467,7 @@
 
   <object Name="Reliquary" Inherits="MountedFurniture" Replace="true">
     <part Name="Render" DisplayName="聖遺物箱" RenderString="254" Tile="Items/sw_reliquary.bmp" ColorString="&amp;W" TileColor="&amp;c" DetailColor="W" />
-    <part Name="Description" Short="過去のほこりっぽい片隅で、名もなき労働者たちが縞模様の大理石に釉薬をかけて金を象嵌し、肩を落とした喰らう者の家宝や副葬品を保管していました。" />
+    <part Name="Description" Short="過去のほこりっぽい片隅で、名もなき労働者たちが縞模様の大理石に釉薬をかけて金を象嵌し、肩を落とした喰らう者の家宝や副葬品を保管していた。" />
     <part Name="Container" />
     <part Name="Inventory" />
     <part Name="Physics" Weight="300" />
@@ -4504,7 +4504,7 @@
 
   <object Name="Recoming Reliquary" Inherits="Reliquary" Replace="true">
     <part Name="Render" DisplayName="戻ってくる聖遺物箱" RenderString="254" Tile="Items/sw_reliquary.bmp" ColorString="&amp;m" TileColor="&amp;Y" DetailColor="m" />
-    <part Name="Description" Short="過去のほこりっぽい片隅で、名もなき労働者たちが縞模様の大理石に釉薬をかけ、アメジストをはめ込んで、帰還したハイ喰らう者の地上の装備を収納していました。" />
+    <part Name="Description" Short="過去のほこりっぽい片隅で、名もなき労働者たちが縞模様の大理石に釉薬をかけ、アメジストをはめ込んで、帰還したハイ喰らう者の地上の装備を収納していた。" />
     <part Name="Container" />
     <part Name="Inventory" />
     <part Name="Physics" Weight="300" />
@@ -4789,7 +4789,7 @@
 
   <object Name="Wide Bottle" Inherits="Bottle" Replace="true">
     <part Name="Render" DisplayName="幅広のガラス瓶" ColorString="&amp;c" DetailColor="c" Tile="Items/sw_bottle_wide.bmp" RenderLayer="6" Occluding="false" />
-    <part Name="Description" Short="木立の絨毯が敷かれたラギノス山の伝統に従って、ガラスは幅広のボウルと細いステムに吹き付けられました。このスタイルの最初の職人たちは、ムサ材の厚く熟した空気の中で作業を行ったのでしょうか?スピンドルのグリッターがマーバーやパイプに埃をかぶっていませんか？" />
+    <part Name="Description" Short="木立の絨毯が敷かれたラギノス山の伝統に従って、ガラスは幅広のボウルと細いステムに吹き付けられた。このスタイルの最初の職人たちは、ムサ材の厚く熟した空気の中で作業を行ったのだろうか？スピンドルのきらめきがマーバーやパイプに埃をかぶらせてはいないか？" />
     <tag Name="TakeDamageSound" Value="Sounds/Damage/sfx_damage_glass" />
     <tag Name="DeathSounds" Value="Sounds/Damage/sfx_destroy_glass" />
     <stag Name="Contemporary" />
@@ -4800,7 +4800,7 @@
     <part Name="Render" DisplayName="粘土ピッチャー" ColorString="&amp;w" DetailColor="k" Tile="Items/sw_jug3.bmp" RenderLayer="6" Occluding="false" />
     <part Name="RandomColors" MainColor="w" DetailColor="all" />
     <part Name="Physics" Weight="10" Takeable="true" />
-    <part Name="Description" Short="朝の柔らかな暖かさの中で、まず牽引された器がろくろに投げ込まれました。キャニオニアは、生命の貴重な液体を保存するために細心の注意を払ってリップを形作りました。" />
+    <part Name="Description" Short="朝の柔らかな暖かさの中で、まず牽引された器がろくろに投げ込まれた。キャニオニアは、生命の貴重な液体を保存するために細心の注意を払ってリップを形作った。" />
     <part Name="LiquidVolume" StartVolume="0" MaxVolume="64" />
     <part Name="PopulationLiquidFiller" Table="VesselLiquid_Standard" Volume="1d6" />
     <stag Name="Contemporary" />
@@ -4811,7 +4811,7 @@
     <part Name="Render" DisplayName="水差し" ColorString="&amp;w" DetailColor="b" Tile="Items/sw_jug4.bmp" RenderLayer="6" Occluding="false" />
     <part Name="RandomColors" MainColor="w" DetailColor="all" />
     <part Name="Physics" Weight="8" Takeable="true" />
-    <part Name="Description" Short="青銅を溶かして冷却し、形を整え、エッチングして、命の水を届けました。" />
+    <part Name="Description" Short="青銅を溶かして冷却し、形を整え、エッチングして、命の水を届ける。" />
     <part Name="LiquidVolume" StartVolume="0" MaxVolume="32" />
     <part Name="PopulationLiquidFiller" Table="VesselLiquid_Standard" Volume="1d6" />
     <stag Name="Contemporary" />
@@ -4822,7 +4822,7 @@
     <part Name="Render" DisplayName="粘土の水差し" ColorString="&amp;w" DetailColor="r" Tile="Items/sw_jug5.bmp" RenderLayer="6" Occluding="false" />
     <part Name="RandomColors" MainColor="w" DetailColor="all" />
     <part Name="Physics" Weight="15" Takeable="true" />
-    <part Name="Description" Short="粘土は丸められ、油やワインを保存するために焼かれました。" />
+    <part Name="Description" Short="粘土は丸められ、油やワインを保存するために焼かれている。" />
     <part Name="LiquidVolume" StartVolume="0" MaxVolume="64" />
     <part Name="PopulationLiquidFiller" Table="VesselLiquid_Standard" Volume="1d6" />
     <stag Name="Contemporary" />
@@ -4831,14 +4831,14 @@
 
   <object Name="Jug Eastern Style" Inherits="Jug" Replace="true">
     <part Name="Render" DisplayName="粘土の水差し" ColorString="&amp;w" DetailColor="r" Tile="Items/sw_jug6.bmp" RenderLayer="6" Occluding="false" />
-    <part Name="Description" Short="粘土は丸められ、油やワインを保存するために焼かれました。" />
+    <part Name="Description" Short="粘土は丸められ、油やワインを保存するために焼かれている。" />
     <stag Name="Contemporary" />
   </object>
 
 
   <object Name="Jug Wide Eastern Style" Inherits="Jug" Replace="true">
     <part Name="Render" DisplayName="粘土の水差し" ColorString="&amp;w" DetailColor="r" Tile="Items/sw_jug7.bmp" RenderLayer="6" Occluding="false" />
-    <part Name="Description" Short="粘土は丸められ、油やワインを保存するために焼かれました。" />
+    <part Name="Description" Short="粘土は丸められ、油やワインを保存するために焼かれている。" />
   </object>
 
 
@@ -4846,7 +4846,7 @@
     <part Name="Render" DisplayName="容器" ColorString="&amp;w" DetailColor="m" Tile="Items/sw_vase2.bmp" RenderLayer="6" Occluding="false" />
     <part Name="RandomColors" MainColor="w" DetailColor="all" />
     <part Name="Physics" Weight="10" Takeable="true" />
-    <part Name="Description" Short="粘土をろくろで回転させ、波の形を作り、焼成し、釉薬をかけて伝統的な器を作りました。" />
+    <part Name="Description" Short="粘土をろくろで回転させ、波の形を作り、焼成し、釉薬をかけて伝統的な器を作っている。" />
     <part Name="LiquidVolume" StartVolume="0" MaxVolume="32" />
     <part Name="PopulationLiquidFiller" Table="VesselLiquid_Standard" Volume="1d6" />
     <stag Name="Contemporary" />
@@ -5091,7 +5091,7 @@
     <tag Name="EmptyDetailColor" Value="C" />
     <tag Name="FullDetailColor" Value="C,w,y,W" />
     <tag Name="HeroNameTitleDescriptor" Value="Flat,Level,L-Shaped,Sturdy,Three-Legged,Wobbly" />
-    <part Name="Description" Short="鋼に液体クロームを塗布し、冷却して平らで加工可能な表面に叩きました。" />
+    <part Name="Description" Short="鋼に液体クロームを塗布し、冷却して平らで加工可能な表面へ叩き延ばしている。" />
     <part Name="Metal" />
   </object>
 
@@ -5113,7 +5113,7 @@
     <part Name="Container" OpenSound="Sounds/Interact/sfx_interact_open_desk" />
     <tag Name="EmptyTile" Value="Items/sw_table_desk.bmp" />
     <tag Name="FullTile" Value="Items/sw_table_desk_full.bmp" />
-    <part Name="Description" Short="木材は湿った木立から回収され、板に削られて、シェールブリッジの保税地に運ばれました。そこでそれは、湿気のない空気に慣れた大工たちに受け入れられ、自分たちのプロジェクトのために豊かな木材を熱心に利用しました。" />
+    <part Name="Description" Short="木材は湿った木立から回収され、板に削られて、シェールブリッジの保税地に運ばれた。そこでそれは、湿気のない空気に慣れた大工たちに受け入れられ、自分たちのプロジェクトのために豊かな木材を熱心に利用した。" />
     <stag Name="Contemporary" />
   </object>
 
@@ -5178,7 +5178,7 @@
   <object Name="Dresser" Inherits="Furniture" Replace="true">
     <part Name="Render" DisplayName="ドレッサー" ColorString="&amp;w" DetailColor="w" RenderString="227" Tile="Items/sw_dresser.bmp" Occluding="false" RenderIfDark="true" />
     <part Name="Physics" Weight="80" Takeable="false" Solid="false" Organic="true" />
-    <part Name="Description" Short="木材を正確に切断して引き出しを作り、衣類を収納するための真鍮のレールに設置しました。" />
+    <part Name="Description" Short="木材を正確に切断して引き出しを作り、衣類を収納するための真鍮のレールに設置している。" />
     <property Name="DontWarnOnOpen" Value="true" />
     <part Name="Container" />
     <tag Name="HeroNameTitleDescriptor" Value="Flat,Knobby,Level,L-Shaped,Sturdy,Three-Legged,Wobbly" />
@@ -5225,7 +5225,7 @@
     <tag Name="EmptyTile" Value="Items/sw_table_ornate_1.bmp" />
     <tag Name="FullTile" Value="Items/sw_table_ornate_1.bmp" />
     <tag Name="FullDetailColor" Value="*delete" />
-    <part Name="Description" Short="贅沢な脚のエッチングされたクロームは、かぎ爪とボールの足に向かって先細りになっており、大理石の表面では幾何学的な欠陥が削り取られ、鉄のバケツに投げ込まれており、今もどこかに残っているかもしれません。喰らう者たちはここで話し合い、計画を立てました。" />
+    <part Name="Description" Short="贅沢な脚のエッチングされたクロームは、かぎ爪とボールの足に向かって先細りになっており、大理石の表面では幾何学的な欠陥が削り取られ、鉄のバケツに投げ込まれており、今もどこかに残っているかもしれない。喰らう者たちはここで話し合い、計画を立てた。" />
     <part Name="Metal" />
   </object>
 
@@ -5376,7 +5376,7 @@
   <object Name="Bust of Mehmet I" Inherits="MountedFurniture" Replace="true">
     <part Name="Render" DisplayName="メフメット１世のクローム胸像" RenderString="234" ColorString="&amp;C" DetailColor="y" Tile="Items/sw_bust2.bmp" RenderLayer="6" Occluding="false" />
     <part Name="Physics" Weight="60" />
-    <part Name="Description" Short="柔らかい頬と丸い眉の型に硬質クロームが鋳造されました。学問の守護王が列聖される。" />
+    <part Name="Description" Short="柔らかい頬と丸い眉の型に硬質クロームが鋳造された。学問の守護王が列聖される。" />
     <part Name="SmartuseLooks" />
     <tag Name="TechTier" Value="1" />
     <stag Name="Scholarly" />

@@ -144,14 +144,58 @@ public sealed class PopupPickOptionTranslationPatchTests
             ("drop", "QudMenuItem", "QUD-MENU-DROP-POISON"),
             ("detonate", "QudMenuItem", "QUD-MENU-DETONATE-POISON"));
         WriteInventoryActionDictionary(
+            ("equip (manual)", "XRL.World.IInventoryActionsEvent", "手動で装備"),
             ("mark important", "XRL.World.IInventoryActionsEvent", "重要にする"),
             ("add notes", "XRL.World.IInventoryActionsEvent", "メモを追加"),
             ("remove", "XRL.World.IInventoryActionsEvent", "外す"),
             ("drop", "XRL.World.IInventoryActionsEvent", "落とす"),
-            ("detonate", "XRL.World.IInventoryActionsEvent", "起爆する"));
+            ("detonate", "XRL.World.IInventoryActionsEvent", "起爆する"),
+            ("seal", "XRL.World.IInventoryActionsEvent", "封をする"),
+            ("unseal", "XRL.World.IInventoryActionsEvent", "封を解く"),
+            ("pray", "XRL.World.IInventoryActionsEvent", "祈る"),
+            ("desecrate", "XRL.World.IInventoryActionsEvent", "冒涜する"),
+            ("deactivate", "XRL.World.IInventoryActionsEvent", "停止する"),
+            ("repair", "XRL.World.IInventoryActionsEvent", "修理する"),
+            ("recharge", "XRL.World.IInventoryActionsEvent", "充電する"),
+            ("disassemble all", "XRL.World.IInventoryActionsEvent", "すべて分解"),
+            ("clean", "XRL.World.IInventoryActionsEvent", "掃除する"),
+            ("show internals", "XRL.World.IInventoryActionsEvent", "内部構造を表示"),
+            ("mod with tinkering", "XRL.World.IInventoryActionsEvent", "工作で改造"),
+            ("drop all", "XRL.World.IInventoryActionsEvent", "すべて落とす"),
+            ("replace cell", "XRL.World.IInventoryActionsEvent", "セルを交換"),
+            ("install cell", "XRL.World.IInventoryActionsEvent", "セルを装着"),
+            ("direct to attack target", "XRL.World.IInventoryActionsEvent", "攻撃対象を指示"),
+            ("direct to engage aggressively", "XRL.World.IInventoryActionsEvent", "攻撃的に交戦させる"),
+            ("direct to engage defensively only", "XRL.World.IInventoryActionsEvent", "防御的に交戦させる"),
+            ("direct to come along", "XRL.World.IInventoryActionsEvent", "ついて来させる"),
+            ("give items", "XRL.World.IInventoryActionsEvent", "アイテムを渡してもらう"),
+            ("direct to move", "XRL.World.IInventoryActionsEvent", "移動を指示"),
+            ("direct to change follow distance", "XRL.World.IInventoryActionsEvent", "追従距離を変更"),
+            ("direct to stay there", "XRL.World.IInventoryActionsEvent", "その場で待機させる"),
+            ("direct ability use", "XRL.World.IInventoryActionsEvent", "能力使用設定を変更"),
+            ("rename", "XRL.World.IInventoryActionsEvent", "名前を変更"),
+            ("untarget", "XRL.World.IInventoryActionsEvent", "ターゲット解除"),
+            ("telekinetically pull toward you", "XRL.World.IInventoryActionsEvent", "念動力で引き寄せる"),
+            ("telekinetically pull one toward you", "XRL.World.IInventoryActionsEvent", "念動力で1つ引き寄せる"),
+            ("telekinetically pull towards you and take", "XRL.World.IInventoryActionsEvent", "念動力で引き寄せて拾う"),
+            ("telekinetically pull one towards you and take", "XRL.World.IInventoryActionsEvent", "念動力で1つ引き寄せて拾う"),
+            ("telekinetically hurl", "XRL.World.IInventoryActionsEvent", "念動力で投げる"),
+            ("telekinetically move", "XRL.World.IInventoryActionsEvent", "念動力で移動"),
+            ("telekinetically hurl one", "XRL.World.IInventoryActionsEvent", "念動力で1つ投げる"),
+            ("telekinetically move one", "XRL.World.IInventoryActionsEvent", "念動力で1つ移動"));
 
         Assert.Multiple(() =>
         {
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[E]}} {{y|Equip (manual)}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[E]}} {{y|手動で装備}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[E]}} {{y|equip (manual)}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[E]}} {{y|手動で装備}}"));
             Assert.That(
                 SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
                     "{{W|[i]}} {{y|mark important}}",
@@ -177,6 +221,171 @@ public sealed class PopupPickOptionTranslationPatchTests
                     "{{W|[n]}} {{y|deto{{hotkey|n}}ate}}",
                     "InventoryActionMenu:ABC123"),
                 Is.EqualTo("{{W|[n]}} {{y|起爆する}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[s]}} {{y|{{hotkey|s}}eal}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[s]}} {{y|封をする}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[u]}} {{y|{{hotkey|u}}nseal}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[u]}} {{y|封を解く}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[y]}} {{y|pra{{hotkey|y}}}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[y]}} {{y|祈る}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[D]}} {{y|{{hotkey|D}}esecrate}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[D]}} {{y|冒涜する}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[a]}} {{y|de{{hotkey|a}}ctivate}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[a]}} {{y|停止する}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[r]}} {{y|{{hotkey|r}}epair}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[r]}} {{y|修理する}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[R]}} {{y|{{hotkey|R}}echarge}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[R]}} {{y|充電する}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[D]}} {{y|drop all}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[D]}} {{y|すべて落とす}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "    {{y|disassemble all}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("    {{y|すべて分解}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[a]}} {{y|clean}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[a]}} {{y|掃除する}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[W]}} {{y|show internals}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[W]}} {{y|内部構造を表示}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[t]}} {{y|mod with tinkering}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[t]}} {{y|工作で改造}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[c]}} {{y|replace cell}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[c]}} {{y|セルを交換}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[c]}} {{y|install cell}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[c]}} {{y|セルを装着}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[a]}} {{y|direct to {{hotkey|a}}ttack target}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[a]}} {{y|攻撃対象を指示}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[e]}} {{y|direct to engage aggressively}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[e]}} {{y|攻撃的に交戦させる}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[e]}} {{y|direct to engage defensively only}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[e]}} {{y|防御的に交戦させる}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[c]}} {{y|direct to come along}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[c]}} {{y|ついて来させる}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[g]}} {{y|give items}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[g]}} {{y|アイテムを渡してもらう}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[m]}} {{y|direct to move}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[m]}} {{y|移動を指示}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[f]}} {{y|direct to change follow distance}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[f]}} {{y|追従距離を変更}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[s]}} {{y|direct to stay there}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[s]}} {{y|その場で待機させる}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[u]}} {{y|direct ability use}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[u]}} {{y|能力使用設定を変更}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[r]}} {{y|rename}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[r]}} {{y|名前を変更}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[t]}} {{y|untarget}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[t]}} {{y|ターゲット解除}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[p]}} {{y|telekinetically pull toward you}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[p]}} {{y|念動力で引き寄せる}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[P]}} {{y|telekinetically pull one toward you}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[P]}} {{y|念動力で1つ引き寄せる}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[t]}} {{y|telekinetically pull towards you and take}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[t]}} {{y|念動力で引き寄せて拾う}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[T]}} {{y|telekinetically pull one towards you and take}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[T]}} {{y|念動力で1つ引き寄せて拾う}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[h]}} {{y|telekinetically hurl}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[h]}} {{y|念動力で投げる}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[m]}} {{y|telekinetically move}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[m]}} {{y|念動力で移動}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[H]}} {{y|telekinetically hurl one}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[H]}} {{y|念動力で1つ投げる}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[M]}} {{y|telekinetically move one}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[M]}} {{y|念動力で1つ移動}}"));
         });
     }
 
