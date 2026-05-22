@@ -1378,7 +1378,7 @@
 
   <object Name="VehicleGolemExit" Inherits="Stairs" Replace="true">
     <part Name="Render" DisplayName="出口ハッチ" RenderLayer="1" ColorString="&amp;W" TileColor="&amp;w" DetailColor="W" RenderString="008" Tile="Furniture/sw_golem_interior_hatch_closed.bmp" />
-    <part Name="Description" Short="一対の引き込み可能なクローム パネルが油を塗ったトラックに取り付けられる。" />
+    <part Name="Description" Short="一対の引き込み可能なクロームパネルが油を塗ったトラックに取り付けられる。" />
     <part Name="InteriorPortal" OpenTile="Furniture/sw_golem_interior_hatch_open.bmp" />
     <tag Name="Gender" Value="neuter" />
     <tag Name="ExcludeFromDynamicEncounters" />
@@ -2823,7 +2823,7 @@
   <object Name="Electrothing" Inherits="HighTechInstallation" Replace="true">
     <part Name="Render" DisplayName="エレクトロディクス" RenderString="211" ColorString="&amp;w" DetailColor="W" Tile="Items/sw_electrothing.bmp" RenderLayer="6" />
     <part Name="Physics" Weight="60" />
-    <part Name="Description" Short="2 つの銅電球は、イオン化ガスの経路に沿った電流を促進するスパーク ギャップを形成する。物体があなたに向かってパチンと火花を散らす。" />
+    <part Name="Description" Short="2 つの銅電球は、イオン化ガスの経路に沿った電流を促進するスパークギャップを形成する。それはパチパチと火花を散らしている。" />
     <part Name="HydraulicPowerTransmission" ChargeRate="1000" IsConsumer="true" DependsOnLiquid="" />
     <part Name="ElectricalPowerTransmission" ChargeRate="1000" IsConsumer="true" />
     <part Name="ChargeSink" ChargeUse="50" NameForStatus="ArcGenerator" />
@@ -5443,7 +5443,7 @@
 
   <object Name="Display Breadboard" Inherits="MountedFurniture" Replace="true">
     <part Name="Render" DisplayName="ディスプレイブレッドボード" ColorString="&amp;y" DetailColor="R" RenderString="223" Tile="Items/sw_breadboard.bmp" />
-    <part Name="Description" Short="粒子状の木材の中にプラスチックが収容されており、接触点の格子状に穴が開けられている。コンデンサとインダクタはスプリング クリップに固定され、ワイヤーの束でネットワーク化されている。" />
+    <part Name="Description" Short="粒子状の木材の中にプラスチックが収容されており、接触点の格子状に穴が開けられている。コンデンサとインダクタはスプリングクリップに固定され、ワイヤーの束でネットワーク化されている。" />
     <part Name="Examiner" Alternate="UnknownBizarreContraption" Complexity="3" />
     <part Name="Physics" Weight="50" Solid="false" />
     <stat Name="AV" Value="2" />

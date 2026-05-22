@@ -1030,7 +1030,7 @@
     <part Name="Render" DisplayName="{{W|魔樹の樹皮}}" ColorString="&amp;W" DetailColor="w" Tile="Items/sw_jerky1.bmp" RenderString="'" RenderLayer="5" />
     <part Name="Physics" Category="Meds" />
     <part Name="Commerce" Value="4" />
-    <part Name="Food" Satiation="None" Thirst="0" Message="A warm tingling washes over you." />
+    <part Name="Food" Satiation="None" Thirst="0" Message="温かな痺れが全身に広がる。" />
     <part Name="ConfuseOnEat" Strength="1d8" Duration="5d3" Level="1" BuildupTimeout="15" />
     <part Name="GeometricHealOnEat" Amount="12-14" Ratio="-50" Duration="3" />
     <part Name="Description" Short="木目の狭間に地衣が貼りつき、香辛料の匂いと共に微かな光沢を放つ。" />
@@ -9046,7 +9046,7 @@
 <object Name="RelicTonic" Inherits="NectarTonic" Replace="true">
     <part Name="Description" Short="テトラクセノノガラスの管の内側で、オパール色のシロップがきらめいている。" />
     <part Name="DosageChange" Amount="1" />
-    <part Name="RulesDescription" Text="ランダムな能力値1種に恒久的な+2のボーナスを得るか、突然変異ポイントを2点得る。" AltForGenotype="True Kin" GenotypeAlt="You gain two attribute points." />
+    <part Name="RulesDescription" Text="ランダムな能力値1種に恒久的な+2のボーナスを得るか、突然変異ポイントを2点得る。" AltForGenotype="True Kin" GenotypeAlt="能力値ポイントを2点得る。" />
     <removepart Name="TinkerItem" />
     <removepart Name="Examiner" />
     <removepart Name="PreservableItem" />

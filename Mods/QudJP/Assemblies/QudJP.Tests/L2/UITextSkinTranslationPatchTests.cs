@@ -453,14 +453,20 @@ public sealed class UITextSkinTranslationPatchTests
             ("Look", "見る"),
             ("interact", "インタラクト"),
             ("walk", "歩く"),
-            ("select", "選択"));
+            ("select", "選択"),
+            ("[Select a direction]", "[方向を選択]"));
+        WriteDictionaryFile(
+            "ui-skillsandpowers.ja.json",
+            ("Shield Slam", "シールドスラム"));
 
-        var source = "Look | ESC | (F1) lock | space interact | W walk | Enter-select";
+        var source = "Look | ESC | (F1) lock | space interact | W walk | Enter-select | Shield Slam | [Select a direction]";
         var translated = UITextSkinTranslationPatch.TranslatePreservingColors(
             source,
             nameof(PickTargetWindowTextTranslator));
 
-        Assert.That(translated, Is.EqualTo("見る | ESC | (F1) ロック | space インタラクト | W 歩く | Enter-選択"));
+        Assert.That(
+            translated,
+            Is.EqualTo("見る | ESC | (F1) ロック | space インタラクト | W 歩く | Enter-選択 | シールドスラム | [方向を選択]"));
     }
 
     [Test]
@@ -481,6 +487,20 @@ public sealed class UITextSkinTranslationPatchTests
             nameof(UITextSkinTranslationPatch));
 
         Assert.That(translated, Is.EqualTo(source));
+    }
+
+    [Test]
+    public void TranslatePreservingColors_DoesNotUseActivatedAbilityNamesForStandalonePickTargetLabels()
+    {
+        WriteDictionaryFile(
+            "ui-skillsandpowers.ja.json",
+            ("Shield Slam", "シールドスラム"));
+
+        var translated = UITextSkinTranslationPatch.TranslatePreservingColors(
+            "Shield Slam",
+            nameof(PickTargetWindowTextTranslator));
+
+        Assert.That(translated, Is.EqualTo("Shield Slam"));
     }
 
     [TestCase("navigate", "移動")]

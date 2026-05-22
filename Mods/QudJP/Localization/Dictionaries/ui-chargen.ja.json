@@ -447,12 +447,12 @@
     {
       "key": "AttributeDescription:Agility",
       "context": "Chargen.Attributes.Description",
-      "text": "敏捷性は、遠隔攻撃の命中率、敵の攻撃を回避する能力（DV）を決定します。"
+      "text": "敏捷は、遠隔攻撃の命中率、敵の攻撃を回避する能力（DV）を決定します。"
     },
     {
       "key": "AttributeDescription:Toughness",
       "context": "Chargen.Attributes.Description",
-      "text": "耐久力は、HP（ヒットポイント）、自然治癒の速度、毒や病気への抵抗力を決定します。"
+      "text": "頑健は、HP（ヒットポイント）、自然治癒の速度、毒や病気への抵抗力を決定します。"
     },
     {
       "key": "AttributeDescription:Intelligence",

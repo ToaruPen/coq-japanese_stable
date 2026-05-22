@@ -1704,7 +1704,7 @@
 <object Name="CryochamberPlaque" Inherits="Wall" Replace="true">
     <part Name="Render" DisplayName="クロームの銘板" ColorString="&amp;y" RenderString="254" Occluding="false" />
     <part Name="Physics" FreezeTemperature="-9999" BrittleTemperature="-9999" />
-    <part Name="Chat" Says="CHAMBER UNOCCUPIED: AWAITING SPECIMEN" ShowInShortDescription="true" />
+    <part Name="Chat" Says="チャンバー空き：標本待機中" ShowInShortDescription="true" />
     <part Name="SmartuseLooks" />
     <part Name="Description" Short="クイッククロームの輝く表面が揺らめく屈折模様を泳ぎ、光が一点に集まると象形が現れ始める。" />
     <stat Name="AV" Value="10" />
@@ -2320,16 +2320,16 @@
 		<part Name="HologramMaterial" ColorStrings="&amp;Y,&amp;m,&amp;y,&amp;m" DetailColors="m,K,M,y" />
 	</object>
 	<object Name="CryochamberPlaqueSpider" Inherits="CryochamberPlaque" Replace="true">
-    <part Name="Chat" Says="SPECIMEN: PHASE SPIDER" />
+    <part Name="Chat" Says="標本：位相グモ" />
   </object>
   <object Name="CryochamberPlaqueRhinox" Inherits="CryochamberPlaque" Replace="true">
-    <part Name="Chat" Says="SPECIMEN: RHINOX" />
+    <part Name="Chat" Says="標本：ライノックス" />
   </object>
   <object Name="CryochamberPlaqueSkybear" Inherits="CryochamberPlaque" Replace="true">
-    <part Name="Chat" Says="SPECIMEN: SAAD AMUS, THE SKY-BEAR, CHAMPION OF SALUM" />
+    <part Name="Chat" Says="標本：サード・アムス、天空の熊、サルムの闘士" />
   </object>
   <object Name="CryochamberPlaqueYempris" Inherits="CryochamberPlaque" Replace="true">
-    <part Name="Chat" Says="SPECIMEN: YEMPURIS PHI" />
+    <part Name="Chat" Says="標本：イェンプルス・ファイ" />
   </object>
 
   

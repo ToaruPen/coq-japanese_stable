@@ -202,6 +202,14 @@ public static class AbilityBarButtonTextTranslationPatch
         return changed;
     }
 
+    internal static string TranslateButtonTextForQudTest(string source)
+    {
+        var route = ObservabilityHelpers.ComposeContext(Context, "field=AbilityButtons.Text");
+        return TryTranslateAbilityButtonText(source, route, out var translated)
+            ? translated
+            : source;
+    }
+
     private static string TranslateNameSegment(string source, string route, out bool changed)
     {
         var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);

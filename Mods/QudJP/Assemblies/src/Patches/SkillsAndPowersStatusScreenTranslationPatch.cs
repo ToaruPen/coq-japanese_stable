@@ -115,6 +115,12 @@ public static class SkillsAndPowersStatusScreenTranslationPatch
             return true;
         }
 
+        if (TryTranslateSkillNameList(source, out translated))
+        {
+            DynamicTextObservability.RecordTransform(route, "SkillNameList", source, translated);
+            return true;
+        }
+
         translated = source;
         return false;
     }
@@ -385,7 +391,7 @@ public static class SkillsAndPowersStatusScreenTranslationPatch
         var translatedLine = $"{name} {match.Groups["costBlock"].Value} {match.Groups["requirement"].Value} {attribute}";
         if (match.Groups["prereq"].Success)
         {
-            var prereq = TranslateLeaf(match.Groups["prereq"].Value);
+            var prereq = TranslateSkillNameListOrLeaf(match.Groups["prereq"].Value);
             changed |= !string.Equals(prereq, match.Groups["prereq"].Value, StringComparison.Ordinal);
             translatedLine += $", {prereq}";
         }
@@ -644,7 +650,7 @@ public static class SkillsAndPowersStatusScreenTranslationPatch
         var translatedVisible = $"{match.Groups["indent"].Value}{colon}{name} {costBlock} {requirement} {attribute}";
         if (match.Groups["prereq"].Success)
         {
-            var prereq = RestoreTranslatedCapture(match, spans, "prereq", TranslateLeaf);
+            var prereq = RestoreTranslatedCapture(match, spans, "prereq", TranslateSkillNameListOrLeaf);
             translatedVisible += $", {prereq}";
         }
 
@@ -677,6 +683,41 @@ public static class SkillsAndPowersStatusScreenTranslationPatch
         var group = match.Groups[groupName];
         var translated = translate(group.Value);
         return ColorAwareTranslationComposer.RestoreCaptureWholeBoundaryWrappersPreservingTranslatedOwnership(translated, spans, group).Trim();
+    }
+
+    private static string TranslateSkillNameListOrLeaf(string source)
+    {
+        return TryTranslateSkillNameList(source, out var translated)
+            ? translated
+            : TranslateLeaf(source);
+    }
+
+    private static bool TryTranslateSkillNameList(string source, out string translated)
+    {
+        const string Separator = ", ";
+        if (source.IndexOf(Separator, StringComparison.Ordinal) < 0)
+        {
+            translated = source;
+            return false;
+        }
+
+        var parts = source.Split(new[] { Separator }, StringSplitOptions.None);
+        var changed = false;
+        for (var index = 0; index < parts.Length; index++)
+        {
+            if (parts[index].Length == 0)
+            {
+                translated = source;
+                return false;
+            }
+
+            var translatedPart = TranslateLeaf(parts[index]);
+            changed |= !string.Equals(translatedPart, parts[index], StringComparison.Ordinal);
+            parts[index] = translatedPart;
+        }
+
+        translated = string.Join(Separator, parts);
+        return changed;
     }
 
     private static (bool changed, string translated) TryTranslateLineCollection(

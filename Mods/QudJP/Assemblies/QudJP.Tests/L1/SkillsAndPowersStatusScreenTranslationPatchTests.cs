@@ -178,6 +178,32 @@ public sealed class SkillsAndPowersStatusScreenTranslationPatchTests
     }
 
     [Test]
+    public void TryTranslateStructuredLinePreservingColors_TranslatesCommaSeparatedRequiredSkillNames()
+    {
+        WriteDictionaryFile(
+            "ui-skillsandpowers.ja.json",
+            ("Draw a Bead", "狙い撃ち"),
+            ("Suppressive Fire", "制圧射撃"));
+
+        var listResult = SkillsAndPowersStatusScreenTranslationPatch.TryTranslateStructuredLinePreservingColors(
+            "Draw a Bead, Suppressive Fire",
+            nameof(SkillsAndPowersStatusScreenTranslationPatchTests),
+            recordTransform: false);
+        var skillLineResult = SkillsAndPowersStatusScreenTranslationPatch.TryTranslateStructuredLinePreservingColors(
+            ":Suppressive Fire [150sp] 19 Agility, Draw a Bead",
+            nameof(SkillsAndPowersStatusScreenTranslationPatchTests),
+            recordTransform: false);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(listResult.changed, Is.True);
+            Assert.That(listResult.translated, Is.EqualTo("狙い撃ち, 制圧射撃"));
+            Assert.That(skillLineResult.changed, Is.True);
+            Assert.That(skillLineResult.translated, Is.EqualTo(":制圧射撃 [150sp] 19 AGI, 狙い撃ち"));
+        });
+    }
+
+    [Test]
     public void TryTranslateDetailText_TranslatesGeneratedAbilityStatLinesAndCooldownAdjustment()
     {
         var result = SkillsAndPowersStatusScreenTranslationPatch.TryTranslateDetailText(

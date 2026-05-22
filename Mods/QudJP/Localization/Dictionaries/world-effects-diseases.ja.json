@@ -51,7 +51,7 @@
         {
             "key": "Leg bones are fusing at the joints.\n{{C|-{0}}} Move Speed\n{{C|+{1}}} AV\nWill continue to lose Move Speed and gain AV until Move Speed penalty reaches -80.",
             "context": "XRL.World.Effects.Ironshank.Details",
-            "text": "脚の骨が関節で癒着しつつある。\n{{C|-{0}}} Move Speed\n{{C|+{1}}} AV\nMove Speed の低下が -80 に達するまで、Move Speed を失い AV を得続ける。"
+            "text": "脚の骨が関節で癒着しつつある。\n{{C|-{0}}} 移動速度\n{{C|+{1}}} AV\n移動速度の低下が -80 に達するまで、移動速度を失い AV を得続ける。"
         },
         {
             "key": "stiff legs",
