@@ -313,6 +313,32 @@ public sealed class GetDisplayNameRouteTranslatorTests
     }
 
     [Test]
+    public void TranslatePreservingColors_TranslatesAllKnownGameWithClauseModifierPhrases()
+    {
+        UseProductionDictionaries();
+
+        Assert.Multiple(() =>
+        {
+            foreach (var testCase in KnownGameWithClauseModifierPhrases())
+            {
+                var source = "レーザーライフル with " + testCase.Source + " \u001a8 \u00031d12 [empty]";
+                var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(source, nameof(GetDisplayNamePatch));
+
+                Assert.That(translated, Does.Contain("（" + testCase.Expected + "）"), testCase.Id);
+                Assert.That(translated, Does.EndWith(" {{c|\u001a}}8 {{r|\u0003}}1d12 [空]"), testCase.Id);
+                Assert.That(
+                    ColorShapeCaptureObservability.Capture(
+                        nameof(InventoryLineTranslationPatch),
+                        testCase.Id,
+                        source,
+                        translated).MarkupSemanticStatus,
+                    Is.EqualTo("clean"),
+                    testCase.Id);
+            }
+        });
+    }
+
+    [Test]
     public void TranslatePreservingColors_PreservesSourceColorOnPlainWithClauseTranslation()
     {
         WriteDictionary(("laser rifle", "レーザーライフル"));
@@ -1064,9 +1090,189 @@ public sealed class GetDisplayNameRouteTranslatorTests
         });
     }
 
+    [Test]
+    public void TranslatePreservingColors_TranslatesAllKnownGamePrefixModifierPhrases()
+    {
+        UseProductionDictionaries();
+
+        Assert.Multiple(() =>
+        {
+            foreach (var testCase in KnownGamePrefixModifierPhrases())
+            {
+                var source = testCase.Source + " チェーンピストル";
+                var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(source, nameof(GetDisplayNamePatch));
+
+                Assert.That(translated, Does.Contain(testCase.Expected), testCase.Id);
+                Assert.That(translated, Does.EndWith("チェーンピストル"), testCase.Id);
+                Assert.That(
+                    ColorShapeCaptureObservability.Capture(
+                        nameof(InventoryLineTranslationPatch),
+                        testCase.Id,
+                        source,
+                        translated).MarkupSemanticStatus,
+                    Is.EqualTo("clean"),
+                    testCase.Id);
+            }
+        });
+    }
+
+    [Test]
+    public void TranslatePreservingColors_TranslatesDisguiseDisplayNameClauses()
+    {
+        WriteDictionary(
+            ("canvas cloak", "キャンバスの外套"),
+            ("snapjaw mask", "スナップジョーの仮面"),
+            ("snapjaw", "スナップジョー"));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                GetDisplayNameRouteTranslator.TranslatePreservingColors(
+                    "snapjaw mask and disguise",
+                    nameof(GetDisplayNamePatch)),
+                Is.EqualTo("スナップジョーの仮面（変装）"));
+            Assert.That(
+                GetDisplayNameRouteTranslator.TranslatePreservingColors(
+                    "canvas cloak and snapjaw disguise",
+                    nameof(GetDisplayNamePatch)),
+                Is.EqualTo("キャンバスの外套（スナップジョーの変装）"));
+        });
+    }
+
     private void WriteDictionary(params (string key, string text)[] entries)
     {
         WriteDictionaryFile("ui-displayname-route.ja.json", entries);
+    }
+
+    private static void UseProductionDictionaries()
+    {
+        Translator.SetDictionaryDirectoryForTests(ProductionDictionaryDirectory());
+    }
+
+    private static string ProductionDictionaryDirectory()
+    {
+        return Path.GetFullPath(
+            Path.Combine(
+                AppDomain.CurrentDomain.BaseDirectory,
+                "..",
+                "..",
+                "..",
+                "..",
+                "..",
+                "Localization",
+                "Dictionaries"));
+    }
+
+    private static IEnumerable<ModifierPhraseCase> KnownGameWithClauseModifierPhrases()
+    {
+        yield return new ModifierPhraseCase("ModBeamsplitter", "{{R-R-r-r-g-g-G-G-B-B-b-b sequence|beamsplitter}}", "{{R-R-r-r-g-g-G-G-B-B-b-b sequence|ビームスプリッタ装着}}");
+        yield return new ModifierPhraseCase("ModFilters", "{{Y|filters}}", "{{Y|フィルター付き}}");
+        yield return new ModifierPhraseCase("ModSuspensor", "{{watery|suspensors}}", "{{watery|サスペンサー付き}}");
+        yield return new ModifierPhraseCase("ModCleated", "cleats", "スパイク付き");
+        yield return new ModifierPhraseCase("ModPiping", "piping", "配管");
+        yield return new ModifierPhraseCase("ModHardened", "{{mercurial|electromagnetic}} shielding", "{{mercurial|電磁}}シールド");
+        yield return new ModifierPhraseCase("ModGearbox", "gearbox", "ギアボックス");
+        yield return new ModifierPhraseCase("ModCoProcessor", "{{brainbrine|co-processor}}", "{{brainbrine|コプロセッサ}}");
+        yield return new ModifierPhraseCase("ModQuantumReverb", "{{quantumreverb|quantum reverb}}", "{{quantumreverb|量子リバーブ}}");
+        yield return new ModifierPhraseCase("ModTerrifyingVisage", "{{K|terrifying}} visage", "{{K|恐怖の}}顔貌");
+        yield return new ModifierPhraseCase("ModSereneVisage", "{{Y|serene}} visage", "{{Y|静穏}}の顔貌");
+    }
+
+    private static IEnumerable<ModifierPhraseCase> KnownGamePrefixModifierPhrases()
+    {
+        yield return new ModifierPhraseCase("ModAirfoil", "{{Y|airfoil}}", "{{Y|翼型}}");
+        yield return new ModifierPhraseCase("ModAntiGravity", "{{B|anti-gravity}}", "{{B|反重力}}");
+        yield return new ModifierPhraseCase("ModBiomech", "{{biomech|biomech}}", "{{biomech|バイオメック}}");
+        yield return new ModifierPhraseCase("ModCamo", "{{camouflage|camo}}", "{{camouflage|迷彩}}");
+        yield return new ModifierPhraseCase("ModCounterweighted", "counterweighted(2)", "つり合い調整(2)");
+        yield return new ModifierPhraseCase("ModCybrid", "{{biomech|cybrid}}", "{{biomech|サイブリッド}}");
+        yield return new ModifierPhraseCase("ModDefib", "{{love|defib}}", "{{love|除細動}}");
+        yield return new ModifierPhraseCase("ModDesecrated", "{{K|desecrated}}", "{{K|冒涜された}}");
+        yield return new ModifierPhraseCase("ModDisplacer", "{{displacer|displacer}}", "{{displacer|位相転移}}");
+        yield return new ModifierPhraseCase("ModDrumLoaded", "drum-loaded", "ドラム装填");
+        yield return new ModifierPhraseCase("ModElectrified", "{{electrical|electrified}}", "{{electrical|帯電}}");
+        yield return new ModifierPhraseCase("ModEngraved", "{{engraved|engraved}}", "{{engraved|彫り刻まれた}}");
+        yield return new ModifierPhraseCase("ModExtradimensional", "{{extradimensional|extradimensional}}", "{{extradimensional|異次元}}");
+        yield return new ModifierPhraseCase("ModFeathered", "{{feathered|feathered}}", "{{feathered|羽飾り}}");
+        yield return new ModifierPhraseCase("ModFlaming", "{{fiery|flaming}}", "{{fiery|燃え盛る}}");
+        yield return new ModifierPhraseCase("ModFlareCompensating", "{{K|flare-compensating}}", "{{K|フレア補償}}");
+        yield return new ModifierPhraseCase("ModFlexiweaved", "flexiweaved(2)", "フレキシ織りの(2)");
+        yield return new ModifierPhraseCase("ModFreezing", "{{freezing|freezing}}", "{{freezing|凍結した}}");
+        yield return new ModifierPhraseCase("ModGesticulating", "{{m|gesticulating}}", "{{m|蠢く}}");
+        yield return new ModifierPhraseCase("ModHUD", "HUD", "HUD");
+        yield return new ModifierPhraseCase("ModHeartstopper", "{{lovesickness|heartstopper}}", "{{lovesickness|ハートストッパー}}");
+        yield return new ModifierPhraseCase("ModHeatSeeking", "homing", "誘導");
+        yield return new ModifierPhraseCase("ModHighCapacity", "{{c|high-capacity}}", "{{c|大容量}}");
+        yield return new ModifierPhraseCase("ModHypervelocity", "{{hypervelocity|hypervelocity}}", "{{hypervelocity|超高速}}");
+        yield return new ModifierPhraseCase("ModIlluminated", "[{{illuminated|illuminated}}]", "[{{illuminated|彩飾}}]");
+        yield return new ModifierPhraseCase("ModInduction", "{{Y|induction}}", "{{Y|誘導}}");
+        yield return new ModifierPhraseCase("ModJacked", "{{c|jacked}}", "{{c|ジャック付き}}");
+        yield return new ModifierPhraseCase("ModJewelEncrusted", "{{m-G-R-W-c-y-B-m-r-W-r-W-c-R-b sequence|jewel-encrusted}}", "{{m-G-R-W-c-y-B-m-r-W-r-W-c-R-b sequence|宝石をちりばめた}}");
+        yield return new ModifierPhraseCase("ModKeen", "keen", "鋭利な");
+        yield return new ModifierPhraseCase("ModLacquered", "{{lacquered|lacquered}}", "{{lacquered|漆仕上げ}}");
+        yield return new ModifierPhraseCase("ModLanterned", "{{lanterned|lanterned}}", "{{lanterned|灯り付き}}");
+        yield return new ModifierPhraseCase("ModLegendary", "{{Y|lege{{W|n}}dary}}", "{{Y|伝説{{W|的}}}}");
+        yield return new ModifierPhraseCase("ModLiquidCooled", "{{K|liquid-cooled}}", "{{K|液冷式}}");
+        yield return new ModifierPhraseCase("ModMagnetized", "magnetized", "磁化した");
+        yield return new ModifierPhraseCase("ModMassivelyOverloaded", "{{overloaded|massively overloaded}}", "{{overloaded|超過荷重}}");
+        yield return new ModifierPhraseCase("ModMasterwork", "{{Y|masterwork}}", "{{Y|傑作}}");
+        yield return new ModifierPhraseCase("ModMercurial", "{{Y|mercurial}}", "{{Y|水銀の}}");
+        yield return new ModifierPhraseCase("ModMetallized", "{{c|metallized}}", "{{c|金属化}}");
+        yield return new ModifierPhraseCase("ModMetered", "{{c|metered}}", "{{c|計量式}}");
+        yield return new ModifierPhraseCase("ModMicroserrated", "{{Y|mi{{R|c}}roserra{{R|t}}ed}}", "{{Y|{{R|微}}鋸{{R|歯}}}}");
+        yield return new ModifierPhraseCase("ModMighty", "mighty", "強力な");
+        yield return new ModifierPhraseCase("ModMorphogenetic", "{{m|morphogenetic}}", "{{m|形態同調}}");
+        yield return new ModifierPhraseCase("ModNanochelated", "{{K|nanochelated}}", "{{K|ナノキレート}}");
+        yield return new ModifierPhraseCase("ModNanon", "{{K|nanon}}", "{{K|ナノ刃}}");
+        yield return new ModifierPhraseCase("ModNav", "{{r|nav}}", "{{r|航法}}");
+        yield return new ModifierPhraseCase("ModNulling", "{{K|nulling}}", "{{K|無効化}}");
+        yield return new ModifierPhraseCase("ModOrthopedic", "orthopedic", "整形");
+        yield return new ModifierPhraseCase("ModOverbuilt", "overbuilt", "過剰設計の");
+        yield return new ModifierPhraseCase("ModOverloaded", "{{overloaded|overloaded}}", "{{overloaded|過荷重}}");
+        yield return new ModifierPhraseCase("ModPadded", "padded", "パッド入り");
+        yield return new ModifierPhraseCase("ModPainted", "{{painted|painted}}", "{{painted|彩色された}}");
+        yield return new ModifierPhraseCase("ModPhaseConjugate", "{{K|phase-conjugate}}", "{{K|位相共役}}");
+        yield return new ModifierPhraseCase("ModPhaseHarmonic", "{{phase-harmonic|phase-harmonic}}", "{{phase-harmonic|位相調和}}");
+        yield return new ModifierPhraseCase("ModPolarized", "{{polarized|polarized}}", "{{polarized|偏光性}}");
+        yield return new ModifierPhraseCase("ModPsionic", "{{psionic|psionic}}", "{{psionic|サイオニック}}");
+        yield return new ModifierPhraseCase("ModRadioPowered", "{{C|radio-powered}}", "{{C|無線駆動の}}");
+        yield return new ModifierPhraseCase("ModRecycling", "{{B|recycling}}", "{{B|再生処理}}");
+        yield return new ModifierPhraseCase("ModRefractive", "{{refractive|refractive}}", "{{refractive|屈折性}}");
+        yield return new ModifierPhraseCase("ModReinforced", "reinforced", "補強");
+        yield return new ModifierPhraseCase("ModScaled", "{{scaled|scaled}}", "{{scaled|鱗状の}}");
+        yield return new ModifierPhraseCase("ModScoped", "scoped", "スコープ付き");
+        yield return new ModifierPhraseCase("ModSerrated", "{{Y|serra{{R|t}}ed}}", "{{Y|鋸歯{{R|状}}の}}");
+        yield return new ModifierPhraseCase("ModSharp", "sharp", "鋭い");
+        yield return new ModifierPhraseCase("ModSixFingered", "{{G|six-fingered}}", "{{G|六指の}}");
+        yield return new ModifierPhraseCase("ModSlender", "slender", "細身な");
+        yield return new ModifierPhraseCase("ModSmart", "{{c|smart}}", "{{c|スマートな}}");
+        yield return new ModifierPhraseCase("ModSnailEncrusted", "{{snail-encrusted|snail-encrusted}}", "{{snail-encrusted|巻貝まみれの}}");
+        yield return new ModifierPhraseCase("ModSpiked", "{{spiked|spiked}}", "{{spiked|トゲ付き}}");
+        yield return new ModifierPhraseCase("ModSpringLoaded", "spring-loaded", "バネ仕掛けの");
+        yield return new ModifierPhraseCase("ModSturdy", "sturdy", "頑丈な");
+        yield return new ModifierPhraseCase("ModTwoFaced", "two-faced", "双面の");
+        yield return new ModifierPhraseCase("ModUrbanCamo", "{{urban camouflage|urban camo}}", "{{urban camouflage|都市迷彩}}");
+        yield return new ModifierPhraseCase("ModVisored", "visored", "バイザー付き");
+        yield return new ModifierPhraseCase("ModWeightless", "{{y-K sequence|weightless}}", "{{y-K sequence|無重量}}");
+        yield return new ModifierPhraseCase("ModWillowy", "willowy", "しなやかな");
+        yield return new ModifierPhraseCase("ModWired", "{{c|wired}}", "{{c|有線}}");
+        yield return new ModifierPhraseCase("ModWooly", "{{Y|wooly}}", "{{Y|毛皮張り}}");
+    }
+
+    private sealed class ModifierPhraseCase
+    {
+        public ModifierPhraseCase(string id, string source, string expected)
+        {
+            Id = id;
+            Source = source;
+            Expected = expected;
+        }
+
+        public string Id { get; }
+
+        public string Source { get; }
+
+        public string Expected { get; }
     }
 
     private void WriteDictionaryFile(string fileName, params (string key, string text)[] entries)

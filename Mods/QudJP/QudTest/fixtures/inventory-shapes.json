@@ -26,6 +26,18 @@
       "route": "inventory-display-name",
       "input": "[{{illuminated|illuminated}}] チェーンピストル \u001a8 \u00031d6 [empty]",
       "expected": "[{{illuminated|彩飾}}] チェーンピストル {{c|\u001a}}8 {{r|\u0003}}1d6 [空]"
+    },
+    {
+      "id": "inventory-display-name.producer-derived-with-beamsplitter-loaded-cell",
+      "route": "inventory-display-name",
+      "input": "アイゲンライフル with {{R-R-r-r-g-g-G-G-B-B-b-b sequence|beamsplitter}} {{W|\u001a}}10 {{r|\u0003}}1d12 {{y|[{{w|フィジェット}} {{c|セル}} {{b|\u0004}}0 {{K|\t}}0 {{y|({{g|残量多}})}}]}}",
+      "expected": "アイゲンライフル（{{R-R-r-r-g-g-G-G-B-B-b-b sequence|ビームスプリッタ装着}}） {{W|\u001a}}10 {{r|\u0003}}1d12 {{y|[{{w|フィジェット}} {{c|セル}} {{b|\u0004}}0 {{K|\t}}0 {{y|({{g|残量多}})}}]}}"
+    },
+    {
+      "id": "inventory-display-name.producer-derived-prefix-chain-with-clause",
+      "route": "inventory-display-name",
+      "input": "{{Y|masterwork}} scoped {{phase-harmonic|phase-harmonic}} チェーンピストル with {{Y|filters}} \u001a8 \u00031d6 [empty]",
+      "expected": "{{Y|傑作}} スコープ付き {{phase-harmonic|位相調和}} チェーンピストル（{{Y|フィルター付き}}） {{c|\u001a}}8 {{r|\u0003}}1d6 [空]"
     }
   ]
 }

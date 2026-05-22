@@ -47,6 +47,14 @@ internal static class GetDisplayNameRouteTranslator
         new Regex(
             @"^(?<base>.+?) (?<stats>(?:\x1a[^\[\r\n<]*(?: \x03[^\[\r\n<]+)?|\x03[^\[\r\n<]+))(?<suffixes>(?: (?:\[[^\]\r\n]+\]|<[^>\r\n]+>))+)$",
             RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex CompactWeaponStatsOnlySuffixSequencePattern =
+        new Regex(
+            @"^ (?<stats>(?:\x1a[^\[\r\n<]*(?: \x03[^\[\r\n<]+)?|\x03[^\[\r\n<]+))(?<suffixes>(?: (?:\[[^\]\r\n]+\]|<[^>\r\n]+>))+)$",
+            RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex CompactWeaponStatsOnlySuffixPattern =
+        new Regex(
+            @"^ (?<stats>(?:\x1a[^\[\r\n<]*(?: \x03[^\[\r\n]+)?|\x03[^\[\r\n]+))(?: \[(?<state>.+)\])?$",
+            RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex WithClauseCompactWeaponStatsDisplayNameSuffixSequencePattern =
         new Regex(
             @"^(?<base>.+?) with (?<clause>.+?) (?<stats>(?:\x1a[^\[\r\n<]*(?: \x03[^\[\r\n<]+)?|\x03[^\[\r\n<]+))(?<suffixes>(?: (?:\[[^\]\r\n]+\]|<[^>\r\n]+>))+)$",
@@ -71,6 +79,8 @@ internal static class GetDisplayNameRouteTranslator
         new Regex("^(?<base>.+?)\\s+(?<angle><(?<code>[^>]+)>)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex WithClauseDisplayNamePattern =
         new Regex("^(?<base>.+?) with (?<clause>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex DisguiseClauseDisplayNameSuffixPattern =
+        new Regex("^(?<base>.+?) and (?:(?<target>.+?) )?disguise$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex LeadingMarkupWrappedModifierPattern =
         new Regex(
             "^(?<modifier>\\{\\{[^|}]+\\|[A-Za-z][A-Za-z\\s\\-']*\\}\\}|\\[\\{\\{[^|}]+\\|[A-Za-z][A-Za-z\\s\\-']*\\}\\}\\])\\s+(?<rest>.+)$",
@@ -249,6 +259,11 @@ internal static class GetDisplayNameRouteTranslator
         if (TryTranslateWithClauseDisplayNamePrefixPreservingSuffix(stripped, spans, route, out var withClausePrefixTranslation))
         {
             return withClausePrefixTranslation;
+        }
+
+        if (TryTranslateDisguiseClauseDisplayNameSuffix(stripped, spans, route, out var disguiseClauseTranslation))
+        {
+            return disguiseClauseTranslation;
         }
 
         if (TryTranslateAngleCodeDisplayNameSuffix(stripped, spans, route, out var angleCodeSuffixTranslation))
@@ -1478,6 +1493,34 @@ internal static class GetDisplayNameRouteTranslator
         return false;
     }
 
+    private static bool TryTranslateDisguiseClauseDisplayNameSuffix(
+        string source,
+        IReadOnlyList<ColorSpan> spans,
+        string route,
+        out string translated)
+    {
+        var match = DisguiseClauseDisplayNameSuffixPattern.Match(source);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        var translatedBase = TranslateDisplayNameFragment(match.Groups["base"].Value, route);
+        var targetGroup = match.Groups["target"];
+        var translatedClause = targetGroup.Success && targetGroup.Length > 0
+            ? TranslateDisplayNameFragment(targetGroup.Value, route) + "の変装"
+            : "変装";
+        translated = translatedBase + "（" + translatedClause + "）";
+        translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+            translated,
+            spans,
+            source.Length);
+
+        DynamicTextObservability.RecordTransform(route, "DisplayName.DisguiseClause", source, translated);
+        return true;
+    }
+
     private static bool TryTranslateSourceWithClausePrefixPreservingSuffix(string source, string route, out string translated)
     {
         translated = source;
@@ -1500,29 +1543,154 @@ internal static class GetDisplayNameRouteTranslator
             return false;
         }
 
-        var translatedBase = TranslateDisplayNameFragmentPreservingColors(baseSource, route);
-        var translatedSuffix = suffix.Length == 0 ? string.Empty : TranslatePreservingColors(suffix, route);
+        var translatedBase = TranslatePreservingColors(baseSource, route);
+        var translatedSuffix = TranslateDisplayNameSuffixPreservingStats(suffix, route);
         translated = translatedBase + "（" + translatedClause + "）" + translatedSuffix;
         DynamicTextObservability.RecordTransform(route, "DisplayName.SourceWithClausePrefix", source, translated);
         return true;
+    }
+
+    private static string TranslateDisplayNameSuffixPreservingStats(string suffix, string route)
+    {
+        if (suffix.Length == 0)
+        {
+            return string.Empty;
+        }
+
+        const string dummyBase = "基底";
+        if (StartsWithMarkupSuffixToken(suffix)
+            && (StringHelpers.ContainsOrdinal(suffix, "\u001a") || StringHelpers.ContainsOrdinal(suffix, "\u0003")))
+        {
+            return TranslateBracketedStateInDisplayNameSuffix(suffix, route);
+        }
+
+        var emptySpans = Array.Empty<ColorSpan>();
+        if (TryTranslateCompactWeaponStatsOnlySuffix(suffix, emptySpans, route, out var compactStatsOnlySuffix))
+        {
+            return compactStatsOnlySuffix;
+        }
+
+        if (TryTranslateCompactWeaponStatsDisplayNameSuffixSequence(dummyBase + suffix, emptySpans, route, out var compactStatsSuffixSequence)
+            && compactStatsSuffixSequence.StartsWith(dummyBase, StringComparison.Ordinal))
+        {
+            return compactStatsSuffixSequence.Substring(dummyBase.Length);
+        }
+
+        if (TryTranslateCompactWeaponStatsDisplayNameSuffix(dummyBase + suffix, emptySpans, route, out var compactStatsSuffix)
+            && compactStatsSuffix.StartsWith(dummyBase, StringComparison.Ordinal))
+        {
+            return compactStatsSuffix.Substring(dummyBase.Length);
+        }
+
+        var translated = TranslatePreservingColors(dummyBase + suffix, route);
+        return translated.StartsWith(dummyBase, StringComparison.Ordinal)
+            ? translated.Substring(dummyBase.Length)
+            : TranslatePreservingColors(suffix, route);
+    }
+
+    private static bool StartsWithMarkupSuffixToken(string suffix)
+    {
+        return suffix.Length >= 3
+            && suffix[0] == ' '
+            && suffix[1] == '{'
+            && suffix[2] == '{';
+    }
+
+    private static string TranslateBracketedStateInDisplayNameSuffix(string suffix, string route)
+    {
+        var bracketStart = suffix.LastIndexOf(" [", StringComparison.Ordinal);
+        if (bracketStart < 0 || !suffix.EndsWith("]", StringComparison.Ordinal))
+        {
+            return suffix;
+        }
+
+        var stateStart = bracketStart + 2;
+        var state = suffix.Substring(stateStart, suffix.Length - stateStart - 1);
+        var translatedState = TranslateDisplayNameState(state, route);
+        return string.Equals(translatedState, state, StringComparison.Ordinal)
+            ? suffix
+            : suffix.Substring(0, stateStart) + translatedState + "]";
+    }
+
+    private static bool TryTranslateCompactWeaponStatsOnlySuffix(
+        string source,
+        IReadOnlyList<ColorSpan> spans,
+        string route,
+        out string translated)
+    {
+        var sequenceMatch = CompactWeaponStatsOnlySuffixSequencePattern.Match(source);
+        if (sequenceMatch.Success)
+        {
+            var suffixes = sequenceMatch.Groups["suffixes"];
+            var suffixEnd = suffixes.Index + suffixes.Length;
+            var builder = new StringBuilder();
+            var scannedTo = suffixes.Index;
+
+            for (var suffixMatch = DisplayNameTrailingSuffixPattern.Match(source, suffixes.Index);
+                 suffixMatch.Success && suffixMatch.Index < suffixEnd;
+                 suffixMatch = suffixMatch.NextMatch())
+            {
+                scannedTo = suffixMatch.Index + suffixMatch.Length;
+                if (suffixMatch.Groups["bracket"].Success)
+                {
+                    var stateGroup = suffixMatch.Groups["state"];
+                    var translatedState = TranslateDisplayNameState(stateGroup.Value, route);
+                    builder.Append(" [");
+                    builder.Append(string.Equals(translatedState, stateGroup.Value, StringComparison.Ordinal)
+                        ? RestoreCompactWeaponSuffixSlice(suffixMatch.Groups["bracket"], spans).Trim('[', ']')
+                        : RestoreWholeSlice(translatedState, spans, stateGroup));
+                    builder.Append(']');
+                    continue;
+                }
+
+                builder.Append(' ');
+                builder.Append(RestoreCompactWeaponSuffixSlice(suffixMatch.Groups["angle"], spans));
+            }
+
+            if (scannedTo == suffixEnd)
+            {
+                translated = " " + RestoreCompactWeaponStatsSlice(sequenceMatch.Groups["stats"], spans) + builder;
+                return true;
+            }
+        }
+
+        var match = CompactWeaponStatsOnlySuffixPattern.Match(source);
+        if (match.Success)
+        {
+            translated = " " + RestoreCompactWeaponStatsSlice(match.Groups["stats"], spans);
+            var stateGroup = match.Groups["state"];
+            if (stateGroup.Success)
+            {
+                translated += " [" + RestoreWholeSlice(TranslateDisplayNameState(stateGroup.Value, route), spans, stateGroup) + "]";
+            }
+
+            return true;
+        }
+
+        translated = source;
+        return false;
     }
 
     private static bool TryReadSourceWithClause(string source, out string clause, out string suffix)
     {
         clause = source;
         suffix = string.Empty;
-        if (source.StartsWith("{{", StringComparison.Ordinal))
+        if (!source.StartsWith("{{", StringComparison.Ordinal))
         {
-            var endIndex = source.IndexOf("}}", StringComparison.Ordinal);
-            if (endIndex < 0)
+            return false;
+        }
+
+        var splitIndex = FindQudMarkupEnd(source, 0);
+        while (splitIndex > 0 && splitIndex < source.Length)
+        {
+            clause = source.Substring(0, splitIndex);
+            suffix = source.Substring(splitIndex);
+            if (suffix.Length > 0 && LooksLikeDisplayNameWithClauseSuffix(suffix))
             {
-                return false;
+                return true;
             }
 
-            clause = source.Substring(0, endIndex + 2);
-            suffix = source.Substring(endIndex + 2);
-            return StringHelpers.ContainsOrdinal(suffix, "{{")
-                && LooksLikeDisplayNameWithClauseSuffix(suffix);
+            splitIndex = source.IndexOf(' ', splitIndex + 1);
         }
 
         return false;
@@ -1536,10 +1704,12 @@ internal static class GetDisplayNameRouteTranslator
         }
 
         return suffix[0] == ' '
-            && (StringHelpers.ContainsOrdinal(suffix, "\u001a")
-                || StringHelpers.ContainsOrdinal(suffix, "\u0003")
-                || StringHelpers.ContainsOrdinal(suffix, " [")
-                || StringHelpers.ContainsOrdinal(suffix, " <"));
+            && (suffix.Length >= 2
+                && (suffix[1] == '\u001a'
+                    || suffix[1] == '\u0003'
+                    || suffix[1] == '['
+                    || suffix[1] == '<'
+                    || suffix.StartsWith(" {{", StringComparison.Ordinal)));
     }
 
     private static string? TranslateDisplayNameWithClause(string source)
@@ -1574,22 +1744,28 @@ internal static class GetDisplayNameRouteTranslator
         var translated = TranslateDisplayNameWithClause(source);
         return translated is null
             ? null
-            : RestoreWithClauseSourceMarkup(translated, spans, sourceStartIndex, sourceLength);
+            : RestoreWithClauseSourceMarkup(source, translated, spans, sourceStartIndex, sourceLength);
     }
 
     private static string? TranslateDisplayNameWithClausePreservingSourceMarkup(string source)
     {
-        var translated = ColorAwareTranslationComposer.TranslatePreservingColors(
-            source,
-            visible =>
-            {
-                var visibleTranslation = TranslateDisplayNameWithClause(visible);
-                return visibleTranslation is null ? visible : visibleTranslation;
-            });
+        var translated = TranslateDisplayNameWithClause(source);
+        if (translated is null)
+        {
+            return null;
+        }
+
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        if (!string.Equals(stripped, source, StringComparison.Ordinal))
+        {
+            translated = RestoreWithClauseSourceMarkup(source, translated, spans, 0, stripped.Length);
+        }
+
         return string.Equals(translated, source, StringComparison.Ordinal) ? null : translated;
     }
 
     private static string RestoreWithClauseSourceMarkup(
+        string source,
         string translated,
         IReadOnlyList<ColorSpan> spans,
         int sourceStartIndex,
@@ -1600,9 +1776,56 @@ internal static class GetDisplayNameRouteTranslator
             return translated;
         }
 
+        if (TryRestoreLeadingWrappedWithClauseComponent(source, translated, out var componentRestored))
+        {
+            return componentRestored;
+        }
+
         var clauseSpans = ColorCodePreserver.SliceSpans(spans, sourceStartIndex, sourceLength);
         RemoveUnmatchedTrailingSliceClosers(clauseSpans);
         return ColorAwareTranslationComposer.Restore(translated, clauseSpans);
+    }
+
+    private static bool TryRestoreLeadingWrappedWithClauseComponent(
+        string source,
+        string translated,
+        out string restored)
+    {
+        restored = translated;
+        if (!source.StartsWith("{{", StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        var wrappedEnd = FindQudMarkupEnd(source, 0);
+        if (wrappedEnd <= 0 || wrappedEnd >= source.Length)
+        {
+            return false;
+        }
+
+        var wrapped = source.Substring(0, wrappedEnd);
+        if (!TryReadWrappedModifierVisible(wrapped, out var visible))
+        {
+            return false;
+        }
+
+        var translatedVisible = TranslateDisplayNameExactOrLowerAscii(visible, DisplayNameAdjectiveContext);
+        translatedVisible ??= TranslateDisplayNameExactOrLowerAscii(visible);
+        if (string.IsNullOrEmpty(translatedVisible)
+            || !translated.StartsWith(translatedVisible, StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        var separator = wrapped.IndexOf('|', 2);
+        if (separator <= 2)
+        {
+            return false;
+        }
+
+        var tag = wrapped.Substring(2, separator - 2);
+        restored = "{{" + tag + "|" + translatedVisible + "}}" + translated.Substring(translatedVisible!.Length);
+        return true;
     }
 
     private static int FindLocalizedPrefixAsciiTailSeparator(string source)
