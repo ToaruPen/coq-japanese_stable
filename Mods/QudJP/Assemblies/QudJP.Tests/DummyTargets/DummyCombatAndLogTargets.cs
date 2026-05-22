@@ -2161,6 +2161,7 @@ internal sealed class DummySingleCallsiteOwnerPopupTarget
     public bool HandleGivesRepBeforeDeathRemoval(DummyBeforeDeathRemovalEvent? e = null)
     {
         _ = e;
+        _ = nameof(HandleGivesRepBeforeDeathRemoval);
         DummyPopupShow.Show(PopupMessageToShow);
         return true;
     }
