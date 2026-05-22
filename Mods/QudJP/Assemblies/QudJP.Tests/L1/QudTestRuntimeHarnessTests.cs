@@ -145,6 +145,7 @@ public sealed class QudTestRuntimeHarnessTests
     [TestCase("bottom-context-item", "{{y|{{W|[space]}} Continue}}", "{{W|[Space]}} {{y|続ける}}")]
     [TestCase("game-summary-menu-literal", "Save Tombstone File", "墓碑ファイルを保存")]
     [TestCase("game-summary-menu-literal", "Exit", "終了")]
+    [TestCase("inventory-display-name", "{{c|copper nugget}} {{y|[empty]}}", "{{c|銅塊}} {{y|[空]}}")]
     public void ExecuteRoute_ProducesFinalRuntimeText(string route, string source, string expected)
     {
         Assert.That(QudTestRouteExecutor.Execute(route, source), Is.EqualTo(expected));
@@ -183,6 +184,35 @@ public sealed class QudTestRuntimeHarnessTests
                 "start-replace.slip-ink",
                 "message-log.direct-marker",
             }));
+        });
+    }
+
+    [Test]
+    public void Run_RecordsColorShapeArtifactForInventoryDisplayName()
+    {
+        WriteFixture(
+            "runtime-smoke.json",
+            suite: "runtime",
+            """
+            {"id":"inventory-display-name.game-object-colored-state","route":"inventory-display-name","input":"{{c|copper nugget}} {{y|[empty]}}","expected":"{{c|銅塊}} {{y|[空]}}"}
+            """);
+
+        var result = QudTestRunner.Run("qudtest:runtime", fixturesDirectory, "ja");
+        var colorShape = result.Cases[0].ColorShape;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Passed, Is.True);
+            Assert.That(colorShape, Is.Not.Null);
+            Assert.That(colorShape!.Route, Is.EqualTo(nameof(InventoryLineTranslationPatch)));
+            Assert.That(colorShape.Producer, Is.EqualTo("QudTest.InventoryDisplayNameFixture"));
+            Assert.That(colorShape.Source, Is.EqualTo("{{c|copper nugget}} {{y|[empty]}}"));
+            Assert.That(colorShape.SourceVisible, Is.EqualTo("copper nugget [empty]"));
+            Assert.That(colorShape.Final, Is.EqualTo("{{c|銅塊}} {{y|[空]}}"));
+            Assert.That(colorShape.FinalVisible, Is.EqualTo("銅塊 [空]"));
+            Assert.That(colorShape.SourceColorSpans, Does.Contain("0:{{c|"));
+            Assert.That(colorShape.FinalColorSpans, Does.Contain("0:{{c|"));
+            Assert.That(colorShape.MarkupSemanticStatus, Is.EqualTo("clean"));
         });
     }
 

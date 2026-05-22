@@ -948,6 +948,72 @@ public sealed class GetDisplayNameRouteTranslatorTests
     }
 
     [Test]
+    public void TranslatePreservingColors_PreservesSeparatorsAcrossProducerDerivedLongPrefixChains()
+    {
+        WriteContextDictionaryFile(
+            "ui-displayname-adjectives.ja.json",
+            ("{{B|wet}}", "GetDisplayName.Adjective", "{{B|接頭辞wet}}"),
+            ("{{slimy|slimy}}", "GetDisplayName.Adjective", "{{slimy|接頭辞slimy}}"),
+            ("{{r|bloody}}", "GetDisplayName.Adjective", "{{r|接頭辞bloody}}"),
+            ("{{Y|masterwork}}", "GetDisplayName.Adjective", "{{Y|接頭辞masterwork}}"),
+            ("scoped", "GetDisplayName.Adjective", "接頭辞scoped"),
+            ("{{electrical|electrified}}", "GetDisplayName.Adjective", "{{electrical|接頭辞electrified}}"),
+            ("{{fiery|flaming}}", "GetDisplayName.Adjective", "{{fiery|接頭辞flaming}}"),
+            ("{{freezing|freezing}}", "GetDisplayName.Adjective", "{{freezing|接頭辞freezing}}"),
+            ("{{freezing|frozen}}", "GetDisplayName.Adjective", "{{freezing|接頭辞frozen}}"),
+            ("{{painted|painted}}", "GetDisplayName.Adjective", "{{painted|接頭辞painted}}"),
+            ("{{lacquered|lacquered}}", "GetDisplayName.Adjective", "{{lacquered|接頭辞lacquered}}"),
+            ("{{phase-harmonic|phase-harmonic}}", "GetDisplayName.Adjective", "{{phase-harmonic|接頭辞phase-harmonic}}"),
+            ("[empty]", "GetDisplayName.Adjective", "[空]"),
+            ("steel long sword", null, "鋼のロングソード"));
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            "{{B|wet}} {{slimy|slimy}} {{r|bloody}} {{Y|masterwork}} scoped {{electrical|electrified}} {{fiery|flaming}} {{freezing|freezing}} {{freezing|frozen}} {{painted|painted}} {{lacquered|lacquered}} {{phase-harmonic|phase-harmonic}} steel long sword \u001a8 \u00031d6 [empty]",
+            nameof(GetDisplayNamePatch));
+
+        Assert.That(
+            translated,
+            Is.EqualTo("{{B|接頭辞wet}} {{slimy|接頭辞slimy}} {{r|接頭辞bloody}} {{Y|接頭辞masterwork}} 接頭辞scoped {{electrical|接頭辞electrified}} {{fiery|接頭辞flaming}} {{freezing|接頭辞freezing}} {{freezing|接頭辞frozen}} {{painted|接頭辞painted}} {{lacquered|接頭辞lacquered}} {{phase-harmonic|接頭辞phase-harmonic}} 鋼のロングソード {{c|\u001a}}8 {{r|\u0003}}1d6 [空]"));
+    }
+
+    [Test]
+    public void TranslatePreservingColors_PreservesUnknownModifierInProducerDerivedPrefixChain()
+    {
+        WriteContextDictionaryFile(
+            "ui-displayname-adjectives.ja.json",
+            ("{{B|wet}}", "GetDisplayName.Adjective", "{{B|接頭辞wet}}"),
+            ("{{Y|masterwork}}", "GetDisplayName.Adjective", "{{Y|接頭辞masterwork}}"),
+            ("[empty]", "GetDisplayName.Adjective", "[空]"),
+            ("steel long sword", null, "鋼のロングソード"));
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            "{{B|wet}} {{unmapped|slick}} {{Y|masterwork}} steel long sword [empty]",
+            nameof(GetDisplayNamePatch));
+
+        Assert.That(
+            translated,
+            Is.EqualTo("{{B|接頭辞wet}} {{unmapped|slick}} {{Y|接頭辞masterwork}} 鋼のロングソード [空]"));
+    }
+
+    [Test]
+    public void TranslatePreservingColors_PreservesDirectMarkerSegmentInProducerDerivedPrefixChain()
+    {
+        WriteContextDictionaryFile(
+            "ui-displayname-adjectives.ja.json",
+            ("{{B|wet}}", "GetDisplayName.Adjective", "{{B|接頭辞wet}}"),
+            ("[empty]", "GetDisplayName.Adjective", "[空]"),
+            ("steel long sword", null, "鋼のロングソード"));
+        var source = MessageFrameTranslator.DirectTranslationMarker
+            + "{{B|wet}} steel long sword [empty]";
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            source,
+            nameof(GetDisplayNamePatch));
+
+        Assert.That(translated, Is.EqualTo(source));
+    }
+
+    [Test]
     public void TranslatePreservingColors_UsesDisplayNameAdjectiveContextForBracketedMarkupWeaponModifiers()
     {
         WriteContextDictionaryFile(
@@ -963,6 +1029,21 @@ public sealed class GetDisplayNameRouteTranslatorTests
             nameof(GetDisplayNamePatch));
 
         Assert.That(translated, Is.EqualTo("[{{Y|接頭辞masterwork}}] 鋼のロングソード"));
+    }
+
+    [Test]
+    public void TranslatePreservingColors_TranslatesProducerDerivedBracketedPrefixModifiers()
+    {
+        WriteContextDictionaryFile(
+            "ui-displayname-adjectives.ja.json",
+            ("[illuminated]", "GetDisplayName.Adjective", "[{{illuminated|接頭辞illuminated}}]"),
+            ("steel long sword", null, "鋼のロングソード"));
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            "[{{illuminated|illuminated}}] steel long sword",
+            nameof(GetDisplayNamePatch));
+
+        Assert.That(translated, Is.EqualTo("[{{illuminated|接頭辞illuminated}}] 鋼のロングソード"));
     }
 
     [Test]

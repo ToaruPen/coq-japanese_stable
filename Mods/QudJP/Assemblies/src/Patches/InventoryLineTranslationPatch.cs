@@ -98,14 +98,23 @@ public static class InventoryLineTranslationPatch
     {
         var go = GetMemberValue(data, "go");
         var displayName = GetStringMemberValue(data, "displayName");
+        var producerContext = "InventoryLineData.displayName";
         if (displayName is null)
         {
             var displayNameTarget = go ?? data;
             displayName = GetStringMemberValue(displayNameTarget, "DisplayName");
+            producerContext = go is null
+                ? "InventoryLineData.DisplayName"
+                : "InventoryLine.GameObjectDisplayName";
         }
         if (displayName is null) { displayName = string.Empty; }
         var itemRoute = ObservabilityHelpers.ComposeContext(Context, "field=text");
         var translatedDisplayName = TranslateItemDisplayName(displayName, itemRoute);
+        ColorShapeCaptureObservability.Record(
+            itemRoute,
+            producerContext,
+            displayName,
+            translatedDisplayName);
         var itemTextSkin = GetMemberValue(instance, "text");
         OwnerTextSetter.SetTranslatedText(
             itemTextSkin,
@@ -198,6 +207,13 @@ public static class InventoryLineTranslationPatch
         }
 
         return MessageFrameTranslator.StripAllDirectTranslationMarkers(translated);
+    }
+
+    internal static string TranslateItemDisplayNameForQudTest(string source)
+    {
+        return TranslateItemDisplayName(
+            source,
+            ObservabilityHelpers.ComposeContext(Context, "field=text"));
     }
 
     private static string TranslateCategoryWeightText(string source, int amount, int weight, bool showItemCount, string route)

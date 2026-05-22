@@ -109,17 +109,18 @@ public static class QudTestRunner
         var expected = QudTestPatchBindingExecutor.Expected(testCase);
         try
         {
-            var actual = QudTestRouteExecutor.Execute(testCase);
-            var passed = string.Equals(actual, expected, StringComparison.Ordinal);
+            var execution = QudTestRouteExecutor.ExecuteWithArtifacts(testCase);
+            var passed = string.Equals(execution.Actual, expected, StringComparison.Ordinal);
             return new QudTestCaseResult
             {
                 Id = testCase.Id,
                 Route = testCase.Route,
                 Input = testCase.Input,
                 Expected = expected,
-                Actual = actual,
+                Actual = execution.Actual,
                 Passed = passed,
                 Diagnostic = passed ? string.Empty : "actual did not match expected",
+                ColorShape = execution.ColorShape,
             };
         }
         catch (Exception ex)

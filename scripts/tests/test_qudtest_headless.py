@@ -51,6 +51,14 @@ def test_qudtest_headless_writes_inspectable_runtime_artifact(tmp_path: Path) ->
     assert payload["modLanguage"] == "ja"
     assert payload["passed"] is True
     assert payload["totalCount"] > 0
+    inventory_case = next(
+        case for case in payload["cases"] if case["id"] == "inventory-display-name.game-object-colored-state"
+    )
+    assert inventory_case["colorShape"]["producer"] == "QudTest.InventoryDisplayNameFixture"
+    assert inventory_case["colorShape"]["sourceVisible"] == "copper nugget [empty]"
+    assert inventory_case["colorShape"]["finalVisible"] == "銅塊 [空]"
+    assert inventory_case["colorShape"]["sourceColorSpans"]
+    assert inventory_case["colorShape"]["finalColorSpans"]
 
     inspected = subprocess.run(
         [
@@ -72,6 +80,82 @@ def test_qudtest_headless_writes_inspectable_runtime_artifact(tmp_path: Path) ->
 
     assert inspected.returncode == 0, inspected.stderr
     assert "QudTest passed" in inspected.stdout
+
+
+def test_qudtest_headless_captures_inventory_shape_from_game_object(tmp_path: Path) -> None:
+    """Inventory shape capture should record the GameObject-produced display name."""
+    _skip_without_game_managed_dir()
+    output = tmp_path / "QudTest"
+
+    completed = subprocess.run(
+        [
+            "dotnet",
+            "run",
+            "--project",
+            str(PROJECT),
+            "--",
+            "--command",
+            "qudtest:inventory-shapes",
+            "--fixtures",
+            str(FIXTURES),
+            "--output",
+            str(output),
+            "--mod-language",
+            "ja",
+        ],
+        check=False,
+        capture_output=True,
+        text=True,
+        timeout=120,
+    )
+
+    assert completed.returncode == 0, completed.stderr
+    results = output / "results.json"
+    payload = json.loads(results.read_text(encoding="utf-8"))
+    assert payload["suite"] == "inventory-shapes"
+    assert payload["modLanguage"] == "ja"
+    assert payload["passed"] is True
+    assert all(case["colorShape"]["markupSemanticStatus"] == "clean" for case in payload["cases"])
+    inventory_case = next(
+        case for case in payload["cases"] if case["id"] == "inventory-display-name-game-object.copper-nugget"
+    )
+    assert inventory_case["input"] == "Copper Nugget"
+    assert inventory_case["actual"] == "{{w|銅のナゲット}}"
+    assert inventory_case["colorShape"]["producer"] == "InventoryLine.GameObjectDisplayName"
+    assert inventory_case["colorShape"]["source"] == "{{w|銅のナゲット}}"
+    assert inventory_case["colorShape"]["sourceVisible"] == "銅のナゲット"
+    assert inventory_case["colorShape"]["final"] == "{{w|銅のナゲット}}"
+    assert inventory_case["colorShape"]["finalVisible"] == "銅のナゲット"
+    assert inventory_case["colorShape"]["sourceColorSpans"]
+    assert inventory_case["colorShape"]["finalColorSpans"]
+    assert inventory_case["colorShape"]["markupSemanticStatus"] == "clean"
+
+    inline_case = next(
+        case for case in payload["cases"] if case["id"] == "inventory-display-name-game-object.grit-gate-recoiler"
+    )
+    assert inline_case["input"] == "Grit Gate Recoiler"
+    assert inline_case["actual"] == "{{c|グリット・ゲート}}リコイラー"
+    assert inline_case["colorShape"]["source"] == "{{c|グリット・ゲート}}リコイラー"
+    assert inline_case["colorShape"]["sourceVisible"] == "グリット・ゲートリコイラー"
+    assert inline_case["colorShape"]["finalVisible"] == "グリット・ゲートリコイラー"
+    assert inline_case["colorShape"]["sourceColorSpans"] == "0:{{c||8:}}"
+    assert inline_case["colorShape"]["finalColorSpans"] == "0:{{c||8:}}"
+
+    long_chain_case = next(
+        case for case in payload["cases"] if case["id"] == "inventory-display-name.producer-derived-long-prefix-chain"
+    )
+    assert long_chain_case["actual"] == long_chain_case["expected"]
+    assert long_chain_case["colorShape"]["markupSemanticStatus"] == "clean"
+    assert "}}{{" not in long_chain_case["actual"]
+    assert "{{freezing|凍結した}} {{painted|彩色された}}" in long_chain_case["actual"]
+    assert "{{lacquered|漆仕上げ}} {{phase-harmonic|位相調和}}" in long_chain_case["actual"]
+
+    bracketed_prefix_case = next(
+        case for case in payload["cases"] if case["id"] == "inventory-display-name.producer-derived-bracketed-prefix"
+    )
+    assert bracketed_prefix_case["actual"] == bracketed_prefix_case["expected"]
+    assert bracketed_prefix_case["colorShape"]["markupSemanticStatus"] == "clean"
+    assert "illuminated" not in bracketed_prefix_case["colorShape"]["finalVisible"]
 
 
 def test_qudtest_headless_writes_inspectable_binding_artifact(tmp_path: Path) -> None:

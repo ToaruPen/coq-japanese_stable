@@ -1,5 +1,7 @@
 using System;
 using System.IO;
+using System.Reflection;
+using System.Runtime.Loader;
 using QudJP;
 using QudJP.Patches;
 using QudJP.QudTest;
@@ -18,6 +20,7 @@ internal static class Program
         try
         {
             var options = CliOptions.Parse(args);
+            ConfigureGameAssemblyResolution();
             ConfigureHeadlessLocalization(options.ProjectRoot);
 
             var result = QudTestRunner.Run(options.Command, options.FixturesDirectory, options.ModLanguage);
@@ -52,9 +55,45 @@ internal static class Program
 
     private static void ConfigureHeadlessLocalization(string projectRoot)
     {
+        Environment.SetEnvironmentVariable("QUDJP_PROJECT_ROOT", projectRoot);
         var dictionariesDirectory = Path.Combine(projectRoot, "Mods", "QudJP", "Localization", "Dictionaries");
         Translator.SetDictionaryDirectoryForTests(dictionariesDirectory);
         StartReplaceTranslationPatch.SetDictionaryPathForTests(Path.Combine(dictionariesDirectory, "templates-variable.ja.json"));
+    }
+
+    private static void ConfigureGameAssemblyResolution()
+    {
+        AssemblyLoadContext.Default.Resolving += static (_, assemblyName) =>
+        {
+            foreach (var directory in EnumerateManagedAssemblyDirectories())
+            {
+                var path = Path.Combine(directory, assemblyName.Name + ".dll");
+                if (File.Exists(path))
+                {
+                    return AssemblyLoadContext.Default.LoadFromAssemblyPath(Path.GetFullPath(path));
+                }
+            }
+
+            return null;
+        };
+    }
+
+    private static string[] EnumerateManagedAssemblyDirectories()
+    {
+        var envDir = Environment.GetEnvironmentVariable("COQ_MANAGED_DIR");
+        var defaultDir = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+            "Games",
+            "CavesOfQud-stable-ref",
+            "CoQ.app",
+            "Contents",
+            "Resources",
+            "Data",
+            "Managed");
+
+        return string.IsNullOrWhiteSpace(envDir)
+            ? [AppContext.BaseDirectory, defaultDir]
+            : [AppContext.BaseDirectory, envDir, defaultDir];
     }
 
     private sealed record CliOptions(
