@@ -124,6 +124,60 @@
       "expected": "終了"
     },
     {
+      "id": "skills-and-powers-exact.required-skills-header",
+      "route": "skills-and-powers-exact-leaf",
+      "input": "[REQUIRED SKILLS]",
+      "expected": "[前提スキル]"
+    },
+    {
+      "id": "skills-and-powers-exact.bracketed-draw-a-bead",
+      "route": "skills-and-powers-exact-leaf",
+      "input": "[Draw a Bead]",
+      "expected": "[狙い撃ち]"
+    },
+    {
+      "id": "skills-and-powers-structured.prefixed-shield-slam",
+      "route": "skills-and-powers-structured-line",
+      "input": ":Shield Slam",
+      "expected": ":シールドスラム"
+    },
+    {
+      "id": "skills-and-powers-structured.prereq-list",
+      "route": "skills-and-powers-structured-line",
+      "input": "Draw a Bead, Suppressive Fire",
+      "expected": "狙い撃ち, 制圧射撃"
+    },
+    {
+      "id": "skills-and-powers-structured.skill-line-with-prereq",
+      "route": "skills-and-powers-structured-line",
+      "input": ":Suppressive Fire [150sp] 19 Agility, Draw a Bead",
+      "expected": ":制圧射撃 [150sp] 19 AGI, 狙い撃ち"
+    },
+    {
+      "id": "ability-bar-button-text.aggressive-stance",
+      "route": "ability-bar-button-text",
+      "input": "Discharge [3 charge]",
+      "expected": "放電 [3チャージ]"
+    },
+    {
+      "id": "ability-bar-button-text.skill-name",
+      "route": "ability-bar-button-text",
+      "input": "Draw a Bead",
+      "expected": "狙い撃ち"
+    },
+    {
+      "id": "pick-target-ui-text.select-direction",
+      "route": "pick-target-ui-text",
+      "input": "[Select a direction]",
+      "expected": "[方向を選択]"
+    },
+    {
+      "id": "pick-target-ui-text.command-bar-ability-direction",
+      "route": "pick-target-ui-text",
+      "input": "Shield Slam | [Select a direction]",
+      "expected": "シールドスラム | [方向を選択]"
+    },
+    {
       "id": "inventory-display-name.game-object-colored-state",
       "route": "inventory-display-name",
       "input": "{{c|copper nugget}} {{y|[empty]}}",

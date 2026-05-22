@@ -327,7 +327,7 @@
         {
             "key": "Describe your engraving. For example: \"a tiny snail\".",
             "context": "Popup.AskString.Prompt",
-            "text": "刻印の内容を入力せよ。例: \\\"a tiny snail\\\"。"
+            "text": "刻印の内容を入力せよ。例: \"小さな巻貝\"。"
         },
         {
             "key": "[~Accept] Continue",
@@ -461,7 +461,7 @@
         {
             "key": "Describe your tattoo. For example: \"a tiny snail\".",
             "context": "XRL.UI.Popup.AskString.Prompt",
-            "text": "刺青の内容を入力する。例: \"a tiny snail\"。"
+            "text": "刺青の内容を入力する。例: \"小さな巻貝\"。"
         },
         {
             "key": "If you quit without saving, you will lose all your unsaved progress. Are you sure you want to QUIT and LOSE YOUR PROGRESS?\n\nType 'ABANDON' to confirm.",

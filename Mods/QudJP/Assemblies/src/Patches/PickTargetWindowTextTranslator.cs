@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics;
 using System.Text.RegularExpressions;
 
 namespace QudJP.Patches;
@@ -7,6 +6,8 @@ namespace QudJP.Patches;
 internal static class PickTargetWindowTextTranslator
 {
     private const string DictionaryFile = "ui-pick-target.ja.json";
+    private static readonly string[] CommandBarContexts = { "PickTarget.CommandBar" };
+    private static readonly string[] ExactLabelContexts = { "PickTarget.DirectionPrompt", "PickTarget.Digging.Label" };
 
     internal static bool TryTranslateUiText(string source, string route, out string translated)
     {
@@ -64,7 +65,7 @@ internal static class PickTargetWindowTextTranslator
     private static bool TryTranslateExactLabel(string source, out string translated)
     {
         var visible = ColorAwareTranslationComposer.GetVisibleText(source);
-        var direct = TranslatePickTargetToken(visible, traceFallback: false);
+        var direct = TranslatePickTargetExactLabelToken(visible);
         if (direct is null)
         {
             translated = source;
@@ -84,7 +85,7 @@ internal static class PickTargetWindowTextTranslator
             return true;
         }
 
-        var direct = TranslatePickTargetToken(visible, traceFallback: false);
+        var direct = TranslatePickTargetCommandBarToken(visible);
         if (direct is not null)
         {
             translated = ColorAwareTranslationComposer.TranslatePreservingColors(source, _ => direct);
@@ -108,7 +109,7 @@ internal static class PickTargetWindowTextTranslator
                 return true;
             }
 
-            var translatedLabel = TranslatePickTargetToken(visibleLabel, traceFallback: false);
+            var translatedLabel = TranslatePickTargetCommandBarToken(visibleLabel);
             if (translatedLabel is not null)
             {
                 translated = $"({parenthesizedHotkeyMatch.Groups["hotkey"].Value}) {ColorAwareTranslationComposer.TranslatePreservingColors(label, _ => translatedLabel)}";
@@ -127,7 +128,7 @@ internal static class PickTargetWindowTextTranslator
                 return true;
             }
 
-            var translatedLabel = TranslatePickTargetToken(visibleLabel, traceFallback: false);
+            var translatedLabel = TranslatePickTargetCommandBarToken(visibleLabel);
             if (translatedLabel is not null)
             {
                 translated = $"{ColorAwareTranslationComposer.TranslatePreservingColors(label, _ => translatedLabel)} ({sourceParenthesizedHotkeyMatch.Groups["hotkey"].Value}){sourceParenthesizedHotkeyMatch.Groups["suffix"].Value}";
@@ -146,7 +147,7 @@ internal static class PickTargetWindowTextTranslator
                 return true;
             }
 
-            var translatedLabel = TranslatePickTargetToken(visibleLabel, traceFallback: false);
+            var translatedLabel = TranslatePickTargetCommandBarToken(visibleLabel);
             if (translatedLabel is not null)
             {
                 translated = $"{hotkeyPrefixMatch.Groups["hotkey"].Value} {ColorAwareTranslationComposer.TranslatePreservingColors(label, _ => translatedLabel)}";
@@ -165,7 +166,7 @@ internal static class PickTargetWindowTextTranslator
                 return true;
             }
 
-            var translatedLabel = TranslatePickTargetToken(visibleLabel, traceFallback: false);
+            var translatedLabel = TranslatePickTargetCommandBarToken(visibleLabel);
             if (translatedLabel is not null)
             {
                 translated = $"{hyphenatedHotkeyMatch.Groups["hotkey"].Value}-{ColorAwareTranslationComposer.TranslatePreservingColors(label, _ => translatedLabel)}";
@@ -178,7 +179,13 @@ internal static class PickTargetWindowTextTranslator
         {
             var label = markupWrappedHotkeyMatch.Groups["label"].Value;
             var visibleLabel = ColorAwareTranslationComposer.GetVisibleText(label);
-            var translatedLabel = TranslatePickTargetToken(visibleLabel, traceFallback: false);
+            if (IsOwnerRouteCommandBarToken(visibleLabel))
+            {
+                translated = source;
+                return true;
+            }
+
+            var translatedLabel = TranslatePickTargetCommandBarToken(visibleLabel);
             if (translatedLabel is not null)
             {
                 translated = $"{markupWrappedHotkeyMatch.Groups["hotkey"].Value}-{ColorAwareTranslationComposer.TranslatePreservingColors(label, _ => translatedLabel)}";
@@ -197,7 +204,7 @@ internal static class PickTargetWindowTextTranslator
                 return true;
             }
 
-            var translatedLabel = TranslatePickTargetToken(visibleLabel, traceFallback: false);
+            var translatedLabel = TranslatePickTargetCommandBarToken(visibleLabel);
             if (translatedLabel is not null)
             {
                 translated = $"{ColorAwareTranslationComposer.TranslatePreservingColors(label, _ => translatedLabel)} ({hotkeySuffixMatch.Groups["hotkey"].Value}){hotkeySuffixMatch.Groups["suffix"].Value}";
@@ -215,7 +222,29 @@ internal static class PickTargetWindowTextTranslator
             || string.Equals(source, "Reload", StringComparison.OrdinalIgnoreCase);
     }
 
-    private static string? TranslatePickTargetToken(string source, bool traceFallback = true)
+    private static string? TranslatePickTargetExactLabelToken(string source)
+    {
+        return TranslatePickTargetToken(
+            source,
+            allowActivatedAbilityName: false,
+            allowUiTokenFallback: false,
+            scopedContexts: ExactLabelContexts);
+    }
+
+    private static string? TranslatePickTargetCommandBarToken(string source)
+    {
+        return TranslatePickTargetToken(
+            source,
+            allowActivatedAbilityName: true,
+            allowUiTokenFallback: true,
+            scopedContexts: CommandBarContexts);
+    }
+
+    private static string? TranslatePickTargetToken(
+        string source,
+        bool allowActivatedAbilityName = false,
+        bool allowUiTokenFallback = true,
+        string[]? scopedContexts = null)
     {
         var scoped = ScopedDictionaryLookup.TranslateExactOrLowerAscii(source, DictionaryFile);
         if (scoped is not null)
@@ -223,13 +252,30 @@ internal static class PickTargetWindowTextTranslator
             return scoped;
         }
 
-        if (traceFallback)
+        if (scopedContexts is not null)
         {
-            Trace.TraceWarning(
-                "QudJP: {0} missing scoped UI token '{1}' in {2}; falling back to UITextSkin token lookup.",
-                nameof(PickTargetWindowTextTranslator),
-                source,
-                DictionaryFile);
+            for (var index = 0; index < scopedContexts.Length; index++)
+            {
+                var contextual = ScopedDictionaryLookup.TranslateExactOrLowerAsciiForContextOnly(
+                    source,
+                    scopedContexts[index],
+                    DictionaryFile);
+                if (contextual is not null)
+                {
+                    return contextual;
+                }
+            }
+        }
+
+        if (allowActivatedAbilityName
+            && ActivatedAbilityNameTranslator.TryTranslateVisibleName(source, out var abilityName))
+        {
+            return abilityName;
+        }
+
+        if (!allowUiTokenFallback)
+        {
+            return null;
         }
 
         return UITextSkinTranslationPatch.TranslateAsciiTokenWithCaseFallback(source);

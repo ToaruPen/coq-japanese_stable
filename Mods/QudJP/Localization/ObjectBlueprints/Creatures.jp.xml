@@ -2560,7 +2560,7 @@
     <inventoryobject Blueprint="Wooden Arrow" Number="10-20" />
     <inventoryobject Blueprint="Dagger" Number="1" />
     <part Name="ConversationScript" ConversationID="HindrenScout" />
-    <part Name="Description" Short="不安そのもののように身構えて緊張し、ししゃもの脚を張らせ、長い耳をぴくぴく動かす。細い目が侵入者を求めて四方を走査する。斥候の身体には、農夫ヒンドレンの高ぶった神経がさらに研ぎ澄まされている。" />
+    <part Name="Description" Short="不安そのもののように身構えて緊張し、脚を張り詰めさせ、長い耳をぴくぴく動かす。細い目が侵入者を求めて四方を走査する。斥候の身体には、農夫ヒンドレンの高ぶった神経がさらに研ぎ澄まされている。" />
     <tag Name="ExcludeFromDynamicEncounters" Value="*noinherit" />
   </object>
 

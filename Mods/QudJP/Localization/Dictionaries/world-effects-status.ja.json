@@ -196,7 +196,7 @@
         {
             "key": "-6 Agility.\n-5 DV.\n-80 move speed.\nMust spend a turn to stand up.",
             "context": "XRL.World.Effects.Prone.Details",
-            "text": "-6 Agility。\n-5 DV。\n-80 Move Speed。\n立ち上がるには 1 ターン必要。"
+            "text": "-6 敏捷。\n-5 DV。\n-80 移動速度。\n立ち上がるには 1 ターン必要。"
         },
         {
             "key": "{{y|astrally burdened}}",
@@ -231,7 +231,7 @@
         {
             "key": "-{0} Quickness",
             "context": "XRL.World.Effects.ITimeDilated.Details",
-            "text": "-{0} Quickness"
+            "text": "-{0} 俊敏"
         },
         {
             "key": "lost",
@@ -251,7 +251,7 @@
         {
             "key": "-70 Quickness\nDoesn't function properly.",
             "context": "XRL.World.Effects.Rusted.Details",
-            "text": "-70 Quickness\n正常に機能しない。"
+            "text": "-70 俊敏\n正常に機能しない。"
         },
         {
             "key": "Doesn't function properly and can't be equipped.\nWill erode into dust if rusted again.",
@@ -271,7 +271,7 @@
         {
             "key": "-1d6 Move Speed per turn for 14-18 turns.\n[total:-{{C|{0}}} Move Speed]",
             "context": "XRL.World.Effects.BasiliskPoison.Details",
-            "text": "14～18 ターンの間、毎ターン -1d6 Move Speed。\n[合計:-{{C|{0}}} Move Speed]"
+            "text": "14～18 ターンの間、毎ターン -1d6 移動速度。\n[合計:-{{C|{0}}} 移動速度]"
         },
         {
             "key": "{{r|anticoagulated}}",
@@ -291,7 +291,7 @@
         {
             "key": "+{0} Quickness\nWill become sluggish soon.",
             "context": "XRL.World.Effects.AxonsInflated.Details",
-            "text": "+{0} Quickness\nまもなく鈍重になる。"
+            "text": "+{0} 俊敏\nまもなく鈍重になる。"
         },
         {
             "key": "{{r|sluggish}}",

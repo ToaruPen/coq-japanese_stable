@@ -22,6 +22,11 @@
       "key": "unlock",
       "context": "PickTarget.CommandBar",
       "text": "固定解除"
+    },
+    {
+      "key": "[Select a direction]",
+      "context": "PickTarget.DirectionPrompt",
+      "text": "[方向を選択]"
     }
   ]
 }

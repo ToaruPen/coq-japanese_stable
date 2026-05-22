@@ -403,7 +403,7 @@
     {
       "key": "Cooldown 100. You fire at a marked target. Your shot combines the effects of all the other Fire powers you have.",
       "context": "TMP.Description",
-      "text": "クールダウン100。マークした目標を射撃し、所持しているFire系能力の効果をすべてまとめて適用する。"
+      "text": "クールダウン100。マークした目標を射撃し、所持している射撃系能力の効果をすべてまとめて適用する。"
     },
     {
       "key": "Cooldown 200. For 20 rounds, firing a pistol only takes half a round instead of a full round.",
@@ -2414,6 +2414,11 @@
       "key": "Wrecking Charge",
       "context": "AbilityBar.ButtonText",
       "text": "破壊的な突進"
+    },
+    {
+      "key": "Required Skills",
+      "context": "TMP.Skill Requirement",
+      "text": "前提スキル"
     }
   ]
 }

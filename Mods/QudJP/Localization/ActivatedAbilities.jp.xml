@@ -1032,7 +1032,7 @@
     <description>
       <p>周囲の遺物や機械を無力化する電磁パルスを発生させる。</p>
       <br />
-      <statline Name="Area" Unit="centered around yourself" />
+      <statline Name="Area" Unit="自身中心" />
       <statline Name="Duration" DisplayName="無効化持続時間" Unit="rounds" />
       <statline Name="Cooldown" />
     </description>
@@ -1684,7 +1684,7 @@
 		<description>
 			<p>前方へ突撃し、貫通判定に+1で近接攻撃する。</p>
 			<br />
-			<statline Name="Range" Unit="spaces" />
+			<statline Name="Range" Unit="マス" />
 			<statline Name="Cooldown" />
 		</description>
 		<UITile Tile="Abilities/abil_charge.bmp" Foreground="W" Detail="r" />

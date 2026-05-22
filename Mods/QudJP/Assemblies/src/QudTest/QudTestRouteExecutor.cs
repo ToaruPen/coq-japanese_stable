@@ -56,6 +56,25 @@ public static class QudTestRouteExecutor
                 return ExecuteBottomContextItem(source);
             case "game-summary-menu-literal":
                 return GameSummaryScreenMenuBarsTranslationPatch.TranslateLiteral(source);
+            case "skills-and-powers-exact-leaf":
+                return SkillsAndPowersStatusScreenTranslationPatch.TryTranslateExactLeafPreservingColors(
+                    source,
+                    nameof(QudTestRouteExecutor),
+                    recordTransform: false).translated;
+            case "skills-and-powers-structured-line":
+                return SkillsAndPowersStatusScreenTranslationPatch.TryTranslateStructuredLinePreservingColors(
+                    source,
+                    nameof(QudTestRouteExecutor),
+                    recordTransform: false).translated;
+            case "ability-bar-button-text":
+                return AbilityBarButtonTextTranslationPatch.TranslateButtonTextForQudTest(source);
+            case "pick-target-ui-text":
+                return PickTargetWindowTextTranslator.TryTranslateUiText(
+                    source,
+                    nameof(QudTestRouteExecutor),
+                    out var pickTargetTranslated)
+                    ? pickTargetTranslated
+                    : source;
             case InventoryDisplayNameRoute:
                 return InventoryLineTranslationPatch.TranslateItemDisplayNameForQudTest(source);
             default:

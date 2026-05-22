@@ -289,7 +289,7 @@ internal static class ColorRouteCatalog
             ["Mods/QudJP/Assemblies/src/Patches/TradeLineTranslationPatch.cs|GetDisplayNameRouteTranslator.TranslatePreservingColors("] = 1,
             ["Mods/QudJP/Assemblies/src/Patches/WaterRitualPopupTranslationPatch.cs|JournalPatternTranslator.Translate("] = 1,
             ["Mods/QudJP/Assemblies/src/Patches/SultanShrineWrapperTranslator.cs|JournalPatternTranslator.Translate("] = 1,
-            ["Mods/QudJP/Assemblies/src/Patches/SkillsAndPowersStatusScreenTranslationPatch.cs|ColorAwareTranslationComposer.TranslatePreservingColors("] = 5,
+            ["Mods/QudJP/Assemblies/src/Patches/SkillsAndPowersStatusScreenTranslationPatch.cs|ColorAwareTranslationComposer.TranslatePreservingColors("] = 7,
             ["Mods/QudJP/Assemblies/src/Patches/DeathReasonTranslationPatch.cs|ColorAwareTranslationComposer.TranslatePreservingColors("] = 1,
             ["Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs|PopupTranslationPatch.TranslatePopupTextForProducerRoute("] = 1,
             ["Mods/QudJP/Assemblies/src/Patches/SinkPrereqTextFieldTranslator.cs|UITextSkinTranslationPatch.TranslatePreservingColors("] = 1,
