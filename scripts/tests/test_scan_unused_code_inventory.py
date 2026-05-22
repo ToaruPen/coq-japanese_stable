@@ -189,6 +189,50 @@ internal static class Demo
     assert _candidate_ids(payload) == {"QudJP.Demo", "QudJP.Demo.Unused()"}
 
 
+def test_python_wrapper_normalizes_relative_output_path(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Relative output paths should be used consistently for scanner and JSON loading."""
+    source_root = tmp_path / "repo"
+    production = source_root / "Mods" / "QudJP" / "Assemblies" / "src"
+    production.mkdir(parents=True)
+    _ = (production / "Demo.cs").write_text(
+        """
+namespace QudJP;
+
+internal static class Demo
+{
+    private static void Unused() {}
+}
+""",
+        encoding="utf-8",
+    )
+    config = source_root / "config.json"
+    _ = config.write_text(
+        json.dumps(
+            {
+                "schema_version": "1.0",
+                "include_path_prefixes": ["Mods/QudJP/Assemblies/src/"],
+                "exclude_path_contains": [],
+                "report_path_prefixes": ["Mods/QudJP/Assemblies/src/"],
+                "candidate_accessibilities": ["private", "internal"],
+                "root_attribute_type_suffixes": [],
+                "root_member_names_in_attribute_rooted_types": [],
+                "exclude_symbol_patterns": [],
+                "exclude_declaration_name_suffixes": [],
+            },
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.chdir(tmp_path)
+
+    payload = write_inventory(source_root, config, Path("nested/unused.json"))
+
+    assert payload["totals"]["candidates"] == 2
+    assert (tmp_path / "nested" / "unused.json").is_file()
+
+
 def _run_tool(tool_dll: Path, source_root: Path, config: Path, output: Path) -> None:
     result = subprocess.run(
         [

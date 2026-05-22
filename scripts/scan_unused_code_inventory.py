@@ -137,18 +137,19 @@ def _run_roslyn_scanner(
     *,
     fail_on_candidates: bool,
 ) -> InventoryPayload:
+    normalized_output_path = output_path.expanduser().resolve()
     if not PROJECT_PATH.is_file():
         msg = f"Roslyn unused-code scanner project is missing: {PROJECT_PATH}"
         raise RuntimeError(msg)
 
-    output_path.parent.mkdir(parents=True, exist_ok=True)
+    normalized_output_path.parent.mkdir(parents=True, exist_ok=True)
     tool_args = [
         "--source-root",
         str(source_root),
         "--config",
         str(config_path),
         "--output",
-        str(output_path),
+        str(normalized_output_path),
     ]
     if fail_on_candidates:
         tool_args.append("--fail-on-candidates")
@@ -162,7 +163,7 @@ def _run_roslyn_scanner(
         if details:
             msg = f"{msg}\n{details}"
         raise RuntimeError(msg)
-    return _load_inventory(output_path)
+    return _load_inventory(normalized_output_path)
 
 
 def _load_inventory(path: Path) -> InventoryPayload:
