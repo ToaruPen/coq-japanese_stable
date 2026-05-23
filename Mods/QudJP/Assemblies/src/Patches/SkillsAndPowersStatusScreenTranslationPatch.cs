@@ -260,7 +260,11 @@ public static class SkillsAndPowersStatusScreenTranslationPatch
             source,
             SkillNameDictionaryContext,
             SkillNameDictionaryFile);
-        scoped ??= ScopedDictionaryLookup.TranslateExactOrLowerAscii(source, SkillNameDictionaryFile);
+        if (scoped is null)
+        {
+            scoped = ScopedDictionaryLookup.TranslateExactOrLowerAscii(source, SkillNameDictionaryFile);
+        }
+
         if (scoped is not null && !string.Equals(scoped, source, StringComparison.Ordinal))
         {
             return scoped;
