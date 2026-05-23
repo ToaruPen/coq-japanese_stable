@@ -664,7 +664,16 @@ public sealed class GetDisplayNameRouteTranslatorTests
     [TestCase(
         "{{r|a{{R|m{{Y|a{{y|r{{r|a{{R|n}}t}}h}}i}}n}}e}} prism",
         "{{r|ア}}{{R|マ}}{{Y|ラ}}{{y|ン}}{{r|ス}}{{R|色}}のプリズム")]
-    public void TranslatePreservingColors_TranslatesCyclopeanPrismGeneratedDisplayNames(
+    [TestCase(
+        "{{Y|Schemasoft [{{C|Pistols, Mid Tier}}]}}",
+        "{{Y|スキーマソフト [{{C|ピストル, 中位}}]}}")]
+    [TestCase(
+        "Schemasoft [Ammo and Energy Cells, Low Tier]",
+        "スキーマソフト [弾薬とエネルギーセル, 下位]")]
+    [TestCase(
+        "{{Y|Schemasoft [{{C|Heavy Weapons, High Tier}}]}}",
+        "{{Y|スキーマソフト [{{C|重火器, 上位}}]}}")]
+    public void TranslatePreservingColors_TranslatesShippedGeneratedDisplayNames(
         string source,
         string expected)
     {
@@ -702,26 +711,6 @@ public sealed class GetDisplayNameRouteTranslatorTests
     {
         WriteDictionary(("snapjaw", "スナップジョー"));
 
-        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
-            source,
-            nameof(GetDisplayNamePatch));
-
-        Assert.That(translated, Is.EqualTo(expected));
-    }
-
-    [TestCase(
-        "{{Y|Schemasoft [{{C|Pistols, Mid Tier}}]}}",
-        "{{Y|スキーマソフト [{{C|ピストル, 中位}}]}}")]
-    [TestCase(
-        "Schemasoft [Ammo and Energy Cells, Low Tier]",
-        "スキーマソフト [弾薬とエネルギーセル, 下位]")]
-    [TestCase(
-        "{{Y|Schemasoft [{{C|Heavy Weapons, High Tier}}]}}",
-        "{{Y|スキーマソフト [{{C|重火器, 上位}}]}}")]
-    public void TranslatePreservingColors_TranslatesCyberneticsSchemasoftGeneratedDisplayName(
-        string source,
-        string expected)
-    {
         var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
             source,
             nameof(GetDisplayNamePatch));
