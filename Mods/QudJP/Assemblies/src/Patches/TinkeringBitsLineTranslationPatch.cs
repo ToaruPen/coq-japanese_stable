@@ -37,9 +37,22 @@ public static class TinkeringBitsLineTranslationPatch
     {
         var text = UiBindingTranslationHelpers.GetMemberValue(instance, "text");
         var current = UITextSkinReflectionAccessor.GetCurrentText(text, Context);
-        if (string.IsNullOrEmpty(current)
-            || !TinkeringBitDescriptionTranslator.TryTranslateKnownDescriptionsInText(current!, out var translated)
-            || string.Equals(translated, current, StringComparison.Ordinal))
+        if (string.IsNullOrEmpty(current))
+        {
+            return;
+        }
+
+        var source = current!;
+        _ = MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var strippedSource);
+        var changedByDictionary = TinkeringBitDescriptionTranslator.TryTranslateKnownDescriptionsInText(
+            strippedSource,
+            out var translated);
+        if (!changedByDictionary)
+        {
+            translated = strippedSource;
+        }
+
+        if (string.Equals(translated, current, StringComparison.Ordinal))
         {
             return;
         }
@@ -48,7 +61,7 @@ public static class TinkeringBitsLineTranslationPatch
         DynamicTextObservability.RecordTransform(route, "TinkeringBitsLine.Text", current!, translated);
         OwnerTextSetter.SetTranslatedText(
             text,
-            current!,
+            strippedSource,
             translated,
             Context,
             typeof(TinkeringBitsLineTranslationPatch));

@@ -16,17 +16,17 @@ public sealed class EnergyStorageChargeStatusTranslationPatchTests
         Assert.Multiple(() =>
         {
             Assert.That(changed, Is.True);
-            Assert.That(translated, Is.EqualTo("{{G|満充電}}"));
+            Assert.That(translated, Is.EqualTo("{{G|残量十分}}"));
             Assert.That(translated, Does.Not.Contain("全画面"));
         });
     }
 
     [TestCase("{{K|Drained}}", "{{K|空}}")]
-    [TestCase("{{r|Very Low}}", "{{r|残量ごく少}}")]
+    [TestCase("{{r|Very Low}}", "{{r|残量わずか}}")]
     [TestCase("{{R|Low}}", "{{R|残量少}}")]
-    [TestCase("{{W|Used}}", "{{W|使用済み}}")]
+    [TestCase("{{W|Used}}", "{{W|残量半分}}")]
     [TestCase("{{g|Fresh}}", "{{g|残量多}}")]
-    [TestCase("{{G|Full}}", "{{G|満充電}}")]
+    [TestCase("{{G|Full}}", "{{G|残量十分}}")]
     [TestCase("{{G|Fully Wound}}", "{{G|完全に巻かれている}}")]
     [TestCase("{{G|Full Speed}}", "{{G|最高速}}")]
     [TestCase("{{G|Fully Tensed}}", "{{G|完全に張っている}}")]

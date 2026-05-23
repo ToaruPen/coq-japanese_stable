@@ -252,12 +252,83 @@ public sealed partial class Issue201OtherUiBindingPatchTests
             Assert.Multiple(() =>
             {
                 Assert.That(numericTarget.OriginalExecuted, Is.True);
-                Assert.That(numericTarget.text.Text, Is.EqualTo("{{{{R|1 スクラップ動力系}}}}"));
-                Assert.That(alphaTarget.text.Text, Is.EqualTo("{{{{Y|A AIマイクロコントローラ}}}}"));
-                Assert.That(unknownTarget.text.Text, Is.EqualTo("{{{{R|? unknown component}}}}"));
+                Assert.That(numericTarget.text.Text, Is.EqualTo("{{R|1 スクラップ動力系}}"));
+                Assert.That(alphaTarget.text.Text, Is.EqualTo("{{Y|A AIマイクロコントローラ}}"));
+                Assert.That(unknownTarget.text.Text, Is.EqualTo("{{R|? unknown component}}"));
                 Assert.That(
                     DynamicTextObservability.GetRouteFamilyHitCountForTests(nameof(TinkeringBitsLineTranslationPatch), "TinkeringBitsLine.Text"),
                     Is.EqualTo(2));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void TinkeringBitsLinePostfix_StripsDirectMarker_WhenTextIsAlreadyTranslated()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyTinkeringBitsLineTarget), nameof(DummyTinkeringBitsLineTarget.setData)),
+                postfix: new HarmonyMethod(RequireMethod(typeof(TinkeringBitsLineTranslationPatch), nameof(TinkeringBitsLineTranslationPatch.Postfix))));
+
+            var target = new DummyTinkeringBitsLineTarget();
+            target.setData(new DummyTinkeringBitsLineDataTarget
+            {
+                bit = MessageFrameTranslator.MarkDirectTranslation("{{R|? unknown component}}"),
+            });
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(target.text.Text, Is.EqualTo("{{R|? unknown component}}"));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(nameof(TinkeringBitsLineTranslationPatch), "TinkeringBitsLine.Text"),
+                    Is.EqualTo(1));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void TinkeringDetailsLinePostfix_StripsDirectMarkers_WhenTextAlreadyTranslated()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyTinkeringDetailsLineTarget), nameof(DummyTinkeringDetailsLineTarget.setData)),
+                postfix: new HarmonyMethod(RequireMethod(typeof(TinkeringDetailsLineTranslationPatch), nameof(TinkeringDetailsLineTranslationPatch.Postfix))));
+
+            var target = new DummyTinkeringDetailsLineTarget();
+            target.setData(new DummyTinkeringLineDataTarget
+            {
+                data = new DummyTinkeringRecipeData
+                {
+                    Type = "Build",
+                    DisplayName = MessageFrameTranslator.MarkDirectTranslation("既訳名"),
+                    UnclippedDescription = MessageFrameTranslator.MarkDirectTranslation("既訳説明"),
+                },
+            });
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(target.text.Text, Is.EqualTo("既訳名"));
+                Assert.That(target.descriptionText.Text, Is.EqualTo("既訳説明"));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(nameof(TinkeringDetailsLineTranslationPatch), "TinkeringDetails.Text"),
+                    Is.EqualTo(1));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(nameof(TinkeringDetailsLineTranslationPatch), "TinkeringDetails.DescriptionText"),
+                    Is.EqualTo(1));
             });
         }
         finally

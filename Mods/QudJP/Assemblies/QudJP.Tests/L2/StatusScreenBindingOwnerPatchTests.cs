@@ -154,8 +154,8 @@ public sealed class StatusScreenBindingOwnerPatchTests
                         nameof(UITextSkinTranslationPatch),
                         nameof(CharacterMutationLineTranslationPatch),
                         SinkObservation.ObservationOnlyDetail,
-                        "Force Wall (1)",
-                        "Force Wall (1)"),
+                        sourceName + " (1)",
+                        sourceName + " (1)"),
                     Is.EqualTo(0));
             });
         }

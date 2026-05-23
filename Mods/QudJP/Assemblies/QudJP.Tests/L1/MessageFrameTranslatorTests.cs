@@ -1014,7 +1014,7 @@ public sealed class MessageFrameTranslatorTests
     [TestCase(
         "to bandage",
         "wounds, but 包帯 pass through them",
-        "あなたはタムの傷に包帯を巻こうとしたが、包帯はすり抜けた。")]
+        "あなたはタムの傷に包帯を巻こうとしたが、包帯はそれらをすり抜けた。")]
     [TestCase(
         "to bandage",
         "wounds, but cannot affect them",
@@ -1067,7 +1067,7 @@ public sealed class MessageFrameTranslatorTests
 
     [TestCase(
         ", but 包帯 pass through them",
-        "あなたは包帯でタムの傷を止血しようとしたが、包帯はすり抜けた。")]
+        "あなたは包帯でタムの傷を止血しようとしたが、包帯はそれらをすり抜けた。")]
     [TestCase(
         ", but cannot affect them",
         "あなたは包帯でタムの傷を止血しようとしたが、影響を与えられなかった。")]

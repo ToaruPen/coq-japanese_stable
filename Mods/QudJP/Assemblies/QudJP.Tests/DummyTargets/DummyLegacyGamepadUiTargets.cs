@@ -194,11 +194,14 @@ internal sealed class DummyAbilityManagerShowTarget
 {
     public DummyLegacyBuffer Buffer { get; } = new();
 
+    public int FooterLength { get; private set; }
+
     public void Show()
     {
         Buffer.Write("[ {{W|Manage Abilities}} ]");
         Buffer.Write(" {{W|T}}-custom ");
         Buffer.Write(" {{W|ESC}}-exit ");
+        FooterLength = DummyLegacyMarkup.StripFormatting("{{W|Maneuvers}}").Length;
         Buffer.Write("{{W|Maneuvers}}");
         Buffer.Write("  a) Sprint [{{W|attack}}] {{Y|<{{w|S}}>}}");
         Buffer.Write("{{K|  b) Teleport [attack] [disabled]}}");
@@ -206,6 +209,7 @@ internal sealed class DummyAbilityManagerShowTarget
         Buffer.Write("Cooldown: {{C|7}} rounds");
         Buffer.Write("[ {{W|Enter}}-Use Ability {{W|Ins}}-Map key {{W|Del}}-unbind {{W|Up}}/{{W|Down}}-Change Order ]");
         Buffer.Write("{{W|<More...>}}");
+        Buffer.Write("\u0001既訳能力");
     }
 }
 

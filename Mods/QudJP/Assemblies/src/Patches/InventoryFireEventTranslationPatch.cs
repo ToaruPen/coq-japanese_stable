@@ -24,6 +24,10 @@ public static class InventoryFireEventTranslationPatch
         "^You cannot equip (?<item>.+?)\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex CannotEquipOnSlotPattern = new(
+        "^You cannot equip (?<item>.+?) on your (?<slot>.+?)\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     private static readonly Regex CannotBudgePattern = new(
         "^You cannot budge (?<item>.+?)\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
@@ -175,46 +179,41 @@ public static class InventoryFireEventTranslationPatch
 
     private static bool TryTranslateInventoryFailurePopup(string source, out string translated)
     {
-        switch (source)
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        switch (stripped)
         {
             case "You cannot equip items while stuck!":
-                translated = "動けない間はアイテムを装備できない！";
+                translated = RestoreWholeSource("動けない間はアイテムを装備できない！", spans, stripped, source);
                 return true;
             case "You cannot remove items while stuck!":
-                translated = "動けない間はアイテムを外せない！";
+                translated = RestoreWholeSource("動けない間はアイテムを外せない！", spans, stripped, source);
                 return true;
         }
 
-        const string cannotEquipPrefix = "You cannot equip ";
-        const string onYourSeparator = " on your ";
-        const string sentenceSuffix = ".";
-
-        if (source.StartsWith(cannotEquipPrefix, StringComparison.Ordinal)
-            && source.EndsWith(sentenceSuffix, StringComparison.Ordinal))
+        var equipOnSlotMatch = CannotEquipOnSlotPattern.Match(stripped);
+        if (equipOnSlotMatch.Success)
         {
-            var body = source.Substring(cannotEquipPrefix.Length, source.Length - cannotEquipPrefix.Length - sentenceSuffix.Length);
-            var separatorIndex = body.IndexOf(onYourSeparator, StringComparison.Ordinal);
-            if (separatorIndex >= 0)
-            {
-                translated = TranslateItemCapture(body.Substring(0, separatorIndex))
-                    + "を"
-                    + TranslateInventorySlot(body.Substring(separatorIndex + onYourSeparator.Length))
-                    + "に装備できない。";
-                return true;
-            }
-        }
-
-        var equipMatch = CannotEquipPattern.Match(source);
-        if (equipMatch.Success)
-        {
-            translated = TranslateItemCapture(equipMatch.Groups["item"].Value) + "を装備できない。";
+            translated = TranslateItemCapture(Restore(equipOnSlotMatch, spans, "item"))
+                + "を"
+                + TranslateInventorySlot(Restore(equipOnSlotMatch, spans, "slot"))
+                + "に装備できない。";
+            translated = RestoreWholeSource(translated, spans, stripped, source);
             return true;
         }
 
-        var budgeMatch = CannotBudgePattern.Match(source);
+        var equipMatch = CannotEquipPattern.Match(stripped);
+        if (equipMatch.Success)
+        {
+            translated = TranslateItemCapture(Restore(equipMatch, spans, "item")) + "を装備できない。";
+            translated = RestoreWholeSource(translated, spans, stripped, source);
+            return true;
+        }
+
+        var budgeMatch = CannotBudgePattern.Match(stripped);
         if (budgeMatch.Success)
         {
-            translated = TranslateItemCapture(budgeMatch.Groups["item"].Value) + "を動かせない。";
+            translated = TranslateItemCapture(Restore(budgeMatch, spans, "item")) + "を動かせない。";
+            translated = RestoreWholeSource(translated, spans, stripped, source);
             return true;
         }
 
@@ -267,5 +266,18 @@ public static class InventoryFireEventTranslationPatch
     {
         var group = match.Groups[groupName];
         return ColorAwareTranslationComposer.MarkupAwareRestoreCapture(group.Value, spans, group).Trim();
+    }
+
+    private static string RestoreWholeSource(
+        string translated,
+        IReadOnlyList<ColorSpan> spans,
+        string stripped,
+        string source)
+    {
+        return ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+            translated,
+            spans,
+            stripped.Length,
+            source);
     }
 }

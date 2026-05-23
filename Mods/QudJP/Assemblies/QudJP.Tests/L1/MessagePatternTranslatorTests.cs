@@ -422,7 +422,7 @@ public sealed class MessagePatternTranslatorTests
         var translated = MessagePatternTranslator.Translate(
             "The {{electrical|electrical arc}} leaps toward the {{freezing|凍結した}} 塩水の水たまり to the southwest!");
 
-        Assert.That(translated, Is.EqualTo("{{electrical|電弧}}が{{freezing|凍結した}} 塩水の水たまり（南西に）へ走った！"));
+        Assert.That(translated, Is.EqualTo("{{electrical|電弧}}が{{freezing|凍結した}} 塩水の水たまり（南西側に）へ走った！"));
     }
 
     [TestCase("You pass by a 編みかご.", "編みかごのそばを通り過ぎた。")]

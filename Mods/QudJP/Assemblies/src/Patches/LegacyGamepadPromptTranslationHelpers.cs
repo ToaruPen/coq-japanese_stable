@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Globalization;
 using System.Text.RegularExpressions;
 
@@ -394,8 +395,12 @@ internal static class LegacyGamepadPromptTranslationHelpers
         {
             return SkillsAndPowersStatusScreenTranslationPatch.TranslateLeaf(source);
         }
-        catch
+        catch (Exception ex)
         {
+            Trace.TraceError(
+                "QudJP: LegacyGamepadPromptTranslationHelpers.TranslateSkillsAndPowersLeafSafely failed for '{0}': {1}",
+                source,
+                ex);
             return source;
         }
     }

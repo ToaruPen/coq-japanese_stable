@@ -612,11 +612,11 @@ public sealed class GetDisplayNameProcessPatchTests
     }
 
     [TestCase("K", "Drained", "空")]
-    [TestCase("r", "Very Low", "残量ごく少")]
+    [TestCase("r", "Very Low", "残量わずか")]
     [TestCase("R", "Low", "残量少")]
-    [TestCase("W", "Used", "使用済み")]
+    [TestCase("W", "Used", "残量半分")]
     [TestCase("g", "Fresh", "残量多")]
-    [TestCase("G", "Full", "満充電")]
+    [TestCase("G", "Full", "残量十分")]
     [TestCase("C", "Unknown", "Unknown")]
     [TestCase("M", "", "")]
     [TestCase("Y", "\u0001Low", "Low")]

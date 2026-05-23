@@ -119,6 +119,11 @@ public static class AbilityManagerLegacyScreenTranslationPatch
             return source;
         }
 
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var stripped))
+        {
+            return stripped;
+        }
+
         var translated = TranslateExactChrome(source);
         translated = TranslateAbilityRowName(translated);
         translated = TranslateCategoryMarkup(translated);
@@ -267,14 +272,18 @@ public static class AbilityManagerLegacyScreenTranslationPatch
         }
 
         var parameters = method.GetParameters();
-        return method.ReturnType == typeof(void)
-               && ((string.Equals(method.Name, "Write", StringComparison.Ordinal)
-                    && parameters.Length == 1
-                    && parameters[0].ParameterType == typeof(string))
-                   || (string.Equals(method.Name, "WriteAt", StringComparison.Ordinal)
-                       && parameters.Length == 3
-                       && parameters[0].ParameterType == typeof(int)
-                       && parameters[1].ParameterType == typeof(int)
-                       && parameters[2].ParameterType == typeof(string)));
+        return (method.ReturnType == typeof(void)
+                && ((string.Equals(method.Name, "Write", StringComparison.Ordinal)
+                     && parameters.Length == 1
+                     && parameters[0].ParameterType == typeof(string))
+                    || (string.Equals(method.Name, "WriteAt", StringComparison.Ordinal)
+                        && parameters.Length == 3
+                        && parameters[0].ParameterType == typeof(int)
+                        && parameters[1].ParameterType == typeof(int)
+                        && parameters[2].ParameterType == typeof(string))))
+               || (method.ReturnType == typeof(string)
+                   && string.Equals(method.Name, "StripFormatting", StringComparison.Ordinal)
+                   && parameters.Length == 1
+                   && parameters[0].ParameterType == typeof(string));
     }
 }

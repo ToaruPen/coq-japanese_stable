@@ -74,7 +74,8 @@ public static class TinkeringDetailsLineTranslationPatch
         }
 
         var route = ObservabilityHelpers.ComposeContext(Context, "field=text");
-        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(current!, route);
+        _ = MessageFrameTranslator.TryStripDirectTranslationMarker(current!, out var source);
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(source, route);
         if (string.Equals(translated, current, StringComparison.Ordinal))
         {
             return;
@@ -83,7 +84,7 @@ public static class TinkeringDetailsLineTranslationPatch
         DynamicTextObservability.RecordTransform(route, "TinkeringDetails.Text", current!, translated);
         OwnerTextSetter.SetTranslatedText(
             text,
-            current!,
+            source,
             translated,
             Context,
             typeof(TinkeringDetailsLineTranslationPatch));
@@ -99,7 +100,8 @@ public static class TinkeringDetailsLineTranslationPatch
         }
 
         var route = ObservabilityHelpers.ComposeContext(Context, "field=descriptionText");
-        var translated = DescriptionTextTranslator.TranslateLongDescription(current!, route);
+        _ = MessageFrameTranslator.TryStripDirectTranslationMarker(current!, out var source);
+        var translated = DescriptionTextTranslator.TranslateLongDescription(source, route);
         if (string.Equals(translated, current, StringComparison.Ordinal))
         {
             return;
@@ -108,7 +110,7 @@ public static class TinkeringDetailsLineTranslationPatch
         DynamicTextObservability.RecordTransform(route, "TinkeringDetails.DescriptionText", current!, translated);
         OwnerTextSetter.SetTranslatedText(
             descriptionText,
-            current!,
+            source,
             translated,
             Context,
             typeof(TinkeringDetailsLineTranslationPatch));

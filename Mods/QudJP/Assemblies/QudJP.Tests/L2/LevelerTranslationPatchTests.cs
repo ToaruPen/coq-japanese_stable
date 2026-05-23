@@ -79,7 +79,7 @@ public sealed class LevelerTranslationPatchTests
     }
 
     [TestCase("")]
-    [TestCase("Your genome enters an excited state!")]
+    [TestCase("The genome hums quietly.")]
     public void Patch_DoesNotClaimFixedOrEmptyPopup_WhenOwnerPatched(string source)
     {
         OwnerPopupRouteTestHarness.WithPatchedPopupOwner(
@@ -94,11 +94,7 @@ public sealed class LevelerTranslationPatchTests
 
                 Assert.Multiple(() =>
                 {
-                    if (source.Length == 0)
-                    {
-                        Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(source));
-                    }
-
+                    Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(source));
                     Assert.That(HitCount("LevelerBuyMutationPrompt"), Is.Zero);
                 });
             });

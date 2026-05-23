@@ -96,6 +96,10 @@ public sealed class InventoryFireEventTranslationPatchTests
                 target.FireEventShowFail();
                 var cannotBudge = DummyPopupShow.LastShowMessage;
 
+                target.PopupMessageToShow = "{{R|You cannot equip {{Y|steel boots}}.}}";
+                target.FireEventShowFail();
+                var wrappedCannotEquip = DummyPopupShow.LastShowMessage;
+
                 Assert.Multiple(() =>
                 {
                     Assert.That(stuckEquip, Is.EqualTo("動けない間はアイテムを装備できない！"));
@@ -103,7 +107,8 @@ public sealed class InventoryFireEventTranslationPatchTests
                     Assert.That(cannotEquipOnSlot, Is.EqualTo("{{Y|steel boots}}をleft handに装備できない。"));
                     Assert.That(stuckRemove, Is.EqualTo("動けない間はアイテムを外せない！"));
                     Assert.That(cannotBudge, Is.EqualTo("{{Y|rusted chest}}を動かせない。"));
-                    Assert.That(PopupHitCount("InventoryFailurePopup"), Is.EqualTo(5));
+                    Assert.That(wrappedCannotEquip, Is.EqualTo("{{R|{{Y|steel boots}}を装備できない。}}"));
+                    Assert.That(PopupHitCount("InventoryFailurePopup"), Is.EqualTo(6));
                 });
             });
     }

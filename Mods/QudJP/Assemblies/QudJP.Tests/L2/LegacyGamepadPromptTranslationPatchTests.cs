@@ -242,12 +242,14 @@ public sealed class LegacyGamepadPromptTranslationPatchTests
                     Assert.That(target.Buffer.Writes, Does.Contain(" {{W|T}}-任意 "));
                     Assert.That(target.Buffer.Writes, Does.Contain(" {{W|ESC}}-終了 "));
                     Assert.That(target.Buffer.Writes, Does.Contain("{{W|戦技}}"));
+                    Assert.That(target.FooterLength, Is.EqualTo("戦技".Length));
                     Assert.That(target.Buffer.Writes, Does.Contain("  a) スプリント [{{W|攻撃}}] {{Y|<{{w|S}}>}}"));
                     Assert.That(target.Buffer.Writes, Does.Contain("{{K|  b) テレポート [攻撃] [無効]}}"));
                     Assert.That(target.Buffer.Writes, Does.Contain("  {{K|c}}) スプリント [{{C|7}}ターンのクールダウン、アストラル束縛] {{K|[{{g|オン}}]}}"));
                     Assert.That(target.Buffer.Writes, Does.Contain("クールダウン: {{C|7}}ラウンド"));
                     Assert.That(target.Buffer.Writes, Does.Contain("[ {{W|Enter}}-能力を使用 {{W|Ins}}-キー割り当て {{W|Del}}-キー解除 {{W|Up}}/{{W|Down}}-順序変更 ]"));
                     Assert.That(target.Buffer.Writes, Does.Contain("{{W|<続き…>}}"));
+                    Assert.That(target.Buffer.Writes, Does.Contain("既訳能力"));
                 });
             });
     }

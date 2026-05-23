@@ -5586,7 +5586,99 @@ public sealed class CombatAndLogMessageQueuePatchTests
 
             _ = target.AbilityManagerShowPopup();
 
-            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("{{C|凍結線}}を使うには{{C|7ラウンド}}待つ必要がある。"));
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("{{C|凍結線}}を使うには{{C|7ラウンド}}待つ必要がある。"));
+                Assert.That(DummyMessageQueue.LastMessage, Is.Null.Or.Empty);
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void AbilityManagerShow_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent()
+    {
+        const string source = "You must wait {{C|7 round}} before using {{C|Freezing Ray}}.";
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShow(harmony);
+
+            DummyPopupShow.Show(source);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(source));
+                Assert.That(DummyMessageQueue.LastMessage, Is.Null.Or.Empty);
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void AbilityManagerShow_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched()
+    {
+        const string source = "You must wait {{C|7 round}} before using {{C|Freezing Ray}}.";
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShow(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummySimpleOwnerQueueTarget), nameof(DummySimpleOwnerQueueTarget.AbilityManagerShowPopup)),
+                typeof(AbilityManagerShowTranslationPatch));
+
+            var target = new DummySimpleOwnerQueueTarget
+            {
+                PopupMessageToSend = MessageFrameTranslator.MarkDirectTranslation(source),
+            };
+
+            _ = target.AbilityManagerShowPopup();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(source));
+                Assert.That(DummyMessageQueue.LastMessage, Is.Null.Or.Empty);
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void AbilityManagerShow_LeavesEmptyPopupUnchanged_WhenOwnerPatched()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShow(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummySimpleOwnerQueueTarget), nameof(DummySimpleOwnerQueueTarget.AbilityManagerShowPopup)),
+                typeof(AbilityManagerShowTranslationPatch));
+
+            var target = new DummySimpleOwnerQueueTarget { PopupMessageToSend = string.Empty };
+
+            _ = target.AbilityManagerShowPopup();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(string.Empty));
+                Assert.That(DummyMessageQueue.LastMessage, Is.Null.Or.Empty);
+            });
         }
         finally
         {

@@ -2968,7 +2968,7 @@
     {
       "verb": "try",
       "extra": "to bandage {0} wounds, but {1} pass through {2}",
-      "text": "{0}傷に包帯を巻こうとしたが、{1}はすり抜けた"
+      "text": "{0}傷に包帯を巻こうとしたが、{1}は{t2}をすり抜けた"
     },
     {
       "verb": "try",
@@ -3173,7 +3173,7 @@
     {
       "verb": "try",
       "extra": "to staunch {0} wounds with {1}, but {2} pass through {3}",
-      "text": "{1}で{0}傷を止血しようとしたが、{2}はすり抜けた"
+      "text": "{1}で{0}傷を止血しようとしたが、{2}は{t3}をすり抜けた"
     },
     {
       "verb": "try",

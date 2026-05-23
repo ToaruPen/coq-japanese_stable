@@ -142,7 +142,7 @@ internal sealed class DummyTinkeringBitsLineTarget
         OriginalExecuted = true;
         if (data is DummyTinkeringBitsLineDataTarget tinkeringBitsLineData)
         {
-            text.SetText("{{" + tinkeringBitsLineData.bit + "}}");
+            text.SetText(tinkeringBitsLineData.bit);
         }
     }
 }
