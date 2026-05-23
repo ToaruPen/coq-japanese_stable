@@ -203,6 +203,16 @@ For repo-local scanner tools:
 - Build with the SDK version already used by repo tools, currently `net10.0`.
 - Add or update a smoke test that builds the `.csproj`, so CI catches tool rot.
 - Keep build-time analysis separate from shipped runtime DLLs.
+- In Python wrappers, normalize external input/output paths once at the wrapper
+  boundary with `Path.expanduser().resolve()` and use the normalized `Path`
+  consistently for directory creation, subprocess arguments, and JSON readback.
+  The wrapper and Roslyn process may not share the caller's current directory.
+- Any pytest that reaches a Roslyn tool through a Python wrapper is still
+  `dotnet`-dependent. Mark it with the same `pytest.mark.skipif(not
+  shutil.which("dotnet"), reason="dotnet SDK not available")` guard used by
+  direct Roslyn tool tests.
+- Add a wrapper regression when relative output paths are supported, so the
+  scanner output path and Python JSON readback path cannot drift apart.
 
 Use these Roslyn defaults unless the task proves otherwise:
 
