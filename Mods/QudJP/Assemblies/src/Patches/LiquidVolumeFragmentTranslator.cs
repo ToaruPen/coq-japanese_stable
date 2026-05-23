@@ -148,6 +148,44 @@ internal static class LiquidVolumeFragmentTranslator
                 match.Groups["amount"].Value,
                 "ドラム集められる。本当にそうしますか？")),
         new(
+            "NoAvailableCollectionContainer",
+            new Regex(
+                "^You have nowhere available to collect that\\.$",
+                RegexOptions.CultureInvariant | RegexOptions.Compiled),
+            static (_, _) => "それを集められる容器がない。"),
+        new(
+            "CannotDoForSomeReason",
+            new Regex(
+                "^You cannot do that for some reason\\.$",
+                RegexOptions.CultureInvariant | RegexOptions.Compiled),
+            static (_, _) => "何らかの理由でそれはできない。"),
+        new(
+            "AutoCollectPureLiquidOnly",
+            new Regex(
+                "^Auto collection only works on unsealed containers with pure liquids\\.$",
+                RegexOptions.CultureInvariant | RegexOptions.Compiled),
+            static (_, _) => "自動収集は、密閉されていない純粋な液体入りの容器でのみ機能する。"),
+        new(
+            "AutoCollectUnknownLiquid",
+            new Regex(
+                "^It isn't clear what kind of liquid would be appropriate for (?<target>.+?) to collect\\. Pour a pure liquid into it, and then enable auto-collect\\.$",
+                RegexOptions.CultureInvariant | RegexOptions.Compiled),
+            static (match, spans) => string.Concat(
+                TranslateTarget(match.Groups["target"], spans),
+                "がどの種類の液体を集めるのに適しているか不明だ。純粋な液体を注いでから、自動収集を有効にする。")),
+        new(
+            "HowManyDrams",
+            new Regex(
+                "^How many drams\\? \\(max=(?<max>\\d+)\\)$",
+                RegexOptions.CultureInvariant | RegexOptions.Compiled),
+            static (match, _) => string.Concat("何ドラム？(最大=", match.Groups["max"].Value, ")")),
+        new(
+            "CollectMessage",
+            new Regex(
+                "^You collect (?<amount>\\d+) drams? of (?<liquid>.+?)(?:(?: (?<openDirection>to the north|to the south|to the east|to the west|to the northeast|to the northwest|to the southeast|to the southwest|nearby|above|below|here|somewhere))|(?: from (?<source>.+?) (?<sourceDirection>to the north|to the south|to the east|to the west|to the northeast|to the northwest|to the southeast|to the southwest|nearby|above|below|here|somewhere)))?(?: in (?<storage>.+?))?\\.$",
+                RegexOptions.CultureInvariant | RegexOptions.Compiled),
+            BuildCollectMessage),
+        new(
             "PourOutSelf",
             new Regex(
                 "^(?<amount>\\d+) drams? of (?<liquid>.+?) pours out all over you!$",
@@ -241,6 +279,42 @@ internal static class LiquidVolumeFragmentTranslator
             "の全身にかかった！");
     }
 
+    private static string BuildCollectMessage(Match match, IReadOnlyList<ColorSpan> spans)
+    {
+        var prefix = BuildCollectLocationPrefix(match, spans);
+        var storageSuffix = match.Groups["storage"].Success
+            ? string.Concat("（", StripPossessivePrefixPreservingColors(RestoreVisible(match.Groups["storage"], spans)), "に入れた）")
+            : string.Empty;
+
+        return string.Concat(
+            prefix,
+            RestoreVisible(match.Groups["liquid"], spans),
+            "を",
+            match.Groups["amount"].Value,
+            "ドラム集めた",
+            storageSuffix,
+            "。");
+    }
+
+    private static string BuildCollectLocationPrefix(Match match, IReadOnlyList<ColorSpan> spans)
+    {
+        if (match.Groups["source"].Success)
+        {
+            var source = TranslateTarget(match.Groups["source"], spans);
+            if (TryTranslateDirection(match.Groups["sourceDirection"].Value, out var sourceDirection))
+            {
+                return string.Concat(source, "（", sourceDirection, "）から");
+            }
+
+            return source + "から";
+        }
+
+        return match.Groups["openDirection"].Success
+            && TryTranslateDirection(match.Groups["openDirection"].Value, out var openDirection)
+            ? openDirection + "で"
+            : string.Empty;
+    }
+
     private static string TranslateTarget(Group group, IReadOnlyList<ColorSpan> spans)
     {
         var restored = RestoreVisible(group, spans);
@@ -291,6 +365,45 @@ internal static class LiquidVolumeFragmentTranslator
         }
 
         return ColorAwareTranslationComposer.TranslatePreservingColors(source, _ => withoutArticle);
+    }
+
+    private static string StripPossessivePrefixPreservingColors(string source)
+    {
+        var direct = StripPossessivePrefix(source);
+        if (!string.Equals(direct, source, StringComparison.Ordinal))
+        {
+            return direct;
+        }
+
+        var visible = ColorAwareTranslationComposer.GetVisibleText(source);
+        var withoutPossessive = StripPossessivePrefix(visible);
+        if (string.Equals(withoutPossessive, visible, StringComparison.Ordinal))
+        {
+            return source;
+        }
+
+        return ColorAwareTranslationComposer.TranslatePreservingColors(source, _ => withoutPossessive);
+    }
+
+    private static string StripPossessivePrefix(string source)
+    {
+        var trimmed = source.Trim();
+        if (trimmed.StartsWith("your ", StringComparison.OrdinalIgnoreCase))
+        {
+            return trimmed.Substring("your ".Length);
+        }
+
+        if (trimmed.StartsWith("its ", StringComparison.OrdinalIgnoreCase))
+        {
+            return trimmed.Substring("its ".Length);
+        }
+
+        return source;
+    }
+
+    private static bool TryTranslateDirection(string source, out string translated)
+    {
+        return QudJP.DirectionPhraseTranslator.TryTranslateNounStem(source, out translated);
     }
 
     private static string NormalizeTarget(string target)

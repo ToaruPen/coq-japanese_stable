@@ -355,6 +355,39 @@ public sealed class DescriptionTextTranslatorTests
     }
 
     [Test]
+    public void TranslateLongDescription_LeavesIntelligenceFragmentsUnchanged()
+    {
+        const string source = "装備して電源を入れると、Intelligence スコアが 2 上昇したかのように遺物鑑定へボーナスを得る。";
+
+        var translated = DescriptionTextTranslator.TranslateLongDescription(
+            source,
+            "DescriptionTextTranslatorTests");
+
+        Assert.That(translated, Is.EqualTo(source));
+    }
+
+    [TestCase("Regains charge when worn or held in hand, much more quickly while in combat.")]
+    [TestCase("Regains charge when wornまたはheld in hand, much more quickly while in combat.")]
+    public void TranslateLongDescription_TranslatesRegainsChargeWhenWornOrHeldLine(string source)
+    {
+        var translated = DescriptionTextTranslator.TranslateLongDescription(
+            source,
+            "DescriptionTextTranslatorTests");
+
+        Assert.That(translated, Is.EqualTo("装備中または手に持っているとチャージが回復する。戦闘中は大幅に速く回復する。"));
+    }
+
+    [Test]
+    public void TranslateShortDescription_TranslatesRegainsChargeWhenWornOrHeldLinePreservingColorWrapper()
+    {
+        var translated = DescriptionTextTranslator.TranslateShortDescription(
+            "{{rules|Regains charge when worn or held in hand, much more quickly while in combat.}}",
+            "DescriptionTextTranslatorTests");
+
+        Assert.That(translated, Is.EqualTo("{{rules|装備中または手に持っているとチャージが回復する。戦闘中は大幅に速く回復する。}}"));
+    }
+
+    [Test]
     public void TranslateLongDescription_TranslatesContinuationLineWithNestedColorWrapper()
     {
         WriteDictionary(

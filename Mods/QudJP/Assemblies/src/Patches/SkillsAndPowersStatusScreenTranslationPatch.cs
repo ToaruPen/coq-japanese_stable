@@ -12,6 +12,8 @@ namespace QudJP.Patches;
 [HarmonyPatch]
 public static class SkillsAndPowersStatusScreenTranslationPatch
 {
+    private const string SkillNameDictionaryContext = "TMP.Skill Name";
+
     private static readonly string SkillNameDictionaryFile =
         Path.Combine("Scoped", "ui-skillsandpowers-skill-names.ja.json");
     private static readonly IReadOnlyDictionary<string, string> AttributeRequirementAbbreviations =
@@ -254,7 +256,15 @@ public static class SkillsAndPowersStatusScreenTranslationPatch
 
     private static string TranslateDictionaryLeaf(string source)
     {
-        var scoped = ScopedDictionaryLookup.TranslateExactOrLowerAscii(source, SkillNameDictionaryFile);
+        var scoped = ScopedDictionaryLookup.TranslateExactOrLowerAsciiForContextOnly(
+            source,
+            SkillNameDictionaryContext,
+            SkillNameDictionaryFile);
+        if (scoped is null)
+        {
+            scoped = ScopedDictionaryLookup.TranslateExactOrLowerAscii(source, SkillNameDictionaryFile);
+        }
+
         if (scoped is not null && !string.Equals(scoped, source, StringComparison.Ordinal))
         {
             return scoped;

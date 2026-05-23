@@ -86,7 +86,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 258,
+          "entry_index": 263,
           "text": "または"
         },
         {
@@ -336,7 +336,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 235,
+          "entry_index": 240,
           "text": "鈍器"
         },
         {
@@ -530,7 +530,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/Scoped/historyspice-common.ja.json",
-          "entry_index": 596,
+          "entry_index": 598,
           "text": "見よ"
         },
         {
@@ -634,7 +634,7 @@
         },
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 232,
+          "entry_index": 237,
           "text": "ピストル"
         }
       ]
@@ -685,12 +685,12 @@
         },
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 181,
+          "entry_index": 186,
           "text": "ランダムに選択"
         },
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 182,
+          "entry_index": 187,
           "text": "ランダムに選択"
         }
       ]
@@ -712,7 +712,7 @@
         },
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 197,
+          "entry_index": 198,
           "text": "技能ポイント"
         }
       ]
@@ -817,7 +817,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-messagelog-world.ja.json",
-          "entry_index": 221,
+          "entry_index": 222,
           "text": "注射は失敗に終わった。"
         },
         {
@@ -844,7 +844,7 @@
         },
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 83,
+          "entry_index": 85,
           "text": "監視官"
         }
       ]
@@ -883,7 +883,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 274,
+          "entry_index": 279,
           "text": "あなたはレシェフの計画に従い、魔女団の帰還に備えて世界から高等生命を一掃することにした。"
         },
         {
@@ -905,7 +905,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 277,
+          "entry_index": 282,
           "text": "あなたは回転の疫病を無効化した。\n\nそしてレシェフを滅ぼし、バラサラムと共に塵に覆われた宇宙へと飛び立ち、星々を渡ることにした。"
         },
         {
@@ -927,7 +927,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 271,
+          "entry_index": 276,
           "text": "あなたは回転の疫病を無効化した。\n\nそしてレシェフを滅ぼし、クッドに戻って芽吹く世界の庭を耕すことにした。"
         },
         {
@@ -949,7 +949,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 267,
+          "entry_index": 272,
           "text": "あなたは回転の疫病を無効化した。\n\nそして芽吹く世界を救うためレシェフを滅ぼしたが、北シェヴァに取り残された。"
         },
         {
@@ -971,7 +971,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 269,
+          "entry_index": 274,
           "text": "あなたは回転の疫病を無効化した。\n\nそしてレシェフと契約を結び、魔女団の帰還に備えてクッドを整えることにした。"
         },
         {
@@ -993,7 +993,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 265,
+          "entry_index": 270,
           "text": "あなたは回転の疫病を無効化した。\n\nそして紡錘を解放し、他の者の昇華に道を譲り、ブライトシェオルへと渡った。"
         },
         {
@@ -1015,7 +1015,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 281,
+          "entry_index": 286,
           "text": "あなたは回転の疫病を無効化した。\n\nそしてバラサラムと共に塵に覆われた宇宙へと飛び立ち、星々を渡ることにした。"
         },
         {
@@ -1037,7 +1037,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 283,
+          "entry_index": 288,
           "text": "あなたは回転の疫病を無効化した。\n\nそして塵に覆われた宇宙へと飛び立ち、星々を渡ることにした。"
         },
         {
@@ -1059,7 +1059,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 273,
+          "entry_index": 278,
           "text": "あなたは回転の疫病を無効化した。\n\nそしてクッドに戻り、芽吹く世界の庭を耕すことにした。"
         },
         {
@@ -1081,7 +1081,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 275,
+          "entry_index": 280,
           "text": "あなたは回転の疫病を無効化した。\n\nしかし翻意し、レシェフの計画に従って魔女団の帰還に備え、世界から高等生命を一掃することにした。"
         },
         {
@@ -1285,7 +1285,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 276,
+          "entry_index": 281,
           "text": "あなたはレシェフを滅ぼし、バラサラムと共に塵に覆われた宇宙へと飛び立ち、星々を渡ることにした。"
         },
         {
@@ -1307,7 +1307,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 278,
+          "entry_index": 283,
           "text": "あなたはレシェフを滅ぼし、塵に覆われた宇宙へと飛び立ち、星々を渡ることにした。"
         },
         {
@@ -1329,7 +1329,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 270,
+          "entry_index": 275,
           "text": "あなたはレシェフを滅ぼし、クッドに戻って芽吹く世界の庭を耕すことにした。"
         },
         {
@@ -1351,7 +1351,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 266,
+          "entry_index": 271,
           "text": "あなたは芽吹く世界を救うためレシェフを滅ぼしたが、北シェヴァに取り残された。"
         },
         {
@@ -1395,7 +1395,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 268,
+          "entry_index": 273,
           "text": "あなたはレシェフと契約を結び、魔女団の帰還に備えてクッドを整えることにした。"
         },
         {
@@ -1439,7 +1439,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 264,
+          "entry_index": 269,
           "text": "あなたは紡錘を解放し、他の者の昇華に道を譲り、ブライトシェオルへと渡った。"
         },
         {
@@ -1627,7 +1627,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 280,
+          "entry_index": 285,
           "text": "あなたはバラサラムと共に塵に覆われた宇宙へと飛び立ち、星々を渡ることにした。"
         },
         {
@@ -1649,7 +1649,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 282,
+          "entry_index": 287,
           "text": "あなたは塵に覆われた宇宙へと飛び立ち、星々を渡ることにした。"
         },
         {
@@ -1671,7 +1671,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 272,
+          "entry_index": 277,
           "text": "あなたはレシェフを退け、クッドに戻って芽吹く世界の庭を耕すことにした。"
         },
         {
@@ -1743,7 +1743,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 245,
+          "entry_index": 250,
           "text": "射撃が大きく逸れた！"
         },
         {
@@ -1765,7 +1765,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 304,
+          "entry_index": 306,
           "text": "{{G|酸の}}"
         },
         {
@@ -1788,7 +1788,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 303,
+          "entry_index": 305,
           "text": "{{G|酸性の}}"
         },
         {
@@ -1815,7 +1815,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 354,
+          "entry_index": 356,
           "text": "{{g|藻質の}}"
         },
         {
@@ -1860,7 +1860,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 372,
+          "entry_index": 374,
           "text": "{{r|血まみれの}}"
         },
         {
@@ -1911,7 +1911,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/Scoped/historyspice-common.ja.json",
-          "entry_index": 245,
+          "entry_index": 247,
           "text": "真鍮"
         },
         {
@@ -1943,7 +1943,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/Scoped/historyspice-common.ja.json",
-          "entry_index": 317,
+          "entry_index": 319,
           "text": "クロム"
         },
         {
@@ -1965,7 +1965,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 343,
+          "entry_index": 345,
           "text": "{{cider|サイダーの}}"
         },
         {
@@ -2009,7 +2009,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 326,
+          "entry_index": 328,
           "text": "{{Y|希釈された}}"
         },
         {
@@ -2031,12 +2031,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/Scoped/historyspice-common.ja.json",
-          "entry_index": 1531,
+          "entry_index": 1533,
           "text": "彫り刻まれた"
         },
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 240,
+          "entry_index": 242,
           "text": "{{engraved|彫り刻まれた}}"
         }
       ]
@@ -2053,7 +2053,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 246,
+          "entry_index": 248,
           "text": "{{fiery|燃え盛る}}"
         },
         {
@@ -2075,7 +2075,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 364,
+          "entry_index": 366,
           "text": "{{neutronic|中性子フラックスの}}"
         },
         {
@@ -2097,7 +2097,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 345,
+          "entry_index": 347,
           "text": "{{cider|芳香の}}"
         },
         {
@@ -2120,7 +2120,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 261,
+          "entry_index": 263,
           "text": "{{freezing|凍結した}}"
         },
         {
@@ -2147,7 +2147,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 297,
+          "entry_index": 299,
           "text": "{{freezing|凍結した}}"
         },
         {
@@ -2191,7 +2191,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/Scoped/historyspice-common.ja.json",
-          "entry_index": 318,
+          "entry_index": 320,
           "text": "ガラス"
         },
         {
@@ -2213,7 +2213,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 307,
+          "entry_index": 309,
           "text": "{{G|どろどろの}}"
         },
         {
@@ -2235,7 +2235,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 306,
+          "entry_index": 308,
           "text": "{{G|どろりとした}}"
         },
         {
@@ -2257,7 +2257,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 348,
+          "entry_index": 350,
           "text": "{{cloning|均質化した}}"
         },
         {
@@ -2280,12 +2280,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/Scoped/historyspice-common.ja.json",
-          "entry_index": 309,
+          "entry_index": 311,
           "text": "ハチミツ"
         },
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 378,
+          "entry_index": 380,
           "text": "{{w|はちみつの}}"
         },
         {
@@ -2307,7 +2307,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 248,
+          "entry_index": 250,
           "text": "{{icy|氷の}}"
         },
         {
@@ -2351,7 +2351,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 153,
+          "entry_index": 155,
           "text": "液まみれの"
         },
         {
@@ -2374,12 +2374,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/Scoped/historyspice-common.ja.json",
-          "entry_index": 1322,
+          "entry_index": 1324,
           "text": "失われた"
         },
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 79,
+          "entry_index": 81,
           "text": "迷子の"
         },
         {
@@ -2423,7 +2423,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 203,
+          "entry_index": 208,
           "text": "低"
         },
         {
@@ -2445,7 +2445,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 301,
+          "entry_index": 303,
           "text": "{{C|発光する}}"
         },
         {
@@ -2467,7 +2467,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 359,
+          "entry_index": 361,
           "text": "{{lava|マグマ質の}}"
         },
         {
@@ -2533,7 +2533,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 313,
+          "entry_index": 315,
           "text": "{{K|油の}}"
         },
         {
@@ -2556,7 +2556,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 312,
+          "entry_index": 314,
           "text": "{{K|油まみれの}}"
         },
         {
@@ -2583,7 +2583,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 315,
+          "entry_index": 317,
           "text": "{{K|軟泥の}}"
         },
         {
@@ -2605,7 +2605,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 317,
+          "entry_index": 319,
           "text": "{{K|滲み出ている}}"
         },
         {
@@ -2627,12 +2627,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/Scoped/historyspice-common.ja.json",
-          "entry_index": 1530,
+          "entry_index": 1532,
           "text": "彩色された"
         },
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 239,
+          "entry_index": 241,
           "text": "{{painted|彩色された}}"
         }
       ]
@@ -2649,7 +2649,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 371,
+          "entry_index": 373,
           "text": "{{radiant|輝く}}"
         },
         {
@@ -2717,12 +2717,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/Scoped/historyspice-common.ja.json",
-          "entry_index": 529,
+          "entry_index": 531,
           "text": "塩"
         },
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 333,
+          "entry_index": 335,
           "text": "{{Y|塩の}}"
         },
         {
@@ -2750,7 +2750,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 331,
+          "entry_index": 333,
           "text": "{{Y|塩気のある}}"
         },
         {
@@ -2777,7 +2777,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 286,
+          "entry_index": 288,
           "text": "{{scaled|鱗状の}}"
         },
         {
@@ -2822,7 +2822,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 231,
+          "entry_index": 236,
           "text": "決定"
         },
         {
@@ -2849,7 +2849,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 355,
+          "entry_index": 357,
           "text": "{{g|スライムの}}"
         },
         {
@@ -2872,7 +2872,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 375,
+          "entry_index": 377,
           "text": "{{slimy|粘液質の}}"
         },
         {
@@ -2899,7 +2899,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 380,
+          "entry_index": 382,
           "text": "{{w|汚泥の}}"
         },
         {
@@ -2971,7 +2971,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 223,
+          "entry_index": 228,
           "text": "並び替え: "
         },
         {
@@ -2993,7 +2993,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 318,
+          "entry_index": 320,
           "text": "香辛料入りの"
         },
         {
@@ -3017,7 +3017,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/Scoped/historyspice-common.ja.json",
-          "entry_index": 315,
+          "entry_index": 317,
           "text": "四角"
         },
         {
@@ -3049,7 +3049,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 154,
+          "entry_index": 156,
           "text": "染みだらけ"
         },
         {
@@ -3071,7 +3071,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 386,
+          "entry_index": 388,
           "text": "{{w|粘ついた}}"
         },
         {
@@ -3093,7 +3093,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 321,
+          "entry_index": 323,
           "text": "{{K|タールの}}"
         },
         {
@@ -3116,7 +3116,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 320,
+          "entry_index": 322,
           "text": "{{K|タール質の}}"
         },
         {
@@ -3145,7 +3145,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 298,
+          "entry_index": 300,
           "text": "{{B|水の}}"
         },
         {
@@ -3182,7 +3182,7 @@
         },
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 299,
+          "entry_index": 301,
           "text": "{{B|濡れた}}"
         }
       ]
@@ -3199,7 +3199,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 361,
+          "entry_index": 363,
           "text": "{{m|ワインの}}"
         },
         {
@@ -3243,7 +3243,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 155,
+          "entry_index": 157,
           "text": "{{B|水の}}"
         },
         {
@@ -3265,7 +3265,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 156,
+          "entry_index": 158,
           "text": "{{B|濡れた}}"
         },
         {
@@ -3287,7 +3287,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 158,
+          "entry_index": 160,
           "text": "{{C|発光する}}"
         },
         {
@@ -3310,7 +3310,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 160,
+          "entry_index": 162,
           "text": "{{G|酸性の}}"
         },
         {
@@ -3337,7 +3337,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 161,
+          "entry_index": 163,
           "text": "{{G|酸の}}"
         },
         {
@@ -3381,7 +3381,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 249,
+          "entry_index": 254,
           "text": "{{K|設計図を持っていない。}}"
         },
         {
@@ -3403,7 +3403,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 167,
+          "entry_index": 169,
           "text": "{{K|インクの}}"
         },
         {
@@ -3425,7 +3425,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 169,
+          "entry_index": 171,
           "text": "{{K|油まみれの}}"
         },
         {
@@ -3447,7 +3447,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 170,
+          "entry_index": 172,
           "text": "{{K|油の}}"
         },
         {
@@ -3469,7 +3469,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 172,
+          "entry_index": 174,
           "text": "{{K|軟泥の}}"
         },
         {
@@ -3491,7 +3491,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 177,
+          "entry_index": 179,
           "text": "{{K|タールの}}"
         },
         {
@@ -3513,7 +3513,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 180,
+          "entry_index": 182,
           "text": "{{W|樹液の}}"
         },
         {
@@ -3535,7 +3535,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 182,
+          "entry_index": 184,
           "text": "{{Y|希釈された}}"
         },
         {
@@ -3557,7 +3557,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 184,
+          "entry_index": 186,
           "text": "{{Y|ゲル状の}}"
         },
         {
@@ -3579,12 +3579,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 113,
+          "entry_index": 115,
           "text": "{{Y|伝説{{W|的}}}}"
         },
         {
           "path": "Dictionaries/world-mods.ja.json",
-          "entry_index": 40,
+          "entry_index": 41,
           "text": "{{Y|伝{{W|説}}的}}"
         }
       ]
@@ -3601,7 +3601,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 188,
+          "entry_index": 190,
           "text": "{{Y|塩の}}"
         },
         {
@@ -3623,7 +3623,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 194,
+          "entry_index": 196,
           "text": "{{Y|蝋の}}"
         },
         {
@@ -3645,7 +3645,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 196,
+          "entry_index": 198,
           "text": "{{brainbrine|脳髄汁の}}"
         },
         {
@@ -3667,7 +3667,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 198,
+          "entry_index": 200,
           "text": "{{cider|サイダーの}}"
         },
         {
@@ -3689,7 +3689,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 200,
+          "entry_index": 202,
           "text": "{{cider|芳香の}}"
         },
         {
@@ -3711,7 +3711,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 201,
+          "entry_index": 203,
           "text": "{{cloning|クローン薬液の}}"
         },
         {
@@ -3733,7 +3733,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 203,
+          "entry_index": 205,
           "text": "{{cloning|均質化した}}"
         },
         {
@@ -3755,7 +3755,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 204,
+          "entry_index": 206,
           "text": "{{c|どろどろの}}"
         },
         {
@@ -3777,7 +3777,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 207,
+          "entry_index": 209,
           "text": "{{g|藻まみれの}}"
         },
         {
@@ -3799,7 +3799,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 209,
+          "entry_index": 211,
           "text": "{{g|藻質の}}"
         },
         {
@@ -3821,7 +3821,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 210,
+          "entry_index": 212,
           "text": "{{g|スライムの}}"
         },
         {
@@ -3843,7 +3843,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 212,
+          "entry_index": 214,
           "text": "{{lava|溶岩まみれの}}"
         },
         {
@@ -3865,7 +3865,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 214,
+          "entry_index": 216,
           "text": "{{lava|マグマ質の}}"
         },
         {
@@ -3887,7 +3887,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 215,
+          "entry_index": 217,
           "text": "{{m|芳醇な}}"
         },
         {
@@ -3909,7 +3909,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 216,
+          "entry_index": 218,
           "text": "{{m|ワインの}}"
         },
         {
@@ -3931,7 +3931,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 218,
+          "entry_index": 220,
           "text": "{{nervous|神経質な}}"
         },
         {
@@ -3953,7 +3953,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 219,
+          "entry_index": 221,
           "text": "{{neutronic|中性子フラックスの}}"
         },
         {
@@ -3975,7 +3975,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 221,
+          "entry_index": 223,
           "text": "{{neutronic|中性化した}}"
         },
         {
@@ -3997,7 +3997,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 222,
+          "entry_index": 224,
           "text": "{{neutronic|中性子質の}}"
         },
         {
@@ -4019,7 +4019,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 223,
+          "entry_index": 225,
           "text": "{{putrid|腐敗液の}}"
         },
         {
@@ -4041,7 +4041,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 225,
+          "entry_index": 227,
           "text": "{{putrid|腐敗した}}"
         },
         {
@@ -4063,7 +4063,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 230,
+          "entry_index": 232,
           "text": "{{slimy|粘液質の}}"
         },
         {
@@ -4085,7 +4085,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 231,
+          "entry_index": 233,
           "text": "{{sunslag|サンスラグの}}"
         },
         {
@@ -4107,7 +4107,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 233,
+          "entry_index": 235,
           "text": "{{w|はちみつの}}"
         },
         {
@@ -4129,7 +4129,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
-          "entry_index": 235,
+          "entry_index": 237,
           "text": "{{w|汚泥の}}"
         },
         {
@@ -4727,12 +4727,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 208,
+          "entry_index": 213,
           "text": "斧（クリティカル時に装甲切断）"
         },
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 241,
+          "entry_index": 246,
           "text": "斧（クリティカル時に装甲切断）"
         }
       ]
@@ -4749,12 +4749,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 206,
+          "entry_index": 211,
           "text": "鈍器（クリティカル時に朦朧付与）"
         },
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 239,
+          "entry_index": 244,
           "text": "鈍器（クリティカル時に朦朧付与）"
         }
       ]
@@ -4771,12 +4771,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 186,
+          "entry_index": 191,
           "text": "セーブせずに終了すると進行状況とキャラクターが完全に失われます。本当に終了しますか？\\n\\n「QUIT」と入力すると確定します。"
         },
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 217,
+          "entry_index": 222,
           "text": "セーブせずに終了すると進行状況とキャラクターが完全に失われます。本当に終了しますか？\\n\\n「QUIT」と入力すると確定します。"
         }
       ]
@@ -4793,12 +4793,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 187,
+          "entry_index": 192,
           "text": "セーブせずに終了すると進行状況とキャラクターが完全に失われます。本当に終了しますか？\\n\\n「QUIT」と入力すると確定します。"
         },
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 218,
+          "entry_index": 223,
           "text": "セーブせずに終了すると進行状況とキャラクターが完全に失われます。本当に終了しますか？\\n\\n「QUIT」と入力すると確定します。"
         }
       ]
@@ -4815,12 +4815,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 184,
+          "entry_index": 189,
           "text": "セーブせずに終了すると保存されていない進行状況がすべて失われます。本当に終了しますか？\\n\\n「QUIT」と入力すると確定します。"
         },
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 215,
+          "entry_index": 220,
           "text": "セーブせずに終了すると保存されていない進行状況がすべて失われます。本当に終了しますか？\\n\\n「QUIT」と入力すると確定します。"
         }
       ]
@@ -4837,12 +4837,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 185,
+          "entry_index": 190,
           "text": "セーブせずに終了すると保存されていない進行状況がすべて失われます。本当に終了しますか？\\n\\n「QUIT」と入力すると確定します。"
         },
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 216,
+          "entry_index": 221,
           "text": "セーブせずに終了すると保存されていない進行状況がすべて失われます。本当に終了しますか？\\n\\n「QUIT」と入力すると確定します。"
         }
       ]
@@ -4903,12 +4903,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 209,
+          "entry_index": 214,
           "text": "長剣（切断可能）"
         },
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 242,
+          "entry_index": 247,
           "text": "長剣（切断可能）"
         }
       ]
@@ -4969,12 +4969,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 181,
+          "entry_index": 186,
           "text": "ランダムに選択"
         },
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 182,
+          "entry_index": 187,
           "text": "ランダムに選択"
         }
       ]
@@ -4991,12 +4991,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 243,
+          "entry_index": 248,
           "text": "選択をリセット"
         },
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 244,
+          "entry_index": 249,
           "text": "選択をリセット"
         }
       ]
@@ -5035,12 +5035,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 207,
+          "entry_index": 212,
           "text": "短剣（クリティカル時に出血）"
         },
         {
           "path": "Dictionaries/ui-default.ja.json",
-          "entry_index": 240,
+          "entry_index": 245,
           "text": "短剣（クリティカル時に出血）"
         }
       ]
@@ -5382,7 +5382,7 @@
         },
         {
           "path": "Dictionaries/ui-messagelog-world.ja.json",
-          "entry_index": 263,
+          "entry_index": 264,
           "text": "別の場所へ弾き飛ばされた！"
         }
       ]
@@ -5404,7 +5404,7 @@
         },
         {
           "path": "Dictionaries/ui-messagelog-world.ja.json",
-          "entry_index": 262,
+          "entry_index": 263,
           "text": "出口へ転送された。"
         }
       ]
@@ -5426,7 +5426,7 @@
         },
         {
           "path": "Dictionaries/ui-messagelog-world.ja.json",
-          "entry_index": 266,
+          "entry_index": 267,
           "text": "ここから安全に階段へたどり着く方法が分からない。"
         }
       ]
@@ -5443,12 +5443,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-messagelog-world.ja.json",
-          "entry_index": 258,
+          "entry_index": 259,
           "text": "目的地への経路が見つからない。"
         },
         {
           "path": "Dictionaries/ui-messagelog-world.ja.json",
-          "entry_index": 265,
+          "entry_index": 266,
           "text": "目的地への経路が見つからない。"
         }
       ]
@@ -5558,7 +5558,7 @@
         },
         {
           "path": "Dictionaries/ui-messagelog-world.ja.json",
-          "entry_index": 264,
+          "entry_index": 265,
           "text": "テレポートした！"
         }
       ]
@@ -5575,12 +5575,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-messagelog-world.ja.json",
-          "entry_index": 236,
+          "entry_index": 237,
           "text": "攻撃は{target}に影響を与えない。"
         },
         {
           "path": "Dictionaries/ui-messagelog-world.ja.json",
-          "entry_index": 237,
+          "entry_index": 238,
           "text": "攻撃は{target}に影響を与えない。"
         }
       ]
@@ -6232,7 +6232,7 @@
         },
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 170,
+          "entry_index": 171,
           "text": "野営"
         }
       ]
@@ -6249,12 +6249,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 171,
+          "entry_index": 172,
           "text": "食事準備"
         },
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 172,
+          "entry_index": 173,
           "text": "食事準備"
         }
       ]
@@ -6271,12 +6271,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 176,
+          "entry_index": 177,
           "text": "心の羅針"
         },
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 177,
+          "entry_index": 178,
           "text": "心の羅針"
         }
       ]
@@ -6293,12 +6293,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 182,
+          "entry_index": 183,
           "text": "秘薬"
         },
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 183,
+          "entry_index": 184,
           "text": "秘薬"
         }
       ]
@@ -6315,12 +6315,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 187,
+          "entry_index": 188,
           "text": "治療"
         },
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 188,
+          "entry_index": 189,
           "text": "治療"
         }
       ]
@@ -6337,12 +6337,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 190,
+          "entry_index": 191,
           "text": "布教"
         },
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 191,
+          "entry_index": 192,
           "text": "布教"
         }
       ]
@@ -6359,12 +6359,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 194,
+          "entry_index": 195,
           "text": "修理"
         },
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 195,
+          "entry_index": 196,
           "text": "修理"
         }
       ]
@@ -6381,12 +6381,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 201,
+          "entry_index": 202,
           "text": "シールドスラム"
         },
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 202,
+          "entry_index": 203,
           "text": "シールドスラム"
         }
       ]
@@ -6403,12 +6403,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 210,
+          "entry_index": 211,
           "text": "蛇油売り"
         },
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 211,
+          "entry_index": 212,
           "text": "蛇油売り"
         }
       ]
@@ -6425,12 +6425,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 212,
+          "entry_index": 213,
           "text": "香辛師"
         },
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 213,
+          "entry_index": 214,
           "text": "香辛師"
         }
       ]
@@ -6447,12 +6447,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 233,
+          "entry_index": 234,
           "text": "戦術"
         },
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 234,
+          "entry_index": 235,
           "text": "戦術"
         }
       ]
@@ -6469,12 +6469,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 237,
+          "entry_index": 238,
           "text": "工匠 I"
         },
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 238,
+          "entry_index": 239,
           "text": "工匠 I"
         }
       ]
@@ -6491,12 +6491,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 249,
+          "entry_index": 251,
           "text": "風雨に耐えた"
         },
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 250,
+          "entry_index": 252,
           "text": "風雪錬成"
         }
       ]
@@ -6513,12 +6513,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 273,
+          "entry_index": 275,
           "text": "荒野の伝承: 渓谷"
         },
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 274,
+          "entry_index": 276,
           "text": "荒地巡り：峡谷"
         }
       ]
@@ -6535,12 +6535,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 275,
+          "entry_index": 277,
           "text": "荒野の伝承: 花畑"
         },
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 276,
+          "entry_index": 278,
           "text": "荒地巡り：花畑"
         }
       ]
@@ -6557,12 +6557,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 277,
+          "entry_index": 279,
           "text": "荒野の伝承: 丘と山岳"
         },
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 278,
+          "entry_index": 280,
           "text": "荒地巡り：丘陵と山"
         }
       ]
@@ -6579,12 +6579,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 279,
+          "entry_index": 281,
           "text": "荒野の伝承: ジャングル"
         },
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 280,
+          "entry_index": 282,
           "text": "荒地巡り：ジャングル"
         }
       ]
@@ -6601,12 +6601,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 281,
+          "entry_index": 283,
           "text": "荒野の伝承: 沼地"
         },
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 282,
+          "entry_index": 284,
           "text": "荒地巡り：湿地"
         }
       ]
@@ -6623,12 +6623,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 283,
+          "entry_index": 285,
           "text": "荒野の伝承: ランダム"
         },
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 284,
+          "entry_index": 286,
           "text": "荒野の伝承: ランダム"
         }
       ]
@@ -6645,12 +6645,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 285,
+          "entry_index": 287,
           "text": "荒野の伝承: 河川と湖"
         },
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 286,
+          "entry_index": 288,
           "text": "荒地巡り：河川"
         }
       ]
@@ -6667,12 +6667,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 287,
+          "entry_index": 289,
           "text": "荒野の伝承: 遺跡"
         },
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 288,
+          "entry_index": 290,
           "text": "荒地巡り：廃墟"
         }
       ]
@@ -6689,12 +6689,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 289,
+          "entry_index": 291,
           "text": "荒野の伝承: 塩砂丘"
         },
         {
           "path": "Dictionaries/ui-skillsandpowers.ja.json",
-          "entry_index": 290,
+          "entry_index": 292,
           "text": "荒地巡り：塩砂漠"
         }
       ]
@@ -7137,12 +7137,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/world-mods.ja.json",
-          "entry_index": 197,
+          "entry_index": 198,
           "text": "命中率: 高い"
         },
         {
           "path": "Dictionaries/world-mods.ja.json",
-          "entry_index": 205,
+          "entry_index": 206,
           "text": "命中率: 高い"
         }
       ]
@@ -7159,12 +7159,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/world-mods.ja.json",
-          "entry_index": 199,
+          "entry_index": 200,
           "text": "命中率: 低い"
         },
         {
           "path": "Dictionaries/world-mods.ja.json",
-          "entry_index": 207,
+          "entry_index": 208,
           "text": "命中率: 低い"
         }
       ]
@@ -7181,12 +7181,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/world-mods.ja.json",
-          "entry_index": 198,
+          "entry_index": 199,
           "text": "命中率: 普通"
         },
         {
           "path": "Dictionaries/world-mods.ja.json",
-          "entry_index": 206,
+          "entry_index": 207,
           "text": "命中率: 普通"
         }
       ]
@@ -7203,12 +7203,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/world-mods.ja.json",
-          "entry_index": 196,
+          "entry_index": 197,
           "text": "命中率: 非常に高い"
         },
         {
           "path": "Dictionaries/world-mods.ja.json",
-          "entry_index": 204,
+          "entry_index": 205,
           "text": "命中率: 非常に高い"
         }
       ]
@@ -7225,12 +7225,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/world-mods.ja.json",
-          "entry_index": 200,
+          "entry_index": 201,
           "text": "命中率: 非常に低い"
         },
         {
           "path": "Dictionaries/world-mods.ja.json",
-          "entry_index": 208,
+          "entry_index": 209,
           "text": "命中率: 非常に低い"
         }
       ]
@@ -7247,12 +7247,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/world-mods.ja.json",
-          "entry_index": 194,
+          "entry_index": 195,
           "text": "武器カテゴリ: 弓 && ライフル"
         },
         {
           "path": "Dictionaries/world-mods.ja.json",
-          "entry_index": 202,
+          "entry_index": 203,
           "text": "武器カテゴリ: 弓 && ライフル"
         }
       ]
@@ -7269,12 +7269,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/world-mods.ja.json",
-          "entry_index": 195,
+          "entry_index": 196,
           "text": "武器カテゴリ: 重火器"
         },
         {
           "path": "Dictionaries/world-mods.ja.json",
-          "entry_index": 203,
+          "entry_index": 204,
           "text": "武器カテゴリ: 重火器"
         }
       ]
@@ -7291,12 +7291,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/world-mods.ja.json",
-          "entry_index": 193,
+          "entry_index": 194,
           "text": "武器カテゴリ: ピストル"
         },
         {
           "path": "Dictionaries/world-mods.ja.json",
-          "entry_index": 201,
+          "entry_index": 202,
           "text": "武器カテゴリ: ピストル"
         }
       ]
@@ -7318,7 +7318,7 @@
         },
         {
           "path": "Dictionaries/world-mods.ja.json",
-          "entry_index": 66,
+          "entry_index": 67,
           "text": "効果なし"
         }
       ]
@@ -7335,12 +7335,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/world-mods.ja.json",
-          "entry_index": 118,
+          "entry_index": 119,
           "text": "{{rules|{1}との評判{0:+#;-#}}}"
         },
         {
           "path": "Dictionaries/world-mods.ja.json",
-          "entry_index": 121,
+          "entry_index": 122,
           "text": "{{rules|{1}との評判{0:+#;-#}}}"
         }
       ]
@@ -7357,12 +7357,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/world-mods.ja.json",
-          "entry_index": 46,
+          "entry_index": 47,
           "text": "}}"
         },
         {
           "path": "Dictionaries/world-mods.ja.json",
-          "entry_index": 83,
+          "entry_index": 84,
           "text": "}}"
         }
       ]

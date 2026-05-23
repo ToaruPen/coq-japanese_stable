@@ -158,6 +158,10 @@ public static class TradeUiPopupTranslationPatch
         "^As a result, the trade goes from being worth (?<before>\\d+) drams? to being worth (?<after>\\d+)\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex SkillsAndPowersSelectNodePopupPattern = new(
+        "^(?:You already have that (?:skill|power)\\.|You must be initiated into this (?:skill|power) in order to learn it\\.|You don't have enough skill points to buy that (?:skill|power)!|You do not have the skill associated with that power\\. Would you like to purchase the required skill\\?|No implementation for .+|Are you sure you want to buy .+? for .+?\\s*sp\\?)$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     private static readonly Regex JapaneseCharacterPattern = new(
         "[\\p{IsHiragana}\\p{IsKatakana}\\p{IsCJKUnifiedIdeographs}]",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
@@ -1070,6 +1074,11 @@ public static class TradeUiPopupTranslationPatch
     private static bool ShouldSkipMessagePatternTranslation(string source)
     {
         var (visibleText, _) = ColorAwareTranslationComposer.Strip(source);
+        if (SkillsAndPowersSelectNodePopupPattern.IsMatch(visibleText))
+        {
+            return true;
+        }
+
         if (!JapaneseCharacterPattern.IsMatch(visibleText))
         {
             return false;

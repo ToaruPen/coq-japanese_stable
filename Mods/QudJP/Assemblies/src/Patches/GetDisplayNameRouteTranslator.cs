@@ -89,6 +89,10 @@ internal static class GetDisplayNameRouteTranslator
         new Regex(
             "^(?<prefix>(?:\\{\\{[^|}]+\\|\\}\\}\\s*)+)(?<rest>.+)$",
             RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex LocalizedPrefixAsciiModifierPattern =
+        new Regex(
+            "^(?<prefix>.*[\\p{IsHiragana}\\p{IsKatakana}\\p{IsCJKUnifiedIdeographs}])(?<modifier>[A-Za-z][A-Za-z\\-']*) (?<rest>.+)$",
+            RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex DisplayNameModifierLevelSuffixPattern =
         new Regex("^(?<modifier>[A-Za-z][A-Za-z\\-']*)\\((?<level>\\d+)\\)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex ParenthesizedColoredChargeStatusPattern =
@@ -510,6 +514,12 @@ internal static class GetDisplayNameRouteTranslator
         if (TryTranslateGeneratedEnglishPrefixDisplayName(transformed, route, out var prefixTranslated))
         {
             translated = prefixTranslated;
+            return true;
+        }
+
+        if (TryTranslateLocalizedPrefixAsciiModifierDisplayName(transformed, route, out var localizedPrefixModifierTranslated))
+        {
+            translated = localizedPrefixModifierTranslated;
             return true;
         }
 
@@ -1051,9 +1061,18 @@ internal static class GetDisplayNameRouteTranslator
         var translatedModifiers = new List<string>();
         var sourceModifiers = new List<string>();
         var position = 0;
+        var skippedArticle = false;
 
         while (TryReadLeadingModifierToken(source, position, out var modifier, out var restStart))
         {
+            if (string.Equals(route, nameof(GetDisplayNamePatch), StringComparison.Ordinal)
+                && IsDisplayNameArticleModifier(modifier))
+            {
+                position = restStart;
+                skippedArticle = true;
+                continue;
+            }
+
             var translatedModifier = TranslateDisplayNameModifierForChain(modifier);
             if (translatedModifier is null)
             {
@@ -1075,12 +1094,29 @@ internal static class GetDisplayNameRouteTranslator
             }
         }
 
-        if (translatedModifiers.Count == 0 || position >= source.Length)
+        if (position >= source.Length)
         {
             return false;
         }
 
-        if (translatedModifiers.Count == 1 && source[0] != '{' && source[0] != '[')
+        if (translatedModifiers.Count == 0)
+        {
+            if (!skippedArticle)
+            {
+                return false;
+            }
+
+            translated = TranslatePreservingColors(source.Substring(position), route);
+            if (string.Equals(translated, source, StringComparison.Ordinal))
+            {
+                return false;
+            }
+
+            DynamicTextObservability.RecordTransform(route, "DisplayName.LeadingArticle", source, translated);
+            return true;
+        }
+
+        if (!skippedArticle && translatedModifiers.Count == 1 && source[0] != '{' && source[0] != '[')
         {
             return false;
         }
@@ -1109,6 +1145,12 @@ internal static class GetDisplayNameRouteTranslator
 
         DynamicTextObservability.RecordTransform(route, "DisplayName.LeadingModifierChain", source, translated);
         return true;
+    }
+
+    private static bool IsDisplayNameArticleModifier(string modifier)
+    {
+        var visible = ColorAwareTranslationComposer.GetVisibleText(modifier);
+        return visible is "a" or "an" or "the";
     }
 
     private static bool TryReadLeadingModifierToken(
@@ -1404,6 +1446,37 @@ internal static class GetDisplayNameRouteTranslator
 
         translated = translatedTail + "の" + head;
         DynamicTextObservability.RecordTransform(route, "DisplayName.LiquidPreposition", source, translated);
+        return true;
+    }
+
+    private static bool TryTranslateLocalizedPrefixAsciiModifierDisplayName(string source, string route, out string translated)
+    {
+        translated = source;
+        if (string.IsNullOrEmpty(source) || !JapaneseCharacterPattern.IsMatch(source))
+        {
+            return false;
+        }
+
+        var match = LocalizedPrefixAsciiModifierPattern.Match(source);
+        if (!match.Success)
+        {
+            return false;
+        }
+
+        var modifier = match.Groups["modifier"].Value;
+        var translatedModifier = TranslateDisplayNameModifierExact(modifier);
+        if (translatedModifier is null)
+        {
+            return false;
+        }
+
+        var rest = match.Groups["rest"].Value;
+        var translatedRest = TranslateDisplayNameFragment(rest, route);
+        translated = match.Groups["prefix"].Value
+            + translatedModifier
+            + GetModifierRestSeparator(modifier, rest)
+            + translatedRest;
+        DynamicTextObservability.RecordTransform(route, "DisplayName.LocalizedPrefixAsciiModifier", source, translated);
         return true;
     }
 
@@ -2198,14 +2271,14 @@ internal static class GetDisplayNameRouteTranslator
             return quantifiedLiquid;
         }
 
-        if (TryTranslateGeneratedDisplayNameState(source, route, out var generatedState))
-        {
-            return generatedState;
-        }
-
         if (TryTranslateDisplayNameStateTemplate(source, route, out var translated))
         {
             return translated;
+        }
+
+        if (TryTranslateGeneratedDisplayNameState(source, route, out var generatedState))
+        {
+            return generatedState;
         }
 
         var direct = TranslateAsciiTokenWithCaseFallback(source);

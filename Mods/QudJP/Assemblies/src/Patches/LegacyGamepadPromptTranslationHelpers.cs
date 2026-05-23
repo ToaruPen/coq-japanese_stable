@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Globalization;
 using System.Text.RegularExpressions;
 
@@ -30,8 +31,20 @@ internal static class LegacyGamepadPromptTranslationHelpers
     private static readonly Regex SkillsAndPowersBuyPattern =
         new Regex(@"^(?<prefix>\s*\[\{\{[WK]\|.+?\}\}-)Buy(?<suffix>\]\s*)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex SkillsAndPowersColoredNamePattern =
+        new Regex(@"\{\{(?<color>[gGKwWCR])\|(?<name>[^{}|]+)\}\}", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex SkillsAndPowersAttributeRequirementPattern =
+        new Regex(@"\{\{(?<color>[RG])\|(?<attribute>Strength|Agility|Toughness|Intelligence|Willpower|Ego)\}\}", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     private static readonly Regex SetPrimaryLimbPattern =
         new Regex(@"^\[\{\{(?<color>[WK])\|(?<glyph>.+?) - Set primary limb\}\}\]$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex TradeUiBracketActionPattern =
+        new Regex(@"^\[(?<prefix>.+? )(?<label>Add/Remove|Offer|Exit|Pick|Haggle|Transfer|Actions)\]$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex TradeUiTraderInventoryTitlePattern =
+        new Regex(@"^\[ \{\{W\|(?<owner>.+?)(?:'s|s') inventory\}\} \]$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     public static string TranslateXrlManualLiteral(string source) => source;
 
@@ -41,6 +54,87 @@ internal static class LegacyGamepadPromptTranslationHelpers
             ReplaceOrdinal(source, "Select Topic", "トピックを選択"),
             "Exit Help",
             "ヘルプを終了");
+    }
+
+    public static string TranslateXrlCoreStartMainMenuRendered(string source)
+    {
+        var translated = ColorAwareTranslationComposer.TranslatePreservingColors(
+            source,
+            static visible => TryTranslateXrlCoreStartMainMenuVisibleText(visible, out var translatedVisible)
+                ? translatedVisible
+                : visible);
+        translated = ReplaceOrdinal(translated, "You have mods with errors.", "エラーのあるModがあります。");
+        translated = ReplaceOrdinal(translated, "You have mods with missing dependencies.", "依存関係が不足しているModがあります。");
+        translated = ReplaceOrdinal(translated, "You have unapproved scripting mods.", "未承認のスクリプトModがあります。");
+        translated = ReplaceOrdinal(translated, "] Help", "] ヘルプ");
+        translated = ReplaceOrdinal(translated, "Caves of Qud", "『Caves of Qud』");
+        translated = ReplaceOrdinal(translated, "Copyright (", "著作権 (");
+        return translated;
+    }
+
+    private static bool TryTranslateXrlCoreStartMainMenuVisibleText(string visible, out string translated)
+    {
+        switch (visible)
+        {
+            case "New game":
+                translated = "新しいゲーム";
+                return true;
+            case "Continue":
+                translated = "続ける";
+                return true;
+            case "Options":
+                translated = "オプション";
+                return true;
+            case "High Scores":
+                translated = "ハイスコア";
+                return true;
+            case "Help":
+                translated = "ヘルプ";
+                return true;
+            case "Quit":
+                translated = "終了";
+                return true;
+            case "Redeem Code":
+                translated = "コードを引き換える";
+                return true;
+            case "Dromad Edition":
+                translated = "ドロマド版";
+                return true;
+            case "Mods":
+                translated = "Mod";
+                return true;
+            case "Caves of Qud":
+                translated = "『Caves of Qud』";
+                return true;
+            default:
+                translated = visible;
+                return false;
+        }
+    }
+
+    public static string TranslateMissileWeaponShowPickerRendered(string source)
+    {
+        return PickTargetWindowTextTranslator.TryTranslateMissileWeaponShowPickerText(source, out var translated)
+            ? translated
+            : source;
+    }
+
+    public static string TranslateTradeUiLegacyLiteral(string source) => source;
+
+    public static string TranslateTradeUiLegacyRendered(string source)
+    {
+        var translated = source switch
+        {
+            "[ {{W|Your inventory}} ]" => "[ {{W|あなたのインベントリ}} ]",
+            _ => source,
+        };
+
+        translated = TranslateTradeUiTraderInventoryTitle(translated);
+        translated = TranslateTradeUiBracketAction(translated);
+        translated = ReplaceAllOrdinal(translated, "[owned by you]", "[あなたの所有]");
+        translated = ReplaceAllOrdinal(translated, "[ owned by someone else ]", "[ 他人の所有 ]");
+        translated = ReplaceAllOrdinal(translated, " drams", " ドラム");
+        return ReplaceAllOrdinal(translated, " lbs.", " ポンド");
     }
 
     public static string TranslateInventoryLiteral(string source)
@@ -59,21 +153,28 @@ internal static class LegacyGamepadPromptTranslationHelpers
         translated = TranslateToExit(translated);
         translated = translated switch
         {
+            "[ {{W|Inventory}} ]" => "[ {{W|インベントリ}} ]",
             "<more...>" => "<続き…>",
             "<...more>" => "<…前へ>",
+            "<{{W|8}} to scroll up>" => "<{{W|8}} 上へスクロール>",
+            "<{{W|2}} to scroll down>" => "<{{W|2}} 下へスクロール>",
+            "[{{W|?}} view quick keys]" => "[{{W|?}} クイックキー表示]",
             _ => translated,
         };
+        translated = ReplaceOrdinal(translated, "Total weight:", "総重量:");
+        translated = ReplaceOrdinal(translated, " lbs.", " ポンド");
 
         var hiddenByFilterMatch = HiddenByFilterPattern.Match(translated);
-        if (!hiddenByFilterMatch.Success)
+        if (hiddenByFilterMatch.Success)
         {
-            return translated;
+            return string.Format(
+                CultureInfo.InvariantCulture,
+                "フィルターにより{0}個のアイテムが非表示",
+                hiddenByFilterMatch.Groups["count"].Value);
         }
 
-        return string.Format(
-            CultureInfo.InvariantCulture,
-            "フィルターにより{0}個のアイテムが非表示",
-            hiddenByFilterMatch.Groups["count"].Value);
+        translated = ReplaceOrdinal(translated, " items", "個");
+        return ReplaceOrdinal(translated, " item", "個");
     }
 
     public static string TranslateStatusLiteral(string source)
@@ -156,10 +257,24 @@ internal static class LegacyGamepadPromptTranslationHelpers
         var translated = TranslateFooter(source, "Journal", "ジャーナル", "Skills", "スキル");
         translated = translated switch
         {
+            "[ {{W|Tinkering}} ]" => "[ {{W|ティンカリング}} ]",
+            " {{R|hostiles nearby}} " => " {{R|敵対者が近くにいる}} ",
             "{{Y|>}} {{W|Build}}    {{w|Mod}}" => "{{Y|>}} {{W|製作}}    {{w|改造}}",
             "  {{w|Build}}  {{Y|>}} {{W|Mod}}" => "  {{w|製作}}  {{Y|>}} {{W|改造}}",
+            "You don't have the Tinkering skill." => "ティンカリングスキルを持っていない。",
+            "You don't have any modification schematics." => "改造設計図を持っていない。",
+            "You don't have any moddable items." => "改造可能なアイテムを持っていない。",
+            "You don't have any item schematics." => "アイテム設計図を持っていない。",
+            " Bit Locker " => " ビットロッカー ",
+            "-or-" => "-または-",
             _ => translated,
         };
+
+        translated = ColorAwareTranslationComposer.TranslatePreservingColors(
+            translated,
+            static visible => TryTranslateTinkeringBitDescription(visible, out var translatedVisible)
+                ? translatedVisible
+                : visible);
 
         if (ContainsOrdinal(translated, " Mod Item  ")
             && ContainsOrdinal(translated, " List Mods  ")
@@ -188,6 +303,11 @@ internal static class LegacyGamepadPromptTranslationHelpers
         }
 
         return translated;
+    }
+
+    private static bool TryTranslateTinkeringBitDescription(string visible, out string translated)
+    {
+        return TinkeringBitDescriptionTranslator.TryTranslateKnownDescriptionsInText(visible, out translated);
     }
 
     public static string TranslateQuestLogLiteral(string source)
@@ -232,7 +352,8 @@ internal static class LegacyGamepadPromptTranslationHelpers
 
     public static string TranslateSkillsAndPowersRendered(string source)
     {
-        var translated = TranslateToExit(TranslateFooter(source, "Tinkering", "ティンカリング", "Character", "キャラクター"));
+        var translated = TranslateLegacySkillsAndPowersRow(
+            TranslateToExit(TranslateFooter(source, "Tinkering", "ティンカリング", "Character", "キャラクター")));
         var buyMatch = SkillsAndPowersBuyPattern.Match(translated);
         if (!buyMatch.Success)
         {
@@ -240,6 +361,48 @@ internal static class LegacyGamepadPromptTranslationHelpers
         }
 
         return buyMatch.Groups["prefix"].Value + "購入" + buyMatch.Groups["suffix"].Value;
+    }
+
+    private static string TranslateLegacySkillsAndPowersRow(string source)
+    {
+        var translated = SkillsAndPowersColoredNamePattern.Replace(
+            source,
+            match =>
+            {
+                var name = match.Groups["name"].Value;
+                if (SkillsAndPowersAttributeRequirementPattern.IsMatch(match.Value))
+                {
+                    return match.Value;
+                }
+
+                var translatedName = TranslateSkillsAndPowersLeafSafely(name);
+                return string.Equals(translatedName, name, StringComparison.Ordinal)
+                    ? match.Value
+                    : "{{" + match.Groups["color"].Value + "|" + translatedName + "}}";
+            });
+
+        translated = SkillsAndPowersAttributeRequirementPattern.Replace(
+            translated,
+            match => "{{" + match.Groups["color"].Value + "|"
+                     + SkillsAndPowersStatusScreenTranslationPatch.TranslateAttributeRequirement(match.Groups["attribute"].Value)
+                     + "}}");
+        return translated;
+    }
+
+    private static string TranslateSkillsAndPowersLeafSafely(string source)
+    {
+        try
+        {
+            return SkillsAndPowersStatusScreenTranslationPatch.TranslateLeaf(source);
+        }
+        catch (Exception ex)
+        {
+            Trace.TraceError(
+                "QudJP: LegacyGamepadPromptTranslationHelpers.TranslateSkillsAndPowersLeafSafely failed for '{0}': {1}",
+                source,
+                ex);
+            return source;
+        }
     }
 
     public static string TranslateEquipmentLiteral(string source)
@@ -262,6 +425,40 @@ internal static class LegacyGamepadPromptTranslationHelpers
         }
 
         return "[{{" + setPrimaryLimbMatch.Groups["color"].Value + "|" + setPrimaryLimbMatch.Groups["glyph"].Value + " - 主要部位を設定}}]";
+    }
+
+    private static string TranslateTradeUiTraderInventoryTitle(string source)
+    {
+        var match = TradeUiTraderInventoryTitlePattern.Match(source);
+        if (!match.Success)
+        {
+            return source;
+        }
+
+        return "[ {{W|" + match.Groups["owner"].Value + "のインベントリ}} ]";
+    }
+
+    private static string TranslateTradeUiBracketAction(string source)
+    {
+        var match = TradeUiBracketActionPattern.Match(source);
+        if (!match.Success)
+        {
+            return source;
+        }
+
+        var translatedLabel = match.Groups["label"].Value switch
+        {
+            "Add/Remove" => "追加/削除",
+            "Offer" => "提示",
+            "Exit" => "終了",
+            "Pick" => "選択",
+            "Haggle" => "値切る",
+            "Transfer" => "受け渡し",
+            "Actions" => "操作",
+            _ => match.Groups["label"].Value,
+        };
+
+        return "[" + match.Groups["prefix"].Value + translatedLabel + "]";
     }
 
     private static string TranslateFooter(string source, string leftEnglish, string leftJapanese, string rightEnglish, string rightJapanese)
@@ -309,5 +506,10 @@ internal static class LegacyGamepadPromptTranslationHelpers
             : source.Substring(0, index)
               + newValue
               + source.Substring(index + oldValue.Length);
+    }
+
+    private static string ReplaceAllOrdinal(string source, string oldValue, string newValue)
+    {
+        return source.Replace(oldValue, newValue);
     }
 }

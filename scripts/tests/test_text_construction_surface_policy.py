@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Any
 
 from scripts.text_construction_surface_policy import (
     TextConstructionFamily,
@@ -239,7 +240,8 @@ def test_policy_closes_reviewed_conversation_choice_tags_and_classifies_body_rou
     assert entries[trade_family_id]["closure_status"] == "covered_by_owner_route"
     assert "ConversationDisplayTextPatchTests.cs" in " ".join(entries[trade_family_id]["closure_evidence"])
     assert entries[mound_family_id]["closure_status"] == "covered_by_owner_route"
-    assert entries[signpost_family_id]["closure_status"] == "partial_coverage"
+    assert entries[signpost_family_id]["closure_status"] == "covered_by_owner_route"
+    assert "display-name/data-source routes" in " ".join(entries[signpost_family_id]["closure_evidence"])
     assert entries[glotrot_family_id]["closure_status"] == "runtime_required"
 
 
@@ -286,14 +288,14 @@ def test_policy_applies_reviewed_closure_overlay_for_high_risk_combat_lane() -> 
     covered = entries[
         "XRL.World.Parts/Combat.cs::Combat.MeleeAttackWithWeaponInternal(GameObject,GameObject,GameObject,BodyPart,string,int,int,int,int,int,bool,bool)"
     ]
-    action_required = entries["XRL.World.Parts/BandageMedication.cs::BandageMedication.PerformBandaging()"]
+    unreviewed = entries["XRL.World.Parts/BandageMedication.cs::BandageMedication.PerformBandaging()"]
     shield_slam = entries[shield_slam_family_id]
     cudgel_slam_cast = entries[cudgel_slam_cast_family_id]
 
     assert covered["closure_lane"] == "combat_message_frame_does"
     assert covered["closure_status"] == "covered_by_owner_route"
     assert "CombatAndLogMessageQueuePatchTests.cs" in " ".join(covered["closure_evidence"])
-    assert action_required["closure_status"] == "action_required"
+    assert unreviewed["closure_status"] == "unreviewed"
     assert shield_slam["closure_status"] == "covered_by_owner_route"
     assert "shield slam possessive capture" in " ".join(shield_slam["closure_evidence"])
     assert cudgel_slam_cast["closure_status"] == "covered_by_owner_route"
@@ -369,12 +371,12 @@ def test_policy_closes_issue747_journal_and_skill_rows_with_owner_route_evidence
     assert "JournalApiAddTranslationPatchTests.cs" in journal_evidence
     assert "PopupShowTranslationPatchTests.cs" in journal_evidence
     assert entries[unreviewed_journal_family_id]["closure_lane"] == "journal_quest_routes"
-    assert entries[unreviewed_journal_family_id]["closure_status"] == "action_required"
+    assert entries[unreviewed_journal_family_id]["closure_status"] == "unreviewed"
     assert entries[tactics_charge_family_id]["closure_status"] == "covered_by_owner_route"
     assert entries[tactics_death_from_above_family_id]["closure_status"] == "covered_by_owner_route"
     assert entries[physic_amputate_family_id]["closure_status"] == "covered_by_owner_route"
     assert entries[tinkering_mine_family_id]["closure_status"] == "covered_by_owner_route"
-    assert entries[unreviewed_skill_family_id]["closure_status"] == "action_required"
+    assert entries[unreviewed_skill_family_id]["closure_status"] == "unreviewed"
     skill_evidence = " ".join(entries[tactics_charge_family_id]["closure_evidence"])
     assert tactics_charge_family_id in skill_evidence
     assert "Issue #747 reviewed skill-originated static family" in skill_evidence
@@ -397,6 +399,7 @@ def test_policy_separates_reviewed_issue711_work_without_overclaiming_closure() 
     tombstone_family_id = "XRL.World.Parts/Tombstone.cs::Tombstone.GenerateTombstone()"
     mod_gigantic_fixed_family_id = "XRL.World.Parts/ModGigantic.cs::ModGigantic.GetDescription(int)"
     mod_gigantic_dynamic_family_id = "XRL.World.Parts/ModGigantic.cs::ModGigantic.GetDescription(int,GameObject)"
+    tinkering_details_family_id = "Qud.UI/TinkeringDetailsLine.cs::TinkeringDetailsLine.setData(FrameworkDataElement)"
 
     inventory = _inventory(
         [
@@ -430,16 +433,28 @@ def test_policy_separates_reviewed_issue711_work_without_overclaiming_closure() 
                 "GetDescription",
                 {"EffectDescriptionReturn": 1},
             ),
+            _family(
+                tinkering_details_family_id,
+                "Qud.UI/TinkeringDetailsLine.cs",
+                "setData",
+                {"SetText": 6},
+            ),
         ]
     )
 
     entries = {entry["family_id"]: entry for entry in valuable_surface_queue(inventory)}
 
     assert entries[missile_hit_family_id]["closure_status"] == "covered_by_owner_route"
-    assert entries[inventory_family_id]["closure_status"] == "partial_coverage"
+    assert entries[inventory_family_id]["closure_status"] == "covered_by_owner_route"
+    inventory_evidence = " ".join(entries[inventory_family_id]["closure_evidence"])
+    assert "InventoryFireEventTranslationPatch.cs" in inventory_evidence
+    assert "BeginBeingUnequippedFailureMessageTranslationPatch.cs" in inventory_evidence
+    assert "cannot-budge" in inventory_evidence
+    assert "You can't remove {item} FailureMessage helper shape" in inventory_evidence
     assert entries[tombstone_family_id]["closure_status"] == "covered_by_owner_route"
     assert entries[mod_gigantic_fixed_family_id]["closure_status"] == "covered_by_owner_route"
     assert entries[mod_gigantic_dynamic_family_id]["closure_status"] == "covered_by_owner_route"
+    assert entries[tinkering_details_family_id]["closure_status"] == "covered_by_owner_route"
 
     mod_gigantic_fixed_evidence = " ".join(entries[mod_gigantic_fixed_family_id]["closure_evidence"])
     assert "world-mods.ja.json" in mod_gigantic_fixed_evidence
@@ -449,6 +464,9 @@ def test_policy_separates_reviewed_issue711_work_without_overclaiming_closure() 
     assert "WorldModsTextTranslator.cs" in mod_gigantic_dynamic_evidence
     assert "TinkeringDetailsLineTranslationPatch.cs" in mod_gigantic_dynamic_evidence
     assert "TinkeringTranslationPatchTests.cs" in mod_gigantic_dynamic_evidence
+    tinkering_details_evidence = " ".join(entries[tinkering_details_family_id]["closure_evidence"])
+    assert "TinkeringDetailsLineTranslationPatch.cs" in tinkering_details_evidence
+    assert "TinkeringTranslationPatchTests.cs" in tinkering_details_evidence
 
 
 def test_policy_records_issue762_first_slice_without_overclaiming_family_closure() -> None:
@@ -467,8 +485,17 @@ def test_policy_records_issue762_first_slice_without_overclaiming_family_closure
     bandage_family_id = (
         "XRL.World.Parts/BandageMedication.cs::BandageMedication.PerformBandaging(GameObject,GameObject)"
     )
+    tonic_family_id = "XRL.World.Parts/Tonic.cs::Tonic.HandleEvent(InventoryActionEvent)"
     multihorns_family_id = (
         "XRL.World.Parts.Mutation/MultiHorns.cs::MultiHorns.PerformCharge(List<Cell>,bool)"
+    )
+    multihorns_mutate_family_id = (
+        "XRL.World.Parts.Mutation/MultiHorns.cs::MultiHorns.Mutate(GameObject,int)"
+    )
+    xrlcore_start_family_id = "XRL.Core/XRLCore.cs::XRLCore._Start()"
+    missile_showpicker_family_id = (
+        "XRL.World.Parts/MissileWeapon.cs::"
+        "MissileWeapon.ShowPicker(int,int,bool,AllowVis,int,bool,GameObject,ref FireType,int)"
     )
     inventory = _inventory(
         [
@@ -509,10 +536,34 @@ def test_policy_records_issue762_first_slice_without_overclaiming_family_closure
                 {"MessageFrame": 2, "Does": 2},
             ),
             _family(
+                tonic_family_id,
+                "XRL.World.Parts/Tonic.cs",
+                "HandleEvent",
+                {"AddPlayerMessage": 1, "Does": 2, "MessageFrame": 3},
+            ),
+            _family(
                 multihorns_family_id,
                 "XRL.World.Parts.Mutation/MultiHorns.cs",
                 "PerformCharge",
                 {"MessageFrame": 3},
+            ),
+            _family(
+                multihorns_mutate_family_id,
+                "XRL.World.Parts.Mutation/MultiHorns.cs",
+                "Mutate",
+                {"ActivatedAbility": 1, "DisplayNameAssignment": 4},
+            ),
+            _family(
+                xrlcore_start_family_id,
+                "XRL.Core/XRLCore.cs",
+                "_Start",
+                {"Initializer": 4, "Other": 10, "OtherInvocation": 75, "Popup": 3},
+            ),
+            _family(
+                missile_showpicker_family_id,
+                "XRL.World.Parts/MissileWeapon.cs",
+                "ShowPicker",
+                {"Popup": 176},
             ),
         ]
     )
@@ -523,41 +574,157 @@ def test_policy_records_issue762_first_slice_without_overclaiming_family_closure
     assert entries[schemasoft_description_family_id]["closure_status"] == "covered_by_owner_route"
     assert entries[longblades_initialize_family_id]["closure_status"] == "covered_by_owner_route"
     assert entries[sparking_baetyl_rewards_family_id]["closure_status"] == "covered_by_owner_route"
+    assert entries[multihorns_mutate_family_id]["closure_status"] == "covered_by_owner_route"
 
-    schemasoft_evidence = " ".join(entries[schemasoft_init_family_id]["closure_evidence"])
-    assert "GetDisplayNameRouteTranslator.cs" in schemasoft_evidence
-    assert "GetDisplayNameRouteTranslatorTests.cs" in schemasoft_evidence
+    assert entries[turret_family_id]["closure_status"] == "covered_by_owner_route"
+    assert entries[bandage_family_id]["closure_status"] == "covered_by_owner_route"
+    assert entries[tonic_family_id]["closure_status"] == "covered_by_owner_route"
+    assert entries[multihorns_family_id]["closure_status"] == "covered_by_owner_route"
+    assert entries[xrlcore_start_family_id]["closure_status"] == "covered_by_owner_route"
+    assert entries[missile_showpicker_family_id]["closure_status"] == "covered_by_owner_route"
 
-    schemasoft_description_evidence = " ".join(entries[schemasoft_description_family_id]["closure_evidence"])
-    assert "CyberneticsBehaviorDescriptionTranslationPatch.cs" in schemasoft_description_evidence
-    assert "CyberneticsBehaviorDescriptionTranslationPatchTests.cs" in schemasoft_description_evidence
+    _assert_issue762_evidence(
+        entries,
+        {
+            "schemasoft_init": schemasoft_init_family_id,
+            "schemasoft_description": schemasoft_description_family_id,
+            "longblades_initialize": longblades_initialize_family_id,
+            "sparking_baetyl_rewards": sparking_baetyl_rewards_family_id,
+            "turret": turret_family_id,
+            "bandage": bandage_family_id,
+            "tonic": tonic_family_id,
+            "multihorns": multihorns_family_id,
+            "multihorns_mutate": multihorns_mutate_family_id,
+            "xrlcore_start": xrlcore_start_family_id,
+            "missile_showpicker": missile_showpicker_family_id,
+        },
+    )
 
-    longblades_evidence = " ".join(entries[longblades_initialize_family_id]["closure_evidence"])
-    assert "ActivatedAbilityNameTranslator.cs" in longblades_evidence
-    assert "AbilityBarButtonTextTranslationPatchTests.cs" in longblades_evidence
-    assert "AbilityManagerLineTranslationPatchTests.cs" in longblades_evidence
-    assert "AbilityManagerScreenTranslationPatchTests.cs" in longblades_evidence
-    assert "ui-skillsandpowers.ja.json" in longblades_evidence
 
-    sparking_baetyl_rewards_evidence = " ".join(entries[sparking_baetyl_rewards_family_id]["closure_evidence"])
-    assert "SparkingBaetyls.jp.xml" in sparking_baetyl_rewards_evidence
-    assert "test_sparking_baetyl_rewards.py" in sparking_baetyl_rewards_evidence
-    assert "popup and wish routes remain separate" in sparking_baetyl_rewards_evidence
+def _assert_issue762_evidence(
+    entries: dict[str, dict[str, Any]],
+    family_ids: dict[str, str],
+) -> None:
+    _assert_evidence_contains(
+        entries,
+        family_ids["schemasoft_init"],
+        "GetDisplayNameRouteTranslator.cs",
+        "GetDisplayNameRouteTranslatorTests.cs",
+    )
+    _assert_evidence_contains(
+        entries,
+        family_ids["schemasoft_description"],
+        "CyberneticsBehaviorDescriptionTranslationPatch.cs",
+        "CyberneticsBehaviorDescriptionTranslationPatchTests.cs",
+    )
+    _assert_evidence_contains(
+        entries,
+        family_ids["longblades_initialize"],
+        "ActivatedAbilityNameTranslator.cs",
+        "AbilityBarButtonTextTranslationPatchTests.cs",
+        "AbilityManagerLineTranslationPatchTests.cs",
+        "AbilityManagerScreenTranslationPatchTests.cs",
+        "ui-skillsandpowers.ja.json",
+    )
+    _assert_evidence_contains(
+        entries,
+        family_ids["sparking_baetyl_rewards"],
+        "SparkingBaetyls.jp.xml",
+        "test_sparking_baetyl_rewards.py",
+        "popup and wish routes remain separate",
+    )
+    _assert_evidence_contains(
+        entries,
+        family_ids["turret"],
+        "ActivatedAbilityNameTranslator.cs",
+        "AbilityBarButtonTextTranslationPatchTests.cs",
+        "ui-pick-target.ja.json",
+        "ui-popup.ja.json",
+    )
+    _assert_evidence_contains(
+        entries,
+        family_ids["bandage"],
+        "ui-pick-target.ja.json",
+        "messages.ja.json",
+        "MessageFrameTranslatorTests.cs",
+        "MessagePatternTranslatorTests.cs",
+        "LocalizationCoverageTests.cs",
+        "MessageFrames/verbs.ja.json",
+    )
+    _assert_evidence_contains(
+        entries,
+        family_ids["tonic"],
+        "SingleCallsiteOwnerQueueTranslationPatch.cs",
+        "PickTargetWindowTextTranslator.cs",
+        "SingleCallsiteOwnerQueueTranslationPatchTests.cs",
+        "PickTargetWindowUpdateTranslationPatchTests.cs",
+    )
+    _assert_evidence_contains(
+        entries,
+        family_ids["multihorns"],
+        "MessageFrameTranslatorTests.cs",
+        "CombatAndLogMessageQueuePatchTests.cs",
+        "PhysicsProcessTakeDamageTranslationPatch.cs",
+        "MessageFrames/verbs.ja.json",
+    )
+    _assert_evidence_contains(
+        entries,
+        family_ids["multihorns_mutate"],
+        "ui-displayname-atomic.ja.json",
+        "StatusScreenBindingOwnerPatchTests.cs",
+    )
+    _assert_evidence_contains(
+        entries,
+        family_ids["xrlcore_start"],
+        "XrlCoreStartMainMenuTranslationPatch.cs",
+        "LegacyGamepadPromptTranslationHelpers.cs",
+        "LegacyGamepadPromptTranslationPatchTests.cs",
+        "TargetMethodResolutionTests.cs",
+    )
+    _assert_evidence_contains(
+        entries,
+        family_ids["missile_showpicker"],
+        "MissileWeaponShowPickerTranslationPatch.cs",
+        "PickTargetWindowTextTranslator.cs",
+        "ui-pick-target.ja.json",
+        "LegacyGamepadPromptTranslationPatchTests.cs",
+        "UITextSkinTranslationPatchTests.cs",
+    )
 
-    for family_id in [turret_family_id, bandage_family_id, multihorns_family_id]:
-        assert entries[family_id]["closure_status"] == "partial_coverage"
 
-    turret_evidence = " ".join(entries[turret_family_id]["closure_evidence"])
-    assert "ActivatedAbilityNameTranslator.cs" in turret_evidence
-    assert "AbilityBarButtonTextTranslationPatchTests.cs" in turret_evidence
+def _assert_evidence_contains(
+    entries: dict[str, dict[str, Any]],
+    family_id: str,
+    *fragments: str,
+) -> None:
+    evidence = " ".join(entries[family_id]["closure_evidence"])
+    for fragment in fragments:
+        assert fragment in evidence
 
-    bandage_evidence = " ".join(entries[bandage_family_id]["closure_evidence"])
-    assert "MessageFrameTranslatorTests.cs" in bandage_evidence
-    assert "MessageFrames/verbs.ja.json" in bandage_evidence
 
-    multihorns_evidence = " ".join(entries[multihorns_family_id]["closure_evidence"])
-    assert "MessageFrameTranslatorTests.cs" in multihorns_evidence
-    assert "MessageFrames/verbs.ja.json" in multihorns_evidence
+def test_policy_defers_unused_base_game_sifrah_to_runtime_evidence() -> None:
+    """PsychicCombatSifrah has owner coverage, but the base game does not route through it."""
+    family_id = (
+        "XRL.World/PsychicCombatSifrah.cs::"
+        "PsychicCombatSifrah.PsychicCombatSifrah(GameObject,string,int,int,string)"
+    )
+    inventory = _inventory(
+        [
+            _family(
+                family_id,
+                "XRL.World/PsychicCombatSifrah.cs",
+                "PsychicCombatSifrah",
+                {"Popup": 1, "Initializer": 6},
+            ),
+        ]
+    )
+
+    entries = {entry["family_id"]: entry for entry in valuable_surface_queue(inventory)}
+
+    assert entries[family_id]["closure_status"] == "runtime_required"
+    evidence = " ".join(entries[family_id]["closure_evidence"])
+    assert "not used in the base game" in evidence
+    assert "SifrahPureOwnerPopupTranslationPatchTests.cs" in evidence
 
 
 def test_policy_records_issue762_generated_display_and_pit_routes() -> None:
@@ -655,14 +822,14 @@ def test_policy_records_issue762_evil_twin_route_split() -> None:
 
     entries = {entry["family_id"]: entry for entry in valuable_surface_queue(inventory)}
 
-    assert entries[create_family_id]["closure_status"] == "partial_coverage"
+    assert entries[create_family_id]["closure_status"] == "covered_by_owner_route"
     assert entries[description_family_id]["closure_status"] == "covered_by_owner_route"
 
     create_evidence = " ".join(entries[create_family_id]["closure_evidence"])
     assert "GetDisplayNameRouteTranslator.cs" in create_evidence
     assert "descriptions.ja.json" in create_evidence
     assert "ui-popup.ja.json" in create_evidence
-    assert "arbitrary caller-supplied Prefix, Message, and MessageForActor values remain split" in create_evidence
+    assert "deferred until a concrete producer/callsite proves a visible localization gap" in create_evidence
 
     description_evidence = " ".join(entries[description_family_id]["closure_evidence"])
     assert "mutation-descriptions.ja.json" in description_evidence
@@ -705,14 +872,15 @@ def test_policy_records_issue762_cherubim_generated_text_routes() -> None:
 
     entries = {entry["family_id"]: entry for entry in valuable_surface_queue(inventory)}
 
-    assert entries[cherubim_handle_family_id]["closure_status"] == "partial_coverage"
+    assert entries[cherubim_handle_family_id]["closure_status"] == "covered_by_owner_route"
     assert entries[cherubim_bestow_family_id]["closure_status"] == "covered_by_owner_route"
     assert entries[hexacherubim_family_id]["closure_status"] == "covered_by_owner_route"
 
     handle_evidence = " ".join(entries[cherubim_handle_family_id]["closure_evidence"])
     assert "CherubimSpawnerHandleEventTranslationPatch.cs" in handle_evidence
     assert "CherubimSpawnerBestowElementTranslationPatch.cs" in handle_evidence
-    assert "base cherub description route remains split" in handle_evidence
+    assert "base organic/mechanical cherub descriptions" in handle_evidence
+    assert "faction-derived object-name composition remains dynamic data" in handle_evidence
 
     bestow_evidence = " ".join(entries[cherubim_bestow_family_id]["closure_evidence"])
     assert "CherubimSpawnerBestowElementTranslationPatch.cs" in bestow_evidence
@@ -722,6 +890,29 @@ def test_policy_records_issue762_cherubim_generated_text_routes() -> None:
     hexacherubim_evidence = " ".join(entries[hexacherubim_family_id]["closure_evidence"])
     assert "HexacherubimSpawnerHandleEventTranslationPatch.cs" in hexacherubim_evidence
     assert "delegated BestowElement RulesDescription text" in hexacherubim_evidence
+
+
+def test_policy_records_sultan_shrine_wrapper_routes_without_exact_cognomen_leaves() -> None:
+    """Sultan shrine wrapper routes are covered while generated names remain dynamic."""
+    family_id = "XRL.World.Parts/SultanShrine.cs::SultanShrine.ShrineInitialize()"
+    inventory = _inventory(
+        [
+            _family(
+                family_id,
+                "XRL.World.Parts/SultanShrine.cs",
+                "ShrineInitialize",
+                {"DescriptionAssignment": 1, "DisplayNameAssignment": 1},
+            ),
+        ]
+    )
+
+    entries = {entry["family_id"]: entry for entry in valuable_surface_queue(inventory)}
+
+    assert entries[family_id]["closure_status"] == "covered_by_owner_route"
+    evidence = " ".join(entries[family_id]["closure_evidence"])
+    assert "GetDisplayNameRouteTranslator.cs" in evidence
+    assert "SultanShrineWrapperTranslator.cs" in evidence
+    assert "generated sultan names/cognomina remain dynamic fragments" in evidence
 
 
 def test_policy_records_issue737_hse_runtime_gap_progress_and_journal_route_closure() -> None:
@@ -1002,7 +1193,7 @@ def test_policy_records_hse_journal_story_completion_routes() -> None:
 
 
 def test_policy_records_hse_owner_plan_closure_for_existing_covered_families() -> None:
-    """Existing HSE owner-plan families should not remain action_required after evidence-backed review."""
+    """Existing HSE owner-plan families should not remain unreviewed after evidence-backed review."""
     cooking_family_id = (
         "XRL.World.Skills.Cooking/CookingRecipe.cs::"
         "CookingRecipe.GenerateRecipeName(List<string>,List<string>,string)"
@@ -1464,7 +1655,7 @@ def test_lane_summary_payload_reports_counts_and_top_families() -> None:
     lane = payload["lanes"]["combat_message_frame_does"]
     assert lane["entry_count"] == 2
     assert lane["text_construction_count"] == 6
-    assert lane["closure_status_counts"] == {"action_required": 2}
+    assert lane["closure_status_counts"] == {"unreviewed": 2}
     assert [entry["source_file"] for entry in lane["top_entries"]] == ["XRL.World.Parts/Combat.cs"]
     assert "non_target" not in payload["lane_counts"]
 
@@ -1483,6 +1674,32 @@ def test_queue_payload_defaults_to_valuable_surfaces_only() -> None:
     assert payload["counts"] == {"player_visible_owner_candidate": 1}
     assert payload["lane_counts"] == {"screen_ui_direct_text": 1}
     assert [entry["source_file"] for entry in payload["entries"]] == ["Qud.UI/TradeLine.cs"]
+
+
+def test_queue_payload_needs_work_excludes_unreviewed_families() -> None:
+    """Known work must be separable from unreviewed static findings."""
+    partial_family_id = "XRL.Core/XRLCore.cs::XRLCore.PlayerTurn()"
+    inventory = _inventory(
+        [
+            _family(
+                partial_family_id,
+                "XRL.Core/XRLCore.cs",
+                "PlayerTurn",
+                {"Popup": 1, "MessageFrame": 1},
+            ),
+            _family(
+                "XRL.World.Parts/BandageMedication.cs::BandageMedication.PerformBandaging()",
+                "XRL.World.Parts/BandageMedication.cs",
+                "PerformBandaging",
+                {"MessageFrame": 1},
+            ),
+        ]
+    )
+
+    payload = queue_payload(inventory, inventory_path=Path("inventory.json"), include="needs-work")
+
+    assert [entry["family_id"] for entry in payload["entries"]] == [partial_family_id]
+    assert payload["entries"][0]["closure_status"] == "partial_coverage"
 
 
 def test_text_summary_names_reason_and_action_for_agent_handoff() -> None:

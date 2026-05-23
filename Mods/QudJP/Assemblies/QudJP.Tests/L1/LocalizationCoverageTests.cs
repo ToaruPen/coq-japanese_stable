@@ -1173,6 +1173,7 @@ public sealed class LocalizationCoverageTests
             new DictionaryEntry("Discharge", "AbilityBar.ButtonText", "放電"),
             new DictionaryEntry("Lase", "AbilityBar.ButtonText", "レーザー照射"),
             new DictionaryEntry("Recoil", "AbilityBar.ButtonText", "帰還"),
+            new DictionaryEntry("Mark", "AbilityBar.ButtonText", "マーク"),
             new DictionaryEntry("Precognition - Start vision", "AbilityBar.ButtonText", "予知 - 予知視開始"),
             new DictionaryEntry("Precognition - End vision", "AbilityBar.ButtonText", "予知 - 予知視終了"),
             new DictionaryEntry("Force Wall", "AbilityBar.ButtonText", "力場壁"),
@@ -1246,6 +1247,85 @@ public sealed class LocalizationCoverageTests
                     entries,
                     Does.Contain(expectedEntry),
                     $"Fresh Player.log static_leaf evidence requires an exact AbilityBar.ButtonText base leaf for {expectedEntry.Key}.");
+            }
+        });
+    }
+
+    [Test]
+    public void TurretTinkerDictionaries_ContainCommandDirectionAndFailureLeaves()
+    {
+        var pickTargetEntries = LoadEntries(Path.Combine(localizationRoot, "Dictionaries", "ui-pick-target.ja.json"));
+        var popupEntries = LoadEntries(Path.Combine(localizationRoot, "Dictionaries", "ui-popup.ja.json"));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                pickTargetEntries,
+                Does.Contain(new DictionaryEntry("Tinker Turret", "PickTarget.DirectionPrompt", "タレット製作")));
+            Assert.That(
+                popupEntries,
+                Does.Contain(new DictionaryEntry(
+                    "You are out of turrets to place.",
+                    "XRL.World.Parts.TurretTinker.CommandTinkerTurret.ShowFailure",
+                    "設置できるタレットが残っていない。")));
+        });
+    }
+
+    [Test]
+    public void BandageMedicationDictionaries_ContainPromptAndFailureLeaves()
+    {
+        var pickTargetEntries = LoadEntries(Path.Combine(localizationRoot, "Dictionaries", "ui-pick-target.ja.json"));
+        var messagePatterns = JsonDocument
+            .Parse(File.ReadAllText(Path.Combine(localizationRoot, "Dictionaries", "messages.ja.json")))
+            .RootElement
+            .GetProperty("patterns")
+            .EnumerateArray()
+            .Select(static element => element.GetProperty("pattern").GetString() ?? string.Empty)
+            .ToHashSet(StringComparer.Ordinal);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                pickTargetEntries,
+                Does.Contain(new DictionaryEntry("Bandage whom?", "PickTarget.DirectionPrompt", "誰に包帯を巻く？")));
+            Assert.That(
+                messagePatterns,
+                Does.Contain("^You cannot reach (.+?) to bandage (?:his|her|its|their) wounds[.!]?$"));
+            Assert.That(
+                messagePatterns,
+                Does.Contain("^There's no one there[.!]?$"));
+            Assert.That(
+                messagePatterns,
+                Does.Contain("^All of (.+?) wounds that can be staunched have been already[.!]?$"));
+            Assert.That(
+                messagePatterns,
+                Does.Contain("^(.+?) wounds have been bandaged[.!]?$"));
+            Assert.That(
+                messagePatterns,
+                Does.Contain("^(.+?) wounds are too deep to bandage[.!]?$"));
+        });
+    }
+
+    [Test]
+    public void DisplayNameAtomicDictionary_ContainsMultiHornsRuntimeMutationDisplayNames()
+    {
+        var entries = LoadEntries(Path.Combine(localizationRoot, "Dictionaries", "ui-displayname-atomic.ja.json"));
+        var expectedEntries = new[]
+        {
+            new DictionaryEntry("Triple Horn", string.Empty, "三本角"),
+            new DictionaryEntry("Horns", string.Empty, "角"),
+            new DictionaryEntry("Horn", string.Empty, "単角"),
+            new DictionaryEntry("Antlers", string.Empty, "枝角"),
+        };
+
+        Assert.Multiple(() =>
+        {
+            foreach (var expectedEntry in expectedEntries)
+            {
+                Assert.That(
+                    entries,
+                    Does.Contain(expectedEntry),
+                    $"MultiHorns.Mutate runtime SetDisplayName leaf should be available to status display sinks: {expectedEntry.Key}.");
             }
         });
     }

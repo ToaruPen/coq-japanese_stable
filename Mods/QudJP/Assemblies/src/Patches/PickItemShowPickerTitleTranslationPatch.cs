@@ -77,6 +77,11 @@ public static class PickItemShowPickerTitleTranslationPatch
 
     internal static string? TranslateTitleForGetItemDialog(string? source, object? style, object? container)
     {
+        if (LiquidVolumeTranslationPatch.TryTranslatePickItemTitle(ref source))
+        {
+            return source;
+        }
+
         if (string.IsNullOrEmpty(source)
             || container is null
             || !string.Equals(style?.ToString(), GetItemDialogStyleName, StringComparison.Ordinal))

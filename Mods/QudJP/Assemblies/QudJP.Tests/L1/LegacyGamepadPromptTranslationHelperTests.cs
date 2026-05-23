@@ -98,6 +98,50 @@ public sealed class LegacyGamepadPromptTranslationHelperTests
     }
 
     [Test]
+    public void TradeUiLegacyRendered_TranslatesConsoleChromeAndUnits()
+    {
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                LegacyGamepadPromptTranslationHelpers.TranslateTradeUiLegacyRendered("[ {{W|Your inventory}} ]"),
+                Is.EqualTo("[ {{W|あなたのインベントリ}} ]"));
+            Assert.That(
+                LegacyGamepadPromptTranslationHelpers.TranslateTradeUiLegacyRendered("[ {{W|dromad's inventory}} ]"),
+                Is.EqualTo("[ {{W|dromadのインベントリ}} ]"));
+            Assert.That(
+                LegacyGamepadPromptTranslationHelpers.TranslateTradeUiLegacyRendered(" {{G|[owned by you]}}"),
+                Is.EqualTo(" {{G|[あなたの所有]}}"));
+            Assert.That(
+                LegacyGamepadPromptTranslationHelpers.TranslateTradeUiLegacyRendered("{{R|[ owned by someone else ]}}"),
+                Is.EqualTo("{{R|[ 他人の所有 ]}}"));
+            Assert.That(
+                LegacyGamepadPromptTranslationHelpers.TranslateTradeUiLegacyRendered("[{{W|A}}/{{W|R}} Add/Remove]"),
+                Is.EqualTo("[{{W|A}}/{{W|R}} 追加/削除]"));
+            Assert.That(
+                LegacyGamepadPromptTranslationHelpers.TranslateTradeUiLegacyRendered("[{{W|O}} Offer]"),
+                Is.EqualTo("[{{W|O}} 提示]"));
+            Assert.That(
+                LegacyGamepadPromptTranslationHelpers.TranslateTradeUiLegacyRendered("[{{W|0-9}} Pick]"),
+                Is.EqualTo("[{{W|0-9}} 選択]"));
+            Assert.That(
+                LegacyGamepadPromptTranslationHelpers.TranslateTradeUiLegacyRendered("[{{W|H}} Haggle]"),
+                Is.EqualTo("[{{W|H}} 値切る]"));
+            Assert.That(
+                LegacyGamepadPromptTranslationHelpers.TranslateTradeUiLegacyRendered("[{{W|T}} Transfer]"),
+                Is.EqualTo("[{{W|T}} 受け渡し]"));
+            Assert.That(
+                LegacyGamepadPromptTranslationHelpers.TranslateTradeUiLegacyRendered("[{{W|V}} Actions]"),
+                Is.EqualTo("[{{W|V}} 操作]"));
+            Assert.That(
+                LegacyGamepadPromptTranslationHelpers.TranslateTradeUiLegacyRendered(" {{C|42}} drams <-> {{C|10}} drams "),
+                Is.EqualTo(" {{C|42}} ドラム <-> {{C|10}} ドラム "));
+            Assert.That(
+                LegacyGamepadPromptTranslationHelpers.TranslateTradeUiLegacyRendered(" {{K|12/250 lbs.}} "),
+                Is.EqualTo(" {{K|12/250 ポンド}} "));
+        });
+    }
+
+    [Test]
     public void XrlManualRendered_TranslatesHelpPrompts()
     {
         Assert.Multiple(() =>

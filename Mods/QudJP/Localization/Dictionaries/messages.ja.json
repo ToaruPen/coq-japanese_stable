@@ -199,6 +199,11 @@
       "route": "emit-message"
     },
     {
+      "pattern": "^Your (.+?)にひびが入った。?$",
+      "template": "{0}にひびが入った。",
+      "route": "emit-message"
+    },
+    {
       "pattern": "^You miss!$",
       "template": "攻撃は外れた！",
       "route": "emit-message"
@@ -1099,6 +1104,11 @@
       "route": "emit-message"
     },
     {
+      "pattern": "^You are stuck in (?:the |a |an )?(.+?)[.!]?$",
+      "template": "{t0}にはまっている！",
+      "route": "emit-message"
+    },
+    {
       "pattern": "^(?:The )?(.+?) stands up[.!]?$",
       "template": "{0}は立ち上がった。",
       "route": "emit-message"
@@ -1391,6 +1401,31 @@
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?)(?:'s|s') flattening fire (?:drops|drop) (?:the |a |an )?(.+?) to the ground!$",
       "template": "{0}の制圧射撃が{1}を地面に叩き伏せた！",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^You cannot reach (.+?) to bandage (?:his|her|its|their) wounds[.!]?$",
+      "template": "{0}には届かず、傷に包帯を巻けない。",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^There's no one there[.!]?$",
+      "template": "そこには誰もいない。",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^All of (.+?) wounds that can be staunched have been already[.!]?$",
+      "template": "{t0}止血できる傷はすべて処置済みだ。",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^(.+?) wounds have been bandaged[.!]?$",
+      "template": "{t0}傷は包帯処置済みだ。",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^(.+?) wounds are too deep to bandage[.!]?$",
+      "template": "{t0}傷は深すぎて包帯では処置できない。",
       "route": "emit-message"
     },
     {
@@ -1950,7 +1985,7 @@
     },
     {
       "pattern": "^You don't have the required <(.+?)> bits! You have:\\n\\n ?([\\s\\S]+)$",
-      "template": "必要な <{0}> ビットが足りない！現在の所持:\n\n{1}",
+      "template": "必要な <{0}> ビットが足りない！現在の所持:\n\n{t1}",
       "route": "emit-message"
     },
     {
@@ -2097,6 +2132,51 @@
       "pattern": "^(?:An|The) electrical arc leaps from (?:the |a |an )?(.+?) toward (.+?)!$",
       "template": "電弧が{0}から{1}へ走った！",
       "route": "emit-message"
+    },
+    {
+      "pattern": "^(?:An|The) electrical arc leaps toward (?:the |a |an )?(.+?) (to the north|to the south|to the east|to the west|to the northeast|to the northwest|to the southeast|to the southwest|nearby|above|below|here|somewhere)!$",
+      "template": "電弧が{0}（{a1}）へ走った！",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^Youはスライムで滑った！$",
+      "template": "あなたはスライムで滑った！",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^The (.+?)はスライムで滑った！$",
+      "template": "{0}はスライムで滑った！",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^You have gained a level! You are now level (\\d+)!\\n([\\s\\S]+)$",
+      "template": "レベルが上がった！現在レベル{0}！\n{t1}",
+      "route": "popup"
+    },
+    {
+      "pattern": "^You have gained the activated ability (.+?)\\.$",
+      "template": "{t0}を有効化能力として獲得した。",
+      "route": "popup"
+    },
+    {
+      "pattern": "^You flush with the warming draught! You are now (.+?)\\.$",
+      "template": "温まる一口が全身を巡った！あなたは今、{t0}。",
+      "route": "popup"
+    },
+    {
+      "pattern": "^Are you sure you want to buy (.+?) for (\\d+) sp\\?$",
+      "template": "{t0}を{1}SPで購入しますか？",
+      "route": "popup"
+    },
+    {
+      "pattern": "^You have a flash of insight and scribe (.+?)\\.$",
+      "template": "ひらめきが走り、{t0}を書き留めた。",
+      "route": "popup"
+    },
+    {
+      "pattern": "^You learn to build (.+?)\\.$",
+      "template": "{t0}を作成する方法を習得した。",
+      "route": "popup"
     }
   ]
 }

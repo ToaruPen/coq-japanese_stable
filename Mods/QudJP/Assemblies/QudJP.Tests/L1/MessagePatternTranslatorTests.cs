@@ -372,6 +372,59 @@ public sealed class MessagePatternTranslatorTests
         Assert.That(translated, Is.EqualTo(expected));
     }
 
+    [Test]
+    public void Translate_RepositoryDictionary_TranslatesPlayerStuckInMessage()
+    {
+        UseRepositoryPatternDictionary();
+
+        var translated = MessagePatternTranslator.Translate("You are stuck in a 蜘蛛の巣!");
+
+        Assert.That(translated, Is.EqualTo("蜘蛛の巣にはまっている！"));
+    }
+
+    [Test]
+    public void Translate_RepositoryDictionary_TranslatesColoredLevelGainCompoundMessage()
+    {
+        UseRepositoryPatternDictionary();
+
+        var translated = MessagePatternTranslator.Translate(
+            "&yYou have gained a level! You are now level &C12&y!\n"
+            + "You gain &C4&y hitpoints\n"
+            + "You gain &C98&y Skill Points\n"
+            + "You gain &C1&y Mutation Point\n"
+            + "You gain &C1&y to each attribute");
+
+        Assert.That(
+            translated,
+            Is.EqualTo(
+                "&yレベルが上がった！現在レベル&C12&y！\n"
+                + "ヒットポイントを&C4&y得た\n"
+                + "スキルポイントを&C98&y得た\n"
+                + "変異ポイントを&C1&y得た\n"
+                + "各能力値が&C1&y上昇した"));
+    }
+
+    [Test]
+    public void Translate_RepositoryDictionary_TranslatesWarmingDraughtCompoundMessage()
+    {
+        UseRepositoryPatternDictionary();
+
+        var translated = MessagePatternTranslator.Translate("&yYou flush with the warming draught! You are now &gQuenched&y.");
+
+        Assert.That(translated, Is.EqualTo("&y温まる一口が全身を巡った！あなたは今、&g潤っている&y。"));
+    }
+
+    [Test]
+    public void Translate_RepositoryDictionary_TranslatesElectricalArcTowardDirectionMessage()
+    {
+        UseRepositoryPatternDictionary();
+
+        var translated = MessagePatternTranslator.Translate(
+            "The {{electrical|electrical arc}} leaps toward the {{freezing|凍結した}} 塩水の水たまり to the southwest!");
+
+        Assert.That(translated, Is.EqualTo("{{electrical|電弧}}が{{freezing|凍結した}} 塩水の水たまり（南西側に）へ走った！"));
+    }
+
     [TestCase("You pass by a 編みかご.", "編みかごのそばを通り過ぎた。")]
     [TestCase("You pass by an 編みかご.", "編みかごのそばを通り過ぎた。")]
     [TestCase("You pass by the ウォーターヴァイン.", "ウォーターヴァインのそばを通り過ぎた。")]
@@ -445,6 +498,16 @@ public sealed class MessagePatternTranslatorTests
         var translated = MessagePatternTranslator.Translate("Your 布のローブ was cracked.");
 
         Assert.That(translated, Is.EqualTo("布のローブにひびが入った。"));
+    }
+
+    [Test]
+    public void Translate_AppliesHybridPossessiveCrackedPattern()
+    {
+        WritePatternDictionary(("^Your (.+?)にひびが入った。?$", "{0}にひびが入った。"));
+
+        var translated = MessagePatternTranslator.Translate("Your 鋼鉄のブーツにひびが入った");
+
+        Assert.That(translated, Is.EqualTo("鋼鉄のブーツにひびが入った。"));
     }
 
     [Test]
@@ -738,7 +801,11 @@ public sealed class MessagePatternTranslatorTests
 
         var actual = MessagePatternTranslator.Translate(source);
 
-        Assert.That(actual, Is.EqualTo(expected), source);
+        Assert.Multiple(() =>
+        {
+            Assert.That(actual, Is.EqualTo(expected), source);
+            Assert.That(actual, Does.Not.Contain("You gain"));
+        });
     }
 
     [Test]
@@ -749,6 +816,40 @@ public sealed class MessagePatternTranslatorTests
         var translated = MessagePatternTranslator.Translate("One of タムの wounds stops bleeding.");
 
         Assert.That(translated, Is.EqualTo("タムの傷のひとつの出血が止まった。"));
+    }
+
+    [TestCase("You cannot reach タム to bandage their wounds.", "タムには届かず、傷に包帯を巻けない。")]
+    [TestCase("There's no one there.", "そこには誰もいない。")]
+    [TestCase("All of タムの wounds that can be staunched have been already.", "タムの止血できる傷はすべて処置済みだ。")]
+    [TestCase("All of your wounds that can be staunched have been already.", "あなたの止血できる傷はすべて処置済みだ。")]
+    [TestCase("タムの wounds have been bandaged.", "タムの傷は包帯処置済みだ。")]
+    [TestCase("Your wounds have been bandaged.", "あなたの傷は包帯処置済みだ。")]
+    [TestCase("タムの wounds are too deep to bandage.", "タムの傷は深すぎて包帯では処置できない。")]
+    [TestCase("Your wounds are too deep to bandage.", "あなたの傷は深すぎて包帯では処置できない。")]
+    public void Translate_RepositoryDictionary_TranslatesBandageMedicationFailureMessages(
+        string source,
+        string expected)
+    {
+        UseRepositoryPatternDictionary();
+
+        Assert.That(MessagePatternTranslator.Translate(source), Is.EqualTo(expected));
+    }
+
+    [TestCase(
+        "You have gained a level! You are now level {{C|2}}!\nYou gain {{rules|1}} hitpoint\nYou gain {{rules|1}} Skill Point",
+        "レベルが上がった！現在レベル{{C|2}}！\nヒットポイントを{{rules|1}}得た\nスキルポイントを{{rules|1}}得た")]
+    [TestCase(
+        "You have gained a level! You are now level {{C|6}}!\nYou gain {{rules|7}} hitpoints\nYou gain {{rules|50}} Skill Points\nYou gain {{rules|1}} Mutation Point\nYou gain {{rules|1}} to each attribute",
+        "レベルが上がった！現在レベル{{C|6}}！\nヒットポイントを{{rules|7}}得た\nスキルポイントを{{rules|50}}得た\n変異ポイントを{{rules|1}}得た\n各能力値が{{rules|1}}上昇した")]
+    public void Translate_RepositoryDictionary_TranslatesVariableLevelUpPopup(
+        string source,
+        string expected)
+    {
+        UseRepositoryPatternDictionary();
+
+        var actual = MessagePatternTranslator.Translate(source);
+
+        Assert.That(actual, Is.EqualTo(expected), source);
     }
 
     [TestCase("熊 nose begins leaking more heavily.", "熊の鼻が激しく液漏れし始めた。")]
@@ -1663,6 +1764,17 @@ public sealed class MessagePatternTranslatorTests
         var translated = MessagePatternTranslator.Translate("You toggle {{c|Akimbo}} on.");
 
         Assert.That(translated, Is.EqualTo("{{c|二挺拳銃}}をオンにした。"));
+    }
+
+    [Test]
+    public void Translate_RepositoryDictionary_TranslatesGainedActivatedAbilityCapture()
+    {
+        UseRepositoryPatternDictionary();
+
+        var translated = MessagePatternTranslator.Translate(
+            "You have gained the activated ability {{Y|Rifle through Trash}}.");
+
+        Assert.That(translated, Is.EqualTo("{{Y|ゴミ漁り}}を有効化能力として獲得した。"));
     }
 
     [Test]

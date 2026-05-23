@@ -631,6 +631,16 @@ internal static class MessageFrameTranslator
             return "あなた";
         }
 
+        if (string.Equals(trimmed, "it", StringComparison.OrdinalIgnoreCase))
+        {
+            return "それ";
+        }
+
+        if (string.Equals(trimmed, "them", StringComparison.OrdinalIgnoreCase))
+        {
+            return "それら";
+        }
+
         if (string.Equals(trimmed, "your", StringComparison.OrdinalIgnoreCase))
         {
             return "あなたの";
@@ -787,7 +797,7 @@ internal static class MessageFrameTranslator
             return false;
         }
 
-        phrase = objectText + suffix;
+        phrase = TranslatePlaceholderValue(objectText) + suffix;
         return true;
     }
 

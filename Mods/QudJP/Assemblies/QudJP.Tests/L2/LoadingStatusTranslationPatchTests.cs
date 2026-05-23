@@ -110,6 +110,40 @@ public sealed class LoadingStatusTranslationPatchTests
     }
 
     [Test]
+    public void Prefix_TranslatesRestingTurnStatus_WhenPatched()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyLoadingTarget), nameof(DummyLoadingTarget.SetLoadingStatus)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(LoadingStatusTranslationPatch), nameof(LoadingStatusTranslationPatch.Prefix))));
+
+            DummyLoadingTarget.SetLoadingStatus("Resting until healed... Turn: 123", waitForUiUpdate: true);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyLoadingTarget.LastDescription, Is.EqualTo("回復するまで休息中… ターン: 123"));
+                Assert.That(DummyLoadingTarget.LastWaitForUiUpdate, Is.True);
+            });
+
+            DummyLoadingTarget.SetLoadingStatus("Resting until party healed... Turn: 456", waitForUiUpdate: false);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyLoadingTarget.LastDescription, Is.EqualTo("パーティが回復するまで休息中… ターン: 456"));
+                Assert.That(DummyLoadingTarget.LastWaitForUiUpdate, Is.False);
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void Prefix_LeavesUnknownDescriptionUnchanged_WhenPatched()
     {
         var harmonyId = CreateHarmonyId();

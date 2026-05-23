@@ -2793,6 +2793,11 @@
             "text": "充電するアイテムを選択。"
         },
         {
+            "key": "You are out of turrets to place.",
+            "context": "XRL.World.Parts.TurretTinker.CommandTinkerTurret.ShowFailure",
+            "text": "設置できるタレットが残っていない。"
+        },
+        {
             "key": "{{c|You sense a sinister presence nearby.}}",
             "text": "{{c|近くに邪悪な気配を感じる。}}"
         }

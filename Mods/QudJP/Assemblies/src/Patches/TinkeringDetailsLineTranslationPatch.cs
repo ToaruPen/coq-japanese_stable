@@ -29,6 +29,8 @@ public static class TinkeringDetailsLineTranslationPatch
             }
 
             TranslateModDescriptionText(__instance);
+            TranslateText(__instance);
+            TranslateDescriptionText(__instance);
             TranslateModBitCostText(__instance);
         }
         catch (Exception ex)
@@ -57,6 +59,58 @@ public static class TinkeringDetailsLineTranslationPatch
         OwnerTextSetter.SetTranslatedText(
             modDescriptionText,
             current!,
+            translated,
+            Context,
+            typeof(TinkeringDetailsLineTranslationPatch));
+    }
+
+    private static void TranslateText(object instance)
+    {
+        var text = UiBindingTranslationHelpers.GetMemberValue(instance, "text");
+        var current = UITextSkinReflectionAccessor.GetCurrentText(text, Context);
+        if (string.IsNullOrEmpty(current))
+        {
+            return;
+        }
+
+        var route = ObservabilityHelpers.ComposeContext(Context, "field=text");
+        _ = MessageFrameTranslator.TryStripDirectTranslationMarker(current!, out var source);
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(source, route);
+        if (string.Equals(translated, current, StringComparison.Ordinal))
+        {
+            return;
+        }
+
+        DynamicTextObservability.RecordTransform(route, "TinkeringDetails.Text", current!, translated);
+        OwnerTextSetter.SetTranslatedText(
+            text,
+            source,
+            translated,
+            Context,
+            typeof(TinkeringDetailsLineTranslationPatch));
+    }
+
+    private static void TranslateDescriptionText(object instance)
+    {
+        var descriptionText = UiBindingTranslationHelpers.GetMemberValue(instance, "descriptionText");
+        var current = UITextSkinReflectionAccessor.GetCurrentText(descriptionText, Context);
+        if (string.IsNullOrEmpty(current))
+        {
+            return;
+        }
+
+        var route = ObservabilityHelpers.ComposeContext(Context, "field=descriptionText");
+        _ = MessageFrameTranslator.TryStripDirectTranslationMarker(current!, out var source);
+        var translated = DescriptionTextTranslator.TranslateLongDescription(source, route);
+        if (string.Equals(translated, current, StringComparison.Ordinal))
+        {
+            return;
+        }
+
+        DynamicTextObservability.RecordTransform(route, "TinkeringDetails.DescriptionText", current!, translated);
+        OwnerTextSetter.SetTranslatedText(
+            descriptionText,
+            source,
             translated,
             Context,
             typeof(TinkeringDetailsLineTranslationPatch));

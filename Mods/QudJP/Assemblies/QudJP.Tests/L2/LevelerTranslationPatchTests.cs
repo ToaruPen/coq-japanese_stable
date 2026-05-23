@@ -79,10 +79,25 @@ public sealed class LevelerTranslationPatchTests
     }
 
     [TestCase("")]
-    [TestCase("Your genome enters an excited state!")]
+    [TestCase("The genome hums quietly.")]
     public void Patch_DoesNotClaimFixedOrEmptyPopup_WhenOwnerPatched(string source)
     {
-        AssertOwnerPopup(source, source, "LevelerBuyMutationPrompt", expectedHits: 0);
+        OwnerPopupRouteTestHarness.WithPatchedPopupOwner(
+            typeof(LevelerTranslationPatch),
+            RequireOwnerMethod(),
+            () =>
+            {
+                new DummyLevelerProducer
+                {
+                    PopupMessageToShow = source,
+                }.RapidAdvancement(3, new DummyGameObject());
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(source));
+                    Assert.That(HitCount("LevelerBuyMutationPrompt"), Is.Zero);
+                });
+            });
     }
 
     private static void AssertOwnerPopup(string source, string expected, string detail, int expectedHits)

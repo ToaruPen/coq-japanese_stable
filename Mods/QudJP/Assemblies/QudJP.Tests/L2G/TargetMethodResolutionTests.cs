@@ -98,6 +98,7 @@ public sealed class TargetMethodResolutionTests
     [TestCase(typeof(EquipmentLineTranslationPatch), "setData", "Qud.UI.EquipmentLine", "System.Void", new[] { "XRL.UI.Framework.FrameworkDataElement" })]
     [TestCase(typeof(JournalLineTranslationPatch), "setData", "Qud.UI.JournalLine", "System.Void", new[] { "XRL.UI.Framework.FrameworkDataElement" })]
     [TestCase(typeof(TinkeringLineTranslationPatch), "setData", "Qud.UI.TinkeringLine", "System.Void", new[] { "XRL.UI.Framework.FrameworkDataElement" })]
+    [TestCase(typeof(TinkeringBitsLineTranslationPatch), "setData", "Qud.UI.TinkeringBitsLine", "System.Void", new[] { "XRL.UI.Framework.FrameworkDataElement" })]
     [TestCase(typeof(TinkeringDetailsLineTranslationPatch), "setData", "Qud.UI.TinkeringDetailsLine", "System.Void", new[] { "XRL.UI.Framework.FrameworkDataElement" })]
     [TestCase(typeof(AbilityManagerLineTranslationPatch), "setData", "Qud.UI.AbilityManagerLine", "System.Void", new[] { "XRL.UI.Framework.FrameworkDataElement" })]
     [TestCase(typeof(PickGameObjectLineTranslationPatch), "setData", "Qud.UI.PickGameObjectLine", "System.Void", new[] { "XRL.UI.Framework.FrameworkDataElement" })]
@@ -203,6 +204,7 @@ public sealed class TargetMethodResolutionTests
     [TestCase(typeof(QudMutationsModuleWindowTranslationPatch), "UpdateControls", "XRL.CharacterBuilds.Qud.UI.QudMutationsModuleWindow", "System.Void", new string[0])]
     [TestCase(typeof(SummaryBlockControlTranslationPatch), "setData", "XRL.UI.Framework.SummaryBlockControl", "System.Void", new[] { "XRL.UI.Framework.FrameworkDataElement" })]
     [TestCase(typeof(TradeLineTranslationPatch), "setData", "Qud.UI.TradeLine", "System.Void", new[] { "XRL.UI.Framework.FrameworkDataElement" })]
+    [TestCase(typeof(TradeUiLegacyScreenTranslationPatch), "ShowTradeScreen", "XRL.UI.TradeUI", "System.Void", new[] { "XRL.World.GameObject", "System.Single", "XRL.UI.TradeUI+TradeScreenMode" })]
     [TestCase(typeof(SkillsAndPowersStatusScreenTranslationPatch), "UpdateViewFromData", "Qud.UI.SkillsAndPowersStatusScreen", "System.Void", new string[0])]
     [TestCase(typeof(MessageQueueTranslationPatch), "AddPlayerMessage", "XRL.Messages.MessageQueue", "System.Void", new[] { "System.String", "System.String", "System.Boolean" })]
     [TestCase(typeof(MessageLogLineTranslationPatch), "setData", "Qud.UI.MessageLogLine", "System.Void", new[] { "XRL.UI.Framework.FrameworkDataElement" })]
@@ -669,6 +671,10 @@ public sealed class TargetMethodResolutionTests
     [TestCase(typeof(MainMenuLocalizationPatch), new[]
     {
         "",
+        "",
+    })]
+    [TestCase(typeof(XrlCoreStartMainMenuTranslationPatch), new[]
+    {
         "",
     })]
     [TestCase(typeof(CreditsMenuBarsTranslationPatch), new[]
@@ -1494,6 +1500,8 @@ public sealed class TargetMethodResolutionTests
     [TestCase(typeof(MutationActionFailureTranslationPatch), new[]
     {
         "XRL.World.Parts.Mutation.ElectricalGeneration|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
+        "XRL.World.Parts.Mutation.ElectricalGeneration|PerformDischarge|System.Boolean|System.Boolean",
+        "XRL.World.Parts.Mutation.RepellingForce|FireEvent|System.Boolean|XRL.World.Event",
         "XRL.World.Parts.Mutation.TeleportOther|FireEvent|System.Boolean|XRL.World.Event",
     })]
     [TestCase(typeof(MutationGeneratedTextTranslationPatch), new[]
@@ -1506,6 +1514,10 @@ public sealed class TargetMethodResolutionTests
     [TestCase(typeof(PickTargetShowPickerTranslationPatch), new[]
     {
         "XRL.UI.PickTarget|ShowPicker|XRL.World.Cell|XRL.UI.PickTarget+PickStyle|System.Int32|System.Int32|System.Int32|System.Int32|System.Boolean|XRL.World.AllowVis|System.Predicate`1[[XRL.World.GameObject]]|System.Predicate`1[[XRL.World.GameObject]]|XRL.World.GameObject|System.Nullable`1[[Genkit.Point2D]]|System.String|System.Boolean|System.Boolean",
+    })]
+    [TestCase(typeof(MissileWeaponShowPickerTranslationPatch), new[]
+    {
+        "XRL.World.Parts.MissileWeapon|ShowPicker|XRL.World.Parts.MissilePath|System.Int32|System.Int32|System.Boolean|XRL.World.AllowVis|System.Int32|System.Boolean|XRL.World.GameObject|XRL.World.Parts.FireType&|System.Int32",
     })]
     [TestCase(typeof(DisassemblyStartTranslationPatch), new[]
     {
@@ -1805,6 +1817,7 @@ public sealed class TargetMethodResolutionTests
         "XRL.UI.FactionsScreen|Show|XRL.UI.ScreenReturn|XRL.World.GameObject",
         "XRL.UI.SkillsAndPowersScreen|Show|XRL.UI.ScreenReturn|XRL.World.GameObject",
         "XRL.UI.EquipmentScreen|Show|XRL.UI.ScreenReturn|XRL.World.GameObject",
+        "XRL.UI.AbilityManager|Show|System.String|XRL.World.GameObject",
     })]
     [TestCase(typeof(StatusScreenPopupTranslationPatch), new[]
     {
@@ -1907,6 +1920,10 @@ public sealed class TargetMethodResolutionTests
     [TestCase(typeof(AbilityManagerShowTranslationPatch), new[]
     {
         "XRL.UI.AbilityManager|Show|System.String|XRL.World.GameObject",
+    })]
+    [TestCase(typeof(ActivatedAbilitiesAddAbilityPopupTranslationPatch), new[]
+    {
+        "XRL.World.Parts.ActivatedAbilities|AddAbility|System.Guid|System.String|System.String|System.String|System.String|System.String|System.String|System.Boolean|System.Boolean|System.Boolean|System.Boolean|System.Boolean|System.Boolean|System.Boolean|System.Boolean|System.Boolean|System.Boolean|System.Boolean|System.Boolean|System.Int32|System.String|ConsoleLib.Console.Renderable|ConsoleLib.Console.Renderable|ConsoleLib.Console.Renderable|ConsoleLib.Console.Renderable",
     })]
     [TestCase(typeof(PopupPickSeveralTranslationPatch), new[]
     {
@@ -2055,6 +2072,10 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.Quests.LandingPadsSystem|SlynthQuestWish|System.Void|System.String",
         "XRL.World.Quests.ReclamationSystem|WishTimer|System.Void",
         "XRL.World.StatWishHandler|ClearStatShifts|System.Void",
+    })]
+    [TestCase(typeof(BeginBeingUnequippedFailureMessageTranslationPatch), new[]
+    {
+        "XRL.World.BeginBeingUnequippedEvent|AddFailureMessage|System.Void|System.String",
     })]
     [TestCase(typeof(SingleCallsiteOwnerQueueTranslationPatch), new[]
     {

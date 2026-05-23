@@ -48,6 +48,10 @@
     { "key": "copper nugget", "text": "銅塊" },
     { "key": "folded carbide dagger", "text": "積層カーバイドの短剣" },
     { "key": "Bedroll", "context": "XRL.World.Effects.Prone.LyingOn", "text": "寝袋" },
+    { "key": "Triple Horn", "text": "三本角" },
+    { "key": "Horns", "text": "角" },
+    { "key": "Horn", "text": "単角" },
+    { "key": "Antlers", "text": "枝角" },
     { "key": "open air", "text": "開けた空間" },
     { "key": "craggy ledge", "text": "険しい岩棚" }
   ]

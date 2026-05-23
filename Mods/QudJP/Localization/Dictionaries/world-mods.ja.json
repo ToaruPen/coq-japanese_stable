@@ -70,6 +70,10 @@
       "text": "効果なし"
     },
     {
+      "key": "lacquered :: Item cannot rust.",
+      "text": "漆仕上げ :: 錆びない。"
+    },
+    {
       "context": "XRL.World.Parts.ModCybrid.GetShortDescription",
       "key": "Cybrid: Can draw power from biomechanical power transmission systems in addition to an electrical power grid.",
       "text": "サイブリッド: 電力網に加えて生体機械式の伝達機構からも給電できる。"

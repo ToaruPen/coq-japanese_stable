@@ -57,6 +57,26 @@ public sealed class WorldModsTextTranslatorTests
     }
 
     [Test]
+    public void TryTranslate_UsesExactLookupForTinkeringModDescription()
+    {
+        WriteDictionary(
+            "world-mods.ja.json",
+            ("lacquered :: Item cannot rust.", "漆仕上げ :: 錆びない。"));
+
+        var ok = WorldModsTextTranslator.TryTranslate(
+            "lacquered :: Item cannot rust.",
+            "TinkeringDetailsLineTranslationPatch",
+            "Description.WorldMods",
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(translated, Is.EqualTo("漆仕上げ :: 錆びない。"));
+        });
+    }
+
+    [Test]
     public void TryTranslate_PreservesColorsForScopedExactLookup()
     {
         WriteDictionary(

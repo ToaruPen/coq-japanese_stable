@@ -9,10 +9,10 @@ from scripts.validate_pattern_routes import ALLOWED_ROUTES, main, validate_patte
 
 _EXPECTED_MESSAGE_ROUTE_COUNTS = {
     "message-frame": 53,
-    "popup": 14,
+    "popup": 20,
     "journal": 1,
     "leaf": 0,
-    "emit-message": 342,
+    "emit-message": 352,
     "does-verb": 0,
     "message-log": 1,
     "description": 13,

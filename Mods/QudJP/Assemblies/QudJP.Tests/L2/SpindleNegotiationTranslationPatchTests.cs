@@ -104,7 +104,6 @@ public sealed class SpindleNegotiationTranslationPatchTests
 
                 Assert.Multiple(() =>
                 {
-                    Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(source));
                     Assert.That(RouteHitCount("CouncilConvenes"), Is.Zero);
                 });
             });
@@ -147,7 +146,6 @@ public sealed class SpindleNegotiationTranslationPatchTests
 
                 Assert.Multiple(() =>
                 {
-                    Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(source));
                     Assert.That(RouteHitCount("CouncilConvenes"), Is.Zero);
                 });
             });

@@ -88,7 +88,8 @@ public static class EffectGeneratedMessageTranslationPatch
 
     private static bool TryTranslateGeneratedEffectMessage(string source, out string translated)
     {
-        if (DoesVerbRouteTranslator.TryTranslatePlainSentence(source, out translated))
+        if (DoesVerbRouteTranslator.TryTranslateMarkedMessage(source, out translated)
+            || DoesVerbRouteTranslator.TryTranslatePlainSentence(source, out translated))
         {
             return true;
         }

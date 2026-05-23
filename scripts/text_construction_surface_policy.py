@@ -21,6 +21,7 @@ ClosureStatus = Literal[
     "partial_coverage",
     "runtime_required",
     "likely_true_gap",
+    "unreviewed",
 ]
 ClosureLane = Literal[
     "activated_ability_names",
@@ -123,6 +124,7 @@ CLASSIFICATION_ORDER: Final = {
     "non_target": 3,
 }
 VALUABLE_CLASSIFICATIONS: Final = frozenset({"player_visible_api", "player_visible_owner_candidate"})
+ACTIONABLE_CLOSURE_STATUSES: Final = frozenset({"action_required", "partial_coverage", "likely_true_gap"})
 LANE_ORDER: Final = {
     "combat_message_frame_does": 0,
     "conversation_routes": 1,
@@ -813,51 +815,64 @@ TEXT_CONSTRUCTION_CLOSURE_OVERLAY: Final[dict[str, ClosureOverlayEntry]] = {
         "closure_evidence": CONVERSATION_BODY_EVIDENCE,
     },
     "XRL.World.Conversations.Parts/QuestSignpost.cs::QuestSignpost.HandleEvent(PrepareTextEvent)": {
-        "closure_status": "partial_coverage",
+        "closure_status": "covered_by_owner_route",
         "closure_evidence": [
             *CONVERSATION_BODY_EVIDENCE,
             QUEST_SIGNPOST_PARTIAL_EVIDENCE,
+            (
+                "Generated questgiver names and landmark text are display-name/data-source routes, "
+                "not residual static producer work."
+            ),
         ],
     },
     (
         "XRL.World.Conversations.Parts/WaterRitualTinkeringRecipe.cs::"
         "WaterRitualTinkeringRecipe.HandleEvent(PrepareTextEvent)"
     ): {
-        "closure_status": "partial_coverage",
+        "closure_status": "covered_by_owner_route",
         "closure_evidence": [
             *CONVERSATION_BODY_EVIDENCE,
             TINKERING_RECIPE_PARTIAL_EVIDENCE,
+            (
+                "Generated item and recipe names are object/tinkering display-name routes, "
+                "not residual static producer work."
+            ),
         ],
     },
     (
         "XRL.World.Conversations.Parts/WaterRitualHermitOath.cs::"
         "WaterRitualHermitOath.HandleEvent(PrepareTextEvent)"
     ): {
-        "closure_status": "partial_coverage",
+        "closure_status": "covered_by_owner_route",
         "closure_evidence": [
             *CONVERSATION_BODY_EVIDENCE,
             HERMIT_OATH_PARTIAL_EVIDENCE,
+            (
+                "Speaker-specific HermitOathAddressAs values are runtime/data-source owned, "
+                "not residual static producer work."
+            ),
         ],
     },
     (
         "XRL.World.Conversations.Parts/WaterRitualLearnSkill.cs::"
         "WaterRitualLearnSkill.HandleEvent(PrepareTextEvent)"
     ): {
-        "closure_status": "partial_coverage",
+        "closure_status": "covered_by_owner_route",
         "closure_evidence": [
             *CONVERSATION_BODY_EVIDENCE,
             LEARN_SKILL_PARTIAL_EVIDENCE,
+            "Generated skill names remain exact dictionary/display-name routes, not residual static producer work.",
         ],
     },
     "XRL.World.Conversations.Parts/KithAndKinExclusion.cs::KithAndKinExclusion.HandleEvent(PrepareTextEvent)": {
-        "closure_status": "partial_coverage",
+        "closure_status": "covered_by_owner_route",
         "closure_evidence": [
             "docs/reports/2026-05-16-issue-719-conversation-text-construction-routes.md",
             "thief name replacement is a Kith-and-Kin game-state/display-name route, not a static producer route",
         ],
     },
     "XRL.World.Conversations.Parts/KithAndKinMotive.cs::KithAndKinMotive.HandleEvent(PrepareTextEvent)": {
-        "closure_status": "partial_coverage",
+        "closure_status": "covered_by_owner_route",
         "closure_evidence": [
             "docs/reports/2026-05-16-issue-719-conversation-text-construction-routes.md",
             "circumstance influence replacement is a Kith-and-Kin clue/game-state route, not a static producer route",
@@ -967,26 +982,68 @@ TEXT_CONSTRUCTION_CLOSURE_OVERLAY: Final[dict[str, ClosureOverlayEntry]] = {
         ],
     },
     "XRL.World.Parts/Inventory.cs::Inventory.FireEvent(Event)": {
-        "closure_status": "partial_coverage",
+        "closure_status": "covered_by_owner_route",
         "closure_evidence": [
+            (
+                "InventoryFireEventTranslationPatch covers the owner-owned "
+                "graveyard recovery queue, container ownership prompt, stuck "
+                "equip/remove popups, Inventory fallback cannot-equip and "
+                "cannot-budge "
+                "popups; BeginBeingUnequippedEvent covers the confirmed "
+                "You can't remove {item} FailureMessage helper shape; other "
+                "event-supplied FailureMessage payloads remain split to their "
+                "true producers."
+            ),
             "Mods/QudJP/Assemblies/src/Patches/InventoryFireEventTranslationPatch.cs",
             "Mods/QudJP/Assemblies/QudJP.Tests/L2/InventoryFireEventTranslationPatchTests.cs",
+            "Mods/QudJP/Assemblies/src/Patches/BeginBeingUnequippedFailureMessageTranslationPatch.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2/BeginBeingUnequippedFailureMessageTranslationPatchTests.cs",
             "docs/reports/2026-05-15-issue-576-static-producer-runtime-deferrals.md",
         ],
     },
     "XRL.World.Parts/MissileWeapon.cs::MissileWeapon.FireEvent(Event)": {
-        "closure_status": "partial_coverage",
+        "closure_status": "covered_by_owner_route",
         "closure_evidence": [
+            (
+                "MissileWeapon.FireEvent direct surfaces are covered by "
+                "message-frame/message-pattern routes for emitted projectiles "
+                "and shot-goes-wild messages; CheckLoadAmmoEvent and "
+                "LoadAmmoEvent payloads are split to loader true producers "
+                "such as BioAmmoLoader/LiquidAmmoLoader/ModLiquidCooled and "
+                "generic ammo loader patterns."
+            ),
+            "Mods/QudJP/Localization/Dictionaries/messages.ja.json",
+            "Mods/QudJP/Localization/Dictionaries/ui-messagelog-leaf.ja.json",
+            "Mods/QudJP/Localization/MessageFrames/verbs.ja.json",
+            "Mods/QudJP/Assemblies/src/Patches/LiquidLoaderTranslationPatch.cs",
             "Mods/QudJP/Assemblies/QudJP.Tests/L1/MessagePatternTranslatorTests.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L1/MessageFrameTranslatorTests.cs",
             "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
             "docs/reports/2026-05-15-issue-576-static-producer-runtime-deferrals.md",
             "docs/reports/2026-05-15-issue-699-static-producer-message-candidates.md",
         ],
     },
     "XRL.UI/TradeUI.cs::TradeUI.ShowTradeScreen(GameObject,float,TradeScreenMode)": {
-        "closure_status": "partial_coverage",
+        "closure_status": "covered_by_owner_route",
         "closure_evidence": [
+            (
+                "TradeUI.ShowTradeScreen popups and water-debt prompts are "
+                "covered by TradeUiPopupTranslationPatch; modern TradeScreen "
+                "menu/AskNumber/update-total surfaces are covered by "
+                "TradeScreenUiTranslationPatch/TradeScreenUpdateTotals; "
+                "legacy console chrome, ownership badges, inventory title, "
+                "dram/weight units, and bottom action prompts are covered by "
+                "TradeUiLegacyScreenTranslationPatch. Dynamic item/category "
+                "names are owner data/display-name routes."
+            ),
+            "Mods/QudJP/Assemblies/src/Patches/TradeUiLegacyScreenTranslationPatch.cs",
+            "Mods/QudJP/Assemblies/src/Patches/TradeScreenUiTranslationPatch.cs",
+            "Mods/QudJP/Assemblies/src/Patches/TradeScreenUpdateTotalsTranslationPatch.cs",
             "Mods/QudJP/Assemblies/QudJP.Tests/L2/TradeUiPopupTranslationPatchTests.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2/TradeScreenUiTranslationPatchTests.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2/LegacyGamepadPromptTranslationPatchTests.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L1/LegacyGamepadPromptTranslationHelperTests.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
             "docs/reports/2026-05-15-issue-576-static-producer-runtime-deferrals.md",
         ],
     },
@@ -1014,20 +1071,38 @@ TEXT_CONSTRUCTION_CLOSURE_OVERLAY: Final[dict[str, ClosureOverlayEntry]] = {
         ],
     },
     "XRL.World.Parts/LiquidVolume.cs::LiquidVolume.HandleEvent(InventoryActionEvent)": {
-        "closure_status": "partial_coverage",
+        "closure_status": "covered_by_owner_route",
         "closure_evidence": [
+            (
+                "Issue #762 covers LiquidVolume.HandleEvent fixed failures, "
+                "ownership/confirmation popups, fill-from picker titles, "
+                "AskNumber dram prompts, status popups, and generated liquid "
+                "collection messages through owner-scoped LiquidVolume routes."
+            ),
             "Mods/QudJP/Assemblies/src/Patches/LiquidVolumeTranslationPatch.cs",
+            "Mods/QudJP/Assemblies/src/Patches/PickItemShowPickerTitleTranslationPatch.cs",
+            "Mods/QudJP/Assemblies/src/Patches/PopupAskNumberTranslationPatch.cs",
             "Mods/QudJP/Assemblies/QudJP.Tests/L1/WorldPartsFragmentTranslatorTests.cs",
             "Mods/QudJP/Assemblies/QudJP.Tests/L2/WorldPartsProducerTranslationPatchTests.cs",
             "docs/reports/2026-05-15-issue-576-static-producer-runtime-deferrals.md",
         ],
     },
     "XRL.World.Parts/Tonic.cs::Tonic.HandleEvent(InventoryActionEvent)": {
-        "closure_status": "partial_coverage",
+        "closure_status": "covered_by_owner_route",
         "closure_evidence": [
+            (
+                "Tonic.HandleEvent inventory-action failures, apply-to target "
+                "failures, visible third-party use messages, and the Apply "
+                "direction prompt are covered through the Tonic owner route "
+                "and pick-target label route; runtime MakeUnderstood popup "
+                "text remains a separate part-supplied message."
+            ),
+            "Mods/QudJP/Assemblies/src/Patches/SingleCallsiteOwnerQueueTranslationPatch.cs",
+            "Mods/QudJP/Assemblies/src/Patches/PickTargetWindowTextTranslator.cs",
             "Mods/QudJP/Assemblies/src/Patches/TonicTranslationPatch.cs",
             "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
             "Mods/QudJP/Assemblies/QudJP.Tests/L2/SingleCallsiteOwnerQueueTranslationPatchTests.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2/PickTargetWindowUpdateTranslationPatchTests.cs",
             "docs/reports/2026-05-15-issue-576-static-producer-runtime-deferrals.md",
         ],
     },
@@ -1442,11 +1517,14 @@ TEXT_CONSTRUCTION_CLOSURE_OVERLAY: Final[dict[str, ClosureOverlayEntry]] = {
         "closure_evidence": HSE_NAMESTYLE_XML_ROUTE_EVIDENCE,
     },
     "XRL.World.Parts/CherubimSpawner.cs::CherubimSpawner.HandleEvent(BeforeObjectCreatedEvent)": {
-        "closure_status": "partial_coverage",
+        "closure_status": "covered_by_owner_route",
         "closure_evidence": [
             (
-                "Issue #762 covers the generated element display/rules text via "
-                "BestowElement; the base cherub description route remains split."
+                "Issue #762 covers generated element display/rules text via "
+                "BestowElement and base organic/mechanical cherub descriptions "
+                "through the CherubimSpawner owner route; faction-derived "
+                "object-name composition remains dynamic data and should not be "
+                "closed with exact leaves."
             ),
             "Mods/QudJP/Assemblies/src/Patches/CherubimSpawnerReplaceDescriptionPatch.cs",
             "Mods/QudJP/Assemblies/QudJP.Tests/L2/CherubimSpawnerReplaceDescriptionPatchTests.cs",
@@ -1456,16 +1534,37 @@ TEXT_CONSTRUCTION_CLOSURE_OVERLAY: Final[dict[str, ClosureOverlayEntry]] = {
         ],
     },
     "XRL.World.Parts/SultanShrine.cs::SultanShrine.ShrineInitialize()": {
-        "closure_status": "partial_coverage",
+        "closure_status": "covered_by_owner_route",
         "closure_evidence": [
+            (
+                "Sultan shrine display names are covered by the generated "
+                "`shrine to <target>` display-name wrapper route and shrine "
+                "descriptions are covered by the SultanShrine wrapper "
+                "translator; generated sultan names/cognomina remain dynamic "
+                "fragments, not fixed leaves."
+            ),
+            "Mods/QudJP/Assemblies/src/Patches/GetDisplayNameRouteTranslator.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L1/GetDisplayNameRouteTranslatorTests.cs",
             "Mods/QudJP/Assemblies/src/Patches/SultanShrineWrapperTranslator.cs",
             "Mods/QudJP/Assemblies/QudJP.Tests/L2/SultanShrineWrapperTranslatorTests.cs",
         ],
     },
     "XRL.UI/StatusScreen.cs::StatusScreen.Show(GameObject)": {
-        "closure_status": "partial_coverage",
+        "closure_status": "covered_by_owner_route",
         "closure_evidence": [
+            (
+                "Legacy StatusScreen.Show chrome, footer, stat labels, "
+                "resistance labels, mutation/effect labels, and dynamic "
+                "attribute/mutation popups are covered by the legacy screen "
+                "transpiler and owner-scoped status popup routes; genotype, "
+                "subtype, mutation, and effect display names are data/display "
+                "routes rather than residual static producer gaps."
+            ),
+            "Mods/QudJP/Assemblies/src/Patches/StatusScreenTranslationPatch.cs",
             "Mods/QudJP/Assemblies/src/Patches/StatusScreenPopupTranslationPatch.cs",
+            "Mods/QudJP/Assemblies/src/Patches/StatusScreenMutationPopupTranslationPatch.cs",
+            "Mods/QudJP/Assemblies/src/Patches/LegacyGamepadPromptTranslationPatch.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2/LegacyGamepadPromptTranslationPatchTests.cs",
             "Mods/QudJP/Assemblies/QudJP.Tests/L2/StatusScreenPopupTranslationPatchTests.cs",
             "docs/reports/2026-05-15-issue-576-static-producer-runtime-deferrals.md",
         ],
@@ -1479,57 +1578,109 @@ TEXT_CONSTRUCTION_CLOSURE_OVERLAY: Final[dict[str, ClosureOverlayEntry]] = {
         ],
     },
     "XRL.UI/TinkeringScreen.cs::TinkeringScreen.Show(GameObject,GameObject,IEvent)": {
-        "closure_status": "partial_coverage",
+        "closure_status": "covered_by_owner_route",
         "closure_evidence": [
+            (
+                "Legacy fixed chrome labels are covered by "
+                "TinkeringScreenTranslationPatch, including title, mode tabs, "
+                "empty-state prompts, Bit Locker labels, bit descriptions, "
+                "ingredient alternatives, and footer commands; dynamic recipe "
+                "display names/descriptions remain owner-data surfaces."
+            ),
             "Mods/QudJP/Assemblies/src/Patches/TinkeringScreenTranslationPatch.cs",
             "Mods/QudJP/Assemblies/QudJP.Tests/L2/TinkeringTranslationPatchTests.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2/LegacyGamepadPromptTranslationPatchTests.cs",
         ],
     },
     "XRL.UI/InventoryScreen.cs::InventoryScreen.Show(GameObject)": {
-        "closure_status": "partial_coverage",
+        "closure_status": "covered_by_owner_route",
         "closure_evidence": [
+            (
+                "Legacy InventoryScreen.Show fixed chrome, footer commands, "
+                "scroll markers, total-weight label, quick-key prompt, and "
+                "filter-hidden count are covered by the legacy screen "
+                "transpiler; item/category names, counts, and weights are "
+                "owner-data/display-name surfaces."
+            ),
             "Mods/QudJP/Assemblies/src/Patches/InventoryScreenTranslationPatch.cs",
+            "Mods/QudJP/Assemblies/src/Patches/LegacyGamepadPromptTranslationPatch.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L1/LegacyGamepadPromptTranslationHelperTests.cs",
             "Mods/QudJP/Assemblies/QudJP.Tests/L2/LegacyGamepadPromptTranslationPatchTests.cs",
         ],
     },
     "XRL.UI/AbilityManager.cs::AbilityManager.Show(XRL.World.GameObject)": {
-        "closure_status": "partial_coverage",
+        "closure_status": "covered_by_owner_route",
         "closure_evidence": [
+            (
+                "Legacy ability-manager fixed chrome, category/row status fragments, "
+                "cooldown detail lines, and footer commands are covered by the legacy "
+                "ScreenBuffer owner route; queued ability cooldown messages remain "
+                "covered by the owner-scoped message route."
+            ),
+            "Mods/QudJP/Assemblies/src/Patches/AbilityManagerLegacyScreenTranslationPatch.cs",
             "Mods/QudJP/Assemblies/src/Patches/AbilityManagerShowTranslationPatch.cs",
+            "Mods/QudJP/Assemblies/src/Patches/LegacyGamepadPromptTranslationPatch.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2/LegacyGamepadPromptTranslationPatchTests.cs",
             "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
             "docs/reports/2026-05-15-issue-576-static-producer-runtime-deferrals.md",
         ],
     },
     "Qud.UI/TinkeringDetailsLine.cs::TinkeringDetailsLine.setData(FrameworkDataElement)": {
-        "closure_status": "partial_coverage",
+        "closure_status": "covered_by_owner_route",
         "closure_evidence": [
+            (
+                "TinkeringDetailsLineTranslationPatch covers setData sinks for "
+                "display names, build/mod descriptions, mod descriptions, "
+                "bit-cost labels, ingredients labels, and -or- separators."
+            ),
             "Mods/QudJP/Assemblies/src/Patches/TinkeringDetailsLineTranslationPatch.cs",
             "Mods/QudJP/Assemblies/QudJP.Tests/L2/TinkeringTranslationPatchTests.cs",
-            "docs/reports/2026-05-15-static-uncovered-coverage-triage.md",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L1/ColorRouteCatalogTests.cs",
         ],
     },
     "XRL.World/PsychicCombatSifrah.cs::PsychicCombatSifrah.PsychicCombatSifrah(GameObject,string,int,int,string)": {
-        "closure_status": "partial_coverage",
+        "closure_status": "runtime_required",
         "closure_evidence": [
+            "decompiled XRL.World/PsychicCombatSifrah.cs notes: This class is not used in the base game.",
             "Mods/QudJP/Assemblies/src/Patches/SifrahPureOwnerPopupTranslationPatch.cs",
             "Mods/QudJP/Assemblies/QudJP.Tests/L2/SifrahPureOwnerPopupTranslationPatchTests.cs",
+            "Mods/QudJP/Localization/Dictionaries/ui-messagelog-world.ja.json",
+            "Mods/QudJP/Localization/Dictionaries/world-parts.ja.json",
         ],
     },
     "XRL.World.Parts.Mutation/MultiHorns.cs::MultiHorns.Mutate(GameObject,int)": {
-        "closure_status": "partial_coverage",
+        "closure_status": "covered_by_owner_route",
         "closure_evidence": [
+            (
+                "Issue #762 covers Wrecking Charge through the activated ability "
+                "route and the runtime Triple Horn/Horns/Horn/Antlers mutation "
+                "display names through status display exact leaves."
+            ),
+            "Mods/QudJP/Localization/Dictionaries/ui-displayname-atomic.ja.json",
             "Mods/QudJP/Localization/Dictionaries/ui-skillsandpowers.ja.json",
             "Mods/QudJP/Assemblies/QudJP.Tests/L1/LocalizationCoverageTests.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2/StatusScreenBindingOwnerPatchTests.cs",
         ],
     },
     (
         "XRL.World.Parts/MissileWeapon.cs::MissileWeapon.ShowPicker("
         "int,int,bool,AllowVis,int,bool,GameObject,ref FireType,int)"
     ): {
-        "closure_status": "partial_coverage",
+        "closure_status": "covered_by_owner_route",
         "closure_evidence": [
+            (
+                "MissileWeapon.ShowPicker fire-target footer, fire-mode menu "
+                "labels, marked-target prompts, and legacy ScreenBuffer writes "
+                "are covered by the pick-target owner route."
+            ),
+            "Mods/QudJP/Assemblies/src/Patches/MissileWeaponShowPickerTranslationPatch.cs",
+            "Mods/QudJP/Assemblies/src/Patches/PickTargetWindowTextTranslator.cs",
             "Mods/QudJP/Localization/Dictionaries/ui-popup.ja.json",
+            "Mods/QudJP/Localization/Dictionaries/ui-pick-target.ja.json",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2/LegacyGamepadPromptTranslationPatchTests.cs",
             "Mods/QudJP/Assemblies/QudJP.Tests/L2/UITextSkinTranslationPatchTests.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
         ],
     },
     "XRL.UI/OptionsUI.cs::OptionsUI.Show()": {
@@ -1613,21 +1764,36 @@ TEXT_CONSTRUCTION_CLOSURE_OVERLAY: Final[dict[str, ClosureOverlayEntry]] = {
         ],
     },
     "XRL.World.Parts/TurretTinker.cs::TurretTinker.FireEvent(Event)": {
-        "closure_status": "partial_coverage",
+        "closure_status": "covered_by_owner_route",
         "closure_evidence": [
             (
                 "Issue #762 covers the generated activated ability display name "
-                "`Tinker Turret [N remaining]`; remaining prompt/failure branches "
-                "need separate route review."
+                "`Tinker Turret [N remaining]`; the CommandTinkerTurret direction "
+                "prompt and out-of-turrets failure popup are covered by fixed "
+                "dictionary leaves through PickTarget and Popup owner routes."
             ),
             "Mods/QudJP/Assemblies/src/Patches/ActivatedAbilityNameTranslator.cs",
             "Mods/QudJP/Assemblies/QudJP.Tests/L2/AbilityBarButtonTextTranslationPatchTests.cs",
+            "Mods/QudJP/Localization/Dictionaries/ui-pick-target.ja.json",
+            "Mods/QudJP/Localization/Dictionaries/ui-popup.ja.json",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2/PickTargetWindowUpdateTranslationPatchTests.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2/PopupShowTranslationPatchTests.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L1/LocalizationCoverageTests.cs",
             "docs/reports/2026-05-16-issue-711-text-construction-separation.md",
         ],
     },
     "XRL.Core/XRLCore.cs::XRLCore._Start()": {
-        "closure_status": "likely_true_gap",
+        "closure_status": "covered_by_owner_route",
         "closure_evidence": [
+            (
+                "Legacy XRLCore._Start main-menu ScreenBuffer.Write/WriteAt "
+                "labels, mod warnings, title, and copyright text are covered "
+                "by the legacy main-menu owner route."
+            ),
+            "Mods/QudJP/Assemblies/src/Patches/XrlCoreStartMainMenuTranslationPatch.cs",
+            "Mods/QudJP/Assemblies/src/Patches/LegacyGamepadPromptTranslationHelpers.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2/LegacyGamepadPromptTranslationPatchTests.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
             "docs/reports/2026-05-16-issue-711-text-construction-separation.md",
         ],
     },
@@ -1689,13 +1855,14 @@ TEXT_CONSTRUCTION_CLOSURE_OVERLAY: Final[dict[str, ClosureOverlayEntry]] = {
         "XRL.World.Parts.Mutation/EvilTwin.cs::"
         "EvilTwin.CreateEvilTwin(GameObject,string,Cell,string,string,GameObject,string,bool,string,string)"
     ): {
-        "closure_status": "partial_coverage",
+        "closure_status": "covered_by_owner_route",
         "closure_evidence": [
             (
                 "Issue #762 covers the known finite EvilTwin/HexCrystal/"
                 "EngulfingClones generated display-name prefixes and runtime "
                 "short descriptions; arbitrary caller-supplied Prefix, Message, "
-                "and MessageForActor values remain split from this route proof."
+                "and MessageForActor values are deferred until a concrete "
+                "producer/callsite proves a visible localization gap."
             ),
             "Mods/QudJP/Assemblies/src/Patches/GetDisplayNameRouteTranslator.cs",
             "Mods/QudJP/Localization/Dictionaries/descriptions.ja.json",
@@ -1783,14 +1950,18 @@ TEXT_CONSTRUCTION_CLOSURE_OVERLAY: Final[dict[str, ClosureOverlayEntry]] = {
         ],
     },
     "XRL.World.Parts/BandageMedication.cs::BandageMedication.PerformBandaging(GameObject,GameObject)": {
-        "closure_status": "partial_coverage",
+        "closure_status": "covered_by_owner_route",
         "closure_evidence": [
             (
-                "Issue #762 covers the successful bandage/staunch MessageFrame "
-                "shapes; failure prompt and phase/stasis branches remain split "
-                "for focused owner-route review."
+                "Issue #762 covers the bandage direction prompt, Actor.Fail "
+                "failure messages, and successful plus phase/stasis "
+                "MessageFrame shapes."
             ),
             "Mods/QudJP/Assemblies/QudJP.Tests/L1/MessageFrameTranslatorTests.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L1/MessagePatternTranslatorTests.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L1/LocalizationCoverageTests.cs",
+            "Mods/QudJP/Localization/Dictionaries/ui-pick-target.ja.json",
+            "Mods/QudJP/Localization/Dictionaries/messages.ja.json",
             "Mods/QudJP/Localization/MessageFrames/verbs.ja.json",
             "docs/reports/2026-05-15-static-uncovered-coverage-triage.md",
             "docs/reports/2026-05-16-issue-711-text-construction-separation.md",
@@ -1810,14 +1981,17 @@ TEXT_CONSTRUCTION_CLOSURE_OVERLAY: Final[dict[str, ClosureOverlayEntry]] = {
         ],
     },
     "XRL.World.Parts.Mutation/MultiHorns.cs::MultiHorns.PerformCharge(List<Cell>,bool)": {
-        "closure_status": "partial_coverage",
+        "closure_status": "covered_by_owner_route",
         "closure_evidence": [
             (
                 "Issue #762 covers the `charge`, `stomp with bestial fury`, and "
-                "`stopped in its tracks by` MessageFrame shapes; damage/shoved "
-                "side effects remain split from this route proof."
+                "`stopped in its tracks by` MessageFrame shapes, the shoved-by-charge "
+                "MessageFrame, and charge wall-slam damage tails through the "
+                "Physics.ProcessTakeDamage owner route."
             ),
             "Mods/QudJP/Assemblies/QudJP.Tests/L1/MessageFrameTranslatorTests.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+            "Mods/QudJP/Assemblies/src/Patches/PhysicsProcessTakeDamageTranslationPatch.cs",
             "Mods/QudJP/Localization/MessageFrames/verbs.ja.json",
             "docs/reports/2026-05-15-static-uncovered-coverage-triage.md",
             "docs/reports/2026-05-16-issue-711-text-construction-separation.md",
@@ -2173,7 +2347,7 @@ def main(argv: list[str] | None = None) -> int:
     _ = parser.add_argument("--format", choices=("text", "json", "lanes-json"), default="text")
     _ = parser.add_argument(
         "--include",
-        choices=("valuable", "all", "candidate-only", "non-target"),
+        choices=("valuable", "needs-work", "unreviewed", "all", "candidate-only", "non-target"),
         default="valuable",
     )
     _ = parser.add_argument("--limit", type=int, default=50, help="maximum text rows; 0 means all")
@@ -2245,7 +2419,7 @@ def _closure_overlay(family: TextConstructionFamily, closure_lane: ClosureLane) 
     if overlay is None:
         if _is_conversation_choice_tag_family_id(family_id):
             return "covered_by_owner_route", list(CONVERSATION_CHOICE_TAG_EVIDENCE)
-        return "action_required", []
+        return "unreviewed", []
     return overlay["closure_status"], list(overlay["closure_evidence"])
 
 
@@ -2377,6 +2551,20 @@ def _filter_entries(entries: list[SurfaceQueueEntry], include: str) -> list[Surf
     match include:
         case "valuable":
             return [entry for entry in entries if entry["classification"] in VALUABLE_CLASSIFICATIONS]
+        case "needs-work":
+            return [
+                entry
+                for entry in entries
+                if entry["classification"] in VALUABLE_CLASSIFICATIONS
+                and entry["closure_status"] in ACTIONABLE_CLOSURE_STATUSES
+            ]
+        case "unreviewed":
+            return [
+                entry
+                for entry in entries
+                if entry["classification"] in VALUABLE_CLASSIFICATIONS
+                and entry["closure_status"] == "unreviewed"
+            ]
         case "candidate-only":
             return [entry for entry in entries if entry["classification"] == "candidate_only"]
         case "non-target":

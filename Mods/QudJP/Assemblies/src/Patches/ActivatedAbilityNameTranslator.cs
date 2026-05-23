@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Text.RegularExpressions;
 
 namespace QudJP.Patches;
@@ -48,6 +49,11 @@ internal static class ActivatedAbilityNameTranslator
         if (scoped is not null)
         {
             translated = scoped;
+            return true;
+        }
+
+        if (TryTranslateStructuredAbilityName(source, out translated))
+        {
             return true;
         }
 
@@ -144,6 +150,26 @@ internal static class ActivatedAbilityNameTranslator
             return true;
         }
 
+        return false;
+    }
+
+    private static bool TryTranslateStructuredAbilityName(string source, out string translated)
+    {
+        try
+        {
+            var structured = ChargenStructuredTextTranslator.Translate(source);
+            if (!string.Equals(structured, source, StringComparison.Ordinal))
+            {
+                translated = structured;
+                return true;
+            }
+        }
+        catch (Exception ex)
+        {
+            Trace.TraceWarning("QudJP: failed to translate activated ability name '{0}': {1}", source, ex.Message);
+        }
+
+        translated = source;
         return false;
     }
 

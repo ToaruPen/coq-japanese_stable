@@ -49,6 +49,8 @@ internal sealed class DummyTinkeringRecipeData
     public string Type { get; set; } = "Build";
 
     public string DisplayName { get; set; } = "build item";
+
+    public string UnclippedDescription { get; set; } = "This contraption hums quietly.";
 }
 
 internal sealed class DummyTinkeringModObject
@@ -124,6 +126,27 @@ internal sealed class DummyTinkeringLineTarget
     }
 }
 
+internal sealed class DummyTinkeringBitsLineDataTarget
+{
+    public string bit = "{{R|1 scrap power systems}}";
+}
+
+internal sealed class DummyTinkeringBitsLineTarget
+{
+    public bool OriginalExecuted { get; private set; }
+
+    public DummyUITextSkin text = new DummyUITextSkin();
+
+    public void setData(object data)
+    {
+        OriginalExecuted = true;
+        if (data is DummyTinkeringBitsLineDataTarget tinkeringBitsLineData)
+        {
+            text.SetText(tinkeringBitsLineData.bit);
+        }
+    }
+}
+
 internal sealed class DummyTinkeringDetailsLineTarget
 {
     public bool OriginalExecuted { get; private set; }
@@ -131,6 +154,10 @@ internal sealed class DummyTinkeringDetailsLineTarget
     public DummyActiveObject gameObject = new DummyActiveObject();
 
     public DummyUITextSkin modBitCostText = new DummyUITextSkin();
+
+    public DummyUITextSkin text = new DummyUITextSkin();
+
+    public DummyUITextSkin descriptionText = new DummyUITextSkin();
 
     public DummyUITextSkin modDescriptionText = new DummyUITextSkin();
 
@@ -149,13 +176,16 @@ internal sealed class DummyTinkeringDetailsLineTarget
         }
 
         gameObject.SetActive(true);
+        text.SetText(tinkeringLineData.data.DisplayName);
         if (tinkeringLineData.data.Type == "Mod")
         {
+            descriptionText.SetText("This item has been modified.");
             modDescriptionText.SetText("{{rules|Gigantic: This weapon has +3 damage and cleaves for -3 AV. It can only be equipped by gigantic creatures.}}");
             modBitCostText.SetText("{{K || Bit Cost |}}\n{{R|A}}{{C|C}}\n\n{{K|| Ingredients |}}\n{{G|u}} item A\n-or-\n{{R|X}} item B");
             return;
         }
 
+        descriptionText.SetText(tinkeringLineData.data.UnclippedDescription);
         modBitCostText.SetText("{{K|| Bit Cost |}}\n{{R|A}}{{C|C}}\n\n{{K|| Ingredients |}}\n{{G|u}} item A\n-or-\n{{R|X}} item B");
     }
 }

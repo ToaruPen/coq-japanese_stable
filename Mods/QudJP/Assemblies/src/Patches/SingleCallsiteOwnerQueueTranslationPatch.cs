@@ -40,6 +40,43 @@ public static class SingleCallsiteOwnerQueueTranslationPatch
         "^(?<actor>.+?) (?<verb>eats|eat|applies|apply) (?<object>.+?)\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex TonicUnableConsumePattern = new(
+        "^(?<subject>.+?) (?:are|is) unable to consume tonics\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex TonicBrokenPattern = new(
+        "^(?<item>.+?) (?:is|are) broken\\.\\.\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex TonicRustedPattern = new(
+        "^(?<item>.+?) (?:is|are) rusted\\.\\.\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex TonicOutOfPhasePattern = new(
+        "^You are out of phase with (?<target>.+?)\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex TonicCannotReachPattern = new(
+        "^You cannot reach (?<target>.+?)\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex TonicNoOneTherePattern = new(
+        "^There is no one there you can (?<verb>feed|apply) (?<tonic>.+?) to\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex TonicSelfTargetPattern = new(
+        "^If you want to (?<verb>eat) (?<tonic>.+?) (?<self>yourself|itself|himself|herself|themself|themselves), you can do so through the (?<action>eat) action\\.$"
+        + "|^If you want to (?<verb>apply) (?<tonic>.+?) to (?<self>yourself|itself|himself|herself|themself|themselves), you can do so through the (?<action>apply) action\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex TonicUnwillingConsumePattern = new(
+        "^(?<target>.+?) (?:do|does) not want to consume (?<tonic>.+?)\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex TonicUnwillingApplyPattern = new(
+        "^(?<target>.+?) (?:do|does) not want (?<tonic>.+?) applied to (?<pronoun>.+?)\\. You'll need to equip (?<itemPronoun>.+?) as a weapon and attack with (?<attackPronoun>.+?)\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     private static readonly Regex ThiefBotPincersPassThroughPattern = new(
         "^(?<target>.+?)(?:'s|') pincers pass through you harmlessly\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
@@ -242,6 +279,13 @@ public static class SingleCallsiteOwnerQueueTranslationPatch
             return true;
         }
 
+        if (OwnerMatches(ownerKey, ActivatedAbilityEntryOwner)
+            && ActivatedAbilityCooldownTranslator.TryTranslateRawCooldown(source, out translated))
+        {
+            detail = "ActivatedAbilityEntryNotUsableDescription";
+            return true;
+        }
+
         if (string.Equals(source, "Nothing seems to happen when you hit the switch.", StringComparison.Ordinal)
             && OwnerMatches(ownerKey, ElevatorSwitchOwner))
         {
@@ -331,6 +375,11 @@ public static class SingleCallsiteOwnerQueueTranslationPatch
             return true;
         }
 
+        if (TryTranslateTonicHandleEventFailure(source, ownerKey, out translated, out detail))
+        {
+            return true;
+        }
+
         match = TonicVisibleConsumePattern.Match(source);
         if (match.Success && OwnerMatches(ownerKey, TonicHandleEventOwner))
         {
@@ -352,6 +401,104 @@ public static class SingleCallsiteOwnerQueueTranslationPatch
 
         translated = source;
         detail = string.Empty;
+        return false;
+    }
+
+    private static bool TryTranslateTonicHandleEventFailure(
+        string source,
+        string? ownerKey,
+        out string translated,
+        out string detail)
+    {
+        translated = source;
+        detail = string.Empty;
+        if (!OwnerMatches(ownerKey, TonicHandleEventOwner))
+        {
+            return false;
+        }
+
+        var match = TonicUnableConsumePattern.Match(source);
+        if (match.Success)
+        {
+            translated = NormalizeTonicSubject(match.Groups["subject"].Value) + "はトニックを摂取できない。";
+            detail = "TonicUnableConsume";
+            return true;
+        }
+
+        match = TonicBrokenPattern.Match(source);
+        if (match.Success)
+        {
+            translated = match.Groups["item"].Value + "は壊れている...";
+            detail = "TonicBroken";
+            return true;
+        }
+
+        match = TonicRustedPattern.Match(source);
+        if (match.Success)
+        {
+            translated = match.Groups["item"].Value + "は錆びている...";
+            detail = "TonicRusted";
+            return true;
+        }
+
+        match = TonicOutOfPhasePattern.Match(source);
+        if (match.Success)
+        {
+            translated = match.Groups["target"].Value + "とは位相がずれている。";
+            detail = "TonicOutOfPhase";
+            return true;
+        }
+
+        match = TonicCannotReachPattern.Match(source);
+        if (match.Success)
+        {
+            translated = match.Groups["target"].Value + "に届かない。";
+            detail = "TonicCannotReach";
+            return true;
+        }
+
+        match = TonicNoOneTherePattern.Match(source);
+        if (match.Success)
+        {
+            translated = "そこには"
+                + match.Groups["tonic"].Value
+                + (string.Equals(match.Groups["verb"].Value, "feed", StringComparison.Ordinal)
+                    ? "を飲ませられる相手がいない。"
+                    : "を使用できる相手がいない。");
+            detail = "TonicNoOneThere";
+            return true;
+        }
+
+        match = TonicSelfTargetPattern.Match(source);
+        if (match.Success)
+        {
+            translated = match.Groups["tonic"].Value
+                + (string.Equals(match.Groups["verb"].Value, "eat", StringComparison.Ordinal)
+                    ? "を自分自身に食べさせたい場合は、食べるアクションから行える。"
+                    : "を自分自身に使用したい場合は、使用アクションから行える。");
+            detail = "TonicSelfTarget";
+            return true;
+        }
+
+        match = TonicUnwillingConsumePattern.Match(source);
+        if (match.Success)
+        {
+            translated = match.Groups["target"].Value + "は" + match.Groups["tonic"].Value + "を摂取したがっていない。";
+            detail = "TonicUnwillingConsume";
+            return true;
+        }
+
+        match = TonicUnwillingApplyPattern.Match(source);
+        if (match.Success)
+        {
+            translated = match.Groups["target"].Value
+                + "は"
+                + match.Groups["tonic"].Value
+                + "を使用されたがっていない。武器として装備し、それで攻撃する必要がある。";
+            detail = "TonicUnwillingApply";
+            return true;
+        }
+
         return false;
     }
 
@@ -403,6 +550,13 @@ public static class SingleCallsiteOwnerQueueTranslationPatch
             "applies" or "apply" => "を使用した。",
             _ => "を使用した。",
         };
+    }
+
+    private static string NormalizeTonicSubject(string source)
+    {
+        return string.Equals(source, "You", StringComparison.OrdinalIgnoreCase)
+            ? "あなた"
+            : source;
     }
 
     private static Type? FindAssemblyCSharpType(string fullTypeName)

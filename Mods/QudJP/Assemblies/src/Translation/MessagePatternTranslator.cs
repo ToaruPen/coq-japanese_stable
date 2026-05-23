@@ -38,6 +38,12 @@ internal static class MessagePatternTranslator
     internal const int MaxUniquePatterns = 10_000;
     internal const int MaxUniqueRoutes = 1_000;
     internal const string OverflowKey = "__overflow__";
+    private static readonly Regex LevelUpPopupMarkupPattern = new Regex(
+        "^(?<prefix>&[A-Za-z])?You have gained a level! You are now level (?<level>.+?)!\\r?\\n(?<lines>[\\s\\S]+)$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex LevelUpStatLineMarkupPattern = new Regex(
+        "^You gain (?<amount>.+?) (?<kind>hitpoints?|Skill Points?|Mutation Points?|Attribute Points?|to each attribute)$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     internal static int LoadInvocationCount => Volatile.Read(ref loadInvocationCount);
 
@@ -78,6 +84,16 @@ internal static class MessagePatternTranslator
         if (string.IsNullOrEmpty(source))
         {
             return source ?? string.Empty;
+        }
+
+        if (TryTranslateLevelUpPopupPreservingMarkup(source!, out var levelUpPopup))
+        {
+            DynamicTextObservability.RecordTransform(
+                nameof(MessagePatternTranslator),
+                "level-up-popup",
+                source!,
+                levelUpPopup);
+            return levelUpPopup;
         }
 
         var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
@@ -610,7 +626,8 @@ internal static class MessagePatternTranslator
 
             var token = template.Substring(index + 1, closeIndex - index - 1);
             var translateCapture = token.Length > 1 && token[0] == 't';
-            if (translateCapture)
+            var translateAdverbCapture = token.Length > 1 && token[0] == 'a';
+            if (translateCapture || translateAdverbCapture)
             {
                 token = token.Substring(1);
             }
@@ -627,7 +644,11 @@ internal static class MessagePatternTranslator
 
             var group = match.Groups[captureIndex + 1];
             var value = group.Value;
-            if (translateCapture)
+            if (translateAdverbCapture)
+            {
+                value = TranslateAdverbTemplateCapture(value);
+            }
+            else if (translateCapture)
             {
                 value = TranslateTemplateCapture(value);
             }
@@ -754,7 +775,15 @@ internal static class MessagePatternTranslator
                 return false;
             }
 
-            var value = part.TranslateCapture ? TranslateTemplateCapture(group.Value) : group.Value;
+            var value = group.Value;
+            if (part.TranslateAdverbCapture)
+            {
+                value = TranslateAdverbTemplateCapture(value);
+            }
+            else if (part.TranslateCapture)
+            {
+                value = TranslateTemplateCapture(value);
+            }
             builder.Append(ColorAwareTranslationComposer.MarkupAwareRestoreCapture(value, spans, group));
             nextSourceStart = group.Index + group.Length;
         }
@@ -851,7 +880,8 @@ internal static class MessagePatternTranslator
 
             var token = template.Substring(index + 1, closeIndex - index - 1);
             var translateCapture = token.Length > 1 && token[0] == 't';
-            if (translateCapture)
+            var translateAdverbCapture = token.Length > 1 && token[0] == 'a';
+            if (translateCapture || translateAdverbCapture)
             {
                 token = token.Substring(1);
             }
@@ -866,7 +896,7 @@ internal static class MessagePatternTranslator
                 throw new FormatException($"QudJP: placeholder '{{{token}}}' exceeds capture count in message pattern template '{template}'.");
             }
 
-            parts.Add(TemplatePart.CreateCapture(captureIndex, translateCapture));
+            parts.Add(TemplatePart.CreateCapture(captureIndex, translateCapture, translateAdverbCapture));
             index = closeIndex;
         }
 
@@ -981,9 +1011,29 @@ internal static class MessagePatternTranslator
             return "あなた";
         }
 
+        if (TryTranslateTinkeringBitInventoryLines(source, out var tinkeringBitInventory))
+        {
+            return tinkeringBitInventory;
+        }
+
         if (string.Equals(source, "yourself", StringComparison.OrdinalIgnoreCase))
         {
             return "自分自身";
+        }
+
+        if (string.Equals(source, "Quenched", StringComparison.Ordinal))
+        {
+            return "潤っている";
+        }
+
+        if (CirculatoryLossTermTranslator.TryTranslateTermPhrase(source, out var circulatoryLossTerm))
+        {
+            return circulatoryLossTerm;
+        }
+
+        if (DirectionPhraseTranslator.TryTranslateNounStem(source, out var direction))
+        {
+            return direction;
         }
 
         using var _ = Translator.PushMissingKeyLoggingSuppression(true);
@@ -996,16 +1046,6 @@ internal static class MessagePatternTranslator
         if (historySpiceComponent is not null)
         {
             return historySpiceComponent;
-        }
-
-        if (CirculatoryLossTermTranslator.TryTranslateTermPhrase(source, out var circulatoryLossTerm))
-        {
-            return circulatoryLossTerm;
-        }
-
-        if (DirectionPhraseTranslator.TryTranslateNounStem(source, out var direction))
-        {
-            return direction;
         }
 
         if (TryTranslatePossessiveCapture(source, out var possessiveCapture))
@@ -1048,6 +1088,93 @@ internal static class MessagePatternTranslator
         return source;
     }
 
+    private static string TranslateAdverbTemplateCapture(string source)
+    {
+        if (DirectionPhraseTranslator.TryTranslateAdverbPhrase(source, out var direction))
+        {
+            return direction;
+        }
+
+        return TranslateTemplateCapture(source);
+    }
+
+    private static bool TryTranslateTinkeringBitInventoryLines(string source, out string translated)
+    {
+        var newline = source.Contains("\r\n") ? "\r\n" : "\n";
+        var lines = source.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
+        var changed = false;
+        for (var index = 0; index < lines.Length; index++)
+        {
+            if (!TinkeringBitDescriptionTranslator.TryTranslateInventoryLine(lines[index], out var line))
+            {
+                continue;
+            }
+
+            lines[index] = line;
+            changed = true;
+        }
+
+        translated = changed ? string.Join(newline, lines) : source;
+        return changed;
+    }
+
+    private static bool TryTranslateLevelUpPopupPreservingMarkup(string source, out string translated)
+    {
+        var match = LevelUpPopupMarkupPattern.Match(source);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        var newline = match.Groups["lines"].Value.Contains("\r\n") ? "\r\n" : "\n";
+        var lines = match.Groups["lines"].Value.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
+        for (var index = 0; index < lines.Length; index++)
+        {
+            if (!TryTranslateLevelUpStatLinePreservingMarkup(lines[index], out var line))
+            {
+                translated = source;
+                return false;
+            }
+
+            lines[index] = line;
+        }
+
+        var prefix = match.Groups["prefix"].Success
+            ? match.Groups["prefix"].Value
+            : string.Empty;
+        translated = prefix
+            + "レベルが上がった！現在レベル"
+            + match.Groups["level"].Value
+            + "！"
+            + newline
+            + string.Join(newline, lines);
+        return true;
+    }
+
+    private static bool TryTranslateLevelUpStatLinePreservingMarkup(string source, out string translated)
+    {
+        var match = LevelUpStatLineMarkupPattern.Match(source);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        var amount = match.Groups["amount"].Value;
+        var kind = match.Groups["kind"].Value;
+        translated = kind switch
+        {
+            "hitpoint" or "hitpoints" => "ヒットポイントを" + amount + "得た",
+            "Skill Point" or "Skill Points" => "スキルポイントを" + amount + "得た",
+            "Mutation Point" or "Mutation Points" => "変異ポイントを" + amount + "得た",
+            "Attribute Point" or "Attribute Points" => "能力値ポイントを" + amount + "得た",
+            "to each attribute" => "各能力値が" + amount + "上昇した",
+            _ => string.Empty,
+        };
+        return translated.Length > 0;
+    }
+
     private static bool TryTranslatePossessiveCapture(string source, out string translated)
     {
         var index = source.IndexOf("'s ", StringComparison.Ordinal);
@@ -1065,6 +1192,21 @@ internal static class MessagePatternTranslator
 
     private static bool TryTranslatePossessivePronounCapture(string source, out string translated)
     {
+        if (string.Equals(source, "your", StringComparison.OrdinalIgnoreCase))
+        {
+            translated = "あなたの";
+            return true;
+        }
+
+        if (string.Equals(source, "its", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(source, "his", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(source, "her", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(source, "their", StringComparison.OrdinalIgnoreCase))
+        {
+            translated = "その";
+            return true;
+        }
+
         if (TryStripPossessivePronounPrefix(source, out var prefix, out var rest))
         {
             translated = prefix + TranslateTemplateCapture(rest);
@@ -1215,11 +1357,12 @@ internal static class MessagePatternTranslator
 
     private readonly struct TemplatePart
     {
-        private TemplatePart(string literal, int captureIndex, bool translateCapture)
+        private TemplatePart(string literal, int captureIndex, bool translateCapture, bool translateAdverbCapture)
         {
             Literal = literal;
             CaptureIndex = captureIndex;
             TranslateCapture = translateCapture;
+            TranslateAdverbCapture = translateAdverbCapture;
         }
 
         internal string Literal { get; }
@@ -1228,16 +1371,18 @@ internal static class MessagePatternTranslator
 
         internal bool TranslateCapture { get; }
 
+        internal bool TranslateAdverbCapture { get; }
+
         internal bool IsCapture => CaptureIndex >= 0;
 
         internal static TemplatePart CreateLiteral(string literal)
         {
-            return new TemplatePart(literal, captureIndex: -1, translateCapture: false);
+            return new TemplatePart(literal, captureIndex: -1, translateCapture: false, translateAdverbCapture: false);
         }
 
-        internal static TemplatePart CreateCapture(int captureIndex, bool translateCapture)
+        internal static TemplatePart CreateCapture(int captureIndex, bool translateCapture, bool translateAdverbCapture)
         {
-            return new TemplatePart(string.Empty, captureIndex, translateCapture);
+            return new TemplatePart(string.Empty, captureIndex, translateCapture, translateAdverbCapture);
         }
     }
 }

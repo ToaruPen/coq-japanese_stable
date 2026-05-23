@@ -28,10 +28,6 @@ public static class AbilityManagerScreenTranslationPatch
         "Type: ",
     };
 
-    private static readonly Regex InputKeyDescriptionPattern = new(
-        @"^(?:(?:Ctrl|Alt|Shift|Cmd|Command|Option|Meta)\+)*(?:[A-Z]|\d|F\d{1,2}|Space|Enter|Return|Esc|Escape|Tab|Backspace|Delete|Home|End|Page Up|Page Down|Up|Down|Left|Right|Mouse \d|Mouse [A-Za-z]+)$",
-        RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.Compiled);
-
     private static readonly Regex CooldownValuePattern = new(
         @"\bCooldown:\s+(?<value>\{\{[^{}|]+\|\d+\}\}|\d+)\s+rounds?\b",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
@@ -460,7 +456,7 @@ public static class AbilityManagerScreenTranslationPatch
 
     private static bool IsInputKeyDescription(string source)
     {
-        return InputKeyDescriptionPattern.IsMatch(source.Trim());
+        return InputKeyDescriptionClassifier.IsInputKeyDescription(source);
     }
 
     private static string TranslateStructuredDetails(string source)

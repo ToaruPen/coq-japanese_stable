@@ -123,6 +123,33 @@ public sealed class TradeUiPopupTranslationPatchTests
     }
 
     [Test]
+    public void Prefix_DoesNotFallbackTranslateSkillsAndPowersSelectNodePopup_WhenOwnerRouteInactive()
+    {
+        WritePatternDictionary(("^You don't have enough skill points to buy that (.+?)!$", "あなたは{0}を購入するのに十分なスキルポイントがない！"));
+
+        using var patch = PatchMethod(nameof(DummyTradeUiPopupTarget.Show));
+
+        DummyTradeUiPopupTarget.Show("You don't have enough skill points to buy that power!");
+
+        Assert.That(
+            DummyTradeUiPopupTarget.LastShowMessage,
+            Is.EqualTo("You don't have enough skill points to buy that power!"));
+    }
+
+    [Test]
+    public void Prefix_DoesNotFallbackTranslateRequiredSkillPrompt_WhenOwnerRouteInactive()
+    {
+        const string source = "You do not have the skill associated with that power. Would you like to purchase the required skill?";
+        WritePatternDictionary(("^You do not have the skill associated with that power\\. Would you like to purchase the required skill\\?$", "fallback should not claim this"));
+
+        using var patch = PatchMethod(nameof(DummyTradeUiPopupTarget.Show));
+
+        DummyTradeUiPopupTarget.Show(source);
+
+        Assert.That(DummyTradeUiPopupTarget.LastShowMessage, Is.EqualTo(source));
+    }
+
+    [Test]
     public void Prefix_UsesOwnerTemplateForTradeQuestion_IgnoresDictionaryEntriesAndPreservesColorTags()
     {
         WriteDictionary(

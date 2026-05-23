@@ -82,14 +82,48 @@ public static class AbilityManagerShowTranslationPatch
         }
 
         var match = CooldownPattern.Match(message);
-        if (!match.Success)
+        if (match.Success)
         {
+            var duration = match.Groups["duration"].Value;
+            var cooldownTranslated = ActivatedAbilityCooldownTranslator.TryTranslateRawCooldown(duration, out var nestedRawCooldown)
+                ? nestedRawCooldown
+                : $"その能力を再び使うには{ActivatedAbilityCooldownTranslator.TranslateCooldownDuration(duration)}待つ必要がある。";
+            DynamicTextObservability.RecordTransform("MessageQueue.AddPlayerMessage", Context, message, cooldownTranslated);
+            message = MessageFrameTranslator.MarkDirectTranslation(cooldownTranslated);
+            return true;
+        }
+
+        if (ActivatedAbilityCooldownTranslator.TryTranslateRawCooldown(
+            message,
+            "MessageQueue.AddPlayerMessage",
+            Context + ".NotUsableDescription",
+            out var rawCooldown))
+        {
+            message = MessageFrameTranslator.MarkDirectTranslation(rawCooldown);
+            return true;
+        }
+
+        return false;
+    }
+
+    internal static bool TryTranslatePopupMessage(string source, string route, string family, out string translated)
+    {
+        if (!OwnerTranslationScope.IsActive(activeDepth) || string.IsNullOrEmpty(source))
+        {
+            translated = source;
             return false;
         }
 
-        var translated = $"その能力を再び使うには{match.Groups["duration"].Value}待つ必要がある。";
-        DynamicTextObservability.RecordTransform("MessageQueue.AddPlayerMessage", Context, message, translated);
-        message = MessageFrameTranslator.MarkDirectTranslation(translated);
-        return true;
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
+        {
+            translated = markedText;
+            return true;
+        }
+
+        return ActivatedAbilityCooldownTranslator.TryTranslateRawCooldown(
+            source,
+            route,
+            family + "." + Context + ".NotUsableDescription",
+            out translated);
     }
 }

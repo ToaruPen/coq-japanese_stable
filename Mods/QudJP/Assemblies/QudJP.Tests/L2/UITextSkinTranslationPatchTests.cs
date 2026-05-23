@@ -535,10 +535,10 @@ public sealed class UITextSkinTranslationPatchTests
         Assert.That(translated, Is.EqualTo(expected));
     }
 
-    [TestCase("{{W|space}}-select | unlock ({{hotkey|F1}}) | Fire Missile Weapon", "{{W|space}}-選択 | ロック解除 ({{hotkey|F1}}) | Fire Missile Weapon")]
-    [TestCase("{{W|space}}-select | lock ({{hotkey|F1}}) | Fire Missile Weapon", "{{W|space}}-選択 | ロック ({{hotkey|F1}}) | Fire Missile Weapon")]
-    [TestCase("{{W|space}}-select | (F1) {{W|lock}} | Fire Missile Weapon", "{{W|space}}-選択 | (F1) {{W|ロック}} | Fire Missile Weapon")]
-    [TestCase("{{W|space}}-select | {{W|lock}} ({{hotkey|F1}}) | Fire Missile Weapon", "{{W|space}}-選択 | {{W|ロック}} ({{hotkey|F1}}) | Fire Missile Weapon")]
+    [TestCase("{{W|space}}-select | unlock ({{hotkey|F1}}) | Fire Missile Weapon", "{{W|space}}-選択 | ロック解除 ({{hotkey|F1}}) | 飛び道具を射撃")]
+    [TestCase("{{W|space}}-select | lock ({{hotkey|F1}}) | Fire Missile Weapon", "{{W|space}}-選択 | ロック ({{hotkey|F1}}) | 飛び道具を射撃")]
+    [TestCase("{{W|space}}-select | (F1) {{W|lock}} | Fire Missile Weapon", "{{W|space}}-選択 | (F1) {{W|ロック}} | 飛び道具を射撃")]
+    [TestCase("{{W|space}}-select | {{W|lock}} ({{hotkey|F1}}) | Fire Missile Weapon", "{{W|space}}-選択 | {{W|ロック}} ({{hotkey|F1}}) | 飛び道具を射撃")]
     [TestCase("{{W|space}}-select | R reload | unlock ({{hotkey|F1}})", "{{W|space}}-選択 | R reload | ロック解除 ({{hotkey|F1}})")]
     [TestCase("{{W|space}}-select | reload ({{hotkey|R}}) | unlock ({{hotkey|F1}})", "{{W|space}}-選択 | reload ({{hotkey|R}}) | ロック解除 ({{hotkey|F1}})")]
     [TestCase("{{W|space}}-select | R-reload | unlock ({{hotkey|F1}})", "{{W|space}}-選択 | R-reload | ロック解除 ({{hotkey|F1}})")]
@@ -551,6 +551,7 @@ public sealed class UITextSkinTranslationPatchTests
             ("reload", "リロード"));
         WriteDictionaryFile(
             "ui-pick-target.ja.json",
+            ("Fire Missile Weapon", "飛び道具を射撃"),
             ("select", "選択"),
             ("unlock", "ロック解除"));
 
@@ -585,6 +586,59 @@ public sealed class UITextSkinTranslationPatchTests
             nameof(UITextSkinTranslationPatch));
 
         Assert.That(translated, Is.EqualTo(source));
+    }
+
+    [Test]
+    public void MissileWeaponAreaTranslateLiteral_TranslatesAfterRenderHotkeySuffixes_FromOwnerDictionary()
+    {
+        WriteDictionaryFile(
+            "ui-missile-weapon-area.ja.json",
+            ("fire", "射撃"),
+            ("reload", "リロード"));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(MissileWeaponAreaTranslationPatch.TranslateLiteral("]}} fire"), Is.EqualTo("]}} 射撃"));
+            Assert.That(MissileWeaponAreaTranslationPatch.TranslateLiteral("]}} reload"), Is.EqualTo("]}} リロード"));
+            Assert.That(MissileWeaponAreaTranslationPatch.TranslateLiteral("{{K|You have no missile weapons equipped.}}"), Is.EqualTo("{{K|You have no missile weapons equipped.}}"));
+        });
+    }
+
+    [Test]
+    public void MissileWeaponAreaTranslateLiteral_LeavesHotkeySuffixesUnchanged_WhenOwnerDictionaryMissingKeys()
+    {
+        WriteDictionaryFile("ui-missile-weapon-area.ja.json");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(MissileWeaponAreaTranslationPatch.TranslateLiteral("]}} fire"), Is.EqualTo("]}} fire"));
+            Assert.That(MissileWeaponAreaTranslationPatch.TranslateLiteral("]}} reload"), Is.EqualTo("]}} reload"));
+        });
+    }
+
+    [Test]
+    public void MissileWeaponAreaPostfix_LeavesProducerTranslatedHotkeyLabelsUnchanged()
+    {
+        WriteDictionaryFile(
+            "ui-missile-weapon-area.ja.json",
+            ("fire", "射撃"),
+            ("reload", "リロード"));
+
+        var fire = new DummyUITextSkin();
+        var reload = new DummyUITextSkin();
+        fire.SetText("{{W|[F]}} 射撃");
+        reload.SetText("{{W|[R]}} リロード");
+
+        var output = TestTraceHelper.CaptureTrace(() => MissileWeaponAreaTranslationPatch.Postfix(fire, reload));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(fire.text, Is.EqualTo("{{W|[F]}} 射撃"));
+            Assert.That(reload.text, Is.EqualTo("{{W|[R]}} リロード"));
+            Assert.That(fire.SetTextCallCount, Is.EqualTo(1));
+            Assert.That(reload.SetTextCallCount, Is.EqualTo(1));
+            Assert.That(output, Does.Not.Contain("MissileWeaponArea.HotkeyLabel"));
+        });
     }
 
     [Test]

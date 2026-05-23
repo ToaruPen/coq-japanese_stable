@@ -18,7 +18,7 @@ public static class TinkeringModPopupTranslationPatch
 
     private static readonly Regex MissingBitsPattern = new(
         "^You don't have the required (?<bits><.+?>) bits! You have:\\n\\n (?<held>.*)$",
-        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+        RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.Singleline);
 
     private static readonly Regex SifrahPromptPattern = new(
         "^Do you want to play a game of Sifrah to mod (?<item>.+?)\\? You can potentially improve the mod's performance and add capabilities to the item, and the cost of playing Sifrah will replace the normal modding cost\\.(?<suffix> You do not have the required <(?<bits>.+?) bits to perform the mod normally\\.)?$",
@@ -157,7 +157,7 @@ public static class TinkeringModPopupTranslationPatch
         match = MissingBitsPattern.Match(source);
         if (match.Success)
         {
-            translated = $"必要な{match.Groups["bits"].Value}ビットが足りない！所持ビット:\n\n {match.Groups["held"].Value}";
+            translated = $"必要な{match.Groups["bits"].Value}ビットが足りない！所持ビット:\n\n {TranslateHeldBits(match.Groups["held"].Value)}";
             detail = "MissingBits";
             return true;
         }
@@ -212,6 +212,23 @@ public static class TinkeringModPopupTranslationPatch
             source.Length - MissingIngredientPrefix.Length - 1).Replace(" or ", "または");
         translated = $"必要な材料が足りない: {ingredient}！";
         return true;
+    }
+
+    private static string TranslateHeldBits(string source)
+    {
+        var newline = source.Contains("\r\n") ? "\r\n" : "\n";
+        var lines = source.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
+        for (var index = 0; index < lines.Length; index++)
+        {
+            if (!TinkeringBitDescriptionTranslator.TryTranslateInventoryLine(lines[index], out var line))
+            {
+                continue;
+            }
+
+            lines[index] = line;
+        }
+
+        return string.Join(newline, lines);
     }
 
     private static string BuildSifrahPrompt(Match match)

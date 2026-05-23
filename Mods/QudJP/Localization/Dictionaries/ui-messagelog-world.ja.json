@@ -1095,6 +1095,11 @@
             "text": "闇がレーザービームを吸収した。"
         },
         {
+            "key": "laser beam",
+            "context": "XRL.World.Parts.Mutation.LightManipulation",
+            "text": "レーザービーム"
+        },
+        {
             "key": "The injection fails.",
             "context": "XRL.World.Parts.CyberneticsMedassistModule",
             "text": "注射は失敗に終わった。"

@@ -816,6 +816,11 @@
       "text": "テレポート"
     },
     {
+      "key": "Mark",
+      "context": "AbilityBar.ButtonText",
+      "text": "マーク"
+    },
+    {
       "key": "Harvest Plants",
       "context": "AbilityManager.Name",
       "text": "収穫"
@@ -1219,6 +1224,11 @@
       "key": "Trash Divining",
       "context": "TMP.Skill Name",
       "text": "ごみ占い"
+    },
+    {
+      "key": "Rifle through Trash",
+      "context": "AbilityManager.Name",
+      "text": "ゴミ漁り"
     },
     {
       "key": "Tumble",

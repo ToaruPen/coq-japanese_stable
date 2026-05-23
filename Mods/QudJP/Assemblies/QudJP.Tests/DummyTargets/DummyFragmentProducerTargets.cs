@@ -25,6 +25,12 @@ internal sealed class DummyLiquidVolumeProducerTarget
 
     public string QueuedMessageToSend { get; set; } = string.Empty;
 
+    public string AskNumberMessageToShow { get; set; } = string.Empty;
+
+    public string? PickItemTitleToShow { get; set; }
+
+    public string? LastPickItemTitle { get; private set; }
+
     public string PopupMethod { get; set; } = nameof(DummyPopupShow.Show);
 
     [MethodImpl(MethodImplOptions.NoInlining)]
@@ -95,6 +101,21 @@ internal sealed class DummyLiquidVolumeProducerTarget
         if (!string.IsNullOrEmpty(QueuedMessageToSend))
         {
             DummyMessageQueue.AddPlayerMessage(QueuedMessageToSend, null, Capitalize: false);
+        }
+
+        if (!string.IsNullOrEmpty(AskNumberMessageToShow))
+        {
+            _ = DummyPopupGenericTarget.AskNumber(AskNumberMessageToShow);
+        }
+
+        if (PickItemTitleToShow is not null)
+        {
+            var title = PickItemTitleToShow;
+            QudJP.Patches.PickItemShowPickerTitleTranslationPatch.Prefix(
+                DummyPickItemDialogStyle.SelectItemDialog,
+                null,
+                ref title);
+            LastPickItemTitle = title;
         }
     }
 }

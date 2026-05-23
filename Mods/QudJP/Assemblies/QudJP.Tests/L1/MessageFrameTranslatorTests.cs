@@ -921,6 +921,76 @@ public sealed class MessageFrameTranslatorTests
     }
 
     [Test]
+    public void TryTranslateXDidY_RepositoryDictionary_TranslatesMutationActionFrames()
+    {
+        UseRepositoryDictionary();
+        WriteExactDictionary(("laser beam", "レーザービーム"));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                MessageFrameTranslator.TryTranslateXDidY("あなた", "emit", "a freezing ray", "!", out var freezingRay),
+                Is.True);
+            Assert.That(freezingRay, Is.EqualTo("あなたは凍結光線を放った！"));
+
+            Assert.That(
+                MessageFrameTranslator.TryTranslateXDidY("変異体", "emit", "a freezing ray from its hands", "!", out var freezingRayFromHands),
+                Is.True);
+            Assert.That(freezingRayFromHands, Is.EqualTo("変異体は凍結光線を放った！"));
+
+            Assert.That(
+                MessageFrameTranslator.TryTranslateXDidY("変異体", "emit", "a flaming ray from its face", "!", out var flamingRay),
+                Is.True);
+            Assert.That(flamingRay, Is.EqualTo("変異体は火炎光線を放った！"));
+
+            Assert.That(
+                MessageFrameTranslator.TryTranslateXDidY("変異体", "emit", "a vast freezing ray from its mouth", "!", out var vastFreezingRay),
+                Is.True);
+            Assert.That(vastFreezingRay, Is.EqualTo("変異体は巨大な凍結光線を放った！"));
+
+            Assert.That(
+                MessageFrameTranslator.TryTranslateXDidY("磁気変異体", "emit", "a powerful magnetic pulse", "!", out var magneticPulse),
+                Is.True);
+            Assert.That(magneticPulse, Is.EqualTo("磁気変異体は強力な磁気パルスを放った！"));
+
+            Assert.That(
+                MessageFrameTranslator.TryTranslateXDidY("変異体", "emit", "an electromagnetic pulse", "!", out var electromagneticPulse),
+                Is.True);
+            Assert.That(electromagneticPulse, Is.EqualTo("変異体は電磁パルスを放った！"));
+
+            Assert.That(
+                MessageFrameTranslator.TryTranslateXDidY("変異体", "shoot", "a swatch of frost webs", "!", out var frostWebs),
+                Is.True);
+            Assert.That(frostWebs, Is.EqualTo("変異体は霜の網を一面に撃ち出した！"));
+
+            Assert.That(
+                MessageFrameTranslator.TryTranslateXDidY("変異体", "refract", "the laser beam", "!", out var refractDidY),
+                Is.True);
+            Assert.That(refractDidY, Is.EqualTo("変異体はレーザービームを屈折させた！"));
+
+            Assert.That(
+                MessageFrameTranslator.TryTranslateXDidYToZ("変異体", "refract", null, "the laser beam", null, "!", out var refractDidYToZ),
+                Is.True);
+            Assert.That(refractDidYToZ, Is.EqualTo("変異体はレーザービームを屈折させた！"));
+
+            Assert.That(
+                MessageFrameTranslator.TryTranslateXDidY("あなた", "invoke", "a concussive blast around you", "!", out var concussiveSelf),
+                Is.True);
+            Assert.That(concussiveSelf, Is.EqualTo("あなたは自分の周囲に衝撃波を呼び起こした！"));
+
+            Assert.That(
+                MessageFrameTranslator.TryTranslateXDidY("変異体", "feel", "a concussive blast around them", "!", out var concussiveAround),
+                Is.True);
+            Assert.That(concussiveAround, Is.EqualTo("変異体は周囲に衝撃波を感じた！"));
+
+            Assert.That(
+                MessageFrameTranslator.TryTranslateXDidY("変異体", "feel", "a concussive blast from the west", "!", out var concussiveDirection),
+                Is.True);
+            Assert.That(concussiveDirection, Is.EqualTo("変異体は西からの衝撃波を感じた！"));
+        });
+    }
+
+    [Test]
     public void TryTranslateXDidYToZ_RepositoryDictionary_TranslatesBandageMedicationSuccessFrame()
     {
         UseRepositoryDictionary();
@@ -938,6 +1008,37 @@ public sealed class MessageFrameTranslatorTests
         {
             Assert.That(ok, Is.True);
             Assert.That(sentence, Is.EqualTo("あなたはタムの傷に包帯を巻いた。"));
+        });
+    }
+
+    [TestCase(
+        "to bandage",
+        "wounds, but 包帯 pass through them",
+        "あなたはタムの傷に包帯を巻こうとしたが、包帯はそれらをすり抜けた。")]
+    [TestCase(
+        "to bandage",
+        "wounds, but cannot affect them",
+        "あなたはタムの傷に包帯を巻こうとしたが、影響を与えられなかった。")]
+    public void TryTranslateXDidYToZ_RepositoryDictionary_TranslatesBandageMedicationFailedPhaseFrames(
+        string preposition,
+        string extra,
+        string expected)
+    {
+        UseRepositoryDictionary();
+
+        var ok = MessageFrameTranslator.TryTranslateXDidYToZ(
+            "あなた",
+            "try",
+            preposition,
+            objectText: "タムの",
+            extra,
+            endMark: ".",
+            out var sentence);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True, extra);
+            Assert.That(sentence, Is.EqualTo(expected));
         });
     }
 
@@ -964,6 +1065,36 @@ public sealed class MessageFrameTranslatorTests
         });
     }
 
+    [TestCase(
+        ", but 包帯 pass through them",
+        "あなたは包帯でタムの傷を止血しようとしたが、包帯はそれらをすり抜けた。")]
+    [TestCase(
+        ", but cannot affect them",
+        "あなたは包帯でタムの傷を止血しようとしたが、影響を与えられなかった。")]
+    public void TryTranslateWDidXToYWithZ_RepositoryDictionary_TranslatesBandageMedicationFailedStaunchFrames(
+        string extra,
+        string expected)
+    {
+        UseRepositoryDictionary();
+
+        var ok = MessageFrameTranslator.TryTranslateWDidXToYWithZ(
+            "あなた",
+            "try",
+            directPreposition: "to staunch",
+            directObject: "タムの",
+            indirectPreposition: "wounds with",
+            indirectObject: "包帯",
+            extra,
+            endMark: ".",
+            out var sentence);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True, extra);
+            Assert.That(sentence, Is.EqualTo(expected));
+        });
+    }
+
     [Test]
     public void TryTranslateXDidYToZ_RepositoryDictionary_TranslatesMultiHornsStoppedInTracksFrame()
     {
@@ -982,6 +1113,44 @@ public sealed class MessageFrameTranslatorTests
         {
             Assert.That(ok, Is.True);
             Assert.That(sentence, Is.EqualTo("多重角の変異体は壁に進路を阻まれた！"));
+        });
+    }
+
+    [Test]
+    public void TryTranslateXDidY_RepositoryDictionary_TranslatesMultiHornsShovedByChargeFrame()
+    {
+        UseRepositoryDictionary();
+
+        var ok = MessageFrameTranslator.TryTranslateXDidY(
+            "スナップジョー",
+            "are",
+            "shoved by 多重角の変異体の charge!",
+            ".",
+            out var sentence);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(sentence, Is.EqualTo("スナップジョーは多重角の変異体の突撃に押し飛ばされた！"));
+        });
+    }
+
+    [Test]
+    public void TryTranslateXDidY_RepositoryDictionary_TranslatesMultiHornsPossessiveChargeFrame()
+    {
+        UseRepositoryDictionary();
+
+        var ok = MessageFrameTranslator.TryTranslateXDidY(
+            "スナップジョー",
+            "are",
+            "shoved by your charge!",
+            ".",
+            out var sentence);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(sentence, Is.EqualTo("スナップジョーはあなたの突撃に押し飛ばされた！"));
         });
     }
 

@@ -47,6 +47,11 @@ public sealed class SingleCallsiteOwnerQueueTranslationPatchTests
         "ワールドマップではそれはできない。",
         "ActivatedAbilityEntryWorldMapBlock")]
     [TestCase(
+        nameof(DummySingleCallsiteOwnerQueueTarget.TrySendCommandEventOnPlayer),
+        "You must wait {{C|7 round}} before using {{C|Phase Blink}}.",
+        "{{C|Phase Blink}}を使うには{{C|7ラウンド}}待つ必要がある。",
+        "ActivatedAbilityEntryNotUsableDescription")]
+    [TestCase(
         nameof(DummySingleCallsiteOwnerQueueTarget.FireElevatorSwitchEvent),
         "Nothing seems to happen when you hit the switch.",
         "スイッチを押しても何も起こらない。",
@@ -111,6 +116,66 @@ public sealed class SingleCallsiteOwnerQueueTranslationPatchTests
         "the goat applies {{Y|a shade oil injector}}.",
         "the goatは{{Y|a shade oil injector}}を使用した。",
         "TonicVisibleConsume")]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerQueueTarget.HandleTonicEvent),
+        "the goat is unable to consume tonics.",
+        "the goatはトニックを摂取できない。",
+        "TonicUnableConsume")]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerQueueTarget.HandleTonicEvent),
+        "You are unable to consume tonics.",
+        "あなたはトニックを摂取できない。",
+        "TonicUnableConsume")]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerQueueTarget.HandleTonicEvent),
+        "{{Y|salve tonic}} is broken...",
+        "{{Y|salve tonic}}は壊れている...",
+        "TonicBroken")]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerQueueTarget.HandleTonicEvent),
+        "{{Y|salve tonic}} is rusted...",
+        "{{Y|salve tonic}}は錆びている...",
+        "TonicRusted")]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerQueueTarget.HandleTonicEvent),
+        "You are out of phase with {{R|snapjaw}}.",
+        "{{R|snapjaw}}とは位相がずれている。",
+        "TonicOutOfPhase")]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerQueueTarget.HandleTonicEvent),
+        "You cannot reach {{R|snapjaw}}.",
+        "{{R|snapjaw}}に届かない。",
+        "TonicCannotReach")]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerQueueTarget.HandleTonicEvent),
+        "There is no one there you can feed {{Y|salve tonic}} to.",
+        "そこには{{Y|salve tonic}}を飲ませられる相手がいない。",
+        "TonicNoOneThere")]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerQueueTarget.HandleTonicEvent),
+        "There is no one there you can apply {{Y|salve tonic}} to.",
+        "そこには{{Y|salve tonic}}を使用できる相手がいない。",
+        "TonicNoOneThere")]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerQueueTarget.HandleTonicEvent),
+        "If you want to eat {{Y|salve tonic}} yourself, you can do so through the eat action.",
+        "{{Y|salve tonic}}を自分自身に食べさせたい場合は、食べるアクションから行える。",
+        "TonicSelfTarget")]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerQueueTarget.HandleTonicEvent),
+        "If you want to apply {{Y|salve tonic}} to yourself, you can do so through the apply action.",
+        "{{Y|salve tonic}}を自分自身に使用したい場合は、使用アクションから行える。",
+        "TonicSelfTarget")]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerQueueTarget.HandleTonicEvent),
+        "{{R|snapjaw}} does not want to consume {{Y|salve tonic}}.",
+        "{{R|snapjaw}}は{{Y|salve tonic}}を摂取したがっていない。",
+        "TonicUnwillingConsume")]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerQueueTarget.HandleTonicEvent),
+        "{{R|snapjaw}} does not want {{Y|salve tonic}} applied to them. You'll need to equip it as a weapon and attack with it.",
+        "{{R|snapjaw}}は{{Y|salve tonic}}を使用されたがっていない。武器として装備し、それで攻撃する必要がある。",
+        "TonicUnwillingApply")]
     [TestCase(
         nameof(DummySingleCallsiteOwnerQueueTarget.HandleWeirdwireTookEvent),
         "You now have 37 feet of copper wire.",

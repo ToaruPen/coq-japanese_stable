@@ -182,15 +182,13 @@ public sealed class WorldMapUiTranslationPatchTests
     }
 
     [Test]
-    public void StatusScreensScreenPostfix_TranslatesFilterNavigationAndAccept_WhenPatched()
+    public void StatusScreensScreenPostfix_TranslatesFilterNavigationAndAcceptWithoutTouchingKeyDescriptions_WhenPatched()
     {
         WriteDictionary(
             "ui-statusscreens.ja.json",
             ("Filter", "絞り込み"),
             ("navigation", "移動"),
-            ("Accept", "決定"),
-            ("Previous tab", "前のタブ"),
-            ("Next tab", "次のタブ"));
+            ("Accept", "決定"));
 
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
@@ -207,20 +205,14 @@ public sealed class WorldMapUiTranslationPatchTests
             Assert.Multiple(() =>
             {
                 Assert.That(DummyStatusScreensScreenTarget.SET_FILTER.Description, Is.EqualTo("絞り込み"));
-                Assert.That(DummyStatusScreensScreenTarget.SET_FILTER.KeyDescription, Is.EqualTo("絞り込み"));
+                Assert.That(DummyStatusScreensScreenTarget.SET_FILTER.KeyDescription, Is.EqualTo("Filter"));
                 Assert.That(target.defaultMenuOptionOrder[0].Description, Is.EqualTo("移動"));
                 Assert.That(target.defaultMenuOptionOrder[1].Description, Is.EqualTo("決定"));
-                Assert.That(target.defaultMenuOptionOrder, Has.Count.EqualTo(4));
-                Assert.That(target.defaultMenuOptionOrder[2].InputCommand, Is.EqualTo("Page Left"));
-                Assert.That(target.defaultMenuOptionOrder[2].Description, Is.EqualTo("前のタブ"));
-                Assert.That(target.defaultMenuOptionOrder[2].KeyDescription, Is.Null);
-                Assert.That(target.defaultMenuOptionOrder[3].InputCommand, Is.EqualTo("Page Right"));
-                Assert.That(target.defaultMenuOptionOrder[3].Description, Is.EqualTo("次のタブ"));
-                Assert.That(target.defaultMenuOptionOrder[3].KeyDescription, Is.Null);
+                Assert.That(target.defaultMenuOptionOrder, Has.Count.EqualTo(2));
                 Assert.That(target.updateMenuBar, Is.True);
                 Assert.That(
                     DynamicTextObservability.GetRouteFamilyHitCountForTests(nameof(StatusScreensScreenTranslationPatch), "StatusScreensScreen.MenuOption"),
-                    Is.EqualTo(6));
+                    Is.EqualTo(3));
             });
         }
         finally
@@ -230,7 +222,7 @@ public sealed class WorldMapUiTranslationPatchTests
     }
 
     [Test]
-    public void StatusScreensScreenPostfix_CreatesPageTabOptions_WhenMenuListStartsEmpty()
+    public void StatusScreensScreenPostfix_DoesNotCreateSyntheticPageTabOptions_WhenMenuListStartsEmpty()
     {
         WriteDictionary(
             "ui-statusscreens.ja.json",
@@ -251,13 +243,7 @@ public sealed class WorldMapUiTranslationPatchTests
 
             Assert.Multiple(() =>
             {
-                Assert.That(target.defaultMenuOptionOrder, Has.Count.EqualTo(2));
-                Assert.That(target.defaultMenuOptionOrder[0].InputCommand, Is.EqualTo("Page Left"));
-                Assert.That(target.defaultMenuOptionOrder[0].Description, Is.EqualTo("前のタブ"));
-                Assert.That(target.defaultMenuOptionOrder[0].KeyDescription, Is.Null);
-                Assert.That(target.defaultMenuOptionOrder[1].InputCommand, Is.EqualTo("Page Right"));
-                Assert.That(target.defaultMenuOptionOrder[1].Description, Is.EqualTo("次のタブ"));
-                Assert.That(target.defaultMenuOptionOrder[1].KeyDescription, Is.Null);
+                Assert.That(target.defaultMenuOptionOrder, Is.Empty);
                 Assert.That(target.updateMenuBar, Is.True);
             });
         }

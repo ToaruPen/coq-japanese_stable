@@ -6,6 +6,8 @@ internal sealed class DummySkillsAndPowersSelectNodeTarget
 
     public string PopupSurface { get; set; } = nameof(DummyPopupShow.Show);
 
+    public string Kind { get; set; } = "power";
+
     public void SelectNode()
     {
         if (string.Equals(PopupSurface, nameof(DummyPopupShow.ShowYesNo), StringComparison.Ordinal))
@@ -21,5 +23,16 @@ internal sealed class DummySkillsAndPowersSelectNodeTarget
         }
 
         DummyPopupShow.Show(PopupMessageToShow);
+    }
+
+    public void SelectNodeNotEnoughSkillPointsMessageLog()
+    {
+        DummyMessageQueue.AddPlayerMessage("You don't have enough skill points to buy that " + Kind + "!");
+    }
+
+    public static void SelectNodeRequiredSkillPromptMessageLog()
+    {
+        DummyMessageQueue.AddPlayerMessage(
+            "You do not have the skill associated with that power. Would you like to purchase the required skill?");
     }
 }

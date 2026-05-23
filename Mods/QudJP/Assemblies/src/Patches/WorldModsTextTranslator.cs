@@ -95,6 +95,12 @@ internal static class WorldModsTextTranslator
     private static readonly Regex FactionSlayerPattern = new Regex(
         "^(?<chance>\\d+)% chance to behead (?<target>.+) on hit\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex StrengthBonusCapPattern = new Regex(
+        "^Strength Bonus Cap: (?<cap>.+)$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex WeaponClassPattern = new Regex(
+        "^Weapon Class: (?<weaponClass>.+)$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex OffhandAttackChancePattern = new Regex(
         "^Offhand Attack Chance: (?<chance>\\d+)%$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
@@ -210,6 +216,16 @@ internal static class WorldModsTextTranslator
             "Adds item modification: {0}",
             (match, spans) => new[] { GetTranslatedCapture(match, spans, "description", TranslateNestedWorldModDescription) },
             out translated))
+        {
+            return true;
+        }
+
+        if (TryTranslateStrengthBonusCapTemplate(source, route, family, out translated))
+        {
+            return true;
+        }
+
+        if (TryTranslateWeaponClassTemplate(source, route, family, out translated))
         {
             return true;
         }
@@ -657,6 +673,102 @@ internal static class WorldModsTextTranslator
             template!,
             new[] { GetTranslatedCapture(match, contentSpans, "chance") },
             out translated);
+    }
+
+    private static bool TryTranslateStrengthBonusCapTemplate(string source, string route, string family, out string translated)
+    {
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        var match = StrengthBonusCapPattern.Match(stripped);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        const string templateKey = "Strength Bonus Cap: {0}";
+        var template = ScopedDictionaryLookup.TranslateExactOrLowerAsciiForContext(
+            templateKey,
+            MeleeWeaponShortDescriptionContext,
+            WorldModsDictionaryFile);
+        if (string.IsNullOrEmpty(template) || string.Equals(template, templateKey, StringComparison.Ordinal))
+        {
+            template = BuildStrengthBonusCapTemplate();
+        }
+
+        if (string.IsNullOrEmpty(template))
+        {
+            translated = source;
+            return false;
+        }
+
+        var contentSpans = ColorAwareTranslationComposer.WithoutTrueWholeSourceBoundarySpans(spans, stripped.Length);
+        return TryFormatTemplate(
+            source,
+            stripped,
+            spans,
+            route,
+            family,
+            match,
+            template!,
+            new[] { GetTranslatedCapture(match, contentSpans, "cap") },
+            out translated);
+    }
+
+    private static bool TryTranslateWeaponClassTemplate(string source, string route, string family, out string translated)
+    {
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        var match = WeaponClassPattern.Match(stripped);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        var weaponClass = match.Groups["weaponClass"].Value;
+        var translatedWeaponClass = TranslateTemplateCapture(weaponClass);
+        if (string.Equals(translatedWeaponClass, weaponClass, StringComparison.Ordinal)
+            && !JapaneseCharacterPattern.IsMatch(weaponClass))
+        {
+            translated = source;
+            return false;
+        }
+
+        var template = BuildWeaponClassTemplate();
+        if (string.IsNullOrEmpty(template))
+        {
+            translated = source;
+            return false;
+        }
+
+        var contentSpans = ColorAwareTranslationComposer.WithoutTrueWholeSourceBoundarySpans(spans, stripped.Length);
+        return TryFormatTemplate(
+            source,
+            stripped,
+            spans,
+            route,
+            family,
+            match,
+            template!,
+            new[] { contentSpans.Count > 0 ? ColorAwareTranslationComposer.RestoreCapture(translatedWeaponClass, contentSpans, match.Groups["weaponClass"]) : translatedWeaponClass },
+            out translated);
+    }
+
+    private static string? BuildStrengthBonusCapTemplate()
+    {
+        if (!StringHelpers.TryGetTranslationExactOrLowerAscii("Strength", out var strength)
+            || !StringHelpers.TryGetTranslationExactOrLowerAscii("Bonus Cap:", out var bonusCap))
+        {
+            return null;
+        }
+
+        return strength + bonusCap + " {0}";
+    }
+
+    private static string? BuildWeaponClassTemplate()
+    {
+        return StringHelpers.TryGetTranslationExactOrLowerAscii("Weapon Class:", out var label)
+            ? label + " {0}"
+            : null;
     }
 
     private static bool TryTranslateCoProcessorTemplate(string source, string route, string family, out string translated)

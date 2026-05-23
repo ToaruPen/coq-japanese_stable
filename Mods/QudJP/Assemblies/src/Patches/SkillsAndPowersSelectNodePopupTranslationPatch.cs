@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
+using System.Reflection.Emit;
 using System.Text.RegularExpressions;
 using HarmonyLib;
 
@@ -14,6 +15,7 @@ public static class SkillsAndPowersSelectNodePopupTranslationPatch
     private const string AlreadyHaveDetail = "AlreadyHave";
     private const string InitiationRequiredDetail = "InitiationRequired";
     private const string NotEnoughSkillPointsDetail = "NotEnoughSkillPoints";
+    private const string RequiredSkillPromptDetail = "RequiredSkillPrompt";
 
     private static readonly Regex AlreadyHavePattern = new(
         "^You already have that (?<kind>skill|power)\\.$",
@@ -27,13 +29,21 @@ public static class SkillsAndPowersSelectNodePopupTranslationPatch
         "^You don't have enough skill points to buy that (?<kind>skill|power)!$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex RequiredSkillPromptPattern = new(
+        "^You do not have the skill associated with that power\\. Would you like to purchase the required skill\\?$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     private static readonly Regex NoImplementationPattern = new(
         "^No implementation for (?<type>.+)$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     private static readonly Regex BuyConfirmationPattern = new(
-        "^Are you sure you want to buy (?<name>.+) for (?<cost>.+?) sp\\?$",
+        "^Are you sure you want to buy (?<name>.+?) for (?<cost>.+?)\\s*sp\\?$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly MethodInfo TranslateProducedMessageMethod =
+        AccessTools.Method(typeof(SkillsAndPowersSelectNodePopupTranslationPatch), nameof(TranslateProducedMessage))
+        ?? throw new InvalidOperationException("TranslateProducedMessage method not found.");
 
     [ThreadStatic]
     private static int activeDepth;
@@ -61,6 +71,19 @@ public static class SkillsAndPowersSelectNodePopupTranslationPatch
         }
     }
 
+    public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+    {
+        foreach (var instruction in instructions)
+        {
+            yield return instruction;
+
+            if (ProducesCandidateMessage(instruction))
+            {
+                yield return new CodeInstruction(OpCodes.Call, TranslateProducedMessageMethod);
+            }
+        }
+    }
+
     public static void Prefix()
     {
         try
@@ -85,6 +108,36 @@ public static class SkillsAndPowersSelectNodePopupTranslationPatch
         }
 
         return __exception;
+    }
+
+    internal static string TranslateProducedMessage(string source)
+    {
+        try
+        {
+            if (string.IsNullOrEmpty(source)
+                || MessageFrameTranslator.TryStripDirectTranslationMarker(source, out _))
+            {
+                return source;
+            }
+
+            var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+            if (!TryTranslateStripped(stripped, spans, source, out var translated, out var detail))
+            {
+                return source;
+            }
+
+            DynamicTextObservability.RecordTransform(
+                Context,
+                "Owner.ProducerText." + Context + "." + detail,
+                source,
+                translated);
+            return MessageFrameTranslator.MarkDirectTranslation(translated);
+        }
+        catch (Exception ex)
+        {
+            Trace.TraceError("QudJP: {0}.TranslateProducedMessage failed: {1}", Context, ex);
+            return source;
+        }
     }
 
     internal static bool TryTranslatePopupMessage(string source, string route, string family, out string translated)
@@ -154,7 +207,19 @@ public static class SkillsAndPowersSelectNodePopupTranslationPatch
             return true;
         }
 
-        var match = NoImplementationPattern.Match(stripped);
+        var match = RequiredSkillPromptPattern.Match(stripped);
+        if (match.Success)
+        {
+            detail = RequiredSkillPromptDetail;
+            translated = RestoreWhole(
+                "そのパワーに関連するスキルを持っていない。前提スキルを購入しますか？",
+                stripped,
+                spans,
+                source);
+            return true;
+        }
+
+        match = NoImplementationPattern.Match(stripped);
         if (match.Success)
         {
             detail = "NoImplementation";
@@ -171,10 +236,14 @@ public static class SkillsAndPowersSelectNodePopupTranslationPatch
         if (match.Success)
         {
             detail = "BuyConfirmation";
-            var name = ColorAwareTranslationComposer.MarkupAwareRestoreCapture(
+            var rawName = ColorAwareTranslationComposer.MarkupAwareRestoreCapture(
                 match.Groups["name"].Value,
                 spans,
                 match.Groups["name"]).Trim();
+            var name = SkillsAndPowersStatusScreenTranslationPatch.TryTranslateExactLeafPreservingColors(
+                rawName,
+                Context + ".BuyConfirmationName",
+                recordTransform: false).translated;
             var cost = match.Groups["cost"].Value.Trim();
             translated = RestoreWhole(name + "を{{C|" + cost + "}}SPで購入しますか？", stripped, spans, source);
             return true;
@@ -212,6 +281,20 @@ public static class SkillsAndPowersSelectNodePopupTranslationPatch
         };
         translated = RestoreWhole(translated, stripped, spans, source);
         return true;
+    }
+
+    private static bool ProducesCandidateMessage(CodeInstruction instruction)
+    {
+        if (instruction.opcode == OpCodes.Ldstr)
+        {
+            return true;
+        }
+
+        return (instruction.opcode == OpCodes.Call || instruction.opcode == OpCodes.Callvirt)
+            && instruction.operand is MethodInfo method
+            && string.Equals(method.Name, nameof(string.Concat), StringComparison.Ordinal)
+            && method.DeclaringType == typeof(string)
+            && method.ReturnType == typeof(string);
     }
 
     private static string TranslateKind(string kind)

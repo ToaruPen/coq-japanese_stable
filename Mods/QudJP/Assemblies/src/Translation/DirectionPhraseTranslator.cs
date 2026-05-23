@@ -2,6 +2,29 @@ namespace QudJP;
 
 internal static class DirectionPhraseTranslator
 {
+    internal static bool TryTranslateAdverbPhrase(string source, out string translated)
+    {
+        translated = source switch
+        {
+            "to the north" => "北側に",
+            "to the south" => "南側に",
+            "to the east" => "東側に",
+            "to the west" => "西側に",
+            "to the northeast" => "北東側に",
+            "to the northwest" => "北西側に",
+            "to the southeast" => "南東側に",
+            "to the southwest" => "南西側に",
+            "nearby" => "近く",
+            "above" => "上方",
+            "below" => "下方",
+            "here" => "ここ",
+            "somewhere" => "どこか",
+            _ => string.Empty,
+        };
+
+        return translated.Length > 0;
+    }
+
     internal static bool TryTranslateNounStem(string source, out string translated)
     {
         translated = source switch

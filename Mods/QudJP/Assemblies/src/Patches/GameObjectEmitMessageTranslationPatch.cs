@@ -98,8 +98,25 @@ public static class GameObjectEmitMessageTranslationPatch
     {
         _ = color;
 
-        return activeDepth > 0
-            && !string.IsNullOrEmpty(message)
-            && MessageLogProducerTranslationHelpers.TryPreparePatternMessage(ref message, Context, "EmitMessage", markJapaneseAsDirect: true);
+        if (activeDepth <= 0 || string.IsNullOrEmpty(message))
+        {
+            return false;
+        }
+
+        if (LiquidVolumeFragmentTranslator.TryTranslateQueuedMessage(
+                message,
+                Context,
+                "EmitMessage.LiquidVolume",
+                out var liquidVolumeTranslated))
+        {
+            message = MessageFrameTranslator.MarkDirectTranslation(liquidVolumeTranslated);
+            return true;
+        }
+
+        return MessageLogProducerTranslationHelpers.TryPreparePatternMessage(
+            ref message,
+            Context,
+            "EmitMessage",
+            markJapaneseAsDirect: true);
     }
 }

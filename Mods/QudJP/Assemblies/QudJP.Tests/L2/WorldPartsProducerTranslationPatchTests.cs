@@ -30,6 +30,7 @@ public sealed class WorldPartsProducerTranslationPatchTests
         SinkObservation.ResetForTests();
         DummyPopupShow.Reset();
         DummyPopupTarget.Reset();
+        DummyPopupGenericTarget.Reset();
         DummyMessageQueue.Reset();
     }
 
@@ -271,6 +272,54 @@ public sealed class WorldPartsProducerTranslationPatchTests
                 Assert.That(LiquidVolumePopupHitCount("CollectConfirm"), Is.EqualTo(1));
                 Assert.That(LiquidVolumePopupHitCount("OwnershipUseLiquid"), Is.EqualTo(1));
                 Assert.That(LiquidVolumeQueuedHitCount("Fizzy"), Is.EqualTo(1));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void LiquidVolumePatch_TranslatesRemainingHandleEventSurfaces_WhenOwnerPatched()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            PatchQueue(harmony);
+            PatchAskNumber(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyLiquidVolumeProducerTarget), nameof(DummyLiquidVolumeProducerTarget.HandleEvent), typeof(DummyInventoryActionEvent)),
+                typeof(LiquidVolumeTranslationPatch));
+
+            var target = new DummyLiquidVolumeProducerTarget
+            {
+                QueuedMessageToSend = "You collect 2 drams of {{C|water}} from the canteen to the north in your waterskin.",
+                AskNumberMessageToShow = "How many drams? (max=7)",
+                PickItemTitleToShow = "[Select a container to fill from]",
+            };
+
+            target.HandleEvent(new DummyInventoryActionEvent());
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("canteen（北側）から{{C|water}}を2ドラム集めた（waterskinに入れた）。"));
+                Assert.That(DummyPopupGenericTarget.LastAskNumberMessage, Is.EqualTo("何ドラム？(最大=7)"));
+                Assert.That(target.LastPickItemTitle, Is.EqualTo("[注ぎ元の容器を選択]"));
+                Assert.That(LiquidVolumeQueuedHitCount("CollectMessage"), Is.EqualTo(1));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(PopupAskNumberTranslationPatch),
+                        "Popup.ProducerText.LiquidVolumeTranslationPatch.HowManyDrams"),
+                    Is.EqualTo(1));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        "PickItem.ShowPicker",
+                        "LiquidVolumeTranslationPatch.PickItemTitle.SelectContainerToFillFrom"),
+                    Is.EqualTo(1));
             });
         }
         finally
@@ -1876,6 +1925,13 @@ public sealed class WorldPartsProducerTranslationPatchTests
         harmony.Patch(
             original: RequireMethod(typeof(DummyMessageQueue), nameof(DummyMessageQueue.AddPlayerMessage), typeof(string), typeof(string), typeof(bool)),
             prefix: new HarmonyMethod(RequireMethod(typeof(CombatAndLogMessageQueuePatch), nameof(CombatAndLogMessageQueuePatch.Prefix), typeof(string).MakeByRefType(), typeof(string), typeof(bool))));
+    }
+
+    private static void PatchAskNumber(Harmony harmony)
+    {
+        harmony.Patch(
+            original: RequireMethod(typeof(DummyPopupGenericTarget), nameof(DummyPopupGenericTarget.AskNumber)),
+            prefix: new HarmonyMethod(RequireMethod(typeof(PopupAskNumberTranslationPatch), nameof(PopupAskNumberTranslationPatch.Prefix))));
     }
 
     private static void PatchMessageLog(Harmony harmony)

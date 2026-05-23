@@ -40,7 +40,9 @@ public sealed partial class Issue201StatusScreensBatch2Tests
                 Assert.That(dataRow.CategoryId, Is.EqualTo("Basic Move / Attack"));
                 Assert.That(dataRow.KeyDescription, Is.EqualTo("近くと交互作用"));
                 Assert.That(DummyKeybindsScreenTarget.REMOVE_BIND.Description, Is.EqualTo("キーバインド削除"));
+                Assert.That(DummyKeybindsScreenTarget.REMOVE_BIND.KeyDescription, Is.EqualTo("Delete"));
                 Assert.That(DummyKeybindsScreenTarget.RESTORE_DEFAULTS.Description, Is.EqualTo("デフォルトに戻す"));
+                Assert.That(DummyKeybindsScreenTarget.RESTORE_DEFAULTS.KeyDescription, Is.EqualTo("R"));
                 Assert.That(
                     DynamicTextObservability.GetRouteFamilyHitCountForTests(
                         nameof(KeybindsScreenTranslationPatch),
