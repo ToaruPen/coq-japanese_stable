@@ -323,44 +323,6 @@ internal static class TextShellReplacementRenderer
         return TextOverflowModes.Overflow;
     }
 
-    internal static bool TryBuildReplacementLifecycleSnapshot(
-        TextMeshProUGUI replacement,
-        string probeName,
-        string trigger,
-        out string? logLine)
-    {
-        logLine = null;
-        if (!string.Equals(replacement.gameObject.name, ReplacementObjectName, StringComparison.Ordinal))
-        {
-            return false;
-        }
-
-        var builder = new StringBuilder();
-        builder.Append("[QudJP] ");
-        builder.Append(probeName);
-        builder.Append(": frame=");
-        builder.Append(Time.frameCount.ToString(CultureInfo.InvariantCulture));
-        builder.Append(" trigger='");
-        builder.Append(trigger);
-        builder.Append("' root='");
-        var owningInventoryLineName = FindOwningInventoryLineName(replacement.transform);
-        if (owningInventoryLineName is null)
-        {
-            Trace.TraceWarning("QudJP: Could not resolve owning inventory line for replacement lifecycle probe.");
-            builder.Append("<unknown>");
-        }
-        else
-        {
-            builder.Append(owningInventoryLineName);
-        }
-        builder.Append("' path='");
-        builder.Append(BuildAbsolutePath(replacement.transform));
-        builder.Append("' ");
-        AppendCreationStageSnapshot(builder, "state", replacement);
-        logLine = builder.ToString();
-        return true;
-    }
-
     internal static bool TryBuildReplacementState(object? componentInstance, string probeName, out string? logLine)
     {
         logLine = null;
@@ -1631,40 +1593,6 @@ internal static class TextShellReplacementRenderer
         return string.Join("/", stack.ToArray());
     }
 
-    private static string BuildAbsolutePath(Transform target)
-    {
-        var stack = new System.Collections.Generic.Stack<string>();
-        var current = target;
-        while (current is not null)
-        {
-            stack.Push(current.name);
-            current = current.parent;
-        }
-
-        return string.Join("/", stack.ToArray());
-    }
-
-    private static string? FindOwningInventoryLineName(Transform target)
-    {
-        var current = target;
-        while (current is not null)
-        {
-            var components = current.GetComponents<Component>();
-            for (var index = 0; index < components.Length; index++)
-            {
-                var component = components[index];
-                if (component is not null
-                    && string.Equals(component.GetType().FullName, "Qud.UI.InventoryLine", StringComparison.Ordinal))
-                {
-                    return current.gameObject.name;
-                }
-            }
-
-            current = current.parent;
-        }
-
-        return null;
-    }
 #else
     internal static bool HasActiveReplacementForCurrentItemText(object? componentInstance)
     {

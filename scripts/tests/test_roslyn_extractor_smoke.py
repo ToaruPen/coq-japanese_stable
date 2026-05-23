@@ -23,6 +23,13 @@ STATIC_PRODUCER_PROJECT_PATH = (
     / "StaticProducerInventoryScanner.csproj"
 )
 SEMANTIC_PROBE_PROJECT_PATH = _REPO_ROOT / "scripts" / "tools" / "RoslynSemanticProbe" / "RoslynSemanticProbe.csproj"
+UNUSED_CODE_PROJECT_PATH = (
+    _REPO_ROOT
+    / "scripts"
+    / "tools"
+    / "UnusedCodeInventoryScanner"
+    / "UnusedCodeInventoryScanner.csproj"
+)
 FIXTURES = Path(__file__).resolve().parent / "fixtures" / "annals"
 
 
@@ -50,6 +57,14 @@ def semantic_probe_tool_dll() -> Path:
     return build_tool_project(SEMANTIC_PROBE_PROJECT_PATH)
 
 
+@pytest.fixture(scope="session")
+def unused_code_tool_dll() -> Path:
+    """Build the unused-code scanner once for smoke validation."""
+    if not shutil.which("dotnet"):
+        pytest.skip("dotnet SDK not available")
+    return build_tool_project(UNUSED_CODE_PROJECT_PATH)
+
+
 @pytest.mark.skipif(not shutil.which("dotnet"), reason="dotnet SDK not available")
 def test_extractor_csproj_builds_in_release(annals_tool_dll: Path) -> None:
     """The Roslyn extractor csproj must build cleanly so the CI step does not rot."""
@@ -66,6 +81,12 @@ def test_static_producer_inventory_scanner_csproj_builds_in_release(static_produ
 def test_semantic_probe_csproj_builds_in_release(semantic_probe_tool_dll: Path) -> None:
     """The Roslyn semantic probe csproj must build cleanly."""
     assert semantic_probe_tool_dll.is_file()
+
+
+@pytest.mark.skipif(not shutil.which("dotnet"), reason="dotnet SDK not available")
+def test_unused_code_inventory_scanner_csproj_builds_in_release(unused_code_tool_dll: Path) -> None:
+    """The Roslyn unused-code scanner csproj must build cleanly."""
+    assert unused_code_tool_dll.is_file()
 
 
 @pytest.mark.skipif(not shutil.which("dotnet"), reason="dotnet SDK not available")

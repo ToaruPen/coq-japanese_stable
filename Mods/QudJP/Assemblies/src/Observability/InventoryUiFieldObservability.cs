@@ -10,9 +10,6 @@ namespace QudJP;
 
 internal static class InventoryUiFieldObservability
 {
-#if QUDJP_DEV_BUILD
-    private const int MaxLogsPerBucket = 4;
-#endif
     private const int MaxEntriesPerSnapshot = 12;
 
     private static readonly string[] MemberNameHints =
@@ -27,60 +24,6 @@ internal static class InventoryUiFieldObservability
         "panel",
         "go",
     };
-
-#if QUDJP_DEV_BUILD
-    private static readonly ConcurrentDictionary<string, int> BucketCounts =
-        new ConcurrentDictionary<string, int>(StringComparer.Ordinal);
-#endif
-
-#if QUDJP_DEV_BUILD
-    internal static bool TryBuildScreenSnapshot(object? screenInstance, out string? logLine)
-    {
-        logLine = null;
-        if (screenInstance is null)
-        {
-            return false;
-        }
-
-        var entries = CollectEntries(screenInstance);
-        if (entries.Count == 0)
-        {
-            return false;
-        }
-
-        var bucket = entries[0];
-        var hitCount = BucketCounts.AddOrUpdate(
-            bucket,
-            1,
-            static (_, currentValue) => currentValue < int.MaxValue ? currentValue + 1 : int.MaxValue);
-        if (hitCount > MaxLogsPerBucket)
-        {
-            return false;
-        }
-
-        var builder = new StringBuilder();
-        builder.Append("[QudJP] InventoryUiFieldProbe/v1: ");
-        for (var index = 0; index < entries.Count; index++)
-        {
-            if (index > 0)
-            {
-                builder.Append("; ");
-            }
-
-            builder.Append(entries[index]);
-        }
-
-        logLine = builder.ToString();
-        return true;
-    }
-#else
-    internal static bool TryBuildScreenSnapshot(object? screenInstance, out string? logLine)
-    {
-        _ = screenInstance;
-        logLine = null;
-        return false;
-    }
-#endif
 
     internal static string[] CollectEntriesForTests(object screenInstance)
     {

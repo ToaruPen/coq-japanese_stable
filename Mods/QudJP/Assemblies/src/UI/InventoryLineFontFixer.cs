@@ -355,24 +355,6 @@ internal static class InventoryLineFontFixer
         return TextShellReplacementRenderer.HasActiveReplacementForCurrentItemText(inventoryLineInstance);
     }
 
-    internal static int TryApplyPrimaryFontToAllTextChildren(object? inventoryLineInstance)
-    {
-        if (inventoryLineInstance is not Component component)
-        {
-            return 0;
-        }
-
-        var texts = component.GetComponentsInChildren<TextMeshProUGUI>(includeInactive: true);
-        var applied = 0;
-        for (var index = 0; index < texts.Length; index++)
-        {
-            FontManager.ApplyToText(texts[index]);
-            applied++;
-        }
-
-        return applied;
-    }
-
     private static string? TryGetStringPropertyOrField(object? instance, string memberName)
     {
         if (instance is null)

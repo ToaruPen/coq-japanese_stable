@@ -122,6 +122,28 @@ inventory:
 - Closure tests: `scripts/tests/test_static_producer_closure.py`
 - Existing Roslyn smoke tests: `scripts/tests/test_roslyn_extractor_smoke.py`
 
+## Unused Code Inventory Quick Reference
+
+Use the unused-code inventory scanner when looking for unreferenced QudJP C#
+declarations. It is a candidate generator, not a removal proof by itself:
+reflection, Harmony entrypoints, conditional compilation, and runtime-only
+routes still need owner review before deleting code.
+
+- Python entrypoint: `scripts/scan_unused_code_inventory.py`
+- Roslyn project: `scripts/tools/UnusedCodeInventoryScanner/UnusedCodeInventoryScanner.csproj`
+- Scanner config: `scripts/unused_code_inventory_config.json`
+- Focused tests: `scripts/tests/test_scan_unused_code_inventory.py`
+- Local preview: `just unused-code-preview`
+- Scanner validation: `just unused-code-check`
+
+The default config scans production, test, analyzer, and analyzer-test C#
+sources so test-only static references count as usage. It reports candidates
+only from production `src` and analyzer sources, enables `HAS_GAME_DLL`,
+`HAS_TMP`, and `QUDJP_DEV_BUILD`, roots
+Harmony patch entrypoints, and excludes known test-helper suffixes such as
+`ForTests`. Do not add `--fail-on-candidates` to PR gates until the current
+candidate baseline has been triaged and false-positive policy is documented.
+
 Current semantic target owners:
 
 - `Popup.Show*`: `XRL.UI.Popup`

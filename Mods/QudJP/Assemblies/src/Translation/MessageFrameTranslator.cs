@@ -26,8 +26,6 @@ internal static class MessageFrameTranslator
 
     internal const char DirectTranslationMarker = '\x01';
 
-    internal static int LoadInvocationCount => Volatile.Read(ref loadInvocationCount);
-
     internal static void SetDictionaryPathForTests(string? filePath)
     {
         lock (SyncRoot)

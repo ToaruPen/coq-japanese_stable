@@ -213,27 +213,6 @@ internal static class ZoneDisplayNameTranslationCatalog
             "zone",
     };
 
-    internal static readonly HashSet<string> PsychicBiomeAdjectives = new(StringComparer.OrdinalIgnoreCase)
-    {
-            "blaring",
-            "blinking",
-            "bubbly",
-            "burgeoning",
-            "drowsy",
-            "illuminated",
-            "jittery",
-            "kindling",
-            "naked",
-            "pastless",
-            "psychically refractive",
-            "rapidly resonating",
-            "regressive",
-            "retrocognate",
-            "telekinetic",
-            "telepathic",
-            "warped",
-    };
-
     internal static readonly HashSet<string> PsychicBiomeEpithets = new(StringComparer.OrdinalIgnoreCase)
     {
             "encomium",

@@ -19,8 +19,6 @@ public static class PopupShowTranslationPatch
     [ThreadStatic]
     private static int pendingDirectMarkerWrapperDepth;
 
-    internal static bool IsNestedPopupCall => pendingDirectMarkerWrapperDepth > 0;
-
     [HarmonyTargetMethods]
     private static IEnumerable<MethodBase> TargetMethods()
     {

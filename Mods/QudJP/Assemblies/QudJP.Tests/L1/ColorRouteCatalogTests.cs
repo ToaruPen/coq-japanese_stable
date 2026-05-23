@@ -123,7 +123,6 @@ internal static class ColorRouteCatalog
         "GetDisplayNameRouteTranslator.TranslatePreservingColors(",
         "UITextSkinTranslationPatch.TranslatePreservingColors(",
         "PopupTranslationPatch.TranslatePopupTextForRoute(",
-        "PopupTranslationPatch.TranslatePopupMenuItemTextForRoute(",
         "PopupTranslationPatch.TranslatePopupTextForProducerRoute(",
         "PopupTranslationPatch.TranslatePopupMenuItemTextForProducerRoute(",
     };

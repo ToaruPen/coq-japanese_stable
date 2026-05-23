@@ -507,17 +507,26 @@ roslyn-build-text-construction:
   trap 'rm -rf "$artifacts_root"' EXIT
   dotnet build scripts/tools/TextConstructionInventory/TextConstructionInventory.csproj --configuration Release --no-incremental --artifacts-path "$artifacts_root"
 
+# Build the unused-code Roslyn inventory tool.
+roslyn-build-unused-code:
+  #!/usr/bin/env bash
+  set -euo pipefail
+  mkdir -p "{{dotnet_artifacts_root}}/roslyn-unused-code"
+  artifacts_root="$(mktemp -d "{{dotnet_artifacts_root}}/roslyn-unused-code/run.XXXXXX")"
+  trap 'rm -rf "$artifacts_root"' EXIT
+  dotnet build scripts/tools/UnusedCodeInventoryScanner/UnusedCodeInventoryScanner.csproj --configuration Release --no-incremental --artifacts-path "$artifacts_root"
+
 # Build all repo-local Roslyn analysis tools.
-roslyn-build: roslyn-build-annals roslyn-build-static-producer roslyn-build-semantic-probe roslyn-build-text-construction
+roslyn-build: roslyn-build-annals roslyn-build-static-producer roslyn-build-semantic-probe roslyn-build-text-construction roslyn-build-unused-code
 
 # Run focused pytest coverage for repo-local Roslyn analysis tools.
 roslyn-test:
-  uv run pytest scripts/tests/test_extract_annals_patterns.py scripts/tests/test_parallel_dotnet_contract.py scripts/tests/test_roslyn_extractor_smoke.py scripts/tests/test_roslyn_semantic_probe.py scripts/tests/test_roslyn_text_construction_inventory.py scripts/tests/test_scan_static_producer_inventory.py scripts/tests/test_static_producer_closure.py scripts/tests/test_text_construction_surface_policy.py -q
+  uv run pytest scripts/tests/test_extract_annals_patterns.py scripts/tests/test_parallel_dotnet_contract.py scripts/tests/test_roslyn_extractor_smoke.py scripts/tests/test_roslyn_semantic_probe.py scripts/tests/test_roslyn_text_construction_inventory.py scripts/tests/test_scan_static_producer_inventory.py scripts/tests/test_scan_unused_code_inventory.py scripts/tests/test_static_producer_closure.py scripts/tests/test_text_construction_surface_policy.py -q
 
 # Run Ruff for Roslyn Python files and basedpyright for the typed static-producer gate.
 roslyn-python-check:
-  ruff check scripts/dotnet_tool_runner.py scripts/extract_annals_patterns.py scripts/roslyn_semantic_probe.py scripts/scan_static_producer_inventory.py scripts/static_producer_closure.py scripts/text_construction_surface_policy.py scripts/tests/test_extract_annals_patterns.py scripts/tests/test_parallel_dotnet_contract.py scripts/tests/test_roslyn_extractor_smoke.py scripts/tests/test_roslyn_semantic_probe.py scripts/tests/test_roslyn_text_construction_inventory.py scripts/tests/test_scan_static_producer_inventory.py scripts/tests/test_static_producer_closure.py scripts/tests/test_text_construction_surface_policy.py
-  uvx basedpyright scripts/dotnet_tool_runner.py scripts/roslyn_semantic_probe.py scripts/scan_static_producer_inventory.py scripts/static_producer_closure.py scripts/text_construction_surface_policy.py scripts/tests/test_roslyn_semantic_probe.py scripts/tests/test_scan_static_producer_inventory.py scripts/tests/test_static_producer_closure.py scripts/tests/test_text_construction_surface_policy.py scripts/tests/test_roslyn_extractor_smoke.py
+  ruff check scripts/dotnet_tool_runner.py scripts/extract_annals_patterns.py scripts/roslyn_semantic_probe.py scripts/scan_static_producer_inventory.py scripts/scan_unused_code_inventory.py scripts/static_producer_closure.py scripts/text_construction_surface_policy.py scripts/tests/test_extract_annals_patterns.py scripts/tests/test_parallel_dotnet_contract.py scripts/tests/test_roslyn_extractor_smoke.py scripts/tests/test_roslyn_semantic_probe.py scripts/tests/test_roslyn_text_construction_inventory.py scripts/tests/test_scan_static_producer_inventory.py scripts/tests/test_scan_unused_code_inventory.py scripts/tests/test_static_producer_closure.py scripts/tests/test_text_construction_surface_policy.py
+  uvx basedpyright scripts/dotnet_tool_runner.py scripts/roslyn_semantic_probe.py scripts/scan_static_producer_inventory.py scripts/scan_unused_code_inventory.py scripts/static_producer_closure.py scripts/text_construction_surface_policy.py scripts/tests/test_roslyn_semantic_probe.py scripts/tests/test_scan_static_producer_inventory.py scripts/tests/test_scan_unused_code_inventory.py scripts/tests/test_static_producer_closure.py scripts/tests/test_text_construction_surface_policy.py scripts/tests/test_roslyn_extractor_smoke.py
 
 # Run build, focused tests, and static checks for Roslyn analysis tooling.
 roslyn-check: roslyn-build roslyn-test roslyn-python-check
@@ -588,6 +597,17 @@ text-construction-inventory source_root=decompiled_root output="/tmp/roslyn-text
 text-construction-surface-queue source_root=decompiled_root output="/tmp/roslyn-text-construction-inventory.json" limit="50":
   just text-construction-inventory {{quote(source_root)}} {{quote(output)}} ""
   {{python}} scripts/text_construction_surface_policy.py --inventory {{quote(output)}} --limit {{quote(limit)}}
+
+# Generate unused private/internal C# declaration candidates to a disposable local output.
+unused-code-preview source_root="." config="scripts/unused_code_inventory_config.json" output="/tmp/qudjp-unused-code-inventory.json":
+  {{python}} scripts/scan_unused_code_inventory.py --source-root {{quote(source_root)}} --config {{quote(config)}} --output {{quote(output)}}
+  {{python}} -c 'import json, sys; doc=json.load(open(sys.argv[1], encoding="utf-8")); print(doc["totals"])' {{quote(output)}}
+
+# Run the unused-code scanner's focused validation gate.
+unused-code-check: roslyn-build-unused-code
+  uv run pytest scripts/tests/test_scan_unused_code_inventory.py scripts/tests/test_roslyn_extractor_smoke.py -q
+  ruff check scripts/scan_unused_code_inventory.py scripts/tests/test_scan_unused_code_inventory.py scripts/tests/test_roslyn_extractor_smoke.py
+  uvx basedpyright scripts/scan_unused_code_inventory.py scripts/tests/test_scan_unused_code_inventory.py scripts/tests/test_roslyn_extractor_smoke.py
 
 # Audit source routes and test expectations for English function-word residue risks.
 function-word-residue-audit source_root=decompiled_root tests_root="Mods/QudJP/Assemblies/QudJP.Tests" output="/tmp/qudjp-function-word-residue-audit.json" limit="100":

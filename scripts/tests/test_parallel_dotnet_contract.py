@@ -81,6 +81,7 @@ def test_roslyn_tool_wrappers_use_run_scoped_dotnet_runner() -> None:
         "scripts/extract_annals_patterns.py",
         "scripts/roslyn_semantic_probe.py",
         "scripts/scan_static_producer_inventory.py",
+        "scripts/scan_unused_code_inventory.py",
     ):
         text = _read_repo_file(path)
         assert "run_cached_tool_project" in text
@@ -141,6 +142,7 @@ def test_roslyn_build_recipes_use_run_scoped_artifacts() -> None:
         "roslyn-build-static-producer",
         "roslyn-build-semantic-probe",
         "roslyn-build-text-construction",
+        "roslyn-build-unused-code",
     ):
         block = _recipe_block(justfile, recipe_name)
         assert "mktemp -d" in block
