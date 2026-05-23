@@ -12,11 +12,11 @@ public static class EnergyStorageChargeStatusTranslationPatch
     private static readonly Dictionary<string, string> ChargeStatusTranslations = new(StringComparer.Ordinal)
     {
         { "Drained", "空" },
-        { "Very Low", "残量ごく少" },
+        { "Very Low", "残量わずか" },
         { "Low", "残量少" },
-        { "Used", "使用済み" },
+        { "Used", "残量半分" },
         { "Fresh", "残量多" },
-        { "Full", "満充電" },
+        { "Full", "残量十分" },
         { "Run Down", "巻き切れ" },
         { "Very Run Down", "巻きがかなり弱い" },
         { "Fairly Run Down", "巻きがやや弱い" },
