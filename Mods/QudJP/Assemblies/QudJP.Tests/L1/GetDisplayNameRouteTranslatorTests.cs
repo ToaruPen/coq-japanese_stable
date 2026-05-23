@@ -1099,6 +1099,28 @@ public sealed class GetDisplayNameRouteTranslatorTests
     }
 
     [Test]
+    public void TranslatePreservingColors_StripsLowercaseArticleModifierBeforeDisplayName()
+    {
+        WriteContextDictionaryFile(
+            "ui-displayname-adjectives.ja.json",
+            ("small", "GetDisplayName.Adjective", "小さな"));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                GetDisplayNameRouteTranslator.TranslatePreservingColors(
+                    "the small 岩塊",
+                    nameof(GetDisplayNamePatch)),
+                Is.EqualTo("小さな岩塊"));
+            Assert.That(
+                GetDisplayNameRouteTranslator.TranslatePreservingColors(
+                    "{{K|the}} 岩塊",
+                    nameof(GetDisplayNamePatch)),
+                Is.EqualTo("岩塊"));
+        });
+    }
+
+    [Test]
     public void TranslatePreservingColors_UsesDisplayNameAdjectiveContextForMarkupWeaponModifiers()
     {
         WriteContextDictionaryFile(

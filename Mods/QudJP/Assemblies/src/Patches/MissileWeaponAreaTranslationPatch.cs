@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
+using System.Reflection.Emit;
 using System.Text.RegularExpressions;
 using HarmonyLib;
 
@@ -11,6 +13,9 @@ public static class MissileWeaponAreaTranslationPatch
 {
     private const string Context = nameof(MissileWeaponAreaTranslationPatch);
     private const string DictionaryFile = "ui-missile-weapon-area.ja.json";
+    private static readonly MethodInfo TranslateLiteralMethod =
+        AccessTools.Method(typeof(MissileWeaponAreaTranslationPatch), nameof(TranslateLiteral))
+        ?? throw new InvalidOperationException("TranslateLiteral method not found.");
 
     private static readonly Regex HotkeyLabelPattern = new(
         "^(?<hotkey>\\{\\{W\\|\\[[^\\]]+\\]\\}\\}\\s+)(?<label>fire|reload)$",
@@ -35,6 +40,21 @@ public static class MissileWeaponAreaTranslationPatch
         return method;
     }
 
+    public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+    {
+        foreach (var instruction in instructions)
+        {
+            yield return instruction;
+
+            if (instruction.opcode == OpCodes.Ldstr
+                && instruction.operand is string literal
+                && IsHotkeyLabelSuffixLiteral(literal))
+            {
+                yield return new CodeInstruction(OpCodes.Call, TranslateLiteralMethod);
+            }
+        }
+    }
+
     public static void Postfix(object? ___fireHotkeyText, object? ___reloadHotkeyText)
     {
         try
@@ -46,6 +66,26 @@ public static class MissileWeaponAreaTranslationPatch
         {
             Trace.TraceError("QudJP: {0}.Postfix failed: {1}", Context, ex);
         }
+    }
+
+    public static string TranslateLiteral(string source)
+    {
+        if (string.IsNullOrEmpty(source) || !IsHotkeyLabelSuffixLiteral(source))
+        {
+            return source;
+        }
+
+        if (source.EndsWith(" fire", StringComparison.Ordinal))
+        {
+            return ReplaceLabelSuffix(source, "fire");
+        }
+
+        if (source.EndsWith(" reload", StringComparison.Ordinal))
+        {
+            return ReplaceLabelSuffix(source, "reload");
+        }
+
+        return source;
     }
 
     private static void TranslateHotkeyText(object? uiTextSkin)
@@ -77,5 +117,22 @@ public static class MissileWeaponAreaTranslationPatch
 
         DynamicTextObservability.RecordTransform(Context, "MissileWeaponArea.HotkeyLabel", source, translated);
         _ = UITextSkinReflectionAccessor.SetCurrentTextField(uiTextSkin, translated);
+    }
+
+    private static bool IsHotkeyLabelSuffixLiteral(string source)
+    {
+        return source.EndsWith(" fire", StringComparison.Ordinal)
+            || source.EndsWith(" reload", StringComparison.Ordinal);
+    }
+
+    private static string ReplaceLabelSuffix(string source, string label)
+    {
+        var translatedLabel = ScopedDictionaryLookup.TranslateExactOrLowerAscii(label, DictionaryFile);
+        if (translatedLabel is null)
+        {
+            return source;
+        }
+
+        return source.Substring(0, source.Length - label.Length) + translatedLabel;
     }
 }

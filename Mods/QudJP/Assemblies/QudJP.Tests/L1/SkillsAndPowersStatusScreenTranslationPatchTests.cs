@@ -50,6 +50,32 @@ public sealed class SkillsAndPowersStatusScreenTranslationPatchTests
     }
 
     [Test]
+    public void TryTranslateExactLeafPreservingColors_UsesContextualScopedSkillNameEntries()
+    {
+        WriteContextualDictionaryFile(
+            Path.Combine("Scoped", "ui-skillsandpowers-skill-names.ja.json"),
+            "TMP.Skill Name",
+            ("Bow and Rifle", "弓とライフル"),
+            ("Wayfaring", "辺境行"));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                SkillsAndPowersStatusScreenTranslationPatch.TryTranslateExactLeafPreservingColors(
+                    "{{K|Bow and Rifle}}",
+                    nameof(SkillsAndPowersStatusScreenTranslationPatchTests),
+                    recordTransform: false).translated,
+                Is.EqualTo("{{K|弓とライフル}}"));
+            Assert.That(
+                SkillsAndPowersStatusScreenTranslationPatch.TryTranslateStructuredLinePreservingColors(
+                    ":Wayfaring",
+                    nameof(SkillsAndPowersStatusScreenTranslationPatchTests),
+                    recordTransform: false).translated,
+                Is.EqualTo(":辺境行"));
+        });
+    }
+
+    [Test]
     public void TryTranslateExactLeafPreservingColors_TranslatesUppercaseHeaderAndBracketedSkillNames()
     {
         WriteDictionaryFile(
@@ -423,6 +449,35 @@ public sealed class SkillsAndPowersStatusScreenTranslationPatchTests
 
             builder.Append("{\"key\":\"");
             builder.Append(EscapeJson(entries[index].key));
+            builder.Append("\",\"text\":\"");
+            builder.Append(EscapeJson(entries[index].text));
+            builder.Append("\"}");
+        }
+
+        builder.Append("]}");
+        builder.AppendLine();
+
+        var path = Path.Combine(tempDirectory, relativePath);
+        Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+        File.WriteAllText(path, builder.ToString(), new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
+    }
+
+    private void WriteContextualDictionaryFile(string relativePath, string context, params (string key, string text)[] entries)
+    {
+        var builder = new StringBuilder();
+        builder.Append("{\"entries\":[");
+
+        for (var index = 0; index < entries.Length; index++)
+        {
+            if (index > 0)
+            {
+                builder.Append(',');
+            }
+
+            builder.Append("{\"key\":\"");
+            builder.Append(EscapeJson(entries[index].key));
+            builder.Append("\",\"context\":\"");
+            builder.Append(EscapeJson(context));
             builder.Append("\",\"text\":\"");
             builder.Append(EscapeJson(entries[index].text));
             builder.Append("\"}");

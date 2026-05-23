@@ -249,6 +249,23 @@ internal static class PickTargetWindowTextTranslator
             return false;
         }
 
+        if (source.IndexOf("Fire Missile Weapon", StringComparison.Ordinal) < 0
+            && source.IndexOf("Select Fire Mode", StringComparison.Ordinal) < 0
+            && source.IndexOf("mark target", StringComparison.Ordinal) < 0
+            && source.IndexOf("marked target", StringComparison.Ordinal) < 0
+            && source.IndexOf("Flattening Fire", StringComparison.Ordinal) < 0
+            && source.IndexOf("Suppressive Fire", StringComparison.Ordinal) < 0
+            && source.IndexOf("Disorienting Fire", StringComparison.Ordinal) < 0
+            && source.IndexOf("Wounding Fire", StringComparison.Ordinal) < 0
+            && source.IndexOf("Beacon Fire", StringComparison.Ordinal) < 0
+            && source.IndexOf("Sure Fire", StringComparison.Ordinal) < 0
+            && source.IndexOf("Ultra Fire", StringComparison.Ordinal) < 0
+            && source.IndexOf("(not marked)", StringComparison.Ordinal) < 0
+            && source.IndexOf("] Menu", StringComparison.Ordinal) < 0)
+        {
+            return false;
+        }
+
         translated = ReplaceOrdinal(source, "Fire Missile Weapon", "飛び道具を射撃");
         translated = ReplaceOrdinal(translated, "Select Fire Mode", "射撃モードを選ぶ");
         translated = ReplaceOrdinal(translated, "marked target", "マーク済み対象");
@@ -262,6 +279,8 @@ internal static class PickTargetWindowTextTranslator
         translated = ReplaceOrdinal(translated, "Ultra Fire", "究極射撃");
         translated = ReplaceOrdinal(translated, "(not marked)", "(未マーク)");
         translated = ReplaceOrdinal(translated, "] Menu", "] メニュー");
+        translated = ReplaceOrdinal(translated, "unlock", "ロック解除");
+        translated = ReplaceOrdinal(translated, "lock", "ロック");
         translated = ReplaceOrdinal(translated, " turn)", " ターン)");
         translated = ReplaceOrdinal(translated, " turns)", " ターン)");
 

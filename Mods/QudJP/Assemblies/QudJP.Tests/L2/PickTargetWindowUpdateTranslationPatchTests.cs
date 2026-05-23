@@ -132,6 +132,28 @@ public sealed class PickTargetWindowUpdateTranslationPatchTests
     }
 
     [Test]
+    public void TranslateCurrentText_TranslatesObservedMissilePickerUnlockSegment()
+    {
+        WriteDictionary(("select", "選択"));
+        DummyPickTargetWindow.currentText = "{{W|space}}-select | unlock ({{hotkey|F1}}) {{hotkey|M}} - mark target [{{W|}}] Menu | Fire Missile Weapon";
+
+        var changed = PickTargetWindowUpdateTranslationPatch.TranslateCurrentTextForTests(typeof(DummyPickTargetWindow));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(changed, Is.True);
+            Assert.That(
+                DummyPickTargetWindow.currentText,
+                Is.EqualTo("{{W|space}}-選択 | ロック解除 ({{hotkey|F1}}) {{hotkey|M}} - 対象をマーク [{{W|}}] メニュー | 飛び道具を射撃"));
+            Assert.That(
+                DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                    nameof(PickTargetWindowUpdateTranslationPatch),
+                    "PickTarget.CommandBar"),
+                Is.GreaterThan(0));
+        });
+    }
+
+    [Test]
     public void TranslateCurrentText_TranslatesExactPickTargetLabel()
     {
         WriteDictionary(("Dig to where?", "どこまで掘る？"));

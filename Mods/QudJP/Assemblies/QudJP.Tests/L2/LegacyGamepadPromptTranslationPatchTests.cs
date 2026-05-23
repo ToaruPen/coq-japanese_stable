@@ -86,7 +86,7 @@ public sealed class LegacyGamepadPromptTranslationPatchTests
                     Assert.That(target.Buffer.Writes, Does.Contain("{{W|B}} - {{W|制圧射撃}}"));
                     Assert.That(target.Buffer.Writes, Does.Contain("{{K|C - 創傷射撃 ({{C|2}} ターン)}}"));
                     Assert.That(target.Buffer.Writes, Does.Contain("[{{W|M}}] メニュー"));
-                    Assert.That(target.Buffer.Writes, Does.Contain("{{W|space}}-select | unlock ({{hotkey|F1}}) | 飛び道具を射撃"));
+                    Assert.That(target.Buffer.Writes, Does.Contain("{{W|space}}-select | ロック解除 ({{hotkey|F1}}) | 飛び道具を射撃"));
                 });
             });
     }

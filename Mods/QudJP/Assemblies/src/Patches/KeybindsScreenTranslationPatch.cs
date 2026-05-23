@@ -147,6 +147,12 @@ public static class KeybindsScreenTranslationPatch
             return;
         }
 
+        if (string.Equals(memberName, "KeyDescription", StringComparison.Ordinal)
+            && InputKeyDescriptionClassifier.IsInputKeyDescription(current!))
+        {
+            return;
+        }
+
         var route = ObservabilityHelpers.ComposeContext(Context, "field=" + routeSuffix);
         var translated = TranslateVisibleText(current!, route, "KeybindsScreen.MenuOption");
         if (!string.Equals(translated, current, StringComparison.Ordinal))

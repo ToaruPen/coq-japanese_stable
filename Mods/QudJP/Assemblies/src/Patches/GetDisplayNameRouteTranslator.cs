@@ -1061,9 +1061,18 @@ internal static class GetDisplayNameRouteTranslator
         var translatedModifiers = new List<string>();
         var sourceModifiers = new List<string>();
         var position = 0;
+        var skippedArticle = false;
 
         while (TryReadLeadingModifierToken(source, position, out var modifier, out var restStart))
         {
+            if (string.Equals(route, nameof(GetDisplayNamePatch), StringComparison.Ordinal)
+                && IsDisplayNameArticleModifier(modifier))
+            {
+                position = restStart;
+                skippedArticle = true;
+                continue;
+            }
+
             var translatedModifier = TranslateDisplayNameModifierForChain(modifier);
             if (translatedModifier is null)
             {
@@ -1085,12 +1094,29 @@ internal static class GetDisplayNameRouteTranslator
             }
         }
 
-        if (translatedModifiers.Count == 0 || position >= source.Length)
+        if (position >= source.Length)
         {
             return false;
         }
 
-        if (translatedModifiers.Count == 1 && source[0] != '{' && source[0] != '[')
+        if (translatedModifiers.Count == 0)
+        {
+            if (!skippedArticle)
+            {
+                return false;
+            }
+
+            translated = TranslatePreservingColors(source.Substring(position), route);
+            if (string.Equals(translated, source, StringComparison.Ordinal))
+            {
+                return false;
+            }
+
+            DynamicTextObservability.RecordTransform(route, "DisplayName.LeadingArticle", source, translated);
+            return true;
+        }
+
+        if (!skippedArticle && translatedModifiers.Count == 1 && source[0] != '{' && source[0] != '[')
         {
             return false;
         }
@@ -1119,6 +1145,12 @@ internal static class GetDisplayNameRouteTranslator
 
         DynamicTextObservability.RecordTransform(route, "DisplayName.LeadingModifierChain", source, translated);
         return true;
+    }
+
+    private static bool IsDisplayNameArticleModifier(string modifier)
+    {
+        var visible = ColorAwareTranslationComposer.GetVisibleText(modifier);
+        return visible is "a" or "an" or "the";
     }
 
     private static bool TryReadLeadingModifierToken(

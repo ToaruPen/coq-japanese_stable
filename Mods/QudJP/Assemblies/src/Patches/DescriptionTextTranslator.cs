@@ -43,6 +43,9 @@ internal static class DescriptionTextTranslator
     private static readonly Regex AddsCookingEffectsPattern =
         new Regex("^Adds (?<effect>.+?) effects to cooked meals\\.$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex RegainsChargeWhenWornOrHeldPattern =
+        new Regex("^Regains charge when worn(?: or |または)held in hand, much more quickly while in combat\\.$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     private static readonly Regex MakersMarkDescriptionPattern =
         new Regex("^(?:(?<markPrefix>.+?):\\s*|:\\s*)?(?<subject>This|These|That|Those) (?<category>.+?) (?<verb>bears|bear) the (?<mark>mark|marks) of (?<crafter>.+?)\\.$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
@@ -729,6 +732,21 @@ internal static class DescriptionTextTranslator
         return true;
     }
 
+    private static bool TryTranslateRegainsChargeWhenWornOrHeldLine(string source, string route, out string translated)
+    {
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        if (!RegainsChargeWhenWornOrHeldPattern.IsMatch(stripped))
+        {
+            translated = source;
+            return false;
+        }
+
+        translated = "装備中または手に持っているとチャージが回復する。戦闘中は大幅に速く回復する。";
+        translated = RestoreWholeLineBoundaryWrappers(translated, spans, stripped.Length);
+        DynamicTextObservability.RecordTransform(route, "Description.RegainsChargeWhenWornOrHeld", source, translated);
+        return true;
+    }
+
     private static bool TryTranslateVisibleSegment(
         string source,
         string route,
@@ -766,6 +784,11 @@ internal static class DescriptionTextTranslator
         }
 
         if (TryTranslateAddsCookingEffectsLine(source, route, out translated))
+        {
+            return true;
+        }
+
+        if (TryTranslateRegainsChargeWhenWornOrHeldLine(source, route, out translated))
         {
             return true;
         }
