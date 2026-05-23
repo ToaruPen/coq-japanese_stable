@@ -189,6 +189,7 @@ internal static class Demo
     assert _candidate_ids(payload) == {"QudJP.Demo", "QudJP.Demo.Unused()"}
 
 
+@pytest.mark.skipif(not shutil.which("dotnet"), reason="dotnet SDK not available")
 def test_python_wrapper_normalizes_relative_output_path(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
