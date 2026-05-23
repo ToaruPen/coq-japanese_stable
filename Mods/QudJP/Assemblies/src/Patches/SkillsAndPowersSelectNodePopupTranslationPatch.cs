@@ -32,7 +32,7 @@ public static class SkillsAndPowersSelectNodePopupTranslationPatch
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     private static readonly Regex BuyConfirmationPattern = new(
-        "^Are you sure you want to buy (?<name>.+) for (?<cost>.+?) sp\\?$",
+        "^Are you sure you want to buy (?<name>.+?) for (?<cost>.+?)\\s*sp\\?$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     [ThreadStatic]
@@ -171,10 +171,14 @@ public static class SkillsAndPowersSelectNodePopupTranslationPatch
         if (match.Success)
         {
             detail = "BuyConfirmation";
-            var name = ColorAwareTranslationComposer.MarkupAwareRestoreCapture(
+            var rawName = ColorAwareTranslationComposer.MarkupAwareRestoreCapture(
                 match.Groups["name"].Value,
                 spans,
                 match.Groups["name"]).Trim();
+            var name = SkillsAndPowersStatusScreenTranslationPatch.TryTranslateExactLeafPreservingColors(
+                rawName,
+                Context + ".BuyConfirmationName",
+                recordTransform: false).translated;
             var cost = match.Groups["cost"].Value.Trim();
             translated = RestoreWhole(name + "を{{C|" + cost + "}}SPで購入しますか？", stripped, spans, source);
             return true;

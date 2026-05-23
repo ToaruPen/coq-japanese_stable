@@ -34,6 +34,7 @@ public sealed class CookingIngredientFragmentTranslatorTests
     [TestCase("some chipped-off chunk of the Spindle", "スピンドルの欠片少々")]
     [TestCase("chip from the horn of a goatfolk", "山羊人の角の欠片")]
     [TestCase("a sprinkle of Eater dander", "喰らう者のフケひと振り")]
+    [TestCase("sprinkle of retrieved bulgur", "取り戻したブルグルひと振り")]
     [TestCase("svardym spittle", "スヴァーディムの唾")]
     [TestCase("nachash root", "ナハシュの根")]
     [TestCase("banana peel", "バナナの皮")]

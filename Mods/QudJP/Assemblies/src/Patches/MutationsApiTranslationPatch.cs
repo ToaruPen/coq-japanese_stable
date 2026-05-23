@@ -12,6 +12,11 @@ public static class MutationsApiTranslationPatch
 {
     private const string Context = nameof(MutationsApiTranslationPatch);
 
+    private static readonly Regex CreatureTypeCannotBuyPattern =
+        new Regex(
+            "^Your type of creature may not buy (?<term>.+?)\\.$",
+            RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     private static readonly Regex InsufficientPointsPattern =
         new Regex(
             "^You don't have (?<cost>\\d+) mutation points!$",
@@ -84,6 +89,17 @@ public static class MutationsApiTranslationPatch
 
         var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
 
+        var creatureTypeMatch = CreatureTypeCannotBuyPattern.Match(stripped);
+        if (creatureTypeMatch.Success)
+        {
+            translated = string.Concat(
+                "この種類の生物は",
+                TranslateMutationTerm(creatureTypeMatch.Groups["term"], spans),
+                "を購入できない。");
+            DynamicTextObservability.RecordTransform(route, family + "." + Context + ".CreatureTypeCannotBuy", source, translated);
+            return true;
+        }
+
         var insufficientMatch = InsufficientPointsPattern.Match(stripped);
         if (insufficientMatch.Success)
         {
@@ -129,10 +145,12 @@ public static class MutationsApiTranslationPatch
     private static string TranslateBuiltInMutationTerm(Group termGroup, IReadOnlyList<ColorSpan> spans, string fallback)
     {
         var strippedTerm = termGroup.Value.Trim();
-        var translated = string.Equals(strippedTerm, "mutation", StringComparison.OrdinalIgnoreCase)
-            || string.Equals(strippedTerm, "mutations", StringComparison.OrdinalIgnoreCase)
-            ? "突然変異"
-            : null;
+        var translated = strippedTerm.ToUpperInvariant() switch
+        {
+            "MUTATION" or "MUTATIONS" => "突然変異",
+            "MODULE" or "MODULES" => "モジュール",
+            _ => null,
+        };
 
         return translated is null
             ? fallback

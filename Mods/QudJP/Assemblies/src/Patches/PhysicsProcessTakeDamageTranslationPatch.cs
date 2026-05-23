@@ -35,6 +35,14 @@ public static class PhysicsProcessTakeDamageTranslationPatch
         "^from slamming into (?<count>.+?) walls$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex ChargeWallSlamTailPattern = new(
+        "^from being slammed into a wall by (?<owner>.+?) charge$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex ChargeWallsSlamTailPattern = new(
+        "^from being slammed into (?<count>.+?) walls by (?<owner>.+?) charge$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     private static readonly Regex ElectricalShockSourcePattern = new(
         "^electrical shock delivered by (?<source>.+)$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
@@ -79,6 +87,7 @@ public static class PhysicsProcessTakeDamageTranslationPatch
     {
         ("failed assault on the structure of spacetime", "時空構造への干渉失敗"),
         ("electrical discharge", "放電"),
+        ("charge", "突撃"),
         ("freezing effect", "凍結効果"),
         ("freezing weapon", "凍てつく武器"),
         ("flaming weapon", "火炎武器"),
@@ -410,6 +419,25 @@ public static class PhysicsProcessTakeDamageTranslationPatch
             return true;
         }
 
+        var chargeWallSlam = ChargeWallSlamTailPattern.Match(tail);
+        if (chargeWallSlam.Success)
+        {
+            translated = TranslateChargeOwner(chargeWallSlam.Groups["owner"].Value)
+                + "突撃で壁に叩きつけられたことで";
+            return true;
+        }
+
+        var chargeWallsSlam = ChargeWallsSlamTailPattern.Match(tail);
+        if (chargeWallsSlam.Success)
+        {
+            var count = TranslateWallCount(chargeWallsSlam.Groups["count"].Value);
+            translated = TranslateChargeOwner(chargeWallsSlam.Groups["owner"].Value)
+                + "突撃で"
+                + count
+                + "枚の壁に叩きつけられたことで";
+            return true;
+        }
+
         if (tail.Equals("from scourging yourself", StringComparison.Ordinal))
         {
             translated = "自分を鞭打ったことで";
@@ -436,6 +464,11 @@ public static class PhysicsProcessTakeDamageTranslationPatch
                 "nine" => "9",
                 _ => visible,
             });
+    }
+
+    private static string TranslateChargeOwner(string owner)
+    {
+        return NormalizeVisiblePossessiveOwner(owner);
     }
 
     private static string TranslateDamageSource(string source)

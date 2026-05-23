@@ -52,6 +52,11 @@ public sealed class TinkeringModPopupTranslationPatchTests
         "MissingBits")]
     [TestCase(
         nameof(DummyPopupShow.ShowFail),
+        "You don't have the required <ABCD> bits! You have:\n\n A x2 - scrap power systems\nB x1 - scrap crystal\nZ x9 - unknown bit",
+        "必要な<ABCD>ビットが足りない！所持ビット:\n\n A x2 - スクラップ動力系\nB x1 - スクラップ結晶\nZ x9 - unknown bit",
+        "MissingBits")]
+    [TestCase(
+        nameof(DummyPopupShow.ShowFail),
         "You can't unequip {{Y|steel boots}}.",
         "{{Y|steel boots}}を外せない。",
         "CantUnequip")]

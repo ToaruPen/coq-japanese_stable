@@ -30,6 +30,16 @@
       "text": "いくつかの"
     },
     {
+      "key": "small",
+      "context": "GetDisplayName.Adjective",
+      "text": "小さな"
+    },
+    {
+      "key": "large",
+      "context": "GetDisplayName.Adjective",
+      "text": "大きな"
+    },
+    {
       "key": "{{painted|painted}}",
       "context": "GetDisplayName.Adjective",
       "text": "{{painted|彩色された}}"

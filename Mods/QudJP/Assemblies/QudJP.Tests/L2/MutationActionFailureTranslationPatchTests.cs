@@ -27,6 +27,24 @@ public sealed class MutationActionFailureTranslationPatchTests
     }
 
     [Test]
+    public void ElectricalGenerationPerformDischarge_TranslatesNoGroundTargetFailurePopup_WhenOwnerPatched()
+    {
+        AssertPopupMessage(
+            nameof(DummyMutationActionFailureTarget.ElectricalGenerationPerformDischarge),
+            "There is nothing there that your electrical discharge can ground into.",
+            "放電を接地できる対象がそこにはない。");
+    }
+
+    [Test]
+    public void RepellingForceFireEvent_TranslatesWorldMapFailurePopup_WhenOwnerPatched()
+    {
+        AssertPopupMessage(
+            nameof(DummyMutationActionFailureTarget.RepellingForceFireEvent),
+            "You cannot use {{G|Repulsion}} on the world map.",
+            "{{G|Repulsion}}はワールドマップでは使えない。");
+    }
+
+    [Test]
     public void TeleportOtherFireEvent_TranslatesSelfTargetFailurePopup_WhenOwnerPatched()
     {
         AssertPopupMessage(
@@ -38,6 +56,12 @@ public sealed class MutationActionFailureTranslationPatchTests
     [TestCase(
         nameof(DummyMutationActionFailureTarget.ElectricalGenerationHandleEvent),
         "You can't seem to drink any of the juice from {{Y|drained chem cell}}.")]
+    [TestCase(
+        nameof(DummyMutationActionFailureTarget.ElectricalGenerationPerformDischarge),
+        "There is nothing there that your electrical discharge can ground into.")]
+    [TestCase(
+        nameof(DummyMutationActionFailureTarget.RepellingForceFireEvent),
+        "You cannot use Repulsion on the world map.")]
     [TestCase(
         nameof(DummyMutationActionFailureTarget.TeleportOtherFireEvent),
         "You may not teleport yourself with Teleport Other!")]
@@ -52,7 +76,9 @@ public sealed class MutationActionFailureTranslationPatchTests
             PatchPopupShow(harmony);
             PatchPopupShowFail(harmony);
 
-            if (string.Equals(methodName, nameof(DummyMutationActionFailureTarget.TeleportOtherFireEvent), StringComparison.Ordinal))
+            if (string.Equals(methodName, nameof(DummyMutationActionFailureTarget.TeleportOtherFireEvent), StringComparison.Ordinal)
+                || string.Equals(methodName, nameof(DummyMutationActionFailureTarget.RepellingForceFireEvent), StringComparison.Ordinal)
+                || string.Equals(methodName, nameof(DummyMutationActionFailureTarget.ElectricalGenerationPerformDischarge), StringComparison.Ordinal))
             {
                 DummyPopupShow.ShowFail(source);
             }
@@ -142,6 +168,8 @@ public sealed class MutationActionFailureTranslationPatchTests
         foreach (var methodName in new[]
         {
             nameof(DummyMutationActionFailureTarget.ElectricalGenerationHandleEvent),
+            nameof(DummyMutationActionFailureTarget.ElectricalGenerationPerformDischarge),
+            nameof(DummyMutationActionFailureTarget.RepellingForceFireEvent),
             nameof(DummyMutationActionFailureTarget.TeleportOtherFireEvent),
         })
         {
@@ -188,9 +216,27 @@ public sealed class MutationActionFailureTranslationPatchTests
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
+        public static bool ElectricalGenerationPerformDischarge(object e)
+        {
+            return ShowFailAndReturn(e, nameof(ElectricalGenerationPerformDischarge));
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public static bool RepellingForceFireEvent(object e)
+        {
+            return ShowFailAndReturn(e, nameof(RepellingForceFireEvent));
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
         public static bool TeleportOtherFireEvent(object e)
         {
+            return ShowFailAndReturn(e, nameof(TeleportOtherFireEvent));
+        }
+
+        private static bool ShowFailAndReturn(object e, string route)
+        {
             _ = e;
+            _ = route;
             DummyPopupShow.ShowFail(PopupMessageToShow);
             return true;
         }

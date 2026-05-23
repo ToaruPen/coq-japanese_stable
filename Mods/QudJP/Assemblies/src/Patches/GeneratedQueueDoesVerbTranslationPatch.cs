@@ -28,6 +28,14 @@ public static class GeneratedQueueDoesVerbTranslationPatch
         "^Somebody rifles through (?<target>.+?)\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex PlayerRiflesThroughFindPattern = new(
+        "^You rifle through (?:the |a |an )?(?<target>.+?), and find (?:the |a |an )?(?<item>.+?)\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex PlayerRiflesThroughNothingPattern = new(
+        "^You rifle through (?:the |a |an )?(?<target>.+?), but you find nothing\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     private static readonly Regex NoLimbsPattern = new(
         "^(?<subject>.+?) (?:has|have) no limbs\\.?$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
@@ -146,6 +154,8 @@ public static class GeneratedQueueDoesVerbTranslationPatch
         if (TryTranslateDropDown(stripped, spans, sourceWithoutLeadingDoesMarker, out var generatedTranslated)
             || TryTranslatePaxKlanq(stripped, spans, sourceWithoutLeadingDoesMarker, out generatedTranslated)
             || TryTranslateExtradimensionalLoot(stripped, spans, sourceWithoutLeadingDoesMarker, out generatedTranslated)
+            || TryTranslatePlayerRiflesThroughFind(stripped, spans, sourceWithoutLeadingDoesMarker, out generatedTranslated)
+            || TryTranslatePlayerRiflesThroughNothing(stripped, spans, sourceWithoutLeadingDoesMarker, out generatedTranslated)
             || TryTranslateSomebodyRiflesThrough(stripped, spans, sourceWithoutLeadingDoesMarker, out generatedTranslated)
             || TryTranslateNoLimbs(stripped, spans, sourceWithoutLeadingDoesMarker, out generatedTranslated))
         {
@@ -257,6 +267,49 @@ public static class GeneratedQueueDoesVerbTranslationPatch
             $"{NormalizeSubject(RestoreCapture(match, spans, "subject"))}は"
             + $"{StripLeadingArticle(RestoreCapture(match, spans, "item"))}を落とし、"
             + "偶然にもそれは量子トンネルを通ってこの次元に完全実体化した。",
+            spans,
+            stripped,
+            source);
+        return true;
+    }
+
+    private static bool TryTranslatePlayerRiflesThroughFind(
+        string stripped,
+        IReadOnlyList<ColorSpan> spans,
+        string source,
+        out string translated)
+    {
+        var match = PlayerRiflesThroughFindPattern.Match(stripped);
+        if (!match.Success)
+        {
+            translated = string.Empty;
+            return false;
+        }
+
+        translated = RestoreWholeSourceBoundary(
+            $"{StripLeadingArticle(RestoreCapture(match, spans, "target"))}を漁り、"
+            + $"{StripLeadingArticle(RestoreCapture(match, spans, "item"))}を見つけた",
+            spans,
+            stripped,
+            source);
+        return true;
+    }
+
+    private static bool TryTranslatePlayerRiflesThroughNothing(
+        string stripped,
+        IReadOnlyList<ColorSpan> spans,
+        string source,
+        out string translated)
+    {
+        var match = PlayerRiflesThroughNothingPattern.Match(stripped);
+        if (!match.Success)
+        {
+            translated = string.Empty;
+            return false;
+        }
+
+        translated = RestoreWholeSourceBoundary(
+            $"{StripLeadingArticle(RestoreCapture(match, spans, "target"))}を漁ったが、何も見つからなかった",
             spans,
             stripped,
             source);

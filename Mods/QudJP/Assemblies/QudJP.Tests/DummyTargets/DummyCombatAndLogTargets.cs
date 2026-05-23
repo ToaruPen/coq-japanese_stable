@@ -1590,6 +1590,13 @@ internal sealed class DummySimpleOwnerQueueTarget
         return string.Empty;
     }
 
+    public string AbilityManagerShowPopup()
+    {
+        _ = nameof(AbilityManagerShowPopup);
+        DummyPopupShow.Show(PopupMessageToSend);
+        return string.Empty;
+    }
+
     public void FleeTakeAction()
     {
         _ = nameof(FleeTakeAction);

@@ -355,6 +355,18 @@ public sealed class DescriptionTextTranslatorTests
     }
 
     [Test]
+    public void TranslateLongDescription_LeavesIntelligenceFragmentsUnchanged()
+    {
+        const string source = "装備して電源を入れると、Intelligence スコアが 2 上昇したかのように遺物鑑定へボーナスを得る。";
+
+        var translated = DescriptionTextTranslator.TranslateLongDescription(
+            source,
+            "DescriptionTextTranslatorTests");
+
+        Assert.That(translated, Is.EqualTo(source));
+    }
+
+    [Test]
     public void TranslateLongDescription_TranslatesContinuationLineWithNestedColorWrapper()
     {
         WriteDictionary(

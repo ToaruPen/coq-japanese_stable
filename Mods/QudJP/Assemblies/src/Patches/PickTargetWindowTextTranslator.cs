@@ -64,7 +64,22 @@ internal static class PickTargetWindowTextTranslator
 
     private static bool TryTranslateExactLabel(string source, out string translated)
     {
+        var sourceApplyMatch = Regex.Match(source, "^Apply (?<object>.+)$", RegexOptions.CultureInvariant);
+        if (sourceApplyMatch.Success)
+        {
+            translated = sourceApplyMatch.Groups["object"].Value + "を使用";
+            return !string.Equals(source, translated, StringComparison.Ordinal);
+        }
+
         var visible = ColorAwareTranslationComposer.GetVisibleText(source);
+        var applyMatch = Regex.Match(visible, "^Apply (?<object>.+)$", RegexOptions.CultureInvariant);
+        if (applyMatch.Success)
+        {
+            var objectName = applyMatch.Groups["object"].Value;
+            translated = ColorAwareTranslationComposer.TranslatePreservingColors(source, _ => objectName + "を使用");
+            return !string.Equals(source, translated, StringComparison.Ordinal);
+        }
+
         var direct = TranslatePickTargetExactLabelToken(visible);
         if (direct is null)
         {
@@ -78,6 +93,11 @@ internal static class PickTargetWindowTextTranslator
 
     private static bool TryTranslateCommandBarSegment(string source, out string translated)
     {
+        if (TryTranslateMissileWeaponShowPickerText(source, out translated))
+        {
+            return true;
+        }
+
         var visible = ColorAwareTranslationComposer.GetVisibleText(source);
         if (IsOwnerRouteCommandBarToken(visible))
         {
@@ -218,8 +238,39 @@ internal static class PickTargetWindowTextTranslator
 
     private static bool IsOwnerRouteCommandBarToken(string source)
     {
-        return string.Equals(source, "Fire Missile Weapon", StringComparison.OrdinalIgnoreCase)
-            || string.Equals(source, "Reload", StringComparison.OrdinalIgnoreCase);
+        return string.Equals(source, "Reload", StringComparison.OrdinalIgnoreCase);
+    }
+
+    internal static bool TryTranslateMissileWeaponShowPickerText(string source, out string translated)
+    {
+        translated = source;
+        if (string.IsNullOrEmpty(source))
+        {
+            return false;
+        }
+
+        translated = ReplaceOrdinal(source, "Fire Missile Weapon", "飛び道具を射撃");
+        translated = ReplaceOrdinal(translated, "Select Fire Mode", "射撃モードを選ぶ");
+        translated = ReplaceOrdinal(translated, "marked target", "マーク済み対象");
+        translated = ReplaceOrdinal(translated, "mark target", "対象をマーク");
+        translated = ReplaceOrdinal(translated, "Flattening Fire", "完全制圧射撃");
+        translated = ReplaceOrdinal(translated, "Suppressive Fire", "制圧射撃");
+        translated = ReplaceOrdinal(translated, "Disorienting Fire", "撹乱射撃");
+        translated = ReplaceOrdinal(translated, "Wounding Fire", "創傷射撃");
+        translated = ReplaceOrdinal(translated, "Beacon Fire", "かがり火");
+        translated = ReplaceOrdinal(translated, "Sure Fire", "必中射撃");
+        translated = ReplaceOrdinal(translated, "Ultra Fire", "究極射撃");
+        translated = ReplaceOrdinal(translated, "(not marked)", "(未マーク)");
+        translated = ReplaceOrdinal(translated, "] Menu", "] メニュー");
+        translated = ReplaceOrdinal(translated, " turn)", " ターン)");
+        translated = ReplaceOrdinal(translated, " turns)", " ターン)");
+
+        return !string.Equals(source, translated, StringComparison.Ordinal);
+    }
+
+    private static string ReplaceOrdinal(string source, string oldValue, string newValue)
+    {
+        return source.Replace(oldValue, newValue);
     }
 
     private static string? TranslatePickTargetExactLabelToken(string source)

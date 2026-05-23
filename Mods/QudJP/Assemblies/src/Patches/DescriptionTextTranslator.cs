@@ -37,6 +37,9 @@ internal static class DescriptionTextTranslator
     private static readonly Regex AllowedLocalizedEnglishTokenPattern =
         new Regex("(?<![A-Za-z])(?:AV|DV|HP|MA|PV|Qud|Quickness|SP|XP)(?![A-Za-z])", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex LocalizedEnglishStatTermPattern =
+        new Regex("(?<![A-Za-z])(?:Strength|Toughness|Willpower|Agility|Ego)(?![A-Za-z])", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     private static readonly Regex AddsCookingEffectsPattern =
         new Regex("^Adds (?<effect>.+?) effects to cooked meals\\.$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
@@ -106,6 +109,7 @@ internal static class DescriptionTextTranslator
             source,
             route,
             allowMessagePatternTranslation: source.IndexOf('\n') < 0,
+            allowGenericLeafTranslation: source.IndexOf('\n') < 0,
             out var wholeTranslated))
         {
             return wholeTranslated;
@@ -410,6 +414,7 @@ internal static class DescriptionTextTranslator
             sourceForTranslation,
             route,
             allowMessagePatternTranslation: true,
+            allowGenericLeafTranslation: true,
             out var translatedWithSyntheticBoundaries))
         {
             if (lineClosesActiveBoundary)
@@ -599,6 +604,7 @@ internal static class DescriptionTextTranslator
         string source,
         string route,
         bool allowMessagePatternTranslation,
+        bool allowGenericLeafTranslation,
         out string translated)
     {
         if (TryTranslateBrainDispositionLinePreservingColors(source, route, out translated))
@@ -639,6 +645,12 @@ internal static class DescriptionTextTranslator
         if (TryTranslateVillageHistoryPatternPreservingColors(source, route, allowMessagePatternTranslation, out translated))
         {
             return true;
+        }
+
+        if (!allowGenericLeafTranslation)
+        {
+            translated = source;
+            return false;
         }
 
         translated = ColorAwareTranslationComposer.TranslatePreservingColors(
@@ -783,6 +795,13 @@ internal static class DescriptionTextTranslator
             && !string.Equals(source, translated, StringComparison.Ordinal))
         {
             DynamicTextObservability.RecordTransform(route, "Description.ExactLeaf", source, translated);
+            return true;
+        }
+
+        translated = TranslateLocalizedEnglishStatTerms(source);
+        if (!string.Equals(source, translated, StringComparison.Ordinal))
+        {
+            DynamicTextObservability.RecordTransform(route, "Description.StatTerms", source, translated);
             return true;
         }
 
@@ -1403,5 +1422,25 @@ internal static class DescriptionTextTranslator
     {
         return StatAbbreviationPattern.IsMatch(source)
             || SignedStatAbbreviationPattern.IsMatch(source);
+    }
+
+    private static string TranslateLocalizedEnglishStatTerms(string source)
+    {
+        if (!ContainsJapaneseCharacters(source))
+        {
+            return source;
+        }
+
+        return LocalizedEnglishStatTermPattern.Replace(
+            source,
+            match => match.Value switch
+            {
+                "Strength" => "筋力",
+                "Toughness" => "頑健",
+                "Willpower" => "意志力",
+                "Agility" => "敏捷",
+                "Ego" => "自我",
+                _ => match.Value,
+            });
     }
 }

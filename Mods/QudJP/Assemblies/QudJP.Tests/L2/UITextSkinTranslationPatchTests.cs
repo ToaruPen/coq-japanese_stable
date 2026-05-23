@@ -535,10 +535,10 @@ public sealed class UITextSkinTranslationPatchTests
         Assert.That(translated, Is.EqualTo(expected));
     }
 
-    [TestCase("{{W|space}}-select | unlock ({{hotkey|F1}}) | Fire Missile Weapon", "{{W|space}}-選択 | ロック解除 ({{hotkey|F1}}) | Fire Missile Weapon")]
-    [TestCase("{{W|space}}-select | lock ({{hotkey|F1}}) | Fire Missile Weapon", "{{W|space}}-選択 | ロック ({{hotkey|F1}}) | Fire Missile Weapon")]
-    [TestCase("{{W|space}}-select | (F1) {{W|lock}} | Fire Missile Weapon", "{{W|space}}-選択 | (F1) {{W|ロック}} | Fire Missile Weapon")]
-    [TestCase("{{W|space}}-select | {{W|lock}} ({{hotkey|F1}}) | Fire Missile Weapon", "{{W|space}}-選択 | {{W|ロック}} ({{hotkey|F1}}) | Fire Missile Weapon")]
+    [TestCase("{{W|space}}-select | unlock ({{hotkey|F1}}) | Fire Missile Weapon", "{{W|space}}-選択 | ロック解除 ({{hotkey|F1}}) | 飛び道具を射撃")]
+    [TestCase("{{W|space}}-select | lock ({{hotkey|F1}}) | Fire Missile Weapon", "{{W|space}}-選択 | ロック ({{hotkey|F1}}) | 飛び道具を射撃")]
+    [TestCase("{{W|space}}-select | (F1) {{W|lock}} | Fire Missile Weapon", "{{W|space}}-選択 | (F1) {{W|ロック}} | 飛び道具を射撃")]
+    [TestCase("{{W|space}}-select | {{W|lock}} ({{hotkey|F1}}) | Fire Missile Weapon", "{{W|space}}-選択 | {{W|ロック}} ({{hotkey|F1}}) | 飛び道具を射撃")]
     [TestCase("{{W|space}}-select | R reload | unlock ({{hotkey|F1}})", "{{W|space}}-選択 | R reload | ロック解除 ({{hotkey|F1}})")]
     [TestCase("{{W|space}}-select | reload ({{hotkey|R}}) | unlock ({{hotkey|F1}})", "{{W|space}}-選択 | reload ({{hotkey|R}}) | ロック解除 ({{hotkey|F1}})")]
     [TestCase("{{W|space}}-select | R-reload | unlock ({{hotkey|F1}})", "{{W|space}}-選択 | R-reload | ロック解除 ({{hotkey|F1}})")]
@@ -551,6 +551,7 @@ public sealed class UITextSkinTranslationPatchTests
             ("reload", "リロード"));
         WriteDictionaryFile(
             "ui-pick-target.ja.json",
+            ("Fire Missile Weapon", "飛び道具を射撃"),
             ("select", "選択"),
             ("unlock", "ロック解除"));
 

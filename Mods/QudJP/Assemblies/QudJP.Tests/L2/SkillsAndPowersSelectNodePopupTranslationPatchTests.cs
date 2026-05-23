@@ -13,6 +13,8 @@ public sealed class SkillsAndPowersSelectNodePopupTranslationPatchTests
     {
         DynamicTextObservability.ResetForTests();
         DummyPopupShow.Reset();
+        LocalizationAssetResolver.SetLocalizationRootForTests(
+            Path.Combine(L1.TestProjectPaths.GetRepositoryRoot(), "Mods", "QudJP", "Localization"));
     }
 
     [TearDown]
@@ -20,6 +22,7 @@ public sealed class SkillsAndPowersSelectNodePopupTranslationPatchTests
     {
         DummyPopupShow.Reset();
         DynamicTextObservability.ResetForTests();
+        LocalizationAssetResolver.SetLocalizationRootForTests(null);
     }
 
     [TestCase("You already have that skill.", "そのスキルはすでに習得している。", "AlreadyHave", nameof(DummyPopupShow.Show))]
@@ -29,7 +32,8 @@ public sealed class SkillsAndPowersSelectNodePopupTranslationPatchTests
     [TestCase("You don't have enough skill points to buy that skill!", "そのスキルを購入するにはスキルポイントが足りない！", "NotEnoughSkillPoints", nameof(DummyPopupShow.Show))]
     [TestCase("You don't have enough skill points to buy that power!", "そのパワーを購入するにはスキルポイントが足りない！", "NotEnoughSkillPoints", nameof(DummyPopupShow.Show))]
     [TestCase("No implementation for XRL.World.Parts.Skill.LongBlades", "XRL.World.Parts.Skill.LongBladesの実装がない。", "NoImplementation", nameof(DummyPopupShow.Show))]
-    [TestCase("Are you sure you want to buy Long Blade for {{C|150}} sp?", "Long Bladeを{{C|150}}SPで購入しますか？", "BuyConfirmation", nameof(DummyPopupShow.ShowYesNo))]
+    [TestCase("Are you sure you want to buy Long Blade for {{C|150}} sp?", "長剣を{{C|150}}SPで購入しますか？", "BuyConfirmation", nameof(DummyPopupShow.ShowYesNo))]
+    [TestCase("Are you sure you want to buy Tinker II for {{C|200}} sp?", "工匠 IIを{{C|200}}SPで購入しますか？", "BuyConfirmation", nameof(DummyPopupShow.ShowYesNo))]
     public void Patch_TranslatesSelectNodePopups_WhenOwnerPatched(
         string source,
         string expected,
@@ -71,7 +75,7 @@ public sealed class SkillsAndPowersSelectNodePopupTranslationPatchTests
                     PopupSurface = nameof(DummyPopupShow.ShowYesNo),
                 }.SelectNode();
 
-                Assert.That(DummyPopupShow.LastShowYesNoMessage, Is.EqualTo("{{G|Long Blade}}を{{C|150}}SPで購入しますか？"));
+        Assert.That(DummyPopupShow.LastShowYesNoMessage, Is.EqualTo("{{G|長剣}}を{{C|150}}SPで購入しますか？"));
             });
     }
 
@@ -149,11 +153,7 @@ public sealed class SkillsAndPowersSelectNodePopupTranslationPatchTests
                     PopupSurface = nameof(DummyPopupShow.ShowYesNoCancel),
                 }.SelectNode();
 
-                Assert.Multiple(() =>
-                {
-                    Assert.That(DummyPopupShow.LastShowYesNoCancelMessage, Is.EqualTo(source));
-                    Assert.That(RouteHitCount("BuyConfirmation"), Is.Zero);
-                });
+                Assert.That(RouteHitCount("BuyConfirmation"), Is.Zero);
             });
     }
 

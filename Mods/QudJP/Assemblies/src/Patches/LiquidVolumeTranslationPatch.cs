@@ -134,4 +134,31 @@ public static class LiquidVolumeTranslationPatch
         message = translated;
         return true;
     }
+
+    internal static bool TryTranslatePickItemTitle(ref string? title)
+    {
+        if (!OwnerTranslationScope.IsActive(activeDepth) || string.IsNullOrEmpty(title))
+        {
+            return false;
+        }
+
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(title, out var markedText))
+        {
+            title = markedText;
+            return true;
+        }
+
+        if (!string.Equals(title, "[Select a container to fill from]", StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        title = "[注ぎ元の容器を選択]";
+        DynamicTextObservability.RecordTransform(
+            "PickItem.ShowPicker",
+            Context + ".PickItemTitle.SelectContainerToFillFrom",
+            "[Select a container to fill from]",
+            title);
+        return true;
+    }
 }

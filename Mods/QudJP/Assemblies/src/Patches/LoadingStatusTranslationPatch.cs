@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using HarmonyLib;
 
 namespace QudJP.Patches;
@@ -9,6 +10,9 @@ namespace QudJP.Patches;
 public static class LoadingStatusTranslationPatch
 {
     private const string Context = nameof(LoadingStatusTranslationPatch);
+    private static readonly Regex RestingUntilHealedTurnPattern = new(
+        "^Resting until (?<party>party )?healed\\.\\.\\. Turn: (?<turn>\\d+)$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     [HarmonyTargetMethod]
     private static MethodBase? TargetMethod()
@@ -41,6 +45,16 @@ public static class LoadingStatusTranslationPatch
             if (MessageFrameTranslator.TryStripDirectTranslationMarker(description, out var stripped))
             {
                 description = stripped;
+                return;
+            }
+
+            var restingMatch = RestingUntilHealedTurnPattern.Match(description);
+            if (restingMatch.Success)
+            {
+                var subject = restingMatch.Groups["party"].Success ? "パーティが" : string.Empty;
+                var translatedResting = $"{subject}回復するまで休息中… ターン: {restingMatch.Groups["turn"].Value}";
+                DynamicTextObservability.RecordTransform(Context, "Loading.RestingUntilHealedTurn", description, translatedResting);
+                description = translatedResting;
                 return;
             }
 

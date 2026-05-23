@@ -1739,6 +1739,11 @@
       "text": "蒸気の雲を放出して冷却した"
     },
     {
+      "verb": "refract",
+      "extra": "the laser beam",
+      "text": "レーザービームを屈折させた"
+    },
+    {
       "verb": "remain",
       "extra": "stunned",
       "text": "気絶したままだ"
@@ -1807,6 +1812,11 @@
       "verb": "share",
       "extra": "some gossip with you",
       "text": "{subject}はあなたに噂話を教えた"
+    },
+    {
+      "verb": "shoot",
+      "extra": "a swatch of frost webs",
+      "text": "霜の網を一面に撃ち出した"
     },
     {
       "verb": "shift",
@@ -2049,6 +2059,11 @@
       "verb": "are",
       "extra": "already your follower\\. Do you want to proselytize (?:him|her|it|them) anyway",
       "text": "{subject}はすでにあなたの仲間だ。それでも勧誘しますか{endmark}"
+    },
+    {
+      "verb": "are",
+      "extra": "shoved by (.+?) charge!",
+      "text": "{t0}突撃に押し飛ばされた！"
     },
     {
       "verb": "are",
@@ -2362,6 +2377,26 @@
     },
     {
       "verb": "emit",
+      "extra": "a freezing ray(?: from (?:your|his|her|its|their) .+?)?",
+      "text": "凍結光線を放った"
+    },
+    {
+      "verb": "emit",
+      "extra": "a flaming ray(?: from (?:your|his|her|its|their) .+?)?",
+      "text": "火炎光線を放った"
+    },
+    {
+      "verb": "emit",
+      "extra": "a vast freezing ray from (?:your|his|her|its|their) .+?",
+      "text": "巨大な凍結光線を放った"
+    },
+    {
+      "verb": "emit",
+      "extra": "a powerful magnetic pulse",
+      "text": "強力な磁気パルスを放った"
+    },
+    {
+      "verb": "emit",
       "extra": "{0}",
       "text": "{0}を発射した"
     },
@@ -2394,6 +2429,26 @@
       "verb": "fire",
       "extra": "{0} molecular cannon",
       "text": "{0}の分子砲を発射した"
+    },
+    {
+      "verb": "feel",
+      "extra": "a concussive blast around them",
+      "text": "周囲に衝撃波を感じた"
+    },
+    {
+      "verb": "feel",
+      "extra": "a concussive blast from the {0}",
+      "text": "{t0}からの衝撃波を感じた"
+    },
+    {
+      "verb": "invoke",
+      "extra": "a concussive blast around you",
+      "text": "自分の周囲に衝撃波を呼び起こした"
+    },
+    {
+      "verb": "invoke",
+      "extra": "a concussive blast to the {0}",
+      "text": "{t0}に衝撃波を呼び起こした"
     },
     {
       "verb": "flinch",
@@ -2912,6 +2967,16 @@
     },
     {
       "verb": "try",
+      "extra": "to bandage {0} wounds, but {1} pass through {2}",
+      "text": "{0}傷に包帯を巻こうとしたが、{1}はすり抜けた"
+    },
+    {
+      "verb": "try",
+      "extra": "to bandage {0} wounds, but cannot affect {1}",
+      "text": "{0}傷に包帯を巻こうとしたが、影響を与えられなかった"
+    },
+    {
+      "verb": "try",
       "extra": "to (.+?) (?:a |an |the )?(.+?), but (?:it is|he is|she is|they are|it's|he's|she's|they're) unresponsive",
       "text": "{subject}は{1}を{0}しようとしたが、反応がない"
     },
@@ -3104,6 +3169,16 @@
       "verb": "staunch",
       "extra": "{0} wounds with {1}",
       "text": "{1}で{0}傷を止血した"
+    },
+    {
+      "verb": "try",
+      "extra": "to staunch {0} wounds with {1}, but {2} pass through {3}",
+      "text": "{1}で{0}傷を止血しようとしたが、{2}はすり抜けた"
+    },
+    {
+      "verb": "try",
+      "extra": "to staunch {0} wounds with {1}, but cannot affect {2}",
+      "text": "{1}で{0}傷を止血しようとしたが、影響を与えられなかった"
     },
     {
       "verb": "wade",

@@ -110,6 +110,10 @@ public sealed partial class Issue201OtherUiBindingPatchTests
     public void TinkeringDetailsLinePostfix_TranslatesBitCostIngredientsAndOr_WhenPatched()
     {
         WriteDictionary(
+            ("build item", "製作品"),
+            ("This contraption hums quietly.", "この装置は静かにうなっている。"),
+            ("mod item", "改造品"),
+            ("This item has been modified.", "このアイテムは改造されている。"),
             ("{{K|| Bit Cost |}}", "{{K|| ビットコスト |}}"),
             ("{{K || Bit Cost |}}", "{{K || ビットコスト |}}"),
             ("{{K|| Ingredients |}}", "{{K|| 素材 |}}"),
@@ -129,6 +133,8 @@ public sealed partial class Issue201OtherUiBindingPatchTests
                 data = new DummyTinkeringRecipeData
                 {
                     Type = "Build",
+                    DisplayName = "build item",
+                    UnclippedDescription = "This contraption hums quietly.",
                 },
             });
 
@@ -138,20 +144,31 @@ public sealed partial class Issue201OtherUiBindingPatchTests
                 data = new DummyTinkeringRecipeData
                 {
                     Type = "Mod",
+                    DisplayName = "mod item",
                 },
             });
 
             Assert.Multiple(() =>
             {
                 Assert.That(buildTarget.OriginalExecuted, Is.True);
+                Assert.That(buildTarget.text.Text, Is.EqualTo("製作品"));
+                Assert.That(buildTarget.descriptionText.Text, Is.EqualTo("この装置は静かにうなっている。"));
                 Assert.That(buildTarget.modBitCostText.Text, Does.Contain("{{K|| ビットコスト |}}"));
                 Assert.That(buildTarget.modBitCostText.Text, Does.Contain("{{R|A}}{{C|C}}"));
                 Assert.That(buildTarget.modBitCostText.Text, Does.Contain("{{K|| 素材 |}}"));
                 Assert.That(buildTarget.modBitCostText.Text, Does.Contain("-または-"));
+                Assert.That(modTarget.text.Text, Is.EqualTo("改造品"));
+                Assert.That(modTarget.descriptionText.Text, Is.EqualTo("このアイテムは改造されている。"));
                 Assert.That(modTarget.modBitCostText.Text, Does.Contain("{{K || ビットコスト |}}"));
                 Assert.That(modTarget.modBitCostText.Text, Does.Contain("{{R|A}}{{C|C}}"));
                 Assert.That(modTarget.modBitCostText.Text, Does.Contain("{{K|| 素材 |}}"));
                 Assert.That(modTarget.modBitCostText.Text, Does.Contain("-または-"));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(nameof(TinkeringDetailsLineTranslationPatch), "TinkeringDetails.Text"),
+                    Is.GreaterThan(0));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(nameof(TinkeringDetailsLineTranslationPatch), "TinkeringDetails.DescriptionText"),
+                    Is.GreaterThan(0));
                 Assert.That(
                     modTarget.modDescriptionText.Text,
                     Is.EqualTo("{{rules|巨大: この武器はダメージ+3、装甲切断でAV-3を与える。これは巨大な生物しか装備できない。}}"));
@@ -195,6 +212,52 @@ public sealed partial class Issue201OtherUiBindingPatchTests
             {
                 Assert.That(target.OriginalExecuted, Is.True);
                 Assert.That(target.text.Text, Is.EqualTo("    チェーンピストル [{{R|A}}{{C|C}}]"));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void TinkeringBitsLinePostfix_TranslatesOnlyBitCategoryNames_WhenPatched()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyTinkeringBitsLineTarget), nameof(DummyTinkeringBitsLineTarget.setData)),
+                postfix: new HarmonyMethod(RequireMethod(typeof(TinkeringBitsLineTranslationPatch), nameof(TinkeringBitsLineTranslationPatch.Postfix))));
+
+            var numericTarget = new DummyTinkeringBitsLineTarget();
+            numericTarget.setData(new DummyTinkeringBitsLineDataTarget
+            {
+                bit = "{{R|1 scrap power systems}}",
+            });
+
+            var alphaTarget = new DummyTinkeringBitsLineTarget();
+            alphaTarget.setData(new DummyTinkeringBitsLineDataTarget
+            {
+                bit = "{{Y|A AI microcontrollers}}",
+            });
+
+            var unknownTarget = new DummyTinkeringBitsLineTarget();
+            unknownTarget.setData(new DummyTinkeringBitsLineDataTarget
+            {
+                bit = "{{R|? unknown component}}",
+            });
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(numericTarget.OriginalExecuted, Is.True);
+                Assert.That(numericTarget.text.Text, Is.EqualTo("{{{{R|1 スクラップ動力系}}}}"));
+                Assert.That(alphaTarget.text.Text, Is.EqualTo("{{{{Y|A AIマイクロコントローラ}}}}"));
+                Assert.That(unknownTarget.text.Text, Is.EqualTo("{{{{R|? unknown component}}}}"));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(nameof(TinkeringBitsLineTranslationPatch), "TinkeringBitsLine.Text"),
+                    Is.EqualTo(2));
             });
         }
         finally

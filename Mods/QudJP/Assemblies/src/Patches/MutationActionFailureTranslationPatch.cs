@@ -14,6 +14,12 @@ public static class MutationActionFailureTranslationPatch
     private static readonly Regex ElectricalGenerationDrinkFailurePattern = new(
         "^You can't seem to drink any of the juice from (?<item>.+?)\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex ElectricalGenerationNoGroundTargetPattern = new(
+        "^There is nothing there that your electrical discharge can ground into\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex RepellingForceWorldMapPattern = new(
+        "^You cannot use (?<mutation>.+?) on the world map\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex TeleportOtherSelfTargetPattern = new(
         "^You may not teleport (?<target>.+?) with Teleport Other!$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
@@ -38,6 +44,16 @@ public static class MutationActionFailureTranslationPatch
             "XRL.World.Parts.Mutation.ElectricalGeneration",
             "HandleEvent",
             new[] { inventoryActionEventType });
+        AddTarget(
+            targets,
+            "XRL.World.Parts.Mutation.ElectricalGeneration",
+            "PerformDischarge",
+            new[] { typeof(bool) });
+        AddTarget(
+            targets,
+            "XRL.World.Parts.Mutation.RepellingForce",
+            "FireEvent",
+            new[] { eventType });
         AddTarget(
             targets,
             "XRL.World.Parts.Mutation.TeleportOther",
@@ -88,6 +104,8 @@ public static class MutationActionFailureTranslationPatch
 
         var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
         if (TryTranslateElectricalGenerationDrinkFailure(stripped, spans, out translated)
+            || TryTranslateElectricalGenerationNoGroundTarget(stripped, out translated)
+            || TryTranslateRepellingForceWorldMap(stripped, spans, out translated)
             || TryTranslateTeleportOtherSelfTarget(stripped, spans, out translated))
         {
             DynamicTextObservability.RecordTransform(route, family + "." + Context, source, translated);
@@ -111,6 +129,35 @@ public static class MutationActionFailureTranslationPatch
         }
 
         translated = $"{RestoreCapture(match, spans, "item")}から電荷を吸い取れないようだ。";
+        return true;
+    }
+
+    private static bool TryTranslateElectricalGenerationNoGroundTarget(string stripped, out string translated)
+    {
+        if (!ElectricalGenerationNoGroundTargetPattern.IsMatch(stripped))
+        {
+            translated = stripped;
+            return false;
+        }
+
+        translated = "放電を接地できる対象がそこにはない。";
+        return true;
+    }
+
+    private static bool TryTranslateRepellingForceWorldMap(
+        string stripped,
+        IReadOnlyList<ColorSpan> spans,
+        out string translated)
+    {
+        var match = RepellingForceWorldMapPattern.Match(stripped);
+        if (!match.Success)
+        {
+            translated = stripped;
+            return false;
+        }
+
+        var mutation = StatusScreenPopupTranslationPatch.TranslateMutationDisplayName(RestoreCapture(match, spans, "mutation"));
+        translated = $"{mutation}はワールドマップでは使えない。";
         return true;
     }
 

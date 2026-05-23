@@ -147,6 +147,20 @@ public sealed class PickTargetWindowUpdateTranslationPatchTests
     }
 
     [Test]
+    public void TranslateCurrentText_TranslatesTonicApplyDirectionPrompt()
+    {
+        DummyPickTargetWindow.currentText = "Apply {{Y|salve tonic}}";
+
+        var changed = PickTargetWindowUpdateTranslationPatch.TranslateCurrentTextForTests(typeof(DummyPickTargetWindow));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(changed, Is.True);
+            Assert.That(DummyPickTargetWindow.currentText, Is.EqualTo("{{Y|salve tonic}}を使用"));
+        });
+    }
+
+    [Test]
     public void TranslateCurrentText_FallbackToEnglish_WhenExactLabelMissing()
     {
         WriteDictionary(("select", "決定"));

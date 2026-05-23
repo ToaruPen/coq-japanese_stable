@@ -64,6 +64,12 @@ public sealed class WorldPartsFragmentTranslatorTests
     [TestCase("The canteen is not owned by you. Are you sure you want to take from it?", "canteenはあなたの所有物ではない。本当にそこから取りますか？")]
     [TestCase("The canteen is not owned by you. Are you sure you want to collect from it?", "canteenはあなたの所有物ではない。本当にそこから集めますか？")]
     [TestCase("You are able to collect 129 drams of {{C|water}}. Are you sure you want to?", "{{C|water}}を129ドラム集められる。本当にそうしますか？")]
+    [TestCase("You have nowhere available to collect that.", "それを集められる容器がない。")]
+    [TestCase("You cannot do that for some reason.", "何らかの理由でそれはできない。")]
+    [TestCase("Auto collection only works on unsealed containers with pure liquids.", "自動収集は、密閉されていない純粋な液体入りの容器でのみ機能する。")]
+    [TestCase("It isn't clear what kind of liquid would be appropriate for the canteen to collect. Pour a pure liquid into it, and then enable auto-collect.", "canteenがどの種類の液体を集めるのに適しているか不明だ。純粋な液体を注いでから、自動収集を有効にする。")]
+    [TestCase("It isn't clear what kind of liquid would be appropriate for {{Y|the canteen}} to collect. Pour a pure liquid into it, and then enable auto-collect.", "{{Y|canteen}}がどの種類の液体を集めるのに適しているか不明だ。純粋な液体を注いでから、自動収集を有効にする。")]
+    [TestCase("How many drams? (max=7)", "何ドラム？(最大=7)")]
     [TestCase("The canteen is not owned by you. Are you sure you want to use {{C|water}} from it?", "canteenはあなたの所有物ではない。{{C|water}}を本当にそこから使いますか？")]
     [TestCase("2 drams of {{C|water}} pours out all over you!", "{{C|water}} 2ドラムがあなたの全身にかかった！")]
     public void LiquidVolumeTranslator_TranslatesInventoriedOwnerPopupFragments(string input, string expected)
@@ -76,6 +82,13 @@ public sealed class WorldPartsFragmentTranslatorTests
     }
 
     [TestCase("It's fizzy.", "シュワシュワしている。")]
+    [TestCase("You have nowhere available to collect that.", "それを集められる容器がない。")]
+    [TestCase("You cannot do that for some reason.", "何らかの理由でそれはできない。")]
+    [TestCase("Auto collection only works on unsealed containers with pure liquids.", "自動収集は、密閉されていない純粋な液体入りの容器でのみ機能する。")]
+    [TestCase("You collect 2 drams of {{C|water}}.", "{{C|water}}を2ドラム集めた。")]
+    [TestCase("You collect 2 drams of {{C|water}} to the north.", "北側で{{C|water}}を2ドラム集めた。")]
+    [TestCase("You collect 2 drams of {{C|water}} from the canteen to the north.", "canteen（北側）から{{C|water}}を2ドラム集めた。")]
+    [TestCase("You collect 2 drams of {{C|water}} from the canteen to the north in your waterskin.", "canteen（北側）から{{C|water}}を2ドラム集めた（waterskinに入れた）。")]
     [TestCase("2 drams of {{C|water}} pours out all over snapjaw!", "{{C|water}} 2ドラムがsnapjawの全身にかかった！")]
     public void LiquidVolumeTranslator_TranslatesInventoriedOwnerQueuedFragments(string input, string expected)
     {

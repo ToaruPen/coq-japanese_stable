@@ -787,7 +787,7 @@ internal static class MessageFrameTranslator
             return false;
         }
 
-        phrase = objectText + suffix;
+        phrase = TranslatePlaceholderValue(objectText) + suffix;
         return true;
     }
 

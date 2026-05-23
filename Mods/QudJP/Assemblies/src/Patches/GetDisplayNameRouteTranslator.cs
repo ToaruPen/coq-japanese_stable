@@ -89,6 +89,10 @@ internal static class GetDisplayNameRouteTranslator
         new Regex(
             "^(?<prefix>(?:\\{\\{[^|}]+\\|\\}\\}\\s*)+)(?<rest>.+)$",
             RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex LocalizedPrefixAsciiModifierPattern =
+        new Regex(
+            "^(?<prefix>.*[\\p{IsHiragana}\\p{IsKatakana}\\p{IsCJKUnifiedIdeographs}])(?<modifier>[A-Za-z][A-Za-z\\-']*) (?<rest>.+)$",
+            RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex DisplayNameModifierLevelSuffixPattern =
         new Regex("^(?<modifier>[A-Za-z][A-Za-z\\-']*)\\((?<level>\\d+)\\)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex ParenthesizedColoredChargeStatusPattern =
@@ -510,6 +514,12 @@ internal static class GetDisplayNameRouteTranslator
         if (TryTranslateGeneratedEnglishPrefixDisplayName(transformed, route, out var prefixTranslated))
         {
             translated = prefixTranslated;
+            return true;
+        }
+
+        if (TryTranslateLocalizedPrefixAsciiModifierDisplayName(transformed, route, out var localizedPrefixModifierTranslated))
+        {
+            translated = localizedPrefixModifierTranslated;
             return true;
         }
 
@@ -1407,6 +1417,37 @@ internal static class GetDisplayNameRouteTranslator
         return true;
     }
 
+    private static bool TryTranslateLocalizedPrefixAsciiModifierDisplayName(string source, string route, out string translated)
+    {
+        translated = source;
+        if (string.IsNullOrEmpty(source) || !JapaneseCharacterPattern.IsMatch(source))
+        {
+            return false;
+        }
+
+        var match = LocalizedPrefixAsciiModifierPattern.Match(source);
+        if (!match.Success)
+        {
+            return false;
+        }
+
+        var modifier = match.Groups["modifier"].Value;
+        var translatedModifier = TranslateDisplayNameModifierExact(modifier);
+        if (translatedModifier is null)
+        {
+            return false;
+        }
+
+        var rest = match.Groups["rest"].Value;
+        var translatedRest = TranslateDisplayNameFragment(rest, route);
+        translated = match.Groups["prefix"].Value
+            + translatedModifier
+            + GetModifierRestSeparator(modifier, rest)
+            + translatedRest;
+        DynamicTextObservability.RecordTransform(route, "DisplayName.LocalizedPrefixAsciiModifier", source, translated);
+        return true;
+    }
+
     private static bool TryTranslateLocalizedPrefixAsciiTailDisplayName(string source, string route, out string translated)
     {
         translated = source;
@@ -2198,14 +2239,14 @@ internal static class GetDisplayNameRouteTranslator
             return quantifiedLiquid;
         }
 
-        if (TryTranslateGeneratedDisplayNameState(source, route, out var generatedState))
-        {
-            return generatedState;
-        }
-
         if (TryTranslateDisplayNameStateTemplate(source, route, out var translated))
         {
             return translated;
+        }
+
+        if (TryTranslateGeneratedDisplayNameState(source, route, out var generatedState))
+        {
+            return generatedState;
         }
 
         var direct = TranslateAsciiTokenWithCaseFallback(source);

@@ -722,11 +722,7 @@ public sealed class GetDisplayNameRouteTranslatorTests
         string source,
         string expected)
     {
-        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
-            source,
-            nameof(GetDisplayNamePatch));
-
-        Assert.That(translated, Is.EqualTo(expected));
+        AssertGetDisplayNameRouteTranslation(source, expected);
     }
 
     [TestCase("Schemasoft [Unknown, Low Tier]")]
@@ -930,6 +926,9 @@ public sealed class GetDisplayNameRouteTranslatorTests
             ("iron sword", "鉄の剣"),
             ("web", "網"));
         WriteDictionaryFile(
+            "ui-displayname-adjectives.ja.json",
+            ("stuck", "拘束"));
+        WriteDictionaryFile(
             "Scoped/ui-displayname-state-templates.ja.json",
             "{\"entries\":["
             + "{\"key\":\"stuck in {0}\",\"context\":\"GetDisplayName.StateTemplate\",\"text\":\"{0}にはまっている\"},"
@@ -968,6 +967,11 @@ public sealed class GetDisplayNameRouteTranslatorTests
                     "snapjaw [{{B|stuck in a web}}]",
                     nameof(GetDisplayNamePatch)),
                 Is.EqualTo("スナップジョー [{{B|網にはまっている}}]"));
+            Assert.That(
+                GetDisplayNameRouteTranslator.TranslatePreservingColors(
+                    "snapjaw [stuck in a 凍結した 塩気混じりの粘液の水たまり]",
+                    nameof(GetDisplayNamePatch)),
+                Is.EqualTo("スナップジョー [凍結した 塩気混じりの粘液の水たまりにはまっている]"));
             Assert.That(
                 GetDisplayNameRouteTranslator.TranslatePreservingColors(
                     "snapjaw [{{B|grabbed by an iron sword}}]",
@@ -1064,6 +1068,41 @@ public sealed class GetDisplayNameRouteTranslatorTests
             nameof(GetDisplayNamePatch));
 
         Assert.That(translated, Is.EqualTo("{{slimy|粘液質の}} {{g|スライム}}"));
+    }
+
+    [Test]
+    public void TranslatePreservingColors_TranslatesSizeAdjectiveBeforeLocalizedBase()
+    {
+        WriteContextDictionaryFile(
+            "ui-displayname-adjectives.ja.json",
+            ("small", "GetDisplayName.Adjective", "小さな"),
+            ("large", "GetDisplayName.Adjective", "大きな"),
+            ("{{B|wet}}", "GetDisplayName.Adjective", "{{B|濡れた}}"),
+            ("{{slimy|slimy}}", "GetDisplayName.Adjective", "{{slimy|粘液質の}}"));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                GetDisplayNameRouteTranslator.TranslatePreservingColors(
+                    "small 岩塊",
+                    nameof(GetDisplayNamePatch)),
+                Is.EqualTo("小さな岩塊"));
+            Assert.That(
+                GetDisplayNameRouteTranslator.TranslatePreservingColors(
+                    "{{slimy|slimy}} {{B|wet}} small 岩塊",
+                    nameof(GetDisplayNamePatch)),
+                Is.EqualTo("{{slimy|粘液質の}} {{B|濡れた}} 小さな岩塊"));
+            Assert.That(
+                GetDisplayNameRouteTranslator.TranslatePreservingColors(
+                    "粘液質の濡れたsmall 岩塊",
+                    nameof(GetDisplayNamePatch)),
+                Is.EqualTo("粘液質の濡れた小さな岩塊"));
+            Assert.That(
+                GetDisplayNameRouteTranslator.TranslatePreservingColors(
+                    "血まみれのlarge 岩塊",
+                    nameof(GetDisplayNamePatch)),
+                Is.EqualTo("血まみれの大きな岩塊"));
+        });
     }
 
     [Test]
@@ -1295,6 +1334,15 @@ public sealed class GetDisplayNameRouteTranslatorTests
     private void WriteDictionary(params (string key, string text)[] entries)
     {
         WriteDictionaryFile("ui-displayname-route.ja.json", entries);
+    }
+
+    private static void AssertGetDisplayNameRouteTranslation(string source, string expected)
+    {
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            source,
+            nameof(GetDisplayNamePatch));
+
+        Assert.That(translated, Is.EqualTo(expected));
     }
 
     private static void UseProductionDictionaries()

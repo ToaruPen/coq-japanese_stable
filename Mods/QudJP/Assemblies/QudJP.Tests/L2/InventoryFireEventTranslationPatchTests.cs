@@ -67,6 +67,48 @@ public sealed class InventoryFireEventTranslationPatchTests
     }
 
     [Test]
+    public void InventoryFireEvent_TranslatesInventoryOwnedFailurePopups_WhenOwnerPatched()
+    {
+        OwnerPopupRouteTestHarness.WithPatchedPopupOwner(
+            typeof(InventoryFireEventTranslationPatch),
+            RequireMethod(nameof(DummyInventoryFireEventProducerTarget.FireEventShowFail)),
+            () =>
+            {
+                var target = new DummyInventoryFireEventProducerTarget();
+
+                target.PopupMessageToShow = "You cannot equip items while stuck!";
+                target.FireEventShowFail();
+                var stuckEquip = DummyPopupShow.LastShowMessage;
+
+                target.PopupMessageToShow = "You cannot equip {{Y|steel boots}}.";
+                target.FireEventShowFail();
+                var cannotEquip = DummyPopupShow.LastShowMessage;
+
+                target.PopupMessageToShow = "You cannot equip {{Y|steel boots}} on your left hand.";
+                target.FireEventShowFail();
+                var cannotEquipOnSlot = DummyPopupShow.LastShowMessage;
+
+                target.PopupMessageToShow = "You cannot remove items while stuck!";
+                target.FireEventShowFail();
+                var stuckRemove = DummyPopupShow.LastShowMessage;
+
+                target.PopupMessageToShow = "You cannot budge {{Y|rusted chest}}.";
+                target.FireEventShowFail();
+                var cannotBudge = DummyPopupShow.LastShowMessage;
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(stuckEquip, Is.EqualTo("動けない間はアイテムを装備できない！"));
+                    Assert.That(cannotEquip, Is.EqualTo("{{Y|steel boots}}を装備できない。"));
+                    Assert.That(cannotEquipOnSlot, Is.EqualTo("{{Y|steel boots}}をleft handに装備できない。"));
+                    Assert.That(stuckRemove, Is.EqualTo("動けない間はアイテムを外せない！"));
+                    Assert.That(cannotBudge, Is.EqualTo("{{Y|rusted chest}}を動かせない。"));
+                    Assert.That(PopupHitCount("InventoryFailurePopup"), Is.EqualTo(5));
+                });
+            });
+    }
+
+    [Test]
     public void InventoryFireEvent_DoesNotClaimOwnerMessages_WhenOwnerAbsent()
     {
         var queueMessage = "{{Y|chrome idol}}] Error dropping object, removing to graveyard zone! (Inventory.cs:CommandEquipObject)";
@@ -177,6 +219,11 @@ public sealed class InventoryFireEventTranslationPatchTests
         public void FireEventPopup()
         {
             _ = DummyPopupShow.ShowYesNo(PopupMessageToShow);
+        }
+
+        public void FireEventShowFail()
+        {
+            DummyPopupShow.ShowFail(PopupMessageToShow);
         }
     }
 }

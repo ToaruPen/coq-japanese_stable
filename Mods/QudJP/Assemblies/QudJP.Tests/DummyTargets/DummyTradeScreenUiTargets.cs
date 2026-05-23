@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace QudJP.Tests.DummyTargets;
@@ -114,5 +115,37 @@ internal static class DummyLegacyTradeUiTarget
         _ = objects;
         _ = numberSelected;
         sReadout = " {{C|42}} drams <-> {{C|10}} drams ÄÄ {{W|$50}} ";
+    }
+}
+
+internal sealed class DummyLegacyTradeUiScreenTarget
+{
+    public DummyLegacyBuffer Buffer { get; } = new();
+
+    public int AddRemoveLength { get; private set; }
+
+    public int OfferLength { get; private set; }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public void ShowTradeScreen()
+    {
+        var addRemove = "[{{W|A}}/{{W|R}} Add/Remove]";
+        AddRemoveLength = DummyLegacyMarkup.StripFormatting(addRemove).Length;
+        var offer = "[{{W|O}} Offer]";
+        OfferLength = DummyLegacyMarkup.StripFormatting(offer).Length;
+
+        Buffer.Write("[ {{W|dromad's inventory}} ]");
+        Buffer.Write("[ {{W|Your inventory}} ]");
+        Buffer.Write(" {{G|[owned by you]}}");
+        Buffer.Write("{{R|[ owned by someone else ]}}");
+        Buffer.Write("[{{W|ESC}} Exit]");
+        Buffer.Write(addRemove);
+        Buffer.Write("[{{W|0-9}} Pick]");
+        Buffer.Write(offer);
+        Buffer.Write("[{{W|H}} Haggle]");
+        Buffer.Write("[{{W|T}} Transfer]");
+        Buffer.Write("[{{W|V}} Actions]");
+        Buffer.Write(" {{C|42}} drams <-> {{C|10}} drams ");
+        Buffer.Write(" {{K|12/250 lbs.}} ");
     }
 }

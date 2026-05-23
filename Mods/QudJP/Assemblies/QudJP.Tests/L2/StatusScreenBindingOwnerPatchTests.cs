@@ -111,10 +111,16 @@ public sealed class StatusScreenBindingOwnerPatchTests
         }
     }
 
-    [Test]
-    public void CharacterMutationLineTranslationPatch_TranslatesMutationLine_WhenPatched()
+    [TestCase("Force Wall", "力の壁")]
+    [TestCase("Triple Horn", "三本角")]
+    [TestCase("Horns", "角")]
+    [TestCase("Horn", "単角")]
+    [TestCase("Antlers", "枝角")]
+    public void CharacterMutationLineTranslationPatch_TranslatesMutationLine_WhenPatched(
+        string sourceName,
+        string translatedName)
     {
-        WriteDictionary(("Force Wall", "力の壁"));
+        WriteDictionary((sourceName, translatedName));
 
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
@@ -127,9 +133,9 @@ public sealed class StatusScreenBindingOwnerPatchTests
             var target = new DummyCharacterMutationLineTarget();
             target.setData(new DummyCharacterMutationLineDataTarget
             {
-                mutation = new DummyCharacterMutationRecord
-                {
-                    DisplayName = "Force Wall",
+                    mutation = new DummyCharacterMutationRecord
+                    {
+                    DisplayName = sourceName,
                     Level = 1,
                     BaseLevel = 1,
                 },
@@ -137,7 +143,7 @@ public sealed class StatusScreenBindingOwnerPatchTests
 
             Assert.Multiple(() =>
             {
-                Assert.That(target.text.Text, Is.EqualTo("{{y|力の壁 ({{C|1}})}}"));
+                Assert.That(target.text.Text, Is.EqualTo("{{y|" + translatedName + " ({{C|1}})}}"));
                 Assert.That(
                     DynamicTextObservability.GetRouteFamilyHitCountForTests(
                         nameof(CharacterMutationLineTranslationPatch),

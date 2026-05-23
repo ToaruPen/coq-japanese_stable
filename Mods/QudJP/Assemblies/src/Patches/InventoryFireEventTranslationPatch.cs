@@ -20,6 +20,14 @@ public static class InventoryFireEventTranslationPatch
         "^You don't own (?<container>.+?)\\. Are you sure you want to take (?<item>.+?)\\?$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex CannotEquipPattern = new(
+        "^You cannot equip (?<item>.+?)\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex CannotBudgePattern = new(
+        "^You cannot budge (?<item>.+?)\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     [ThreadStatic]
     private static int activeDepth;
 
@@ -121,14 +129,15 @@ public static class InventoryFireEventTranslationPatch
             return true;
         }
 
-        if (!TryTranslateContainerOwnershipPrompt(source, out translated))
+        if (!TryTranslateContainerOwnershipPrompt(source, out translated)
+            && !TryTranslateInventoryFailurePopup(source, out translated))
         {
             return false;
         }
 
         DynamicTextObservability.RecordTransform(
             route,
-            "Popup.ProducerText." + Context + ".ContainerOwnershipPrompt",
+            "Popup.ProducerText." + Context + "." + GetPopupFamilyDetail(source),
             source,
             translated);
         return true;
@@ -162,6 +171,96 @@ public static class InventoryFireEventTranslationPatch
         translated = Restore(match, spans, "container") + "はあなたのものではない。"
             + "本当に" + Restore(match, spans, "item") + "を取りますか？";
         return true;
+    }
+
+    private static bool TryTranslateInventoryFailurePopup(string source, out string translated)
+    {
+        switch (source)
+        {
+            case "You cannot equip items while stuck!":
+                translated = "動けない間はアイテムを装備できない！";
+                return true;
+            case "You cannot remove items while stuck!":
+                translated = "動けない間はアイテムを外せない！";
+                return true;
+        }
+
+        const string cannotEquipPrefix = "You cannot equip ";
+        const string onYourSeparator = " on your ";
+        const string sentenceSuffix = ".";
+
+        if (source.StartsWith(cannotEquipPrefix, StringComparison.Ordinal)
+            && source.EndsWith(sentenceSuffix, StringComparison.Ordinal))
+        {
+            var body = source.Substring(cannotEquipPrefix.Length, source.Length - cannotEquipPrefix.Length - sentenceSuffix.Length);
+            var separatorIndex = body.IndexOf(onYourSeparator, StringComparison.Ordinal);
+            if (separatorIndex >= 0)
+            {
+                translated = TranslateItemCapture(body.Substring(0, separatorIndex))
+                    + "を"
+                    + TranslateInventorySlot(body.Substring(separatorIndex + onYourSeparator.Length))
+                    + "に装備できない。";
+                return true;
+            }
+        }
+
+        var equipMatch = CannotEquipPattern.Match(source);
+        if (equipMatch.Success)
+        {
+            translated = TranslateItemCapture(equipMatch.Groups["item"].Value) + "を装備できない。";
+            return true;
+        }
+
+        var budgeMatch = CannotBudgePattern.Match(source);
+        if (budgeMatch.Success)
+        {
+            translated = TranslateItemCapture(budgeMatch.Groups["item"].Value) + "を動かせない。";
+            return true;
+        }
+
+        translated = source;
+        return false;
+    }
+
+    private static string GetPopupFamilyDetail(string source)
+    {
+        if (ContainerOwnershipPromptPattern.IsMatch(ColorAwareTranslationComposer.Strip(source).stripped))
+        {
+            return "ContainerOwnershipPrompt";
+        }
+
+        return "InventoryFailurePopup";
+    }
+
+    private static string TranslateItemCapture(string source)
+    {
+        try
+        {
+            return GetDisplayNameRouteTranslator.TranslatePreservingColors(
+                source,
+                Context + ".InventoryFailurePopup");
+        }
+        catch (Exception ex)
+        {
+            Trace.TraceError("QudJP: {0}.TranslateItemCapture failed: {1}", Context, ex);
+            return source;
+        }
+    }
+
+    private static string TranslateInventorySlot(string source)
+    {
+        try
+        {
+            var translated = Translator.Translate(source);
+            return string.Equals(translated, source, StringComparison.Ordinal)
+                ? source
+                : translated;
+        }
+        catch (Exception ex)
+        {
+            Trace.TraceError("QudJP: {0}.TranslateInventorySlot failed: {1}", Context, ex);
+            return source;
+        }
     }
 
     private static string Restore(Match match, IReadOnlyList<ColorSpan> spans, string groupName)

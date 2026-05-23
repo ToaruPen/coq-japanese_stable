@@ -717,6 +717,22 @@
       "text": "新しいゲーム"
     },
     {
+      "key": "New game",
+      "text": "新しいゲーム"
+    },
+    {
+      "key": "High Scores",
+      "text": "ハイスコア"
+    },
+    {
+      "key": "Help",
+      "text": "ヘルプ"
+    },
+    {
+      "key": "Quit",
+      "text": "終了"
+    },
+    {
       "key": "Records",
       "text": "記録"
     },
@@ -727,6 +743,10 @@
     {
       "key": "Redeem Code",
       "text": "コードを引き換える"
+    },
+    {
+      "key": "Dromad Edition",
+      "text": "ドロマド版"
     },
     {
       "key": "Modding Toolkit",

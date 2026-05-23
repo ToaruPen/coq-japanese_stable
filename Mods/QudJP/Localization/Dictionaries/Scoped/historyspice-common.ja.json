@@ -74,6 +74,8 @@
     { "key": "fried", "text": "揚げ" },
     { "key": "wafers", "text": "ウェハー" },
     { "key": "stew", "text": "シチュー" },
+    { "key": "retrieved", "text": "取り戻した" },
+    { "key": "bulgur", "text": "ブルグル" },
     { "key": "spectre", "text": "亡霊" },
     { "key": "bread", "text": "パン" },
     { "key": "honeyed", "text": "ハチミツ風味の" },

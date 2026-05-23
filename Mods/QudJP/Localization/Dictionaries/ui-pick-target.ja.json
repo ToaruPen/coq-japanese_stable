@@ -14,6 +14,11 @@
       "text": "選択"
     },
     {
+      "key": "Fire Missile Weapon",
+      "context": "PickTarget.CommandBar",
+      "text": "飛び道具を射撃"
+    },
+    {
       "key": "Dig to where?",
       "context": "PickTarget.Digging.Label",
       "text": "どこまで掘る？"
@@ -22,6 +27,16 @@
       "key": "unlock",
       "context": "PickTarget.CommandBar",
       "text": "固定解除"
+    },
+    {
+      "key": "Tinker Turret",
+      "context": "PickTarget.DirectionPrompt",
+      "text": "タレット製作"
+    },
+    {
+      "key": "Bandage whom?",
+      "context": "PickTarget.DirectionPrompt",
+      "text": "誰に包帯を巻く？"
     },
     {
       "key": "[Select a direction]",

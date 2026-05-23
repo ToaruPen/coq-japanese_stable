@@ -181,6 +181,9 @@ public sealed class CombatAndLogMessageQueuePatchTests
             ("{{r|You take 4 damage from being crushed by a machine press.}}", "{{r|機械プレスに押し潰されたことで4ダメージを受けた。}}"),
             ("{{r|You take 4 damage from being forced into phase.}}", "{{r|位相に押し込まれたことで4ダメージを受けた。}}"),
             ("{{r|You take 4 damage from slamming into {{W|two}} walls!}}", "{{r|{{W|2}}枚の壁に叩きつけられたことで4ダメージを受けた！}}"),
+            ("{{r|You take 4 damage from your charge!}}", "{{r|あなたの突撃で4ダメージを受けた！}}"),
+            ("{{r|You take 4 damage from being slammed into a wall by your charge!}}", "{{r|あなたの突撃で壁に叩きつけられたことで4ダメージを受けた！}}"),
+            ("{{r|You take 4 damage from being slammed into {{W|2}} walls by your charge!}}", "{{r|あなたの突撃で{{W|2}}枚の壁に叩きつけられたことで4ダメージを受けた！}}"),
             ("{{r|You take 4 damage from an electrical shock delivered by your defibrillator.}}", "{{r|あなたのdefibrillatorからの電気ショックで4ダメージを受けた。}}"),
             ("{{r|You take 4 damage from an {{electrical|electrical shock}} delivered by your defibrillator.}}", "{{r|あなたのdefibrillatorからの{{electrical|電気ショック}}で4ダメージを受けた。}}"),
             ("{{r|You take 4 damage from a sharp edge!}}", "{{r|鋭利な刃で4ダメージを受けた！}}"),
@@ -5337,6 +5340,15 @@ public sealed class CombatAndLogMessageQueuePatchTests
     }
 
     [Test]
+    public void EffectGeneratedApply_TranslatesMarkedShatteredArmorQueuedMessage_WhenOwnerPatched()
+    {
+        const string subject = "Your 鋼鉄のブーツ";
+        var source = DoesVerbRouteTranslator.MarkDoesFragment(subject + " were", "were", subject.Length, null) + " cracked.";
+
+        AssertEffectGeneratedApplyQueuedMessage(source, "鋼鉄のブーツにひびが入った");
+    }
+
+    [Test]
     public void EffectGeneratedHandleEvent_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched()
     {
         AssertEffectGeneratedHandleEventQueuedMessage(
@@ -5408,6 +5420,18 @@ public sealed class CombatAndLogMessageQueuePatchTests
         nameof(DummySimpleOwnerQueueTarget.GarbageAttemptRifle),
         "Somebody rifles through the ゴミ山.",
         "誰かがゴミ山を漁った")]
+    [TestCase(
+        nameof(DummySimpleOwnerQueueTarget.GarbageAttemptRifle),
+        "You rifle through the ゴミ山, and find a 銅線.",
+        "ゴミ山を漁り、銅線を見つけた")]
+    [TestCase(
+        nameof(DummySimpleOwnerQueueTarget.GarbageAttemptRifle),
+        "You rifle through an unknown refuse pile, and find a strange widget.",
+        "unknown refuse pileを漁り、strange widgetを見つけた")]
+    [TestCase(
+        nameof(DummySimpleOwnerQueueTarget.GarbageAttemptRifle),
+        "{{K|You rifle through the {{Y|ゴミ山}}, but you find nothing.}}",
+        "{{K|{{Y|ゴミ山}}を漁ったが、何も見つからなかった}}")]
     public void GeneratedQueueDoesVerb_TranslatesDoesVerbMessages_WhenOwnerPatched(
         string methodName,
         string source,
@@ -5525,12 +5549,49 @@ public sealed class CombatAndLogMessageQueuePatchTests
 
     [TestCase(
         "You must wait {{C|7 turns}} to use that ability again.",
-        "その能力を再び使うには{{C|7 turns}}待つ必要がある。")]
+        "その能力を再び使うには{{C|7ターン}}待つ必要がある。")]
+    [TestCase(
+        "You must wait {{C|7 round}} before using {{C|Freezing Ray}}.",
+        "{{C|凍結線}}を使うには{{C|7ラウンド}}待つ必要がある。")]
+    [TestCase(
+        "You must wait {{C|You must wait 7 round before using Freezing Ray.}} to use that ability again.",
+        "{{C|凍結線を使うには7ラウンド待つ必要がある。}}")]
     public void AbilityManagerShow_TranslatesCooldownQueuedMessage_WhenOwnerPatched(
         string source,
         string expected)
     {
+        UseRepositoryPatternDictionary();
         AssertAbilityManagerShowQueuedMessage(source, expected);
+    }
+
+    [Test]
+    public void AbilityManagerShow_TranslatesCooldownPopup_WhenOwnerPatched()
+    {
+        UseRepositoryPatternDictionary();
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShow(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummySimpleOwnerQueueTarget), nameof(DummySimpleOwnerQueueTarget.AbilityManagerShowPopup)),
+                typeof(AbilityManagerShowTranslationPatch));
+
+            var target = new DummySimpleOwnerQueueTarget
+            {
+                PopupMessageToSend = "You must wait {{C|7 round}} before using {{C|Freezing Ray}}.",
+            };
+
+            _ = target.AbilityManagerShowPopup();
+
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("{{C|凍結線}}を使うには{{C|7ラウンド}}待つ必要がある。"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
     }
 
     [Test]

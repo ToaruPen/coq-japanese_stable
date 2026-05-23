@@ -64,6 +64,19 @@ public sealed class MutationsApiTranslationPatchTests
     }
 
     [Test]
+    public void BuyRandomMutation_TranslatesCreatureTypeCannotBuyMessage_WhenPatched()
+    {
+        WithPatchedBuyRandomMutation(nameof(DummyPopupShow.Show), () =>
+        {
+            DummyMutationsApiTarget.FailureMessageToShow = "Your type of creature may not buy modules.";
+
+            _ = DummyMutationsApiTarget.BuyRandomMutation(new DummyGameObject(), 4, MutationTerm: "module");
+
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("この種類の生物はモジュールを購入できない。"));
+        });
+    }
+
+    [Test]
     public void BuyRandomMutation_TranslatesConfirmationMessage_WhenPatched()
     {
         WithPatchedBuyRandomMutation(nameof(DummyPopupShow.ShowYesNo), () =>
@@ -118,6 +131,22 @@ public sealed class MutationsApiTranslationPatchTests
         {
             Assert.That(ok, Is.True);
             Assert.That(translated, Is.EqualTo("本当に4ポイントを消費して新しい{{G|突然変異}}を購入しますか？"));
+        });
+    }
+
+    [Test]
+    public void TryTranslatePopupMessage_TranslatesCreatureTypeCannotBuyBuiltInMutationTerm()
+    {
+        WriteDictionary();
+
+        var ok = TryTranslatePopupMessageDuringMutationPurchase(
+            "Your type of creature may not buy mutations.",
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(translated, Is.EqualTo("この種類の生物は突然変異を購入できない。"));
         });
     }
 

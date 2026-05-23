@@ -25,6 +25,7 @@ public static class LegacyGamepadPromptTranslationPatch
         ("XRL.UI.FactionsScreen", "FactionsScreen", FactionsScreenGamepadPromptTranslationPatch.Transpiler),
         ("XRL.UI.SkillsAndPowersScreen", "SkillsAndPowersScreen", SkillsAndPowersScreenTranslationPatch.Transpiler),
         ("XRL.UI.EquipmentScreen", "EquipmentScreen", EquipmentScreenTranslationPatch.Transpiler),
+        ("XRL.UI.AbilityManager", "AbilityManager", AbilityManagerLegacyScreenTranslationPatch.Transpiler),
     };
 
     [HarmonyTargetMethods]
