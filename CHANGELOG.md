@@ -10,6 +10,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+## [0.3.21] - 2026-05-23
+
+### Fixed
+
+- turret tinkering、long blade stance、schemasoft chip、Cyclopean Prism、PitMaterial、Evil Twin、Cherubim/Hexacherubim element text などの生成・表示名テキストを追加で日本語化しました。
+- gigantic item mod description、sparking baetyl reward description、bandaging、multi-horns charge message などの説明文・報酬文・戦闘ログに残っていた英語表示を改善しました。
+- アイテム表示名の翻訳時に、angle suffix より前にある色 markup が失われる場合がある問題を修正しました。
+- エネルギーセルの充電状態ラベルを見直し、インベントリや詳細表示に残っていた不自然な表現を改善しました。
+
+---
+
 ## [0.3.20] - 2026-05-22
 
 ### Fixed
@@ -361,7 +372,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
-[Unreleased]: https://github.com/ToaruPen/coq-japanese_stable/compare/v0.3.20...HEAD
+[Unreleased]: https://github.com/ToaruPen/coq-japanese_stable/compare/v0.3.21...HEAD
+[0.3.21]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.3.21
 [0.3.20]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.3.20
 [0.3.01]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.3.01
 [0.3.00]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.3.00
