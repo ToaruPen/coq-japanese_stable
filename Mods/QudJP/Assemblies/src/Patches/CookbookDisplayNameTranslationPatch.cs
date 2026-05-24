@@ -46,11 +46,6 @@ public static class CookbookDisplayNameTranslationPatch
         }
     }
 
-    internal static bool TryTranslateDisplayNameForTests(object? instance)
-    {
-        return TryTranslateDisplayName(instance);
-    }
-
     private static bool TryTranslateDisplayName(object? instance)
     {
         if (instance is null

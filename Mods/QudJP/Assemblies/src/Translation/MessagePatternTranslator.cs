@@ -439,11 +439,6 @@ internal static class MessagePatternTranslator
     }
 #endif
 
-    internal static bool ShouldLogMissingHitForTests(int hitCount)
-    {
-        return ObservabilityHelpers.ShouldLogMissingHit(hitCount);
-    }
-
     private static void LogDuplicatePatternSummary(Dictionary<string, int> duplicatePatternCounts)
     {
         if (duplicatePatternCounts.Count == 0)

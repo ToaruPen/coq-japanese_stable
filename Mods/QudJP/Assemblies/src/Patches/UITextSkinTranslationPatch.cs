@@ -422,16 +422,6 @@ public static class UITextSkinTranslationPatch
                 || source.Contains(" unlock ("));
     }
 
-    internal static bool ShouldSkipTranslationForTests(string source)
-    {
-        return ShouldSkipTranslation(source, nameof(UITextSkinTranslationPatch));
-    }
-
-    internal static bool ShouldSkipTranslationForTests(string source, string? context)
-    {
-        return ShouldSkipTranslation(source, context);
-    }
-
     internal static bool IsAlreadyLocalizedDirectRouteTextForContext(string source, string? context)
     {
         return IsAlreadyLocalizedDirectRouteText(source, context);

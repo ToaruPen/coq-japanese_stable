@@ -52,11 +52,6 @@ public static class SultanRegionRevealDescriptionTranslationPatch
         }
     }
 
-    internal static bool TryTranslateRevealedDescriptionForTests(object? instance)
-    {
-        return TryTranslateRevealedDescription(instance);
-    }
-
     private static bool TryTranslateRevealedDescription(object? instance)
     {
         if (instance is null
