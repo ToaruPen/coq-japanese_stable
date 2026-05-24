@@ -2,6 +2,31 @@
   "schema_version": "1",
   "candidates": [
     {
+      "extracted_pattern": "^Throughout\\ the\\ entirety\\ of\\ (.+?)\\ (?:BR|AR),\\ (.+?\\ (?:I|II|III|IV|V|VI|VII|VIII|IX|X))\\ (.+?)\\ all\\ of\\ (.+?),\\ (.+?)\\ for\\ (.+?)\\ and\\ (.+?)\\.\\ (.+?)\\ became\\ known\\ as\\ (?:the\\ )?(Scourge|Terror|Bane|Pest|Woe|Sorrow)\\ of\\ (.+?)\\.$",
+      "status": "accepted",
+      "ja_template": "{t0}年全体を通じて、{t1}は{t3}全域を{t2}うえ、{t5}と{t6}に対して{t4}を行った。{t7}は以後{t9}の{t8}として知られるようになった。"
+    },
+    {
+      "extracted_pattern": "^Throughout\\ the\\ entirety\\ of\\ (.+?)\\ (?:BR|AR),\\ (.+?\\ (?:I|II|III|IV|V|VI|VII|VIII|IX|X))\\ (.+?)\\ all\\ of\\ (.+?),\\ (.+?)\\ of\\ (.+?)\\ and\\ (.+?)\\.\\ (.+?)\\ became\\ known\\ as\\ (?:the\\ )?(.+?)\\ (Scourge|Terror|Bane|Pest|Woe|Sorrow)\\.$",
+      "status": "accepted",
+      "ja_template": "{t0}年全体を通じて、{t1}は{t3}全域を{t2}うえ、{t5}と{t6}に対して{t4}を行った。{t7}は以後{t8}の{t9}として知られるようになった。"
+    },
+    {
+      "extracted_pattern": "^(.+?),\\ (.+?)\\ cemented\\ its\\ friendship\\ with\\ (.+?)\\ by\\ marrying\\ (.+?)\\.\\ (.+?),\\ (.+?)\\ bestowed\\ upon\\ (.+?)\\ a\\ wedding\\ gift\\ they\\ called\\ (.+?)\\.$",
+      "status": "accepted",
+      "ja_template": "{t0}、{t1}は{t3}と婚姻を結ぶことにより、{t2}との友誼を固めた。{t4}、{t5}は{t6}に、彼らが{t7}と呼ぶ婚礼の贈り物を授けた。"
+    },
+    {
+      "extracted_pattern": "^(.+?),\\ (.+?)\\ cemented\\ their\\ friendship\\ with\\ (.+?)\\ by\\ marrying\\ (.+?)\\.\\ (.+?),\\ the\\ (.+?)\\ bestowed\\ upon\\ (.+?)\\ a\\ wedding\\ gift\\ they\\ called\\ (.+?)\\.$",
+      "status": "accepted",
+      "ja_template": "{t0}、{t1}は{t3}と婚姻を結ぶことにより、彼らの{t2}との友誼を固めた。{t4}、{t5}は{t6}に、彼らが{t7}と呼ぶ婚礼の贈り物を授けた。"
+    },
+    {
+      "extracted_pattern": "^(.+?),\\ (.+?)\\ cemented\\ their\\ friendship\\ with\\ (.+?)\\ by\\ marrying\\ (.+?)\\.$",
+      "status": "accepted",
+      "ja_template": "{t0}、{t1}は{t3}と婚姻を結ぶことにより、彼らの{t2}との友誼を固めた。"
+    },
+    {
       "id": "Abdicate#gospel#bl:else",
       "source_file": "Abdicate.cs",
       "annal_class": "Abdicate",

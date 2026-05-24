@@ -627,6 +627,16 @@
       "route": "journal"
     },
     {
+      "pattern": "^<spice\\.commonPhrases\\.intrepid\\.!random\\.capitalize> =name= discovered (.+?), once thought lost to the sands of time\\.$",
+      "template": "<spice.commonPhrases.intrepid.!random.capitalize>=name=は、かつて時の砂に失われたと思われていた{t0}を発見した。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^In =year=, =name= won a decisive victory against the combined force of (.+?) from the (.+?) at the bloody Battle of (.+?)\\.$",
+      "template": "=year=、=name=は{t2}の血塗られた戦いで、{t1}の{t0}連合軍に決定的勝利を収めた。",
+      "route": "journal"
+    },
+    {
       "pattern": "^In an excavation at a site of deep history near (.+?), =name= recovered (.+?), the historic relic once thought lost to the sands of time\\.$",
       "template": "{t0}近くの深い歴史を持つ場所での発掘において、=name=はかつて時の砂に失われたと思われていた歴史的遺物{t1}を回収した。",
       "route": "journal"

@@ -208,6 +208,29 @@ public sealed class ExaminerTranslationPatchTests
     }
 
     [Test]
+    public void Patch_TranslatesExaminerIdentify_DropsRuntimePairOfPrefixFromKnownItem()
+    {
+        OwnerPopupRouteTestHarness.WithPatchedPopupOwner(
+            typeof(ExaminerTranslationPatch),
+            RequireOwnerMethod(nameof(DummyExaminerProducerTarget.ResultPartialSuccess)),
+            () =>
+            {
+                var target = new DummyExaminerProducerTarget
+                {
+                    PopupMessageToShow = "You identify the 奇妙な遺物 as a pair of 尺骨刺激装置.",
+                };
+
+                target.ResultPartialSuccess(new DummyGameObject());
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("奇妙な遺物を尺骨刺激装置だと鑑定した。"));
+                    Assert.That(ExaminerHitCount("Identify"), Is.EqualTo(1));
+                });
+            });
+    }
+
+    [Test]
     public void Patch_LeavesNonMatchingPartialSuccessPopupUnchanged_WhenOwnerPatched()
     {
         OwnerPopupRouteTestHarness.WithPatchedPopupOwner(

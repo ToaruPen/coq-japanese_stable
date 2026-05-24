@@ -1551,6 +1551,7 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.Parts.SpawningEggSac|tickEgg|System.Void",
         "XRL.World.Parts.LuminousInfection|TryGrowMushroom|System.Void",
         "XRL.World.Parts.TorchProperties|HandleEvent|System.Boolean|XRL.World.EndTurnEvent",
+        "XRL.World.Effects.Lost|HandleEvent|System.Boolean|XRL.World.CanTravelEvent",
         "XRL.World.Parts.Mutation.Teleportation|Cast|System.Boolean|XRL.World.Parts.Mutation.Teleportation|System.String|XRL.World.IEvent|XRL.World.Cell|XRL.World.GameObject|System.Boolean|System.Int32",
         "XRL.World.Parts.CatacombsExitTeleporter|HandleEvent|System.Boolean|XRL.World.ObjectEnteredCellEvent",
     })]

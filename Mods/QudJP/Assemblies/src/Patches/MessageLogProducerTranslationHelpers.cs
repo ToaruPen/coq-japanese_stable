@@ -92,7 +92,7 @@ internal static class MessageLogProducerTranslationHelpers
         RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
     private static readonly Regex LairPattern = new Regex(
-        @"^the (?<kind>village lair|lair|workshop|scriptorium|kitchen|distillery|organ market|cradle|chuppah) of (?<name>.+)$",
+        @"^(?:the )?(?<kind>village lair|lair|workshop|scriptorium|kitchen|distillery|organ market|cradle|chuppah) of (?<name>.+)$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
     private static readonly Regex StrataPattern = new Regex(
@@ -244,6 +244,14 @@ internal static class MessageLogProducerTranslationHelpers
 
         if (markJapaneseAsDirect && ContainsJapaneseCharacters(patternSource))
         {
+            var japanesePatternTranslated = MessagePatternTranslator.TranslateIfPatternMatches(patternSource, route);
+            if (!string.Equals(japanesePatternTranslated, patternSource, StringComparison.Ordinal))
+            {
+                DynamicTextObservability.RecordTransform(route, detail, source, japanesePatternTranslated);
+                source = MessageFrameTranslator.MarkDirectTranslation(japanesePatternTranslated);
+                return true;
+            }
+
             if (ShouldMarkAlreadyLocalizedJapaneseDirectly(patternSource))
             {
                 source = MessageFrameTranslator.MarkDirectTranslation(patternSource);

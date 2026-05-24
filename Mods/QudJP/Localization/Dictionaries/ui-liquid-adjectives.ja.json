@@ -88,6 +88,11 @@
       "key": "bloody",
       "context": "XRL.Liquids.Adjective",
       "text": "血混じりの"
+    },
+    {
+      "key": "brackish",
+      "context": "XRL.Liquids.Adjective",
+      "text": "塩気混じりの"
     }
   ]
 }

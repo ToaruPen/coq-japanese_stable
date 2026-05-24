@@ -43,7 +43,8 @@ public sealed class TradeLineTranslationPatchTests
         WriteDictionary(
             ("Weapons", "武器"),
             ("iron sword", "鉄の剣"),
-            ("bronze", "青銅"));
+            ("bronze", "青銅"),
+            ("bronze long sword", "{{w|青銅の長剣}}"));
 
         var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";
         var harmony = new Harmony(harmonyId);
@@ -81,6 +82,14 @@ public sealed class TradeLineTranslationPatchTests
             });
 
             Assert.That(target.text.text, Is.EqualTo("{{w|青銅}}"));
+
+            target.setData(new DummyFrameworkDataElement
+            {
+                Title = "Weapons",
+                Description = "{{w|bronze}} long sword {{c|\u001a}}4 {{r|\u0003}}1d3",
+            });
+
+            Assert.That(target.text.text, Is.EqualTo("{{w|青銅の長剣}} {{c|\u001a}}4 {{r|\u0003}}1d3"));
         }
         finally
         {

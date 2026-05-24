@@ -14,6 +14,9 @@ internal static class ActivatedAbilityNameTranslator
     private static readonly Regex TightenPattern =
         new Regex("^Tighten (?<target>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex DeactivatePattern =
+        new Regex("^Deactivate (?<target>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     private static readonly Regex DischargeChargePattern =
         new Regex("^Discharge \\[(?<count>\\d+) charge\\]$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
@@ -67,6 +70,13 @@ internal static class ActivatedAbilityNameTranslator
         var tightenMatch = TightenPattern.Match(source);
         if (tightenMatch.Success
             && TryTranslateTightenName(tightenMatch.Groups["target"].Value, out translated))
+        {
+            return true;
+        }
+
+        var deactivateMatch = DeactivatePattern.Match(source);
+        if (deactivateMatch.Success
+            && TryTranslateDeactivateName(deactivateMatch.Groups["target"].Value, out translated))
         {
             return true;
         }
@@ -133,6 +143,21 @@ internal static class ActivatedAbilityNameTranslator
         }
 
         translated = translatedTarget + "を締め付ける";
+        return true;
+    }
+
+    private static bool TryTranslateDeactivateName(string target, out string translated)
+    {
+        var translatedTarget = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            target,
+            nameof(ActivatedAbilityNameTranslator));
+        if (ContainsAsciiLetter(ColorAwareTranslationComposer.GetVisibleText(translatedTarget)))
+        {
+            translated = "Deactivate " + target;
+            return false;
+        }
+
+        translated = translatedTarget + "を停止";
         return true;
     }
 

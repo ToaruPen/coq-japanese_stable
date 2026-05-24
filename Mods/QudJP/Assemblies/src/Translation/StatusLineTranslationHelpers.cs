@@ -20,6 +20,8 @@ internal static class StatusLineTranslationHelpers
         new Regex("^Requires:\\s*(?<value>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex WeightPattern =
         new Regex("^Weight:\\s*(?<value>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex StuckInEffectPartPattern =
+        new Regex("^stuck in (?:the |a |an )?(?<target>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     internal static bool TryTranslateCompareStatusLine(string source, string route, string family, out string translated)
     {
@@ -251,6 +253,13 @@ internal static class StatusLineTranslationHelpers
             return false;
         }
 
+        var stuckInMatch = StuckInEffectPartPattern.Match(source.Trim());
+        if (stuckInMatch.Success)
+        {
+            translated = stuckInMatch.Groups["target"].Value + "にはまっている";
+            return true;
+        }
+
         if (TryTranslateDisplayNameModifierSequence(source, out translated))
         {
             return true;
@@ -273,8 +282,9 @@ internal static class StatusLineTranslationHelpers
         for (var index = 0; index < parts.Length; index++)
         {
             var part = parts[index];
-            var translatedPart = ScopedDictionaryLookup.TranslateExactOrLowerAscii(
+            var translatedPart = ScopedDictionaryLookup.TranslateExactOrLowerAsciiForContext(
                 part,
+                "GetDisplayName.Adjective",
                 "ui-displayname-adjectives.ja.json");
             if (string.IsNullOrEmpty(translatedPart) || string.Equals(translatedPart, part, StringComparison.Ordinal))
             {

@@ -59,6 +59,7 @@ public sealed class AbilityBarButtonTextTranslationPatchTests
             ("Rebuke Robot", "ロボットを叱責"),
             ("Rifle through Trash", "ゴミ漁り"),
             ("Mark", "マーク"),
+            ("Activate", "起動"),
             ("Recoil", "帰還"),
             ("Joppa", "ジョッパ"),
             ("[disabled]", "[無効]"),
@@ -88,6 +89,7 @@ public sealed class AbilityBarButtonTextTranslationPatchTests
             var rebukeRobot = new DummyAbilityBarButton("&CRebuke Robot {{Y|<{{w|R}}>}}");
             var trashRifling = new DummyAbilityBarButton("&CRifle through Trash {{K|[{{g|on}}]}}");
             var mark = new DummyAbilityBarButton("&CMark");
+            var activate = new DummyAbilityBarButton("Activate");
             var recoil = new DummyAbilityBarButton("Recoil");
             var recoilToJoppa = new DummyAbilityBarButton("Recoil to Joppa");
             var coloredRecoilToJoppa = new DummyAbilityBarButton("&CRecoil to Joppa {{K|[disabled]}}");
@@ -108,6 +110,7 @@ public sealed class AbilityBarButtonTextTranslationPatchTests
             target.AbilityButtons.Add(rebukeRobot);
             target.AbilityButtons.Add(trashRifling);
             target.AbilityButtons.Add(mark);
+            target.AbilityButtons.Add(activate);
             target.AbilityButtons.Add(recoil);
             target.AbilityButtons.Add(recoilToJoppa);
             target.AbilityButtons.Add(coloredRecoilToJoppa);
@@ -133,6 +136,7 @@ public sealed class AbilityBarButtonTextTranslationPatchTests
                 Assert.That(rebukeRobot.Text.text, Is.EqualTo("&Cロボットを叱責 {{Y|<{{w|R}}>}}"));
                 Assert.That(trashRifling.Text.text, Is.EqualTo("&Cゴミ漁り {{K|[{{g|オン}}]}}"));
                 Assert.That(mark.Text.text, Is.EqualTo("&Cマーク"));
+                Assert.That(activate.Text.text, Is.EqualTo("起動"));
                 Assert.That(recoil.Text.text, Is.EqualTo("帰還"));
                 Assert.That(recoilToJoppa.Text.text, Is.EqualTo("ジョッパへ帰還"));
                 Assert.That(coloredRecoilToJoppa.Text.text, Is.EqualTo("&Cジョッパへ帰還 {{K|[無効]}}"));
@@ -144,7 +148,7 @@ public sealed class AbilityBarButtonTextTranslationPatchTests
                     DynamicTextObservability.GetRouteFamilyHitCountForTests(
                         nameof(AbilityBarButtonTextTranslationPatch),
                         "AbilityBar.ButtonText"),
-                    Is.EqualTo(17));
+                    Is.EqualTo(18));
                 Assert.That(
                     SinkObservation.GetHitCountForTests(
                         nameof(UITextSkinTranslationPatch),

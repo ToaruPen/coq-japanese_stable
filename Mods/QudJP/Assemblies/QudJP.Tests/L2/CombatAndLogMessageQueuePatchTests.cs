@@ -129,6 +129,15 @@ public sealed class CombatAndLogMessageQueuePatchTests
             ("The 樹液まみれの濡れた光葉 takes no damage from oozing.", "樹液まみれの濡れた光葉は滲出でダメージを受けなかった。"),
             ("{{r|You take 1 damage from fluxing.}}", "{{r|フラックス漏れで1ダメージを受けた。}}"),
             ("The 落葉剤グレネード mk I miner mk I takes 4 damage from your freezing effect!", "落葉剤グレネード mk I miner mk Iはあなたの凍結効果で4ダメージを受けた！"),
+            ("The 凍結した 熊 takes 13 damage from your freezing effect!", "凍結した 熊はあなたの凍結効果で13ダメージを受けた！"),
+            ("The 山羊人の種播き takes 35 damage from your electrical discharge!", "山羊人の種播きはあなたの放電で35ダメージを受けた！"),
+            ("You take 9 damage from 転がる莢の explosion!", "転がる莢の爆発で9ダメージを受けた！"),
+            ("You take 1 damage from ヒルの life drain!", "ヒルの生命吸収で1ダメージを受けた！"),
+            ("You take no damage from bleeding.", "出血でダメージを受けなかった。"),
+            ("The 電気カタツムリ takes no damage from your electrical discharge!", "電気カタツムリはあなたの放電でダメージを受けなかった！"),
+            ("You take 2 damage from 電気カタツムリの electrical discharge!", "電気カタツムリの放電で2ダメージを受けた！"),
+            ("The 燃え盛る 電気カタツムリ takes 1 damage from the fire you started!", "燃え盛る 電気カタツムリはあなたが起こした火で1ダメージを受けた！"),
+            ("You take 20 damage from 波形ワームの passage!", "波形ワームの通過で20ダメージを受けた！"),
             ("{{r|You take 9 damage from your plasma you started by you near your ally and You!}}", "{{r|あなたのplasma you started by you near your ally and Youで9ダメージを受けた！}}"),
         };
 
@@ -213,6 +222,19 @@ public sealed class CombatAndLogMessageQueuePatchTests
         };
 
         AssertPhysicsProcessTakeDamageQueuedMessages(cases);
+    }
+
+    [Test]
+    public void PhysicsProcessTakeDamage_DoesNotRecordMessagePatternMiss_WhenLocalOwnerFrameTranslates()
+    {
+        const string source = "The target takes 4 damage from your electrical discharge!";
+
+        AssertPhysicsProcessTakeDamageQueuedMessage(source, "targetはあなたの放電で4ダメージを受けた！");
+
+        Assert.That(MessagePatternTranslator.GetMissingPatternHitCountForTests(source), Is.EqualTo(0));
+        Assert.That(
+            MessagePatternTranslator.GetMissingRouteHitCountForTests(nameof(PhysicsProcessTakeDamageTranslationPatch)),
+            Is.EqualTo(0));
     }
 
     [Test]
@@ -1277,6 +1299,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
     [TestCase("You can't unlock the 扉 from a distance.", "離れた位置から扉の鍵を開けることはできない")]
     [TestCase("You can't unlock the 扉.", "扉の鍵を開けられない")]
     [TestCase("You interface with the 扉 and unlock it.", "扉にインターフェースで接続して鍵を開けた")]
+    [TestCase("Your  unlocks the セキュリティドア.", "セキュリティドアの鍵が開いた")]
     [TestCase("You lay your hand upon the 扉 and draw forth its passcode. You enter the code and the 扉 unlocks.", "扉に手を当ててパスコードを読み取った。コードを入力すると扉の鍵が開いた")]
     [TestCase("You interface with the 扉 but nothing happens.", "You interface with the 扉 but nothing happens.")]
     [TestCase("", "")]
@@ -5999,6 +6022,12 @@ public sealed class CombatAndLogMessageQueuePatchTests
     }
 
     [Test]
+    public void SystemStaticLostCanTravelEvent_TranslatesRuntimeObservedLostMessage_WhenOwnerPatched()
+    {
+        AssertSystemStaticLostCanTravelEventQueuedMessage("You are lost!", "道に迷っている！");
+    }
+
+    [Test]
     public void SystemStaticSpacetimeVortex_TranslatesFixedQueuedMessage_WhenOwnerPatched()
     {
         AssertSystemStaticVortexQueuedMessage("{{G|You sunder spacetime.}}", "{{G|時空を切り裂いた。}}");
@@ -6293,6 +6322,42 @@ public sealed class CombatAndLogMessageQueuePatchTests
             target.EmitMessage("unused");
 
             Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("baboonsに包囲されている。"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void GameObjectEmitMessage_TranslatesRuntimeObservedFreshWaterCollectMessage_WhenPatched()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyGameObjectEmitMessageTarget), nameof(DummyGameObjectEmitMessageTarget.EmitMessage), typeof(string), typeof(DummyGameObject), typeof(string), typeof(bool)),
+                typeof(GameObjectEmitMessageTranslationPatch));
+
+            var target = new DummyGameObjectEmitMessageTarget
+            {
+                MessageToSend = "You collect 8 dram of fresh water from nearby in your 水筒.",
+            };
+
+            target.EmitMessage("unused");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("近くから真水を8ドラム集めた（水筒に入れた）。"));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(GameObjectEmitMessageTranslationPatch),
+                        "EmitMessage.LiquidVolume.CollectMessage"),
+                    Is.EqualTo(1));
+            });
         }
         finally
         {
@@ -6632,6 +6697,8 @@ public sealed class CombatAndLogMessageQueuePatchTests
             ("An image of タム disappears.", "タムの映像が消えた。"),
             ("The 熊's carapace loosens.", "熊の甲殻が緩んだ"),
             ("熊の carapace loosens.", "熊の甲殻が緩んだ"),
+            ("濡れた気難しいカメの 甲殻 loosens.", "濡れた気難しいカメの甲殻が緩んだ"),
+            ("猫飼いの glow dims until it's extinguished.", "猫飼いの輝きが消えるまで薄れた"),
             ("The zealot mumbles inaudibly, encased in ice.", "氷に閉じ込められた狂信者が、聞き取れないほどに呟いた。"),
             ("The infected crust of skin on 熊の left arm loosens and breaks away.", "熊の left armの感染した皮膚の痂皮が緩んで剥がれ落ちた。"),
             ("You lose 3 HP.", "あなたは3HPを失った"),
@@ -6643,6 +6710,13 @@ public sealed class CombatAndLogMessageQueuePatchTests
             ("You harvest a ヴァインウェハー from the ウォーターヴァイン.", "ウォーターヴァインからヴァインウェハーを収穫した"),
             ("カロク begins flying.", "カロクが飛翔し始めた。"),
             ("シュウラシュウォレム harvests a スターアップル.", "シュウラシュウォレムはスターアップルを収穫した。"),
+            ("The ヒンドレンの村人 harvests some ラーの花弁.", "ヒンドレンの村人はラーの花弁を収穫した。"),
+            ("Westからsome 魔樹の樹皮を収穫した", "西から魔樹の樹皮を収穫した"),
+            ("ゴミ to the southwestを漁ったが、何も見つからなかった", "南西でゴミを漁ったが、何も見つからなかった"),
+            ("説教者は言う、'今日は、子らよ、啓発の儀について語ろう。」", "説教者は言う、「今日は、子らよ、啓発の儀について語ろう。」"),
+            ("An electrical arc leaps toward you!", "電弧があなたへ走った！"),
+            ("Your カービン is already fully loaded.", "カービンはすでに完全に装填されている。"),
+            ("The 凍結した タールまみれの 結合ギルシュリング は二つに分裂した！", "凍結した タールまみれの 結合ギルシュリングは二つに分裂した！"),
         };
 
         UseRepositoryPatternDictionary();
@@ -10804,6 +10878,36 @@ public sealed class CombatAndLogMessageQueuePatchTests
             };
 
             _ = target.TorchPropertiesHandleEvent(new DummyEndTurnEvent());
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertSystemStaticLostCanTravelEventQueuedMessage(string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(
+                    typeof(DummySimpleOwnerQueueTarget),
+                    nameof(DummySimpleOwnerQueueTarget.LostCanTravelHandleEvent),
+                    typeof(DummyEvent)),
+                typeof(SystemStaticMessageTranslationPatch));
+
+            var target = new DummySimpleOwnerQueueTarget
+            {
+                MessageToSend = message,
+            };
+
+            _ = target.LostCanTravelHandleEvent(new DummyEvent());
 
             Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
         }

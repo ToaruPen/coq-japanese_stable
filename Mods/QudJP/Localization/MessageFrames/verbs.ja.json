@@ -2266,6 +2266,31 @@
       "text": "{subject}は{1}から{0}を解体した"
     },
     {
+      "verb": "butcher",
+      "extra": "{0} into a set of {1}",
+      "text": "{0}を解体して{1}を得た"
+    },
+    {
+      "verb": "butcher",
+      "extra": "{0} into a {1}",
+      "text": "{0}を解体して{1}を得た"
+    },
+    {
+      "verb": "butcher",
+      "extra": "{0} into an {1}",
+      "text": "{0}を解体して{1}を得た"
+    },
+    {
+      "verb": "butcher",
+      "extra": "{0} into the {1}",
+      "text": "{0}を解体して{1}を得た"
+    },
+    {
+      "verb": "butcher",
+      "extra": "{0} into {1}",
+      "text": "{0}を解体して{1}を得た"
+    },
+    {
       "verb": "charge",
       "extra": ", but{0} brought up short",
       "text": "突撃したが、阻まれた"
@@ -2456,6 +2481,16 @@
       "text": "{0}をかわした"
     },
     {
+      "verb": "flinch",
+      "extra": "away as {0} whistles past from the {1}",
+      "text": "{t1}から飛んできた{0}をかわした"
+    },
+    {
+      "verb": "flinch",
+      "extra": "away as {0} whizzes past from the {1}",
+      "text": "{t1}から飛んできた{0}をかわした"
+    },
+    {
       "verb": "fling",
       "extra": "(?:your|his|her|its|their) quills",
       "text": "棘を飛ばした"
@@ -2539,6 +2574,11 @@
       "verb": "have",
       "extra": "restocked {0} inventory",
       "text": "{0}の在庫を補充した"
+    },
+    {
+      "verb": "have",
+      "extra": "restocked (?:your|his|her|its|their) inventory",
+      "text": "在庫を補充した"
     },
     {
       "verb": "have",
@@ -2709,6 +2749,11 @@
       "verb": "press",
       "extra": "{0} activation panel",
       "text": "{0}の起動パネルを押した"
+    },
+    {
+      "verb": "press",
+      "extra": "the power button on {0}",
+      "text": "{0}の電源ボタンを押した"
     },
     {
       "verb": "provide",

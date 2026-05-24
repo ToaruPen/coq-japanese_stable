@@ -70,6 +70,11 @@ public sealed class TinkeringModPopupTranslationPatchTests
         "You mod {{Y|steel boots}} to be {{C|spring-loaded}}.",
         "{{Y|steel boots}}を{{C|spring-loaded}}に改造した。",
         "Success")]
+    [TestCase(
+        nameof(DummyPopupShow.Show),
+        "You mod your ナインフォールドのブーツ to be {{C|バネ仕掛け}}.",
+        "ナインフォールドのブーツを{{C|バネ仕掛け}}に改造した。",
+        "Success")]
     public void PerformUITinkerMod_TranslatesPopupMessages_WhenOwnerPatched(
         string popupMethod,
         string source,

@@ -39,6 +39,7 @@ internal static class SultanRegionRevealDescriptionTranslator
         {
             ["over the flats"] = "平原の上",
             ["under the chrome carcasses of giants"] = "巨人たちのクロムの残骸の下",
+            ["deep within an earth-cleft"] = "大地の裂け目の奥深く",
         };
 
     private static readonly IReadOnlyDictionary<string, string> ActivityPhrases =
@@ -46,6 +47,7 @@ internal static class SultanRegionRevealDescriptionTranslator
         {
             ["the Eaters dwelled and dreamed"] = "イーターたちが住まい、夢見ていた",
             ["The Eaters admired their strange flora"] = "イーターたちが奇妙な植物群を愛でていた",
+            ["Stargazers plied their craft in isolation"] = "星見たちが孤独に技を磨いていた",
         };
 
     private static readonly string GovernmentPattern = BuildAlternation(GovernmentTerms.Keys);

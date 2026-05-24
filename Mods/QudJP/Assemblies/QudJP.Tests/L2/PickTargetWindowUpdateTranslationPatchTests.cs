@@ -154,6 +154,31 @@ public sealed class PickTargetWindowUpdateTranslationPatchTests
     }
 
     [Test]
+    public void TranslateCurrentText_TranslatesObservedTitleCaseMarkTargetCommand()
+    {
+        WriteDictionary(
+            ("select", "選択"),
+            ("Mark Target", "対象をマーク"),
+            ("lock", "ロック"));
+        DummyPickTargetWindow.currentText = "{{W|Space}}-select | Mark Target | {{hotkey|F1}} lock";
+
+        var changed = PickTargetWindowUpdateTranslationPatch.TranslateCurrentTextForTests(typeof(DummyPickTargetWindow));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(changed, Is.True);
+            Assert.That(
+                DummyPickTargetWindow.currentText,
+                Is.EqualTo("{{W|Space}}-選択 | 対象をマーク | {{hotkey|F1}} ロック"));
+            Assert.That(
+                DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                    nameof(PickTargetWindowUpdateTranslationPatch),
+                    "PickTarget.CommandBar"),
+                Is.GreaterThan(0));
+        });
+    }
+
+    [Test]
     public void TranslateCurrentText_TranslatesExactPickTargetLabel()
     {
         WriteDictionary(("Dig to where?", "どこまで掘る？"));

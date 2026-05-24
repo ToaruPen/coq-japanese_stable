@@ -29,11 +29,15 @@ public sealed class LevelerTranslationPatchTests
 
     [TestCase(
         "Your genome enters an excited state! Would you like to spend {{rules|4}} mutation points to buy a mutation before rapidly mutating?",
-        "ゲノムが励起状態に入った！急速変異する前に{{rules|4}}変異ポイントを消費してmutationを購入しますか？",
+        "ゲノムが励起状態に入った！急速変異する前に{{rules|4}}変異ポイントを消費して変異を購入しますか？",
         "LevelerBuyMutationPrompt")]
     [TestCase(
         "Your genome enters an excited state! Would you like to spend {{rules|4}} mutation points to buy {{Y|an esper mutation}} before rapidly mutating?",
-        "ゲノムが励起状態に入った！急速変異する前に{{rules|4}}変異ポイントを消費して{{Y|esper mutation}}を購入しますか？",
+        "ゲノムが励起状態に入った！急速変異する前に{{rules|4}}変異ポイントを消費して{{Y|超能力変異}}を購入しますか？",
+        "LevelerBuyMutationPrompt")]
+    [TestCase(
+        "Your genome enters an excited state! Would you like to spend {{rules|4}} mutation points to buy {{Y|a physical mutation}} before rapidly mutating?",
+        "ゲノムが励起状態に入った！急速変異する前に{{rules|4}}変異ポイントを消費して{{Y|身体的変異}}を購入しますか？",
         "LevelerBuyMutationPrompt")]
     [TestCase(
         "You have rapidly advanced {{Y|Teleportation}} by 2 ranks to rank {{C|6}}!",
@@ -41,7 +45,7 @@ public sealed class LevelerTranslationPatchTests
         "LevelerRapidAdvancement")]
     [TestCase(
         "You have no physical mutations to rapidly advance!",
-        "急速に成長させられる身体的mutationsがない！",
+        "急速に成長させられる身体的変異がない！",
         "LevelerNoPhysicalMutations")]
     public void Patch_TranslatesRapidAdvancementPopup_WhenOwnerPatched(
         string source,

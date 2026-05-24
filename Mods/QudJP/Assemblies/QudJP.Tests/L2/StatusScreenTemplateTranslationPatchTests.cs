@@ -64,6 +64,37 @@ public sealed class StatusScreenTemplateTranslationPatchTests
     }
 
     [Test]
+    public void Postfix_TranslatesRuntimeObservedSkillsOwnerTitle_WhenPatched()
+    {
+        WriteDictionary(
+            ("Skill Points (SP): {val}", "スキルポイント (SP): {val}"),
+            ("Skills", "スキル"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummySkillsAndPowersStatusScreen), nameof(DummySkillsAndPowersStatusScreen.UpdateViewFromData)),
+                postfix: new HarmonyMethod(RequireMethod(typeof(SkillsAndPowersStatusScreenTranslationPatch), nameof(SkillsAndPowersStatusScreenTranslationPatch.Postfix))));
+
+            var screen = new DummySkillsAndPowersStatusScreen();
+            screen.UpdateViewFromData();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(screen.nameBlockText.Text, Is.EqualTo("カムシュルウールのスキル"));
+                Assert.That(screen.spText.Text, Is.EqualTo("スキルポイント (SP): 0"));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void Postfix_RecordsSkillPointsOwnerRouteTransform_WithoutUITextSkinSinkObservation_WhenPatched()
     {
         WriteDictionary(("Skill Points (SP): {val}", "スキルポイント (SP): {val}"));

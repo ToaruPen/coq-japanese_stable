@@ -122,10 +122,10 @@ public sealed class WorldModsTextTranslatorTests
         "反重力: 通電中、この品の重量は20%減り、さらに2lbs軽くなる。")]
     [TestCase(
         "Co-processor: When powered, this item grants +2 Intelligence and provides 13 units of compute power to the local lattice.",
-        "共同処理装置: 通電中、知力に+2を与え、局所格子に13ユニットの演算力を供給する。")]
+        "共同処理装置: 通電中、Intelligenceに+2を与え、局所格子に13ユニットの演算力を供給する。")]
     [TestCase(
         "Co-Processor: When powered, this item grants bonus Intelligence and provides compute power to the local lattice.",
-        "共同処理装置: 通電中、知力にボーナスを与え、局所格子に演算力を供給する。")]
+        "共同処理装置: 通電中、Intelligenceにボーナスを与え、局所格子に演算力を供給する。")]
     [TestCase(
         "Counterweighted: Adds +2 to hit.",
         "つり合い調整: 命中に+2のボーナスを与える。")]
@@ -176,10 +176,10 @@ public sealed class WorldModsTextTranslatorTests
         "イッサカリ族との評判-100")]
     [TestCase(
         "{{W|Co-processor: When powered, this item grants +2 Intelligence and provides 13 units of compute power to the local lattice.}}",
-        "{{W|共同処理装置: 通電中、知力に+2を与え、局所格子に13ユニットの演算力を供給する。}}")]
+        "{{W|共同処理装置: 通電中、Intelligenceに+2を与え、局所格子に13ユニットの演算力を供給する。}}")]
     [TestCase(
         "{{rules|Co-Processor: When powered, this item grants bonus Intelligence and provides compute power to the local lattice.}}",
-        "{{rules|共同処理装置: 通電中、知力にボーナスを与え、局所格子に演算力を供給する。}}")]
+        "{{rules|共同処理装置: 通電中、Intelligenceにボーナスを与え、局所格子に演算力を供給する。}}")]
     [TestCase(
         "Offhand Attack Chance: 15%",
         "オフハンド命中率: 15%")]
@@ -227,6 +227,40 @@ public sealed class WorldModsTextTranslatorTests
         {
             Assert.That(ok, Is.True);
             Assert.That(translated, Is.EqualTo(expected));
+        });
+    }
+
+    [Test]
+    public void TryTranslate_PreservesStatContractLabelInTooltipTemplates()
+    {
+        WriteDictionary(
+            "ui-default.ja.json",
+            ("Strength", "筋力"),
+            ("Bonus Cap:", "ボーナス上限:"));
+        WriteDictionary(
+            "world-mods.ja.json",
+            ("Co-Processor: When powered, this item grants {0} {1} and provides {2} units of compute power to the local lattice.", "共同処理装置: 通電中、{1}に{0}を与え、局所格子に{2}ユニットの演算力を供給する。"),
+            ("Intelligence", "知力"));
+
+        var strengthOk = WorldModsTextTranslator.TryTranslate(
+            "Strength Bonus Cap: 4",
+            "DescriptionShortDescriptionPatch",
+            "Description.WorldMods",
+            out var strengthTranslated);
+        var intelligenceOk = WorldModsTextTranslator.TryTranslate(
+            "Co-processor: When powered, this item grants +2 Intelligence and provides 13 units of compute power to the local lattice.",
+            "DescriptionShortDescriptionPatch",
+            "Description.WorldMods",
+            out var intelligenceTranslated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(strengthOk, Is.True);
+            Assert.That(strengthTranslated, Is.EqualTo("Strength ボーナス上限: 4"));
+            Assert.That(intelligenceOk, Is.True);
+            Assert.That(
+                intelligenceTranslated,
+                Is.EqualTo("共同処理装置: 通電中、Intelligenceに+2を与え、局所格子に13ユニットの演算力を供給する。"));
         });
     }
 
@@ -621,6 +655,53 @@ public sealed class WorldModsTextTranslatorTests
             Assert.That(ok, Is.True);
             Assert.That(translated, Is.EqualTo("発動中の効果: べとつく{{B|濡れた}}、浅瀬を進んでいる"));
             Assert.That(Translator.GetMissingKeyHitCountForTests("tarry wet"), Is.EqualTo(0));
+        });
+    }
+
+    [Test]
+    public void TryTranslateActiveEffectsLine_UsesDisplayNameAdjectiveContextForGeneratedEffectParts()
+    {
+        WriteDictionary(
+            "world-mods.ja.json",
+            ("ACTIVE EFFECTS:", "発動中の効果:"));
+        WriteDictionaryWithContext(
+            "ui-displayname-adjectives.ja.json",
+            ("GetDisplayName.Adjective", "bloody", "{{r|血まみれの}}"),
+            ("GetDisplayName.Adjective", "salty", "{{W|塩辛い}}"),
+            ("GetDisplayName.Adjective", "slimy", "{{slimy|粘液質の}}"));
+
+        var ok = StatusLineTranslationHelpers.TryTranslateActiveEffectsLine(
+            "ACTIVE EFFECTS: bloody salty slimy",
+            "AbilityBarAfterRenderTranslationPatch",
+            "AbilityBar.ActiveEffects",
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(translated, Is.EqualTo("発動中の効果: {{r|血まみれの}}{{W|塩辛い}}{{slimy|粘液質の}}"));
+            Assert.That(Translator.GetMissingKeyHitCountForTests("bloody salty slimy"), Is.EqualTo(0));
+        });
+    }
+
+    [Test]
+    public void TryTranslateActiveEffectsLine_TranslatesGeneratedStuckInEffectPart()
+    {
+        WriteDictionary(
+            "world-mods.ja.json",
+            ("ACTIVE EFFECTS:", "発動中の効果:"));
+
+        var ok = StatusLineTranslationHelpers.TryTranslateActiveEffectsLine(
+            "ACTIVE EFFECTS: tarry, stuck in a アスファルトの水たまり",
+            "AbilityBarAfterRenderTranslationPatch",
+            "AbilityBar.ActiveEffects",
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(translated, Is.EqualTo("発動中の効果: tarry、アスファルトの水たまりにはまっている"));
+            Assert.That(Translator.GetMissingKeyHitCountForTests("stuck in a アスファルトの水たまり"), Is.EqualTo(0));
         });
     }
 

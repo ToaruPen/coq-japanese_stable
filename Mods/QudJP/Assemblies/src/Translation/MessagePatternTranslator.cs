@@ -31,9 +31,7 @@ internal static class MessagePatternTranslator
     private static string? leafFileOverride;
     private static string patternLoadSummary = "MessagePatternTranslator: pattern load summary unavailable.";
     private static int loadInvocationCount;
-#if QUDJP_DEV_BUILD
     private const int MaxLogSourceLength = 200;
-#endif
     private const string DefaultLeafFileName = "ui-messagelog-leaf.ja.json";
     internal const int MaxUniquePatterns = 10_000;
     internal const int MaxUniqueRoutes = 1_000;
@@ -79,6 +77,16 @@ internal static class MessagePatternTranslator
 
     internal static string Translate(string? source, string? context = null)
     {
+        return TranslateCore(source, context, logMissingPattern: true);
+    }
+
+    internal static string TranslateIfPatternMatches(string? source, string? context = null)
+    {
+        return TranslateCore(source, context, logMissingPattern: false);
+    }
+
+    private static string TranslateCore(string? source, string? context, bool logMissingPattern)
+    {
         using var _ = Translator.PushLogContext(context);
 
         if (string.IsNullOrEmpty(source))
@@ -102,7 +110,7 @@ internal static class MessagePatternTranslator
             return source!;
         }
 
-        return TranslateStripped(stripped, spans);
+        return TranslateStripped(stripped, spans, logMissingPattern);
     }
 
     private sealed class CachedPatternFile
@@ -232,7 +240,10 @@ internal static class MessagePatternTranslator
         return LocalizationAssetResolver.GetLocalizationPath("Dictionaries/" + DefaultLeafFileName);
     }
 
-    private static string TranslateStripped(string source, IReadOnlyList<ColorSpan>? spans = null)
+    private static string TranslateStripped(
+        string source,
+        IReadOnlyList<ColorSpan>? spans = null,
+        bool logMissingPattern = true)
     {
         if (DeathWrapperFamilyTranslator.TryTranslateMessage(source, spans, out var deathTranslated))
         {
@@ -285,18 +296,19 @@ internal static class MessagePatternTranslator
             return translated;
         }
 
-#if QUDJP_DEV_BUILD
-        if (RuntimeDiagnostics.VerboseProbesEnabled)
+        if (logMissingPattern)
         {
-            var hitCount = RecordMissingPattern(source);
-            if (ObservabilityHelpers.ShouldLogMissingHit(hitCount))
+            RuntimeDiagnostics.RunVerboseProbe(() =>
             {
-                var sanitizedSource = SanitizeForLog(source);
-                RuntimeDiagnostics.LogVerboseProbe(() =>
-                    $"[QudJP] MessagePatternTranslator: no pattern for '{sanitizedSource}' (hit {hitCount}).{Translator.GetCurrentLogContextSuffix()}{Translator.BuildTranslatorStructuredSuffix(Translator.ExtractCurrentRoute(), "message_pattern", sanitizedSource)}");
-            }
+                var hitCount = RecordMissingPattern(source);
+                if (ObservabilityHelpers.ShouldLogMissingHit(hitCount))
+                {
+                    var sanitizedSource = SanitizeForLog(source);
+                    RuntimeDiagnostics.LogVerboseProbe(() =>
+                        $"[QudJP] MessagePatternTranslator: no pattern for '{sanitizedSource}' (hit {hitCount}).{Translator.GetCurrentLogContextSuffix()}{Translator.BuildTranslatorStructuredSuffix(Translator.ExtractCurrentRoute(), "message_pattern", sanitizedSource)}");
+                }
+            });
         }
-#endif
 
         return spans is null || spans.Count == 0
             ? source
@@ -413,7 +425,6 @@ internal static class MessagePatternTranslator
         return new Regex(pattern, RegexOptions.Compiled | RegexOptions.CultureInvariant);
     }
 
-#if QUDJP_DEV_BUILD
     private static int RecordMissingPattern(string source)
     {
         var hitCount = AddOrUpdateCapped(MissingPatternCounts, source, MaxUniquePatterns);
@@ -437,7 +448,6 @@ internal static class MessagePatternTranslator
 
         return counters.AddOrUpdate(OverflowKey, 1, ObservabilityHelpers.IncrementCounter);
     }
-#endif
 
     private static void LogDuplicatePatternSummary(Dictionary<string, int> duplicatePatternCounts)
     {
@@ -455,7 +465,6 @@ internal static class MessagePatternTranslator
         RuntimeDiagnostics.LogImportant(message);
     }
 
-#if QUDJP_DEV_BUILD
     private static string SanitizeForLog(string source)
     {
 #if NET48
@@ -497,7 +506,6 @@ internal static class MessagePatternTranslator
 
         return builder.ToString();
     }
-#endif
 
     private static string ApplyTemplate(string template, Match match, string source, IReadOnlyList<ColorSpan>? spans)
     {

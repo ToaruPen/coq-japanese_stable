@@ -182,6 +182,173 @@ public sealed class UiDictionaryOwnershipTests
         });
     }
 
+    [Test]
+    public void RuntimeObservedFixedUiLeaves_AreOwnedByNarrowDictionaries()
+    {
+        var dictionariesRoot = Path.Combine(
+            TestProjectPaths.GetRepositoryRoot(),
+            "Mods",
+            "QudJP",
+            "Localization",
+            "Dictionaries");
+        var uiDefaultEntries = LoadEntries(Path.Combine(dictionariesRoot, "ui-default.ja.json"));
+        var pickTargetEntries = LoadEntries(Path.Combine(dictionariesRoot, "ui-pick-target.ja.json"));
+        var skillsAndPowersEntries = LoadEntries(Path.Combine(dictionariesRoot, "ui-skillsandpowers.ja.json"));
+        var displayNameAdjectiveEntries = LoadEntries(Path.Combine(dictionariesRoot, "ui-displayname-adjectives.ja.json"));
+        var displayNameAtomicEntries = LoadEntries(Path.Combine(dictionariesRoot, "ui-displayname-atomic.ja.json"));
+        var creatureTitles = LoadCreatureTitles(Path.Combine(
+            TestProjectPaths.GetRepositoryRoot(),
+            "Mods",
+            "QudJP",
+            "Localization",
+            "ObjectBlueprints",
+            "Creatures.jp.xml"));
+        var creatureDescriptions = LoadCreatureDescriptions(Path.Combine(
+            TestProjectPaths.GetRepositoryRoot(),
+            "Mods",
+            "QudJP",
+            "Localization",
+            "ObjectBlueprints",
+            "Creatures.jp.xml"));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                uiDefaultEntries,
+                Has.Some.Matches<DictionaryEntry>(entry =>
+                    string.Equals(entry.Key, "Loading wish commands", StringComparison.Ordinal)
+                    && string.IsNullOrEmpty(entry.Context)
+                    && string.Equals(entry.Text, "wishコマンドを読み込み中", StringComparison.Ordinal)),
+                "WishManager loading status should be owned by ui-default.ja.json.");
+            Assert.That(
+                pickTargetEntries,
+                Has.Some.Matches<DictionaryEntry>(entry =>
+                    string.Equals(entry.Key, "Pick Target", StringComparison.Ordinal)
+                    && string.IsNullOrEmpty(entry.Context)
+                    && string.Equals(entry.Text, "対象を選択", StringComparison.Ordinal)),
+                "PickTarget.ShowPicker title and command bar header should share the ui-pick-target.ja.json leaf.");
+            Assert.That(
+                pickTargetEntries,
+                Has.Some.Matches<DictionaryEntry>(entry =>
+                    string.Equals(entry.Key, "Berate whom?", StringComparison.Ordinal)
+                    && string.IsNullOrEmpty(entry.Context)
+                    && string.Equals(entry.Text, "誰を罵倒する？", StringComparison.Ordinal)),
+                "Persuasion berate target prompt should be owned by ui-pick-target.ja.json.");
+
+            var expectedAbilityManagerFragments = new[]
+            {
+                ("disabled", "無効"),
+                ("astrally tethered", "アストラル束縛"),
+                ("turn cooldown", "ターンのクールダウン"),
+                ("Toggled on", "オン"),
+                ("Toggled off", "オフ"),
+                ("high Willpower", "高い意志力"),
+            };
+            foreach (var (key, text) in expectedAbilityManagerFragments)
+            {
+                Assert.That(
+                    skillsAndPowersEntries,
+                    Has.Some.Matches<DictionaryEntry>(entry =>
+                        string.Equals(entry.Key, key, StringComparison.Ordinal)
+                        && string.Equals(entry.Context, "AbilityManagerLine.Fragment", StringComparison.Ordinal)
+                        && string.Equals(entry.Text, text, StringComparison.Ordinal)),
+                    $"{key} should be owned by AbilityManagerLine fragments in ui-skillsandpowers.ja.json.");
+            }
+
+            var expectedSkillsAndPowersLeaves = new[]
+            {
+                ("Toggle to enable or disable the harvesting of plants", "植物の収穫を有効/無効に切り替える"),
+                ("DV penalty and no jumping removed due to Hurdle skill.", "障害物越えスキルにより、DVペナルティとジャンプ不可は取り除かれている。"),
+            };
+            foreach (var (key, text) in expectedSkillsAndPowersLeaves)
+            {
+                Assert.That(
+                    skillsAndPowersEntries,
+                    Has.Some.Matches<DictionaryEntry>(entry =>
+                        string.Equals(entry.Key, key, StringComparison.Ordinal)
+                        && string.IsNullOrEmpty(entry.Context)
+                        && string.Equals(entry.Text, text, StringComparison.Ordinal)),
+                    $"{key} should be owned by ui-skillsandpowers.ja.json.");
+            }
+
+            var expectedDisplayNameAdjectives = new[]
+            {
+                ("HE", "HE"),
+            };
+            foreach (var (key, text) in expectedDisplayNameAdjectives)
+            {
+                Assert.That(
+                    displayNameAdjectiveEntries,
+                    Has.Some.Matches<DictionaryEntry>(entry =>
+                        string.Equals(entry.Key, key, StringComparison.Ordinal)
+                        && string.Equals(entry.Context, "GetDisplayName.Adjective", StringComparison.Ordinal)
+                        && string.Equals(entry.Text, text, StringComparison.Ordinal)),
+                    $"{key} should be owned by GetDisplayName.Adjective in ui-displayname-adjectives.ja.json.");
+            }
+
+            var expectedDisplayNameAtomicLeaves = new[]
+            {
+                ("bronze long sword", "{{w|青銅の長剣}}"),
+            };
+            foreach (var (key, text) in expectedDisplayNameAtomicLeaves)
+            {
+                Assert.That(
+                    displayNameAtomicEntries,
+                    Has.Some.Matches<DictionaryEntry>(entry =>
+                        string.Equals(entry.Key, key, StringComparison.Ordinal)
+                        && string.IsNullOrEmpty(entry.Context)
+                        && string.Equals(entry.Text, text, StringComparison.Ordinal)),
+                    $"{key} should be owned by ui-displayname-atomic.ja.json so trade/inventory display-name routes do not split it into a partial material translation.");
+            }
+
+            var expectedDisplayNameTitles = new[]
+            {
+                ("disciple of the Coiled Lamb", "GetDisplayName.Title", "巻かれた仔羊の弟子"),
+                ("hindren pariah", "GetDisplayName.Title", "ヒンドレンのパリア"),
+            };
+            foreach (var (key, context, text) in expectedDisplayNameTitles)
+            {
+                Assert.That(
+                    displayNameAtomicEntries,
+                    Has.Some.Matches<DictionaryEntry>(entry =>
+                        string.Equals(entry.Key, key, StringComparison.Ordinal)
+                        && string.Equals(entry.Context, context, StringComparison.Ordinal)
+                        && string.Equals(entry.Text, text, StringComparison.Ordinal)),
+                    $"{key} should be owned by GetDisplayName.Title in ui-displayname-atomic.ja.json.");
+            }
+
+            Assert.That(
+                creatureTitles,
+                Has.Some.Matches<CreatureTitle>(entry =>
+                    string.Equals(entry.ObjectName, "Lulihart", StringComparison.Ordinal)
+                    && string.Equals(entry.Kind, "Ordinary", StringComparison.Ordinal)
+                    && string.Equals(entry.Text, "ヒンドレンのパリア", StringComparison.Ordinal)),
+                "Lulihart's localized blueprint title should not leave the runtime display name to translate hindren pariah.");
+            Assert.That(
+                creatureTitles,
+                Has.Some.Matches<CreatureTitle>(entry =>
+                    string.Equals(entry.ObjectName, "Tszappur", StringComparison.Ordinal)
+                    && string.Equals(entry.Kind, "Primary", StringComparison.Ordinal)
+                    && string.Equals(entry.Text, "巻かれた仔羊の弟子", StringComparison.Ordinal)),
+                "Tszappur's localized blueprint title should not leave the runtime display name to translate disciple of the Coiled Lamb.");
+
+            var runtimeObservedDescriptionResidues = new[]
+            {
+                "galvanize",
+                "moon time",
+                " flare ",
+            };
+            foreach (var residue in runtimeObservedDescriptionResidues)
+            {
+                Assert.That(
+                    creatureDescriptions,
+                    Has.None.Matches<CreatureDescription>(entry =>
+                        entry.ShortDescription.IndexOf(residue, StringComparison.Ordinal) >= 0),
+                    $"Creature descriptions should not retain runtime-observed English residue: {residue}");
+            }
+        });
+    }
+
     private static IReadOnlyList<DictionaryEntry> LoadEntries(string path)
     {
         using var document = JsonDocument.Parse(File.ReadAllText(path));
@@ -203,5 +370,39 @@ public sealed class UiDictionaryOwnershipTests
             .ToArray();
     }
 
+    private static IReadOnlyList<CreatureTitle> LoadCreatureTitles(string path)
+    {
+        var document = XDocument.Load(path);
+        return document.Descendants("object")
+            .SelectMany(static element =>
+            {
+                var objectName = (string?)element.Attribute("Name") ?? string.Empty;
+                return element.Elements("part")
+                    .Where(static part => string.Equals((string?)part.Attribute("Name"), "Titles", StringComparison.Ordinal))
+                    .SelectMany(part => part.Attributes()
+                        .Where(static attribute => !string.Equals(attribute.Name.LocalName, "Name", StringComparison.Ordinal))
+                        .Select(attribute => new CreatureTitle(objectName, attribute.Name.LocalName, attribute.Value)));
+            })
+            .ToArray();
+    }
+
+    private static IReadOnlyList<CreatureDescription> LoadCreatureDescriptions(string path)
+    {
+        var document = XDocument.Load(path);
+        return document.Descendants("object")
+            .SelectMany(static element =>
+            {
+                var objectName = (string?)element.Attribute("Name") ?? string.Empty;
+                return element.Elements("part")
+                    .Where(static part => string.Equals((string?)part.Attribute("Name"), "Description", StringComparison.Ordinal))
+                    .Select(part => new CreatureDescription(objectName, (string?)part.Attribute("Short") ?? string.Empty));
+            })
+            .ToArray();
+    }
+
     private sealed record DictionaryEntry(string Key, string Context, string Text);
+
+    private sealed record CreatureTitle(string ObjectName, string Kind, string Text);
+
+    private sealed record CreatureDescription(string ObjectName, string ShortDescription);
 }

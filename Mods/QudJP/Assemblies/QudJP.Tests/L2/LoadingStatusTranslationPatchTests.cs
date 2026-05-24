@@ -144,6 +144,40 @@ public sealed class LoadingStatusTranslationPatchTests
     }
 
     [Test]
+    public void Prefix_TranslatesDisassemblyProgressStatus_WhenPatched()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyLoadingTarget), nameof(DummyLoadingTarget.SetLoadingStatus)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(LoadingStatusTranslationPatch), nameof(LoadingStatusTranslationPatch.Prefix))));
+
+            DummyLoadingTarget.SetLoadingStatus("Disassembled 1 item of 2...", waitForUiUpdate: true);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyLoadingTarget.LastDescription, Is.EqualTo("分解済み 1/2 アイテム..."));
+                Assert.That(DummyLoadingTarget.LastWaitForUiUpdate, Is.True);
+            });
+
+            DummyLoadingTarget.SetLoadingStatus("Disassembled 2 items of 12...", waitForUiUpdate: false);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyLoadingTarget.LastDescription, Is.EqualTo("分解済み 2/12 アイテム..."));
+                Assert.That(DummyLoadingTarget.LastWaitForUiUpdate, Is.False);
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void Prefix_LeavesUnknownDescriptionUnchanged_WhenPatched()
     {
         var harmonyId = CreateHarmonyId();

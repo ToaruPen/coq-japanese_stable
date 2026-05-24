@@ -755,13 +755,13 @@ internal static class WorldModsTextTranslator
 
     private static string? BuildStrengthBonusCapTemplate()
     {
-        if (!StringHelpers.TryGetTranslationExactOrLowerAscii("Strength", out var strength)
-            || !StringHelpers.TryGetTranslationExactOrLowerAscii("Bonus Cap:", out var bonusCap))
+        if (!StringHelpers.TryGetTranslationExactOrLowerAscii("Bonus Cap:", out var bonusCap))
         {
             return null;
         }
 
-        return strength + bonusCap + " {0}";
+        // Tooltip stat names are game contract labels; keep Strength/Intelligence/etc. in English.
+        return "Strength " + bonusCap + " {0}";
     }
 
     private static string? BuildWeaponClassTemplate()
@@ -1654,6 +1654,11 @@ internal static class WorldModsTextTranslator
 
     private static string TranslateTemplateCapture(string source)
     {
+        if (IsStatContractLabel(source))
+        {
+            return source;
+        }
+
         using var _ = Translator.PushMissingKeyLoggingSuppression(true);
         var scoped = ScopedDictionaryLookup.TranslateExactOrLowerAscii(source, WorldModsDictionaryFile);
         if (scoped is not null)
@@ -1664,6 +1669,16 @@ internal static class WorldModsTextTranslator
         return StringHelpers.TryGetTranslationExactOrLowerAscii(source, out var translated)
             ? translated
             : source;
+    }
+
+    private static bool IsStatContractLabel(string source)
+    {
+        return source.Trim() switch
+        {
+            "Strength" or "Agility" or "Toughness" or "Intelligence" or "Willpower" or "Ego" => true,
+            "STR" or "AGI" or "TOU" or "INT" or "WIL" or "EGO" => true,
+            _ => false,
+        };
     }
 
     private static readonly Regex WhitespacePattern = new Regex(

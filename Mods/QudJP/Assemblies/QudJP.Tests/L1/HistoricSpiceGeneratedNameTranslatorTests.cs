@@ -369,6 +369,36 @@ public sealed class HistoricSpiceGeneratedNameTranslatorTests
         });
     }
 
+    [TestCase("antelopegift", "アンテロープの賜物")]
+    [TestCase("fishgift", "魚の賜物")]
+    [TestCase("antelopefavor", "アンテロープの寵愛")]
+    [TestCase("antelopegrant", "アンテロープの授与")]
+    [TestCase("wardensdower", "監視官同胞団の持参財")]
+    [TestCase("fishboon", "魚の恩寵")]
+    [TestCase("fishbane", "魚の災厄")]
+    public void TryTranslateHistoricItemName_SplitsCompactRootAndBlessing(string source, string expected)
+    {
+        WriteDictionaryFile(
+            "Scoped/historyspice-common.ja.json",
+            ("antelope", "アンテロープ"),
+            ("fish", "魚"),
+            ("wardens", "監視官同胞団"),
+            ("gift", "賜物"),
+            ("favor", "寵愛"),
+            ("grant", "授与"),
+            ("dower", "持参財"),
+            ("boon", "恩寵"),
+            ("bane", "災厄"));
+
+        var ok = HistoricSpiceGeneratedNameTranslator.TryTranslateHistoricItemName(source, out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(translated, Is.EqualTo(expected));
+        });
+    }
+
     [Test]
     public void TryTranslateCapture_UnknownInput_ReturnsFalseAndOriginal()
     {

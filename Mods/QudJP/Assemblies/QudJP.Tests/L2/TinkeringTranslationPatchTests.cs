@@ -187,6 +187,41 @@ public sealed partial class Issue201OtherUiBindingPatchTests
     }
 
     [Test]
+    public void TinkeringDetailsLinePostfix_TranslatesRuntimeObservedDescriptionLine_WhenPatched()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyTinkeringDetailsLineTarget), nameof(DummyTinkeringDetailsLineTarget.setData)),
+                postfix: new HarmonyMethod(RequireMethod(typeof(TinkeringDetailsLineTranslationPatch), nameof(TinkeringDetailsLineTranslationPatch.Postfix))));
+
+            var target = new DummyTinkeringDetailsLineTarget();
+            target.setData(new DummyTinkeringLineDataTarget
+            {
+                data = new DummyTinkeringRecipeData
+                {
+                    Type = "Build",
+                    DisplayName = "build item",
+                    UnclippedDescription = "This item's AV and DV modifiers are being averaged across all body parts of the same type.",
+                },
+            });
+
+            Assert.That(
+                target.descriptionText.Text,
+                Is.EqualTo("このアイテムのAVとDV修正は同じ種類の全身体部位で平均化されている。"));
+            Assert.That(
+                DynamicTextObservability.GetRouteFamilyHitCountForTests(nameof(TinkeringDetailsLineTranslationPatch), "TinkeringDetails.DescriptionText"),
+                Is.GreaterThan(0));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void TinkeringLinePostfix_PreservesColoredBitCostTags_WhenItemLineDoesNotNeedFragmentTranslation()
     {
         var harmonyId = CreateHarmonyId();

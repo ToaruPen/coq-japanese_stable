@@ -17,6 +17,9 @@ public static class EffectMobilityBlockTranslationPatch
     private static readonly Regex MobilityBlockPattern = new(
         "^You are (?<status>.+)!$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex StuckInStatusPattern = new(
+        "^stuck in (?:the |a |an )?(?<target>.+)$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     [ThreadStatic]
     private static int activeDepth;
@@ -150,6 +153,14 @@ public static class EffectMobilityBlockTranslationPatch
                 suffix = "されている！";
                 return true;
             default:
+                var stuckInMatch = StuckInStatusPattern.Match(source.Trim());
+                if (stuckInMatch.Success)
+                {
+                    translated = stuckInMatch.Groups["target"].Value + "にはまっている";
+                    suffix = "！";
+                    return true;
+                }
+
                 translated = string.Empty;
                 suffix = string.Empty;
                 return false;

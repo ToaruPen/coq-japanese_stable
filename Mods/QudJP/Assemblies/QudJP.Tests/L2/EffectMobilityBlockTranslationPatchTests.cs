@@ -21,6 +21,8 @@ public sealed class EffectMobilityBlockTranslationPatchTests
     [TestCase("You are {{|immobilized}}!", "{{|移動不能}}だ！")]
     [TestCase("You are stuck!", "拘束されている！")]
     [TestCase("You are {{Y|stuck}}!", "{{Y|拘束}}されている！")]
+    [TestCase("You are stuck in a アスファルトの水たまり&y!", "アスファルトの水たまりにはまっている！")]
+    [TestCase("You are {{Y|stuck in a アスファルトの水たまり}}!", "{{Y|アスファルトの水たまりにはまっている}}！")]
     public void EffectMobilityBlock_TranslatesQueuedMobilityBlockMessages_WhenOwnerPatched(
         string source,
         string expected)
@@ -32,6 +34,8 @@ public sealed class EffectMobilityBlockTranslationPatchTests
     [TestCase("You are {{|immobilized}}!", "{{|移動不能}}だ！", true)]
     [TestCase("You are stuck!", "拘束されている！", false)]
     [TestCase("You are {{Y|stuck}}!", "{{Y|拘束}}されている！", false)]
+    [TestCase("You are stuck in a アスファルトの水たまり!", "アスファルトの水たまりにはまっている！", false)]
+    [TestCase("You are {{Y|stuck in a アスファルトの水たまり}}!", "{{Y|アスファルトの水たまりにはまっている}}！", false)]
     public void EffectMobilityBlock_TranslatesPopupMobilityBlockMessages_WhenOwnerPatched(
         string source,
         string expected,

@@ -6,10 +6,13 @@ namespace QudJP.Tests.DummyTargets;
 
 internal sealed class DummySkillsAndPowersStatusScreen
 {
+    public DummyUITextSkin nameBlockText = new DummyUITextSkin();
+
     public DummyUITextSkin spText = new DummyUITextSkin();
 
     public void UpdateViewFromData()
     {
+        nameBlockText.SetText("カムシュルウールの Skills");
         spText.SetText("Skill Points (SP): 0");
     }
 }

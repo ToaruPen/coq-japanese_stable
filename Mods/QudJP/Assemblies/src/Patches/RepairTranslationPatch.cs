@@ -514,7 +514,49 @@ public static class RepairTranslationPatch
 
     private static string RestoreDisplayNameCapture(Match match, IReadOnlyList<ColorSpan> spans, string groupName)
     {
-        return DisplayNameCaptureTranslator.TranslatePreservingColors(RestoreCapture(match, spans, groupName), Context);
+        var restored = RestoreCapture(match, spans, groupName);
+        return DisplayNameCaptureTranslator.TranslatePreservingColors(StripLeadingRepairPossessive(restored), Context);
+    }
+
+    private static string StripLeadingRepairPossessive(string source)
+    {
+        var direct = StripLeadingRepairPossessiveVisible(source);
+        if (!string.Equals(direct, source, StringComparison.Ordinal))
+        {
+            return direct;
+        }
+
+        return ColorAwareTranslationComposer.TranslatePreservingColors(source, StripLeadingRepairPossessiveVisible);
+    }
+
+    private static string StripLeadingRepairPossessiveVisible(string source)
+    {
+        if (source.StartsWith("your ", StringComparison.Ordinal))
+        {
+            return source.Substring("your ".Length);
+        }
+
+        if (source.StartsWith("his ", StringComparison.Ordinal))
+        {
+            return source.Substring("his ".Length);
+        }
+
+        if (source.StartsWith("her ", StringComparison.Ordinal))
+        {
+            return source.Substring("her ".Length);
+        }
+
+        if (source.StartsWith("its ", StringComparison.Ordinal))
+        {
+            return source.Substring("its ".Length);
+        }
+
+        if (source.StartsWith("their ", StringComparison.Ordinal))
+        {
+            return source.Substring("their ".Length);
+        }
+
+        return source;
     }
 
     private static string RestoreWholeSourceBoundary(

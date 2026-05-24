@@ -32,6 +32,9 @@ public sealed class ActivatedAbilitiesAddAbilityPopupTranslationPatchTests
         "You have gained the activated ability {{Y|Discharge [3 charge]}}.",
         "起動アビリティ {{Y|放電 [3チャージ]}} を得た。")]
     [TestCase(
+        "You have gained the activated ability {{Y|Deactivate ナインフォールドのブーツ}}.",
+        "起動アビリティ {{Y|ナインフォールドのブーツを停止}} を得た。")]
+    [TestCase(
         "You have gained the activated ability {{Y|Unknown Ability}}.",
         "起動アビリティ {{Y|Unknown Ability}} を得た。")]
     public void AddAbility_TranslatesGainedAbilityPopup_WhenOwnerPatched(string source, string expected)

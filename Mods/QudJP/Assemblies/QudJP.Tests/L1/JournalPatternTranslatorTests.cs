@@ -423,6 +423,19 @@ public sealed class JournalPatternTranslatorTests
     }
 
     [Test]
+    public void Translate_TranslatesCompactHistoricItemNameInsideCommaSeparatedCapture()
+    {
+        WriteDictionaryFile(
+            Path.Combine("Scoped", "historyspice-common.ja.json"),
+            new[] { ("antelope", "アンテロープ"), ("gift", "賜物") });
+        WritePatternDictionary(("^A wedding gift they called (.+?)\\.$", "婚礼の贈り物は{t0}と呼ばれた。"));
+
+        var translated = JournalPatternTranslator.Translate("A wedding gift they called Betrothedecus, antelopegift.");
+
+        Assert.That(translated, Is.EqualTo("婚礼の贈り物はBetrothedecus、アンテロープの賜物と呼ばれた。"));
+    }
+
+    [Test]
     public void Translate_TranslatesAbdicateSuccessorAnnalWithExpandedHistorySpiceCaptures()
     {
         WriteDictionaryFile(
@@ -694,6 +707,12 @@ public sealed class JournalPatternTranslatorTests
                 Assert.That(
                     JournalPatternTranslator.Translate("<spice.commonPhrases.intrepid.!random.capitalize> =name= recovered Stopsvalinn, a historic relic once thought lost to the sands of time."),
                     Is.EqualTo("<spice.commonPhrases.intrepid.!random.capitalize>=name=は、かつて時の砂に失われたと思われていた歴史的遺物ストップスヴァリンを回収した。"));
+                Assert.That(
+                    JournalPatternTranslator.Translate("<spice.commonPhrases.intrepid.!random.capitalize> =name= discovered アラアッラワン, once thought lost to the sands of time."),
+                    Is.EqualTo("<spice.commonPhrases.intrepid.!random.capitalize>=name=は、かつて時の砂に失われたと思われていたアラアッラワンを発見した。"));
+                Assert.That(
+                    JournalPatternTranslator.Translate("In =year=, =name= won a decisive victory against the combined force of スナップジョー from the 密林 at the bloody Battle of アラアッラワン."),
+                    Is.EqualTo("=year=、=name=はアラアッラワンの血塗られた戦いで、密林のスナップジョー連合軍に決定的勝利を収めた。"));
                 Assert.That(
                     JournalPatternTranslator.Translate("In an excavation at a site of deep history near Joppa, =name= recovered Stopsvalinn, the historic relic once thought lost to the sands of time."),
                     Is.EqualTo("ジョッパ近くの深い歴史を持つ場所での発掘において、=name=はかつて時の砂に失われたと思われていた歴史的遺物ストップスヴァリンを回収した。"));

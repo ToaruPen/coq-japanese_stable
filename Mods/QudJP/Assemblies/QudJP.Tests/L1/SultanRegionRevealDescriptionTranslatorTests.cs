@@ -41,6 +41,23 @@ public sealed class SultanRegionRevealDescriptionTranslatorTests
     }
 
     [Test]
+    public void TryTranslate_TranslatesRuntimeObservedStargazerLostProvinceFrame()
+    {
+        const string source =
+            "Stargazers plied their craft in isolation in the lost province whose ruins lie deep within an earth-cleft.";
+
+        var translated = SultanRegionRevealDescriptionTranslator.TryTranslate(source, out var result);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.True);
+            Assert.That(
+                result,
+                Is.EqualTo("失われた州では星見たちが孤独に技を磨いていた。その遺跡は大地の裂け目の奥深くに横たわっている。"));
+        });
+    }
+
+    [Test]
     public void TryTranslate_PreservesWholeSourceColorWrapper()
     {
         const string source =

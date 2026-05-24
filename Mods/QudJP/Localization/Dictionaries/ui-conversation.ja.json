@@ -25,6 +25,21 @@
       "text": "生きて飲め。"
     },
     {
+      "key": "Glory to Shekhinah.",
+      "context": "ConversationTemplate.ConvertSpawner.Append",
+      "text": "シェキーナに栄光あれ。"
+    },
+    {
+      "key": "May the ground shake but the Six Day Stilt never tumble!",
+      "context": "ConversationTemplate.ConvertSpawner.Append",
+      "text": "地は揺れても六日のスティルトは決して倒れん！"
+    },
+    {
+      "key": "Praise our argent Fathers! Wisest of all beings.",
+      "context": "ConversationTemplate.ConvertSpawner.Append",
+      "text": "銀白の父たちを讃えよ！ あらゆる存在の中で最も賢き者たちよ。"
+    },
+    {
       "key": "*does not react*",
       "context": "ConversationTemplate.SimpleConversation.Body.NoReaction",
       "text": "*反応しない*"

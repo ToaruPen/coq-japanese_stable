@@ -339,6 +339,11 @@
       "route": "emit-message"
     },
     {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) picks up (?:the |a |an )?(.+?)[.!]?$",
+      "template": "{t0}は{t1}を拾った",
+      "route": "emit-message"
+    },
+    {
       "pattern": "^You drop (.+?)[.!]?$",
       "template": "{0}を落とした",
       "route": "emit-message"
@@ -484,7 +489,7 @@
       "route": "emit-message"
     },
     {
-      "pattern": "^(?:The |the |[Aa]n? )?(.+) misses you with their (.+?)[.!] \\[(.+?) vs (.+?)\\]$",
+      "pattern": "^(?:The |the |[Aa]n? )?(.+) miss(?:es)? you with their (.+?)[.!] \\[(.+?) vs (.+?)\\]$",
       "template": "{0}の{1}は外れた。[{2} vs {3}]",
       "route": "emit-message"
     },
@@ -924,7 +929,7 @@
       "route": "emit-message"
     },
     {
-      "pattern": "^(?:The |the |[Aa]n? )?(.+?)(?:'s|s'|の) carapace loosens[.!]?$",
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?)(?:'s|s'|の)\\s*(?:carapace|甲殻) loosens[.!]?$",
       "template": "{0}の甲殻が緩んだ",
       "route": "emit-message"
     },
@@ -1074,8 +1079,23 @@
       "route": "emit-message"
     },
     {
-      "pattern": "^(?:The |the )?(.+?) harvests a (.+?)[.!]?$",
+      "pattern": "^(?:The |the )?(.+?) harvests (?:a |an |some )?(.+?)[.!]?$",
       "template": "{0}は{1}を収穫した。",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^(north|south|east|west|northeast|northwest|southeast|southwest|North|South|East|West|Northeast|Northwest|Southeast|Southwest)から(?:some |a |an )?(.+?)を収穫した$",
+      "template": "{t0}から{1}を収穫した",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^Your (.+?) is already fully loaded[.!]?$",
+      "template": "{0}はすでに完全に装填されている。",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) は二つに分裂した！$",
+      "template": "{0}は二つに分裂した！",
       "route": "emit-message"
     },
     {
@@ -1114,8 +1134,13 @@
       "route": "emit-message"
     },
     {
-      "pattern": "^You disassemble the (.+?)\\. You receive tinkering bits <(.+?)>\\.[.!]?$",
+      "pattern": "^You disassemble (?:the |your )(.+?)\\. You receive tinkering bits <(.+?)>\\.[.!]?$",
       "template": "{0}を分解し、修理ビット<{1}>を受け取った。",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^(.+?) (to the north|to the south|to the east|to the west|to the northeast|to the northwest|to the southeast|to the southwest|here)を分解し、修理ビット<(.+?)>を受け取った。$",
+      "template": "{0}（{t1}）を分解し、修理ビット<{2}>を受け取った。",
       "route": "emit-message"
     },
     {
@@ -1157,6 +1182,26 @@
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) not bleeding[.!]?$",
       "template": "{0}は出血していない",
       "route": "message-frame"
+    },
+    {
+      "pattern": "^You notice some ruins nearby\\. Would you like to investigate\\?$",
+      "template": "近くに遺跡があることに気づいた。調査しますか？",
+      "route": "popup"
+    },
+    {
+      "pattern": "^You smell roasted boar nearby\\. Would you like to investigate\\?$",
+      "template": "近くで焼いたイノシシの匂いがする。調査しますか？",
+      "route": "popup"
+    },
+    {
+      "pattern": "^You are carrying too much to move!$",
+      "template": "持ちすぎて動けない！",
+      "route": "popup"
+    },
+    {
+      "pattern": "^There's nothing in that\\. Would you like to store an item\\?$",
+      "template": "その中には何も入っていない。アイテムを預けるか？",
+      "route": "popup"
     },
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?) (?:is|are) not owned by you, and trying to repair (.+?) will be considered an act of theft\\. Are you sure\\?$",
@@ -1494,6 +1539,11 @@
       "route": "emit-message"
     },
     {
+      "pattern": "^Your\\s+unlocks (?:the |a |an )?(.+?)[.!]?$",
+      "template": "{0}の鍵が開いた",
+      "route": "emit-message"
+    },
+    {
       "pattern": "^You lay your hand upon (?:the |a |an )?(.+?) and draw forth (?:his|her|its|their) passcode\\. You enter the code and (?:the |a |an )?(.+?) (?:unlocks|unlock)[.!]?$",
       "template": "{0}に手を当ててパスコードを読み取った。コードを入力すると{1}の鍵が開いた",
       "route": "emit-message"
@@ -1534,6 +1584,16 @@
       "route": "emit-message"
     },
     {
+      "pattern": "^(.+?) to the (north|south|east|west|northeast|northwest|southeast|southwest)を漁ったが、何も見つからなかった$",
+      "template": "{t1}で{0}を漁ったが、何も見つからなかった",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^(.+?) to the (north|south|east|west|northeast|northwest|southeast|southwest)を漁り、(.+?)を見つけた$",
+      "template": "{t1}で{0}を漁り、{2}を見つけた",
+      "route": "emit-message"
+    },
+    {
       "pattern": "^Somebody rifles through (?:the |a |an )?(.+?)[.!]?$",
       "template": "誰かが{0}を漁った",
       "route": "emit-message"
@@ -1541,6 +1601,11 @@
     {
       "pattern": "^You butcher (?:a |an |the )?(.+?) from (?:the |a |an )?(.+?)[.!]?$",
       "template": "{1}から{0}を解体した",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^You butcher (?:the |a |an )?(.+?) into (?:a set of |a |an |the )?(.+?)[.!]?$",
+      "template": "あなたは{0}を解体して{1}を得た。",
       "route": "emit-message"
     },
     {
@@ -1624,7 +1689,7 @@
       "route": "emit-message"
     },
     {
-      "pattern": "^(?:The |the |[Aa]n? )?(.+?)(?:'s|s') glow dims until it's extinguished[.!]?$",
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?)(?:'s|s'|の)\\s*glow dims until it's extinguished[.!]?$",
       "template": "{0}の輝きが消えるまで薄れた",
       "route": "emit-message"
     },
@@ -2124,6 +2189,11 @@
       "route": "journal"
     },
     {
+      "pattern": "^説教者は言う、'(.+)$",
+      "template": "説教者は言う、「{0}",
+      "route": "emit-message"
+    },
+    {
       "pattern": "^Zone build failure:(.+)$",
       "template": "ゾーン構築失敗:{0}",
       "route": "emit-message"
@@ -2131,6 +2201,11 @@
     {
       "pattern": "^(?:An|The) electrical arc leaps from (?:the |a |an )?(.+?) toward (.+?)!$",
       "template": "電弧が{0}から{1}へ走った！",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^(?:An|The) electrical arc leaps toward you!$",
+      "template": "電弧があなたへ走った！",
       "route": "emit-message"
     },
     {

@@ -103,6 +103,7 @@ public sealed class MessageLogProducerTranslationHelpersTests
     [TestCase("the kitchen of Joppa", "ジョッパの厨房")]
     [TestCase("the distillery of Joppa", "ジョッパの蒸留所")]
     [TestCase("the organ market of Joppa", "ジョッパの臓器市場")]
+    [TestCase("lair of Joppa", "ジョッパの巣")]
     public void TryTranslateZoneDisplayName_TranslatesLairTemplates(string source, string expected)
     {
         WriteExactDictionary(("Joppa", "ジョッパ"));
@@ -116,6 +117,22 @@ public sealed class MessageLogProducerTranslationHelpersTests
         {
             Assert.That(translated, Is.True);
             Assert.That(result, Is.EqualTo(expected));
+        });
+    }
+
+    [Test]
+    public void TryTranslateZoneDisplayName_TranslatesRuntimeObservedStatusBarLairSegment()
+    {
+        var translated = MessageLogProducerTranslationHelpers.TryTranslateZoneDisplayName(
+            "ジャングル, lair of マファ・ファフンン, 伝説の膨れヒル, 地表",
+            "PlayerStatusBarProducerTranslationPatch.Zone",
+            out var result);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.True);
+            Assert.That(result, Is.EqualTo("ジャングル, マファ・ファフンンの巣, 伝説の膨れヒル, 地表"));
+            Assert.That(Translator.GetMissingKeyHitCountForTests("ジャングル, lair of マファ・ファフンン, 伝説の膨れヒル, 地表"), Is.EqualTo(0));
         });
     }
 

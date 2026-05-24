@@ -154,7 +154,11 @@ public sealed class JournalTextTranslatorTests
             ("カルクヘタラ", "カルクヘタラ"),
             ("Omonporch", "オモンポーチ"),
             ("Red Rock", "レッドロック"),
+            ("The Yd Freehold", "イド・フリーホールド"),
+            ("the Six Day Stilt", "六日のスティルト"),
             ("east", "東"),
+            ("west", "西"),
+            ("north", "北"),
             ("south", "南"));
         WriteHistorySpiceDictionary(
             ("stargazer", "星見"),
@@ -169,6 +173,12 @@ public sealed class JournalTextTranslatorTests
             AssertTranslatedMapNote(
                 "トゥキスフ, Stargazerhome\n7 parasangs east of Red Rock",
                 "\u0001トゥキスフ, 星見の家\nレッドロックから7パラサング東");
+            AssertTranslatedMapNote(
+                "アラルスイシャン\n1 parasang west and 2 parasangs north of the Yd Freehold",
+                "\u0001アラルスイシャン\nイド・フリーホールドから1パラサング西、2パラサング北");
+            AssertTranslatedMapNote(
+                "ドロマドの隊商\nnear the Six Day Stilt",
+                "\u0001ドロマドの隊商\n六日のスティルトの近く");
         });
     }
 

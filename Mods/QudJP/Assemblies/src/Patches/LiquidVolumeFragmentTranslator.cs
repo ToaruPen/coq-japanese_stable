@@ -1,11 +1,94 @@
 using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace QudJP.Patches;
 
 internal static class LiquidVolumeFragmentTranslator
 {
+    private const string LiquidContext = "XRL.Liquids";
+    private const string LiquidAdjectiveContext = "XRL.Liquids.Adjective";
+    private const string LiquidDictionaryFile = "ui-liquids.ja.json";
+    private const string LiquidAdjectiveDictionaryFile = "ui-liquid-adjectives.ja.json";
+    private const string OpenDirectionPattern =
+        "to the north|to the south|to the east|to the west|to the northeast|to the northwest|to the southeast|to the southwest|the north|the south|the east|the west|the northeast|the northwest|the southeast|the southwest|north|south|east|west|northeast|northwest|southeast|southwest|nearby|above|below|here|somewhere";
+
+    private static readonly IReadOnlyDictionary<string, string> LiquidNameFallbacks =
+        new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["acid"] = "酸",
+            ["algae"] = "藻",
+            ["asphalt"] = "アスファルト",
+            ["black ooze"] = "黒い軟泥",
+            ["blood"] = "血",
+            ["brain brine"] = "脳髄汁",
+            ["brain-brine"] = "脳髄汁",
+            ["brown sludge"] = "茶色い汚泥",
+            ["cider"] = "サイダー",
+            ["cloning draught"] = "クローン薬液",
+            ["cloning-draught"] = "クローン薬液",
+            ["convalessence"] = "コンバレセンス",
+            ["fresh water"] = "真水",
+            ["gel"] = "ゲル",
+            ["green goo"] = "緑の粘液",
+            ["goo"] = "粘液",
+            ["honey"] = "はちみつ",
+            ["ink"] = "インク",
+            ["lava"] = "溶岩",
+            ["molten wax"] = "溶けた蝋",
+            ["neutron flux"] = "中性子フラックス",
+            ["oil"] = "油",
+            ["ooze"] = "軟泥",
+            ["primordial soup"] = "原始スープ",
+            ["putrescence"] = "腐敗液",
+            ["salt"] = "塩",
+            ["salty water"] = "塩水",
+            ["sap"] = "樹液",
+            ["slime"] = "粘液",
+            ["sludge"] = "汚泥",
+            ["soup"] = "原始スープ",
+            ["sunslag"] = "サンスラグ",
+            ["tar"] = "タール",
+            ["warm static"] = "ウォームスタティック",
+            ["water"] = "水",
+            ["wax"] = "蝋",
+            ["wine"] = "ワイン",
+        };
+
+    private static readonly IReadOnlyDictionary<string, string> LiquidAdjectiveFallbacks =
+        new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["acidic"] = "酸性の",
+            ["algal"] = "藻質の",
+            ["bloody"] = "血混じりの",
+            ["brackish"] = "塩気混じりの",
+            ["dilute"] = "薄めの",
+            ["entropic"] = "エントロピー性の",
+            ["gooey"] = "粘つく",
+            ["homogenized"] = "均質化された",
+            ["honeyed"] = "蜜味の",
+            ["inky"] = "インク混じりの",
+            ["lush"] = "豊潤な",
+            ["luminous"] = "発光する",
+            ["magmatic"] = "マグマ質の",
+            ["nervous"] = "神経性の",
+            ["neutronic"] = "中性子質の",
+            ["oily"] = "油っぽい",
+            ["oozing"] = "軟泥状の",
+            ["putrid"] = "腐敗した",
+            ["radiant"] = "輝く",
+            ["salty"] = "塩気のある",
+            ["slimy"] = "粘液質の",
+            ["sludgy"] = "汚泥状の",
+            ["soupy"] = "スープ状の",
+            ["spiced"] = "スパイス入りの",
+            ["sugary"] = "甘い",
+            ["tarry"] = "タール質の",
+            ["unctuous"] = "ぬるぬるした",
+            ["waxen"] = "蝋質の",
+        };
+
     private static readonly IReadOnlyList<TranslationRule> Rules =
     [
         new(
@@ -78,7 +161,7 @@ internal static class LiquidVolumeFragmentTranslator
             static (match, spans) => string.Concat(
                 TranslateTarget(match.Groups["target"], spans),
                 "はあなたの所有物ではない。",
-                RestoreVisible(match.Groups["liquid"], spans),
+                TranslateLiquid(match.Groups["liquid"], spans),
                 "を本当にそこから使いますか？")),
         new(
             "NowStatus",
@@ -143,7 +226,7 @@ internal static class LiquidVolumeFragmentTranslator
                 "^You are able to collect (?<amount>\\d+) drams? of (?<liquid>.+?)\\. Are you sure you want to\\?$",
                 RegexOptions.CultureInvariant | RegexOptions.Compiled),
             static (match, spans) => string.Concat(
-                RestoreVisible(match.Groups["liquid"], spans),
+                TranslateLiquid(match.Groups["liquid"], spans),
                 "を",
                 match.Groups["amount"].Value,
                 "ドラム集められる。本当にそうしますか？")),
@@ -182,7 +265,7 @@ internal static class LiquidVolumeFragmentTranslator
         new(
             "CollectMessage",
             new Regex(
-                "^You collect (?<amount>\\d+) drams? of (?<liquid>.+?)(?:(?: (?<openDirection>to the north|to the south|to the east|to the west|to the northeast|to the northwest|to the southeast|to the southwest|nearby|above|below|here|somewhere))|(?: from (?<source>.+?) (?<sourceDirection>to the north|to the south|to the east|to the west|to the northeast|to the northwest|to the southeast|to the southwest|nearby|above|below|here|somewhere)))?(?: in (?<storage>.+?))?\\.$",
+                "^You collect (?<amount>\\d+) drams? of (?<liquid>.+?)(?:(?: from (?<fromOpenDirection>" + OpenDirectionPattern + "))|(?: (?<openDirection>" + OpenDirectionPattern + "))|(?: from (?<source>.+?) (?<sourceDirection>" + OpenDirectionPattern + ")))?(?: in (?<storage>.+?))?\\.$",
                 RegexOptions.CultureInvariant | RegexOptions.Compiled),
             BuildCollectMessage),
         new(
@@ -271,7 +354,7 @@ internal static class LiquidVolumeFragmentTranslator
         IReadOnlyList<ColorSpan> spans)
     {
         return string.Concat(
-            RestoreVisible(liquidGroup, spans),
+            TranslateLiquid(liquidGroup, spans),
             ' ',
             amountGroup.Value,
             "ドラムが",
@@ -288,7 +371,7 @@ internal static class LiquidVolumeFragmentTranslator
 
         return string.Concat(
             prefix,
-            RestoreVisible(match.Groups["liquid"], spans),
+            TranslateLiquid(match.Groups["liquid"], spans),
             "を",
             match.Groups["amount"].Value,
             "ドラム集めた",
@@ -298,6 +381,13 @@ internal static class LiquidVolumeFragmentTranslator
 
     private static string BuildCollectLocationPrefix(Match match, IReadOnlyList<ColorSpan> spans)
     {
+        if (match.Groups["fromOpenDirection"].Success)
+        {
+            return TryTranslateDirection(match.Groups["fromOpenDirection"].Value, out var fromOpenDirection)
+                ? fromOpenDirection + "から"
+                : string.Empty;
+        }
+
         if (match.Groups["source"].Success)
         {
             var source = TranslateTarget(match.Groups["source"], spans);
@@ -314,6 +404,93 @@ internal static class LiquidVolumeFragmentTranslator
             ? openDirection + "で"
             : string.Empty;
     }
+
+    private static string TranslateLiquid(Group liquidGroup, IReadOnlyList<ColorSpan> spans)
+    {
+        var visible = liquidGroup.Value.Trim();
+        var translated = TranslateLiquidPhrase(visible);
+        return translated is null
+            ? RestoreVisible(liquidGroup, spans)
+            : ColorAwareTranslationComposer.RestoreCapture(translated, spans, liquidGroup).Trim();
+    }
+
+    internal static string? TranslateLiquidPhrase(string source)
+    {
+        var exact = TranslateLiquidName(source);
+        if (exact is not null)
+        {
+            return exact;
+        }
+
+        // LiquidVolume.GetLiquidName composes mixtures from zero or more GetAdjective() parts
+        // followed by the dominant liquid's GetName(), so match the longest translatable suffix.
+        var parts = source.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length < 2)
+        {
+            return null;
+        }
+
+        for (var liquidStart = 0; liquidStart < parts.Length; liquidStart++)
+        {
+            var liquidName = TranslateLiquidName(string.Join(" ", parts, liquidStart, parts.Length - liquidStart));
+            if (liquidName is null)
+            {
+                continue;
+            }
+
+            var builder = new StringBuilder();
+            for (var index = 0; index < liquidStart; index++)
+            {
+                var adjective = TranslateLiquidAdjective(parts[index]);
+                if (adjective is null)
+                {
+                    return null;
+                }
+
+                builder.Append(adjective);
+            }
+
+            builder.Append(liquidName);
+            return builder.ToString();
+        }
+
+        return null;
+    }
+
+    private static string? TranslateLiquidName(string source)
+    {
+        var normalized = NormalizeLiquidPhrase(source);
+        var scoped = ScopedDictionaryLookup.TranslateExactOrLowerAsciiForContext(
+            normalized,
+            LiquidContext,
+            LiquidDictionaryFile);
+        if (scoped is not null)
+        {
+            return scoped;
+        }
+
+        return LiquidNameFallbacks.TryGetValue(normalized, out var translated) ? translated : null;
+    }
+
+    private static string? TranslateLiquidAdjective(string source)
+    {
+        var normalized = NormalizeLiquidPhrase(source);
+        var scoped = ScopedDictionaryLookup.TranslateExactOrLowerAsciiForContext(
+            normalized,
+            LiquidAdjectiveContext,
+            LiquidAdjectiveDictionaryFile);
+        if (scoped is not null)
+        {
+            return scoped;
+        }
+
+        return LiquidAdjectiveFallbacks.TryGetValue(normalized, out var translated) ? translated : null;
+    }
+
+    private static string NormalizeLiquidPhrase(string source) =>
+        StringHelpers.StripLeadingEnglishArticle(
+            source.Trim(),
+            includeCapitalizedDefiniteArticle: true);
 
     private static string TranslateTarget(Group group, IReadOnlyList<ColorSpan> spans)
     {
@@ -403,7 +580,10 @@ internal static class LiquidVolumeFragmentTranslator
 
     private static bool TryTranslateDirection(string source, out string translated)
     {
-        return QudJP.DirectionPhraseTranslator.TryTranslateNounStem(source, out translated);
+        var normalized = StringHelpers.StripLeadingEnglishArticle(
+            source.Trim(),
+            includeCapitalizedDefiniteArticle: true);
+        return QudJP.DirectionPhraseTranslator.TryTranslateNounStem(normalized, out translated);
     }
 
     private static string NormalizeTarget(string target)

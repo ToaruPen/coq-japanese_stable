@@ -249,7 +249,7 @@ public static class PhysicsProcessTakeDamageTranslationPatch
 
     private static bool TryTranslateDamageFrame(string source, out string translated)
     {
-        var repositoryTranslated = MessagePatternTranslator.Translate(source, Context);
+        var repositoryTranslated = MessagePatternTranslator.TranslateIfPatternMatches(source, Context);
         if (!string.Equals(repositoryTranslated, source, StringComparison.Ordinal))
         {
             translated = repositoryTranslated;

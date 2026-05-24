@@ -76,6 +76,55 @@ public sealed class ActiveEffectTextTranslatorTests
     }
 
     [Test]
+    public void TryTranslateText_TranslatesCoveredLiquidWithMultiWordDominantLiquid()
+    {
+        WriteScopedDictionary(
+            "ui-liquid-adjectives.ja.json",
+            ("dilute", "XRL.Liquids.Adjective", "薄めの"),
+            ("bloody", "XRL.Liquids.Adjective", "血混じりの"));
+        WriteScopedDictionary(
+            "ui-liquids.ja.json",
+            ("warm static", "XRL.Liquids", "ウォームスタティック"));
+
+        var changed = ActiveEffectTextTranslator.TryTranslateText(
+            "Covered in 12 drams of dilute bloody warm static.",
+            "ActiveEffectTextTranslatorTests",
+            "ActiveEffects.Details.LiquidCovered",
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(changed, Is.True);
+            Assert.That(translated, Is.EqualTo("薄めの血混じりのウォームスタティックを12ドラム浴びている。"));
+        });
+    }
+
+    [Test]
+    public void TryTranslateText_TranslatesRuntimeObservedMultiAdjectiveLiquidDetails()
+    {
+        WriteScopedDictionary(
+            "ui-liquid-adjectives.ja.json",
+            ("brackish", "XRL.Liquids.Adjective", "塩気混じりの"),
+            ("bloody", "XRL.Liquids.Adjective", "血混じりの"));
+        WriteScopedDictionary(
+            "ui-liquids.ja.json",
+            ("slime", "XRL.Liquids", "粘液"));
+
+        var changed = ActiveEffectTextTranslator.TryTranslateText(
+            "Covered in 31 dram of {{w|brackish}} {{r|bloody}} {{slimy|slime}}.",
+            "ActiveEffectTextTranslatorTests",
+            "ActiveEffects.Details.LiquidCovered",
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(changed, Is.True);
+            Assert.That(translated, Is.EqualTo("塩気混じりの血混じりの粘液を31ドラム浴びている。"));
+            Assert.That(Translator.GetMissingKeyHitCountForTests("brackish bloody slime"), Is.EqualTo(0));
+        });
+    }
+
+    [Test]
     public void TryTranslateText_DoesNotRecordMissingKey_ForGeneratedMoveSpeedLine()
     {
         var changed = ActiveEffectTextTranslator.TryTranslateText(
@@ -112,9 +161,11 @@ public sealed class ActiveEffectTextTranslatorTests
     [TestCase("dominated (3 turns remaining)", "支配された（残り3ターン）")]
     [TestCase("time-dilated ({{C|-40}} Quickness)", "時間遅延 ({{C|-40}} Quickness)")]
     [TestCase("{{C|lying on a chair}}", "{{C|椅子に横たわっている}}")]
+    [TestCase("{{C|lying on a 寝袋}}", "{{C|寝袋に横たわっている}}")]
     [TestCase("{{B|engulfed by a starapple tree}}", "{{B|スターアップルの木に呑み込まれている}}")]
     [TestCase("{{G|enclosed in a glass bottle}}", "{{G|ガラス瓶に閉じ込められている}}")]
     [TestCase("{{y|sitting on a stool}}", "{{y|腰掛けに座っている}}")]
+    [TestCase("{{y|sitting on a フロアクッション}}", "{{y|フロアクッションに座っている}}")]
     [TestCase("{{C|piloting a hovercraft}}", "{{C|ホバークラフトを操縦中}}")]
     [TestCase("{{R|marked by a snapjaw hunter}}", "{{R|スナップジョーの狩人にマークされている}}")]
     [TestCase("{{r|cleaved ({{C|-3 AV}})}}", "{{r|裂かれた（{{C|-3 AV}}）}}")]
