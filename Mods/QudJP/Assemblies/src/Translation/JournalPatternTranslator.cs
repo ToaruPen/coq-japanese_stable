@@ -75,16 +75,6 @@ internal static class JournalPatternTranslator
         return patternLoadSummary;
     }
 
-    internal static int GetMissingPatternHitCountForTests(string source)
-    {
-        return ObservabilityHelpers.GetCounterValue(MissingPatternCounts, source);
-    }
-
-    internal static int GetMissingRouteHitCountForTests(string? context)
-    {
-        return ObservabilityHelpers.GetCounterValue(MissingRouteCounts, ObservabilityHelpers.NormalizeContext(context));
-    }
-
     internal static string Translate(string? source, string? context = null)
     {
         using var _ = Translator.PushLogContext(context);

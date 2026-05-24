@@ -344,11 +344,6 @@ public static class Translator
     }
 #endif
 
-    internal static bool ShouldLogMissingHitForTests(int hitCount)
-    {
-        return ObservabilityHelpers.ShouldLogMissingHit(hitCount);
-    }
-
     private static void LogDuplicateKeySummary(Dictionary<string, int> duplicateKeyCounts)
     {
         if (duplicateKeyCounts.Count == 0)

@@ -57,8 +57,4 @@ public static class ModScrollerOneTranslationPatch
         }
     }
 
-    internal static string TranslateLiteralForTests(string source)
-    {
-        return ModManagementSemanticPipeline.TranslateDisabledScriptsSuffix(source);
-    }
 }

@@ -76,11 +76,6 @@ public static class MarkovCorpusTranslationPatch
         return string.Equals(corpus, VanillaCorpusName, StringComparison.Ordinal);
     }
 
-    internal static void SetCorpusPathForTests(string? path)
-    {
-        corpusPathOverride = path;
-    }
-
     internal static void ResetForTests()
     {
         corpusPathOverride = null;
