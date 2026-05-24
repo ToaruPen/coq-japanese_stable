@@ -134,15 +134,18 @@ routes still need owner review before deleting code.
 - Scanner config: `scripts/unused_code_inventory_config.json`
 - Focused tests: `scripts/tests/test_scan_unused_code_inventory.py`
 - Local preview: `just unused-code-preview`
+- Zero-candidate gate: `just unused-code-gate`
 - Scanner validation: `just unused-code-check`
 
 The default config scans production, test, analyzer, and analyzer-test C#
 sources so test-only static references count as usage. It reports candidates
 only from production `src` and analyzer sources, enables `HAS_GAME_DLL`,
-`HAS_TMP`, and `QUDJP_DEV_BUILD`, roots
-Harmony patch entrypoints, and excludes known test-helper suffixes such as
-`ForTests`. Do not add `--fail-on-candidates` to PR gates until the current
-candidate baseline has been triaged and false-positive policy is documented.
+`HAS_TMP`, and `QUDJP_DEV_BUILD`, resolves configured external metadata
+references from `COQ_MANAGED_DIR`, the stable reference install, or an explicit
+`managed_dir` recipe argument, roots Harmony patch entrypoints, and excludes
+known test-helper suffixes such as `ForTests`. Do not add
+`--fail-on-candidates` to PR gates until the current candidate baseline has been
+triaged and false-positive policy is documented.
 
 Current semantic target owners:
 

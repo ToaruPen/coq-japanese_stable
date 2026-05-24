@@ -23,6 +23,19 @@
     "HAS_TMP",
     "QUDJP_DEV_BUILD"
   ],
+  "reference_assembly_names": [
+    "Assembly-CSharp.dll",
+    "0Harmony.dll",
+    "Unity.TextMeshPro.dll",
+    "UnityEngine.CoreModule.dll",
+    "UnityEngine.SharedInternalsModule.dll",
+    "UnityEngine.TextCoreFontEngineModule.dll",
+    "UnityEngine.TextCoreTextEngineModule.dll",
+    "UnityEngine.TextRenderingModule.dll",
+    "UnityEngine.UI.dll",
+    "UnityEngine.UIModule.dll"
+  ],
+  "reference_paths": [],
   "root_attribute_type_suffixes": [
     "HarmonyPatch",
     "HarmonyPatchAttribute",

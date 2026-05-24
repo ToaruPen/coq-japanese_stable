@@ -49,6 +49,12 @@ QudJP is the Japanese localization mod for Caves of Qud `1.0.4`. The repo contai
   `.codex/skills/roslyn-static-analysis/SKILL.md`. Purpose-built Roslyn
   inventories are still the source-of-truth path for durable or tracked
   artifacts; runtime evidence is still required for live route proof.
+- For unused private/internal QudJP C# declaration candidates, run
+  `just unused-code-preview`. Use `just unused-code-gate` when a task needs a
+  zero-candidate check, and `just unused-code-check` when changing the scanner
+  implementation itself. The unused-code scanner resolves configured external
+  metadata references from `COQ_MANAGED_DIR`, the stable reference install, or
+  an explicit `managed_dir` recipe argument.
 - Prefer `just` recipes for routine validation so local runs match the repo task runner.
   Raw commands below document what the recipes execute.
 - Create and use a git worktree for implementation work by default. Use the

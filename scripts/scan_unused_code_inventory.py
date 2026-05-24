@@ -62,6 +62,15 @@ class GenerationPayload(TypedDict):
     includes_raw_source_text: bool
     parse_error_file_count: int
     parse_error_files: list[str]
+    metadata_references: MetadataReferencePayload
+
+
+class MetadataReferencePayload(TypedDict):
+    """Metadata references used for Roslyn semantic resolution."""
+
+    trusted_platform_assembly_count: int
+    external_references: list[str]
+    missing_external_references: list[str]
 
 
 class InventoryPayload(TypedDict):
@@ -82,6 +91,8 @@ def write_inventory(
     output_path: Path,
     *,
     fail_on_candidates: bool = False,
+    references: list[Path] | None = None,
+    managed_dir: Path | None = None,
 ) -> InventoryPayload:
     """Write the unused-code inventory JSON."""
     return _run_roslyn_scanner(
@@ -89,6 +100,8 @@ def write_inventory(
         _resolve_config_path(config_path),
         output_path,
         fail_on_candidates=fail_on_candidates,
+        references=references or [],
+        managed_dir=managed_dir,
     )
 
 
@@ -98,16 +111,29 @@ def main(argv: list[str] | None = None) -> int:
     _ = parser.add_argument("--source-root", type=Path, default=DEFAULT_SOURCE_ROOT)
     _ = parser.add_argument("--config", type=Path, default=DEFAULT_CONFIG_PATH)
     _ = parser.add_argument("--output", type=Path, required=True)
+    _ = parser.add_argument("--reference", type=Path, action="append", default=[])
+    _ = parser.add_argument("--managed-dir", type=Path)
     _ = parser.add_argument("--fail-on-candidates", action="store_true")
     args = parser.parse_args(argv)
 
     source_root = cast("Path", args.source_root).expanduser()
     config_path = cast("Path", args.config).expanduser()
     output_path = cast("Path", args.output)
+    references = [path.expanduser() for path in cast("list[Path]", args.reference)]
+    managed_dir = cast("Path | None", args.managed_dir)
+    if managed_dir is not None:
+        managed_dir = managed_dir.expanduser()
     fail_on_candidates = cast("bool", args.fail_on_candidates)
 
     try:
-        _ = write_inventory(source_root, config_path, output_path, fail_on_candidates=fail_on_candidates)
+        _ = write_inventory(
+            source_root,
+            config_path,
+            output_path,
+            fail_on_candidates=fail_on_candidates,
+            references=references,
+            managed_dir=managed_dir,
+        )
     except (FileNotFoundError, RuntimeError) as exc:
         _ = sys.stderr.write(f"{exc}\n")
         return 1
@@ -136,6 +162,8 @@ def _run_roslyn_scanner(
     output_path: Path,
     *,
     fail_on_candidates: bool,
+    references: list[Path],
+    managed_dir: Path | None,
 ) -> InventoryPayload:
     normalized_output_path = output_path.expanduser().resolve()
     if not PROJECT_PATH.is_file():
@@ -151,6 +179,10 @@ def _run_roslyn_scanner(
         "--output",
         str(normalized_output_path),
     ]
+    for reference in references:
+        tool_args.extend(["--reference", str(reference.expanduser())])
+    if managed_dir is not None:
+        tool_args.extend(["--managed-dir", str(managed_dir.expanduser())])
     if fail_on_candidates:
         tool_args.append("--fail-on-candidates")
     try:

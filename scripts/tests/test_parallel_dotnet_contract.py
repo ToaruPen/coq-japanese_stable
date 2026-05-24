@@ -150,6 +150,26 @@ def test_roslyn_build_recipes_use_run_scoped_artifacts() -> None:
         assert "trap 'rm -rf \"$artifacts_root\"' EXIT" in block
 
 
+def test_unused_code_gate_recipe_fails_on_candidates() -> None:
+    """The unused-code candidate gate should expose the scanner's fail mode."""
+    justfile = "\n" + _read_repo_file("justfile")
+    block = _recipe_block(justfile, "unused-code-gate")
+
+    assert "scripts/scan_unused_code_inventory.py" in block
+    assert "--fail-on-candidates" in block
+    assert 'doc["totals"]' in block
+
+
+def test_unused_code_scanner_enforces_sdk_analyzers() -> None:
+    """The unused-code scanner should stay clean under the SDK analyzer gate."""
+    csproj = _read_repo_file("scripts/tools/UnusedCodeInventoryScanner/UnusedCodeInventoryScanner.csproj")
+
+    assert "<TreatWarningsAsErrors>true</TreatWarningsAsErrors>" in csproj
+    assert "<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>" in csproj
+    assert "<EnableNETAnalyzers>true</EnableNETAnalyzers>" in csproj
+    assert "<AnalysisLevel>latest-all</AnalysisLevel>" in csproj
+
+
 def test_roslyn_python_check_covers_shared_dotnet_runner() -> None:
     """The shared Python runner must stay inside the Roslyn lint and type gates."""
     justfile = "\n" + _read_repo_file("justfile")

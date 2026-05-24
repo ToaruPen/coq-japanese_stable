@@ -599,8 +599,25 @@ text-construction-surface-queue source_root=decompiled_root output="/tmp/roslyn-
   {{python}} scripts/text_construction_surface_policy.py --inventory {{quote(output)}} --limit {{quote(limit)}}
 
 # Generate unused private/internal C# declaration candidates to a disposable local output.
-unused-code-preview source_root="." config="scripts/unused_code_inventory_config.json" output="/tmp/qudjp-unused-code-inventory.json":
-  {{python}} scripts/scan_unused_code_inventory.py --source-root {{quote(source_root)}} --config {{quote(config)}} --output {{quote(output)}}
+unused-code-preview source_root="." config="scripts/unused_code_inventory_config.json" output="/tmp/qudjp-unused-code-inventory.json" managed_dir="":
+  #!/usr/bin/env bash
+  set -euo pipefail
+  args=(--source-root {{quote(source_root)}} --config {{quote(config)}} --output {{quote(output)}})
+  if [ -n {{quote(managed_dir)}} ]; then
+    args+=(--managed-dir {{quote(managed_dir)}})
+  fi
+  {{python}} scripts/scan_unused_code_inventory.py "${args[@]}"
+  {{python}} -c 'import json, sys; doc=json.load(open(sys.argv[1], encoding="utf-8")); print(doc["totals"])' {{quote(output)}}
+
+# Fail if unused private/internal C# declaration candidates are present.
+unused-code-gate source_root="." config="scripts/unused_code_inventory_config.json" output="/tmp/qudjp-unused-code-inventory.json" managed_dir="":
+  #!/usr/bin/env bash
+  set -euo pipefail
+  args=(--source-root {{quote(source_root)}} --config {{quote(config)}} --output {{quote(output)}} --fail-on-candidates)
+  if [ -n {{quote(managed_dir)}} ]; then
+    args+=(--managed-dir {{quote(managed_dir)}})
+  fi
+  {{python}} scripts/scan_unused_code_inventory.py "${args[@]}"
   {{python}} -c 'import json, sys; doc=json.load(open(sys.argv[1], encoding="utf-8")); print(doc["totals"])' {{quote(output)}}
 
 # Run the unused-code scanner's focused validation gate.

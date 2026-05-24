@@ -17,7 +17,7 @@ internal static class Program
         if (parsed.ShowHelp)
         {
             Console.Out.WriteLine(
-                "Usage: UnusedCodeInventoryScanner --source-root <dir> --config <json-path> --output <json-path> [--fail-on-candidates]");
+                "Usage: UnusedCodeInventoryScanner --source-root <dir> --config <json-path> --output <json-path> [--reference <dll>] [--managed-dir <dir>] [--fail-on-candidates]");
             return 0;
         }
 
@@ -39,7 +39,11 @@ internal static class Program
             return 1;
         }
 
-        var inventory = UnusedCodeScanner.Scan(parsed.SourceRoot!, parsed.ConfigPath!);
+        var inventory = UnusedCodeScanner.Scan(
+            parsed.SourceRoot!,
+            parsed.ConfigPath!,
+            parsed.ReferencePaths,
+            parsed.ManagedDir);
         InventoryWriter.Write(inventory, parsed.OutputPath!);
         Console.Out.WriteLine(
             $"[unused-code-inventory] wrote {inventory.Totals.Candidates} candidate(s) to {parsed.OutputPath}");
@@ -58,6 +62,8 @@ internal sealed class CliArguments
     public string? SourceRoot { get; private init; }
     public string? ConfigPath { get; private init; }
     public string? OutputPath { get; private init; }
+    public IReadOnlyList<string> ReferencePaths { get; private init; } = Array.Empty<string>();
+    public string? ManagedDir { get; private init; }
     public string? Error { get; private init; }
     public bool FailOnCandidates { get; private init; }
     public bool ShowHelp { get; private init; }
@@ -67,6 +73,8 @@ internal sealed class CliArguments
         string? sourceRoot = null;
         string? configPath = null;
         string? outputPath = null;
+        var referencePaths = new List<string>();
+        string? managedDir = null;
         var failOnCandidates = false;
 
         for (var index = 0; index < args.Count; index++)
@@ -99,6 +107,22 @@ internal sealed class CliArguments
 
                     outputPath = args[++index];
                     break;
+                case "--reference":
+                    if (index + 1 >= args.Count)
+                    {
+                        return new CliArguments { Error = "Missing value for --reference" };
+                    }
+
+                    referencePaths.Add(ExpandHome(args[++index]));
+                    break;
+                case "--managed-dir":
+                    if (index + 1 >= args.Count)
+                    {
+                        return new CliArguments { Error = "Missing value for --managed-dir" };
+                    }
+
+                    managedDir = ExpandHome(args[++index]);
+                    break;
                 case "--fail-on-candidates":
                     failOnCandidates = true;
                     break;
@@ -117,6 +141,8 @@ internal sealed class CliArguments
             SourceRoot = ExpandHome(sourceRoot),
             ConfigPath = ExpandHome(configPath),
             OutputPath = ExpandHome(outputPath),
+            ReferencePaths = referencePaths,
+            ManagedDir = managedDir,
             FailOnCandidates = failOnCandidates,
         };
     }
@@ -161,20 +187,25 @@ internal static class UnusedCodeScanner
 {
     private const string SchemaVersion = "1.0";
     private const string GameVersion = "1.0.4";
-    public static InventoryDocument Scan(string sourceRoot, string configPath)
+    public static InventoryDocument Scan(
+        string sourceRoot,
+        string configPath,
+        IReadOnlyList<string> referencePaths,
+        string? managedDir)
     {
         var root = Path.GetFullPath(sourceRoot);
         var config = ScannerConfig.Load(configPath);
         var syntaxTrees = LoadSyntaxTrees(root, config);
+        var resolvedReferences = ReferenceResolver.ResolveReferences(root, config, referencePaths, managedDir);
         var compilation = CSharpCompilation.Create(
             "QudJP.UnusedCodeInventory",
             syntaxTrees,
-            ReferenceResolver.ResolveReferences(),
+            resolvedReferences.References,
             new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary, allowUnsafe: true));
         var declarations = DeclarationCollector.Collect(compilation, config);
         var references = ReferenceCollector.Collect(compilation, declarations.Symbols);
         var classified = CandidateClassifier.Classify(declarations, references, config);
-        return BuildInventory(config, syntaxTrees, classified);
+        return BuildInventory(config, syntaxTrees, classified, resolvedReferences);
     }
 
     private static List<SyntaxTree> LoadSyntaxTrees(string sourceRoot, ScannerConfig config)
@@ -195,7 +226,8 @@ internal static class UnusedCodeScanner
     private static InventoryDocument BuildInventory(
         ScannerConfig config,
         IReadOnlyList<SyntaxTree> syntaxTrees,
-        IReadOnlyList<ClassifiedDeclaration> classified)
+        IReadOnlyList<ClassifiedDeclaration> classified,
+        ReferenceResolution resolvedReferences)
     {
         var candidates = classified
             .Where(row => row.Status == CandidateStatus.Candidate)
@@ -233,6 +265,7 @@ internal static class UnusedCodeScanner
                 IncludesRawSourceText = false,
                 ParseErrorFileCount = diagnostics.Count,
                 ParseErrorFiles = diagnostics,
+                MetadataReferences = resolvedReferences.ToRecord(),
             },
             Totals = new TotalsRecord
             {
@@ -275,6 +308,11 @@ internal sealed class SourceFile
 
 internal sealed class ScannerConfig
 {
+    private static readonly JsonSerializerOptions LoadOptions = new()
+    {
+        PropertyNameCaseInsensitive = true,
+    };
+
     [JsonPropertyName("schema_version")]
     public string SchemaVersion { get; init; } = "1.0";
 
@@ -305,12 +343,17 @@ internal sealed class ScannerConfig
     [JsonPropertyName("preprocessor_symbols")]
     public IReadOnlyList<string> PreprocessorSymbols { get; init; } = Array.Empty<string>();
 
+    [JsonPropertyName("reference_assembly_names")]
+    public IReadOnlyList<string> ReferenceAssemblyNames { get; init; } = Array.Empty<string>();
+
+    [JsonPropertyName("reference_paths")]
+    public IReadOnlyList<string> ReferencePaths { get; init; } = Array.Empty<string>();
+
     private IReadOnlyList<Regex>? excludeSymbolRegexes;
 
     public static ScannerConfig Load(string path)
     {
-        var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-        var config = JsonSerializer.Deserialize<ScannerConfig>(File.ReadAllText(path), options)
+        var config = JsonSerializer.Deserialize<ScannerConfig>(File.ReadAllText(path), LoadOptions)
             ?? throw new InvalidOperationException($"empty scanner config: {path}");
         if (config.SchemaVersion != "1.0")
         {
@@ -330,7 +373,7 @@ internal sealed class ScannerConfig
 
     public bool IsCandidateAccessibility(Accessibility accessibility)
     {
-        return CandidateAccessibilities.Contains(accessibility.ToString().ToLowerInvariant(), StringComparer.Ordinal);
+        return CandidateAccessibilities.Contains(SymbolText.AccessibilityName(accessibility), StringComparer.Ordinal);
     }
 
     public bool IsExcludedSymbol(ISymbol symbol)
@@ -488,7 +531,7 @@ internal sealed class DeclarationInfo
     public bool IsRoot { get; }
     public bool IsExcluded { get; }
     public string SymbolId => Symbol.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat);
-    public string Accessibility => Symbol.DeclaredAccessibility.ToString().ToLowerInvariant();
+    public string Accessibility => SymbolText.AccessibilityName(Symbol.DeclaredAccessibility);
 
     public static DeclarationInfo Create(ISymbol symbol, SyntaxNode node, ScannerConfig config)
     {
@@ -525,7 +568,7 @@ internal sealed class DeclarationInfo
             IPropertySymbol => "property",
             IFieldSymbol => "field",
             IEventSymbol => "event",
-            _ => symbol.Kind.ToString().ToLowerInvariant(),
+            _ => symbol.Kind.ToString(),
         };
     }
 
@@ -597,6 +640,24 @@ internal sealed class DeclarationInfo
         }
 
         return false;
+    }
+}
+
+internal static class SymbolText
+{
+    public static string AccessibilityName(Accessibility accessibility)
+    {
+        return accessibility switch
+        {
+            Microsoft.CodeAnalysis.Accessibility.NotApplicable => "notapplicable",
+            Microsoft.CodeAnalysis.Accessibility.Private => "private",
+            Microsoft.CodeAnalysis.Accessibility.ProtectedAndInternal => "protectedandinternal",
+            Microsoft.CodeAnalysis.Accessibility.Protected => "protected",
+            Microsoft.CodeAnalysis.Accessibility.Internal => "internal",
+            Microsoft.CodeAnalysis.Accessibility.ProtectedOrInternal => "protectedorinternal",
+            Microsoft.CodeAnalysis.Accessibility.Public => "public",
+            _ => "unknown",
+        };
     }
 }
 
@@ -681,6 +742,11 @@ internal static class ReferenceCollector
 
     private static ISymbol? NormalizeReferencedSymbol(ISymbol? symbol)
     {
+        if (symbol is null)
+        {
+            return null;
+        }
+
         return symbol switch
         {
             IMethodSymbol { MethodKind: MethodKind.Constructor, ContainingType: { } type } => type.OriginalDefinition,
@@ -689,12 +755,17 @@ internal static class ReferenceCollector
             IFieldSymbol field => field.OriginalDefinition,
             IEventSymbol eventSymbol => eventSymbol.OriginalDefinition,
             INamedTypeSymbol type => type.OriginalDefinition,
-            _ => symbol?.OriginalDefinition,
+            _ => symbol.OriginalDefinition,
         };
     }
 
     private static ISymbol? NormalizeEnclosingSymbol(ISymbol? symbol)
     {
+        if (symbol is null)
+        {
+            return null;
+        }
+
         return symbol switch
         {
             IMethodSymbol { AssociatedSymbol: { } associated } => associated.OriginalDefinition,
@@ -703,7 +774,7 @@ internal static class ReferenceCollector
             IFieldSymbol field => field.OriginalDefinition,
             IEventSymbol eventSymbol => eventSymbol.OriginalDefinition,
             INamedTypeSymbol type => type.OriginalDefinition,
-            _ => symbol?.OriginalDefinition,
+            _ => symbol.OriginalDefinition,
         };
     }
 }
@@ -812,17 +883,150 @@ internal sealed class CandidateStatus
 
 internal static class ReferenceResolver
 {
-    public static IReadOnlyList<MetadataReference> ResolveReferences()
+    public static ReferenceResolution ResolveReferences(
+        string sourceRoot,
+        ScannerConfig config,
+        IReadOnlyList<string> referencePaths,
+        string? managedDir)
     {
         var trustedPlatformAssemblies =
             (AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES") as string)?.Split(Path.PathSeparator)
             ?? Array.Empty<string>();
-        return trustedPlatformAssemblies
+        var trustedReferences = trustedPlatformAssemblies
             .Where(File.Exists)
             .Distinct(StringComparer.Ordinal)
             .OrderBy(path => path, StringComparer.Ordinal)
+            .ToList();
+        var externalCandidates = ExternalReferenceCandidates(sourceRoot, config, referencePaths, managedDir);
+        var externalReferences = externalCandidates
+            .Where(File.Exists)
+            .Select(Path.GetFullPath)
+            .Distinct(StringComparer.Ordinal)
+            .OrderBy(path => path, StringComparer.Ordinal)
+            .ToList();
+        var missingReferences = externalCandidates
+            .Where(path => !File.Exists(path))
+            .Select(Path.GetFullPath)
+            .Distinct(StringComparer.Ordinal)
+            .OrderBy(path => path, StringComparer.Ordinal)
+            .ToList();
+        var references = trustedReferences
+            .Concat(externalReferences)
             .Select(path => MetadataReference.CreateFromFile(path))
             .ToList();
+
+        return new ReferenceResolution(
+            references,
+            trustedReferences.Count,
+            externalReferences,
+            missingReferences);
+    }
+
+    private static IReadOnlyList<string> ExternalReferenceCandidates(
+        string sourceRoot,
+        ScannerConfig config,
+        IReadOnlyList<string> referencePaths,
+        string? managedDir)
+    {
+        var candidates = new List<string>();
+        candidates.AddRange(config.ReferencePaths.Select(path => ResolvePath(sourceRoot, path)));
+        candidates.AddRange(referencePaths.Select(path => ResolvePath(sourceRoot, path)));
+
+        var resolvedManagedDir = ResolveManagedDir(managedDir);
+        if (resolvedManagedDir is not null)
+        {
+            candidates.AddRange(config.ReferenceAssemblyNames.Select(name => Path.Combine(resolvedManagedDir, name)));
+        }
+
+        return candidates;
+    }
+
+    private static string ResolvePath(string sourceRoot, string path)
+    {
+        var expanded = ExpandHome(path);
+        return Path.IsPathFullyQualified(expanded) ? expanded : Path.Combine(sourceRoot, expanded);
+    }
+
+    private static string? ResolveManagedDir(string? managedDir)
+    {
+        if (!string.IsNullOrWhiteSpace(managedDir))
+        {
+            return Path.GetFullPath(ExpandHome(managedDir));
+        }
+
+        string? firstCandidate = null;
+        foreach (var candidate in ManagedDirCandidates(null))
+        {
+            var fullPath = Path.GetFullPath(ExpandHome(candidate));
+            firstCandidate ??= fullPath;
+            if (Directory.Exists(fullPath))
+            {
+                return fullPath;
+            }
+        }
+
+        return firstCandidate;
+    }
+
+    private static IEnumerable<string> ManagedDirCandidates(string? managedDir)
+    {
+        if (!string.IsNullOrWhiteSpace(managedDir))
+        {
+            yield return managedDir;
+        }
+
+        var envManagedDir = Environment.GetEnvironmentVariable("COQ_MANAGED_DIR");
+        if (!string.IsNullOrWhiteSpace(envManagedDir))
+        {
+            yield return envManagedDir;
+        }
+
+        yield return "~/Games/CavesOfQud-stable-ref/CoQ.app/Contents/Resources/Data/Managed";
+    }
+
+    private static string ExpandHome(string path)
+    {
+        if (path == "~")
+        {
+            return Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        }
+
+        if (path.StartsWith("~/", StringComparison.Ordinal))
+        {
+            return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), path[2..]);
+        }
+
+        return path;
+    }
+}
+
+internal sealed class ReferenceResolution
+{
+    public ReferenceResolution(
+        IReadOnlyList<MetadataReference> references,
+        int trustedPlatformAssemblyCount,
+        IReadOnlyList<string> externalReferences,
+        IReadOnlyList<string> missingExternalReferences)
+    {
+        References = references;
+        TrustedPlatformAssemblyCount = trustedPlatformAssemblyCount;
+        ExternalReferences = externalReferences;
+        MissingExternalReferences = missingExternalReferences;
+    }
+
+    public IReadOnlyList<MetadataReference> References { get; }
+    public int TrustedPlatformAssemblyCount { get; }
+    public IReadOnlyList<string> ExternalReferences { get; }
+    public IReadOnlyList<string> MissingExternalReferences { get; }
+
+    public MetadataReferenceRecord ToRecord()
+    {
+        return new MetadataReferenceRecord
+        {
+            TrustedPlatformAssemblyCount = TrustedPlatformAssemblyCount,
+            ExternalReferences = ExternalReferences,
+            MissingExternalReferences = MissingExternalReferences,
+        };
     }
 }
 
@@ -866,6 +1070,21 @@ internal sealed class GenerationInfo
 
     [JsonPropertyName("parse_error_files")]
     public IReadOnlyList<string> ParseErrorFiles { get; init; } = Array.Empty<string>();
+
+    [JsonPropertyName("metadata_references")]
+    public MetadataReferenceRecord MetadataReferences { get; init; } = new();
+}
+
+internal sealed class MetadataReferenceRecord
+{
+    [JsonPropertyName("trusted_platform_assembly_count")]
+    public int TrustedPlatformAssemblyCount { get; init; }
+
+    [JsonPropertyName("external_references")]
+    public IReadOnlyList<string> ExternalReferences { get; init; } = Array.Empty<string>();
+
+    [JsonPropertyName("missing_external_references")]
+    public IReadOnlyList<string> MissingExternalReferences { get; init; } = Array.Empty<string>();
 }
 
 internal sealed class TotalsRecord
