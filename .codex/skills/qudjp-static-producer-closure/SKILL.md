@@ -137,6 +137,12 @@ split/deferred with a reason.
      family-specific target tokens: prefer a full
      `DeclaringType|Method|Return|...` signature, or include both the exact
      upstream declaring type and member name.
+   When renaming, removing, or replacing tests that are referenced by
+   `scripts/static_producer_closure.py`, update the corresponding
+   `EvidenceFile.required_substrings` in the same change. Run
+   `uv run pytest scripts/tests/test_static_producer_closure.py::test_covered_owner_families_have_current_source_and_test_evidence -q`
+   before relying on broader `just` checks; stale evidence substrings can keep
+   implementation behavior green while breaking the closure gate.
 
 7. **Verify and report.**
    - Run the focused L1/L2/L2G tests touched by the batch.
