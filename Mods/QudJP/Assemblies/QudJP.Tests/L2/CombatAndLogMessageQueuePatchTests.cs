@@ -25,6 +25,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
         Translator.ResetForTests();
         Translator.SetDictionaryDirectoryForTests(tempDirectory);
         LocalizationAssetResolver.SetLocalizationRootForTests(null);
+        JournalPatternTranslator.ResetForTests();
         MessagePatternTranslator.ResetForTests();
         MessageFrameTranslator.ResetForTests();
         QuestLifecyclePopupTranslationPatch.ResetForTests();
@@ -41,6 +42,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
     {
         Translator.ResetForTests();
         LocalizationAssetResolver.SetLocalizationRootForTests(null);
+        JournalPatternTranslator.ResetForTests();
         MessagePatternTranslator.ResetForTests();
         MessageFrameTranslator.ResetForTests();
         QuestLifecyclePopupTranslationPatch.ResetForTests();
@@ -1300,6 +1302,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
     [TestCase("You can't unlock the 扉.", "扉の鍵を開けられない")]
     [TestCase("You interface with the 扉 and unlock it.", "扉にインターフェースで接続して鍵を開けた")]
     [TestCase("Your  unlocks the セキュリティドア.", "セキュリティドアの鍵が開いた")]
+    [TestCase("Your security card unlocks the セキュリティドア.", "セキュリティドアの鍵が開いた")]
     [TestCase("You lay your hand upon the 扉 and draw forth its passcode. You enter the code and the 扉 unlocks.", "扉に手を当ててパスコードを読み取った。コードを入力すると扉の鍵が開いた")]
     [TestCase("You interface with the 扉 but nothing happens.", "You interface with the 扉 but nothing happens.")]
     [TestCase("", "")]
@@ -6711,6 +6714,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
             ("カロク begins flying.", "カロクが飛翔し始めた。"),
             ("シュウラシュウォレム harvests a スターアップル.", "シュウラシュウォレムはスターアップルを収穫した。"),
             ("The ヒンドレンの村人 harvests some ラーの花弁.", "ヒンドレンの村人はラーの花弁を収穫した。"),
+            ("An ヒンドレンの村人 harvests some ラーの花弁.", "ヒンドレンの村人はラーの花弁を収穫した。"),
             ("Westからsome 魔樹の樹皮を収穫した", "西から魔樹の樹皮を収穫した"),
             ("ゴミ to the southwestを漁ったが、何も見つからなかった", "南西でゴミを漁ったが、何も見つからなかった"),
             ("説教者は言う、'今日は、子らよ、啓発の儀について語ろう。」", "説教者は言う、「今日は、子らよ、啓発の儀について語ろう。」"),
@@ -6994,6 +6998,42 @@ public sealed class CombatAndLogMessageQueuePatchTests
             target.SetActiveZone(new DummyZone());
 
             Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("注記: ancient bones"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void ZoneManagerSetActiveZoneMapNotes_DoesNotLeakClosingBraceAfterColoredRuinsSection_WhenPatched()
+    {
+        UseRepositoryPatternDictionary();
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyZoneManagerMapNotesTarget), nameof(DummyZoneManagerMapNotesTarget.SetActiveZone), typeof(DummyZone)),
+                typeof(ZoneManagerSetActiveZoneMapNotesTranslationPatch));
+
+            var target = new DummyZoneManagerMapNotesTarget
+            {
+                MessageToSend = "You note the location of some forgotten ruins in the {{W|Locations > Ruins}} section of your journal.",
+            };
+
+            target.SetActiveZone(new DummyZone());
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(
+                    DummyMessageQueue.LastMessage,
+                    Is.EqualTo("ジャーナルの「場所 > 遺跡」欄に忘れられた遺跡の場所を記録した。"));
+                Assert.That(DummyMessageQueue.LastMessage, Does.Not.Contain("遺跡}}"));
+            });
         }
         finally
         {
@@ -11485,6 +11525,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
         LocalizationAssetResolver.SetLocalizationRootForTests(localizationRoot);
         Translator.SetDictionaryDirectoryForTests(Path.Combine(localizationRoot, "Dictionaries"));
         MessagePatternTranslator.SetPatternFileForTests(null);
+        JournalPatternTranslator.SetPatternFileForTests(null);
     }
 
     private static void UseRepositoryMessageFrames()

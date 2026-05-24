@@ -165,7 +165,7 @@ public sealed class GetDisplayNameRouteTranslatorTests
                 GetDisplayNameRouteTranslator.TranslatePreservingColors(
                     "{{r|blood}}-and-{{g|slime}}-stained leather cap",
                     nameof(GetDisplayNamePatch)),
-                Is.EqualTo("血と粘液で汚れた 革の帽子"));
+                Is.EqualTo("{{r|血}}と{{g|粘液}}で汚れた革の帽子"));
         });
     }
 

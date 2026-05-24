@@ -530,7 +530,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/Scoped/historyspice-common.ja.json",
-          "entry_index": 599,
+          "entry_index": 598,
           "text": "見よ"
         },
         {
@@ -2031,7 +2031,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/Scoped/historyspice-common.ja.json",
-          "entry_index": 1541,
+          "entry_index": 1540,
           "text": "彫り刻まれた"
         },
         {
@@ -2053,7 +2053,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/Scoped/historyspice-common.ja.json",
-          "entry_index": 962,
+          "entry_index": 961,
           "text": "魚"
         },
         {
@@ -2396,7 +2396,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/Scoped/historyspice-common.ja.json",
-          "entry_index": 1330,
+          "entry_index": 1329,
           "text": "失われた"
         },
         {
@@ -2649,7 +2649,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/Scoped/historyspice-common.ja.json",
-          "entry_index": 1540,
+          "entry_index": 1539,
           "text": "彩色された"
         },
         {
@@ -4164,28 +4164,6 @@
           "path": "Dictionaries/ui-liquids.ja.json",
           "entry_index": 28,
           "text": "{{w|汚泥}}"
-        }
-      ]
-    },
-    {
-      "scope": "same_file",
-      "path": "Dictionaries/Scoped/historyspice-common.ja.json",
-      "key": "ghost",
-      "entry_count": 2,
-      "texts": [
-        "幽鬼",
-        "幽鬼"
-      ],
-      "occurrences": [
-        {
-          "path": "Dictionaries/Scoped/historyspice-common.ja.json",
-          "entry_index": 593,
-          "text": "幽鬼"
-        },
-        {
-          "path": "Dictionaries/Scoped/historyspice-common.ja.json",
-          "entry_index": 618,
-          "text": "幽鬼"
         }
       ]
     },

@@ -1079,7 +1079,7 @@
       "route": "emit-message"
     },
     {
-      "pattern": "^(?:The |the )?(.+?) harvests (?:a |an |some )?(.+?)[.!]?$",
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) harvests (?:a |an |some )?(.+?)[.!]?$",
       "template": "{0}は{1}を収穫した。",
       "route": "emit-message"
     },
@@ -1539,7 +1539,7 @@
       "route": "emit-message"
     },
     {
-      "pattern": "^Your\\s+unlocks (?:the |a |an )?(.+?)[.!]?$",
+      "pattern": "^Your\\s+(?:(?:.+?)\\s+)?unlocks (?:the |a |an )?(.+?)[.!]?$",
       "template": "{0}の鍵が開いた",
       "route": "emit-message"
     },

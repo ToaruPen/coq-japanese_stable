@@ -3429,6 +3429,11 @@ internal static class GetDisplayNameRouteTranslator
 
     private static bool ShouldSpaceAfterModifier(string modifier)
     {
+        if (CompoundStainedModifierPattern.IsMatch(ColorAwareTranslationComposer.GetVisibleText(modifier)))
+        {
+            return false;
+        }
+
         if (modifier.StartsWith("{{", StringComparison.Ordinal)
             || modifier.StartsWith("[{{", StringComparison.Ordinal))
         {
@@ -3619,7 +3624,8 @@ internal static class GetDisplayNameRouteTranslator
 
     private static bool TryTranslateStainedLiquidComponent(string source, out string translated)
     {
-        var visible = ColorAwareTranslationComposer.GetVisibleText(source).Trim();
+        var (visibleRaw, sourceSpans) = ColorAwareTranslationComposer.Strip(source);
+        var visible = visibleRaw.Trim();
         var direct = ScopedDictionaryLookup.TranslateExactOrLowerAsciiForContext(
                 visible,
                 "XRL.Liquids",
@@ -3643,13 +3649,25 @@ internal static class GetDisplayNameRouteTranslator
             return false;
         }
 
-        translated = ColorAwareTranslationComposer.GetVisibleText(direct).Trim();
-        if (translated.EndsWith("の", StringComparison.Ordinal))
+        var translatedVisible = ColorAwareTranslationComposer.GetVisibleText(direct).Trim();
+        if (translatedVisible.EndsWith("の", StringComparison.Ordinal))
         {
-            translated = translated.Substring(0, translated.Length - 1);
+            translatedVisible = translatedVisible.Substring(0, translatedVisible.Length - 1);
         }
 
-        return translated.Length > 0;
+        if (translatedVisible.Length == 0)
+        {
+            translated = source;
+            return false;
+        }
+
+        translated = sourceSpans.Count == 0
+            ? translatedVisible
+            : ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+                translatedVisible,
+                sourceSpans,
+                visibleRaw.Length);
+        return true;
     }
 
     private static string? TranslateLeveledDisplayNameModifier(string source)

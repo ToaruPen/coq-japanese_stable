@@ -346,6 +346,7 @@ public sealed class MessagePatternTranslatorTests
     [TestCase("The zealot mumbles inaudibly, encased in ice.", "氷に閉じ込められた狂信者が、聞き取れないほどに呟いた。")]
     [TestCase("The infected crust of skin on 熊の left arm loosens and breaks away.", "熊の left armの感染した皮膚の痂皮が緩んで剥がれ落ちた。")]
     [TestCase("The ヒンドレンの村人 harvests some ラーの花弁.", "ヒンドレンの村人はラーの花弁を収穫した。")]
+    [TestCase("An ヒンドレンの村人 harvests some ラーの花弁.", "ヒンドレンの村人はラーの花弁を収穫した。")]
     [TestCase("Westからsome 魔樹の樹皮を収穫した", "西から魔樹の樹皮を収穫した")]
     [TestCase("Southwestからsome ラーの花弁を収穫した", "南西からラーの花弁を収穫した")]
     [TestCase("ゴミ to the southwestを漁ったが、何も見つからなかった", "南西でゴミを漁ったが、何も見つからなかった")]

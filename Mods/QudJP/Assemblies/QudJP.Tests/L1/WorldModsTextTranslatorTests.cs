@@ -690,9 +690,12 @@ public sealed class WorldModsTextTranslatorTests
         WriteDictionary(
             "world-mods.ja.json",
             ("ACTIVE EFFECTS:", "発動中の効果:"));
+        WriteDictionary(
+            "ui-displayname-adjectives.ja.json",
+            ("tar", "タール"));
 
         var ok = StatusLineTranslationHelpers.TryTranslateActiveEffectsLine(
-            "ACTIVE EFFECTS: tarry, stuck in a アスファルトの水たまり",
+            "ACTIVE EFFECTS: tarry, stuck in tar",
             "AbilityBarAfterRenderTranslationPatch",
             "AbilityBar.ActiveEffects",
             out var translated);
@@ -700,8 +703,8 @@ public sealed class WorldModsTextTranslatorTests
         Assert.Multiple(() =>
         {
             Assert.That(ok, Is.True);
-            Assert.That(translated, Is.EqualTo("発動中の効果: tarry、アスファルトの水たまりにはまっている"));
-            Assert.That(Translator.GetMissingKeyHitCountForTests("stuck in a アスファルトの水たまり"), Is.EqualTo(0));
+            Assert.That(translated, Is.EqualTo("発動中の効果: tarry、タールにはまっている"));
+            Assert.That(Translator.GetMissingKeyHitCountForTests("stuck in tar"), Is.EqualTo(0));
         });
     }
 

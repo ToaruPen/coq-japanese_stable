@@ -134,8 +134,18 @@ public static class LocationFinderPopupTranslationPatch
             return false;
         }
 
-        translated = string.Format(CultureInfo.InvariantCulture, template, match.Groups["location"].Value);
+        var location = TranslateLocationCapture(match.Groups["location"].Value);
+        translated = string.Format(CultureInfo.InvariantCulture, template, location);
         DynamicTextObservability.RecordTransform(route, family, source, translated);
         return true;
+    }
+
+    private static string TranslateLocationCapture(string source)
+    {
+        return ColorAwareTranslationComposer.TranslatePreservingColors(
+            source,
+            static visible => StringHelpers.TryGetTranslationExactOrLowerAscii(visible, out var translated)
+                ? translated
+                : visible);
     }
 }

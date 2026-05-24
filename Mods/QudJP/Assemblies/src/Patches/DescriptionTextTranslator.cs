@@ -1295,9 +1295,12 @@ internal static class DescriptionTextTranslator
             return true;
         }
 
-        if (WaterBondedLinePattern.IsMatch(source))
+        var waterBondedMatch = WaterBondedLinePattern.Match(source);
+        if (waterBondedMatch.Success)
         {
-            translated = "あなたは相手と水の絆で結ばれている。";
+            translated = "あなたは"
+                + TranslateWaterBondedTarget(waterBondedMatch.Groups["target"].Value)
+                + "と水の絆で結ばれている。";
             DynamicTextObservability.RecordTransform(route, "Description.RuntimeObservedLine", source, translated);
             return true;
         }
@@ -1393,6 +1396,19 @@ internal static class DescriptionTextTranslator
 
         translated = source;
         return false;
+    }
+
+    private static string TranslateWaterBondedTarget(string source)
+    {
+        var target = source.Trim();
+        return target switch
+        {
+            "him" => "彼",
+            "her" => "彼女",
+            "it" => "それ",
+            "them" => "彼ら",
+            _ => target,
+        };
     }
 
     private static bool TryTranslateBrainDispositionLinePreservingColors(string source, string route, out string translated)
