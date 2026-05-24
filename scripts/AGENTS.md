@@ -36,6 +36,9 @@ just static-producer-check
 just static-producer-preview
 just annals-pattern-preview
 just text-construction-inventory
+just unused-code-preview
+just unused-code-gate
+just unused-code-check
 just ast-grep-check
 just ast-grep-smoke
 just render-skill-evals <repo-local-skill> <scenario>
@@ -77,6 +80,15 @@ just sync-mod
 - Roslyn tracked artifact recipes are intentionally named `*-tracked`;
   prefer preview recipes for review and validation unless the task explicitly
   owns the generated artifact.
+- Use `just unused-code-preview` to inspect unused private/internal QudJP C#
+  declaration candidates, `just unused-code-gate` when a zero-candidate check is
+  required, and `just unused-code-check` for scanner implementation changes.
+  The candidate inventory is cleanup evidence, not deletion proof; review
+  Harmony, reflection, conditional compilation, and runtime-only ownership
+  before removing code. External metadata references come from
+  `scripts/unused_code_inventory_config.json` and resolve against
+  `COQ_MANAGED_DIR`, the default stable reference install, or the recipe's
+  explicit `managed_dir` argument.
 - Repo-local Roslyn wrappers build into the shared
   `QUDJP_DOTNET_ARTIFACTS_ROOT` cache (default: `.artifacts/dotnet`) behind
   per-tool locks, then execute the produced tool DLL. Just validation recipes

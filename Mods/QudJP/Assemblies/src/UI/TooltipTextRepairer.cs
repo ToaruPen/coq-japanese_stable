@@ -86,17 +86,6 @@ internal static class TooltipTextRepairer
         }
     }
 
-    internal static bool TryPinLookerTooltip(object? triggerInstance)
-    {
-        var tooltipObject = TryGetTooltipObjectFromTrigger(triggerInstance, out var tooltip);
-        if (tooltipObject == null)
-        {
-            return false;
-        }
-
-        return TryPinLookerTooltip(triggerInstance, tooltip, tooltipObject);
-    }
-
     internal static bool ShouldScheduleRepair(object? triggerInstance)
     {
         var tooltipObject = TryGetTooltipObjectFromTrigger(triggerInstance, out _);

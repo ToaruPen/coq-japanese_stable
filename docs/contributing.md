@@ -322,7 +322,15 @@ uv run python scripts/sync_mod.py \
 - `just ast-search-py '<pattern>' [path]` — Python structural search (`sg-py` は後方互換 alias)
 - `just lsp-check` — repo-local `csharp-ls` による C# solution-load diagnostics
 - `just unused-code-preview` — Roslyn による private / internal C# 宣言の未参照候補 inventory
+- `just unused-code-gate` — `unused-code-preview` と同じ inventory を生成し、候補が 1 件でもあれば失敗
 - `just unused-code-check` — unused-code scanner 自体の build / pytest / Ruff / basedpyright gate
+
+`unused-code-preview` / `unused-code-gate` は削除候補の入口であり、削除証明ではありません。
+Harmony、reflection、条件コンパイル、runtime-only route で root されるコードは通常参照だけでは
+判断できないため、候補を消す前に owner review を行います。
+scanner は `scripts/unused_code_inventory_config.json` の外部 assembly 名を
+`COQ_MANAGED_DIR`、既定の stable reference install、または recipe の `managed_dir`
+引数から解決し、解決済み / 未解決の metadata reference を inventory に記録します。
 
 `just lsp-check` は `.sln` / `.csproj` / reference stub / dotnet tool manifest
 の変更時、または editor の診断と `dotnet build` の結果が食い違う時に使います。

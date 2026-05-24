@@ -1,11 +1,13 @@
 """Smoke tests for the Roslyn unused-code inventory scanner."""
-# ruff: noqa: S603,S607 -- tests invoke dotnet to drive the repo-local tool
+# ruff: noqa: S603 -- tests invoke dotnet to drive the repo-local tool
 
 from __future__ import annotations
 
 import json
+import os
 import shutil
 import subprocess
+from dataclasses import dataclass
 from pathlib import Path
 from typing import cast
 
@@ -16,6 +18,16 @@ from scripts.scan_unused_code_inventory import InventoryPayload, write_inventory
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
 PROJECT_PATH = _REPO_ROOT / "scripts" / "tools" / "UnusedCodeInventoryScanner" / "UnusedCodeInventoryScanner.csproj"
+DOTNET_TIMEOUT_SECONDS = 120
+
+
+@dataclass(frozen=True)
+class ToolRunOptions:
+    """Optional arguments for invoking the scanner fixture."""
+
+    references: list[Path] | None = None
+    managed_dir: Path | None = None
+    env: dict[str, str] | None = None
 
 
 @pytest.fixture(scope="session")
@@ -148,6 +160,303 @@ public static class DemoTests
 
 
 @pytest.mark.skipif(not shutil.which("dotnet"), reason="dotnet SDK not available")
+def test_unused_code_inventory_resolves_external_attribute_references(
+    tmp_path: Path,
+    inventory_tool_dll: Path,
+) -> None:
+    """External metadata references should make semantic attribute roots available."""
+    external_dll = _build_external_root_attribute(tmp_path)
+    source_root = tmp_path / "repo"
+    production = source_root / "Mods" / "QudJP" / "Assemblies" / "src"
+    production.mkdir(parents=True)
+    _ = (production / "ExternalRooted.cs").write_text(
+        """
+using External;
+
+namespace QudJP;
+
+[Root]
+internal static class ExternalRooted
+{
+    private static void Prefix() {}
+    private static void HelperUnusedByRoot() {}
+}
+""",
+        encoding="utf-8",
+    )
+    config = source_root / "config.json"
+    _ = config.write_text(
+        json.dumps(
+            {
+                "schema_version": "1.0",
+                "include_path_prefixes": ["Mods/QudJP/Assemblies/src/"],
+                "exclude_path_contains": [],
+                "report_path_prefixes": ["Mods/QudJP/Assemblies/src/"],
+                "candidate_accessibilities": ["private", "internal"],
+                "root_attribute_type_suffixes": ["External.RootAttribute"],
+                "root_member_names_in_attribute_rooted_types": ["Prefix"],
+                "exclude_symbol_patterns": [],
+                "exclude_declaration_name_suffixes": [],
+            },
+        ),
+        encoding="utf-8",
+    )
+    output = tmp_path / "unused.json"
+
+    _run_tool(
+        inventory_tool_dll,
+        source_root,
+        config,
+        output,
+        options=ToolRunOptions(references=[external_dll]),
+    )
+    payload = cast("InventoryPayload", json.loads(output.read_text(encoding="utf-8")))
+
+    assert payload["generation"]["parse_error_file_count"] == 0
+    assert str(external_dll) in payload["generation"]["metadata_references"]["external_references"]
+    candidate_ids = _candidate_ids(payload)
+    assert "QudJP.ExternalRooted" not in candidate_ids
+    assert "QudJP.ExternalRooted.Prefix()" not in candidate_ids
+    assert "QudJP.ExternalRooted.HelperUnusedByRoot()" in candidate_ids
+
+
+@pytest.mark.skipif(not shutil.which("dotnet"), reason="dotnet SDK not available")
+def test_unused_code_inventory_matches_non_private_accessibilities_as_lowercase(
+    tmp_path: Path,
+    inventory_tool_dll: Path,
+) -> None:
+    """Configured accessibility tokens should match Roslyn accessibility names."""
+    source_root = tmp_path / "repo"
+    production = source_root / "Mods" / "QudJP" / "Assemblies" / "src"
+    production.mkdir(parents=True)
+    _ = (production / "Demo.cs").write_text(
+        """
+namespace QudJP;
+
+internal class Demo
+{
+    protected void NeverCalled() {}
+}
+""",
+        encoding="utf-8",
+    )
+    config = source_root / "config.json"
+    _ = config.write_text(
+        json.dumps(
+            {
+                "schema_version": "1.0",
+                "include_path_prefixes": ["Mods/QudJP/Assemblies/src/"],
+                "exclude_path_contains": [],
+                "report_path_prefixes": ["Mods/QudJP/Assemblies/src/"],
+                "candidate_accessibilities": ["protected"],
+                "root_attribute_type_suffixes": [],
+                "root_member_names_in_attribute_rooted_types": [],
+                "exclude_symbol_patterns": [],
+                "exclude_declaration_name_suffixes": [],
+            },
+        ),
+        encoding="utf-8",
+    )
+    output = tmp_path / "unused.json"
+
+    _run_tool(inventory_tool_dll, source_root, config, output)
+    payload = cast("InventoryPayload", json.loads(output.read_text(encoding="utf-8")))
+
+    assert "QudJP.Demo.NeverCalled()" in _candidate_ids(payload)
+
+
+@pytest.mark.skipif(not shutil.which("dotnet"), reason="dotnet SDK not available")
+def test_unused_code_inventory_resolves_configured_managed_dir_references(
+    tmp_path: Path,
+    inventory_tool_dll: Path,
+) -> None:
+    """Configured assembly names should resolve against an explicit managed directory."""
+    external_dll = _build_external_root_attribute(tmp_path)
+    source_root = tmp_path / "repo"
+    production = source_root / "Mods" / "QudJP" / "Assemblies" / "src"
+    production.mkdir(parents=True)
+    _ = (production / "ExternalRooted.cs").write_text(
+        """
+using External;
+
+namespace QudJP;
+
+[Root]
+internal static class ExternalRooted
+{
+    private static void Prefix() {}
+}
+""",
+        encoding="utf-8",
+    )
+    config = source_root / "config.json"
+    _ = config.write_text(
+        json.dumps(
+            {
+                "schema_version": "1.0",
+                "include_path_prefixes": ["Mods/QudJP/Assemblies/src/"],
+                "exclude_path_contains": [],
+                "report_path_prefixes": ["Mods/QudJP/Assemblies/src/"],
+                "candidate_accessibilities": ["private", "internal"],
+                "root_attribute_type_suffixes": ["External.RootAttribute"],
+                "root_member_names_in_attribute_rooted_types": ["Prefix"],
+                "reference_assembly_names": [external_dll.name],
+                "exclude_symbol_patterns": [],
+                "exclude_declaration_name_suffixes": [],
+            },
+        ),
+        encoding="utf-8",
+    )
+    output = tmp_path / "unused.json"
+
+    _run_tool(
+        inventory_tool_dll,
+        source_root,
+        config,
+        output,
+        options=ToolRunOptions(managed_dir=external_dll.parent),
+    )
+    payload = cast("InventoryPayload", json.loads(output.read_text(encoding="utf-8")))
+
+    assert str(external_dll) in payload["generation"]["metadata_references"]["external_references"]
+    assert not payload["generation"]["metadata_references"]["missing_external_references"]
+    assert not _candidate_ids(payload)
+
+
+@pytest.mark.skipif(not shutil.which("dotnet"), reason="dotnet SDK not available")
+def test_unused_code_inventory_reports_configured_references_when_managed_dir_is_missing(
+    tmp_path: Path,
+    inventory_tool_dll: Path,
+) -> None:
+    """Configured assembly names should not disappear when no managed directory resolves."""
+    source_root = tmp_path / "repo"
+    production = source_root / "Mods" / "QudJP" / "Assemblies" / "src"
+    missing_managed_dir = tmp_path / "missing-managed"
+    production.mkdir(parents=True)
+    _ = (production / "Demo.cs").write_text(
+        """
+namespace QudJP;
+
+internal static class Demo
+{
+    private static void Unused() {}
+}
+""",
+        encoding="utf-8",
+    )
+    config = source_root / "config.json"
+    _ = config.write_text(
+        json.dumps(
+            {
+                "schema_version": "1.0",
+                "include_path_prefixes": ["Mods/QudJP/Assemblies/src/"],
+                "exclude_path_contains": [],
+                "report_path_prefixes": ["Mods/QudJP/Assemblies/src/"],
+                "candidate_accessibilities": ["private", "internal"],
+                "root_attribute_type_suffixes": [],
+                "root_member_names_in_attribute_rooted_types": [],
+                "reference_assembly_names": ["Missing.External.dll"],
+                "exclude_symbol_patterns": [],
+                "exclude_declaration_name_suffixes": [],
+            },
+        ),
+        encoding="utf-8",
+    )
+    output = tmp_path / "unused.json"
+
+    _run_tool(
+        inventory_tool_dll,
+        source_root,
+        config,
+        output,
+        options=ToolRunOptions(managed_dir=missing_managed_dir),
+    )
+    payload = cast("InventoryPayload", json.loads(output.read_text(encoding="utf-8")))
+
+    metadata = payload["generation"]["metadata_references"]
+    assert metadata["external_references"] == []
+    assert metadata["missing_external_references"] == [str(missing_managed_dir / "Missing.External.dll")]
+
+
+@pytest.mark.skipif(not shutil.which("dotnet"), reason="dotnet SDK not available")
+def test_unused_code_inventory_falls_back_when_env_managed_dir_is_missing(
+    tmp_path: Path,
+    inventory_tool_dll: Path,
+) -> None:
+    """A bad COQ_MANAGED_DIR should not hide a later existing managed directory."""
+    external_dll = _build_external_root_attribute(tmp_path)
+    fake_home = tmp_path / "home"
+    default_managed_dir = (
+        fake_home
+        / "Games"
+        / "CavesOfQud-stable-ref"
+        / "CoQ.app"
+        / "Contents"
+        / "Resources"
+        / "Data"
+        / "Managed"
+    )
+    default_managed_dir.mkdir(parents=True)
+    default_reference = default_managed_dir / external_dll.name
+    _ = shutil.copy2(external_dll, default_reference)
+    source_root = tmp_path / "repo"
+    production = source_root / "Mods" / "QudJP" / "Assemblies" / "src"
+    production.mkdir(parents=True)
+    _ = (production / "ExternalRooted.cs").write_text(
+        """
+using External;
+
+namespace QudJP;
+
+[Root]
+internal static class ExternalRooted
+{
+    private static void Prefix() {}
+}
+""",
+        encoding="utf-8",
+    )
+    config = source_root / "config.json"
+    _ = config.write_text(
+        json.dumps(
+            {
+                "schema_version": "1.0",
+                "include_path_prefixes": ["Mods/QudJP/Assemblies/src/"],
+                "exclude_path_contains": [],
+                "report_path_prefixes": ["Mods/QudJP/Assemblies/src/"],
+                "candidate_accessibilities": ["private", "internal"],
+                "root_attribute_type_suffixes": ["External.RootAttribute"],
+                "root_member_names_in_attribute_rooted_types": ["Prefix"],
+                "reference_assembly_names": [external_dll.name],
+                "exclude_symbol_patterns": [],
+                "exclude_declaration_name_suffixes": [],
+            },
+        ),
+        encoding="utf-8",
+    )
+    output = tmp_path / "unused.json"
+
+    _run_tool(
+        inventory_tool_dll,
+        source_root,
+        config,
+        output,
+        options=ToolRunOptions(
+            env={
+                "COQ_MANAGED_DIR": str(tmp_path / "missing-env-managed"),
+                "HOME": str(fake_home),
+            },
+        ),
+    )
+    payload = cast("InventoryPayload", json.loads(output.read_text(encoding="utf-8")))
+
+    metadata = payload["generation"]["metadata_references"]
+    assert metadata["external_references"] == [str(default_reference)]
+    assert not metadata["missing_external_references"]
+    assert not _candidate_ids(payload)
+
+
+@pytest.mark.skipif(not shutil.which("dotnet"), reason="dotnet SDK not available")
 def test_python_wrapper_runs_scanner(tmp_path: Path) -> None:
     """The Python wrapper should build and execute the Roslyn scanner."""
     source_root = tmp_path / "repo"
@@ -234,8 +543,58 @@ internal static class Demo
     assert (tmp_path / "nested" / "unused.json").is_file()
 
 
-def _run_tool(tool_dll: Path, source_root: Path, config: Path, output: Path) -> None:
-    result = subprocess.run(
+def _build_external_root_attribute(tmp_path: Path) -> Path:
+    project = tmp_path / "external" / "External.csproj"
+    project.parent.mkdir()
+    _ = project.write_text(
+        """
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+</Project>
+""",
+        encoding="utf-8",
+    )
+    _ = (project.parent / "RootAttribute.cs").write_text(
+        """
+namespace External;
+
+public sealed class RootAttribute : System.Attribute;
+""",
+        encoding="utf-8",
+    )
+    result = _run_dotnet(
+        ["dotnet", "build", str(project), "--configuration", "Release"],
+        cwd=None,
+    )
+    assert result.returncode == 0, (
+        f"external fixture build failed (exit {result.returncode}). stdout:\n{result.stdout}\nstderr:\n{result.stderr}"
+    )
+    return project.parent / "bin" / "Release" / "net10.0" / "External.dll"
+
+
+def _run_tool(
+    tool_dll: Path,
+    source_root: Path,
+    config: Path,
+    output: Path,
+    *,
+    options: ToolRunOptions | None = None,
+) -> None:
+    tool_options = options or ToolRunOptions()
+    reference_args = [
+        arg
+        for reference in tool_options.references or []
+        for arg in ("--reference", str(reference))
+    ]
+    managed_dir_args = (
+        []
+        if tool_options.managed_dir is None
+        else ["--managed-dir", str(tool_options.managed_dir)]
+    )
+    result = _run_dotnet(
         [
             "dotnet",
             str(tool_dll),
@@ -245,14 +604,43 @@ def _run_tool(tool_dll: Path, source_root: Path, config: Path, output: Path) -> 
             str(config),
             "--output",
             str(output),
+            *reference_args,
+            *managed_dir_args,
         ],
-        capture_output=True,
-        text=True,
-        check=False,
+        cwd=None,
+        env=tool_options.env,
     )
     assert result.returncode == 0, (
         f"scanner failed (exit {result.returncode}). stdout:\n{result.stdout}\nstderr:\n{result.stderr}"
     )
+
+
+def _run_dotnet(
+    args: list[str],
+    *,
+    cwd: Path | None,
+    env: dict[str, str] | None = None,
+) -> subprocess.CompletedProcess[str]:
+    run_env = None if env is None else {**dict(os.environ), **env}
+    try:
+        return subprocess.run(
+            args,
+            cwd=cwd,
+            env=run_env,
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=DOTNET_TIMEOUT_SECONDS,
+        )
+    except subprocess.TimeoutExpired as exc:
+        message = "\n".join(
+            [
+                f"dotnet command timed out after {DOTNET_TIMEOUT_SECONDS}s: {' '.join(args)}",
+                f"stdout:\n{exc.stdout or ''}",
+                f"stderr:\n{exc.stderr or ''}",
+            ]
+        )
+        pytest.fail(message)
 
 
 def _candidate_ids(payload: InventoryPayload) -> set[str]:

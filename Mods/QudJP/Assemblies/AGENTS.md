@@ -57,6 +57,8 @@ just --list
 just ast-search-cs '<pattern>' Mods/QudJP/Assemblies/src
 just ast-search-cs '<pattern>'
 just lsp-check
+just unused-code-preview
+just unused-code-gate
 ```
 
 `just ast-search-cs '<pattern>'` without a path searches the configured
@@ -64,6 +66,14 @@ decompiled-source target. Use it with `~/dev/coq-decompiled_stable/` to trace
 upstream producers, verify signatures, and investigate unclaimed routes. Promote
 type-, receiver-, overload-, alias-, or inheritance-sensitive C# questions to
 the repo's Roslyn/static-analysis workflow described in the root `AGENTS.md`.
+Use `just unused-code-preview` to generate private/internal QudJP C#
+declaration candidates before cleanup. `just unused-code-gate` fails on any
+candidate and is useful for zero-candidate maintenance, but candidates still
+need owner review before deletion because Harmony, reflection, conditional
+compilation, and runtime-only routes can root code outside ordinary references.
+When the stable game reference is outside the default path, set
+`COQ_MANAGED_DIR` or pass the recipe's `managed_dir` argument so Harmony, game,
+Unity, and TMP metadata can participate in semantic resolution.
 
 When a patch reflects into upstream game members, verify the real signature in
 the decompiled source before choosing `AccessTools.Method` parameter types.
