@@ -216,6 +216,8 @@ public sealed class DescriptionTextTranslatorTests
     [TestCase("You are water-bonded with her.", "あなたは彼女と水の絆で結ばれている。")]
     [TestCase("You are water-bonded with it.", "あなたはそれと水の絆で結ばれている。")]
     [TestCase("You are water-bonded with them.", "あなたは彼らと水の絆で結ばれている。")]
+    [TestCase("You are water-bonded with a dromad caravan.", "あなたはドロマドのキャラバンと水の絆で結ばれている。")]
+    [TestCase("You are water-bonded with {{Y|a dromad caravan}}.", "あなたは{{Y|ドロマドのキャラバン}}と水の絆で結ばれている。")]
     [TestCase("身体的特徴: flaming pseudopod、flaming pseudopod、flaming pseudopod、flaming pseudopod", "身体的特徴: {{fiery|燃え盛る}}仮足、{{fiery|燃え盛る}}仮足、{{fiery|燃え盛る}}仮足、{{fiery|燃え盛る}}仮足")]
     [TestCase("身体的特徴: 枝角、thick fur", "身体的特徴: 枝角、厚い毛皮")]
     [TestCase("This item's AV and DV modifiers are being averaged across all body parts of the same type.", "このアイテムのAVとDV修正は同じ種類の全身体部位で平均化されている。")]

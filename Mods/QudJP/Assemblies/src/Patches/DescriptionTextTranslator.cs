@@ -685,6 +685,11 @@ internal static class DescriptionTextTranslator
             return true;
         }
 
+        if (TryTranslateWaterBondedLinePreservingColors(source, route, out translated))
+        {
+            return true;
+        }
+
         if (TryTranslateSultanShrineWrapperPreservingColors(source, route, out translated))
         {
             return true;
@@ -1299,7 +1304,7 @@ internal static class DescriptionTextTranslator
         if (waterBondedMatch.Success)
         {
             translated = "あなたは"
-                + TranslateWaterBondedTarget(waterBondedMatch.Groups["target"].Value)
+                + TranslateWaterBondedTarget(waterBondedMatch.Groups["target"].Value, route)
                 + "と水の絆で結ばれている。";
             DynamicTextObservability.RecordTransform(route, "Description.RuntimeObservedLine", source, translated);
             return true;
@@ -1398,7 +1403,26 @@ internal static class DescriptionTextTranslator
         return false;
     }
 
-    private static string TranslateWaterBondedTarget(string source)
+    private static bool TryTranslateWaterBondedLinePreservingColors(string source, string route, out string translated)
+    {
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        var match = WaterBondedLinePattern.Match(stripped);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        var targetGroup = match.Groups["target"];
+        var target = TranslateWaterBondedTarget(targetGroup.Value, route);
+        target = RestoreBalancedCapture(target, spans, targetGroup);
+        translated = "あなたは" + target + "と水の絆で結ばれている。";
+        translated = RestoreWholeLineBoundaryWrappers(translated, spans, stripped.Length);
+        DynamicTextObservability.RecordTransform(route, "Description.WaterBonded", source, translated);
+        return true;
+    }
+
+    private static string TranslateWaterBondedTarget(string source, string route)
     {
         var target = source.Trim();
         return target switch
@@ -1407,7 +1431,9 @@ internal static class DescriptionTextTranslator
             "her" => "彼女",
             "it" => "それ",
             "them" => "彼ら",
-            _ => target,
+            _ => TryTranslateVisibleSegment(target, route, allowMessagePatternTranslation: true, out var translatedTarget)
+                ? translatedTarget
+                : target,
         };
     }
 

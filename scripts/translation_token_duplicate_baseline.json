@@ -2044,28 +2044,6 @@
     {
       "scope": "cross_file",
       "path": "Dictionaries",
-      "key": "fish",
-      "entry_count": 2,
-      "texts": [
-        "魚",
-        "魚の"
-      ],
-      "occurrences": [
-        {
-          "path": "Dictionaries/Scoped/historyspice-common.ja.json",
-          "entry_index": 961,
-          "text": "魚"
-        },
-        {
-          "path": "Dictionaries/world-gospels.ja.json",
-          "entry_index": 672,
-          "text": "魚の"
-        }
-      ]
-    },
-    {
-      "scope": "cross_file",
-      "path": "Dictionaries",
       "key": "flaming",
       "entry_count": 2,
       "texts": [
