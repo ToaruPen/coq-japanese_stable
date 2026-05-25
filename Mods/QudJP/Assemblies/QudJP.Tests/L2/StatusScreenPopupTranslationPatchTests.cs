@@ -120,6 +120,69 @@ public sealed class StatusScreenPopupTranslationPatchTests
     }
 
     [Test]
+    public void BuyRandomMutation_HandlesMutationPickOptionDirectMarkers_WhenOwnerPatched()
+    {
+        var (intro, options) = TranslateMutationPickOption(
+            MessageFrameTranslator.MarkDirectTranslation("Choose a mutation."),
+            new[]
+            {
+                MessageFrameTranslator.MarkDirectTranslation(
+                    "{{W|Two-hearted}} - You have two hearts.\n+2 Toughness\nYou can sprint for 30% longer."),
+            });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(intro, Is.EqualTo("Choose a mutation."));
+            Assert.That(options, Is.Not.Null);
+            Assert.That(options![0], Is.EqualTo("{{W|Two-hearted}} - You have two hearts.\n+2 Toughness\nYou can sprint for 30% longer."));
+        });
+    }
+
+    [Test]
+    public void BuyRandomMutation_LeavesEmptyMutationPickOptionFieldsUnchanged_WhenOwnerPatched()
+    {
+        var (intro, options) = TranslateMutationPickOption(string.Empty, Array.Empty<string>());
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(intro, Is.Empty);
+            Assert.That(options, Is.Not.Null);
+            Assert.That(options, Is.Empty);
+        });
+    }
+
+    [Test]
+    public void BuyRandomMutation_PreservesColoredMutationPickOptionPromptAndFallbackOption_WhenOwnerPatched()
+    {
+        const string sourceIntro = "<color=#ff0>Choose a mutation.</color>";
+        const string sourceOption = "<color=#ff0>unhandled choice</color>";
+
+        var (intro, options) = TranslateMutationPickOption(sourceIntro, new[] { sourceOption });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(intro, Is.EqualTo("<color=#ff0>変異を選んでください。</color>"));
+            Assert.That(options, Is.Not.Null);
+            Assert.That(options![0], Is.EqualTo(sourceOption));
+        });
+    }
+
+    [Test]
+    public void BuyRandomMutation_LeavesUnsupportedMutationPickOptionPromptUnchanged_WhenOwnerPatched()
+    {
+        const string sourceIntro = "<color=#ff0>Choose an artifact.</color>";
+
+        var (intro, options) = TranslateMutationPickOption(sourceIntro, Array.Empty<string>());
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(intro, Is.EqualTo(sourceIntro));
+            Assert.That(options, Is.Not.Null);
+            Assert.That(options, Is.Empty);
+        });
+    }
+
+    [Test]
     public void Show_TranslatesPsychicGlimmerDebugPopup_WhenOwnerPatched()
     {
         AssertPopupMessage(
@@ -458,6 +521,36 @@ public sealed class StatusScreenPopupTranslationPatchTests
             _ = ownerMethod.Invoke(null, CreateOwnerArguments(ownerMethod));
 
             return DummyPopupShow.LastShowMessage ?? string.Empty;
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static (string? intro, IReadOnlyList<string>? options) TranslateMutationPickOption(
+        string intro,
+        IReadOnlyList<string> options)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPickOption(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(
+                    typeof(DummyStatusScreenPopupTarget),
+                    nameof(DummyStatusScreenPopupTarget.BuyRandomMutation),
+                    typeof(DummyGameObject)));
+
+            DummyStatusScreenPopupTarget.PickOptionTitleToSend = "";
+            DummyStatusScreenPopupTarget.PickOptionIntroToSend = intro;
+            DummyStatusScreenPopupTarget.PickOptionOptionsToSend = options;
+
+            _ = DummyStatusScreenPopupTarget.BuyRandomMutation(new DummyGameObject());
+
+            return (DummyPopupGenericTarget.LastPickOptionIntro, DummyPopupGenericTarget.LastPickOptionOptions);
         }
         finally
         {

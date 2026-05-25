@@ -154,8 +154,15 @@ public static class LevelerTranslationPatch
         var pickOptionMatch = RapidAdvancementPickOptionPattern.Match(stripped);
         if (pickOptionMatch.Success)
         {
+            if (!TryTranslateMutationTerm(pickOptionMatch.Groups["term"], spans, out var translatedTerm))
+            {
+                translated = source;
+                detail = string.Empty;
+                return false;
+            }
+
             translated = RestoreWhole(
-                $"急速に成長させる{TranslateMutationTerm(pickOptionMatch.Groups["term"], spans)}を選んでください。",
+                $"急速に成長させる{translatedTerm}を選んでください。",
                 spans,
                 stripped.Length,
                 source);
@@ -197,18 +204,28 @@ public static class LevelerTranslationPatch
 
     private static string TranslateMutationTerm(Group group, IReadOnlyList<ColorSpan> spans)
     {
+        return TryTranslateMutationTerm(group, spans, out var translated)
+            ? translated
+            : RestoreArticleStrippedCapture(group, spans);
+    }
+
+    private static bool TryTranslateMutationTerm(Group group, IReadOnlyList<ColorSpan> spans, out string translated)
+    {
         var stripped = StringHelpers.StripLeadingEnglishArticle(group.Value).Trim();
-        var translated = stripped.ToUpperInvariant() switch
+        translated = stripped.ToUpperInvariant() switch
         {
             "MUTATION" or "MUTATIONS" => "変異",
             "ESPER MUTATION" or "ESPER MUTATIONS" => "超能力変異",
             "MENTAL MUTATION" or "MENTAL MUTATIONS" => "精神変異",
             "PHYSICAL MUTATION" or "PHYSICAL MUTATIONS" => "身体的変異",
-            _ => null,
+            _ => string.Empty,
         };
+        if (string.IsNullOrEmpty(translated))
+        {
+            return false;
+        }
 
-        return translated is null
-            ? RestoreArticleStrippedCapture(group, spans)
-            : ColorAwareTranslationComposer.RestoreCapture(translated, spans, group).Trim();
+        translated = ColorAwareTranslationComposer.RestoreCapture(translated, spans, group).Trim();
+        return true;
     }
 }

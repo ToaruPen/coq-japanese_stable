@@ -195,8 +195,14 @@ public static class StatusScreenPopupTranslationPatch
         var promptMatch = MutationChoicePromptPattern.Match(stripped);
         if (promptMatch.Success)
         {
+            if (!TryTranslateMutationTerm(promptMatch.Groups["term"].Value, out var translatedTerm))
+            {
+                translated = source;
+                return false;
+            }
+
             translated = RestoreWhole(
-                $"{TranslateMutationTerm(promptMatch.Groups["term"].Value)}を選んでください。",
+                $"{translatedTerm}を選んでください。",
                 source,
                 stripped,
                 spans);
@@ -415,8 +421,14 @@ public static class StatusScreenPopupTranslationPatch
             return false;
         }
 
+        if (!TryTranslateMutationTerm(match.Groups["term"].Value, out var translatedTerm))
+        {
+            translated = source;
+            return false;
+        }
+
         translated = RestoreWhole(
-            $"利用可能な{TranslateMutationTerm(match.Groups["term"].Value)}はすべて持っている。",
+            $"利用可能な{translatedTerm}はすべて持っている。",
             source,
             stripped,
             spans);
@@ -477,14 +489,15 @@ public static class StatusScreenPopupTranslationPatch
         };
     }
 
-    private static string TranslateMutationTerm(string term)
+    private static bool TryTranslateMutationTerm(string term, out string translated)
     {
-        return term switch
+        translated = term switch
         {
             "mutation" or "mutations" => "変異",
             "defect" or "defects" => "欠陥",
-            _ => term,
+            _ => string.Empty,
         };
+        return !string.IsNullOrEmpty(translated);
     }
 
     internal static string TranslateMutationDisplayName(string source)

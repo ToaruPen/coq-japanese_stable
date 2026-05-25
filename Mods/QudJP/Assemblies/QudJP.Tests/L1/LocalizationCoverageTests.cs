@@ -531,15 +531,34 @@ public sealed class LocalizationCoverageTests
         var descriptionKeys = LoadEntries(Path.Combine(localizationRoot, "Dictionaries", "mutation-descriptions.ja.json"))
             .Select(static entry => entry.Key)
             .ToHashSet(StringComparer.Ordinal);
+        var rankKeys = LoadEntries(Path.Combine(localizationRoot, "Dictionaries", "mutation-ranktext.ja.json"))
+            .Select(static entry => entry.Key)
+            .ToHashSet(StringComparer.Ordinal);
+        var mutationVariants = LoadMutationNameVariantsWithDisplayName(Path.Combine(localizationRoot, "Mutations.jp.xml"))
+            .Concat(LoadMutationNameVariantsWithDisplayName(Path.Combine(localizationRoot, "HiddenMutations.jp.xml")))
+            .Where(static entry => !string.IsNullOrWhiteSpace(entry.variant))
+            .Distinct()
+            .ToArray();
 
         var missing = mutationNames
             .Where(name => !descriptionKeys.Contains($"mutation:{name}"))
             .ToArray();
+        var missingVariantRanks = mutationVariants
+            .Where(entry => !rankKeys.Contains($"mutation:{entry.name}:{entry.variant}:rank:1"))
+            .Select(entry => $"{entry.name}:{entry.variant}")
+            .ToArray();
 
-        Assert.That(
-            missing,
-            Is.Empty,
-            "Every mutation asset entry should have a mutation:<Name> long-description key for popup and menu owner routes.");
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                missing,
+                Is.Empty,
+                "Every mutation asset entry should have a mutation:<Name> long-description key for popup and menu owner routes.");
+            Assert.That(
+                missingVariantRanks,
+                Is.Empty,
+                "Every mutation asset entry with Variant should have a mutation:<Name>:<Variant>:rank:1 rank-text key.");
+        });
     }
 
     [Test]
@@ -1503,6 +1522,19 @@ public sealed class LocalizationCoverageTests
             .Select(element => element.Attribute("Name")?.Value)
             .Where(static value => !string.IsNullOrWhiteSpace(value))
             .Cast<string>()
+            .ToArray();
+    }
+
+    private static (string name, string variant)[] LoadMutationNameVariantsWithDisplayName(string path)
+    {
+        var document = XDocument.Load(path);
+        return document.Root!
+            .Descendants("mutation")
+            .Where(element => element.Attribute("DisplayName") is not null)
+            .Select(element => (
+                name: element.Attribute("Name")?.Value ?? string.Empty,
+                variant: element.Attribute("Variant")?.Value.Trim() ?? string.Empty))
+            .Where(static entry => !string.IsNullOrWhiteSpace(entry.name))
             .ToArray();
     }
 

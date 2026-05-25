@@ -190,6 +190,26 @@ public sealed class ChargenStructuredTextTranslatorTests
     }
 
     [Test]
+    public void TryTranslateMutationLongDescription_PrefersExplicitVariantRankKey()
+    {
+        WriteDictionary(
+            ("mutation:Freezing Ray", "任意の方向へ冷気の光線を放つ。"),
+            ("mutation:Freezing Ray:rank:1", "汎用の凍結線ランク説明。"),
+            ("mutation:Freezing Ray:Icy Vapor:rank:1", "選んだ方向に9マスの冷気線を放つ。"));
+
+        var translated = ChargenStructuredTextTranslator.TryTranslateMutationLongDescription(
+            "Freezing Ray",
+            "Icy Vapor",
+            out var result);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.True);
+            Assert.That(result, Is.EqualTo("任意の方向へ冷気の光線を放つ。\n\n選んだ方向に9マスの冷気線を放つ。"));
+        });
+    }
+
+    [Test]
     public void Translate_UsesMutationDictionaryForRawBeakDescription()
     {
         WriteDictionary(("mutation:Beak", "顔に立派なくちばしが生えている。\n\n{{rules|+1}} 意力。時おり敵をついばむ。"));

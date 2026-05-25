@@ -17,12 +17,14 @@ public sealed class LevelerTranslationPatchTests
         DynamicTextObservability.ResetForTests();
         MessageFrameTranslator.ResetForTests();
         DummyPopupShow.Reset();
+        DummyPopupGenericTarget.Reset();
     }
 
     [TearDown]
     public void TearDown()
     {
         DummyPopupShow.Reset();
+        DummyPopupGenericTarget.Reset();
         MessageFrameTranslator.ResetForTests();
         DynamicTextObservability.ResetForTests();
     }
@@ -109,6 +111,42 @@ public sealed class LevelerTranslationPatchTests
         });
     }
 
+    [TestCase(
+        "Choose a physical mutation to rapidly advance.",
+        "急速に成長させる身体的変異を選んでください。",
+        1)]
+    [TestCase(
+        "Choose a mutation to rapidly advance.",
+        "急速に成長させる変異を選んでください。",
+        1)]
+    [TestCase(
+        "Choose a lattice to rapidly advance.",
+        "Choose a lattice to rapidly advance.",
+        0)]
+    [TestCase("", "", 0)]
+    [TestCase(
+        "<color=#ff0>Choose a physical mutation to rapidly advance.</color>",
+        "<color=#ff0>急速に成長させる身体的変異を選んでください。</color>",
+        1)]
+    public void Patch_HandlesRapidAdvancementPickOptionTitleEdges_WhenOwnerPatched(
+        string source,
+        string expected,
+        int expectedHits)
+    {
+        AssertOwnerPickOptionTitle(source, expected, expectedHits);
+    }
+
+    [Test]
+    public void Patch_DoesNotRetranslateDirectMarkedPickOptionTitle_WhenOwnerPatched()
+    {
+        const string source = "Choose a physical mutation to rapidly advance.";
+
+        AssertOwnerPickOptionTitle(
+            MessageFrameTranslator.MarkDirectTranslation(source),
+            source,
+            expectedHits: 0);
+    }
+
     [Test]
     public void Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched()
     {
@@ -161,6 +199,25 @@ public sealed class LevelerTranslationPatchTests
                     Assert.That(HitCount(detail), Is.EqualTo(expectedHits));
                 });
             });
+    }
+
+    private static void AssertOwnerPickOptionTitle(string source, string expected, int expectedHits)
+    {
+        LevelerTranslationPatch.Prefix();
+        try
+        {
+            CallPickOption(source);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyPopupGenericTarget.LastPickOptionTitle, Is.EqualTo(expected));
+                Assert.That(PickOptionHitCount("LevelerRapidAdvancementPickOption"), Is.EqualTo(expectedHits));
+            });
+        }
+        finally
+        {
+            _ = LevelerTranslationPatch.Finalizer(null);
+        }
     }
 
     private static MethodInfo RequireOwnerMethod()

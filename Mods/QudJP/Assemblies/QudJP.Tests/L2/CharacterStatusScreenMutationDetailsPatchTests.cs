@@ -123,6 +123,46 @@ public sealed class CharacterStatusScreenMutationDetailsPatchTests
     }
 
     [Test]
+    public void Postfix_PrefersMutationVariantRankKey_WhenGenericRankExists()
+    {
+        WriteDictionary(
+            ("mutation:Freezing Ray", "任意の方向へ冷気の光線を放つ。"),
+            ("mutation:Freezing Ray:rank:1", "汎用の凍結線ランク説明。"),
+            ("mutation:Freezing Ray:Icy Vapor:rank:1", "選んだ方向に9マスの冷気線を放つ。"));
+
+        var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyCharacterStatusMutationScreen), nameof(DummyCharacterStatusMutationScreen.HandleHighlightMutation)),
+                postfix: new HarmonyMethod(RequireMethod(typeof(CharacterStatusScreenMutationDetailsPatch), nameof(CharacterStatusScreenMutationDetailsPatch.Postfix))));
+
+            var screen = new DummyCharacterStatusMutationScreen();
+            screen.HandleHighlightMutation(new DummyCharacterMutationLineData
+            {
+                mutation = new DummyCharacterMutation
+                {
+                    Name = "FreezingRay",
+                    EntryName = "Freezing Ray",
+                    DisplayName = "Freezing Ray",
+                    Variant = "Icy Vapor",
+                    Level = 1,
+                },
+            });
+
+            Assert.That(
+                screen.mutationsDetails.Text,
+                Is.EqualTo("任意の方向へ冷気の光線を放つ。\n\n選んだ方向に9マスの冷気線を放つ。"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void Postfix_RecordsMutationDetailsOwnerRouteTransform_WithoutUITextSkinSinkObservation_WhenPatched()
     {
         WriteDictionary(

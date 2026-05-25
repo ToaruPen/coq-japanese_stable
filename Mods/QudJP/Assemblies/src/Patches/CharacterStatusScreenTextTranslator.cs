@@ -527,12 +527,6 @@ internal static class CharacterStatusScreenTextTranslator
 
     private static string? GetMutationRankDictionaryValue(string mutationName, string? variant, int level)
     {
-        var simpleRank = GetMutationDictionaryValue($"mutation:{mutationName}:rank:{level}");
-        if (!string.IsNullOrEmpty(simpleRank))
-        {
-            return simpleRank;
-        }
-
         if (!string.IsNullOrWhiteSpace(variant))
         {
             var variantRank = GetMutationDictionaryValue($"mutation:{mutationName}:{variant!.Trim()}:rank:{level}");
@@ -540,6 +534,12 @@ internal static class CharacterStatusScreenTextTranslator
             {
                 return variantRank;
             }
+        }
+
+        var simpleRank = GetMutationDictionaryValue($"mutation:{mutationName}:rank:{level}");
+        if (!string.IsNullOrEmpty(simpleRank))
+        {
+            return simpleRank;
         }
 
         return TryGetStingerRankKey(mutationName, level, out var stingerRankKey)

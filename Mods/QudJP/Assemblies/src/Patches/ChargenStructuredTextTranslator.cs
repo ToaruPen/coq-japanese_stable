@@ -235,12 +235,6 @@ internal static class ChargenStructuredTextTranslator
 
     private static bool TryGetMutationRankText(string mutationName, string? variant, string simpleRankKey, out string rankText)
     {
-        if (Translator.TryGetTranslation(simpleRankKey, out rankText)
-            && !string.Equals(rankText, simpleRankKey, StringComparison.Ordinal))
-        {
-            return true;
-        }
-
         if (!string.IsNullOrWhiteSpace(variant))
         {
             var variantRankKey = string.Concat("mutation:", mutationName, ":", variant!.Trim(), ":rank:1");
@@ -249,6 +243,12 @@ internal static class ChargenStructuredTextTranslator
             {
                 return true;
             }
+        }
+
+        if (Translator.TryGetTranslation(simpleRankKey, out rankText)
+            && !string.Equals(rankText, simpleRankKey, StringComparison.Ordinal))
+        {
+            return true;
         }
 
         if (!TryGetStingerRankKey(mutationName, out var stingerRankKey))
