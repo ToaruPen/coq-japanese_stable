@@ -521,9 +521,10 @@
       "scope": "cross_file",
       "path": "Dictionaries",
       "key": "Look",
-      "entry_count": 3,
+      "entry_count": 4,
       "texts": [
         "見よ",
+        "見る",
         "見る",
         "見る"
       ],
@@ -536,6 +537,11 @@
         {
           "path": "Dictionaries/ui-default.ja.json",
           "entry_index": 81,
+          "text": "見る"
+        },
+        {
+          "path": "Dictionaries/ui-pick-target.ja.json",
+          "entry_index": 4,
           "text": "見る"
         },
         {
@@ -2321,9 +2327,10 @@
       "scope": "cross_file",
       "path": "Dictionaries",
       "key": "interact",
-      "entry_count": 2,
+      "entry_count": 3,
       "texts": [
         "インタラクト",
+        "操作する",
         "操作する"
       ],
       "occurrences": [
@@ -2331,6 +2338,11 @@
           "path": "Dictionaries/ui-default.ja.json",
           "entry_index": 82,
           "text": "インタラクト"
+        },
+        {
+          "path": "Dictionaries/ui-pick-target.ja.json",
+          "entry_index": 6,
+          "text": "操作する"
         },
         {
           "path": "Dictionaries/ui-popup.ja.json",

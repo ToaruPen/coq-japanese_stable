@@ -164,6 +164,51 @@ public sealed class ChargenStructuredTextTranslatorTests
         });
     }
 
+    [TestCase("Freezing Ray", "Icy Vapor", "任意の方向へ冷気の光線を放つ。", "選んだ方向に9マスの冷気線を放つ。")]
+    [TestCase("Flaming Ray", "Ghostly Flames", "任意の方向へ火炎の光線を放つ。", "選んだ方向に9マスの火炎線を放つ。")]
+    [TestCase("Horns", "Horns Antlers", "頭から鋭い角が生えている。", "枝角で敵を突く。")]
+    public void TryTranslateMutationLongDescription_UsesExplicitVariantRankKey(
+        string mutationName,
+        string variant,
+        string description,
+        string rankText)
+    {
+        WriteDictionary(
+            ($"mutation:{mutationName}", description),
+            ($"mutation:{mutationName}:{variant}:rank:1", rankText));
+
+        var translated = ChargenStructuredTextTranslator.TryTranslateMutationLongDescription(
+            mutationName,
+            variant,
+            out var result);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.True);
+            Assert.That(result, Is.EqualTo($"{description}\n\n{rankText}"));
+        });
+    }
+
+    [Test]
+    public void TryTranslateMutationLongDescription_PrefersExplicitVariantRankKey()
+    {
+        WriteDictionary(
+            ("mutation:Freezing Ray", "任意の方向へ冷気の光線を放つ。"),
+            ("mutation:Freezing Ray:rank:1", "汎用の凍結線ランク説明。"),
+            ("mutation:Freezing Ray:Icy Vapor:rank:1", "選んだ方向に9マスの冷気線を放つ。"));
+
+        var translated = ChargenStructuredTextTranslator.TryTranslateMutationLongDescription(
+            "Freezing Ray",
+            "Icy Vapor",
+            out var result);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.True);
+            Assert.That(result, Is.EqualTo("任意の方向へ冷気の光線を放つ。\n\n選んだ方向に9マスの冷気線を放つ。"));
+        });
+    }
+
     [Test]
     public void Translate_UsesMutationDictionaryForRawBeakDescription()
     {

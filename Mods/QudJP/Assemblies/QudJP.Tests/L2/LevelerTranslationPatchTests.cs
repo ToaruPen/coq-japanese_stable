@@ -17,12 +17,14 @@ public sealed class LevelerTranslationPatchTests
         DynamicTextObservability.ResetForTests();
         MessageFrameTranslator.ResetForTests();
         DummyPopupShow.Reset();
+        DummyPopupGenericTarget.Reset();
     }
 
     [TearDown]
     public void TearDown()
     {
         DummyPopupShow.Reset();
+        DummyPopupGenericTarget.Reset();
         MessageFrameTranslator.ResetForTests();
         DynamicTextObservability.ResetForTests();
     }
@@ -68,6 +70,81 @@ public sealed class LevelerTranslationPatchTests
             Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(source));
             Assert.That(HitCount("LevelerRapidAdvancement"), Is.Zero);
         });
+    }
+
+    [Test]
+    public void Patch_TranslatesRapidAdvancementPickOptionTitle_WhenOwnerPatched()
+    {
+        const string source = "Choose a physical mutation to rapidly advance.";
+
+        LevelerTranslationPatch.Prefix();
+        try
+        {
+            new DummyLevelerProducer
+            {
+                PickOptionTitleToShow = source,
+            }.RapidAdvancement(3, new DummyGameObject());
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyPopupGenericTarget.LastPickOptionTitle, Is.EqualTo("急速に成長させる身体的変異を選んでください。"));
+                Assert.That(PickOptionHitCount("LevelerRapidAdvancementPickOption"), Is.EqualTo(1));
+            });
+        }
+        finally
+        {
+            _ = LevelerTranslationPatch.Finalizer(null);
+        }
+    }
+
+    [Test]
+    public void Patch_DoesNotTranslateRapidAdvancementPickOptionTitle_WhenOwnerAbsent()
+    {
+        const string source = "Choose a physical mutation to rapidly advance.";
+
+        CallPickOption(source);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(DummyPopupGenericTarget.LastPickOptionTitle, Is.EqualTo(source));
+            Assert.That(PickOptionHitCount("LevelerRapidAdvancementPickOption"), Is.Zero);
+        });
+    }
+
+    [TestCase(
+        "Choose a physical mutation to rapidly advance.",
+        "急速に成長させる身体的変異を選んでください。",
+        1)]
+    [TestCase(
+        "Choose a mutation to rapidly advance.",
+        "急速に成長させる変異を選んでください。",
+        1)]
+    [TestCase(
+        "Choose a lattice to rapidly advance.",
+        "Choose a lattice to rapidly advance.",
+        0)]
+    [TestCase("", "", 0)]
+    [TestCase(
+        "<color=#ff0>Choose a physical mutation to rapidly advance.</color>",
+        "<color=#ff0>急速に成長させる身体的変異を選んでください。</color>",
+        1)]
+    public void Patch_HandlesRapidAdvancementPickOptionTitleEdges_WhenOwnerPatched(
+        string source,
+        string expected,
+        int expectedHits)
+    {
+        AssertOwnerPickOptionTitle(source, expected, expectedHits);
+    }
+
+    [Test]
+    public void Patch_DoesNotRetranslateDirectMarkedPickOptionTitle_WhenOwnerPatched()
+    {
+        const string source = "Choose a physical mutation to rapidly advance.";
+
+        AssertOwnerPickOptionTitle(
+            MessageFrameTranslator.MarkDirectTranslation(source),
+            source,
+            expectedHits: 0);
     }
 
     [Test]
@@ -124,6 +201,25 @@ public sealed class LevelerTranslationPatchTests
             });
     }
 
+    private static void AssertOwnerPickOptionTitle(string source, string expected, int expectedHits)
+    {
+        LevelerTranslationPatch.Prefix();
+        try
+        {
+            CallPickOption(source);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyPopupGenericTarget.LastPickOptionTitle, Is.EqualTo(expected));
+                Assert.That(PickOptionHitCount("LevelerRapidAdvancementPickOption"), Is.EqualTo(expectedHits));
+            });
+        }
+        finally
+        {
+            _ = LevelerTranslationPatch.Finalizer(null);
+        }
+    }
+
     private static MethodInfo RequireOwnerMethod()
     {
         return AccessTools.Method(
@@ -140,16 +236,60 @@ public sealed class LevelerTranslationPatchTests
         return OwnerPopupRouteTestHarness.RouteHitCount(typeof(LevelerTranslationPatch), detail);
     }
 
+    private static int PickOptionHitCount(string detail)
+    {
+        return DynamicTextObservability.GetRouteFamilyHitCountForTests(
+            nameof(PopupPickOptionTranslationPatch),
+            "Popup.ProducerText." + nameof(LevelerTranslationPatch) + "." + detail);
+    }
+
     private sealed class DummyLevelerProducer
     {
         public string PopupMessageToShow { get; set; } = string.Empty;
+
+        public string PickOptionTitleToShow { get; set; } = string.Empty;
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         public void RapidAdvancement(int amount, DummyGameObject parentObject)
         {
             _ = amount;
             _ = parentObject;
+            if (!string.IsNullOrEmpty(PickOptionTitleToShow))
+            {
+                CallPickOption(PickOptionTitleToShow);
+                return;
+            }
+
             DummyPopupShow.Show(PopupMessageToShow);
+        }
+    }
+
+    private static void CallPickOption(string title)
+    {
+        string? intro = null;
+        var spacingText = string.Empty;
+        IReadOnlyList<string>? options = null;
+        object? buttons = null;
+        string? popupId = null;
+
+        PopupPickOptionTranslationPatch.Prefix(
+            ref title,
+            ref intro,
+            ref spacingText,
+            ref options,
+            buttons,
+            popupId);
+        try
+        {
+            DummyPopupGenericTarget.PickOption(
+                Title: title,
+                Intro: intro,
+                SpacingText: spacingText,
+                Options: options);
+        }
+        finally
+        {
+            PopupPickOptionTranslationPatch.Finalizer();
         }
     }
 }

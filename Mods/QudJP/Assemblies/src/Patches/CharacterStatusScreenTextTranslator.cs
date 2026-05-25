@@ -215,11 +215,12 @@ internal static class CharacterStatusScreenTextTranslator
 
         var description = GetMutationDictionaryValue($"mutation:{mutationName}");
         var level = GetIntMemberValue(mutation, "Level");
+        var variant = GetStringMemberValue(mutation, "Variant");
         var currentRank = level.HasValue
-            ? GetMutationRankDictionaryValue(mutationName!, level.Value)
+            ? GetMutationRankDictionaryValue(mutationName!, variant, level.Value)
             : null;
         var nextRank = level.HasValue
-            ? GetMutationRankDictionaryValue(mutationName!, level.Value + 1)
+            ? GetMutationRankDictionaryValue(mutationName!, variant, level.Value + 1)
             : null;
 
 #pragma warning disable CA2249
@@ -524,8 +525,17 @@ internal static class CharacterStatusScreenTextTranslator
             : null;
     }
 
-    private static string? GetMutationRankDictionaryValue(string mutationName, int level)
+    private static string? GetMutationRankDictionaryValue(string mutationName, string? variant, int level)
     {
+        if (!string.IsNullOrWhiteSpace(variant))
+        {
+            var variantRank = GetMutationDictionaryValue($"mutation:{mutationName}:{variant!.Trim()}:rank:{level}");
+            if (!string.IsNullOrEmpty(variantRank))
+            {
+                return variantRank;
+            }
+        }
+
         var simpleRank = GetMutationDictionaryValue($"mutation:{mutationName}:rank:{level}");
         if (!string.IsNullOrEmpty(simpleRank))
         {

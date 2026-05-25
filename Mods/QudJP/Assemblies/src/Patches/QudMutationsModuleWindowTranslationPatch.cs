@@ -123,14 +123,14 @@ public static class QudMutationsModuleWindowTranslationPatch
                     continue;
                 }
 
-                changed |= TranslateMenuOption(menuOption);
+                changed |= TranslateMenuOption(instance, menuOption);
             }
         }
 
         return changed;
     }
 
-    private static bool TranslateMenuOption(object menuOption)
+    private static bool TranslateMenuOption(object windowInstance, object menuOption)
     {
         if (!TryGetStringMemberValue(menuOption, "Id", out var mutationName)
             || string.IsNullOrWhiteSpace(mutationName))
@@ -150,7 +150,8 @@ public static class QudMutationsModuleWindowTranslationPatch
             }
         }
 
-        if (ChargenStructuredTextTranslator.TryTranslateMutationLongDescription(mutationName!, out var translatedLongDescription)
+        var variant = TryGetMutationNodeVariant(windowInstance, mutationName!);
+        if (ChargenStructuredTextTranslator.TryTranslateMutationLongDescription(mutationName!, variant, out var translatedLongDescription)
             && (!TryGetStringMemberValue(menuOption, "LongDescription", out var longDescription)
                 || !string.Equals(longDescription, translatedLongDescription, StringComparison.Ordinal)))
         {
@@ -159,6 +160,57 @@ public static class QudMutationsModuleWindowTranslationPatch
         }
 
         return changed;
+    }
+
+    private static string? TryGetMutationNodeVariant(object instance, string mutationName)
+    {
+        if (!TryGetMemberValue(instance, "mutationNodes", out var mutationNodesValue)
+            || mutationNodesValue is not IEnumerable mutationNodes)
+        {
+            return null;
+        }
+
+        foreach (var node in mutationNodes)
+        {
+            if (node is null)
+            {
+                continue;
+            }
+
+            if (!TryGetMemberValue(node, "Entry", out var entry)
+                || entry is null
+                || !TryGetStringMemberValue(entry, "Name", out var entryName)
+                || !string.Equals(entryName, mutationName, StringComparison.Ordinal))
+            {
+                continue;
+            }
+
+            if (TryGetStringMemberValue(node, "Variant", out var variant)
+                && !string.IsNullOrWhiteSpace(variant))
+            {
+                return variant;
+            }
+
+            if (TryGetStringMemberValue(entry, "Variant", out var entryVariant)
+                && !string.IsNullOrWhiteSpace(entryVariant))
+            {
+                return entryVariant;
+            }
+
+            var exemplar = TryGetMemberValue(node, "Exemplar", out var exemplarValue)
+                ? exemplarValue
+                : null;
+            if (exemplar is not null
+                && TryGetStringMemberValue(exemplar, "Variant", out var exemplarVariant)
+                && !string.IsNullOrWhiteSpace(exemplarVariant))
+            {
+                return exemplarVariant;
+            }
+
+            return null;
+        }
+
+        return null;
     }
 
     private static void RefreshMenuOptions(object instance)

@@ -487,6 +487,18 @@ public static class PopupTranslationPatch
             return true;
         }
 
+        if (LevelerTranslationPatch.TryTranslatePopupMessage(source, route, family, out var levelerTranslated))
+        {
+            translated = levelerTranslated;
+            return true;
+        }
+
+        if (StatusScreenPopupTranslationPatch.TryTranslatePopupMessage(source, route, family, out var statusScreenTranslated))
+        {
+            translated = statusScreenTranslated;
+            return true;
+        }
+
         if (WaterRitualTextTranslator.TryTranslateReputationMessage(
                 source,
                 route,

@@ -6,6 +6,20 @@ internal static class DummyStatusScreenPopupTarget
 {
     public static string MessageToSend { get; set; } = string.Empty;
 
+    public static string PickOptionTitleToSend { get; set; } = string.Empty;
+
+    public static string PickOptionIntroToSend { get; set; } = string.Empty;
+
+    public static IReadOnlyList<string>? PickOptionOptionsToSend { get; set; }
+
+    public static void Reset()
+    {
+        MessageToSend = string.Empty;
+        PickOptionTitleToSend = string.Empty;
+        PickOptionIntroToSend = string.Empty;
+        PickOptionOptionsToSend = null;
+    }
+
     [MethodImpl(MethodImplOptions.NoInlining)]
     public static void BuyStat(DummyGameObject go, string chosenStat)
     {
@@ -18,6 +32,17 @@ internal static class DummyStatusScreenPopupTarget
     public static bool BuyRandomMutation(DummyGameObject go)
     {
         _ = go;
+        if (!string.IsNullOrEmpty(PickOptionTitleToSend)
+            || !string.IsNullOrEmpty(PickOptionIntroToSend)
+            || PickOptionOptionsToSend is not null)
+        {
+            DummyPopupGenericTarget.PickOption(
+                Title: PickOptionTitleToSend,
+                Intro: PickOptionIntroToSend,
+                Options: PickOptionOptionsToSend);
+            return true;
+        }
+
         DummyPopupShow.Show(MessageToSend);
         return true;
     }

@@ -12,6 +12,13 @@ internal sealed class DummyQudMutationsModuleWindow
             new DummyMutationMenuOption("Stinger (Confusing Venom)", "Stinger (Confusing Venom) [{{W|V}}]", "Sting things.", hasVariantSelector: true)),
     ];
 
+    public List<DummyMutationNode> mutationNodes =
+    [
+        new DummyMutationNode("Esper"),
+        new DummyMutationNode("Adrenal Control"),
+        new DummyMutationNode("Stinger (Confusing Venom)"),
+    ];
+
     public void UpdateControls()
     {
         foreach (var categoryMenu in categoryMenus)
@@ -31,6 +38,45 @@ internal sealed class DummyQudMutationsModuleWindow
             ? string.Concat(entryId, " [{{W|V}}]")
             : entryId;
     }
+}
+
+internal sealed class DummyMutationNode
+{
+    public DummyMutationNode(string entryName, string variant = "")
+    {
+        Entry = new DummyMutationWindowEntry(entryName, variant);
+        Variant = variant;
+        Exemplar = new DummyMutationWindowExemplar(variant);
+    }
+
+    public DummyMutationWindowEntry Entry { get; }
+
+    public string Variant { get; set; }
+
+    public DummyMutationWindowExemplar Exemplar { get; }
+}
+
+internal sealed class DummyMutationWindowEntry
+{
+    public DummyMutationWindowEntry(string name, string variant)
+    {
+        Name = name;
+        Variant = variant;
+    }
+
+    public string Name { get; }
+
+    public string Variant { get; }
+}
+
+internal sealed class DummyMutationWindowExemplar
+{
+    public DummyMutationWindowExemplar(string variant)
+    {
+        Variant = variant;
+    }
+
+    public string Variant { get; }
 }
 
 internal sealed class DummyMutationCategoryMenuData

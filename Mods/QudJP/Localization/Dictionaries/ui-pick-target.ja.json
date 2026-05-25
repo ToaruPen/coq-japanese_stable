@@ -24,6 +24,26 @@
       "text": "対象をマーク"
     },
     {
+      "key": "Look",
+      "context": "PickTarget.CommandBar",
+      "text": "見る"
+    },
+    {
+      "key": "lock",
+      "context": "PickTarget.CommandBar",
+      "text": "ロック"
+    },
+    {
+      "key": "interact",
+      "context": "PickTarget.CommandBar",
+      "text": "操作する"
+    },
+    {
+      "key": "walk",
+      "context": "PickTarget.CommandBar",
+      "text": "歩く"
+    },
+    {
       "key": "Dig to where?",
       "context": "PickTarget.Digging.Label",
       "text": "どこまで掘る？"
