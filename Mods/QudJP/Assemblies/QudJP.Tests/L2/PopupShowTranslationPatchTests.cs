@@ -580,6 +580,38 @@ public sealed class PopupShowTranslationPatchTests
     }
 
     [Test]
+    public void Prefix_PhysicsAttackConfirm_TranslatesGeneratedDisplayNameTarget()
+    {
+        WriteDictionaryFile("ui-displayname-adjectives.ja.json", ("solar", "太陽光"));
+        WriteDictionaryFile(
+            "ui-displayname-atomic.ja.json",
+            ("pumping station", "ポンプステーション"),
+            ("solar pumping station", "太陽光 ポンプステーション"));
+
+        var translated = RunShowYesNoWithPopupPatch("Do you really want to attack the solar pumping station?");
+
+        Assert.That(translated, Is.EqualTo("本当に太陽光 ポンプステーションを攻撃しますか？"));
+    }
+
+    [Test]
+    public void PhysicsAttackConfirm_FallsBackToOriginalWhenTargetTranslationDictionaryIsMissing()
+    {
+        var source = "Do you really want to attack the solar pumping station?";
+        Translator.SetDictionaryDirectoryForTests(Path.Combine(tempDirectory, "missing-dictionaries"));
+
+        var changed = PopupTranslationPatch.TryTranslatePhysicsAttackConfirmText(
+            source,
+            Array.Empty<ColorSpan>(),
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(changed, Is.False);
+            Assert.That(translated, Is.EqualTo(source));
+        });
+    }
+
+    [Test]
     public void Prefix_PhysicsAttackConfirm_StripsDirectMarkerWithoutRetranslating()
     {
         var source = "Do you really want to attack the ウォーターヴァイン農家?";
@@ -938,6 +970,33 @@ public sealed class PopupShowTranslationPatchTests
         builder.AppendLine();
 
         var path = Path.Combine(tempDirectory, "popup-show.ja.json");
+        File.WriteAllText(path, builder.ToString(), new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
+    }
+
+    private void WriteDictionaryFile(string fileName, params (string key, string text)[] entries)
+    {
+        var builder = new StringBuilder();
+        builder.Append('{');
+        builder.Append("\"entries\":[");
+
+        for (var index = 0; index < entries.Length; index++)
+        {
+            if (index > 0)
+            {
+                builder.Append(',');
+            }
+
+            builder.Append("{\"key\":\"");
+            builder.Append(EscapeJson(entries[index].key));
+            builder.Append("\",\"text\":\"");
+            builder.Append(EscapeJson(entries[index].text));
+            builder.Append("\"}");
+        }
+
+        builder.Append("]}");
+        builder.AppendLine();
+
+        var path = Path.Combine(tempDirectory, fileName);
         File.WriteAllText(path, builder.ToString(), new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
     }
 

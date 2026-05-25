@@ -1220,6 +1220,14 @@
       "text": "メニューを閉じる"
     },
     {
+      "key": "Space-select",
+      "text": "[Space] 選択"
+    },
+    {
+      "key": "space-select",
+      "text": "[Space] 選択"
+    },
+    {
       "key": "Loading wish commands",
       "text": "wishコマンドを読み込み中"
     }

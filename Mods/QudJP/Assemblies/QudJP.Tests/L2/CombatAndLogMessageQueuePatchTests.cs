@@ -3625,10 +3625,10 @@ public sealed class CombatAndLogMessageQueuePatchTests
     [TestCase("snapjaw kicks glowfish backwards.", "snapjawがglowfishを後ろへ蹴り飛ばした。")]
     [TestCase(
         "The momentum from your charge causes your {{Y|battle axe}} to cleave deeper through {{R|snapjaw's armor}}.",
-        "突撃の勢いで{{Y|battle axe}}が{{R|snapjawのarmor}}をさらに深く切り裂いた。")]
-    [TestCase("You cleave through snapjaw's armor.", "snapjawのarmorを切り裂いた。")]
-    [TestCase("snapjaw cleaves through your armor.", "snapjawがあなたのarmorを切り裂いた。")]
-    [TestCase("snapjaw cleaves through glowfish's armor.", "snapjawがglowfishのarmorを切り裂いた。")]
+        "突撃の勢いで{{Y|battle axe}}が{{R|snapjawの装甲}}をさらに深く切り裂いた。")]
+    [TestCase("You cleave through snapjaw's armor.", "snapjawの装甲を切り裂いた。")]
+    [TestCase("snapjaw cleaves through your armor.", "snapjawがあなたの装甲を切り裂いた。")]
+    [TestCase("snapjaw cleaves through glowfish's armor.", "snapjawがglowfishの装甲を切り裂いた。")]
     [TestCase("You shook off the stun.", "スタンを振り払った。")]
     [TestCase("You shook off the dazing.", "朦朧を振り払った。")]
     [TestCase("The snapjaw shook off the stun.", "snapjawはスタンを振り払った。")]
@@ -3728,7 +3728,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
 
                 Assert.Multiple(() =>
                 {
-                    Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("snapjawのarmorを切り裂いた。"));
+                    Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("snapjawの装甲を切り裂いた。"));
                     Assert.That(CombatSkillHitCount(), Is.EqualTo(1));
                 });
             }
@@ -6721,6 +6721,10 @@ public sealed class CombatAndLogMessageQueuePatchTests
             ("An electrical arc leaps toward you!", "電弧があなたへ走った！"),
             ("Your カービン is already fully loaded.", "カービンはすでに完全に装填されている。"),
             ("The 凍結した タールまみれの 結合ギルシュリング は二つに分裂した！", "凍結した タールまみれの 結合ギルシュリングは二つに分裂した！"),
+            ("A loud buzz is emitted. The unauthorized glyph flashes on the display.", "大きなブザー音が鳴った。認証されていないグリフがディスプレイに点滅した。"),
+            ("Youは氷で滑った！", "あなたは氷で滑った！"),
+            ("The 濡れた ジュースサップは氷で滑った！", "濡れた ジュースサップは氷で滑った！"),
+            ("濡れたチェインレーザー砲座の shot goes wild!", "濡れたチェインレーザー砲座の弾が逸れた！"),
         };
 
         UseRepositoryPatternDictionary();
@@ -7416,7 +7420,9 @@ public sealed class CombatAndLogMessageQueuePatchTests
             ("You miss!", "攻撃は外れた！"),
             ("You miss with your bronze dagger! [10 vs 14]", "bronze daggerでの攻撃は外れた。[10 vs 14]"),
             ("You miss! [10 vs 14]", "攻撃は外れた！ [10 vs 14]"),
+            ("The 山羊人の暴漢 misses you with his ! [7 vs 10]", "山羊人の暴漢の攻撃は外れた。[7 vs 10]"),
             ("Snapjaw Scavenger misses you!", "Snapjaw Scavengerの攻撃は外れた"),
+            ("Snapjaw Scavenger misses you with its attack! [10 vs 14]", "Snapjaw Scavengerの攻撃は外れた。[10 vs 14]"),
             ("Snapjaw Scavenger misses you with its bronze dagger! [10 vs 14]", "Snapjaw Scavengerのbronze daggerは外れた。[10 vs 14]"),
             ("Snapjaw Scavenger misses you! [10 vs 14]", "Snapjaw Scavengerの攻撃は外れた！ [10 vs 14]"),
             ("Your mental attack does not affect Snapjaw Scavenger.", "あなたの精神攻撃はSnapjaw Scavengerに効かない。"),

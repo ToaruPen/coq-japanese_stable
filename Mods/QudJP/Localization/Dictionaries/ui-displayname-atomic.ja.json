@@ -47,6 +47,7 @@
     { "key": "disciple of the Coiled Lamb", "context": "GetDisplayName.Title", "text": "巻かれた仔羊の弟子" },
     { "key": "hindren pariah", "context": "GetDisplayName.Title", "text": "ヒンドレンのパリア" },
     { "key": "Mechanimist convert", "text": "メカニミスト改宗者" },
+    { "key": "Oboroqoru", "text": "オボロコル" },
     { "key": "Torch", "text": "たいまつ" },
     { "key": "Wooden Arrow", "text": "木の矢" },
     { "key": "copper nugget", "text": "銅塊" },
@@ -58,6 +59,8 @@
     { "key": "Horn", "text": "単角" },
     { "key": "Antlers", "text": "枝角" },
     { "key": "open air", "text": "開けた空間" },
-    { "key": "craggy ledge", "text": "険しい岩棚" }
+    { "key": "craggy ledge", "text": "険しい岩棚" },
+    { "key": "pumping station", "text": "ポンプステーション" },
+    { "key": "solar pumping station", "text": "太陽光 ポンプステーション" }
   ]
 }

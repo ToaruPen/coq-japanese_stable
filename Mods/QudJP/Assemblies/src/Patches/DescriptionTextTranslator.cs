@@ -63,7 +63,7 @@ internal static class DescriptionTextTranslator
 
     private static readonly Regex HistoricNarrativeLinePattern =
         new Regex(
-            "^(?:In\\s+.+?\\s+(?:BR|AR),|At\\s+.+?,|Around\\s+.+?,|Through(?:out)?\\s+.+?,|Sometime\\s+in\\s+.+?,|While\\s+.+?,|Deep\\s+in\\s+.+?,|Acting\\s+against\\s+.+?,|Near\\s+the\\s+location\\s+of\\s+.+?,)",
+            "^(?:In\\s+.+?\\s+(?:BR|AR),|Early\\s+in\\s+.+?\\s+(?:BR|AR),|Late\\s+in\\s+.+?\\s+(?:BR|AR),|At\\s+.+?,|Around\\s+.+?,|Through(?:out)?\\s+.+?,|Sometime\\s+in\\s+.+?,|While\\s+.+?,|Deep\\s+in\\s+.+?,|Acting\\s+against\\s+.+?,|Near\\s+the\\s+location\\s+of\\s+.+?,)",
             RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     private static readonly Regex TombMuralWrapperPattern =
@@ -120,8 +120,10 @@ internal static class DescriptionTextTranslator
     private static readonly Regex PoweredOffLinePattern =
         new Regex("^.+? (?:is|are) powered off\\.$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
-    private static readonly Regex WhenActivatedAttributeLinePattern =
-        new Regex("^When activated, \\+(?<amount>\\d+) (?<attribute>Strength|Toughness|Willpower|Agility|Ego|Intelligence)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex StatAdjustLinePattern =
+        new Regex(
+            "^(?<activated>When activated, )?(?<amount>[+-]\\d+)(?<percent>%?) (?<stat>Strength|Toughness|Willpower|Agility|Ego|Intelligence|quickness|hit points|move speed|acid resistance|cold resistance|electric resistance|heat resistance|AV|DV|MA|PV)$",
+            RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     private static readonly Regex ItReadsLinePattern =
         new Regex("^It reads, '(?<text>.+)'\\.$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
@@ -874,6 +876,11 @@ internal static class DescriptionTextTranslator
             return false;
         }
 
+        if (TryTranslateRuntimeObservedDescriptionLine(source, route, out translated))
+        {
+            return true;
+        }
+
         if (TryTranslateLabeledList(source, route, out translated))
         {
             return true;
@@ -920,11 +927,6 @@ internal static class DescriptionTextTranslator
         }
 
         if (TryTranslateStuckInStateLine(source, route, out translated))
-        {
-            return true;
-        }
-
-        if (TryTranslateRuntimeObservedDescriptionLine(source, route, out translated))
         {
             return true;
         }
@@ -1281,6 +1283,13 @@ internal static class DescriptionTextTranslator
             return true;
         }
 
+        if (string.Equals(source, "Contains plumbing enabling it to function as part of hydraulic transmission system, producing hydraulic power.", StringComparison.Ordinal))
+        {
+            translated = "油圧伝達システムの一部として機能する配管を備え、油圧を生成する。";
+            DynamicTextObservability.RecordTransform(route, "Description.RuntimeObservedLine", source, translated);
+            return true;
+        }
+
         if (source.StartsWith("This item is a named ", StringComparison.Ordinal)
             && source.EndsWith(".", StringComparison.Ordinal))
         {
@@ -1360,13 +1369,13 @@ internal static class DescriptionTextTranslator
             return true;
         }
 
-        var whenActivatedAttributeMatch = WhenActivatedAttributeLinePattern.Match(source);
-        if (whenActivatedAttributeMatch.Success)
+        var statAdjustMatch = StatAdjustLinePattern.Match(source);
+        if (statAdjustMatch.Success)
         {
-            translated = "起動時、"
-                + whenActivatedAttributeMatch.Groups["attribute"].Value
-                + "+"
-                + whenActivatedAttributeMatch.Groups["amount"].Value;
+            translated = (statAdjustMatch.Groups["activated"].Success ? "起動時、" : string.Empty)
+                + TranslateRuntimeStatAdjustLabel(statAdjustMatch.Groups["stat"].Value)
+                + statAdjustMatch.Groups["amount"].Value
+                + statAdjustMatch.Groups["percent"].Value;
             DynamicTextObservability.RecordTransform(route, "Description.RuntimeObservedLine", source, translated);
             return true;
         }
@@ -1401,6 +1410,27 @@ internal static class DescriptionTextTranslator
 
         translated = source;
         return false;
+    }
+
+    private static string TranslateRuntimeStatAdjustLabel(string stat)
+    {
+        return stat switch
+        {
+            "Strength" => "筋力",
+            "Agility" => "敏捷",
+            "Toughness" => "頑健",
+            "Intelligence" => "知力",
+            "Willpower" => "意志力",
+            "Ego" => "自我",
+            "quickness" => "俊敏",
+            "hit points" => "ヒットポイント",
+            "move speed" => "移動速度",
+            "acid resistance" => "酸耐性",
+            "cold resistance" => "冷気耐性",
+            "electric resistance" => "電気耐性",
+            "heat resistance" => "熱耐性",
+            _ => stat,
+        };
     }
 
     private static bool TryTranslateWaterBondedLinePreservingColors(string source, string route, out string translated)
@@ -1844,6 +1874,11 @@ internal static class DescriptionTextTranslator
 
     private static bool ShouldSkipExactLeafTranslation(string source)
     {
+        if (StatAdjustLinePattern.IsMatch(source))
+        {
+            return false;
+        }
+
         // Tooltip and description stat names are game contract labels; keep names like
         // Strength, Intelligence, and Ego in English even when broad dictionaries know them.
         return StatAbbreviationPattern.IsMatch(source)

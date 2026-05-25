@@ -291,6 +291,36 @@ public sealed class GrammarPatchTests
     }
 
     [Test]
+    public void MakeAndListPatch_NormalizesPairAndSetPrefixes()
+    {
+        var result = string.Empty;
+        var input = new List<string> { "a pair of 尺骨刺激装置", "a set of 上り階段" };
+
+        var skipped = GrammarMakeAndListPatch.Prefix(input, false, ref result);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(skipped, Is.False);
+            Assert.That(result, Is.EqualTo("尺骨刺激装置一対と上り階段一組"));
+        });
+    }
+
+    [Test]
+    public void MakeAndListPatch_TranslatesRuntimeStateLeaves()
+    {
+        var result = string.Empty;
+        var input = new List<string> { "equipped", "powered", "in use" };
+
+        var skipped = GrammarMakeAndListPatch.Prefix(input, false, ref result);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(skipped, Is.False);
+            Assert.That(result, Is.EqualTo("装備中、給電中、と使用中"));
+        });
+    }
+
+    [Test]
     public void MakeAndListPatch_LogsDynamicTransformProbe()
     {
         var output = TestTraceHelper.CaptureTrace(() =>

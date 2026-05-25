@@ -153,7 +153,17 @@ public static class LiquidLeakMessageTranslationPatch
     private static string Restore(Match match, IReadOnlyList<ColorSpan> spans, string groupName)
     {
         var group = match.Groups[groupName];
-        return ColorAwareTranslationComposer.MarkupAwareRestoreCapture(group.Value, spans, group).Trim();
+        var restored = ColorAwareTranslationComposer.MarkupAwareRestoreCapture(group.Value, spans, group).Trim();
+        if (!string.Equals(groupName, "liquid", StringComparison.Ordinal))
+        {
+            return restored;
+        }
+
+        var translated = LiquidVolumeFragmentTranslator.TranslateLiquidPhrasePreservingColors(
+            ColorAwareTranslationComposer.MarkupAwareRestoreCapture(group.Value, spans, group).Trim());
+        return translated is null
+            ? restored
+            : translated;
     }
 
     private static string RestoreOwner(Match match, IReadOnlyList<ColorSpan> spans)

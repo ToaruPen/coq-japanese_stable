@@ -1645,7 +1645,13 @@ public static class PopupTranslationPatch
             target = ColorAwareTranslationComposer.RestoreCapture(target, spans, match.Groups["value"]);
         }
 
-        translated = "本当に" + target + "を攻撃しますか？";
+        if (!TryTranslatePhysicsAttackConfirmTarget(target, out var translatedTarget))
+        {
+            translated = source;
+            return false;
+        }
+
+        translated = "本当に" + translatedTarget + "を攻撃しますか？";
         if (spans.Count > 0)
         {
             var boundarySpans = ColorAwareTranslationComposer.SliceBoundarySpans(spans, match, source.Length, translated.Length);
@@ -1653,6 +1659,29 @@ public static class PopupTranslationPatch
         }
 
         return true;
+    }
+
+    private static bool TryTranslatePhysicsAttackConfirmTarget(string target, out string translated)
+    {
+        try
+        {
+            translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(target, nameof(PopupTranslationPatch));
+            return true;
+        }
+        catch (System.IO.DirectoryNotFoundException ex)
+        {
+            Trace.TraceError(
+                "QudJP: PopupTranslationPatch.GetDisplayNameRouteTranslator.TranslatePreservingColors target translation failed: {0}",
+                ex);
+            if (ColorAwareTranslationComposer.HasColorMarkup(target))
+            {
+                translated = target;
+                return true;
+            }
+
+            translated = target;
+            return false;
+        }
     }
 
     private static bool TryTranslateConversationRefusal(

@@ -38,6 +38,18 @@ internal static class GetDisplayNameRouteTranslator
         };
     private static readonly Regex BracketedDisplayNameSuffixPattern =
         new Regex("^(?<base>.+?)\\s+\\[(?<state>.+)\\]$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex MarkedUpBracketedStateSuffixPattern =
+        new Regex(
+            "^(?<base>.+?)\\s+(?<open>\\{\\{[^{}|]+\\|\\[)(?<state>.+)(?<close>\\]\\}\\})(?:\\s+(?<parenOpen>\\{\\{[^{}|]+\\|\\()(?<parenState>.+)(?<parenClose>\\)\\}\\}))?$",
+            RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex MarkedUpBracketedStateSuffixSequencePattern =
+        new Regex(
+            "^(?<base>.+?)(?<suffixes>(?:\\s+\\{\\{[^{}|]+\\|\\[[^\\]\\r\\n]+\\]\\}\\})+)$",
+            RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex MarkedUpBracketedStateSuffixTokenPattern =
+        new Regex(
+            "\\G(?<space>\\s+)(?<open>\\{\\{[^{}|]+\\|\\[)(?<state>[^\\]\\r\\n]+)(?<close>\\]\\}\\})",
+            RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex ArmorStatsDisplayNameSuffixPattern =
         new Regex(@"^(?<base>.+?) (?<stats>\x04-?\d+ \t-?\d+)(?: \[(?<state>.+)\])?$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex CompactWeaponStatsDisplayNameSuffixPattern =
@@ -73,7 +85,9 @@ internal static class GetDisplayNameRouteTranslator
     private static readonly Regex EditionTitleSuffixPattern =
         new Regex("^(?<number>\\d+)(?:st|nd|rd|th) Edition$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex GeneratedTitleSuffixPattern =
-        new Regex("^(?<base>.+?)(?<separator>, | and )(?<suffix>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+        new Regex("^(?<base>.+?)(?<separator>, | and |(?<![A-Za-z])and\\s+)(?<suffix>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex WorshipperTitleSuffixPattern =
+        new Regex("^worshipper of (?<target>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex CompoundStainedModifierPattern =
         new Regex("^(?<left>.+?)-and-(?<right>.+?)-stained$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex MkTierDisplayNameSuffixPattern =
@@ -112,7 +126,7 @@ internal static class GetDisplayNameRouteTranslator
             RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex QuantifiedLiquidStatePattern =
         new Regex(
-            "^(?<amount>\\d+)\\s+drams? of (?<liquid>.+?)(?:,\\s+(?<state>[A-Za-z][A-Za-z\\s-]*))?$",
+            "^(?<amount>\\d+|\\{\\{[^{}|]+\\|\\d+\\}\\})\\s+drams? of (?<liquid>.+?)(?:,\\s+(?<state>.+))?$",
             RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex LiquidStatePattern =
         new Regex(
@@ -126,6 +140,8 @@ internal static class GetDisplayNameRouteTranslator
         new Regex("^(?<count>\\d+) cells?$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex ChapterDisplayNameStatePattern =
         new Regex("^(?<owner>.+?) chapter$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex FlywheelDisplayNameStatePattern =
+        new Regex("^flywheel: (?<status>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex GeneratedCanvasTentPattern =
         new Regex(
             "^(?<body>[A-Za-z][A-Za-z\\s-]*?) tent$",
@@ -247,6 +263,22 @@ internal static class GetDisplayNameRouteTranslator
         if (TryTranslateEvilTwinSpacedPrefixDisplayName(source!, route, out var evilTwinPrefixTranslation))
         {
             return evilTwinPrefixTranslation;
+        }
+
+        if (TryTranslateMarkedUpBracketedStateSuffixSequence(source!, route, out var markedUpBracketedStateSequenceTranslation))
+        {
+            return markedUpBracketedStateSequenceTranslation;
+        }
+
+        if (TryTranslateMarkedUpBracketedStateSuffix(source!, route, out var markedUpBracketedStateTranslation))
+        {
+            return markedUpBracketedStateTranslation;
+        }
+
+        if (ColorAwareTranslationComposer.HasColorMarkup(source!)
+            && TryTranslateGeneratedTitleSuffix(source!, route, out var markedUpTitleSuffixTranslation))
+        {
+            return markedUpTitleSuffixTranslation;
         }
 
         var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
@@ -622,8 +654,8 @@ internal static class GetDisplayNameRouteTranslator
 
         var baseSource = match.Groups["base"].Value;
         var stateSource = match.Groups["state"].Value;
-        var translatedBase = TranslateDisplayNameFragment(baseSource, route);
-        var translatedState = TranslateDisplayNameState(stateSource, route);
+        var translatedBase = TranslateDisplayNameFragmentPreservingColors(baseSource, route);
+        var translatedState = TranslateMarkedUpDisplayNameState(stateSource, route);
 
         translated = translatedBase + " (" + translatedState + ")";
         if (string.Equals(translated, source, StringComparison.Ordinal))
@@ -695,6 +727,148 @@ internal static class GetDisplayNameRouteTranslator
         DynamicTextObservability.RecordTransform(route, "DisplayName.BracketedSuffix", source, translated);
         return true;
     }
+
+    private static bool TryTranslateMarkedUpBracketedStateSuffix(
+        string source,
+        string route,
+        out string translated)
+    {
+        var match = MarkedUpBracketedStateSuffixPattern.Match(source);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        var baseSource = match.Groups["base"].Value;
+        var stateSource = match.Groups["state"].Value;
+        if (GeneratedTitleSuffixPattern.IsMatch(baseSource))
+        {
+            translated = source;
+            return false;
+        }
+
+        string translatedBase;
+        string translatedState;
+        if (QuantifiedLiquidStatePattern.IsMatch(stateSource))
+        {
+            translatedBase = IsWholeQudWrapper(baseSource)
+                ? TranslateDisplayNameFragmentPreservingWholeQudWrapper(baseSource, route)
+                : TranslateDisplayNameFragment(baseSource, route);
+            translatedState = TranslateDisplayNameState(stateSource, route);
+        }
+        else if (TryTranslateBracketedStateExact(stateSource, out var exactState)
+            && !ColorAwareTranslationComposer.HasColorMarkup(exactState))
+        {
+            translatedBase = IsWholeQudWrapper(baseSource)
+                ? TranslateDisplayNameFragmentPreservingWholeQudWrapper(baseSource, route)
+                : TranslateDisplayNameFragmentPreservingColors(baseSource, route);
+            translatedState = exactState;
+        }
+        else
+        {
+            translated = source;
+            return false;
+        }
+
+        var changed = !string.Equals(translatedBase, baseSource, StringComparison.Ordinal)
+            || !string.Equals(translatedState, stateSource, StringComparison.Ordinal);
+
+        translated = translatedBase
+            + " "
+            + match.Groups["open"].Value
+            + translatedState
+            + match.Groups["close"].Value;
+
+        if (match.Groups["parenState"].Success)
+        {
+            var parenStateSource = match.Groups["parenState"].Value;
+            var translatedParenState = TranslateMarkedUpDisplayNameState(parenStateSource, route);
+            changed |= !string.Equals(translatedParenState, parenStateSource, StringComparison.Ordinal);
+            translated += " "
+                + match.Groups["parenOpen"].Value
+                + translatedParenState
+                + match.Groups["parenClose"].Value;
+        }
+
+        if (!changed)
+        {
+            translated = source;
+            return false;
+        }
+
+        DynamicTextObservability.RecordTransform(route, "DisplayName.MarkedUpBracketedStateSuffix", source, translated);
+        return true;
+    }
+
+    private static bool TryTranslateMarkedUpBracketedStateSuffixSequence(
+        string source,
+        string route,
+        out string translated)
+    {
+        var match = MarkedUpBracketedStateSuffixSequencePattern.Match(source);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        var baseSource = match.Groups["base"].Value;
+        var translatedBase = TranslateDisplayNameFragmentPreservingColors(baseSource, route);
+        var builder = new StringBuilder(translatedBase);
+        var changed = !string.Equals(translatedBase, baseSource, StringComparison.Ordinal);
+        var suffixes = match.Groups["suffixes"].Value;
+        var offset = 0;
+        var suffixCount = 0;
+        while (offset < suffixes.Length)
+        {
+            var suffix = MarkedUpBracketedStateSuffixTokenPattern.Match(suffixes, offset);
+            if (!suffix.Success)
+            {
+                translated = source;
+                return false;
+            }
+
+            var stateSource = suffix.Groups["state"].Value;
+            var translatedState = TranslateMarkedUpDisplayNameState(stateSource, route);
+            changed |= !string.Equals(translatedState, stateSource, StringComparison.Ordinal);
+            builder.Append(suffix.Groups["space"].Value);
+            builder.Append(suffix.Groups["open"].Value);
+            builder.Append(translatedState);
+            builder.Append(suffix.Groups["close"].Value);
+            suffixCount++;
+            offset += suffix.Length;
+        }
+
+        if (suffixCount < 2 || !changed)
+        {
+            translated = source;
+            return false;
+        }
+
+        translated = builder.ToString();
+        DynamicTextObservability.RecordTransform(route, "DisplayName.MarkedUpBracketedStateSuffixSequence", source, translated);
+        return true;
+    }
+
+    private static string TranslateMarkedUpDisplayNameState(string source, string route)
+    {
+        var direct = TranslateDisplayNameState(source, route);
+        if (!string.Equals(direct, source, StringComparison.Ordinal))
+        {
+            return direct;
+        }
+
+        if (!ColorAwareTranslationComposer.HasColorMarkup(source))
+        {
+            return source;
+        }
+
+        return ColorAwareTranslationComposer.TranslatePreservingColors(
+            source,
+            visible => TranslateDisplayNameState(visible, route));
+    }
+
 
     private static bool TryTranslateArmorStatsDisplayNameSuffix(
         string source,
@@ -2348,16 +2522,30 @@ internal static class GetDisplayNameRouteTranslator
         }
 
         var suffix = match.Groups["suffix"].Value;
+        var baseText = match.Groups["base"].Value;
+        if (!HasBalancedQudMarkupBoundaryPairs(baseText) || !HasBalancedQudMarkupBoundaryPairs(suffix))
+        {
+            return false;
+        }
+
         var translatedSuffix = TranslateTitleSuffix(suffix, route);
         if (string.Equals(translatedSuffix, suffix, StringComparison.Ordinal))
         {
             return false;
         }
 
-        var baseText = match.Groups["base"].Value;
-        if (!TryTranslateDisplayNameRouteText(baseText, route, out var translatedBase))
+        string translatedBase;
+        if (ColorAwareTranslationComposer.HasColorMarkup(baseText) && !IsWholeQudWrapper(baseText))
         {
-            translatedBase = baseText;
+            if (!TryTranslateMarkedUpBracketedStateSuffix(baseText, route, out translatedBase)
+                && !TryTranslateMarkedUpBracketedStateSuffixSequence(baseText, route, out translatedBase))
+            {
+                return false;
+            }
+        }
+        else
+        {
+            translatedBase = TranslateDisplayNameFragmentPreservingColors(baseText, route);
         }
 
         translated = translatedBase + "、" + translatedSuffix;
@@ -2380,7 +2568,15 @@ internal static class GetDisplayNameRouteTranslator
 
         var suffixGroup = match.Groups["suffix"];
         var suffix = suffixGroup.Value;
-        var translatedSuffix = TranslateTitleSuffix(suffix, route);
+        var translatedSuffixOwnsMarkup = TryTranslateWorshipperTitleSuffix(
+            suffix,
+            spans,
+            suffixGroup.Index,
+            route,
+            out var worshipperTitleSuffix);
+        var translatedSuffix = translatedSuffixOwnsMarkup
+            ? worshipperTitleSuffix
+            : TranslateTitleSuffix(suffix, route);
         if (string.Equals(translatedSuffix, suffix, StringComparison.Ordinal))
         {
             return false;
@@ -2395,7 +2591,9 @@ internal static class GetDisplayNameRouteTranslator
         translated =
             RestoreWholeSlice(translatedBase, spans, baseGroup) +
             "、" +
-            RestoreWholeSlice(translatedSuffix, spans, suffixGroup);
+            (translatedSuffixOwnsMarkup
+                ? translatedSuffix
+                : RestoreWholeSlice(translatedSuffix, spans, suffixGroup));
         translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
             translated,
             spans,
@@ -2403,6 +2601,41 @@ internal static class GetDisplayNameRouteTranslator
 
         DynamicTextObservability.RecordTransform(route, "DisplayName.TitleSuffix", source, translated);
         return true;
+    }
+
+    private static bool HasBalancedQudMarkupBoundaryPairs(string source)
+    {
+        return CountOccurrences(source, "{{") == CountOccurrences(source, "}}");
+    }
+
+    private static bool IsWholeQudWrapper(string source)
+    {
+        if (!source.StartsWith("{{", StringComparison.Ordinal)
+            || !source.EndsWith("}}", StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        if (CountOccurrences(source, "{{") != 1 || CountOccurrences(source, "}}") != 1)
+        {
+            return false;
+        }
+
+        var pipeIndex = source.IndexOf('|');
+        return pipeIndex > 2 && pipeIndex < source.Length - 2;
+    }
+
+    private static int CountOccurrences(string source, string token)
+    {
+        var count = 0;
+        var offset = 0;
+        while ((offset = source.IndexOf(token, offset, StringComparison.Ordinal)) >= 0)
+        {
+            count++;
+            offset += token.Length;
+        }
+
+        return count;
     }
 
     private static string TranslateTitleSuffix(string suffix, string route)
@@ -2416,6 +2649,12 @@ internal static class GetDisplayNameRouteTranslator
         if (HistoricSpiceGeneratedNameTranslator.TryTranslateCapture(suffix, out var historicSpiceTitle))
         {
             return historicSpiceTitle;
+        }
+
+        var worshipperMatch = WorshipperTitleSuffixPattern.Match(suffix);
+        if (worshipperMatch.Success)
+        {
+            return TranslateWorshipperTitleSuffix(worshipperMatch.Groups["target"].Value, route);
         }
 
         var contextual = TranslateDisplayNameExactOrLowerAscii(suffix, DisplayNameTitleContext);
@@ -2439,6 +2678,44 @@ internal static class GetDisplayNameRouteTranslator
         }
 
         return Translator.Translate(suffix);
+    }
+
+    private static string TranslateWorshipperTitleSuffix(string target, string route)
+    {
+        if (TryTranslateMarkedUpBracketedStateSuffix(target, route, out var markedUpBracketedTarget))
+        {
+            return markedUpBracketedTarget + "の崇拝者";
+        }
+
+        var bracketedTargetMatch = BracketedDisplayNameSuffixPattern.Match(target);
+        if (bracketedTargetMatch.Success)
+        {
+            return TranslateDisplayNameFragmentPreservingWholeQudWrapper(bracketedTargetMatch.Groups["base"].Value, route)
+                + "の崇拝者 ["
+                + TranslateDisplayNameStatePreservingWholeQudWrapper(bracketedTargetMatch.Groups["state"].Value, route)
+                + "]";
+        }
+
+        return TranslateDisplayNameFragmentPreservingWholeQudWrapper(target, route) + "の崇拝者";
+    }
+
+    private static bool TryTranslateWorshipperTitleSuffix(
+        string suffix,
+        IReadOnlyList<ColorSpan> spans,
+        int suffixStart,
+        string route,
+        out string translated)
+    {
+        var worshipperMatch = WorshipperTitleSuffixPattern.Match(suffix);
+        if (!worshipperMatch.Success)
+        {
+            translated = suffix;
+            return false;
+        }
+
+        var suffixSource = RestoreVisibleSliceWithAdjacentBoundary(suffix, spans, suffixStart, suffix.Length);
+        translated = TranslateTitleSuffix(suffixSource, route);
+        return true;
     }
 
     private static string TranslateDisplayNameFragment(string source, string route)
@@ -2465,6 +2742,48 @@ internal static class GetDisplayNameRouteTranslator
         }
 
         return source;
+    }
+
+    private static string TranslateDisplayNameFragmentPreservingWholeQudWrapper(string source, string route)
+    {
+        return TryTranslateWholeQudWrapper(source, inner => TranslateDisplayNameFragment(inner, route), out var translated)
+            ? translated
+            : TranslateDisplayNameFragmentPreservingColors(source, route);
+    }
+
+    private static string TranslateDisplayNameStatePreservingWholeQudWrapper(string source, string route)
+    {
+        return TryTranslateWholeQudWrapper(source, inner => TranslateDisplayNameState(inner, route), out var translated)
+            ? translated
+            : TranslateMarkedUpDisplayNameState(source, route);
+    }
+
+    private static bool TryTranslateWholeQudWrapper(
+        string source,
+        Func<string, string> translateInner,
+        out string translated)
+    {
+        translated = source;
+        if (!IsWholeQudWrapper(source))
+        {
+            return false;
+        }
+
+        var pipeIndex = source.IndexOf('|');
+        if (pipeIndex <= 2 || pipeIndex >= source.Length - 2)
+        {
+            return false;
+        }
+
+        var inner = source.Substring(pipeIndex + 1, source.Length - pipeIndex - 3);
+        var translatedInner = translateInner(inner);
+        if (string.Equals(translatedInner, inner, StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        translated = source.Substring(0, pipeIndex + 1) + translatedInner + "}}";
+        return true;
     }
 
     private static bool TryTranslateTrimmedDisplayNameFragment(string source, string route, out string translated)
@@ -2496,6 +2815,11 @@ internal static class GetDisplayNameRouteTranslator
         if (IsAlreadyLocalizedDisplayNameStateText(source))
         {
             return source;
+        }
+
+        if (TryTranslateFlywheelDisplayNameState(source, route, out var flywheelState))
+        {
+            return flywheelState;
         }
 
         if (TryTranslateBracketedStateExact(source, out var exact))
@@ -2576,6 +2900,55 @@ internal static class GetDisplayNameRouteTranslator
         return false;
     }
 
+    private static bool TryTranslateFlywheelDisplayNameState(string source, string route, out string translated)
+    {
+        var flywheelMatch = FlywheelDisplayNameStatePattern.Match(source);
+        if (!flywheelMatch.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        var status = flywheelMatch.Groups["status"].Value;
+        if (!TryStripDirectTranslationMarkerFromChargeStatus(status, out var strippedStatus))
+        {
+            strippedStatus = status;
+        }
+
+        if (!EnergyStorageChargeStatusTranslationPatch.TryTranslateChargeStatus(strippedStatus, out var translatedStatus))
+        {
+            translatedStatus = strippedStatus;
+        }
+
+        translated = "フライホイール: " + translatedStatus;
+        DynamicTextObservability.RecordTransform(route, "DisplayName.FlywheelState", source, translated);
+        return true;
+    }
+
+    private static bool TryTranslateLiquidVolumeStateLeaf(string source, out string translated)
+    {
+        if (string.Equals(source, "sealed", StringComparison.OrdinalIgnoreCase))
+        {
+            translated = "密封";
+            return true;
+        }
+
+        if (string.Equals(source, "empty", StringComparison.OrdinalIgnoreCase))
+        {
+            translated = "空";
+            return true;
+        }
+
+        if (string.Equals(source, "broken", StringComparison.OrdinalIgnoreCase))
+        {
+            translated = "破損";
+            return true;
+        }
+
+        translated = source;
+        return false;
+    }
+
     private static bool GeneratedDisplayNameStateTranslated(
         string source,
         string route,
@@ -2614,7 +2987,7 @@ internal static class GetDisplayNameRouteTranslator
         var state = match.Groups["state"].Value;
         if (state.Length > 0)
         {
-            var translatedState = TranslateDisplayNameState(state, route);
+            var translatedState = TranslateLiquidVolumeState(state, route);
             if (string.Equals(translatedState, state, StringComparison.Ordinal))
             {
                 translated = source;
@@ -2626,6 +2999,35 @@ internal static class GetDisplayNameRouteTranslator
 
         DynamicTextObservability.RecordTransform(route, "DisplayName.QuantifiedLiquidState", source, translated);
         return true;
+    }
+
+    private static string TranslateLiquidVolumeState(string source, string route)
+    {
+        if (TryTranslateLiquidVolumeStateLeaf(source, out var translated))
+        {
+            return translated;
+        }
+
+        if (ColorAwareTranslationComposer.HasColorMarkup(source))
+        {
+            var colorAware = ColorAwareTranslationComposer.TranslatePreservingColors(
+                source,
+                visible =>
+                {
+                    if (TryTranslateLiquidVolumeStateLeaf(visible, out var translatedVisible))
+                    {
+                        return translatedVisible;
+                    }
+
+                    return TranslateDisplayNameState(visible, route);
+                });
+            if (!string.Equals(colorAware, source, StringComparison.Ordinal))
+            {
+                return colorAware;
+            }
+        }
+
+        return TranslateDisplayNameState(source, route);
     }
 
     private static bool TryTranslateLiquidState(string source, string route, out string translated)
@@ -2989,6 +3391,21 @@ internal static class GetDisplayNameRouteTranslator
             sliceSpans);
     }
 
+    private static string RestoreVisibleSliceWithAdjacentBoundary(
+        string value,
+        IReadOnlyList<ColorSpan> spans,
+        int startIndex,
+        int length)
+    {
+        var sliceSpans = ColorCodePreserver.SliceSpans(spans, startIndex, length);
+        sliceSpans.AddRange(ColorCodePreserver.SliceAdjacentCaptureBoundarySpans(spans, startIndex, length));
+        RemoveUnmatchedTrailingSliceClosers(sliceSpans);
+
+        return ColorAwareTranslationComposer.Restore(
+            value,
+            sliceSpans);
+    }
+
     private static string RestoreCompactWeaponStatsSlice(Group group, IReadOnlyList<ColorSpan> spans)
     {
         return ColorizeRawCompactWeaponStats(RestoreVisibleSlice(group, spans));
@@ -3088,7 +3505,7 @@ internal static class GetDisplayNameRouteTranslator
         }
 
         var builder = new StringBuilder(source.Length + (code.Length * 6));
-        builder.Append("{{y|<{{|");
+        builder.Append("{{y|<");
         for (var index = 0; index < code.Length; index++)
         {
             var current = code[index];
@@ -3111,7 +3528,7 @@ internal static class GetDisplayNameRouteTranslator
             builder.Append(current);
         }
 
-        builder.Append("}}>}}");
+        builder.Append(">}}");
         return builder.ToString();
     }
 
@@ -3316,17 +3733,7 @@ internal static class GetDisplayNameRouteTranslator
         var builder = new StringBuilder();
         for (var index = 0; index < parts.Length; index++)
         {
-            var translatedPart = ScopedDictionaryLookup.TranslateExactOrLowerAscii(parts[index], LiquidPhraseDictionaryFiles);
-            if (translatedPart is null)
-            {
-                translatedPart = TryTranslateColoredLiquidToken(parts[index]);
-            }
-
-            if (translatedPart is null)
-            {
-                translatedPart = Translator.Translate(parts[index]);
-            }
-
+            var translatedPart = TranslateAsciiPhrasePart(parts[index]);
             if (string.Equals(translatedPart, parts[index], StringComparison.Ordinal))
             {
                 return null;
@@ -3336,6 +3743,43 @@ internal static class GetDisplayNameRouteTranslator
         }
 
         return builder.ToString();
+    }
+
+    private static string TranslateAsciiPhrasePart(string source)
+    {
+        var translatedPart = ScopedDictionaryLookup.TranslateExactOrLowerAscii(source, LiquidPhraseDictionaryFiles);
+        if (translatedPart is not null)
+        {
+            return translatedPart;
+        }
+
+        translatedPart = TryTranslateColoredLiquidToken(source);
+        if (translatedPart is not null)
+        {
+            return translatedPart;
+        }
+
+        if (ColorAwareTranslationComposer.HasColorMarkup(source))
+        {
+            var translatedWithMarkup = ColorAwareTranslationComposer.TranslatePreservingColors(
+                source,
+                visible =>
+                {
+                    var visibleTranslation = ScopedDictionaryLookup.TranslateExactOrLowerAscii(visible, LiquidPhraseDictionaryFiles);
+                    if (visibleTranslation is not null)
+                    {
+                        return visibleTranslation;
+                    }
+
+                    return Translator.Translate(visible);
+                });
+            if (!string.Equals(translatedWithMarkup, source, StringComparison.Ordinal))
+            {
+                return translatedWithMarkup;
+            }
+        }
+
+        return Translator.Translate(source);
     }
 
     private static string? TranslateDisplayNameComponentPhrase(string source, string context)

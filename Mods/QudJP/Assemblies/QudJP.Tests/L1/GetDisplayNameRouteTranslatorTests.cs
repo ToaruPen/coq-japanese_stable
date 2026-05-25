@@ -74,6 +74,245 @@ public sealed class GetDisplayNameRouteTranslatorTests
     }
 
     [Test]
+    public void TranslatePreservingColors_TranslatesHydraulicLiquidAndFlywheelSuffixes()
+    {
+        WriteDictionaryFile(
+            "ui-displayname-adjectives.ja.json",
+            ("solar", "太陽光"),
+            ("{{W|solar}}", "{{W|太陽光}}"),
+            ("{{c|sealed}}", "{{c|密封}}"));
+        WriteDictionaryFile(
+            "ui-displayname-atomic.ja.json",
+            ("pumping station", "ポンプステーション"),
+            ("{{c|pumping station}}", "{{c|ポンプステーション}}"));
+        WriteDictionaryFile(
+            "ui-liquid-adjectives.ja.json",
+            ("{{g|algal}}", "{{g|藻質の}}"));
+        WriteDictionaryFile(
+            "ui-liquids.ja.json",
+            ("{{B|water}}", "{{B|水}}"));
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            "{{W|solar}} {{c|pumping station}} {{y|[{{rules|256}} drams of {{g|algal}} {{B|water}}, {{c|sealed}}]}} {{y|(flywheel: {{G|Full Speed}})}}",
+            nameof(GetDisplayNamePatch));
+
+        Assert.That(
+            translated,
+            Is.EqualTo("{{W|太陽光}} {{c|ポンプステーション}} {{y|[{{rules|256}}ドラムの{{g|藻質の}}{{B|水}}、{{c|密封}}]}} {{y|(フライホイール: {{G|最高速}})}}"));
+    }
+
+    [Test]
+    public void TranslatePreservingColors_StripsDirectMarkerFromFlywheelBracketedState()
+    {
+        WriteDictionaryFile(
+            "ui-displayname-atomic.ja.json",
+            ("pumping station", "ポンプステーション"));
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            "pumping station [flywheel: " + MessageFrameTranslator.DirectTranslationMarker + "Full Speed]",
+            nameof(GetDisplayNamePatch));
+
+        Assert.That(translated, Is.EqualTo("ポンプステーション [フライホイール: 最高速]"));
+    }
+
+    [Test]
+    public void TranslatePreservingColors_StripsDirectMarkerFromUnknownFlywheelBracketedState()
+    {
+        WriteDictionaryFile(
+            "ui-displayname-atomic.ja.json",
+            ("pumping station", "ポンプステーション"));
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            "pumping station [flywheel: " + MessageFrameTranslator.DirectTranslationMarker + "SomeUnknownState]",
+            nameof(GetDisplayNamePatch));
+
+        Assert.That(translated, Is.EqualTo("ポンプステーション [フライホイール: SomeUnknownState]"));
+    }
+
+    [Test]
+    public void TranslatePreservingColors_PreservesMarkupInsideWorshipperTitleSuffixTarget()
+    {
+        WriteDictionaryFile(
+            "ui-displayname-adjectives.ja.json",
+            ("broken", "破損"));
+        WriteDictionaryFile(
+            "ui-displayname-atomic.ja.json",
+            ("guard", "衛兵"),
+            ("chrome pyramid", "クロムピラミッド"));
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            "guard and worshipper of {{W|chrome pyramid}} [{{K|broken}}]",
+            nameof(GetDisplayNamePatch));
+
+        Assert.That(translated, Is.EqualTo("衛兵、{{W|クロムピラミッド}}の崇拝者 [{{K|破損}}]"));
+    }
+
+    [Test]
+    public void TranslatePreservingColors_TranslatesMultipleLiquidAndStateSuffixes()
+    {
+        WriteDictionaryFile(
+            "ui-displayname-adjectives.ja.json",
+            ("[auto-collecting]", "[自動収集中]"),
+            ("[broken]", "[破損]"));
+        WriteDictionaryFile(
+            "ui-displayname-atomic.ja.json",
+            ("lead-acid cell", "鉛酸セル"));
+        WriteDictionaryFile(
+            "ui-liquids.ja.json",
+            ("{{G|acid}}", "{{G|酸}}"));
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            "lead-acid cell {{y|[{{rules|8}} drams of {{G|acid}}]}} {{y|[{{c|auto-collecting}}]}}",
+            nameof(GetDisplayNamePatch));
+
+        Assert.That(
+            translated,
+            Is.EqualTo("鉛酸セル {{y|[{{rules|8}}ドラムの{{G|酸}}]}} {{y|[{{c|自動収集中}}]}}"));
+    }
+
+    [Test]
+    public void TranslatePreservingColors_TranslatesHydraulicAndFusionModifiers()
+    {
+        WriteDictionaryFile(
+            "ui-displayname-adjectives.ja.json",
+            ("hydraulic", "油圧式"),
+            ("{{C|fusion}}", "{{C|核融合式}}"));
+        WriteDictionaryFile(
+            "ui-displayname-atomic.ja.json",
+            ("cleaner", "洗浄器"),
+            ("pumping station", "ポンプ場"));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                GetDisplayNameRouteTranslator.TranslatePreservingColors(
+                    "hydraulic cleaner [密封]",
+                    nameof(GetDisplayNamePatch)),
+                Is.EqualTo("油圧式洗浄器 [密封]"));
+            Assert.That(
+                GetDisplayNameRouteTranslator.TranslatePreservingColors(
+                    "{{C|fusion}} pumping station",
+                    nameof(GetDisplayNamePatch)),
+                Is.EqualTo("{{C|核融合式}} ポンプ場"));
+        });
+    }
+
+    [Test]
+    public void TranslatePreservingColors_DoesNotSplitAndInsideBaseNameBeforeTitleSuffix()
+    {
+        WriteDictionaryFile(
+            "ui-displayname-atomic.ja.json",
+            ("hand axe", "手斧"));
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            "hand axe, 5th Edition",
+            nameof(GetDisplayNamePatch));
+
+        Assert.That(translated, Is.EqualTo("手斧、第5版"));
+    }
+
+    [Test]
+    public void TranslatePreservingColors_TranslatesMarkedUpBaseBeforeGeneratedTitleSuffix()
+    {
+        WriteDictionaryFile(
+            "ui-displayname-atomic.ja.json",
+            ("laser rifle", "レーザーライフル"));
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            "{{W|laser rifle}}, 1st Edition",
+            nameof(GetDisplayNamePatch));
+
+        Assert.That(translated, Is.EqualTo("{{W|レーザーライフル}}、第1版"));
+    }
+
+    [Test]
+    public void TranslatePreservingColors_DoesNotUseEarlyTitleSuffixRouteForMultiWrapperBase()
+    {
+        WriteDictionaryFile(
+            "ui-displayname-atomic.ja.json",
+            ("water flask", "水袋"));
+        WriteContextDictionaryFile(
+            "ui-displayname-adjectives.ja.json",
+            ("[empty]", "GetDisplayName.State", "[空]"));
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            "{{W|water flask}} {{y|[empty]}}, 1st Edition",
+            nameof(GetDisplayNamePatch));
+
+        Assert.That(translated, Is.EqualTo("{{W|水袋}} {{y|[空]}}、第1版"));
+    }
+
+    [Test]
+    public void TranslatePreservingColors_PreservesSingleMarkedUpBracketedStateSuffix()
+    {
+        WriteDictionaryFile(
+            "ui-displayname-atomic.ja.json",
+            ("water flask", "水袋"));
+        WriteContextDictionaryFile(
+            "ui-displayname-adjectives.ja.json",
+            ("[empty]", "GetDisplayName.State", "[空]"));
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            "water flask {{y|[empty]}}",
+            nameof(GetDisplayNamePatch));
+
+        Assert.That(translated, Is.EqualTo("水袋 {{y|[空]}}"));
+    }
+
+    [Test]
+    public void TranslatePreservingColors_TranslatesWholeWrappedBaseBeforeQuantifiedLiquidState()
+    {
+        WriteDictionaryFile(
+            "ui-displayname-atomic.ja.json",
+            ("water flask", "水袋"));
+        WriteDictionaryFile(
+            "ui-liquids.ja.json",
+            ("slime", "スライム"));
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            "{{W|water flask}} {{y|[1 dram of slime]}}",
+            nameof(GetDisplayNamePatch));
+
+        Assert.That(translated, Is.EqualTo("{{W|水袋}} {{y|[1ドラムのスライム]}}"));
+    }
+
+    [Test]
+    public void TranslatePreservingColors_TranslatesMarkedUpWorshipperTargetWithMarkedUpBracketState()
+    {
+        WriteDictionaryFile(
+            "ui-displayname-atomic.ja.json",
+            ("guard", "衛兵"),
+            ("water flask", "水袋"));
+        WriteContextDictionaryFile(
+            "ui-displayname-adjectives.ja.json",
+            ("[empty]", "GetDisplayName.State", "[空]"));
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            "guard and worshipper of {{W|water flask}} {{y|[empty]}}",
+            nameof(GetDisplayNamePatch));
+
+        Assert.That(translated, Is.EqualTo("衛兵、{{W|水袋}} {{y|[空]}}の崇拝者"));
+    }
+
+    [Test]
+    public void TranslatePreservingColors_TranslatesMarkedUpBaseAndStateSuffixSequence()
+    {
+        WriteDictionaryFile(
+            "ui-displayname-atomic.ja.json",
+            ("chem cell", "ケムセル"));
+        WriteDictionaryFile(
+            "ui-displayname-adjectives.ja.json",
+            ("sealed", "密封"));
+        WriteDictionary(("fresh water", "真水"));
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            "{{c|chem cell}} {{y|[{{B|fresh water}}]}} {{y|[{{c|sealed}}]}}",
+            nameof(GetDisplayNamePatch));
+
+        Assert.That(translated, Is.EqualTo("{{c|ケムセル}} {{y|[{{B|真水}}]}} {{y|[{{c|密封}}]}}"));
+    }
+
+    [Test]
     public void TranslatePreservingColors_PreservesArmorStatSymbolTags_WhenTranslatingNameAndState()
     {
         WriteDictionary(("dromad waterskin", "ラクダの水袋"));
@@ -206,12 +445,12 @@ public sealed class GetDisplayNameRouteTranslatorTests
             ("[broken]", "[{{r|破損}}]"));
 
         var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
-            "クローム・リボルバー {{c|\u001a}}7 {{r|\u0003}}1d6 {{y|[鉛スラッグ x6]}} [{{r|rusted}}] [{{r|broken}}] {{y|<{{|{{B|C}}{{B|C}}{{g|2}}}}>}}",
+            "クローム・リボルバー {{c|\u001a}}7 {{r|\u0003}}1d6 {{y|[鉛スラッグ x6]}} [{{r|rusted}}] [{{r|broken}}] {{y|<{{B|C}}{{B|C}}{{g|2}}>}}",
             nameof(GetDisplayNamePatch));
 
         Assert.That(
             translated,
-            Is.EqualTo("クローム・リボルバー {{c|\u001a}}7 {{r|\u0003}}1d6 {{y|[鉛スラッグ x6]}} [{{r|錆びた}}] [{{r|破損}}] {{y|<{{|{{B|C}}{{B|C}}{{g|2}}}}>}}"));
+            Is.EqualTo("クローム・リボルバー {{c|\u001a}}7 {{r|\u0003}}1d6 {{y|[鉛スラッグ x6]}} [{{r|錆びた}}] [{{r|破損}}] {{y|<{{B|C}}{{B|C}}{{g|2}}>}}"));
     }
 
     [Test]
@@ -227,18 +466,18 @@ public sealed class GetDisplayNameRouteTranslatorTests
 
         Assert.That(
             translated,
-            Is.EqualTo("クローム・リボルバー {{c|\u001a}}7 {{r|\u0003}}1d6 {{y|[鉛スラッグ x6]}} [{{r|錆びた}}] {{y|<{{|{{B|C}}{{B|C}}{{g|2}}}}>}}"));
+            Is.EqualTo("クローム・リボルバー {{c|\u001a}}7 {{r|\u0003}}1d6 {{y|[鉛スラッグ x6]}} [{{r|錆びた}}] {{y|<{{B|C}}{{B|C}}{{g|2}}>}}"));
     }
 
     [TestCase(
-        "{{c|ケムセル}} [{{r|rusted}}] {{y|<{{|{{G|B}}{{C|D}}{{r|1}}}}>}}",
-        "{{c|ケムセル}} [{{r|錆びた}}] {{y|<{{|{{G|B}}{{C|D}}{{r|1}}}}>}}")]
+        "{{c|ケムセル}} [{{r|rusted}}] {{y|<{{G|B}}{{C|D}}{{r|1}}>}}",
+        "{{c|ケムセル}} [{{r|錆びた}}] {{y|<{{G|B}}{{C|D}}{{r|1}}>}}")]
     [TestCase(
-        "{{c|ケムセル}} [{{r|錆びた}}] {{y|<{{|{{G|B}}{{C|D}}{{r|1}}}}>}}",
-        "{{c|ケムセル}} [{{r|錆びた}}] {{y|<{{|{{G|B}}{{C|D}}{{r|1}}}}>}}")]
+        "{{c|ケムセル}} [{{r|錆びた}}] {{y|<{{G|B}}{{C|D}}{{r|1}}>}}",
+        "{{c|ケムセル}} [{{r|錆びた}}] {{y|<{{G|B}}{{C|D}}{{r|1}}>}}")]
     [TestCase(
-        "{{y|ケムセル [{{r|rusted}}] <{{|{{G|B}}{{C|D}}{{r|1}}}}>}}",
-        "{{y|ケムセル [{{r|錆びた}}] <{{|{{G|B}}{{C|D}}{{r|1}}}}>}}")]
+        "{{y|ケムセル [{{r|rusted}}] <{{G|B}}{{C|D}}{{r|1}}>}}",
+        "{{y|ケムセル [{{r|錆びた}}] <{{G|B}}{{C|D}}{{r|1}}>}}")]
     public void TranslatePreservingColors_PreservesSourceOwnedColorSpansInAngleCodeBase(
         string source,
         string expected)
@@ -450,13 +689,13 @@ public sealed class GetDisplayNameRouteTranslatorTests
             GetDisplayNameRouteTranslator.TranslatePreservingColors(
                 "laser rifle with {{Y|filters}} \u001a8 \u00031d12 <AD14>",
                 nameof(GetDisplayNamePatch)),
-            Is.EqualTo("レーザーライフル（{{Y|フィルター付き}}） {{c|\u001a}}8 {{r|\u0003}}1d12 {{y|<{{|{{B|A}}{{B|D}}{{g|1}}{{g|4}}}}>}}"));
+            Is.EqualTo("レーザーライフル（{{Y|フィルター付き}}） {{c|\u001a}}8 {{r|\u0003}}1d12 {{y|<{{B|A}}{{B|D}}{{g|1}}{{g|4}}>}}"));
 
         Assert.That(
             GetDisplayNameRouteTranslator.TranslatePreservingColors(
-                "laser rifle with {{Y|filters}} {{W|\u001a}}8 {{r|\u0003}}1d12 {{y|<{{|{{B|A}}{{B|D}}{{g|1}}{{g|4}}}}>}}",
+                "laser rifle with {{Y|filters}} {{W|\u001a}}8 {{r|\u0003}}1d12 {{y|<{{B|A}}{{B|D}}{{g|1}}{{g|4}}>}}",
                 nameof(GetDisplayNamePatch)),
-            Is.EqualTo("レーザーライフル（{{Y|フィルター付き}}） {{W|\u001a}}8 {{r|\u0003}}1d12 {{y|<{{|{{B|A}}{{B|D}}{{g|1}}{{g|4}}}}>}}"));
+            Is.EqualTo("レーザーライフル（{{Y|フィルター付き}}） {{W|\u001a}}8 {{r|\u0003}}1d12 {{y|<{{B|A}}{{B|D}}{{g|1}}{{g|4}}>}}"));
     }
 
     [Test]
@@ -1125,7 +1364,8 @@ public sealed class GetDisplayNameRouteTranslatorTests
     {
         WriteDictionaryFile(
             "ui-displayname-atomic.ja.json",
-            ("Mechanimist convert", "メカニミスト改宗者"));
+            ("Mechanimist convert", "メカニミスト改宗者"),
+            ("Oboroqoru", "オボロコル"));
 
         Assert.Multiple(() =>
         {
@@ -1139,6 +1379,16 @@ public sealed class GetDisplayNameRouteTranslatorTests
                     "{{W|ドロマドの行商人 and Mechanimist convert [{{B|座っている}}]}}",
                     nameof(GetDisplayNamePatch)),
                 Is.EqualTo("{{W|ドロマドの行商人、メカニミスト改宗者 [{{B|座っている}}]}}"));
+            Assert.That(
+                GetDisplayNameRouteTranslator.TranslatePreservingColors(
+                    "スクラップ・ショベラー and worshipper of Oboroqoru [{{B|座っている}}]",
+                    nameof(GetDisplayNamePatch)),
+                Is.EqualTo("スクラップ・ショベラー、オボロコルの崇拝者 [{{B|座っている}}]"));
+            Assert.That(
+                GetDisplayNameRouteTranslator.TranslatePreservingColors(
+                    "山羊人のシャーマンand worshipper of Oboroqoru [{{B|座っている}}]",
+                    nameof(GetDisplayNamePatch)),
+                Is.EqualTo("山羊人のシャーマン、オボロコルの崇拝者 [{{B|座っている}}]"));
         });
     }
 
@@ -1444,6 +1694,27 @@ public sealed class GetDisplayNameRouteTranslatorTests
     }
 
     [Test]
+    public void TranslatePreservingColors_TranslatesArbitraryLengthAdjectiveChainPreservingColorTags()
+    {
+        UseProductionDictionaries();
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            "{{K|deactivated}} spring-loaded {{w|wooden}} {{c|mechanical}} チェーンピストル",
+            nameof(GetDisplayNamePatch));
+
+        Assert.That(
+            translated,
+            Is.EqualTo("{{K|停止中の}} バネ仕掛けの {{w|木製の}} {{c|機械化}} チェーンピストル"));
+        Assert.That(
+            ColorShapeCaptureObservability.Capture(
+                nameof(InventoryLineTranslationPatch),
+                "ArbitraryLengthAdjectiveChain",
+                "{{K|deactivated}} spring-loaded {{w|wooden}} {{c|mechanical}} チェーンピストル",
+                translated).MarkupSemanticStatus,
+            Is.EqualTo("clean"));
+    }
+
+    [Test]
     public void TranslatePreservingColors_TranslatesDisguiseDisplayNameClauses()
     {
         WriteDictionary(
@@ -1546,6 +1817,7 @@ public sealed class GetDisplayNameRouteTranslatorTests
         yield return new ModifierPhraseCase("ModMercurial", "{{Y|mercurial}}", "{{Y|水銀の}}");
         yield return new ModifierPhraseCase("ModMetallized", "{{c|metallized}}", "{{c|金属化}}");
         yield return new ModifierPhraseCase("ModMetered", "{{c|metered}}", "{{c|計量式}}");
+        yield return new ModifierPhraseCase("RoboticizedMechanical", "{{c|mechanical}}", "{{c|機械化}}");
         yield return new ModifierPhraseCase("ModMicroserrated", "{{Y|mi{{R|c}}roserra{{R|t}}ed}}", "{{Y|{{R|微}}鋸{{R|歯}}}}");
         yield return new ModifierPhraseCase("ModMighty", "mighty", "強力な");
         yield return new ModifierPhraseCase("ModMorphogenetic", "{{m|morphogenetic}}", "{{m|形態同調}}");
@@ -1562,6 +1834,8 @@ public sealed class GetDisplayNameRouteTranslatorTests
         yield return new ModifierPhraseCase("ModPhaseHarmonic", "{{phase-harmonic|phase-harmonic}}", "{{phase-harmonic|位相調和}}");
         yield return new ModifierPhraseCase("ModPolarized", "{{polarized|polarized}}", "{{polarized|偏光性}}");
         yield return new ModifierPhraseCase("ModPsionic", "{{psionic|psionic}}", "{{psionic|サイオニック}}");
+        yield return new ModifierPhraseCase("PowerSwitchInactive", "deactivated", "停止中の");
+        yield return new ModifierPhraseCase("PowerSwitchInactiveColored", "{{K|deactivated}}", "{{K|停止中の}}");
         yield return new ModifierPhraseCase("ModRadioPowered", "{{C|radio-powered}}", "{{C|無線駆動の}}");
         yield return new ModifierPhraseCase("ModRecycling", "{{B|recycling}}", "{{B|再生処理}}");
         yield return new ModifierPhraseCase("ModRefractive", "{{refractive|refractive}}", "{{refractive|屈折性}}");
@@ -1582,6 +1856,8 @@ public sealed class GetDisplayNameRouteTranslatorTests
         yield return new ModifierPhraseCase("ModVisored", "visored", "バイザー付き");
         yield return new ModifierPhraseCase("ModWeightless", "{{y-K sequence|weightless}}", "{{y-K sequence|無重量}}");
         yield return new ModifierPhraseCase("ModWillowy", "willowy", "しなやかな");
+        yield return new ModifierPhraseCase("DataAuthoredWooden", "wooden", "木製の");
+        yield return new ModifierPhraseCase("DataAuthoredWoodenColored", "{{w|wooden}}", "{{w|木製の}}");
         yield return new ModifierPhraseCase("ModWired", "{{c|wired}}", "{{c|有線}}");
         yield return new ModifierPhraseCase("ModWooly", "{{Y|wooly}}", "{{Y|毛皮張り}}");
     }

@@ -202,6 +202,26 @@ public sealed class DescriptionTextTranslatorTests
         Assert.That(translated, Is.EqualTo("石から彫り出されたこの像は山羊人の種播きを精緻に描いている:"));
     }
 
+    [Test]
+    public void TranslateLongDescription_TranslatesEarlyHistoricSceneChallengeSultanBody()
+    {
+        WriteHistorySpiceDictionary(
+            ("aspirant", "野心家"),
+            ("mollusks", "軟体動物"),
+            ("drawn and quartered", "八つ裂きにされた"));
+        WriteJournalPatternDictionary((
+            "^((?:Early in))\\ (.+?)\\ (?:BR|AR),\\ (.+?)\\ was\\ challenged\\ by\\ (?:a|an|the)\\ (.+?)\\ to\\ a\\ duel\\ (?:over\\ the\\ rights\\ of|over\\ an\\ ordinance\\ mandating\\ the\\ practice\\ of|over\\ the\\ sanctioned\\ persecution\\ of)\\ (.+?)\\.\\ (.+?)\\ lost\\ and\\ was\\ (.+?)\\.\\ (.+?)\\ was\\ (.+?)\\ years\\ old\\.$",
+            "{t1}{t0}、{t2}は{t4}を巡って{t3}に決闘を挑まれた。{t5}は敗れ、{t6}。{t7}は{t8}歳であった。"));
+
+        var translated = DescriptionTextTranslator.TranslateLongDescription(
+            "{{cyan|Early in 3476 BR, ナレドゥクフト was challenged by an aspirant to a duel over the rights of mollusks. She lost and was drawn and quartered. She was 49 years old.}}",
+            "DescriptionTextTranslatorTests");
+
+        Assert.That(
+            translated,
+            Is.EqualTo("{{cyan|3476年初頭、ナレドゥクフトは軟体動物を巡って野心家に決闘を挑まれた。その者は敗れ、八つ裂きにされた。その者は49歳であった。}}"));
+    }
+
     [TestCase(
         "Engraved: This item is engraved with a scene from the life of the ancient sultan ウーヒム I:",
         "彫刻: この品には古代のスルタン ウーヒム Iの生涯の一場面が彫り刻まれている:")]
@@ -210,8 +230,8 @@ public sealed class DescriptionTextTranslatorTests
     [TestCase("+5 Electrical Resistance", "電撃耐性+5")]
     [TestCase("+12 Acid Resistance", "酸耐性+12")]
     [TestCase("+2 to hit", "命中+2")]
-    [TestCase("+1 Ego", "+1 Ego")]
-    [TestCase("+1 Agility", "+1 Agility")]
+    [TestCase("+1 Ego", "自我+1")]
+    [TestCase("+1 Agility", "敏捷+1")]
     [TestCase("You are water-bonded with him.", "あなたは彼と水の絆で結ばれている。")]
     [TestCase("You are water-bonded with her.", "あなたは彼女と水の絆で結ばれている。")]
     [TestCase("You are water-bonded with it.", "あなたはそれと水の絆で結ばれている。")]
@@ -239,13 +259,21 @@ public sealed class DescriptionTextTranslatorTests
     [TestCase("Swarmer: This creature receives +1 to hit in melee and +1 to penetration rolls for each other hostile swarmer beyond the first who is in another square adjacent to qyr target. (currently +2)", "スウォーマー: 対象に隣接する別のマスにいる、最初の1体を超える敵対的なスウォーマー1体ごとに、このクリーチャーは近接命中+1と貫通ロール+1を得る。(現在+2)")]
     [TestCase("Contains wiring enabling it to function as part of power grid, producing electrical charge.", "電力網の一部として機能する配線を備え、電荷を生成する。")]
     [TestCase("Contains plumbing enabling it to function as part of hydraulic transmission system, consuming hydraulic power.", "油圧伝達システムの一部として機能する配管を備え、油圧を消費する。")]
+    [TestCase("Contains plumbing enabling it to function as part of hydraulic transmission system, producing hydraulic power.", "油圧伝達システムの一部として機能する配管を備え、油圧を生成する。")]
     [TestCase("This item is a named 猿毛のクローク.", "このアイテムは名前付きの猿毛のクロークである。")]
     [TestCase("Spray fire: This item can be fired while adjacent to multiple enemies without risk of the shot going wild.", "スプレーファイア: 複数の敵に隣接していても、このアイテムは射撃が逸れる危険なしに発射できる。")]
     [TestCase("装備して電源を入れると、Intelligence スコアが 2 上昇したかのように遺物鑑定へボーナスを得る。", "装備して電源を入れると、Intelligence スコアが 2 上昇したかのように遺物鑑定へボーナスを得る。")]
     [TestCase("It is powered off.", "電源が切れている。")]
     [TestCase("They are powered off.", "電源が切れている。")]
-    [TestCase("When activated, +1 Strength", "起動時、Strength+1")]
-    [TestCase("When activated, +1 Agility", "起動時、Agility+1")]
+    [TestCase("When activated, +1 Strength", "起動時、筋力+1")]
+    [TestCase("When activated, +1 Agility", "起動時、敏捷+1")]
+    [TestCase("When activated, +1 Toughness", "起動時、頑健+1")]
+    [TestCase("When activated, +1 Intelligence", "起動時、知力+1")]
+    [TestCase("When activated, +1 Willpower", "起動時、意志力+1")]
+    [TestCase("When activated, +1 Ego", "起動時、自我+1")]
+    [TestCase("+2 Strength", "筋力+2")]
+    [TestCase("-1 Toughness", "頑健-1")]
+    [TestCase("When activated, +25% quickness", "起動時、俊敏+25%")]
     [TestCase("表情豊かな顔と筋肉質な胴体は明らかに人間の血脈を示すが、厚い毛がまだらの脇腹を覆い、ぴくぴく動く尖った耳と誇らしい角は別の遺伝子の strand を語る。", "表情豊かな顔と筋肉質な胴体は明らかに人間の血脈を示すが、厚い毛がまだらの脇腹を覆い、ぴくぴく動く尖った耳と誇らしい角は別の遺伝子の系統を物語る。")]
     [TestCase("stuck in a 凍結した 黒い滲出液の水たまり", "凍結した 黒い滲出液の水たまりにはまっている")]
     public void TranslateShortDescription_TranslatesRuntimeObservedDescriptionLines(
@@ -419,7 +447,7 @@ public sealed class DescriptionTextTranslatorTests
         Assert.That(
             translated,
             Is.EqualTo(
-                "{{rules|Strength ボーナス上限: 1\n武器カテゴリ: 斧（クリティカル時に装甲破砕）}}\n" +
+                "{{rules|筋力ボーナス上限: 1\n武器カテゴリ: 斧（クリティカル時に装甲破砕）}}\n" +
                 "{{cyan|彩色: この品には古代のスルタン クホマスプ IIの生涯の一場面が描かれている:\n\nIn 4834 BR}}"));
     }
 
@@ -479,7 +507,7 @@ public sealed class DescriptionTextTranslatorTests
         Assert.That(
             translated,
             Is.EqualTo(
-                "{{rules|Strength ボーナス上限: 1\n" +
+                "{{rules|筋力ボーナス上限: 1\n" +
                 "{{Y|武器カテゴリ: 斧（クリティカル時に装甲破砕）}}}}"));
     }
 
@@ -505,7 +533,7 @@ public sealed class DescriptionTextTranslatorTests
         Assert.That(
             translated,
             Is.EqualTo(
-                "<color=yellow>Strength ボーナス上限: 1\n" +
+                "<color=yellow>筋力ボーナス上限: 1\n" +
                 "武器カテゴリ: 斧（クリティカル時に装甲破砕）</color>"));
     }
 
@@ -623,7 +651,7 @@ public sealed class DescriptionTextTranslatorTests
                 translated,
                 Is.EqualTo(
                     "拳大の巻貝が柔らかな螺旋にとぐろを巻き、煤で黒く燻され、硫黄の臭気を放つ。\n\n" +
-                    "Strength ボーナス上限: 3\n" +
+                    "筋力ボーナス上限: 3\n" +
                     "武器カテゴリ: 棍棒（クリティカル時に朦朧付与）\n" +
                     "オフハンド命中率: 15%\n\n" +
                     "重量： 2 lbs."));

@@ -212,7 +212,7 @@ public sealed partial class Issue201StatusScreensBatch2Tests
             ("[broken]", "[{{r|破損}}]"));
 
         var source =
-            "クローム・リボルバー {{c|\u001a}}7 {{r|\u0003}}1d6 {{y|[鉛スラッグ x6]}} [{{r|rusted}}] [{{r|broken}}] {{y|<{{|{{B|C}}{{B|C}}{{g|2}}}}>}}";
+            "クローム・リボルバー {{c|\u001a}}7 {{r|\u0003}}1d6 {{y|[鉛スラッグ x6]}} [{{r|rusted}}] [{{r|broken}}] {{y|<{{B|C}}{{B|C}}{{g|2}}>}}";
 
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
@@ -232,7 +232,7 @@ public sealed partial class Issue201StatusScreensBatch2Tests
 
             Assert.That(
                 itemTarget.text.Text,
-                Is.EqualTo("クローム・リボルバー {{c|\u001a}}7 {{r|\u0003}}1d6 {{y|[鉛スラッグ x6]}} [{{r|錆びた}}] [{{r|破損}}] {{y|<{{|{{B|C}}{{B|C}}{{g|2}}}}>}}"));
+                Is.EqualTo("クローム・リボルバー {{c|\u001a}}7 {{r|\u0003}}1d6 {{y|[鉛スラッグ x6]}} [{{r|錆びた}}] [{{r|破損}}] {{y|<{{B|C}}{{B|C}}{{g|2}}>}}"));
         }
         finally
         {

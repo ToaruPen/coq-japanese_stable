@@ -584,8 +584,8 @@ public sealed class DescriptionLongDescriptionPatchTests
 
             Assert.Multiple(() =>
             {
-                Assert.That(capBuilder.ToString(), Is.EqualTo("Strength ボーナス上限: なし"));
-                Assert.That(egoCapBuilder.ToString(), Is.EqualTo("Ego ボーナス上限: 2"));
+                Assert.That(capBuilder.ToString(), Is.EqualTo("筋力ボーナス上限: なし"));
+                Assert.That(egoCapBuilder.ToString(), Is.EqualTo("自我ボーナス上限: 2"));
                 Assert.That(weaponClassBuilder.ToString(), Is.EqualTo("武器カテゴリ: 長剣（クリティカル時に貫通力上昇）"));
                 Assert.That(cudgelBuilder.ToString(), Is.EqualTo("{{rules|武器カテゴリ: 棍棒（クリティカル時に朦朧付与）}}"));
                 Assert.That(requiresBuilder.ToString(), Is.EqualTo("要件： ティンカーI"));

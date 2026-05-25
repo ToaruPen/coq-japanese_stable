@@ -36,6 +36,10 @@ public static class AbilityManagerScreenTranslationPatch
         @"\bCooldown reduced by (?<amount>\d+) due to high Willpower\.",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex DurationIncreasedPattern = new(
+        @"\bDuration increased by (?<amount>\d+%) due to (?<reason>.+?) (?<kind>mutation|skill)\.",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     private static readonly Regex CooldownFloorPattern = new(
         @"\bCooldown cannot be reduced below (?<amount>\d+) rounds?\.",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
@@ -465,6 +469,13 @@ public static class AbilityManagerScreenTranslationPatch
         translated = CooldownValuePattern.Replace(translated, static match => "クールダウン: " + match.Groups["value"].Value + "ラウンド");
         translated = translated.Replace("Cooldown Remaining Turns: ", "残りクールダウンターン: ");
         translated = CooldownReducedPattern.Replace(translated, static match => "高い意志力によりクールダウンが" + match.Groups["amount"].Value + "短縮された。");
+        translated = DurationIncreasedPattern.Replace(
+            translated,
+            static match => TranslateReason(match.Groups["reason"].Value)
+                + TranslateReasonKind(match.Groups["kind"].Value)
+                + "により持続時間が"
+                + match.Groups["amount"].Value
+                + "増加。");
         translated = CooldownFloorPattern.Replace(translated, static match => "クールダウンは" + match.Groups["amount"].Value + "ラウンド未満には短縮できない。");
         translated = AreaCenteredPattern.Replace(translated, static match => "範囲: 自分を中心に" + match.Groups["area"].Value);
         translated = DurationValuePattern.Replace(translated, static match => "持続時間: " + match.Groups["duration"].Value);
@@ -484,6 +495,20 @@ public static class AbilityManagerScreenTranslationPatch
         return string.Equals(value, "sight", StringComparison.Ordinal)
             ? "視界"
             : value;
+    }
+
+    private static string TranslateReason(string value)
+    {
+        return StringHelpers.TryGetTranslationExactOrLowerAscii(value, out var translated)
+            ? translated
+            : value;
+    }
+
+    private static string TranslateReasonKind(string value)
+    {
+        return string.Equals(value, "mutation", StringComparison.Ordinal)
+            ? "変異"
+            : "スキル";
     }
 
     private static string TranslateSentenceFragments(string source)

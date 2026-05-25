@@ -2,6 +2,26 @@
   "schema_version": "1",
   "candidates": [
     {
+      "extracted_pattern": "^((?:In|Early in|Late in|Sometime in))\\ (.+?)\\ (?:BR|AR),\\ (.+?)\\ challenged\\ the\\ sultan\\ of\\ Qud\\ to\\ a\\ duel\\ (?:over\\ the\\ rights\\ of|over\\ an\\ ordinance\\ prohibiting\\ the\\ practice\\ of|over\\ the\\ sanctioned\\ persecution\\ of)\\ (.+?)\\.\\ (.+?)\\ won\\ and\\ (.+?)\\.\\ (.+?)\\ was\\ (.+?)\\ years\\ old\\.$",
+      "status": "accepted",
+      "ja_template": "{t1}{t0}、{t2}は{t3}を巡ってクッドのスルタンに決闘を挑んだ。{t4}は勝利し、{t5}。{t6}は{t7}歳であった。"
+    },
+    {
+      "extracted_pattern": "^((?:In|Early in|Late in|Sometime in))\\ (.+?)\\ (?:BR|AR),\\ (.+?)\\ challenged\\ the\\ legitimacy\\ of\\ the\\ sultan\\ of\\ Qud\\ (?:over\\ the\\ rights\\ of|over\\ an\\ ordinance\\ prohibiting\\ the\\ practice\\ of|over\\ the\\ sanctioned\\ persecution\\ of)\\ (.+?)\\.\\ (.+?)\\ won\\ and\\ (.+?)\\.\\ (.+?)\\ was\\ (.+?)\\ years\\ old\\.$",
+      "status": "accepted",
+      "ja_template": "{t1}{t0}、{t2}は{t3}を巡ってクッドのスルタンの正統性に異議を唱えた。{t4}は勝利し、{t5}。{t6}は{t7}歳であった。"
+    },
+    {
+      "extracted_pattern": "^((?:In|Early in|Late in|Sometime in))\\ (.+?)\\ (?:BR|AR),\\ (.+?)\\ assassinated\\ the\\ sultan\\ of\\ Qud\\ (?:over\\ the\\ rights\\ of|over\\ an\\ ordinance\\ prohibiting\\ the\\ practice\\ of|over\\ the\\ sanctioned\\ persecution\\ of)\\ (.+?)\\.\\ (.+?)\\ won\\ and\\ (.+?)\\.\\ (.+?)\\ was\\ (.+?)\\ years\\ old\\.$",
+      "status": "accepted",
+      "ja_template": "{t1}{t0}、{t2}は{t3}を巡ってクッドのスルタンを暗殺した。{t4}は勝利し、{t5}。{t6}は{t7}歳であった。"
+    },
+    {
+      "extracted_pattern": "^While\\ leading\\ a\\ small\\ army\\ in\\ (.+?),\\ (.+?)\\ was\\ challenged\\ by\\ (?:a|an|the)\\ (.+?)\\ to\\ a\\ duel\\ (?:over\\ the\\ rights\\ of|over\\ an\\ ordinance\\ mandating\\ the\\ practice\\ of|over\\ the\\ sanctioned\\ persecution\\ of)\\ (.+?)\\.\\ (.+?)\\ lost\\ and\\ was\\ (.+?)\\.\\ (.+?)\\ was\\ (.+?)\\ years\\ old\\.$",
+      "status": "accepted",
+      "ja_template": "{t0}で小軍を率いていたとき、{t1}は{t3}を巡って{t2}に決闘を挑まれた。{t4}は敗れ、{t5}。{t6}は{t7}歳であった。"
+    },
+    {
       "extracted_pattern": "^Throughout\\ the\\ entirety\\ of\\ (.+?)\\ (?:BR|AR),\\ (.+?\\ (?:I|II|III|IV|V|VI|VII|VIII|IX|X))\\ (.+?)\\ all\\ of\\ (.+?),\\ (.+?)\\ for\\ (.+?)\\ and\\ (.+?)\\.\\ (.+?)\\ became\\ known\\ as\\ (?:the\\ )?(Scourge|Terror|Bane|Pest|Woe|Sorrow)\\ of\\ (.+?)\\.$",
       "status": "accepted",
       "ja_template": "{t0}年全体を通じて、{t1}は{t3}全域を{t2}うえ、{t5}と{t6}に対して{t4}を行った。{t7}は以後{t9}の{t8}として知られるようになった。"

@@ -361,6 +361,13 @@ public sealed class MessagePatternTranslatorTests
     [TestCase("The タレット hits タム with a 鉛スラッグ, but their mental attack has no effect.", "タレットは鉛スラッグでタムに命中させたが、精神攻撃は効果がない")]
     [TestCase("The タレット hits タム (x2) with a 鉛スラッグ!", "タレットは鉛スラッグでタムに命中した (x2)")]
     [TestCase("The タールまみれの結合ギルシュリング miss you with their 牙! [5 vs 7]", "タールまみれの結合ギルシュリングの牙は外れた。[5 vs 7]")]
+    [TestCase("A loud buzz is emitted. The unauthorized glyph flashes on the display.", "大きなブザー音が鳴った。認証されていないグリフがディスプレイに点滅した。")]
+    [TestCase("&rA loud buzz is emitted. The unauthorized glyph flashes on the display.", "&r大きなブザー音が鳴った。認証されていないグリフがディスプレイに点滅した。")]
+    [TestCase("{{r|A loud buzz is emitted. The unauthorized glyph flashes on the display.}}", "{{r|大きなブザー音が鳴った。認証されていないグリフがディスプレイに点滅した。}}")]
+    [TestCase("{{y|&rA loud buzz is emitted. The unauthorized glyph flashes on the display.}}", "{{y|&r大きなブザー音が鳴った。認証されていないグリフがディスプレイに点滅した。}}")]
+    [TestCase("Youは氷で滑った！", "あなたは氷で滑った！")]
+    [TestCase("The 濡れた ジュースサップは氷で滑った！", "濡れた ジュースサップは氷で滑った！")]
+    [TestCase("濡れたチェインレーザー砲座の shot goes wild!", "濡れたチェインレーザー砲座の弾が逸れた！")]
     [TestCase("鉛スラッグ hits you to the east! (x2)", "鉛スラッグがあなたに東側に命中！ (x2)")]
     [TestCase("鉛スラッグ critically hits you to the east! (x2)", "鉛スラッグが会心であなたに東側に命中！ (x2)")]
     [TestCase("鉛スラッグ hits you to the east, but your mental attack has no effect.", "鉛スラッグがあなたに東側に命中したが、精神攻撃は効果がない")]
@@ -756,6 +763,16 @@ public sealed class MessagePatternTranslatorTests
         var translated = MessagePatternTranslator.Translate("{{r|You miss with your {{w|青銅の短剣}}!}} [7 vs 12]");
 
         Assert.That(translated, Is.EqualTo("{{r|{{w|青銅の短剣}}での攻撃は外れた。[7 vs 12]}}"));
+    }
+
+    [Test]
+    public void Translate_RepositoryDictionary_TranslatesIncomingMissWhenWeaponNameIsEmpty()
+    {
+        UseRepositoryPatternDictionary();
+
+        var translated = MessagePatternTranslator.Translate("The 山羊人の暴漢 misses you with his ! [7 vs 10]");
+
+        Assert.That(translated, Is.EqualTo("山羊人の暴漢の攻撃は外れた。[7 vs 10]"));
     }
 
     [Test]
@@ -1874,6 +1891,75 @@ public sealed class MessagePatternTranslatorTests
         var translated = MessagePatternTranslator.Translate("You take 6 damage from ドリンクスの pyrokinesis!");
 
         Assert.That(translated, Is.EqualTo("ドリンクスの熱念動で6ダメージを受けた！"));
+    }
+
+    [Test]
+    public void Translate_RepositoryDictionary_TranslatesElectricalArcGeneratedCaptures()
+    {
+        UseRepositoryPatternDictionary();
+
+        var translated = MessagePatternTranslator.Translate(
+            "An electrical arc leaps from you toward the 凍結した 山羊人の暴漢 to the northwest!");
+
+        Assert.That(translated, Is.EqualTo("電弧があなたから凍結した 山羊人の暴漢（北西）へ走った！"));
+    }
+
+    [Test]
+    public void Translate_RepositoryDictionary_TranslatesCapitalizedDirectionQualifiedCapture()
+    {
+        UseRepositoryPatternDictionary();
+
+        var translated = MessagePatternTranslator.Translate(
+            "An electrical arc leaps from you toward the 凍結した 山羊人の暴漢 to the North!");
+
+        Assert.That(translated, Is.EqualTo("電弧があなたから凍結した 山羊人の暴漢（北）へ走った！"));
+    }
+
+    [Test]
+    public void Translate_RepositoryDictionary_TranslatesHitFromDirectionDamageCapture()
+    {
+        UseRepositoryPatternDictionary();
+
+        var translated = MessagePatternTranslator.Translate(
+            "A レーザービーム hits you (x1) from the northwest for 3 damage!");
+
+        Assert.That(translated, Is.EqualTo("レーザービームが北西からあなたに命中、3ダメージ！ (x1)"));
+    }
+
+    [Test]
+    public void Translate_RepositoryDictionary_TranslatesHitFromCapitalizedDirectionDamageCapture()
+    {
+        UseRepositoryPatternDictionary();
+
+        var translated = MessagePatternTranslator.Translate(
+            "A レーザービーム hits you (x1) from the North for 3 damage!");
+
+        Assert.That(translated, Is.EqualTo("レーザービームが北からあなたに命中、3ダメージ！ (x1)"));
+    }
+
+    [Test]
+    public void Translate_RepositoryDictionary_TranslatesRuntimeMessageLogActionSiblings()
+    {
+        UseRepositoryPatternDictionary();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                MessagePatternTranslator.Translate("You butcher the 目なし蟹の死体 to the east into a set of 無眼蟹の脚."),
+                Is.EqualTo("東にある目なし蟹の死体を解体して無眼蟹の脚一組にした。"));
+            Assert.That(
+                MessagePatternTranslator.Translate("You extinguish the キャンプファイヤー."),
+                Is.EqualTo("キャンプファイヤーを消した。"));
+            Assert.That(
+                MessagePatternTranslator.Translate("You light the キャンプファイヤー."),
+                Is.EqualTo("キャンプファイヤーに火をつけた。"));
+            Assert.That(
+                MessagePatternTranslator.Translate("The ウォーターヴァイン農家 sits down on the フロアクッション."),
+                Is.EqualTo("ウォーターヴァイン農家はフロアクッションに座った。"));
+            Assert.That(
+                MessagePatternTranslator.Translate("The 目なし蟹 is stuck in a アスファルトの水たまり!"),
+                Is.EqualTo("目なし蟹はアスファルトの水たまりにはまっている！"));
+        });
     }
 
     [Test]
