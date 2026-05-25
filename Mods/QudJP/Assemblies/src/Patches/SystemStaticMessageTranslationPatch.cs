@@ -27,6 +27,7 @@ public static class SystemStaticMessageTranslationPatch
         var gameObjectType = AccessTools.TypeByName("XRL.World.GameObject");
         var objectEnteredCellEventType = AccessTools.TypeByName("XRL.World.ObjectEnteredCellEvent");
         var endTurnEventType = AccessTools.TypeByName("XRL.World.EndTurnEvent");
+        var canTravelEventType = AccessTools.TypeByName("XRL.World.CanTravelEvent");
         if (eventType is null || zoneType is null || factionType is null)
         {
             Trace.TraceError("QudJP: {0} target parameter types not found.", Context);
@@ -59,6 +60,14 @@ public static class SystemStaticMessageTranslationPatch
         else
         {
             Trace.TraceError("QudJP: {0}.TorchProperties.HandleEvent parameter type not found.", Context);
+        }
+        if (canTravelEventType is not null)
+        {
+            AddTarget(targets, "XRL.World.Effects.Lost", "HandleEvent", new[] { canTravelEventType });
+        }
+        else
+        {
+            Trace.TraceError("QudJP: {0}.Lost.HandleEvent parameter type not found.", Context);
         }
         if (teleportationType is not null && iEventType is not null && cellType is not null && gameObjectType is not null)
         {
@@ -143,6 +152,7 @@ public static class SystemStaticMessageTranslationPatch
             "The svardym egg hatches." => "スヴァーディムの卵が孵化した。",
             "You sprout a {{C|luminous hoarshroom}}." => "あなたに{{C|発光ホアシュルーム}}が生えた。",
             "Your torch burns out!" => "たいまつが燃え尽きた！",
+            "You are lost!" => "道に迷っている！",
             "You are shunted to another location!" => "別の場所へ弾き飛ばされた！",
             "You teleport!" => "テレポートした！",
             "You are teleported to an exit." => "出口へ転送された。",

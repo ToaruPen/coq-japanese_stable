@@ -3073,7 +3073,7 @@
 
 <object Name="Gelatinous Wedge" Inherits="BaseOoze" Replace="true">
     <part Name="Render" DisplayName="ゼラチンの楔" Tile="Creatures/sw_wedge.bmp" RenderString="J" ColorString="&amp;c" DetailColor="C" />
-    <part Name="Description" Short="有機物が腐敗剤で液化し、狭い空間に圧されて角柱台の形を取った。飢餓に似た本能に galvanize され、ゼラチンの存在は楔となって押し出される。" />
+    <part Name="Description" Short="有機物が腐敗剤で液化し、狭い空間に圧されて角柱台の形を取った。飢餓に似た本能に突き動かされ、ゼラチンの存在は楔となって押し出される。" />
     <stat Name="Level" Value="13" />
     <tag Name="Role" Value="Tank" />
     <stat Name="AV" Value="4" />
@@ -3126,7 +3126,7 @@
     <stat Name="Hitpoints" Value="15" />
     <part Name="Brain" Hostile="false" Factions="Worms-99,Girsh-100" />
     <inventoryobject Blueprint="Girshworm_Crush" Number="1" />
-    <part Name="Description" Short="排泄管が硬い外食道全体でげっぷを上げ、震える。吸い付く根のように湿った剛毛が並び、節が押したり引いたりして moon time へと進む。" />
+    <part Name="Description" Short="排泄管が硬い外食道全体でげっぷを上げ、震える。吸い付く根のように湿った剛毛が並び、節が押したり引いたりして月の刻へと進む。" />
     <mutation Name="Regeneration" />
     <part Name="MentalShield" />
     <mutation Name="PoisonGasGeneration" Level="1" />
@@ -3354,7 +3354,7 @@
     <stat Name="AV" Value="3" />
     <stat Name="Hitpoints" Value="4" />
     <part Name="Brain" Hostile="false" />
-    <part Name="Description" Short="感覚触肢が moon time 以外でもぱちぱちと爆ぜ、六本の脚が火花をまとって flare する。虫は生のバイオカレントに galvanize され、点から点へと跳ね回る。" />
+    <part Name="Description" Short="感覚触肢が月の刻以外でもぱちぱちと爆ぜ、六本の脚が火花をまとって閃く。虫は生のバイオカレントに突き動かされ、点から点へと跳ね回る。" />
     <inventoryobject Blueprint="Spark_Tick_Arc" Number="1" />
     <skill Name="ShortBlades" />
     <tag Name="Role" Value="Minion" />
@@ -3991,7 +3991,7 @@
 
 <object Name="Gelatinous Frustum" Inherits="BaseOoze" Replace="true">
     <part Name="Render" DisplayName="ゼラチンの台錐" Tile="Creatures/sw_frustum.bmp" RenderString="J" ColorString="&amp;w" DetailColor="W" />
-    <part Name="Description" Short="有機物が腐敗剤で液化し、狭い空間に圧されて角柱台の形を取った。飢餓に似た本能に galvanize され、ゼラチンの存在は台錐となって押し出される。" />
+    <part Name="Description" Short="有機物が腐敗剤で液化し、狭い空間に圧されて角柱台の形を取った。飢餓に似た本能に突き動かされ、ゼラチンの存在は台錐となって押し出される。" />
     <stat Name="Level" Value="18" />
     <part Name="Engulfing" />
     <part Name="EngulfingDamage" Amount="3-7" />
@@ -4910,7 +4910,7 @@
 
 <object Name="Gelatinous Prism" Inherits="BaseOoze" Replace="true">
     <part Name="Render" DisplayName="ゼラチンの角柱" Tile="Creatures/sw_prism.bmp" RenderString="J" ColorString="&amp;y" DetailColor="Y" />
-    <part Name="Description" Short="有機物が腐敗剤で液化し、狭い空間に圧されて角柱状のプリズマトイドになる。飢餓に似た本能に galvanize され、ゼラチンの存在は角柱形のまま前方へ押し出される。" />
+    <part Name="Description" Short="有機物が腐敗剤で液化し、狭い空間に圧されて角柱状のプリズマトイドになる。飢餓に似た本能に突き動かされ、ゼラチンの存在は角柱形のまま前方へ押し出される。" />
     <stat Name="Level" Value="23" />
     <tag Name="Role" Value="Tank" />
     <part Name="Engulfing" />
@@ -6059,7 +6059,7 @@
 
 <object Name="Gelatinous Cupola" Inherits="BaseOoze" Replace="true">
     <part Name="Render" DisplayName="ゼラチンのクーポラ" Tile="Creatures/sw_cupola.bmp" RenderString="J" ColorString="&amp;g" DetailColor="G" />
-    <part Name="Description" Short="有機物が腐敗剤で液化し、狭い空間に圧されて角柱状のプリズマトイドになる。飢餓に似た本能に galvanize され、ゼラチンの存在はクーポラ形のまま前方へ押し出される。" />
+    <part Name="Description" Short="有機物が腐敗剤で液化し、狭い空間に圧されて角柱状のプリズマトイドになる。飢餓に似た本能に突き動かされ、ゼラチンの存在はクーポラ形のまま前方へ押し出される。" />
     <stat Name="Level" Value="28" />
     <tag Name="Role" Value="Tank" />
     <part Name="Engulfing" />
@@ -11837,7 +11837,7 @@
 
 <object Name="Lulihart" Inherits="BaseHindren" Replace="true">
     <part Name="Render" DisplayName="ルリハート" RenderString="h" Tile="creatures/sw_lulihart.bmp" ColorString="&amp;C" />
-    <part Name="Titles" Ordinary="hindren pariah" />
+    <part Name="Titles" Ordinary="ヒンドレンのパリア" />
     <stat Name="Level" Value="20" />
     <stat Name="Strength" Value="12" />
     <stat Name="Agility" Value="24" />
@@ -11876,7 +11876,7 @@
 
 <object Name="Tszappur" Inherits="Mysterious Gunslinger" Replace="true">
     <part Name="Render" DisplayName="ツザップル" Tile="creatures/sw_stranger1.bmp" ColorString="&amp;Y" DetailColor="C" />
-    <part Name="Titles" Primary="disciple of the Coiled Lamb" />
+    <part Name="Titles" Primary="巻かれた仔羊の弟子" />
     <part Name="Description" Short="荒織りの医療布をたたんだ襞がガンマンのショールのようにしなやかな体から垂れ、年季の入った帽子のしわんだ鍔が太陽と星明かりを遮る。" />
     <part Name="Brain" Wanders="false" Hostile="false" Factions="Resheph-100" />
     <part Name="ConversationScript" ConversationID="Tszappur" />

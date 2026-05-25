@@ -803,6 +803,15 @@ public sealed class DoesVerbFamilyTests
         AssertTranslated(input, expected);
     }
 
+    // --- Pick Up Family ---
+
+    [TestCase("You pick up {{B|濡れた}}寝袋.", "{{B|濡れた}}寝袋を拾った")]
+    [TestCase("The アルコノート picks up the {{B|濡れた}}寝袋.", "アルコノートは{{B|濡れた}}寝袋を拾った")]
+    public void Translate_PickUpFamily(string input, string expected)
+    {
+        AssertTranslated(input, expected);
+    }
+
     // --- Rifle Through (Garbage.cs) Family ---
 
     [TestCase("You rifle through the ゴミ山, and find a 銅線.", "ゴミ山を漁り、銅線を見つけた")]
@@ -821,6 +830,8 @@ public sealed class DoesVerbFamilyTests
 
     [TestCase("You butcher a サイバネティック from the 死体.", "死体からサイバネティックを解体した")]
     [TestCase("The 熊 butchers a サイバネティック from the 死体.", "熊は死体からサイバネティックを解体した")]
+    [TestCase("You butcher the ドーングライダーの死体 into a {{G|ドーングライダーの尾}}.", "あなたはドーングライダーの死体を解体して{{G|ドーングライダーの尾}}を得た。")]
+    [TestCase("You butcher the 目なし蟹の死体 into a set of 無眼蟹の脚.", "あなたは目なし蟹の死体を解体して無眼蟹の脚を得た。")]
     [TestCase("You rip a サイバネティック out of the 死体, but destroy it in the process.", "死体からサイバネティックを引き抜いたが、その過程で壊してしまった")]
     [TestCase("The 熊 rips a サイバネティック out of the 死体, but destroys it in the process.", "熊は死体からサイバネティックを引き抜いたが、その過程で壊してしまった")]
     // Color-wrapped

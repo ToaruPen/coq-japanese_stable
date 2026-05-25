@@ -48,6 +48,10 @@ internal static class JournalPatternTranslator
         new Regex("^(?<name>.+?)'s twin had been the one who died$", RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.IgnoreCase);
     private static readonly Regex LeaderRelationshipTitlePattern =
         new Regex("^leader of the (?<faction>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.IgnoreCase);
+    private static readonly Regex ProvinceOfCapturePattern =
+        new Regex("^(?:(?:the|The) )?(?:(?<owner>.+?)' )?Province of (?<province>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex WaistDeepInLakeCapturePattern =
+        new Regex("^Waist deep in a lake of (?<material>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex PopularRivalMurderReasonPattern =
         new Regex("^after murdering a popular rival (?<method>with .+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.IgnoreCase);
     private static readonly Regex VisageReasonPattern =
@@ -804,6 +808,16 @@ internal static class JournalPatternTranslator
             return expandedHistorySpiceCapture;
         }
 
+        if (TryTranslateAnnalsPlaceCapture(source, out var annalsPlaceCapture))
+        {
+            return annalsPlaceCapture;
+        }
+
+        if (TryTranslateCommaSeparatedCapture(source, out var commaSeparatedCapture))
+        {
+            return commaSeparatedCapture;
+        }
+
         if (TryTranslateRelationshipTitleFragment(source, out var relationshipTitleCapture))
         {
             return relationshipTitleCapture;
@@ -828,6 +842,11 @@ internal static class JournalPatternTranslator
             {
                 return lowered;
             }
+        }
+
+        if (HistoricSpiceGeneratedNameTranslator.TryTranslateHistoricItemName(source, out var historicItemName))
+        {
+            return historicItemName;
         }
 
         if (TryTranslateVillageTemplateCapture(source, out var villageCapture))
@@ -1066,6 +1085,65 @@ internal static class JournalPatternTranslator
             ? translatedAdjective + translatedNoun
             : translatedOwner + "の" + translatedAdjective + translatedNoun;
         return true;
+    }
+
+    private static bool TryTranslateAnnalsPlaceCapture(string source, out string translated)
+    {
+        var provinceMatch = ProvinceOfCapturePattern.Match(source);
+        if (provinceMatch.Success)
+        {
+            var province = TranslateTemplateCapture(provinceMatch.Groups["province"].Value);
+            var owner = provinceMatch.Groups["owner"];
+            translated = owner.Success && owner.Length > 0
+                ? TranslateTemplateCapture(owner.Value) + "の" + province + "州"
+                : province + "州";
+            return true;
+        }
+
+        var lakeMatch = WaistDeepInLakeCapturePattern.Match(source);
+        if (lakeMatch.Success)
+        {
+            translated = TranslateTemplateCapture(lakeMatch.Groups["material"].Value) + "の湖に腰まで浸かって";
+            return true;
+        }
+
+        translated = source;
+        return false;
+    }
+
+    private static bool TryTranslateCommaSeparatedCapture(string source, out string translated)
+    {
+        if (source.IndexOf(",", StringComparison.Ordinal) < 0)
+        {
+            translated = source;
+            return false;
+        }
+
+        var parts = source.Split(',');
+        var changed = false;
+        for (var index = 0; index < parts.Length; index++)
+        {
+            var part = parts[index].Trim();
+            if (part.Length == 0)
+            {
+                continue;
+            }
+
+            var translatedPart = TranslateTemplateCapture(part);
+            if (!string.Equals(translatedPart, part, StringComparison.Ordinal))
+            {
+                parts[index] = translatedPart;
+                changed = true;
+                continue;
+            }
+
+            parts[index] = part;
+        }
+
+        translated = changed
+            ? string.Join("、", parts)
+            : source;
+        return changed;
     }
 
     internal static bool TryTranslateRelationshipTitleFragment(string source, out string translated)

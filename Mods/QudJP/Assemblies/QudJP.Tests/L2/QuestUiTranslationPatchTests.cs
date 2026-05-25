@@ -223,6 +223,55 @@ public sealed class QuestUiTranslationPatchTests
     }
 
     [Test]
+    public void QuestsStatusScreenPostfix_TranslatesRuntimeObservedVisitMapPinDetails_WhenPatched()
+    {
+        WriteDictionary(("quest:", "クエスト:"));
+        WriteDictionaryFile(
+            "Scoped/historyspice-common.ja.json",
+            ("stargazer", "星見"),
+            ("home", "家"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyQuestsStatusScreenTarget), nameof(DummyQuestsStatusScreenTarget.UpdateViewFromData)),
+                postfix: new HarmonyMethod(RequireMethod(typeof(QuestsStatusScreenTranslationPatch), nameof(QuestsStatusScreenTranslationPatch.Postfix))));
+
+            var target = new DummyQuestsStatusScreenTarget
+            {
+                PinDataOverride = new List<DummyMapPinData>
+                {
+                    new DummyMapPinData
+                    {
+                        title = "{{W|トゥキスフ, Stargazerhome, 地表}}",
+                        details = "{{B|quest:}} Visit カルクヘタラ, Stargazerhome",
+                    },
+                },
+            };
+            target.UpdateViewFromData();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(
+                    target.mapController.pins[0].pinItem.titleText.Text,
+                    Is.EqualTo("{{W|トゥキスフ, 星見の家, 地表}}"));
+                Assert.That(
+                    target.mapController.pins[0].pinItem.detailsText.Text,
+                    Is.EqualTo("{{B|クエスト:}} カルクヘタラ, 星見の家を訪問"));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(nameof(QuestsStatusScreenTranslationPatch), "QuestsStatusScreen.MapPinVisitDetails"),
+                    Is.EqualTo(1));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void QuestLogPostfix_TranslatesOptionalPrefixAndBonusReward_WhenPatched()
     {
         WriteDictionary(
@@ -327,6 +376,39 @@ public sealed class QuestUiTranslationPatchTests
         builder.AppendLine();
 
         var path = Path.Combine(tempDirectory, "ui-quests.ja.json");
+        File.WriteAllText(path, builder.ToString(), new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
+    }
+
+    private void WriteDictionaryFile(string fileName, params (string key, string text)[] entries)
+    {
+        var builder = new StringBuilder();
+        builder.Append('{');
+        builder.Append("\"entries\":[");
+
+        for (var index = 0; index < entries.Length; index++)
+        {
+            if (index > 0)
+            {
+                builder.Append(',');
+            }
+
+            builder.Append("{\"key\":\"");
+            builder.Append(EscapeJson(entries[index].key));
+            builder.Append("\",\"text\":\"");
+            builder.Append(EscapeJson(entries[index].text));
+            builder.Append("\"}");
+        }
+
+        builder.Append("]}");
+        builder.AppendLine();
+
+        var path = Path.Combine(tempDirectory, fileName);
+        var parent = Path.GetDirectoryName(path);
+        if (!string.IsNullOrEmpty(parent))
+        {
+            Directory.CreateDirectory(parent);
+        }
+
         File.WriteAllText(path, builder.ToString(), new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
     }
 

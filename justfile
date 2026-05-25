@@ -104,7 +104,7 @@ python-test-filter pattern:
 localization-check:
   {{python}} scripts/check_encoding.py Mods/QudJP/Localization scripts
   {{python}} scripts/check_glossary_consistency.py Mods/QudJP/Localization
-  {{python}} scripts/validate_pattern_routes.py Mods/QudJP/Localization/Dictionaries/messages.ja.json --require-needs-harmony-patch-deferrals --expect-count message-frame=53 --expect-count popup=20 --expect-count journal=1 --expect-count leaf=0 --expect-count emit-message=352 --expect-count does-verb=0 --expect-count message-log=1 --expect-count description=13 --expect-count effect-cripple=1 --expect-count needs-harmony-patch=0 --expect-count unclassified=0
+  {{python}} scripts/validate_pattern_routes.py Mods/QudJP/Localization/Dictionaries/messages.ja.json --require-needs-harmony-patch-deferrals --expect-count message-frame=53 --expect-count popup=24 --expect-count journal=1 --expect-count leaf=0 --expect-count emit-message=363 --expect-count does-verb=0 --expect-count message-log=1 --expect-count description=13 --expect-count effect-cripple=1 --expect-count needs-harmony-patch=0 --expect-count unclassified=0
   {{python}} scripts/validate_xml.py Mods/QudJP/Localization --strict --warning-baseline scripts/validate_xml_warning_baseline.json
 
 # Check placeholder and markup-token parity in JSON localization assets.

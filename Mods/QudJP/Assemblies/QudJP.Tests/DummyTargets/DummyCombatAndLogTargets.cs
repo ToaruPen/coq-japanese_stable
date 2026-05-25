@@ -1443,6 +1443,14 @@ internal sealed class DummySimpleOwnerQueueTarget
         return true;
     }
 
+    public bool LostCanTravelHandleEvent(DummyEvent? eventObject = null)
+    {
+        _ = eventObject;
+        _ = nameof(LostCanTravelHandleEvent);
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+        return true;
+    }
+
     public bool Apply(DummyGameObject? obj = null)
     {
         _ = obj;

@@ -171,6 +171,68 @@ public sealed class SultanShrineWrapperTranslatorTests
     }
 
     [Test]
+    public void Translate_TranslatesRuntimeObservedRampageGospel_WithRomanNumeralSultan()
+    {
+        const string source =
+            "The shrine depicts a significant event from the life of the ancient sultan ウーヒム II:"
+            + "\n\nThroughout the entirety of 5379 BR, ウーヒム II pillaged all of the Window Makers' Province of ダビッパ, rejoicing most sorrowfully for fish and apes. He became known as the Scourge of ダビッパ.";
+
+        var translated = MessagePatternTranslator.Translate(source, nameof(DescriptionLongDescriptionPatch));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Does.Contain("ウーヒム II"));
+            Assert.That(translated, Does.Contain("5379年全体を通じて、ウーヒム IIは"));
+            Assert.That(translated, Does.Contain("ダビッパ州全域を略奪した"));
+            Assert.That(translated, Does.Contain("魚と類人猿"));
+            Assert.That(translated, Does.Contain("ダビッパの災厄"));
+            Assert.That(translated, Does.Not.Contain("pillaged"));
+            Assert.That(translated, Does.Not.Contain("Province of"));
+            Assert.That(translated, Does.Not.Contain("Scourge"));
+        });
+    }
+
+    [Test]
+    public void Translate_TranslatesRuntimeObservedMarriageGospel_WithCompactGiftName()
+    {
+        const string source =
+            "The shrine depicts a significant event from the life of the ancient sultan ウーヒム III:"
+            + "\n\nWaist deep in a lake of wood, ウーヒム III cemented its friendship with antelope by marrying グヌユゴゴコグムグヌ. In celebration of the occasion, antelope bestowed upon ウーヒム III a wedding gift they called Betrothedecus, antelopegift.";
+
+        var translated = MessagePatternTranslator.Translate(source, nameof(DescriptionLongDescriptionPatch));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Does.Contain("木材の湖に腰まで浸かって"));
+            Assert.That(translated, Does.Contain("ウーヒム IIIは"));
+            Assert.That(translated, Does.Contain("アンテロープとの友誼を固めた"));
+            Assert.That(translated, Does.Contain("この出来事を祝して"));
+            Assert.That(translated, Does.Contain("Betrothedecus、アンテロープの賜物"));
+            Assert.That(translated, Does.Not.Contain("Waist deep"));
+            Assert.That(translated, Does.Not.Contain("In celebration"));
+            Assert.That(translated, Does.Not.Contain("antelopegift"));
+            Assert.That(translated, Does.Not.Contain("そのの"));
+        });
+    }
+
+    [Test]
+    public void Translate_TranslatesRuntimeObservedMarriageGospel_WithoutDoublePossessiveForTheirFriendship()
+    {
+        const string source =
+            "The shrine depicts a significant event from the life of the ancient sultan ウーヒム III:"
+            + "\n\nWaist deep in a lake of wood, ウーヒム III cemented their friendship with wardens by marrying グヌユゴゴコグムグヌ.";
+
+        var translated = MessagePatternTranslator.Translate(source, nameof(DescriptionLongDescriptionPatch));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Does.Contain("彼らの監視官同胞団との友誼を固めた"));
+            Assert.That(translated, Does.Not.Contain("彼らのの"));
+            Assert.That(translated, Does.Not.Contain("their friendship"));
+        });
+    }
+
+    [Test]
     public void Translate_TranslatesTwoParagraphShape_WhenQualitySuffixAbsent()
     {
         // Shape produced directly by SultanShrine.ShrineInitialize (Description.Short).

@@ -380,6 +380,23 @@ public sealed class TradeUiPopupTranslationPatchTests
         Assert.That(translated, Is.EqualTo(source));
     }
 
+    [Test]
+    public void TranslatePopupText_DoesNotReportNoPattern_ForUnknownNonTradePopup()
+    {
+        const string source = "This popup does not belong to trade UI.";
+
+        var translated = TradeUiPopupTranslationPatch.TranslatePopupText(source);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.EqualTo(source));
+            Assert.That(MessagePatternTranslator.GetMissingPatternHitCountForTests(source), Is.EqualTo(0));
+            Assert.That(
+                MessagePatternTranslator.GetMissingRouteHitCountForTests(nameof(TradeUiPopupTranslationPatch)),
+                Is.EqualTo(0));
+        });
+    }
+
     private void WriteDictionary(params (string key, string text)[] entries)
     {
         var builder = new StringBuilder();

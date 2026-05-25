@@ -345,10 +345,10 @@ jobs:
           Mods/QudJP/Localization/Dictionaries/messages.ja.json
           --require-needs-harmony-patch-deferrals
           --expect-count message-frame=53
-          --expect-count popup=20
+          --expect-count popup=24
           --expect-count journal=1
           --expect-count leaf=0
-          --expect-count emit-message=352
+          --expect-count emit-message=363
           --expect-count does-verb=0
           --expect-count message-log=1
           --expect-count description=13

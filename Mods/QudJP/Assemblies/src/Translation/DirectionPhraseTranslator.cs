@@ -4,21 +4,22 @@ internal static class DirectionPhraseTranslator
 {
     internal static bool TryTranslateAdverbPhrase(string source, out string translated)
     {
-        translated = source switch
+        var normalized = source.ToUpperInvariant();
+        translated = normalized switch
         {
-            "to the north" => "北側に",
-            "to the south" => "南側に",
-            "to the east" => "東側に",
-            "to the west" => "西側に",
-            "to the northeast" => "北東側に",
-            "to the northwest" => "北西側に",
-            "to the southeast" => "南東側に",
-            "to the southwest" => "南西側に",
-            "nearby" => "近く",
-            "above" => "上方",
-            "below" => "下方",
-            "here" => "ここ",
-            "somewhere" => "どこか",
+            "TO THE NORTH" => "北側に",
+            "TO THE SOUTH" => "南側に",
+            "TO THE EAST" => "東側に",
+            "TO THE WEST" => "西側に",
+            "TO THE NORTHEAST" => "北東側に",
+            "TO THE NORTHWEST" => "北西側に",
+            "TO THE SOUTHEAST" => "南東側に",
+            "TO THE SOUTHWEST" => "南西側に",
+            "NEARBY" => "近く",
+            "ABOVE" => "上方",
+            "BELOW" => "下方",
+            "HERE" => "ここ",
+            "SOMEWHERE" => "どこか",
             _ => string.Empty,
         };
 
@@ -27,29 +28,29 @@ internal static class DirectionPhraseTranslator
 
     internal static bool TryTranslateNounStem(string source, out string translated)
     {
-        translated = source switch
+        translated = source.ToUpperInvariant() switch
         {
-            "north" => "北",
-            "south" => "南",
-            "east" => "東",
-            "west" => "西",
-            "northeast" => "北東",
-            "northwest" => "北西",
-            "southeast" => "南東",
-            "southwest" => "南西",
-            "to the north" => "北側",
-            "to the south" => "南側",
-            "to the east" => "東側",
-            "to the west" => "西側",
-            "to the northeast" => "北東側",
-            "to the northwest" => "北西側",
-            "to the southeast" => "南東側",
-            "to the southwest" => "南西側",
-            "nearby" => "近く",
-            "above" => "上方",
-            "below" => "下方",
-            "here" => "ここ",
-            "somewhere" => "どこか",
+            "NORTH" => "北",
+            "SOUTH" => "南",
+            "EAST" => "東",
+            "WEST" => "西",
+            "NORTHEAST" => "北東",
+            "NORTHWEST" => "北西",
+            "SOUTHEAST" => "南東",
+            "SOUTHWEST" => "南西",
+            "TO THE NORTH" => "北側",
+            "TO THE SOUTH" => "南側",
+            "TO THE EAST" => "東側",
+            "TO THE WEST" => "西側",
+            "TO THE NORTHEAST" => "北東側",
+            "TO THE NORTHWEST" => "北西側",
+            "TO THE SOUTHEAST" => "南東側",
+            "TO THE SOUTHWEST" => "南西側",
+            "NEARBY" => "近く",
+            "ABOVE" => "上方",
+            "BELOW" => "下方",
+            "HERE" => "ここ",
+            "SOMEWHERE" => "どこか",
             _ => string.Empty,
         };
 

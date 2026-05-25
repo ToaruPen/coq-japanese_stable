@@ -280,6 +280,11 @@
             "text": "{{slimy|粘液}}"
         },
         {
+            "key": "slime",
+            "context": "XRL.Liquids",
+            "text": "粘液"
+        },
+        {
             "key": "{{slimy|slimy}}",
             "context": "XRL.Liquids",
             "text": "{{slimy|粘液質}}"

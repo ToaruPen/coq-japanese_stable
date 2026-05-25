@@ -125,6 +125,51 @@ public sealed class GetDisplayNameRouteTranslatorTests
     }
 
     [Test]
+    public void TranslatePreservingColors_TranslatesMarkupWrappedStainedModifierBeforeLocalizedBase()
+    {
+        WriteContextDictionaryFile(
+            "ui-displayname-adjectives.ja.json",
+            ("{{g|slime}}-stained", "GetDisplayName.Adjective", "{{g|スライム}}でぬめった"));
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            "{{g|slime}}-stained 両手用{{b|カーバイドの長剣}}",
+            nameof(GetDisplayNameProcessPatch));
+
+        Assert.That(translated, Is.EqualTo("{{g|スライム}}でぬめった 両手用{{b|カーバイドの長剣}}"));
+    }
+
+    [Test]
+    public void TranslatePreservingColors_TranslatesGeneratedCompoundStainedModifier()
+    {
+        WriteDictionary(("leather cap", "革の帽子"));
+        WriteDictionaryFile(
+            "ui-displayname-adjectives.ja.json",
+            ("blood", "血"),
+            ("slime", "粘液"),
+            ("tar", "タール"),
+            ("water", "水"));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                GetDisplayNameRouteTranslator.TranslatePreservingColors(
+                    "blood-and-tar-stained leather cap",
+                    nameof(GetDisplayNamePatch)),
+                Is.EqualTo("血とタールで汚れた革の帽子"));
+            Assert.That(
+                GetDisplayNameRouteTranslator.TranslatePreservingColors(
+                    "water-and-slime-stained leather cap",
+                    nameof(GetDisplayNamePatch)),
+                Is.EqualTo("水と粘液で汚れた革の帽子"));
+            Assert.That(
+                GetDisplayNameRouteTranslator.TranslatePreservingColors(
+                    "{{r|blood}}-and-{{g|slime}}-stained leather cap",
+                    nameof(GetDisplayNamePatch)),
+                Is.EqualTo("{{r|血}}と{{g|粘液}}で汚れた革の帽子"));
+        });
+    }
+
+    [Test]
     public void TranslatePreservingColors_PreservesCompactWeaponStatSymbolTags_WhenTranslatingName()
     {
         WriteDictionary(
@@ -646,6 +691,25 @@ public sealed class GetDisplayNameRouteTranslatorTests
         Assert.That(translated, Is.EqualTo(expected));
     }
 
+    [Test]
+    public void TranslatePreservingColors_TranslatesRuntimeObservedShrineCognomenTarget()
+    {
+        WriteDictionaryFile(
+            "Scoped/historyspice-common.ja.json",
+            ("potent", "強大な"),
+            ("ghost", "幽鬼"));
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            "shrine to ウーヒム II, the Potent Ghost",
+            nameof(GetDisplayNameProcessPatch));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.EqualTo("ウーヒム II、強大な幽鬼の祠"));
+            Assert.That(Translator.GetMissingKeyHitCountForTests("the Potent Ghost"), Is.EqualTo(0));
+        });
+    }
+
     [TestCase(
         "{{K|amaranthine}} prism",
         "{{K|アマランス色}}のプリズム")]
@@ -1035,6 +1099,50 @@ public sealed class GetDisplayNameRouteTranslatorTests
     }
 
     [Test]
+    public void TranslatePreservingColors_TranslatesRuntimeObservedSingleTitleSuffix()
+    {
+        WriteContextDictionaryFile(
+            "ui-displayname-atomic.ja.json",
+            ("hired guard", "GetDisplayName.Title", "雇われ護衛"));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                GetDisplayNameRouteTranslator.TranslatePreservingColors(
+                    "{{W|スパークティック}} and hired guard",
+                    nameof(GetDisplayNamePatch)),
+                Is.EqualTo("{{W|スパークティック}}、雇われ護衛"));
+            Assert.That(
+                GetDisplayNameRouteTranslator.TranslatePreservingColors(
+                    "スナップジョーの餌係 and hired guard",
+                    nameof(GetDisplayNamePatch)),
+                Is.EqualTo("スナップジョーの餌係、雇われ護衛"));
+        });
+    }
+
+    [Test]
+    public void TranslatePreservingColors_TranslatesRuntimeObservedTitleSuffixWithState()
+    {
+        WriteDictionaryFile(
+            "ui-displayname-atomic.ja.json",
+            ("Mechanimist convert", "メカニミスト改宗者"));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                GetDisplayNameRouteTranslator.TranslatePreservingColors(
+                    "ドロマドの行商人 and Mechanimist convert [{{B|座っている}}]",
+                    nameof(GetDisplayNamePatch)),
+                Is.EqualTo("ドロマドの行商人、メカニミスト改宗者 [{{B|座っている}}]"));
+            Assert.That(
+                GetDisplayNameRouteTranslator.TranslatePreservingColors(
+                    "{{W|ドロマドの行商人 and Mechanimist convert [{{B|座っている}}]}}",
+                    nameof(GetDisplayNamePatch)),
+                Is.EqualTo("{{W|ドロマドの行商人、メカニミスト改宗者 [{{B|座っている}}]}}"));
+        });
+    }
+
+    [Test]
     public void TranslatePreservingColors_TranslatesImplantedMarkupAdjective()
     {
         WriteDictionaryFile(
@@ -1277,6 +1385,18 @@ public sealed class GetDisplayNameRouteTranslatorTests
             nameof(GetDisplayNamePatch));
 
         Assert.That(translated, Is.EqualTo("[{{illuminated|接頭辞illuminated}}] 鋼のロングソード"));
+    }
+
+    [TestCase("pair of ナインフォールドのブーツ", "ナインフォールドのブーツ")]
+    [TestCase("pair of unknown boots", "pair of unknown boots")]
+    [TestCase("pair of ナインフォールド unknown boots", "pair of ナインフォールド unknown boots")]
+    public void TranslatePreservingColors_HandlesRuntimePairOfPrefix(string source, string expected)
+    {
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            source,
+            nameof(GetDisplayNamePatch));
+
+        Assert.That(translated, Is.EqualTo(expected));
     }
 
     [Test]

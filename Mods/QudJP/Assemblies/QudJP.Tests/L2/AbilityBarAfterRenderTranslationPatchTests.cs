@@ -244,6 +244,28 @@ public sealed class AbilityBarAfterRenderTranslationPatchTests
     }
 
     [Test]
+    public void Postfix_TranslatesObservedGeneratedStuckInEffectPart()
+    {
+        WriteDictionary(("ACTIVE EFFECTS:", "アクティブ効果:"));
+
+        RunWithPostfixPatch(() =>
+        {
+            var target = new DummyAbilityBarAfterRenderTarget
+            {
+                NextEffectText =
+                    "<color=#FFFFFFFF><color=#508d75>ACTIVE EFFECTS:</color></color><color=#B1C9C3FF> </color><color=#155352FF>タールまみれの</color><color=#B1C9C3FF>, stuck in a アスファルトの水たまり</color>",
+            };
+
+            target.AfterRender(core: null, sb: null);
+
+            Assert.That(
+                target.GetEffectText(),
+                Is.EqualTo(
+                    "<color=#FFFFFFFF><color=#508d75>アクティブ効果:</color></color><color=#B1C9C3FF> </color><color=#155352FF>タールまみれの</color><color=#B1C9C3FF>、アスファルトの水たまりにはまっている</color>"));
+        });
+    }
+
+    [Test]
     public void Postfix_PreservesSeparatorTmpSegment_WhenCommaBelongsToPreviousEffectColor()
     {
         WriteDictionary(("ACTIVE EFFECTS:", "アクティブ効果:"));

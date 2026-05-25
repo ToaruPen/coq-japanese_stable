@@ -90,7 +90,7 @@ public sealed class RepairTranslationPatchTests
 
             var target = new DummyRepairProducerTarget
             {
-                PopupMessageToShow = "You repair {{C|壊れたライフル}}.",
+                PopupMessageToShow = "You repair your {{C|壊れたライフル}}.",
             };
 
             target.RepairResultSuccess(new DummyGameObject(), new DummyGameObject());
@@ -275,7 +275,7 @@ public sealed class RepairTranslationPatchTests
 
             var target = new DummyRepairProducerTarget
             {
-                PopupMessageToShow = "Do you want to spend <{{|ABCD}}> to repair {{Y|ひび割れたレンズ}}? You have:\n\n{{|A: 1, B: 0}}",
+                PopupMessageToShow = "Do you want to spend <{{|ABCD}}> to repair your {{Y|ひび割れたレンズ}}? You have:\n\n{{|A: 1, B: 0}}",
             };
 
             target.HandleEvent(new DummyInventoryActionEvent());

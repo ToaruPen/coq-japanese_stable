@@ -325,6 +325,111 @@ public sealed class MessageFrameTranslatorTests
         });
     }
 
+    [Test]
+    public void TryTranslateXDidYToZ_RepositoryDictionary_FlinchesAwayAsProjectilePassesFromDirection()
+    {
+        UseRepositoryDictionary();
+
+        var translated = MessageFrameTranslator.TryTranslateXDidYToZ(
+            "あなた",
+            "flinch",
+            preposition: "away as",
+            objectText: "{{w|木の矢}}",
+            extra: "whistles past from the east",
+            endMark: "!",
+            out var sentence);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.True);
+            Assert.That(sentence, Is.EqualTo("あなたは東から飛んできた{{w|木の矢}}をかわした！"));
+        });
+    }
+
+    [Test]
+    public void TryTranslateXDidYToZ_RepositoryDictionary_FlinchesAwayAsProjectileWhizzesPastFromDirection()
+    {
+        UseRepositoryDictionary();
+
+        var translated = MessageFrameTranslator.TryTranslateXDidYToZ(
+            "あなた",
+            "flinch",
+            preposition: "away as",
+            objectText: "{{w|木の矢}}",
+            extra: "whizzes past from the west",
+            endMark: "!",
+            out var sentence);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.True);
+            Assert.That(sentence, Is.EqualTo("あなたは西から飛んできた{{w|木の矢}}をかわした！"));
+        });
+    }
+
+    [Test]
+    public void TryTranslateXDidYToZ_RepositoryDictionary_ButchersCorpseIntoSingleYield()
+    {
+        UseRepositoryDictionary();
+
+        var translated = MessageFrameTranslator.TryTranslateXDidYToZ(
+            "あなた",
+            "butcher",
+            preposition: null,
+            objectText: "ドーングライダーの死体",
+            extra: "into a {{G|ドーングライダーの尾}}",
+            endMark: ".",
+            out var sentence);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.True);
+            Assert.That(sentence, Is.EqualTo("あなたはドーングライダーの死体を解体して{{G|ドーングライダーの尾}}を得た。"));
+        });
+    }
+
+    [Test]
+    public void TryTranslateXDidYToZ_RepositoryDictionary_ButchersCorpseIntoSetYield()
+    {
+        UseRepositoryDictionary();
+
+        var translated = MessageFrameTranslator.TryTranslateXDidYToZ(
+            "あなた",
+            "butcher",
+            preposition: null,
+            objectText: "目なし蟹の死体",
+            extra: "into a set of 無眼蟹の脚",
+            endMark: ".",
+            out var sentence);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.True);
+            Assert.That(sentence, Is.EqualTo("あなたは目なし蟹の死体を解体して無眼蟹の脚を得た。"));
+        });
+    }
+
+    [Test]
+    public void TryTranslateXDidYToZ_RepositoryDictionary_PressesPowerButtonOnObject()
+    {
+        UseRepositoryDictionary();
+
+        var translated = MessageFrameTranslator.TryTranslateXDidYToZ(
+            "あなた",
+            "press",
+            preposition: "the power button on",
+            objectText: "バネ仕掛けのナインフォールドのブーツ",
+            extra: null,
+            endMark: ".",
+            out var sentence);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.True);
+            Assert.That(sentence, Is.EqualTo("あなたはバネ仕掛けのナインフォールドのブーツの電源ボタンを押した。"));
+        });
+    }
+
     // --- New Tier2 tests (Task 1: #82 DidX verb entries) ---
 
     [Test]
@@ -422,6 +527,25 @@ public sealed class MessageFrameTranslatorTests
         {
             Assert.That(ok, Is.True);
             Assert.That(sentence, Is.EqualTo("変異体は分子砲を回転させた！"));
+        });
+    }
+
+    [Test]
+    public void TryTranslateXDidY_RepositoryDictionary_TranslatesRuntimeRestockedInventoryWithoutPossessivePronoun()
+    {
+        UseRepositoryDictionary();
+
+        var ok = MessageFrameTranslator.TryTranslateXDidY(
+            "ドロマドの行商人、メカニミスト改宗者 [{{B|座っている}}]",
+            "have",
+            "restocked his inventory",
+            "!",
+            out var sentence);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(sentence, Is.EqualTo("ドロマドの行商人、メカニミスト改宗者 [{{B|座っている}}]は在庫を補充した！"));
         });
     }
 

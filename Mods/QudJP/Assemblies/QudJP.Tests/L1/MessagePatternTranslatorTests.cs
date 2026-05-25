@@ -341,13 +341,26 @@ public sealed class MessagePatternTranslatorTests
     [TestCase("An image of タム disappears.", "タムの映像が消えた。")]
     [TestCase("The 熊's carapace loosens.", "熊の甲殻が緩んだ")]
     [TestCase("熊の carapace loosens.", "熊の甲殻が緩んだ")]
+    [TestCase("濡れた気難しいカメの 甲殻 loosens.", "濡れた気難しいカメの甲殻が緩んだ")]
+    [TestCase("猫飼いの glow dims until it's extinguished.", "猫飼いの輝きが消えるまで薄れた")]
     [TestCase("The zealot mumbles inaudibly, encased in ice.", "氷に閉じ込められた狂信者が、聞き取れないほどに呟いた。")]
     [TestCase("The infected crust of skin on 熊の left arm loosens and breaks away.", "熊の left armの感染した皮膚の痂皮が緩んで剥がれ落ちた。")]
+    [TestCase("The ヒンドレンの村人 harvests some ラーの花弁.", "ヒンドレンの村人はラーの花弁を収穫した。")]
+    [TestCase("An ヒンドレンの村人 harvests some ラーの花弁.", "ヒンドレンの村人はラーの花弁を収穫した。")]
+    [TestCase("Westからsome 魔樹の樹皮を収穫した", "西から魔樹の樹皮を収穫した")]
+    [TestCase("Southwestからsome ラーの花弁を収穫した", "南西からラーの花弁を収穫した")]
+    [TestCase("ゴミ to the southwestを漁ったが、何も見つからなかった", "南西でゴミを漁ったが、何も見つからなかった")]
+    [TestCase("ゴミ to the northwestを漁り、歪んだ金属板を見つけた", "北西でゴミを漁り、歪んだ金属板を見つけた")]
+    [TestCase("説教者は言う、'今日は、子らよ、啓発の儀について語ろう。」", "説教者は言う、「今日は、子らよ、啓発の儀について語ろう。」")]
+    [TestCase("An electrical arc leaps toward you!", "電弧があなたへ走った！")]
+    [TestCase("Your カービン is already fully loaded.", "カービンはすでに完全に装填されている。")]
+    [TestCase("The 凍結した タールまみれの 結合ギルシュリング は二つに分裂した！", "凍結した タールまみれの 結合ギルシュリングは二つに分裂した！")]
     [TestCase("Exodus launch in 7...", "エクソダス発射まで7…")]
     [TestCase("Something hits タム (x2) with a 鉛スラッグ for 6 damage!", "何かが鉛スラッグでタムに6ダメージを与えた！ (x2)")]
     [TestCase("The タレット hits you with a 鉛スラッグ, but your mental attack has no effect.", "タレットの鉛スラッグが命中したが、精神攻撃は効果がない")]
     [TestCase("The タレット hits タム with a 鉛スラッグ, but their mental attack has no effect.", "タレットは鉛スラッグでタムに命中させたが、精神攻撃は効果がない")]
     [TestCase("The タレット hits タム (x2) with a 鉛スラッグ!", "タレットは鉛スラッグでタムに命中した (x2)")]
+    [TestCase("The タールまみれの結合ギルシュリング miss you with their 牙! [5 vs 7]", "タールまみれの結合ギルシュリングの牙は外れた。[5 vs 7]")]
     [TestCase("鉛スラッグ hits you to the east! (x2)", "鉛スラッグがあなたに東側に命中！ (x2)")]
     [TestCase("鉛スラッグ critically hits you to the east! (x2)", "鉛スラッグが会心であなたに東側に命中！ (x2)")]
     [TestCase("鉛スラッグ hits you to the east, but your mental attack has no effect.", "鉛スラッグがあなたに東側に命中したが、精神攻撃は効果がない")]
@@ -1023,11 +1036,38 @@ public sealed class MessagePatternTranslatorTests
     [Test]
     public void Translate_AppliesDisassembleAndBitsReceiptPattern()
     {
-        WritePatternDictionary(("^You disassemble the (.+?)\\. You receive tinkering bits <(.+?)>\\.[.!]?$", "{0}を分解し、修理ビット<{1}>を受け取った。"));
+        WritePatternDictionary(("^You disassemble (?:the |your )(.+?)\\. You receive tinkering bits <(.+?)>\\.[.!]?$", "{0}を分解し、修理ビット<{1}>を受け取った。"));
 
         var translated = MessagePatternTranslator.Translate("You disassemble the 奇妙な遺物. You receive tinkering bits <CD>.");
 
         Assert.That(translated, Is.EqualTo("奇妙な遺物を分解し、修理ビット<CD>を受け取った。"));
+    }
+
+    [Test]
+    public void Translate_RepositoryDictionary_TranslatesRuntimeObservedDisassembleYourBitsReceipt()
+    {
+        UseRepositoryPatternDictionary();
+
+        var translated = MessagePatternTranslator.Translate("You disassemble your 焦げたコンデンサ x2. You receive tinkering bits <AA>.");
+
+        Assert.That(translated, Is.EqualTo("焦げたコンデンサ x2を分解し、修理ビット<AA>を受け取った。"));
+    }
+
+    [TestCase("You notice some ruins nearby. Would you like to investigate?", "近くに遺跡があることに気づいた。調査しますか？")]
+    [TestCase("You smell roasted boar nearby. Would you like to investigate?", "近くで焼いたイノシシの匂いがする。調査しますか？")]
+    [TestCase("You are carrying too much to move!", "持ちすぎて動けない！")]
+    [TestCase("There's nothing in that. Would you like to store an item?", "その中には何も入っていない。アイテムを預けるか？")]
+    [TestCase("イサッカリライフル to the southを分解し、修理ビット<A2>を受け取った。", "イサッカリライフル（南側）を分解し、修理ビット<A2>を受け取った。")]
+    [TestCase("イサッカリライフル hereを分解し、修理ビット<A2>を受け取った。", "イサッカリライフル（ここ）を分解し、修理ビット<A2>を受け取った。")]
+    public void Translate_RepositoryDictionary_TranslatesRuntimeObservedFrames(
+        string source,
+        string expected)
+    {
+        UseRepositoryPatternDictionary();
+
+        var translated = MessagePatternTranslator.Translate(source);
+
+        Assert.That(translated, Is.EqualTo(expected));
     }
 
     [Test]
@@ -1775,6 +1815,17 @@ public sealed class MessagePatternTranslatorTests
             "You have gained the activated ability {{Y|Rifle through Trash}}.");
 
         Assert.That(translated, Is.EqualTo("{{Y|ゴミ漁り}}を有効化能力として獲得した。"));
+    }
+
+    [Test]
+    public void Translate_RepositoryDictionary_TranslatesRuntimeObservedDeactivateActivatedAbilityCapture()
+    {
+        UseRepositoryPatternDictionary();
+
+        var translated = MessagePatternTranslator.Translate(
+            "You have gained the activated ability {{Y|Deactivate ナインフォールドのブーツ}}.");
+
+        Assert.That(translated, Is.EqualTo("{{Y|ナインフォールドのブーツを停止}}を有効化能力として獲得した。"));
     }
 
     [Test]

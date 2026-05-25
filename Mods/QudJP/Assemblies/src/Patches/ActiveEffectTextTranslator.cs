@@ -396,9 +396,35 @@ internal static class ActiveEffectTextTranslator
             {
                 ColorAwareTranslationComposer.TranslatePreservingColors(
                     match.Groups["target"].Value,
-                    StringHelpers.TranslateExactOrLowerAsciiFallback),
+                    TranslateGeneratedTargetCapture),
             },
             out translated);
+    }
+
+    private static string TranslateGeneratedTargetCapture(string source)
+    {
+        var translated = StringHelpers.TranslateExactOrLowerAscii(source);
+        if (translated is not null)
+        {
+            return translated;
+        }
+
+        var withoutArticle = StringHelpers.StripLeadingEnglishArticle(
+            source,
+            includeCapitalizedDefiniteArticle: true,
+            includeCapitalizedIndefiniteArticle: true);
+        if (string.Equals(withoutArticle, source, StringComparison.Ordinal))
+        {
+            return source;
+        }
+
+        translated = StringHelpers.TranslateExactOrLowerAscii(withoutArticle);
+        if (translated is not null)
+        {
+            return translated;
+        }
+
+        return withoutArticle;
     }
 
     private static bool TryTranslateSimpleGeneratedTemplate(
@@ -625,7 +651,17 @@ internal static class ActiveEffectTextTranslator
     {
         var amount = coveredMatch.Groups["amount"].Value;
         var liquid = coveredMatch.Groups["liquid"].Value;
-        var translatedLiquid = StringHelpers.TranslateExactOrLowerAsciiFallback(liquid);
+        var translatedLiquid = TranslateLiquidPhrase(liquid);
+        if (translatedLiquid is null)
+        {
+            translatedLiquid = StringHelpers.TranslateExactOrLowerAsciiFallback(liquid);
+        }
+
         return string.Format(CultureInfo.InvariantCulture, "{0}を{1}ドラム浴びている。", translatedLiquid, amount);
+    }
+
+    private static string? TranslateLiquidPhrase(string source)
+    {
+        return LiquidVolumeFragmentTranslator.TranslateLiquidPhrase(source);
     }
 }

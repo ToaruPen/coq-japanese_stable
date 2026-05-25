@@ -1,6 +1,7 @@
 using System;
 using System.Text;
 using System.Text.RegularExpressions;
+using QudJP.Patches;
 
 namespace QudJP;
 
@@ -20,6 +21,8 @@ internal static class StatusLineTranslationHelpers
         new Regex("^Requires:\\s*(?<value>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex WeightPattern =
         new Regex("^Weight:\\s*(?<value>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex StuckInEffectPartPattern =
+        new Regex("^stuck in (?:the |a |an )?(?<target>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     internal static bool TryTranslateCompareStatusLine(string source, string route, string family, out string translated)
     {
@@ -251,6 +254,13 @@ internal static class StatusLineTranslationHelpers
             return false;
         }
 
+        var stuckInMatch = StuckInEffectPartPattern.Match(source.Trim());
+        if (stuckInMatch.Success)
+        {
+            translated = TranslateGeneratedActiveEffectTarget(stuckInMatch.Groups["target"].Value) + "にはまっている";
+            return true;
+        }
+
         if (TryTranslateDisplayNameModifierSequence(source, out translated))
         {
             return true;
@@ -258,6 +268,35 @@ internal static class StatusLineTranslationHelpers
 
         translated = source;
         return false;
+    }
+
+    private static string TranslateGeneratedActiveEffectTarget(string source)
+    {
+        if (TryTranslateDisplayNameModifierSequence(source, out var modifierSequence))
+        {
+            return modifierSequence;
+        }
+
+        var adjective = ScopedDictionaryLookup.TranslateExactOrLowerAsciiForContext(
+            source,
+            "GetDisplayName.Adjective",
+            "ui-displayname-adjectives.ja.json");
+        if (!string.IsNullOrEmpty(adjective) && !string.Equals(adjective, source, StringComparison.Ordinal))
+        {
+            var visible = ColorAwareTranslationComposer.GetVisibleText(adjective).Trim();
+            return visible.EndsWith("の", StringComparison.Ordinal)
+                ? visible.Substring(0, visible.Length - 1)
+                : visible;
+        }
+
+        var direct = StringHelpers.TranslateExactOrLowerAscii(source, nameof(StatusLineTranslationHelpers));
+        if (!string.IsNullOrEmpty(direct) && !string.Equals(direct, source, StringComparison.Ordinal))
+        {
+            return direct!;
+        }
+
+        var liquid = LiquidVolumeFragmentTranslator.TranslateLiquidPhrase(source);
+        return string.IsNullOrEmpty(liquid) ? source : liquid!;
     }
 
     private static bool TryTranslateDisplayNameModifierSequence(string source, out string translated)
@@ -273,8 +312,9 @@ internal static class StatusLineTranslationHelpers
         for (var index = 0; index < parts.Length; index++)
         {
             var part = parts[index];
-            var translatedPart = ScopedDictionaryLookup.TranslateExactOrLowerAscii(
+            var translatedPart = ScopedDictionaryLookup.TranslateExactOrLowerAsciiForContext(
                 part,
+                "GetDisplayName.Adjective",
                 "ui-displayname-adjectives.ja.json");
             if (string.IsNullOrEmpty(translatedPart) || string.Equals(translatedPart, part, StringComparison.Ordinal))
             {

@@ -54,6 +54,8 @@ internal static class CookbookDisplayNameTranslator
             ["Astral"] = "アストラル",
             ["The Salt Roads"] = "塩の道",
             ["Glowfish"] = "グロウフィッシュ",
+            ["Pretender"] = "僭称者",
+            ["Spouse"] = "伴侶",
         };
 
     private static readonly string CookingTermsPattern = BuildAlternation(CookingTerms.Keys);
@@ -93,6 +95,10 @@ internal static class CookbookDisplayNameTranslator
 
     private static readonly Regex FocusMarkovPattern = new(
         "^(?<focus>.+?): (?<title>.+)$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.Singleline);
+
+    private static readonly Regex PossessiveTitlePattern = new(
+        "^(?<owner>.+?)'s (?<title>.+)$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.Singleline);
 
     private static readonly Regex AdjectiveRecipesWithFocusPattern = new(
@@ -218,6 +224,27 @@ internal static class CookbookDisplayNameTranslator
     private static string Capture(Match match, string groupName)
     {
         var source = match.Groups[groupName].Value;
+        var possessiveMatch = PossessiveTitlePattern.Match(source);
+        if (possessiveMatch.Success)
+        {
+            var owner = possessiveMatch.Groups["owner"].Value;
+            var translatedOwner = owner;
+            if (CookingTerms.TryGetValue(owner, out var cooking))
+            {
+                translatedOwner = cooking;
+            }
+            else if (CaptureTerms.TryGetValue(owner, out var capturedOwner))
+            {
+                translatedOwner = capturedOwner;
+            }
+
+            var title = possessiveMatch.Groups["title"].Value;
+            var translatedTitle = CaptureTerms.TryGetValue(title, out var capturedTitle)
+                ? capturedTitle
+                : title;
+            return translatedOwner + "の" + translatedTitle;
+        }
+
         return CaptureTerms.TryGetValue(source, out var translated) ? translated : source;
     }
 

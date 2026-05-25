@@ -450,10 +450,12 @@ public sealed class UITextSkinTranslationPatchTests
             ("lock", "ロック"));
         WriteDictionaryFile(
             "ui-pick-target.ja.json",
+            ("Pick Target", "対象を選択"),
             ("Look", "見る"),
             ("interact", "インタラクト"),
             ("walk", "歩く"),
             ("select", "選択"),
+            ("unlock", "固定解除"),
             ("[Select a direction]", "[方向を選択]"));
         WriteDictionaryFile(
             "ui-skillsandpowers.ja.json",
@@ -467,6 +469,23 @@ public sealed class UITextSkinTranslationPatchTests
         Assert.That(
             translated,
             Is.EqualTo("見る | ESC | (F1) ロック | space インタラクト | W 歩く | Enter-選択 | シールドスラム | [方向を選択]"));
+    }
+
+    [Test]
+    public void TranslatePreservingColors_TranslatesRuntimeObservedPickTargetCommandBarMarkup()
+    {
+        WriteDictionaryFile(
+            "ui-pick-target.ja.json",
+            ("Pick Target", "対象を選択"),
+            ("select", "選択"),
+            ("unlock", "固定解除"));
+
+        var source = "Pick Target | {{W|Space}}-select | unlock ({{hotkey|F1}}))";
+        var translated = UITextSkinTranslationPatch.TranslatePreservingColors(
+            source,
+            nameof(PickTargetWindowTextTranslator));
+
+        Assert.That(translated, Is.EqualTo("対象を選択 | {{W|Space}}-選択 | 固定解除 ({{hotkey|F1}}))"));
     }
 
     [Test]

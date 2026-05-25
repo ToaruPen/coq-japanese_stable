@@ -98,7 +98,7 @@ public sealed class WaterRitualPopupTranslationPatchTests
         nameof(DummyWaterRitualPopupProducerTarget.IWaterRitualPartUseReputation),
         nameof(DummyPopupShow.Show),
         "You don't have a high enough reputation with {{Y|the Farmers' Guild}}.",
-        "{{Y|the Farmers' Guild}}との評判が十分に高くない。",
+        "{{Y|Farmers' Guild}}との評判が十分に高くない。",
         "ReputationTooLow")]
     [TestCase(
         nameof(DummyWaterRitualPopupProducerTarget.WaterRitualPerformRitual),

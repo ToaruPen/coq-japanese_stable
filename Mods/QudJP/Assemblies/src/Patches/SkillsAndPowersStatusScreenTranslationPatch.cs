@@ -13,9 +13,11 @@ namespace QudJP.Patches;
 public static class SkillsAndPowersStatusScreenTranslationPatch
 {
     private const string SkillNameDictionaryContext = "TMP.Skill Name";
+    private const string OwnerSkillsTitleContext = "XRL.UI.SkillsAndPowersScreen";
 
     private static readonly string SkillNameDictionaryFile =
         Path.Combine("Scoped", "ui-skillsandpowers-skill-names.ja.json");
+    private const string SkillsAndPowersDictionaryFile = "ui-skillsandpowers.ja.json";
     private static readonly IReadOnlyDictionary<string, string> AttributeRequirementAbbreviations =
         new Dictionary<string, string>(StringComparer.Ordinal)
         {
@@ -28,6 +30,8 @@ public static class SkillsAndPowersStatusScreenTranslationPatch
         };
     private static readonly Regex SkillPointsPattern =
         new Regex("^Skill Points \\(SP\\): (?<rest>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex OwnerSkillsTitlePattern =
+        new Regex("^(?<owner>.+?) Skills$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex LearnedPattern =
         new Regex("^Learned \\[(?<owned>\\d+)\\/(?<limit>\\d+)\\]$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex StartingCostPattern =
@@ -68,7 +72,7 @@ public static class SkillsAndPowersStatusScreenTranslationPatch
         return method;
     }
 
-    public static void Postfix(object? ___spText)
+    public static void Postfix(object? ___spText, object? ___nameBlockText)
     {
         try
         {
@@ -78,6 +82,7 @@ public static class SkillsAndPowersStatusScreenTranslationPatch
                 "Skill Points (SP): {val}",
                 "{val}",
                 nameof(SkillsAndPowersStatusScreenTranslationPatch));
+            TranslateNameBlockText(___nameBlockText);
         }
         catch (Exception ex)
         {
@@ -88,6 +93,11 @@ public static class SkillsAndPowersStatusScreenTranslationPatch
     internal static bool TryTranslateText(string source, string route, out string translated)
     {
         if (TryTranslateSkillPoints(source, route, out translated))
+        {
+            return true;
+        }
+
+        if (TryTranslateOwnerSkillsTitle(source, route, out translated))
         {
             return true;
         }
@@ -125,6 +135,28 @@ public static class SkillsAndPowersStatusScreenTranslationPatch
 
         translated = source;
         return false;
+    }
+
+    private static void TranslateNameBlockText(object? nameBlockText)
+    {
+        var source = UITextSkinReflectionAccessor.GetCurrentText(
+            nameBlockText,
+            nameof(SkillsAndPowersStatusScreenTranslationPatch));
+        if (string.IsNullOrEmpty(source))
+        {
+            return;
+        }
+
+        var route = ObservabilityHelpers.ComposeContext(nameof(SkillsAndPowersStatusScreenTranslationPatch), "field=nameBlockText");
+        if (!TryTranslateOwnerSkillsTitle(source!, route, out var translated))
+        {
+            return;
+        }
+
+        _ = UITextSkinReflectionAccessor.SetCurrentText(
+            nameBlockText,
+            translated,
+            nameof(SkillsAndPowersStatusScreenTranslationPatch));
     }
 
     internal static (bool changed, string translated) TryTranslateExactLeafPreservingColors(
@@ -299,6 +331,44 @@ public static class SkillsAndPowersStatusScreenTranslationPatch
 
         translated = template.Replace("{val}", match.Groups["rest"].Value);
         DynamicTextObservability.RecordTransform(route, "Skill Points (SP): {val}", source, translated);
+        return true;
+    }
+
+    private static bool TryTranslateOwnerSkillsTitle(string source, string route, out string translated)
+    {
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        var match = OwnerSkillsTitlePattern.Match(stripped);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        var translatedLabel = ScopedDictionaryLookup.TranslateExactOrLowerAsciiForContextOnly(
+            "Skills",
+            OwnerSkillsTitleContext,
+            SkillsAndPowersDictionaryFile);
+        if (translatedLabel is null)
+        {
+            translatedLabel = TranslateLeaf("Skills");
+        }
+        if (string.Equals(translatedLabel, "Skills", StringComparison.Ordinal))
+        {
+            translated = source;
+            return false;
+        }
+
+        var owner = ColorAwareTranslationComposer.RestoreCapture(
+            match.Groups["owner"].Value,
+            spans,
+            match.Groups["owner"]);
+        translated = owner + translatedLabel;
+        translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+            translated,
+            spans,
+            stripped.Length);
+
+        DynamicTextObservability.RecordTransform(route, "SkillsAndPowers.OwnerSkillsTitle", source, translated);
         return true;
     }
 

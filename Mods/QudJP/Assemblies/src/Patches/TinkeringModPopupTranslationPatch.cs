@@ -188,7 +188,7 @@ public static class TinkeringModPopupTranslationPatch
         match = SuccessPattern.Match(source);
         if (match.Success)
         {
-            translated = $"{match.Groups["item"].Value}を{match.Groups["mod"].Value}に改造した。";
+            translated = $"{StripLeadingPossessive(match.Groups["item"].Value)}を{match.Groups["mod"].Value}に改造した。";
             detail = "Success";
             return true;
         }
@@ -212,6 +212,33 @@ public static class TinkeringModPopupTranslationPatch
             source.Length - MissingIngredientPrefix.Length - 1).Replace(" or ", "または");
         translated = $"必要な材料が足りない: {ingredient}！";
         return true;
+    }
+
+    private static string StripLeadingPossessive(string source)
+    {
+        if (source.StartsWith("your ", StringComparison.Ordinal))
+        {
+            return source.Substring("your ".Length);
+        }
+
+        if (source.StartsWith("his ", StringComparison.Ordinal))
+        {
+            return source.Substring("his ".Length);
+        }
+
+        if (source.StartsWith("her ", StringComparison.Ordinal))
+        {
+            return source.Substring("her ".Length);
+        }
+
+        if (source.StartsWith("its ", StringComparison.Ordinal))
+        {
+            return source.Substring("its ".Length);
+        }
+
+        return source.StartsWith("their ", StringComparison.Ordinal)
+            ? source.Substring("their ".Length)
+            : source;
     }
 
     private static string TranslateHeldBits(string source)

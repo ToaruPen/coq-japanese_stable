@@ -394,7 +394,8 @@ public static class WaterRitualPopupTranslationPatch
         if (TryTranslatePattern(
                 ReputationTooLowPattern,
                 source,
-                (match, spans) => $"{Restore(match, spans, "faction")}との評判が十分に高くない。",
+                (match, spans) =>
+                    $"{RestoreTranslated(match, spans, "faction", WaterRitualTextTranslator.TranslateFactionVisible)}との評判が十分に高くない。",
                 out translated))
         {
             detail = "ReputationTooLow";

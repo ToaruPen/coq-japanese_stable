@@ -14,6 +14,8 @@ public static class QuestsStatusScreenTranslationPatch
     private const string DictionaryFile = "ui-quests.ja.json";
     private static readonly Regex QuestPrefixPattern =
         new Regex(@"\{\{B\|(?<label>quest:)\}\}\s", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex VisitMapPinDetailsPattern =
+        new Regex(@"(?<lead>(?:^|\n)(?:\{\{B\|[^}]+\}\}\s*)?)Visit (?<target>[^\r\n]+)", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     [HarmonyTargetMethod]
     private static MethodBase? TargetMethod()
@@ -178,11 +180,40 @@ public static class QuestsStatusScreenTranslationPatch
             changed = true;
         }
 
+        var visitTranslated = TranslateVisitMapPinDetails(translated, route, out var visitChanged);
+        if (visitChanged)
+        {
+            translated = visitTranslated;
+            changed = true;
+        }
+
         if (changed)
         {
             DynamicTextObservability.RecordTransform(route, "QuestsStatusScreen.MapPinDetails", source, translated);
         }
 
+        return translated;
+    }
+
+    private static string TranslateVisitMapPinDetails(string source, string route, out bool changed)
+    {
+        var didChange = false;
+        var translated = VisitMapPinDetailsPattern.Replace(
+            source,
+            match =>
+            {
+                var target = match.Groups["target"].Value;
+                if (!MessageLogProducerTranslationHelpers.TryTranslateZoneDisplayName(target, route, out var translatedTarget)
+                    || string.Equals(translatedTarget, target, StringComparison.Ordinal))
+                {
+                    return match.Value;
+                }
+
+                didChange = true;
+                DynamicTextObservability.RecordTransform(route, "QuestsStatusScreen.MapPinVisitDetails", match.Value, translatedTarget);
+                return match.Groups["lead"].Value + translatedTarget + "を訪問";
+            });
+        changed = didChange;
         return translated;
     }
 }

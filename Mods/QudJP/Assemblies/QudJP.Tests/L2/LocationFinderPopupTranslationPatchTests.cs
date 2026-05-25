@@ -14,8 +14,8 @@ public sealed class LocationFinderPopupTranslationPatchTests
 {
     private const string DiscoverSource = "You discover {{Y|some forgotten ruins}}!";
     private const string TravelSource = "You traveled to {{Y|some forgotten ruins}}!";
-    private const string DiscoverTranslated = "{{Y|some forgotten ruins}}を発見した！";
-    private const string TravelTranslated = "{{Y|some forgotten ruins}}へ移動した！";
+    private const string DiscoverTranslated = "{{Y|忘れられた遺跡}}を発見した！";
+    private const string TravelTranslated = "{{Y|忘れられた遺跡}}へ移動した！";
 
     private static readonly UTF8Encoding Utf8WithoutBom = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
 
@@ -34,7 +34,8 @@ public sealed class LocationFinderPopupTranslationPatchTests
 
         WriteDictionary(
             ("You discover {0}!", "{0}を発見した！"),
-            ("You traveled to {0}!", "{0}へ移動した！"));
+            ("You traveled to {0}!", "{0}へ移動した！"),
+            ("some forgotten ruins", "忘れられた遺跡"));
     }
 
     [TearDown]
@@ -69,6 +70,7 @@ public sealed class LocationFinderPopupTranslationPatchTests
             Assert.Multiple(() =>
             {
                 Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(expected));
+                Assert.That(DummyPopupShow.LastShowMessage, Does.Not.Contain("}}}"));
                 Assert.That(
                     DynamicTextObservability.GetRouteFamilyHitCountForTests(
                         nameof(PopupShowTranslationPatch),
@@ -85,7 +87,7 @@ public sealed class LocationFinderPopupTranslationPatchTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(DiscoverTranslated));
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("{{Y|some forgotten ruins}}を発見した！"));
             Assert.That(GetDiscoverHitCount(), Is.EqualTo(0));
         });
     }

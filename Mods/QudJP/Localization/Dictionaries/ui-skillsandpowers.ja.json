@@ -821,6 +821,11 @@
       "text": "マーク"
     },
     {
+      "key": "Activate",
+      "context": "AbilityBar.ButtonText",
+      "text": "起動"
+    },
+    {
       "key": "Harvest Plants",
       "context": "AbilityManager.Name",
       "text": "収穫"
@@ -2449,6 +2454,44 @@
       "key": "Required Skills",
       "context": "TMP.Skill Requirement",
       "text": "前提スキル"
+    },
+    {
+      "key": "disabled",
+      "context": "AbilityManagerLine.Fragment",
+      "text": "無効"
+    },
+    {
+      "key": "astrally tethered",
+      "context": "AbilityManagerLine.Fragment",
+      "text": "アストラル束縛"
+    },
+    {
+      "key": "turn cooldown",
+      "context": "AbilityManagerLine.Fragment",
+      "text": "ターンのクールダウン"
+    },
+    {
+      "key": "Toggled on",
+      "context": "AbilityManagerLine.Fragment",
+      "text": "オン"
+    },
+    {
+      "key": "Toggled off",
+      "context": "AbilityManagerLine.Fragment",
+      "text": "オフ"
+    },
+    {
+      "key": "high Willpower",
+      "context": "AbilityManagerLine.Fragment",
+      "text": "高い意志力"
+    },
+    {
+      "key": "Toggle to enable or disable the harvesting of plants",
+      "text": "植物の収穫を有効/無効に切り替える"
+    },
+    {
+      "key": "DV penalty and no jumping removed due to Hurdle skill.",
+      "text": "障害物越えスキルにより、DVペナルティとジャンプ不可は取り除かれている。"
     }
   ]
 }

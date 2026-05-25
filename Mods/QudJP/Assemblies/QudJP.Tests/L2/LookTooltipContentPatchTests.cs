@@ -344,7 +344,7 @@ public sealed class LookTooltipContentPatchTests
 
             Assert.Multiple(() =>
             {
-                Assert.That(cap, Is.EqualTo("筋力ボーナス上限: なし"));
+                Assert.That(cap, Is.EqualTo("Strength ボーナス上限: なし"));
                 Assert.That(egoCap, Is.EqualTo("自我ボーナス上限: 2"));
                 Assert.That(weaponClass, Is.EqualTo("武器カテゴリ: 長剣（クリティカル時に貫通力上昇）"));
             });

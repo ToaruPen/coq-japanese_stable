@@ -137,14 +137,54 @@ internal static class JournalNotificationTranslator
             return translated;
         }
 
-        var extraClose = translatedSectionPath + "}}";
+        var sectionPathCleaned = RemoveUniqueExtraCloseAfter(translated, translatedSectionPath);
+        if (!string.Equals(sectionPathCleaned, translated, StringComparison.Ordinal))
+        {
+            return sectionPathCleaned;
+        }
+
+        var lastSeparator = sourceSectionPath.LastIndexOf(JournalPathSeparator, StringComparison.Ordinal);
+        var sourceLeaf = lastSeparator < 0
+            ? sourceSectionPath
+            : sourceSectionPath.Substring(lastSeparator + JournalPathSeparator.Length);
+        var translatedLeaf = TranslateJournalPathSegment(sourceLeaf);
+        if (translatedLeaf.Length == 0 || string.Equals(translatedLeaf, translatedSectionPath, StringComparison.Ordinal))
+        {
+            return RemoveUniqueExtraCloseBeforeSectionLabel(translated);
+        }
+
+        var leafCleaned = RemoveUniqueExtraCloseAfter(translated, translatedLeaf);
+        return string.Equals(leafCleaned, translated, StringComparison.Ordinal)
+            ? RemoveUniqueExtraCloseBeforeSectionLabel(translated)
+            : leafCleaned;
+    }
+
+    private static string RemoveUniqueExtraCloseAfter(string translated, string translatedSectionText)
+    {
+        var extraClose = translatedSectionText + "}}";
         var index = translated.IndexOf(extraClose, StringComparison.Ordinal);
         if (index < 0 || translated.IndexOf(extraClose, index + extraClose.Length, StringComparison.Ordinal) >= 0)
         {
             return translated;
         }
 
-        return translated.Remove(index + translatedSectionPath.Length, 2);
+        return translated.Remove(index + translatedSectionText.Length, 2);
+    }
+
+    private static string RemoveUniqueExtraCloseBeforeSectionLabel(string translated)
+    {
+        const string extraCloseBeforeSectionLabel = "}}」欄";
+        var index = translated.IndexOf(extraCloseBeforeSectionLabel, StringComparison.Ordinal);
+        if (index < 0
+            || translated.IndexOf(
+                extraCloseBeforeSectionLabel,
+                index + extraCloseBeforeSectionLabel.Length,
+                StringComparison.Ordinal) >= 0)
+        {
+            return translated;
+        }
+
+        return translated.Remove(index, 2);
     }
 
     private static string RestoreSectionPathBoundaryWrappers(

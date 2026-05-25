@@ -182,7 +182,7 @@ public sealed class WorldPartsProducerTranslationPatchTests
 
             target.Pour(ref requestExit, new DummyGameObject());
 
-            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("{{C|water}} 2ドラムがsnapjawの全身にかかった！"));
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("{{C|水}} 2ドラムがsnapjawの全身にかかった！"));
         }
         finally
         {
@@ -260,8 +260,8 @@ public sealed class WorldPartsProducerTranslationPatchTests
                 Assert.That(ownershipFill, Is.EqualTo("{{Y|canteen}}はあなたの所有物ではない。本当に満たしますか？"));
                 Assert.That(emptyFirst, Is.EqualTo("{{Y|canteen}}を先に空にしますか？"));
                 Assert.That(ownershipCollect, Is.EqualTo("{{Y|canteen}}はあなたの所有物ではない。本当にそこから集めますか？"));
-                Assert.That(collectConfirm, Is.EqualTo("{{B|fresh water}}を129ドラム集められる。本当にそうしますか？"));
-                Assert.That(ownershipUseLiquid, Is.EqualTo("{{Y|canteen}}はあなたの所有物ではない。{{B|fresh water}}を本当にそこから使いますか？"));
+                Assert.That(collectConfirm, Is.EqualTo("{{B|真水}}を129ドラム集められる。本当にそうしますか？"));
+                Assert.That(ownershipUseLiquid, Is.EqualTo("{{Y|canteen}}はあなたの所有物ではない。{{B|真水}}を本当にそこから使いますか？"));
                 Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("シュワシュワしている。"));
                 Assert.That(LiquidVolumePopupHitCount("OwnershipDrink"), Is.EqualTo(1));
                 Assert.That(LiquidVolumePopupHitCount("OwnershipDrain"), Is.EqualTo(1));
@@ -306,7 +306,7 @@ public sealed class WorldPartsProducerTranslationPatchTests
 
             Assert.Multiple(() =>
             {
-                Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("canteen（北側）から{{C|water}}を2ドラム集めた（waterskinに入れた）。"));
+                Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("canteen（北側）から{{C|水}}を2ドラム集めた（waterskinに入れた）。"));
                 Assert.That(DummyPopupGenericTarget.LastAskNumberMessage, Is.EqualTo("何ドラム？(最大=7)"));
                 Assert.That(target.LastPickItemTitle, Is.EqualTo("[注ぎ元の容器を選択]"));
                 Assert.That(LiquidVolumeQueuedHitCount("CollectMessage"), Is.EqualTo(1));

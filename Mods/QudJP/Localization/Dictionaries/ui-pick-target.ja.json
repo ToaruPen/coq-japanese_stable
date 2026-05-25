@@ -19,6 +19,11 @@
       "text": "飛び道具を射撃"
     },
     {
+      "key": "Mark Target",
+      "context": "PickTarget.CommandBar",
+      "text": "対象をマーク"
+    },
+    {
       "key": "Dig to where?",
       "context": "PickTarget.Digging.Label",
       "text": "どこまで掘る？"
@@ -29,6 +34,10 @@
       "text": "固定解除"
     },
     {
+      "key": "Pick Target",
+      "text": "対象を選択"
+    },
+    {
       "key": "Tinker Turret",
       "context": "PickTarget.DirectionPrompt",
       "text": "タレット製作"
@@ -37,6 +46,10 @@
       "key": "Bandage whom?",
       "context": "PickTarget.DirectionPrompt",
       "text": "誰に包帯を巻く？"
+    },
+    {
+      "key": "Berate whom?",
+      "text": "誰を罵倒する？"
     },
     {
       "key": "[Select a direction]",

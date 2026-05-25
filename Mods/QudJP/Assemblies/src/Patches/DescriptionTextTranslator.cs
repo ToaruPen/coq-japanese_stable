@@ -11,7 +11,7 @@ internal static class DescriptionTextTranslator
         new Regex("^(?<relation>Loved by|Admired by|Hated by|Disliked by) (?<target>.+?)(?: for (?<reason>.+?))?\\.$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     private static readonly Regex LabeledListPattern =
-        new Regex("^(?<label>Physical features:|Equipped:) (?<items>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+        new Regex("^(?<label>Physical features:|Equipped:|身体的特徴:|装備:) (?<items>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     private static readonly Regex BrainDispositionLinePattern =
         new Regex("^(?<label>Base demeanor:|Engagement style:) (?<value>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
@@ -25,6 +25,12 @@ internal static class DescriptionTextTranslator
     private static readonly Regex SignedStatAbbreviationPattern =
         new Regex("^[+-]\\d+\\s+[A-Z]{2,4}$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex AttributeTermPattern =
+        new Regex("^(?:Strength|Toughness|Willpower|Agility|Ego|Intelligence)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex SignedAttributeTermPattern =
+        new Regex("^[+-]\\d+\\s+(?:Strength|Toughness|Willpower|Agility|Ego|Intelligence)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     private static readonly Regex JapaneseCharacterPattern =
         new Regex("[\\p{IsHiragana}\\p{IsKatakana}\\p{IsCJKUnifiedIdeographs}]", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
@@ -36,9 +42,6 @@ internal static class DescriptionTextTranslator
 
     private static readonly Regex AllowedLocalizedEnglishTokenPattern =
         new Regex("(?<![A-Za-z])(?:AV|DV|HP|MA|PV|Qud|Quickness|SP|XP)(?![A-Za-z])", RegexOptions.CultureInvariant | RegexOptions.Compiled);
-
-    private static readonly Regex LocalizedEnglishStatTermPattern =
-        new Regex("(?<![A-Za-z])(?:Strength|Toughness|Willpower|Agility|Ego)(?![A-Za-z])", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     private static readonly Regex AddsCookingEffectsPattern =
         new Regex("^Adds (?<effect>.+?) effects to cooked meals\\.$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
@@ -73,6 +76,11 @@ internal static class DescriptionTextTranslator
             "^The tomb mural depicts a significant event from the life of the (?<ancient>ancient )?sultan (?<sultan>.+?):$",
             RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex HistoricSceneHeaderPattern =
+        new Regex(
+            "^(?<kind>Painted|Engraved): This item is (?:painted|engraved) with a scene from the life of the ancient (?<subject>.+):$",
+            RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     private static readonly Regex SplitHistoricSceneHeaderStartPattern =
         new Regex(
             "^(?<kind>Painted|Engraved): This item is (?:painted|engraved) with a scene from the life of the ancient (?<subjectPrefix>.+)$",
@@ -86,6 +94,54 @@ internal static class DescriptionTextTranslator
     private static readonly Regex SplitVillageHistoryHeaderStartPattern =
         new Regex(
             "^(?<kind>Painted|Engraved|Holographic): (?:(?:This object is (?:painted|engraved) with)|(?:This hologram depicts)) a scene from the history of the village (?<villagePrefix>.*)$",
+            RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex StuckInStateLinePattern =
+        new Regex("^stuck in (?:the |a |an )?(?<target>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex ResistanceLinePattern =
+        new Regex("^\\+(?<amount>\\d+) (?<element>Heat|Cold|Electrical|Acid) Resistance$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex ToHitLinePattern =
+        new Regex("^\\+(?<amount>\\d+) to hit$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex WallPenetrationLinePattern =
+        new Regex("^(?<powered>When powered, )?(?<amount>[+-]\\d+) penetration vs\\. walls\\.$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex DestroysWallsLinePattern =
+        new Regex("^(?<powered>When powered, )?(?:D|d)estroys\\s+walls after (?<hits>\\d+) penetrating hits?\\.$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex MoveSpeedLinePattern =
+        new Regex("^(?<amount>[+-]\\d+) move speed$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex WaterBondedLinePattern =
+        new Regex("^You are water-bonded with (?<target>.+?)\\.$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex PoweredOffLinePattern =
+        new Regex("^.+? (?:is|are) powered off\\.$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex WhenActivatedAttributeLinePattern =
+        new Regex("^When activated, \\+(?<amount>\\d+) (?<attribute>Strength|Toughness|Willpower|Agility|Ego|Intelligence)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex ItReadsLinePattern =
+        new Regex("^It reads, '(?<text>.+)'\\.$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex DisarmedSuffixPattern =
+        new Regex("^(?<body>.+) It's been disarmed\\.$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex BleedingOnPenetrationPattern =
+        new Regex(
+            "^On penetration, this weapon causes bleeding: (?<damage>\\d+) damage per round; save difficulty (?<difficulty>\\d+)\\.$",
+            RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex SwarmAlphaPattern =
+        new Regex(
+            "^Swarm Alpha: As long as this creature is adjacent to (?<possessive>\\S+) target, (?<subject>\\S+) grants? \\+?(?<bonus>\\d+) to the swarm bonuses of each other swarmer who is adjacent to \\k<possessive> target\\.$",
+            RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex SwarmerPattern =
+        new Regex(
+            "^Swarmer: This creature receives \\+1 to hit in melee and \\+1 to penetration rolls for each other hostile swarmer beyond the first who is in another square adjacent to (?<possessive>\\S+) target\\. \\(currently (?<current>[+-]?\\d+)\\)$",
             RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     // Keep TranslateShortDescription and TranslateLongDescription separate even though they
@@ -238,9 +294,18 @@ internal static class DescriptionTextTranslator
     {
         var hasTrailingSpace = source.EndsWith(" ", StringComparison.Ordinal);
         var trimmed = source.TrimEnd();
-        var translated = StringHelpers.TryGetTranslationExactOrLowerAscii(trimmed, out var exact)
-            ? exact
-            : trimmed;
+        string translated;
+        if (trimmed.StartsWith("sultan ", StringComparison.Ordinal))
+        {
+            translated = "スルタン " + trimmed.Substring("sultan ".Length);
+        }
+        else
+        {
+            translated = StringHelpers.TryGetTranslationExactOrLowerAscii(trimmed, out var exact)
+                ? exact
+                : trimmed;
+        }
+
         return hasTrailingSpace ? translated + " " : translated;
     }
 
@@ -620,6 +685,11 @@ internal static class DescriptionTextTranslator
             return true;
         }
 
+        if (TryTranslateWaterBondedLinePreservingColors(source, route, out translated))
+        {
+            return true;
+        }
+
         if (TryTranslateSultanShrineWrapperPreservingColors(source, route, out translated))
         {
             return true;
@@ -636,6 +706,11 @@ internal static class DescriptionTextTranslator
         }
 
         if (WorldModsTextTranslator.TryTranslate(source, route, "Description.WorldMods", out translated))
+        {
+            return true;
+        }
+
+        if (TryTranslateHistoricSceneHeaderPreservingColors(source, route, out translated))
         {
             return true;
         }
@@ -732,6 +807,46 @@ internal static class DescriptionTextTranslator
         return true;
     }
 
+    private static bool TryTranslateHistoricSceneHeaderPreservingColors(string source, string route, out string translated)
+    {
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        var match = HistoricSceneHeaderPattern.Match(stripped);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        var subject = TranslateHistoricSceneSubjectPrefix(match.Groups["subject"].Value);
+        subject = ColorAwareTranslationComposer.MarkupAwareRestoreCapture(subject, spans, match.Groups["subject"]);
+        var visible = string.Equals(match.Groups["kind"].Value, "Engraved", StringComparison.Ordinal)
+            ? "彫刻: この品には古代の" + subject + "の生涯の一場面が彫り刻まれている:"
+            : "彩色: この品には古代の" + subject + "の生涯の一場面が描かれている:";
+        translated = RestoreWholeLineBoundaryWrappers(visible, spans, stripped.Length);
+        DynamicTextObservability.RecordTransform(route, "Description.HistoricSceneHeader", source, translated);
+        return true;
+    }
+
+    private static bool TryTranslateStuckInStateLine(string source, string route, out string translated)
+    {
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        var match = StuckInStateLinePattern.Match(stripped);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        var target = ColorAwareTranslationComposer.MarkupAwareRestoreCapture(
+            match.Groups["target"].Value,
+            spans,
+            match.Groups["target"]);
+        translated = target + "にはまっている";
+        translated = RestoreWholeLineBoundaryWrappers(translated, spans, stripped.Length);
+        DynamicTextObservability.RecordTransform(route, "Description.StuckInState", source, translated);
+        return true;
+    }
+
     private static bool TryTranslateRegainsChargeWhenWornOrHeldLine(string source, string route, out string translated)
     {
         var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
@@ -753,6 +868,12 @@ internal static class DescriptionTextTranslator
         bool allowMessagePatternTranslation,
         out string translated)
     {
+        if (ShouldSkipExactLeafTranslation(source))
+        {
+            translated = source;
+            return false;
+        }
+
         if (TryTranslateLabeledList(source, route, out translated))
         {
             return true;
@@ -764,6 +885,11 @@ internal static class DescriptionTextTranslator
         }
 
         if (TryTranslateTombMuralHeaderPreservingColors(source, route, out translated))
+        {
+            return true;
+        }
+
+        if (TryTranslateHistoricSceneHeaderPreservingColors(source, route, out translated))
         {
             return true;
         }
@@ -788,6 +914,21 @@ internal static class DescriptionTextTranslator
             return true;
         }
 
+        if (CookingEffectFragmentTranslator.TryTranslate(source, route, "Description.CookingEffect", out translated))
+        {
+            return true;
+        }
+
+        if (TryTranslateStuckInStateLine(source, route, out translated))
+        {
+            return true;
+        }
+
+        if (TryTranslateRuntimeObservedDescriptionLine(source, route, out translated))
+        {
+            return true;
+        }
+
         if (TryTranslateRegainsChargeWhenWornOrHeldLine(source, route, out translated))
         {
             return true;
@@ -808,23 +949,10 @@ internal static class DescriptionTextTranslator
             return true;
         }
 
-        if (ShouldSkipExactLeafTranslation(source))
-        {
-            translated = source;
-            return false;
-        }
-
         if (StringHelpers.TryGetTranslationExactOrLowerAscii(source, out translated)
             && !string.Equals(source, translated, StringComparison.Ordinal))
         {
             DynamicTextObservability.RecordTransform(route, "Description.ExactLeaf", source, translated);
-            return true;
-        }
-
-        translated = TranslateLocalizedEnglishStatTerms(source);
-        if (!string.Equals(source, translated, StringComparison.Ordinal))
-        {
-            DynamicTextObservability.RecordTransform(route, "Description.StatTerms", source, translated);
             return true;
         }
 
@@ -1006,6 +1134,8 @@ internal static class DescriptionTextTranslator
         return true;
     }
 
+    private static string FormatPoweredPrefix(bool powered) => powered ? "電源投入時、" : string.Empty;
+
     private static bool TryTranslateMakersMarkDescription(string source, string route, out string translated)
     {
         var match = MakersMarkDescriptionPattern.Match(source);
@@ -1052,6 +1182,259 @@ internal static class DescriptionTextTranslator
 
         translated = source;
         return false;
+    }
+
+    private static bool TryTranslateRuntimeObservedDescriptionLine(string source, string route, out string translated)
+    {
+        var resistanceMatch = ResistanceLinePattern.Match(source);
+        if (resistanceMatch.Success)
+        {
+            var element = resistanceMatch.Groups["element"].Value switch
+            {
+                "Heat" => "熱",
+                "Cold" => "冷気",
+                "Electrical" => "電撃",
+                "Acid" => "酸",
+                _ => string.Empty,
+            };
+            translated = element + "耐性+" + resistanceMatch.Groups["amount"].Value;
+            DynamicTextObservability.RecordTransform(route, "Description.RuntimeObservedLine", source, translated);
+            return true;
+        }
+
+        var toHitMatch = ToHitLinePattern.Match(source);
+        if (toHitMatch.Success)
+        {
+            translated = "命中+" + toHitMatch.Groups["amount"].Value;
+            DynamicTextObservability.RecordTransform(route, "Description.RuntimeObservedLine", source, translated);
+            return true;
+        }
+
+        var itReadsMatch = ItReadsLinePattern.Match(source);
+        if (itReadsMatch.Success)
+        {
+            translated = "「" + itReadsMatch.Groups["text"].Value + "」と書かれている。";
+            DynamicTextObservability.RecordTransform(route, "Description.RuntimeObservedLine", source, translated);
+            return true;
+        }
+
+        var disarmedMatch = DisarmedSuffixPattern.Match(source);
+        if (disarmedMatch.Success)
+        {
+            translated = disarmedMatch.Groups["body"].Value + " 解除済み。";
+            DynamicTextObservability.RecordTransform(route, "Description.RuntimeObservedLine", source, translated);
+            return true;
+        }
+
+        var bleedingMatch = BleedingOnPenetrationPattern.Match(source);
+        if (bleedingMatch.Success)
+        {
+            translated = "貫通時、この武器は出血を引き起こす: 1ラウンドあたり"
+                + bleedingMatch.Groups["damage"].Value
+                + "ダメージ; セーブ難度"
+                + bleedingMatch.Groups["difficulty"].Value
+                + "。";
+            DynamicTextObservability.RecordTransform(route, "Description.RuntimeObservedLine", source, translated);
+            return true;
+        }
+
+        var swarmAlphaMatch = SwarmAlphaPattern.Match(source);
+        if (swarmAlphaMatch.Success)
+        {
+            // Swarmer.cs composes this line from pronouns and ExtraBonus, so avoid
+            // freezing one observed alpha creature's gender or bonus value.
+            translated = "群れのアルファ: このクリーチャーが対象に隣接している限り、対象に隣接している他の各スウォーマーの群れボーナスに"
+                + swarmAlphaMatch.Groups["bonus"].Value
+                + "を付与する。";
+            DynamicTextObservability.RecordTransform(route, "Description.RuntimeObservedLine", source, translated);
+            return true;
+        }
+
+        var swarmerMatch = SwarmerPattern.Match(source);
+        if (swarmerMatch.Success)
+        {
+            translated = "スウォーマー: 対象に隣接する別のマスにいる、最初の1体を超える敵対的なスウォーマー1体ごとに、このクリーチャーは近接命中+1と貫通ロール+1を得る。(現在"
+                + swarmerMatch.Groups["current"].Value
+                + ")";
+            DynamicTextObservability.RecordTransform(route, "Description.RuntimeObservedLine", source, translated);
+            return true;
+        }
+
+        if (string.Equals(source, "Contains wiring enabling it to function as part of power grid, producing electrical charge.", StringComparison.Ordinal))
+        {
+            translated = "電力網の一部として機能する配線を備え、電荷を生成する。";
+            DynamicTextObservability.RecordTransform(route, "Description.RuntimeObservedLine", source, translated);
+            return true;
+        }
+
+        if (string.Equals(source, "Contains wiring enabling it to function as part of power grid, consuming electrical charge.", StringComparison.Ordinal))
+        {
+            translated = "電力網の一部として機能する配線を備え、電荷を消費する。";
+            DynamicTextObservability.RecordTransform(route, "Description.RuntimeObservedLine", source, translated);
+            return true;
+        }
+
+        if (string.Equals(source, "Contains plumbing enabling it to function as part of hydraulic transmission system, consuming hydraulic power.", StringComparison.Ordinal))
+        {
+            translated = "油圧伝達システムの一部として機能する配管を備え、油圧を消費する。";
+            DynamicTextObservability.RecordTransform(route, "Description.RuntimeObservedLine", source, translated);
+            return true;
+        }
+
+        if (source.StartsWith("This item is a named ", StringComparison.Ordinal)
+            && source.EndsWith(".", StringComparison.Ordinal))
+        {
+            var item = source.Substring("This item is a named ".Length);
+            item = item.Substring(0, item.Length - 1);
+            translated = "このアイテムは名前付きの"
+                + GetDisplayNameRouteTranslator.TranslatePreservingColors(item, nameof(GetDisplayNamePatch))
+                + "である。";
+            DynamicTextObservability.RecordTransform(route, "Description.RuntimeObservedLine", source, translated);
+            return true;
+        }
+
+        if (string.Equals(source, "Spray fire: This item can be fired while adjacent to multiple enemies without risk of the shot going wild.", StringComparison.Ordinal))
+        {
+            translated = "スプレーファイア: 複数の敵に隣接していても、このアイテムは射撃が逸れる危険なしに発射できる。";
+            DynamicTextObservability.RecordTransform(route, "Description.RuntimeObservedLine", source, translated);
+            return true;
+        }
+
+        var waterBondedMatch = WaterBondedLinePattern.Match(source);
+        if (waterBondedMatch.Success)
+        {
+            translated = "あなたは"
+                + TranslateWaterBondedTarget(waterBondedMatch.Groups["target"].Value, route)
+                + "と水の絆で結ばれている。";
+            DynamicTextObservability.RecordTransform(route, "Description.RuntimeObservedLine", source, translated);
+            return true;
+        }
+
+        if (string.Equals(source, "This item's AV and DV modifiers are being averaged across all body parts of the same type.", StringComparison.Ordinal))
+        {
+            translated = "このアイテムのAVとDV修正は同じ種類の全身体部位で平均化されている。";
+            DynamicTextObservability.RecordTransform(route, "Description.RuntimeObservedLine", source, translated);
+            return true;
+        }
+
+        if (string.Equals(source, "+2 DV while occupying the same tile as foliage", StringComparison.Ordinal))
+        {
+            translated = "植物と同じタイルにいる間DV+2";
+            DynamicTextObservability.RecordTransform(route, "Description.RuntimeObservedLine", source, translated);
+            return true;
+        }
+
+        var wallPenetrationMatch = WallPenetrationLinePattern.Match(source);
+        if (wallPenetrationMatch.Success)
+        {
+            translated = FormatPoweredPrefix(wallPenetrationMatch.Groups["powered"].Success)
+                + "壁に対する貫通"
+                + wallPenetrationMatch.Groups["amount"].Value
+                + "。";
+            DynamicTextObservability.RecordTransform(route, "Description.RuntimeObservedLine", source, translated);
+            return true;
+        }
+
+        var destroysWallsMatch = DestroysWallsLinePattern.Match(source);
+        if (destroysWallsMatch.Success)
+        {
+            translated = FormatPoweredPrefix(destroysWallsMatch.Groups["powered"].Success)
+                + destroysWallsMatch.Groups["hits"].Value
+                + "回の貫通ヒット後に壁を破壊する。";
+            DynamicTextObservability.RecordTransform(route, "Description.RuntimeObservedLine", source, translated);
+            return true;
+        }
+
+        var moveSpeedMatch = MoveSpeedLinePattern.Match(source);
+        if (moveSpeedMatch.Success)
+        {
+            translated = "移動速度" + moveSpeedMatch.Groups["amount"].Value;
+            DynamicTextObservability.RecordTransform(route, "Description.RuntimeObservedLine", source, translated);
+            return true;
+        }
+
+        if (PoweredOffLinePattern.IsMatch(source))
+        {
+            translated = "電源が切れている。";
+            DynamicTextObservability.RecordTransform(route, "Description.RuntimeObservedLine", source, translated);
+            return true;
+        }
+
+        var whenActivatedAttributeMatch = WhenActivatedAttributeLinePattern.Match(source);
+        if (whenActivatedAttributeMatch.Success)
+        {
+            translated = "起動時、"
+                + whenActivatedAttributeMatch.Groups["attribute"].Value
+                + "+"
+                + whenActivatedAttributeMatch.Groups["amount"].Value;
+            DynamicTextObservability.RecordTransform(route, "Description.RuntimeObservedLine", source, translated);
+            return true;
+        }
+
+        if (string.Equals(source, "At the center of a particularly thick copse, the vegetation clears. Flower-bedecked huts huddle in the clearing within, surrounded by phalanxes of tidy watervine rows and carefully-tended lah.", StringComparison.Ordinal))
+        {
+            translated = "ひときわ密な雑木林の中心で植生が開けている。花で飾られた小屋がその空き地に寄り集まり、整然としたウォーターヴァインの畝と丹念に世話されたラーの列に囲まれている。";
+            DynamicTextObservability.RecordTransform(route, "Description.RuntimeObservedLine", source, translated);
+            return true;
+        }
+
+        if (string.Equals(source, "a dromad caravan", StringComparison.Ordinal))
+        {
+            translated = "ドロマドのキャラバン";
+            DynamicTextObservability.RecordTransform(route, "Description.RuntimeObservedLine", source, translated);
+            return true;
+        }
+
+        if (string.Equals(source, "Notes:", StringComparison.Ordinal))
+        {
+            translated = "注記:";
+            DynamicTextObservability.RecordTransform(route, "Description.RuntimeObservedLine", source, translated);
+            return true;
+        }
+
+        if (source.Contains("遺伝子の strand を語る。"))
+        {
+            translated = source.Replace("遺伝子の strand を語る。", "遺伝子の系統を物語る。");
+            DynamicTextObservability.RecordTransform(route, "Description.RuntimeObservedLine", source, translated);
+            return true;
+        }
+
+        translated = source;
+        return false;
+    }
+
+    private static bool TryTranslateWaterBondedLinePreservingColors(string source, string route, out string translated)
+    {
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        var match = WaterBondedLinePattern.Match(stripped);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        var targetGroup = match.Groups["target"];
+        var target = TranslateWaterBondedTarget(targetGroup.Value, route);
+        target = RestoreBalancedCapture(target, spans, targetGroup);
+        translated = "あなたは" + target + "と水の絆で結ばれている。";
+        translated = RestoreWholeLineBoundaryWrappers(translated, spans, stripped.Length);
+        DynamicTextObservability.RecordTransform(route, "Description.WaterBonded", source, translated);
+        return true;
+    }
+
+    private static string TranslateWaterBondedTarget(string source, string route)
+    {
+        var target = source.Trim();
+        return target switch
+        {
+            "him" => "彼",
+            "her" => "彼女",
+            "it" => "それ",
+            "them" => "彼ら",
+            _ => TryTranslateVisibleSegment(target, route, allowMessagePatternTranslation: true, out var translatedTarget)
+                ? translatedTarget
+                : target,
+        };
     }
 
     private static bool TryTranslateBrainDispositionLinePreservingColors(string source, string route, out string translated)
@@ -1418,6 +1801,8 @@ internal static class DescriptionTextTranslator
         {
             "Physical features:" => "身体的特徴:",
             "Equipped:" => "装備:",
+            "身体的特徴:" => "身体的特徴:",
+            "装備:" => "装備:",
             _ => string.Empty,
         };
 
@@ -1427,10 +1812,10 @@ internal static class DescriptionTextTranslator
             return false;
         }
 
-        var parts = match.Groups["items"].Value.Split(new[] { ", " }, StringSplitOptions.None);
+        var parts = match.Groups["items"].Value.Split(new[] { ", ", "、" }, StringSplitOptions.None);
         for (var index = 0; index < parts.Length; index++)
         {
-            if (StringHelpers.TryGetTranslationExactOrLowerAscii(parts[index], out var translatedPart))
+            if (TryTranslateLabeledListPart(parts[index], out var translatedPart))
             {
                 parts[index] = translatedPart;
             }
@@ -1441,29 +1826,29 @@ internal static class DescriptionTextTranslator
         return true;
     }
 
-    private static bool ShouldSkipExactLeafTranslation(string source)
+    private static bool TryTranslateLabeledListPart(string source, out string translated)
     {
-        return StatAbbreviationPattern.IsMatch(source)
-            || SignedStatAbbreviationPattern.IsMatch(source);
-    }
-
-    private static string TranslateLocalizedEnglishStatTerms(string source)
-    {
-        if (!ContainsJapaneseCharacters(source))
+        if (StringHelpers.TryGetTranslationExactOrLowerAscii(source, out translated))
         {
-            return source;
+            return true;
         }
 
-        return LocalizedEnglishStatTermPattern.Replace(
-            source,
-            match => match.Value switch
-            {
-                "Strength" => "筋力",
-                "Toughness" => "頑健",
-                "Willpower" => "意志力",
-                "Agility" => "敏捷",
-                "Ego" => "自我",
-                _ => match.Value,
-            });
+        translated = source switch
+        {
+            "flaming pseudopod" => "{{fiery|燃え盛る}}仮足",
+            "thick fur" => "厚い毛皮",
+            _ => source,
+        };
+        return !string.Equals(translated, source, StringComparison.Ordinal);
+    }
+
+    private static bool ShouldSkipExactLeafTranslation(string source)
+    {
+        // Tooltip and description stat names are game contract labels; keep names like
+        // Strength, Intelligence, and Ego in English even when broad dictionaries know them.
+        return StatAbbreviationPattern.IsMatch(source)
+            || SignedStatAbbreviationPattern.IsMatch(source)
+            || AttributeTermPattern.IsMatch(source)
+            || SignedAttributeTermPattern.IsMatch(source);
     }
 }

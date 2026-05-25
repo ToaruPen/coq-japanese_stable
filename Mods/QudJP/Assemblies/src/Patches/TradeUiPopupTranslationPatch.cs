@@ -306,7 +306,7 @@ public static class TradeUiPopupTranslationPatch
             return source;
         }
 
-        return MessagePatternTranslator.Translate(source, Context);
+        return MessagePatternTranslator.TranslateIfPatternMatches(source, Context);
     }
 
     internal static bool TryTranslatePerformOfferTradeWaterMessage(string source, out string translated)

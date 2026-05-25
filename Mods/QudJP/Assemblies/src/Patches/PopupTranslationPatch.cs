@@ -1069,12 +1069,10 @@ public static class PopupTranslationPatch
             return true;
         }
 
-        if (TryTranslateSinglePlaceholderTemplate(
+        if (TryTranslateWaterRitualLowReputation(
                 stripped,
                 route,
                 family + ".WaterRitualLowReputation",
-                WaterRitualLowReputationPattern,
-                "You don't have a high enough reputation with {0}.",
                 spans,
                 out var waterRitualLowReputationTranslated))
         {
@@ -1094,7 +1092,7 @@ public static class PopupTranslationPatch
 
         if (ShouldTryMessagePatternFallback(route))
         {
-            var patternTranslated = MessagePatternTranslator.Translate(source, route);
+            var patternTranslated = MessagePatternTranslator.TranslateIfPatternMatches(source, route);
             if (!string.Equals(patternTranslated, source, StringComparison.Ordinal))
             {
                 translated = patternTranslated;
@@ -1473,6 +1471,46 @@ public static class PopupTranslationPatch
     private static bool ShouldTryMessagePatternFallback(string route)
     {
         return string.Equals(route, nameof(PopupShowTranslationPatch), StringComparison.Ordinal);
+    }
+
+    private static bool TryTranslateWaterRitualLowReputation(
+        string source,
+        string route,
+        string family,
+        IReadOnlyList<ColorSpan> spans,
+        out string translated)
+    {
+        var match = WaterRitualLowReputationPattern.Match(source);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        const string templateKey = "You don't have a high enough reputation with {0}.";
+        var translatedTemplate = Translator.Translate(templateKey);
+        if (string.Equals(translatedTemplate, templateKey, StringComparison.Ordinal))
+        {
+            translated = source;
+            return false;
+        }
+
+        var factionGroup = match.Groups["value"];
+        var faction = WaterRitualTextTranslator.TranslateFactionVisible(factionGroup.Value);
+        if (spans.Count > 0)
+        {
+            faction = ColorAwareTranslationComposer.RestoreCapture(faction, spans, factionGroup);
+        }
+
+        translated = translatedTemplate.Replace("{0}", faction);
+        if (spans.Count > 0)
+        {
+            var boundarySpans = ColorAwareTranslationComposer.SliceBoundarySpans(spans, match, source.Length, translated.Length);
+            translated = ColorAwareTranslationComposer.Restore(translated, boundarySpans);
+        }
+
+        DynamicTextObservability.RecordTransform(route, family, source, translated);
+        return true;
     }
 
     private static bool TryTranslateSinglePlaceholderTemplate(

@@ -535,6 +535,11 @@
       "text": "HUD"
     },
     {
+      "key": "HE",
+      "context": "GetDisplayName.Adjective",
+      "text": "HE"
+    },
+    {
       "key": "{{lovesickness|heartstopper}}",
       "context": "GetDisplayName.Adjective",
       "text": "{{lovesickness|ハートストッパー}}"

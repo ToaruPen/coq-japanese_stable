@@ -111,7 +111,7 @@ public static class LevelerTranslationPatch
         var buyMatch = BuyMutationPromptPattern.Match(stripped);
         if (buyMatch.Success)
         {
-            var term = RestoreArticleStrippedCapture(buyMatch, spans, "term");
+            var term = TranslateMutationTerm(buyMatch.Groups["term"], spans);
             translated = RestoreWhole(
                 $"ゲノムが励起状態に入った！急速変異する前に{RestoreCapture(buyMatch, spans, "points")}変異ポイントを消費して{term}を購入しますか？",
                 spans,
@@ -139,7 +139,7 @@ public static class LevelerTranslationPatch
         if (noPhysicalMatch.Success)
         {
             translated = RestoreWhole(
-                $"急速に成長させられる身体的{RestoreCapture(noPhysicalMatch, spans, "term")}がない！",
+                $"急速に成長させられる身体的{TranslateMutationTerm(noPhysicalMatch.Groups["term"], spans)}がない！",
                 spans,
                 stripped.Length,
                 source);
@@ -171,13 +171,28 @@ public static class LevelerTranslationPatch
         return ColorAwareTranslationComposer.RestoreCapture(group.Value, spans, group).Trim();
     }
 
-    private static string RestoreArticleStrippedCapture(
-        Match match,
-        IReadOnlyList<ColorSpan> spans,
-        string groupName)
+    private static string RestoreArticleStrippedCapture(Group group, IReadOnlyList<ColorSpan> spans)
     {
-        var group = match.Groups[groupName];
-        var stripped = StringHelpers.StripLeadingEnglishArticle(group.Value);
-        return ColorAwareTranslationComposer.RestoreCapture(stripped, spans, group).Trim();
+        return ColorAwareTranslationComposer.RestoreCapture(
+            StringHelpers.StripLeadingEnglishArticle(group.Value),
+            spans,
+            group).Trim();
+    }
+
+    private static string TranslateMutationTerm(Group group, IReadOnlyList<ColorSpan> spans)
+    {
+        var stripped = StringHelpers.StripLeadingEnglishArticle(group.Value).Trim();
+        var translated = stripped.ToUpperInvariant() switch
+        {
+            "MUTATION" or "MUTATIONS" => "変異",
+            "ESPER MUTATION" or "ESPER MUTATIONS" => "超能力変異",
+            "MENTAL MUTATION" or "MENTAL MUTATIONS" => "精神変異",
+            "PHYSICAL MUTATION" or "PHYSICAL MUTATIONS" => "身体的変異",
+            _ => null,
+        };
+
+        return translated is null
+            ? RestoreArticleStrippedCapture(group, spans)
+            : ColorAwareTranslationComposer.RestoreCapture(translated, spans, group).Trim();
     }
 }

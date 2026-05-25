@@ -16,6 +16,9 @@ public sealed class CookbookDisplayNameTranslatorTests
     [TestCase("&gCooking With Glowfish", "&gグロウフィッシュを使った料理")]
     [TestCase("&gAstral Recipes With Glowfish", "&gグロウフィッシュを使ったアストラルのレシピ")]
     [TestCase("&gCooking Astral Recipes With Glowfish", "&gグロウフィッシュを使ったアストラルの料理レシピ")]
+    [TestCase("&gBoiling: Pretender", "&g茹で料理：僭称者")]
+    [TestCase("&gPickling: Boiling's Pretender", "&g漬物：茹で料理の僭称者")]
+    [TestCase("&gFermenting: Spouse", "&g発酵：伴侶")]
     public void TryTranslate_TranslatesFiniteCookbookFrames(string source, string expected)
     {
         var translated = CookbookDisplayNameTranslator.TryTranslate(source, out var result);

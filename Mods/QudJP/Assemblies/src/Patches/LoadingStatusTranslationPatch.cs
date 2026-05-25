@@ -13,6 +13,9 @@ public static class LoadingStatusTranslationPatch
     private static readonly Regex RestingUntilHealedTurnPattern = new(
         "^Resting until (?<party>party )?healed\\.\\.\\. Turn: (?<turn>\\d+)$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex DisassemblyProgressPattern = new(
+        "^Disassembled (?<done>\\d+) items? of (?<total>\\d+)\\.\\.\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     [HarmonyTargetMethod]
     private static MethodBase? TargetMethod()
@@ -55,6 +58,16 @@ public static class LoadingStatusTranslationPatch
                 var translatedResting = $"{subject}回復するまで休息中… ターン: {restingMatch.Groups["turn"].Value}";
                 DynamicTextObservability.RecordTransform(Context, "Loading.RestingUntilHealedTurn", description, translatedResting);
                 description = translatedResting;
+                return;
+            }
+
+            var disassemblyMatch = DisassemblyProgressPattern.Match(description);
+            if (disassemblyMatch.Success)
+            {
+                var translatedDisassembly =
+                    $"分解済み {disassemblyMatch.Groups["done"].Value}/{disassemblyMatch.Groups["total"].Value} アイテム...";
+                DynamicTextObservability.RecordTransform(Context, "Loading.DisassemblyProgress", description, translatedDisassembly);
+                description = translatedDisassembly;
                 return;
             }
 

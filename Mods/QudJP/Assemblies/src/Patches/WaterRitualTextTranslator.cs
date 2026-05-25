@@ -273,7 +273,7 @@ internal static class WaterRitualTextTranslator
         };
     }
 
-    private static string TranslateFactionVisible(string source)
+    internal static string TranslateFactionVisible(string source)
     {
         var trimmed = source.Trim();
         if (TryGetTranslationExactOrLowerAscii(trimmed, out var translated))

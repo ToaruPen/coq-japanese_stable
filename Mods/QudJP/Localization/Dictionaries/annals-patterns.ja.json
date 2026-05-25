@@ -347,6 +347,16 @@
       "route": "annals"
     },
     {
+      "pattern": "^Throughout\\ the\\ entirety\\ of\\ (.+?)\\ (?:BR|AR),\\ (.+?\\ (?:I|II|III|IV|V|VI|VII|VIII|IX|X))\\ (.+?)\\ all\\ of\\ (.+?),\\ (.+?)\\ for\\ (.+?)\\ and\\ (.+?)\\.\\ (.+?)\\ became\\ known\\ as\\ (?:the\\ )?(Scourge|Terror|Bane|Pest|Woe|Sorrow)\\ of\\ (.+?)\\.$",
+      "template": "{t0}年全体を通じて、{t1}は{t3}全域を{t2}うえ、{t5}と{t6}に対して{t4}を行った。{t7}は以後{t9}の{t8}として知られるようになった。",
+      "route": "annals"
+    },
+    {
+      "pattern": "^Throughout\\ the\\ entirety\\ of\\ (.+?)\\ (?:BR|AR),\\ (.+?\\ (?:I|II|III|IV|V|VI|VII|VIII|IX|X))\\ (.+?)\\ all\\ of\\ (.+?),\\ (.+?)\\ of\\ (.+?)\\ and\\ (.+?)\\.\\ (.+?)\\ became\\ known\\ as\\ (?:the\\ )?(.+?)\\ (Scourge|Terror|Bane|Pest|Woe|Sorrow)\\.$",
+      "template": "{t0}年全体を通じて、{t1}は{t3}全域を{t2}うえ、{t5}と{t6}に対して{t4}を行った。{t7}は以後{t8}の{t9}として知られるようになった。",
+      "route": "annals"
+    },
+    {
       "pattern": "^Throughout\\ the\\ entirety\\ of\\ (.+?),\\ (.+?)\\ (.+?)\\ all\\ of\\ (.+?),\\ (.+?)\\ of\\ (.+?)\\ and\\ (.+?)\\.\\ (.+?)\\ became\\ known\\ as\\ (?:the\\ )?(.+?)\\ (Scourge|Terror|Bane|Pest|Woe|Sorrow)\\.$",
       "template": "{t0}年全体を通じて、{t1}は{t3}全域を{t2}うえ、{t5}と{t6}に対して{t4}を行った。{t7}は以後{t8}の{t9}として知られるようになった。",
       "route": "annals"
@@ -419,6 +429,16 @@
     {
       "pattern": "^For\\ the\\ sake\\ of\\ (.+?),\\ (.+?)\\ (.+?)\\ at\\ (.+?)\\ in\\ (.+?)\\ to\\ (.+?)\\ among\\ the\\ (.+?)\\ and\\ (.+?)\\.\\ After\\ (.+?)\\ (.+?)\\ years,\\ (.+?)\\ (.+?)\\ at\\ (.+?)\\.$",
       "template": "{t0}のため、{t1}は{t4}の{t3}にて{t2}、{t6}と{t7}の間に{t5}せんとした。{t8}年もの{t9}歳月を経て、{t10}は{t12}にて{t11}。",
+      "route": "annals"
+    },
+    {
+      "pattern": "^(.+?),\\ (.+?)\\ cemented\\ its\\ friendship\\ with\\ (.+?)\\ by\\ marrying\\ (.+?)\\.\\ (.+?),\\ (.+?)\\ bestowed\\ upon\\ (.+?)\\ a\\ wedding\\ gift\\ they\\ called\\ (.+?)\\.$",
+      "template": "{t0}、{t1}は{t3}と婚姻を結ぶことにより、{t2}との友誼を固めた。{t4}、{t5}は{t6}に、彼らが{t7}と呼ぶ婚礼の贈り物を授けた。",
+      "route": "annals"
+    },
+    {
+      "pattern": "^(.+?),\\ (.+?)\\ cemented\\ their\\ friendship\\ with\\ (.+?)\\ by\\ marrying\\ (.+?)\\.\\ (.+?),\\ the\\ (.+?)\\ bestowed\\ upon\\ (.+?)\\ a\\ wedding\\ gift\\ they\\ called\\ (.+?)\\.$",
+      "template": "{t0}、{t1}は{t3}と婚姻を結ぶことにより、彼らの{t2}との友誼を固めた。{t4}、{t5}は{t6}に、彼らが{t7}と呼ぶ婚礼の贈り物を授けた。",
       "route": "annals"
     },
     {
@@ -599,6 +619,11 @@
     {
       "pattern": "^[Ww]elcome\\ strangers\\ in\\ (.+?),\\ but\\ teach\\ them\\ the\\ (.+?)\\ of\\ (.+?)(?:\\.)?$",
       "template": "{t0}の中で異邦人を迎えよ、されど彼らに{t2}の{t1}を教えよ。",
+      "route": "annals"
+    },
+    {
+      "pattern": "^(.+?),\\ (.+?)\\ cemented\\ their\\ friendship\\ with\\ (.+?)\\ by\\ marrying\\ (.+?)\\.$",
+      "template": "{t0}、{t1}は{t3}と婚姻を結ぶことにより、彼らの{t2}との友誼を固めた。",
       "route": "annals"
     },
     {

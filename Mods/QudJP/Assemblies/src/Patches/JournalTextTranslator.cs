@@ -11,6 +11,10 @@ internal static class JournalTextTranslator
         "^(?<steps>\\d+ parasangs? (?:north|south|east|west)(?: and \\d+ parasangs? (?:north|south|east|west))*) of (?<landmark>.+)$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex MapNoteNearLinePattern = new(
+        "^near (?<landmark>.+)$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     private static readonly Regex MapNoteDistanceStepPattern = new(
         "^(?<count>\\d+) parasangs? (?<direction>north|south|east|west)$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
@@ -260,6 +264,15 @@ internal static class JournalTextTranslator
 
     private static bool TryTranslateMapNoteDistanceLine(string source, string route, out string translated)
     {
+        var nearMatch = MapNoteNearLinePattern.Match(source);
+        if (nearMatch.Success)
+        {
+            var nearLandmark = TranslateMapNoteLandmark(nearMatch.Groups["landmark"].Value, route);
+            translated = nearLandmark + "の近く";
+            DynamicTextObservability.RecordTransform(route, "Journal.MapNoteDistanceLine", source, translated);
+            return true;
+        }
+
         var match = MapNoteDistanceLinePattern.Match(source);
         if (!match.Success)
         {
@@ -317,9 +330,18 @@ internal static class JournalTextTranslator
             return zoneName;
         }
 
-        return StringHelpers.TryGetTranslationExactOrLowerAscii(source, out var exact)
-            ? exact
-            : source;
+        if (StringHelpers.TryGetTranslationExactOrLowerAscii(source, out var exact))
+        {
+            return exact;
+        }
+
+        if (source.StartsWith("the ", StringComparison.Ordinal)
+            && StringHelpers.TryGetTranslationExactOrLowerAscii("The " + source.Substring(4), out var definiteArticleExact))
+        {
+            return definiteArticleExact;
+        }
+
+        return source;
     }
 
     private static string? GetStringMemberValue(object instance, string memberName)

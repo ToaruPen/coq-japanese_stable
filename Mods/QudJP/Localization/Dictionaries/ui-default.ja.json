@@ -1218,6 +1218,10 @@
     {
       "key": "Close Menu",
       "text": "メニューを閉じる"
+    },
+    {
+      "key": "Loading wish commands",
+      "text": "wishコマンドを読み込み中"
     }
   ]
 }

@@ -202,6 +202,75 @@ public sealed class DescriptionTextTranslatorTests
         Assert.That(translated, Is.EqualTo("石から彫り出されたこの像は山羊人の種播きを精緻に描いている:"));
     }
 
+    [TestCase(
+        "Engraved: This item is engraved with a scene from the life of the ancient sultan ウーヒム I:",
+        "彫刻: この品には古代のスルタン ウーヒム Iの生涯の一場面が彫り刻まれている:")]
+    [TestCase("+5 Heat Resistance", "熱耐性+5")]
+    [TestCase("+9 Cold Resistance", "冷気耐性+9")]
+    [TestCase("+5 Electrical Resistance", "電撃耐性+5")]
+    [TestCase("+12 Acid Resistance", "酸耐性+12")]
+    [TestCase("+2 to hit", "命中+2")]
+    [TestCase("+1 Ego", "+1 Ego")]
+    [TestCase("+1 Agility", "+1 Agility")]
+    [TestCase("You are water-bonded with him.", "あなたは彼と水の絆で結ばれている。")]
+    [TestCase("You are water-bonded with her.", "あなたは彼女と水の絆で結ばれている。")]
+    [TestCase("You are water-bonded with it.", "あなたはそれと水の絆で結ばれている。")]
+    [TestCase("You are water-bonded with them.", "あなたは彼らと水の絆で結ばれている。")]
+    [TestCase("You are water-bonded with a dromad caravan.", "あなたはドロマドのキャラバンと水の絆で結ばれている。")]
+    [TestCase("You are water-bonded with {{Y|a dromad caravan}}.", "あなたは{{Y|ドロマドのキャラバン}}と水の絆で結ばれている。")]
+    [TestCase("身体的特徴: flaming pseudopod、flaming pseudopod、flaming pseudopod、flaming pseudopod", "身体的特徴: {{fiery|燃え盛る}}仮足、{{fiery|燃え盛る}}仮足、{{fiery|燃え盛る}}仮足、{{fiery|燃え盛る}}仮足")]
+    [TestCase("身体的特徴: 枝角、thick fur", "身体的特徴: 枝角、厚い毛皮")]
+    [TestCase("This item's AV and DV modifiers are being averaged across all body parts of the same type.", "このアイテムのAVとDV修正は同じ種類の全身体部位で平均化されている。")]
+    [TestCase("+2 DV while occupying the same tile as foliage", "植物と同じタイルにいる間DV+2")]
+    [TestCase("At the center of a particularly thick copse, the vegetation clears. Flower-bedecked huts huddle in the clearing within, surrounded by phalanxes of tidy watervine rows and carefully-tended lah.", "ひときわ密な雑木林の中心で植生が開けている。花で飾られた小屋がその空き地に寄り集まり、整然としたウォーターヴァインの畝と丹念に世話されたラーの列に囲まれている。")]
+    [TestCase("a dromad caravan", "ドロマドのキャラバン")]
+    [TestCase("Notes:", "注記:")]
+    [TestCase("It reads, '爆発物'.", "「爆発物」と書かれている。")]
+    [TestCase("無秩序が時間の仮想反転で静止へと巻き取られ、金属の円盤に封じられている。動きの命が下るときだけ、凝集を解き放つ。 It's been disarmed.", "無秩序が時間の仮想反転で静止へと巻き取られ、金属の円盤に封じられている。動きの命が下るときだけ、凝集を解き放つ。 解除済み。")]
+    [TestCase("On penetration, this weapon causes bleeding: 1 damage per round; save difficulty 26.", "貫通時、この武器は出血を引き起こす: 1ラウンドあたり1ダメージ; セーブ難度26。")]
+    [TestCase("Swarm Alpha: As long as this creature is adjacent to his target, he grants 2 to the swarm bonuses of each other swarmer who is adjacent to his target.", "群れのアルファ: このクリーチャーが対象に隣接している限り、対象に隣接している他の各スウォーマーの群れボーナスに2を付与する。")]
+    [TestCase("Swarm Alpha: As long as this creature is adjacent to her target, she grants 2 to the swarm bonuses of each other swarmer who is adjacent to her target.", "群れのアルファ: このクリーチャーが対象に隣接している限り、対象に隣接している他の各スウォーマーの群れボーナスに2を付与する。")]
+    [TestCase("Swarm Alpha: As long as this creature is adjacent to its target, it grants 2 to the swarm bonuses of each other swarmer who is adjacent to its target.", "群れのアルファ: このクリーチャーが対象に隣接している限り、対象に隣接している他の各スウォーマーの群れボーナスに2を付与する。")]
+    [TestCase("Swarm Alpha: As long as this creature is adjacent to their target, they grant 3 to the swarm bonuses of each other swarmer who is adjacent to their target.", "群れのアルファ: このクリーチャーが対象に隣接している限り、対象に隣接している他の各スウォーマーの群れボーナスに3を付与する。")]
+    [TestCase("Swarm Alpha: As long as this creature is adjacent to qyr target, qe grants +2 to the swarm bonuses of each other swarmer who is adjacent to qyr target.", "群れのアルファ: このクリーチャーが対象に隣接している限り、対象に隣接している他の各スウォーマーの群れボーナスに2を付与する。")]
+    [TestCase("Swarmer: This creature receives +1 to hit in melee and +1 to penetration rolls for each other hostile swarmer beyond the first who is in another square adjacent to its target. (currently +1)", "スウォーマー: 対象に隣接する別のマスにいる、最初の1体を超える敵対的なスウォーマー1体ごとに、このクリーチャーは近接命中+1と貫通ロール+1を得る。(現在+1)")]
+    [TestCase("Swarmer: This creature receives +1 to hit in melee and +1 to penetration rolls for each other hostile swarmer beyond the first who is in another square adjacent to her target. (currently +0)", "スウォーマー: 対象に隣接する別のマスにいる、最初の1体を超える敵対的なスウォーマー1体ごとに、このクリーチャーは近接命中+1と貫通ロール+1を得る。(現在+0)")]
+    [TestCase("Swarmer: This creature receives +1 to hit in melee and +1 to penetration rolls for each other hostile swarmer beyond the first who is in another square adjacent to their target. (currently +12)", "スウォーマー: 対象に隣接する別のマスにいる、最初の1体を超える敵対的なスウォーマー1体ごとに、このクリーチャーは近接命中+1と貫通ロール+1を得る。(現在+12)")]
+    [TestCase("Swarmer: This creature receives +1 to hit in melee and +1 to penetration rolls for each other hostile swarmer beyond the first who is in another square adjacent to qyr target. (currently +2)", "スウォーマー: 対象に隣接する別のマスにいる、最初の1体を超える敵対的なスウォーマー1体ごとに、このクリーチャーは近接命中+1と貫通ロール+1を得る。(現在+2)")]
+    [TestCase("Contains wiring enabling it to function as part of power grid, producing electrical charge.", "電力網の一部として機能する配線を備え、電荷を生成する。")]
+    [TestCase("Contains plumbing enabling it to function as part of hydraulic transmission system, consuming hydraulic power.", "油圧伝達システムの一部として機能する配管を備え、油圧を消費する。")]
+    [TestCase("This item is a named 猿毛のクローク.", "このアイテムは名前付きの猿毛のクロークである。")]
+    [TestCase("Spray fire: This item can be fired while adjacent to multiple enemies without risk of the shot going wild.", "スプレーファイア: 複数の敵に隣接していても、このアイテムは射撃が逸れる危険なしに発射できる。")]
+    [TestCase("装備して電源を入れると、Intelligence スコアが 2 上昇したかのように遺物鑑定へボーナスを得る。", "装備して電源を入れると、Intelligence スコアが 2 上昇したかのように遺物鑑定へボーナスを得る。")]
+    [TestCase("It is powered off.", "電源が切れている。")]
+    [TestCase("They are powered off.", "電源が切れている。")]
+    [TestCase("When activated, +1 Strength", "起動時、Strength+1")]
+    [TestCase("When activated, +1 Agility", "起動時、Agility+1")]
+    [TestCase("表情豊かな顔と筋肉質な胴体は明らかに人間の血脈を示すが、厚い毛がまだらの脇腹を覆い、ぴくぴく動く尖った耳と誇らしい角は別の遺伝子の strand を語る。", "表情豊かな顔と筋肉質な胴体は明らかに人間の血脈を示すが、厚い毛がまだらの脇腹を覆い、ぴくぴく動く尖った耳と誇らしい角は別の遺伝子の系統を物語る。")]
+    [TestCase("stuck in a 凍結した 黒い滲出液の水たまり", "凍結した 黒い滲出液の水たまりにはまっている")]
+    public void TranslateShortDescription_TranslatesRuntimeObservedDescriptionLines(
+        string source,
+        string expected)
+    {
+        var translated = DescriptionTextTranslator.TranslateShortDescription(
+            source,
+            "DescriptionTextTranslatorTests");
+
+        Assert.That(translated, Is.EqualTo(expected));
+    }
+
+    [Test]
+    public void TranslateShortDescription_TranslatesNamedItemCaptureThroughDisplayNameRoute()
+    {
+        WriteHistorySpiceDictionary(("potent", "強大な"), ("ghost", "幽鬼"));
+
+        var translated = DescriptionTextTranslator.TranslateShortDescription(
+            "This item is a named shrine to ウーヒム II, the Potent Ghost.",
+            "DescriptionTextTranslatorTests");
+
+        Assert.That(translated, Is.EqualTo("このアイテムは名前付きのウーヒム II、強大な幽鬼の祠である。"));
+    }
+
     [Test]
     public void TranslateLongDescription_PreservesColoredFactionTarget_InDispositionLine()
     {
@@ -350,12 +419,12 @@ public sealed class DescriptionTextTranslatorTests
         Assert.That(
             translated,
             Is.EqualTo(
-                "{{rules|筋力ボーナス上限: 1\n武器カテゴリ: 斧（クリティカル時に装甲破砕）}}\n" +
+                "{{rules|Strength ボーナス上限: 1\n武器カテゴリ: 斧（クリティカル時に装甲破砕）}}\n" +
                 "{{cyan|彩色: この品には古代のスルタン クホマスプ IIの生涯の一場面が描かれている:\n\nIn 4834 BR}}"));
     }
 
     [Test]
-    public void TranslateLongDescription_LeavesIntelligenceFragmentsUnchanged()
+    public void TranslateLongDescription_LeavesTooltipStatNameFragmentsUnchanged()
     {
         const string source = "装備して電源を入れると、Intelligence スコアが 2 上昇したかのように遺物鑑定へボーナスを得る。";
 
@@ -410,7 +479,7 @@ public sealed class DescriptionTextTranslatorTests
         Assert.That(
             translated,
             Is.EqualTo(
-                "{{rules|筋力ボーナス上限: 1\n" +
+                "{{rules|Strength ボーナス上限: 1\n" +
                 "{{Y|武器カテゴリ: 斧（クリティカル時に装甲破砕）}}}}"));
     }
 
@@ -436,7 +505,7 @@ public sealed class DescriptionTextTranslatorTests
         Assert.That(
             translated,
             Is.EqualTo(
-                "<color=yellow>筋力ボーナス上限: 1\n" +
+                "<color=yellow>Strength ボーナス上限: 1\n" +
                 "武器カテゴリ: 斧（クリティカル時に装甲破砕）</color>"));
     }
 
@@ -554,7 +623,7 @@ public sealed class DescriptionTextTranslatorTests
                 translated,
                 Is.EqualTo(
                     "拳大の巻貝が柔らかな螺旋にとぐろを巻き、煤で黒く燻され、硫黄の臭気を放つ。\n\n" +
-                    "筋力ボーナス上限: 3\n" +
+                    "Strength ボーナス上限: 3\n" +
                     "武器カテゴリ: 棍棒（クリティカル時に朦朧付与）\n" +
                     "オフハンド命中率: 15%\n\n" +
                     "重量： 2 lbs."));
@@ -616,6 +685,36 @@ public sealed class DescriptionTextTranslatorTests
             "DescriptionTextTranslatorTests");
 
         Assert.That(translated, Is.EqualTo("シンプルな植物由来の効果を調理した食事に加える。"));
+    }
+
+    [Test]
+    public void TranslateShortDescription_TranslatesRuntimeObservedWallAndMoveSpeedRules()
+    {
+        var translated = DescriptionTextTranslator.TranslateShortDescription(
+            "+20 penetration vs. walls.\nDestroys  walls after 8 penetrating hits.\n+8 move speed",
+            "DescriptionTextTranslatorTests");
+
+        Assert.That(
+            translated,
+            Is.EqualTo(
+                "壁に対する貫通+20。\n" +
+                "8回の貫通ヒット後に壁を破壊する。\n" +
+                "移動速度+8"));
+    }
+
+    [Test]
+    public void TranslateShortDescription_TranslatesPoweredWallAndNegativeMoveSpeedRules()
+    {
+        var translated = DescriptionTextTranslator.TranslateShortDescription(
+            "When powered, +20 penetration vs. walls.\nWhen powered, destroys  walls after 8 penetrating hits.\n-25 move speed",
+            "DescriptionTextTranslatorTests");
+
+        Assert.That(
+            translated,
+            Is.EqualTo(
+                "電源投入時、壁に対する貫通+20。\n" +
+                "電源投入時、8回の貫通ヒット後に壁を破壊する。\n" +
+                "移動速度-25"));
     }
 
     [Test]

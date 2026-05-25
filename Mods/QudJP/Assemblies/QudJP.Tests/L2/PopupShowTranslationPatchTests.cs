@@ -120,6 +120,23 @@ public sealed class PopupShowTranslationPatchTests
     }
 
     [Test]
+    public void Prefix_DoesNotRecordMessagePatternMiss_WhenNoPopupPatternMatches()
+    {
+        const string source = "This popup is owned by another route.";
+
+        var translated = PopupShowSemanticPipeline.TranslateMessage(source, nameof(PopupShowTranslationPatch));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.EqualTo(source));
+            Assert.That(MessagePatternTranslator.GetMissingPatternHitCountForTests(source), Is.EqualTo(0));
+            Assert.That(
+                MessagePatternTranslator.GetMissingRouteHitCountForTests(nameof(PopupShowTranslationPatch)),
+                Is.EqualTo(0));
+        });
+    }
+
+    [Test]
     public void Prefix_TranslatesDiscoverLocationTemplateWithColorWrappedTarget()
     {
         WriteDictionary(("You discover {0}!", "{0}を発見した！"));

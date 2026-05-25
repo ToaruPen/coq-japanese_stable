@@ -70,9 +70,28 @@ public static class ZoneManagerSetActiveZoneMapNotesTranslationPatch
 
     internal static bool TryTranslateQueuedMessage(ref string message, string? color)
     {
-        return activeDepth > 0
-            && !string.IsNullOrEmpty(message)
-            && !string.Equals(color, "C", StringComparison.Ordinal)
-            && MessageLogProducerTranslationHelpers.TryPreparePatternMessage(ref message, Context, "SetActiveZoneMapNotes", markJapaneseAsDirect: true);
+        if (activeDepth <= 0
+            || string.IsNullOrEmpty(message)
+            || string.Equals(color, "C", StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        if (!MessageFrameTranslator.TryStripDirectTranslationMarker(message, out _)
+            && JournalNotificationTranslator.TryTranslate(
+                message,
+                Context,
+                "SetActiveZoneMapNotes",
+                out var journalNotificationTranslated))
+        {
+            message = MessageFrameTranslator.MarkDirectTranslation(journalNotificationTranslated);
+            return true;
+        }
+
+        return MessageLogProducerTranslationHelpers.TryPreparePatternMessage(
+            ref message,
+            Context,
+            "SetActiveZoneMapNotes",
+            markJapaneseAsDirect: true);
     }
 }

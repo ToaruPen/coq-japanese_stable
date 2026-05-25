@@ -64,6 +64,31 @@ public sealed class ConversationDisplayTextPatchTests
     }
 
     [Test]
+    public void Postfix_TranslatesRuntimeObservedSixDayStiltConvertAppendLine_WhenPatched()
+    {
+        WriteDictionary(("May the ground shake but the Six Day Stilt never tumble!", "地は揺れても六日のスティルトは決して倒れん！"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyConversationElement), nameof(DummyConversationElement.GetDisplayText)),
+                postfix: new HarmonyMethod(RequireMethod(typeof(ConversationDisplayTextPatch), nameof(ConversationDisplayTextPatch.Postfix))));
+
+            var element = new DummyConversationElement("May the ground shake but the Six Day Stilt never tumble!");
+            var result = element.GetDisplayText(withColor: false);
+
+            Assert.That(result, Is.EqualTo("地は揺れても六日のスティルトは決して倒れん！"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void Postfix_DoesNotOwnGeneratedVillageTinkerConversationTemplateAfterPlayerVariableReplacement()
     {
         WriteDictionary(

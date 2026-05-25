@@ -332,6 +332,16 @@ internal static class HistoricSpiceGeneratedNameTranslator
         "flower",
     };
 
+    private static readonly string[] CompactMarriageGiftSuffixes =
+    {
+        "favor",
+        "grant",
+        "dower",
+        "boon",
+        "bane",
+        "gift",
+    };
+
     internal static bool TryTranslateCapture(string source, out string translated)
     {
         var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
@@ -471,7 +481,8 @@ internal static class HistoricSpiceGeneratedNameTranslator
     private static bool TryTranslateHistoricItemNameCore(string source, out string translated) =>
         TryTranslateBlessingOfItem(source, out translated)
         || TryTranslatePossessiveBlessingItem(source, out translated)
-        || TryTranslateTrailingBlessingItem(source, out translated);
+        || TryTranslateTrailingBlessingItem(source, out translated)
+        || TryTranslateCompactMarriageGiftItem(source, out translated);
 
     private static bool TryTranslateSultanCultNameCore(string source, out string translated) =>
         TryTranslateRootianCultName(source, out translated)
@@ -799,6 +810,52 @@ internal static class HistoricSpiceGeneratedNameTranslator
 
         translated = TranslateHistoricItemRoot(match.Groups["root"].Value) + "の" + blessing;
         return true;
+    }
+
+    private static bool TryTranslateCompactMarriageGiftItem(string source, out string translated)
+    {
+        // Marry.cs, LoseItemAtTavern.cs, and BattleItem.cs concatenate
+        // meaningful faction/name words and gift/boon/bane suffixes without a separator.
+        foreach (var suffix in CompactMarriageGiftSuffixes)
+        {
+            if (source.Length <= suffix.Length
+                || !source.EndsWith(suffix, StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+
+            var root = source.Substring(0, source.Length - suffix.Length);
+            if (!TryTranslateSiteModifier(root, out var translatedRoot)
+                || !TryTranslateCompactGiftSuffix(suffix, out var translatedSuffix))
+            {
+                continue;
+            }
+
+            translated = translatedRoot + "の" + translatedSuffix;
+            return true;
+        }
+
+        translated = source;
+        return false;
+    }
+
+    private static bool TryTranslateCompactGiftSuffix(string source, out string translated)
+    {
+        if (HistorySpiceComponentLookup.TryTranslateWord(source, out translated)
+            && !string.Equals(source, translated, StringComparison.Ordinal))
+        {
+            return true;
+        }
+
+        var worldGospel = ScopedDictionaryLookup.TranslateExactOrLowerAscii(source, WorldGospelsDictionaryFile);
+        if (worldGospel is not null)
+        {
+            translated = worldGospel;
+            return true;
+        }
+
+        translated = source;
+        return false;
     }
 
     private static bool TryTranslateCultOfRootName(string source, out string translated)

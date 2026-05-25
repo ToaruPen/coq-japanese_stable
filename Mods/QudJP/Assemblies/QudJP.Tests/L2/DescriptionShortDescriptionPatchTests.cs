@@ -96,7 +96,7 @@ public sealed class DescriptionShortDescriptionPatchTests
     public void DescriptionShortDescriptionPatch_TranslatesScopedWorldModsEntries_WhenPatched()
     {
         WriteScopedDictionary(
-            ("Strength Bonus Cap: no limit\nWeapon Class: Long Blades (increased penetration on critical hit)", "筋力ボーナス上限: なし\n武器カテゴリ: 長剣（クリティカル時に貫通力上昇）"),
+            ("Strength Bonus Cap: no limit\nWeapon Class: Long Blades (increased penetration on critical hit)", "Strength ボーナス上限: なし\n武器カテゴリ: 長剣（クリティカル時に貫通力上昇）"),
             ("Masterwork: This weapon scores critical hits {0} of the time instead of 5%.", "傑作: この武器のクリティカル発生率は{0}（通常は5%）。"),
             ("Offhand Attack Chance: {0}%", "オフハンド命中率: {0}%"));
 
@@ -119,7 +119,7 @@ public sealed class DescriptionShortDescriptionPatchTests
             {
                 Assert.That(
                     compareTarget.GetShortDescription(useShort: true, useLong: false, prefix: string.Empty),
-                    Is.EqualTo("筋力ボーナス上限: なし\n武器カテゴリ: 長剣（クリティカル時に貫通力上昇）"));
+                    Is.EqualTo("Strength ボーナス上限: なし\n武器カテゴリ: 長剣（クリティカル時に貫通力上昇）"));
                 Assert.That(
                     masterworkTarget.GetShortDescription(useShort: true, useLong: false, prefix: string.Empty),
                     Is.EqualTo("{{rules|傑作: この武器のクリティカル発生率は15%（通常は5%）。}}"));
@@ -383,7 +383,7 @@ public sealed class DescriptionShortDescriptionPatchTests
             {
                 Assert.That(
                     target.GetShortDescription(useShort: true, useLong: false, prefix: string.Empty),
-                    Is.EqualTo("共同処理装置: 通電中、知力に+2を与え、局所格子に13ユニットの演算力を供給する。\nアイテム改造: つり合い調整: 命中に+2のボーナスを与える。"));
+                    Is.EqualTo("共同処理装置: 通電中、Intelligenceに+2を与え、局所格子に13ユニットの演算力を供給する。\nアイテム改造: つり合い調整: 命中に+2のボーナスを与える。"));
                 Assert.That(
                     DynamicTextObservability.GetRouteFamilyHitCountForTests(
                         nameof(DescriptionShortDescriptionPatch),
