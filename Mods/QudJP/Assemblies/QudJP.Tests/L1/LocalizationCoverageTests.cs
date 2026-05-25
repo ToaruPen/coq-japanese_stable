@@ -522,6 +522,27 @@ public sealed class LocalizationCoverageTests
     }
 
     [Test]
+    public void MutationDescriptionsDictionary_CoversAllMutationEntriesFromAssets()
+    {
+        var mutationNames = LoadMutationNamesWithDisplayName(Path.Combine(localizationRoot, "Mutations.jp.xml"))
+            .Concat(LoadMutationNamesWithDisplayName(Path.Combine(localizationRoot, "HiddenMutations.jp.xml")))
+            .Distinct(StringComparer.Ordinal)
+            .ToArray();
+        var descriptionKeys = LoadEntries(Path.Combine(localizationRoot, "Dictionaries", "mutation-descriptions.ja.json"))
+            .Select(static entry => entry.Key)
+            .ToHashSet(StringComparer.Ordinal);
+
+        var missing = mutationNames
+            .Where(name => !descriptionKeys.Contains($"mutation:{name}"))
+            .ToArray();
+
+        Assert.That(
+            missing,
+            Is.Empty,
+            "Every mutation asset entry should have a mutation:<Name> long-description key for popup and menu owner routes.");
+    }
+
+    [Test]
     public void ChargenStructuredTextTranslator_CoversRuntimeObservedSkillLeaves()
     {
         var expectedTranslations = new Dictionary<string, string>(StringComparer.Ordinal)

@@ -120,6 +120,44 @@ public sealed class QudMutationsModuleWindowTranslationPatchTests
         Assert.That(translated, Is.EqualTo(source));
     }
 
+    [TestCase("Freezing Ray", "Icy Vapor", "任意の方向へ冷気の光線を放つ。", "選んだ方向に9マスの冷気線を放つ。")]
+    [TestCase("Flaming Ray", "Ghostly Flames", "任意の方向へ火炎の光線を放つ。", "選んだ方向に9マスの火炎線を放つ。")]
+    [TestCase("Horns", "Horns Antlers", "頭から鋭い角が生えている。", "枝角で敵を突く。")]
+    public void Postfix_UsesMutationNodeVariantForLongDescriptionRankText(
+        string mutationName,
+        string variant,
+        string description,
+        string rankText)
+    {
+        WriteDictionary(
+            ($"mutation:{mutationName}", description),
+            ($"mutation:{mutationName}:{variant}:rank:1", rankText));
+
+        var window = new DummyQudMutationsModuleWindow
+        {
+            categoryMenus =
+            [
+                new DummyMutationCategoryMenuData(
+                    new DummyMutationMenuOption(
+                        mutationName,
+                        mutationName,
+                        "English description that should be replaced.")),
+            ],
+            mutationNodes =
+            [
+                new DummyMutationNode(mutationName, variant),
+            ],
+        };
+
+        QudMutationsModuleWindowTranslationPatch.Postfix(window);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(window.categoryMenus[0].menuOptions[0].LongDescription, Is.EqualTo($"{description}\n\n{rankText}"));
+            Assert.That(window.prefabComponent.LastRenderedLongDescriptions[0], Is.EqualTo($"{description}\n\n{rankText}"));
+        });
+    }
+
     private static MethodInfo RequireMethod(Type type, string methodName)
     {
         return AccessTools.Method(type, methodName)

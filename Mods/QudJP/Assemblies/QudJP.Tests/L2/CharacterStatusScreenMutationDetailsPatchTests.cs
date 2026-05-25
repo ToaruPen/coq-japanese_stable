@@ -77,6 +77,51 @@ public sealed class CharacterStatusScreenMutationDetailsPatchTests
         }
     }
 
+    [TestCase("Freezing Ray", "Icy Vapor", "任意の方向へ冷気の光線を放つ。", "選んだ方向に9マスの冷気線を放つ。")]
+    [TestCase("Flaming Ray", "Ghostly Flames", "任意の方向へ火炎の光線を放つ。", "選んだ方向に9マスの火炎線を放つ。")]
+    [TestCase("Horns", "Horns Antlers", "頭から鋭い角が生えている。", "枝角で敵を突く。")]
+    public void Postfix_TranslatesMutationDetailsUsingVariantRankKey_WhenPatched(
+        string mutationName,
+        string variant,
+        string description,
+        string rankText)
+    {
+        WriteDictionary(
+            ($"mutation:{mutationName}", description),
+            ($"mutation:{mutationName}:{variant}:rank:1", rankText));
+
+        var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyCharacterStatusMutationScreen), nameof(DummyCharacterStatusMutationScreen.HandleHighlightMutation)),
+                postfix: new HarmonyMethod(RequireMethod(typeof(CharacterStatusScreenMutationDetailsPatch), nameof(CharacterStatusScreenMutationDetailsPatch.Postfix))));
+
+            var screen = new DummyCharacterStatusMutationScreen();
+            screen.HandleHighlightMutation(new DummyCharacterMutationLineData
+            {
+                mutation = new DummyCharacterMutation
+                {
+                    Name = mutationName.Replace(" ", string.Empty, StringComparison.Ordinal),
+                    EntryName = mutationName,
+                    DisplayName = mutationName,
+                    Variant = variant,
+                    Level = 1,
+                },
+            });
+
+            Assert.That(
+                screen.mutationsDetails.Text,
+                Is.EqualTo($"{description}\n\n{rankText}"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
     [Test]
     public void Postfix_RecordsMutationDetailsOwnerRouteTransform_WithoutUITextSkinSinkObservation_WhenPatched()
     {

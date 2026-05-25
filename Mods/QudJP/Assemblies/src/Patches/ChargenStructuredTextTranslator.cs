@@ -167,6 +167,11 @@ internal static class ChargenStructuredTextTranslator
 
     internal static bool TryTranslateMutationLongDescription(string mutationName, out string translated)
     {
+        return TryTranslateMutationLongDescription(mutationName, variant: null, out translated);
+    }
+
+    internal static bool TryTranslateMutationLongDescription(string mutationName, string? variant, out string translated)
+    {
         if (string.IsNullOrWhiteSpace(mutationName))
         {
             translated = mutationName;
@@ -177,7 +182,7 @@ internal static class ChargenStructuredTextTranslator
         var rankKey = string.Concat(descriptionKey, ":rank:1");
         var hasDescription = Translator.TryGetTranslation(descriptionKey, out var description)
             && !string.Equals(description, descriptionKey, StringComparison.Ordinal);
-        var hasRank = TryGetMutationRankText(mutationName!, rankKey, out var rankText);
+        var hasRank = TryGetMutationRankText(mutationName!, variant, rankKey, out var rankText);
 
         if (!hasDescription && !hasRank)
         {
@@ -228,12 +233,22 @@ internal static class ChargenStructuredTextTranslator
         return false;
     }
 
-    private static bool TryGetMutationRankText(string mutationName, string simpleRankKey, out string rankText)
+    private static bool TryGetMutationRankText(string mutationName, string? variant, string simpleRankKey, out string rankText)
     {
         if (Translator.TryGetTranslation(simpleRankKey, out rankText)
             && !string.Equals(rankText, simpleRankKey, StringComparison.Ordinal))
         {
             return true;
+        }
+
+        if (!string.IsNullOrWhiteSpace(variant))
+        {
+            var variantRankKey = string.Concat("mutation:", mutationName, ":", variant!.Trim(), ":rank:1");
+            if (Translator.TryGetTranslation(variantRankKey, out rankText)
+                && !string.Equals(rankText, variantRankKey, StringComparison.Ordinal))
+            {
+                return true;
+            }
         }
 
         if (!TryGetStingerRankKey(mutationName, out var stingerRankKey))

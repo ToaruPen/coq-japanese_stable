@@ -39,6 +39,14 @@ public static class StatusScreenPopupTranslationPatch
         "^You have all available (?<term>.+?)\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex MutationChoicePromptPattern = new(
+        "^Choose (?:(?:a|an) )?(?<term>.+?)\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex MutationChoiceOptionPattern = new(
+        "^(?<name>.+?)(?<extraLimb> \\+ grow a new body part)? - [\\s\\S]+$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     private static readonly Regex PsychicGlimmerDebugPattern = new(
         "^TODOJASON GLIMMER=(?<value>.+)$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
@@ -144,6 +152,11 @@ public static class StatusScreenPopupTranslationPatch
         IReadOnlyList<ColorSpan> spans,
         out string translated)
     {
+        if (TryTranslateMutationChoicePickOption(source, stripped, spans, out translated))
+        {
+            return true;
+        }
+
         if (TryTranslateAttributePopup(source, stripped, spans, out translated))
         {
             return true;
@@ -171,6 +184,45 @@ public static class StatusScreenPopupTranslationPatch
 
         translated = source;
         return false;
+    }
+
+    private static bool TryTranslateMutationChoicePickOption(
+        string source,
+        string stripped,
+        IReadOnlyList<ColorSpan> spans,
+        out string translated)
+    {
+        var promptMatch = MutationChoicePromptPattern.Match(stripped);
+        if (promptMatch.Success)
+        {
+            translated = RestoreWhole(
+                $"{TranslateMutationTerm(promptMatch.Groups["term"].Value)}を選んでください。",
+                source,
+                stripped,
+                spans);
+            return true;
+        }
+
+        var match = MutationChoiceOptionPattern.Match(stripped);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        var mutationName = match.Groups["name"].Value.Trim();
+        if (!ChargenStructuredTextTranslator.TryTranslateMutationLongDescription(mutationName, out var longDescription))
+        {
+            translated = source;
+            return false;
+        }
+
+        var translatedName = TranslateMutationName(Restore(match, spans, "name"));
+        var extraLimb = match.Groups["extraLimb"].Success
+            ? "{{G| + 新しい身体部位が生える}}"
+            : string.Empty;
+        translated = $"{translatedName}{extraLimb} - {longDescription}";
+        return !string.Equals(translated, source, StringComparison.Ordinal);
     }
 
     private static bool TryTranslateAttributePopup(

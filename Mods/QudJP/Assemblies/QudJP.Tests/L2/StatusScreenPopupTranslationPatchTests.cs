@@ -19,7 +19,8 @@ public sealed class StatusScreenPopupTranslationPatchTests
         StatusScreenPopupTranslationPatch.ResetForTests();
         StatusScreenMutationPopupTranslationPatch.ResetForTests();
         DummyPopupShow.Reset();
-        DummyStatusScreenPopupTarget.MessageToSend = string.Empty;
+        DummyPopupGenericTarget.Reset();
+        DummyStatusScreenPopupTarget.Reset();
     }
 
     [TearDown]
@@ -74,6 +75,48 @@ public sealed class StatusScreenPopupTranslationPatchTests
             ownerMethod: RequireMethod(typeof(DummyStatusScreenPopupTarget), nameof(DummyStatusScreenPopupTarget.BuyRandomMutation), typeof(DummyGameObject)),
             source,
             expected);
+    }
+
+    [Test]
+    public void BuyRandomMutation_TranslatesMutationPickOptionIntroAndOptions_WhenOwnerPatched()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPickOption(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(
+                    typeof(DummyStatusScreenPopupTarget),
+                    nameof(DummyStatusScreenPopupTarget.BuyRandomMutation),
+                    typeof(DummyGameObject)));
+
+            DummyStatusScreenPopupTarget.PickOptionTitleToSend = "";
+            DummyStatusScreenPopupTarget.PickOptionIntroToSend = "Choose a mutation.";
+            DummyStatusScreenPopupTarget.PickOptionOptionsToSend = new[]
+            {
+                "{{W|Photosynthetic Skin}}{{G| + grow a new body part}} {{y|- You replenish yourself by absorbing sunlight through your hearty green skin.\nYou can bask in the sunlight instead of eating a meal to gain a special metabolizing effect for 1 day: +30% to natural healing rate and +15 Quickness}}",
+                "{{W|Two-hearted}} - You have two hearts.\n+2 Toughness\nYou can sprint for 30% longer.",
+                "{{W|Double-muscled}} - You are possessed of hulking strength.\n+2 Strength\n15% chance to daze your opponent on a successful melee attack for 2-3 rounds",
+            };
+
+            _ = DummyStatusScreenPopupTarget.BuyRandomMutation(new DummyGameObject());
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyPopupGenericTarget.LastPickOptionTitle, Is.Empty);
+                Assert.That(DummyPopupGenericTarget.LastPickOptionIntro, Is.EqualTo("変異を選んでください。"));
+                Assert.That(DummyPopupGenericTarget.LastPickOptionOptions, Is.Not.Null);
+                Assert.That(DummyPopupGenericTarget.LastPickOptionOptions![0], Does.StartWith("{{W|光合成皮膚}}{{G| + 新しい身体部位が生える}} - たくましい緑の皮膚で日光を吸収し、そこから養分を得る。"));
+                Assert.That(DummyPopupGenericTarget.LastPickOptionOptions![1], Does.StartWith("{{W|二重心臓}} - 心臓が2つある。"));
+                Assert.That(DummyPopupGenericTarget.LastPickOptionOptions![2], Does.StartWith("{{W|二重筋肉}} - あなたは怪力を振るうことができる。"));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
     }
 
     [Test]
@@ -452,6 +495,14 @@ public sealed class StatusScreenPopupTranslationPatchTests
                 typeof(bool),
                 typeof(bool)),
             prefix: new HarmonyMethod(RequireMethod(typeof(PopupShowTranslationPatch), nameof(PopupShowTranslationPatch.Prefix))));
+    }
+
+    private static void PatchPickOption(Harmony harmony)
+    {
+        harmony.Patch(
+            original: RequireMethod(typeof(DummyPopupGenericTarget), nameof(DummyPopupGenericTarget.PickOption)),
+            prefix: new HarmonyMethod(RequireMethod(typeof(PopupPickOptionTranslationPatch), nameof(PopupPickOptionTranslationPatch.Prefix))),
+            finalizer: new HarmonyMethod(RequireMethod(typeof(PopupPickOptionTranslationPatch), nameof(PopupPickOptionTranslationPatch.Finalizer))));
     }
 
     private static void PatchOwner(Harmony harmony, MethodInfo original)

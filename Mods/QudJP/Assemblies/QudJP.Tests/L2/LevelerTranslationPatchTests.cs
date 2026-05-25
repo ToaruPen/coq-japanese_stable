@@ -71,6 +71,45 @@ public sealed class LevelerTranslationPatchTests
     }
 
     [Test]
+    public void Patch_TranslatesRapidAdvancementPickOptionTitle_WhenOwnerPatched()
+    {
+        const string source = "Choose a physical mutation to rapidly advance.";
+
+        LevelerTranslationPatch.Prefix();
+        try
+        {
+            new DummyLevelerProducer
+            {
+                PickOptionTitleToShow = source,
+            }.RapidAdvancement(3, new DummyGameObject());
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyPopupGenericTarget.LastPickOptionTitle, Is.EqualTo("急速に成長させる身体的変異を選んでください。"));
+                Assert.That(PickOptionHitCount("LevelerRapidAdvancementPickOption"), Is.EqualTo(1));
+            });
+        }
+        finally
+        {
+            _ = LevelerTranslationPatch.Finalizer(null);
+        }
+    }
+
+    [Test]
+    public void Patch_DoesNotTranslateRapidAdvancementPickOptionTitle_WhenOwnerAbsent()
+    {
+        const string source = "Choose a physical mutation to rapidly advance.";
+
+        CallPickOption(source);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(DummyPopupGenericTarget.LastPickOptionTitle, Is.EqualTo(source));
+            Assert.That(PickOptionHitCount("LevelerRapidAdvancementPickOption"), Is.Zero);
+        });
+    }
+
+    [Test]
     public void Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched()
     {
         const string source = "You have no physical mutations to rapidly advance!";
@@ -140,16 +179,60 @@ public sealed class LevelerTranslationPatchTests
         return OwnerPopupRouteTestHarness.RouteHitCount(typeof(LevelerTranslationPatch), detail);
     }
 
+    private static int PickOptionHitCount(string detail)
+    {
+        return DynamicTextObservability.GetRouteFamilyHitCountForTests(
+            nameof(PopupPickOptionTranslationPatch),
+            "Popup.ProducerText." + nameof(LevelerTranslationPatch) + "." + detail);
+    }
+
     private sealed class DummyLevelerProducer
     {
         public string PopupMessageToShow { get; set; } = string.Empty;
+
+        public string PickOptionTitleToShow { get; set; } = string.Empty;
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         public void RapidAdvancement(int amount, DummyGameObject parentObject)
         {
             _ = amount;
             _ = parentObject;
+            if (!string.IsNullOrEmpty(PickOptionTitleToShow))
+            {
+                CallPickOption(PickOptionTitleToShow);
+                return;
+            }
+
             DummyPopupShow.Show(PopupMessageToShow);
+        }
+    }
+
+    private static void CallPickOption(string title)
+    {
+        string? intro = null;
+        var spacingText = string.Empty;
+        IReadOnlyList<string>? options = null;
+        object? buttons = null;
+        string? popupId = null;
+
+        PopupPickOptionTranslationPatch.Prefix(
+            ref title,
+            ref intro,
+            ref spacingText,
+            ref options,
+            buttons,
+            popupId);
+        try
+        {
+            DummyPopupGenericTarget.PickOption(
+                Title: title,
+                Intro: intro,
+                SpacingText: spacingText,
+                Options: options);
+        }
+        finally
+        {
+            PopupPickOptionTranslationPatch.Finalizer();
         }
     }
 }

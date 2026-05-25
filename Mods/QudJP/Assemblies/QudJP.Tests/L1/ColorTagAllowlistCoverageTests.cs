@@ -176,7 +176,7 @@ public sealed class ColorTagAllowlistCoverageTests
             ["Mods/QudJP/Assemblies/src/Patches/InventoryFireEventTranslationPatch.cs:226:GetPopupFamilyDetail"] = "Audited Strip call: predicate-only popup family classifier; color ownership is not modified.",
             ["Mods/QudJP/Assemblies/src/Patches/JournalNotificationTranslator.cs:20:TryTranslate"] = "Audited Strip call: color ownership is restored in a downstream branch/helper or the call is predicate/observation-only.",
             ["Mods/QudJP/Assemblies/src/Patches/KeyMappingUiTranslationPatch.cs:112:TryTranslatePopupMessage"] = "Audited Strip call: color ownership is restored in a downstream branch/helper or the call is predicate/observation-only.",
-            ["Mods/QudJP/Assemblies/src/Patches/LevelerTranslationPatch.cs:109:TryTranslate"] = "Audited Strip call: color ownership is restored in a downstream branch/helper or the call is predicate/observation-only.",
+            ["Mods/QudJP/Assemblies/src/Patches/LevelerTranslationPatch.cs:113:TryTranslate"] = "Audited Strip call: color ownership is restored in a downstream branch/helper or the call is predicate/observation-only.",
             ["Mods/QudJP/Assemblies/src/Patches/LiquidVolumeFragmentTranslator.cs:325:TryTranslate"] = "Audited Strip call: color ownership is restored in a downstream branch/helper or the call is predicate/observation-only.",
             ["Mods/QudJP/Assemblies/src/Patches/LongBladesCoreTranslationPatch.cs:116:TryTranslatePopupMessage"] = "Audited Strip call: popup target colors are restored through the local MarkupAwareRestoreCapture helper.",
             ["Mods/QudJP/Assemblies/src/Patches/LongBladesCoreTranslationPatch.cs:136:TryTranslateQueuedMessage"] = "Audited Strip call: queued actor/target colors are restored through the local MarkupAwareRestoreCapture helper.",
@@ -206,8 +206,8 @@ public sealed class ColorTagAllowlistCoverageTests
             ["Mods/QudJP/Assemblies/src/Patches/PhysicsInventoryActionPopupTranslationPatch.cs:94:TryTranslatePopupMessage"] = "Audited Strip call: ownership-pour colors are restored by LiquidVolumeFragmentTranslator, cleaning-liquid captures use MarkupAwareRestoreCapture, and attack-confirm target colors are restored by PopupTranslationPatch.TryTranslatePhysicsAttackConfirmText.",
             ["Mods/QudJP/Assemblies/src/Patches/PhysicAmputateLimbTranslationPatch.cs:125:TryTranslatePopupMessage"] = "Audited Strip call: field-amputation popup captures are restored through RestoreCapture and whole-source boundary wrappers are restored through RestoreWhole.",
             ["Mods/QudJP/Assemblies/src/Patches/PhysicsProcessTakeDamageTranslationPatch.cs:260:TryTranslateDamageFrame"] = "Audited Strip call: damage-frame source and damage-type captures are restored through local MarkupAwareRestoreCapture helpers.",
-            ["Mods/QudJP/Assemblies/src/Patches/PopupTranslationPatch.cs:1416:TranslateCookingRecipeNameForInventoryActionMenu"] = "Audited Strip call: recipe-name colors are restored through CookbookDisplayNameTranslator after inventory action menu parsing.",
-            ["Mods/QudJP/Assemblies/src/Patches/PopupTranslationPatch.cs:1821:IsAlreadyLocalizedPopupText"] = "Audited Strip call: color ownership is restored in a downstream branch/helper or the call is predicate/observation-only.",
+            ["Mods/QudJP/Assemblies/src/Patches/PopupTranslationPatch.cs:1428:TranslateCookingRecipeNameForInventoryActionMenu"] = "Audited Strip call: recipe-name colors are restored through CookbookDisplayNameTranslator after inventory action menu parsing.",
+            ["Mods/QudJP/Assemblies/src/Patches/PopupTranslationPatch.cs:1833:IsAlreadyLocalizedPopupText"] = "Audited Strip call: color ownership is restored in a downstream branch/helper or the call is predicate/observation-only.",
             ["Mods/QudJP/Assemblies/src/Patches/PopupTranslationPatch.cs:270:TranslatePopupTextForRoute"] = "Audited Strip call: color ownership is restored in a downstream branch/helper or the call is predicate/observation-only.",
             ["Mods/QudJP/Assemblies/src/Patches/PopupTranslationPatch.cs:386:TryTranslatePopupProducerText"] = "Audited Strip call: color ownership is restored in a downstream branch/helper or the call is predicate/observation-only.",
             ["Mods/QudJP/Assemblies/src/Patches/PowerEntryRequirementPopupTranslationPatch.cs:110:TryTranslatePrerequisitePopup"] = "Audited Strip call: color ownership is restored in a downstream branch/helper or the call is predicate/observation-only.",
@@ -230,7 +230,7 @@ public sealed class ColorTagAllowlistCoverageTests
             ["Mods/QudJP/Assemblies/src/Patches/StatusScreenMutationPopupTranslationPatch.cs:291:TryTranslateTail"] = "Audited Strip call: mutation popup tail colors are restored by RestoreWhole and RestoreCapture.",
             ["Mods/QudJP/Assemblies/src/Patches/StatusScreenMutationPopupTranslationPatch.cs:328:TryTranslateIncreasedRankLine"] = "Audited Strip call: mutation rank-up colors are restored by RestoreWhole and RestoreCapture.",
             ["Mods/QudJP/Assemblies/src/Patches/StatusScreenMutationPopupTranslationPatch.cs:417:TryTranslateRankBoostLine"] = "Audited Strip call: rank-boost line colors are restored by RestoreWhole; whole-line color wrappers are covered by L2 tests.",
-            ["Mods/QudJP/Assemblies/src/Patches/StatusScreenPopupTranslationPatch.cs:119:TryTranslatePopupMessage"] = "Audited Strip call: color ownership is restored in a downstream branch/helper or the call is predicate/observation-only.",
+            ["Mods/QudJP/Assemblies/src/Patches/StatusScreenPopupTranslationPatch.cs:127:TryTranslatePopupMessage"] = "Audited Strip call: color ownership is restored in a downstream branch/helper or the call is predicate/observation-only.",
             ["Mods/QudJP/Assemblies/src/Patches/SurvivalCampAttemptCampPopupTranslationPatch.cs:151:TryTranslateExistingCampfireHere"] = "Audited Strip call: campfire capture colors are restored through the local RestoreCapture helper.",
             ["Mods/QudJP/Assemblies/src/Patches/SurvivalCampAttemptCampPopupTranslationPatch.cs:168:TryTranslateExistingCampfireNavigation"] = "Audited Strip call: campfire capture colors are restored through the local RestoreCapture helper.",
             ["Mods/QudJP/Assemblies/src/Patches/SurvivalCampAttemptCampPopupTranslationPatch.cs:185:TryTranslateCampfireInPool"] = "Audited Strip call: liquid capture colors are restored through the local RestoreCapture helper.",
@@ -277,7 +277,7 @@ public sealed class ColorTagAllowlistCoverageTests
     private static readonly SortedDictionary<string, string> NameLikeRestoreCaptureWithoutGuardAllowlist =
         new(StringComparer.Ordinal)
         {
-            ["Mods/QudJP/Assemblies/src/Patches/ChargenStructuredTextTranslator.cs:423:TryTranslateCyberneticsSlot:name"] =
+            ["Mods/QudJP/Assemblies/src/Patches/ChargenStructuredTextTranslator.cs:438:TryTranslateCyberneticsSlot:name"] =
                 "Cybernetics slot names are exact static labels, not display-name owner captures.",
         };
 

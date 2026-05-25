@@ -1,6 +1,7 @@
 using System.Text;
 using HarmonyLib;
 using QudJP.Patches;
+using QudJP.Tests.DummyTargets;
 
 namespace QudJP.Tests.L2;
 
@@ -106,6 +107,31 @@ public sealed class PickTargetWindowUpdateTranslationPatchTests
                     nameof(PickTargetWindowUpdateTranslationPatch),
                     "PickTarget.CommandBar"),
                 Is.GreaterThan(0));
+        });
+    }
+
+    [Test]
+    public void Prefix_DoesNotCallSetTextAgain_WhenProducerRegeneratesSameEnglishCommandBar()
+    {
+        WriteDictionary(
+            ("Look", "見る"),
+            ("lock", "ロック"),
+            ("interact", "操作する"),
+            ("walk", "歩く"));
+        const string source = "Look | {{W|ESC}} | {{hotkey|({{hotkey|F1}})}} {{W|l}}ock | {{hotkey|space}} interact | {{hotkey|{{hotkey|W}}}} walk";
+        const string expected = "見る | {{W|ESC}} | {{hotkey|({{hotkey|F1}})}} {{W|ロ}}ック | {{hotkey|space}} 操作する | {{hotkey|{{hotkey|W}}}} 歩く";
+        DummyPickTargetWindow.currentText = source;
+
+        RunWithPickTargetWindowUpdatePatch(() => DummyPickTargetWindow.Update());
+        DummyPickTargetWindow.currentText = source;
+        RunWithPickTargetWindowUpdatePatch(() => DummyPickTargetWindow.Update());
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(DummyPickTargetWindow.currentText, Is.EqualTo(expected));
+            Assert.That(DummyPickTargetWindow.text.text, Is.EqualTo(expected));
+            Assert.That(DummyPickTargetWindow.text.SetTextCallCount, Is.EqualTo(1));
+            Assert.That(DummyPickTargetWindow.UpdateCallCount, Is.EqualTo(2));
         });
     }
 
@@ -316,16 +342,23 @@ public sealed class PickTargetWindowUpdateTranslationPatchTests
     {
         public static string currentText = string.Empty;
 
+        public static DummyUITextSkin text = new();
+
         public static int UpdateCallCount { get; private set; }
 
         public static void Update()
         {
             UpdateCallCount++;
+            if (text.text != currentText)
+            {
+                text.SetText(currentText);
+            }
         }
 
         public static void Reset()
         {
             currentText = string.Empty;
+            text = new DummyUITextSkin();
             UpdateCallCount = 0;
         }
     }

@@ -106,6 +106,8 @@ internal sealed class DummyCharacterMutation
 
     public int Level { get; set; } = 1;
 
+    public string Variant { get; set; } = string.Empty;
+
     public string GetDisplayName()
     {
         return DisplayName;

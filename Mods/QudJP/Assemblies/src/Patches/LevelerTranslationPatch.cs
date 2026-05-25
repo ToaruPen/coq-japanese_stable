@@ -24,6 +24,10 @@ public static class LevelerTranslationPatch
         "^You have no physical (?<term>.+?) to rapidly advance!$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex RapidAdvancementPickOptionPattern = new(
+        "^Choose (?<term>.+?) to rapidly advance\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     [ThreadStatic]
     private static int activeDepth;
 
@@ -144,6 +148,18 @@ public static class LevelerTranslationPatch
                 stripped.Length,
                 source);
             detail = "LevelerNoPhysicalMutations";
+            return true;
+        }
+
+        var pickOptionMatch = RapidAdvancementPickOptionPattern.Match(stripped);
+        if (pickOptionMatch.Success)
+        {
+            translated = RestoreWhole(
+                $"急速に成長させる{TranslateMutationTerm(pickOptionMatch.Groups["term"], spans)}を選んでください。",
+                spans,
+                stripped.Length,
+                source);
+            detail = "LevelerRapidAdvancementPickOption";
             return true;
         }
 
