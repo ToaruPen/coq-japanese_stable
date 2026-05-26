@@ -472,6 +472,23 @@ public sealed class UITextSkinTranslationPatchTests
     }
 
     [Test]
+    public void TranslatePreservingColors_TranslatesPickDirectionAbilityLabelAtTextSink()
+    {
+        WriteContextDictionaryFile(
+            "ui-pick-target.ja.json",
+            ("[Select a direction]", "PickTarget.DirectionPrompt", "[方向を選択]"));
+        WriteContextDictionaryFile(
+            "ui-skillsandpowers.ja.json",
+            ("Discharge", "AbilityBar.ButtonText", "放電"));
+
+        var translated = UITextSkinTranslationPatch.TranslatePreservingColors(
+            "Discharge | [Select a direction]",
+            nameof(UITextSkinTranslationPatch));
+
+        Assert.That(translated, Is.EqualTo("放電 | [方向を選択]"));
+    }
+
+    [Test]
     public void TranslatePreservingColors_TranslatesRuntimeObservedPickTargetCommandBarMarkup()
     {
         WriteDictionaryFile(

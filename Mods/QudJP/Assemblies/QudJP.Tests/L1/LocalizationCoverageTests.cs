@@ -1401,6 +1401,49 @@ public sealed class LocalizationCoverageTests
     }
 
     [Test]
+    public void SkillsAndPowersDictionary_ContainsKnownActivatedAbilityBarLeavesFromStaticAudit()
+    {
+        var entries = LoadEntries(Path.Combine(localizationRoot, "Dictionaries", "ui-skillsandpowers.ja.json"));
+        var expectedEntries = new[]
+        {
+            new DictionaryEntry("Activate Flume-Flier", "AbilityBar.ButtonText", "フルーム・フライヤーを起動"),
+            new DictionaryEntry("Activate Stopsvalinn", "AbilityBar.ButtonText", "Stopsvalinnを起動"),
+            new DictionaryEntry("Anchor Spikes", "AbilityBar.ButtonText", "アンカースパイク"),
+            new DictionaryEntry("Anomaly Fumigator", "AbilityBar.ButtonText", "アノマリー燻蒸器"),
+            new DictionaryEntry("Change Grip", "AbilityBar.ButtonText", "握りを変える"),
+            new DictionaryEntry("End Domination", "AbilityBar.ButtonText", "支配を終了"),
+            new DictionaryEntry("Exit pilot seat", "AbilityBar.ButtonText", "操縦席を降りる"),
+            new DictionaryEntry("Fire Suppression", "AbilityBar.ButtonText", "消火システム"),
+            new DictionaryEntry("Glitter Bomb", "AbilityBar.ButtonText", "グリッター爆弾"),
+            new DictionaryEntry("Medassist Module", "AbilityBar.ButtonText", "メッドアシスト・モジュール"),
+            new DictionaryEntry("Night Vision", "AbilityBar.ButtonText", "暗視"),
+            new DictionaryEntry("Penetrating Radar", "AbilityBar.ButtonText", "透過レーダー"),
+            new DictionaryEntry("Phase Harmonic Modulator", "AbilityBar.ButtonText", "位相調和モジュレーター"),
+            new DictionaryEntry("Phase-Adaptive Projectiles", "AbilityBar.ButtonText", "位相適応投射物"),
+            new DictionaryEntry("Puff Spores", "AbilityBar.ButtonText", "胞子を噴出"),
+            new DictionaryEntry("Pyrokinesis Field", "AbilityBar.ButtonText", "発火念力場"),
+            new DictionaryEntry("Set Target Temperature", "AbilityBar.ButtonText", "目標温度設定"),
+            new DictionaryEntry("Stasis Arena", "AbilityBar.ButtonText", "静止アリーナ"),
+            new DictionaryEntry("Stasis Entangler", "AbilityBar.ButtonText", "静止エンタングラー"),
+            new DictionaryEntry("Stop Burrowing", "AbilityBar.ButtonText", "穴掘りをやめる"),
+            new DictionaryEntry("Surface", "AbilityBar.ButtonText", "浮上"),
+            new DictionaryEntry("Swoop", "AbilityBar.ButtonText", "急降下"),
+            new DictionaryEntry("Wormhole", "AbilityBar.ButtonText", "ワームホール"),
+        };
+
+        Assert.Multiple(() =>
+        {
+            foreach (var expectedEntry in expectedEntries)
+            {
+                Assert.That(
+                    entries,
+                    Does.Contain(expectedEntry),
+                    $"Static Add*ActivatedAbility audit requires an AbilityBar.ButtonText leaf for {expectedEntry.Key}.");
+            }
+        });
+    }
+
+    [Test]
     public void KnownRuntimeNoisyDuplicateKeys_AreExplicitlyAudited()
     {
         var dictionariesRoot = Path.Combine(localizationRoot, "Dictionaries");

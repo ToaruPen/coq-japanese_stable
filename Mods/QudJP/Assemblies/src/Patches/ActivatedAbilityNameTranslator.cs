@@ -18,11 +18,17 @@ internal static class ActivatedAbilityNameTranslator
     private static readonly Regex DeactivatePattern =
         new Regex("^Deactivate (?<target>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex ActivatePattern =
+        new Regex("^Activate (?<target>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     private static readonly Regex DischargeChargePattern =
         new Regex("^Discharge \\[(?<count>\\d+) charge\\]$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     private static readonly Regex LaseChargesPattern =
         new Regex("^Lase \\((?<count>\\d+) charges\\)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex LayMineTargetPattern =
+        new Regex("^Lay Mine \\[(?<target>.+)\\]$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     private static readonly Regex TinkerTurretRemainingPattern =
         new Regex("^Tinker Turret\\s+\\[(?<count>\\d+) remaining\\]$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
@@ -118,6 +124,13 @@ internal static class ActivatedAbilityNameTranslator
             return true;
         }
 
+        var activateMatch = ActivatePattern.Match(source);
+        if (activateMatch.Success
+            && TryTranslateActivateName(activateMatch.Groups["target"].Value, out translated))
+        {
+            return true;
+        }
+
         var dischargeMatch = DischargeChargePattern.Match(source);
         if (dischargeMatch.Success
             && TryTranslateBaseAbilityName("Discharge", out var discharge))
@@ -131,6 +144,14 @@ internal static class ActivatedAbilityNameTranslator
             && TryTranslateBaseAbilityName("Lase", out var lase))
         {
             translated = lase + " (" + laseMatch.Groups["count"].Value + "チャージ)";
+            return true;
+        }
+
+        var layMineTargetMatch = LayMineTargetPattern.Match(source);
+        if (layMineTargetMatch.Success
+            && TryTranslateBaseAbilityName("Lay Mine", out var layMine))
+        {
+            translated = layMine + " [" + layMineTargetMatch.Groups["target"].Value + "]";
             return true;
         }
 
@@ -209,6 +230,21 @@ internal static class ActivatedAbilityNameTranslator
         }
 
         translated = translatedTarget + "を停止";
+        return true;
+    }
+
+    private static bool TryTranslateActivateName(string target, out string translated)
+    {
+        var translatedTarget = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            target,
+            nameof(ActivatedAbilityNameTranslator));
+        if (ContainsAsciiLetter(ColorAwareTranslationComposer.GetVisibleText(translatedTarget)))
+        {
+            translated = "Activate " + target;
+            return false;
+        }
+
+        translated = translatedTarget + "を起動";
         return true;
     }
 

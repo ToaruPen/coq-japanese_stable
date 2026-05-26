@@ -2687,6 +2687,121 @@
     {
       "key": "DV penalty and no jumping removed due to Hurdle skill.",
       "text": "障害物越えスキルにより、DVペナルティとジャンプ不可は取り除かれている。"
+    },
+    {
+      "key": "Activate Flume-Flier",
+      "context": "AbilityBar.ButtonText",
+      "text": "フルーム・フライヤーを起動"
+    },
+    {
+      "key": "Activate Stopsvalinn",
+      "context": "AbilityBar.ButtonText",
+      "text": "Stopsvalinnを起動"
+    },
+    {
+      "key": "Anchor Spikes",
+      "context": "AbilityBar.ButtonText",
+      "text": "アンカースパイク"
+    },
+    {
+      "key": "Anomaly Fumigator",
+      "context": "AbilityBar.ButtonText",
+      "text": "アノマリー燻蒸器"
+    },
+    {
+      "key": "Change Grip",
+      "context": "AbilityBar.ButtonText",
+      "text": "握りを変える"
+    },
+    {
+      "key": "End Domination",
+      "context": "AbilityBar.ButtonText",
+      "text": "支配を終了"
+    },
+    {
+      "key": "Exit pilot seat",
+      "context": "AbilityBar.ButtonText",
+      "text": "操縦席を降りる"
+    },
+    {
+      "key": "Fire Suppression",
+      "context": "AbilityBar.ButtonText",
+      "text": "消火システム"
+    },
+    {
+      "key": "Glitter Bomb",
+      "context": "AbilityBar.ButtonText",
+      "text": "グリッター爆弾"
+    },
+    {
+      "key": "Medassist Module",
+      "context": "AbilityBar.ButtonText",
+      "text": "メッドアシスト・モジュール"
+    },
+    {
+      "key": "Night Vision",
+      "context": "AbilityBar.ButtonText",
+      "text": "暗視"
+    },
+    {
+      "key": "Penetrating Radar",
+      "context": "AbilityBar.ButtonText",
+      "text": "透過レーダー"
+    },
+    {
+      "key": "Phase Harmonic Modulator",
+      "context": "AbilityBar.ButtonText",
+      "text": "位相調和モジュレーター"
+    },
+    {
+      "key": "Phase-Adaptive Projectiles",
+      "context": "AbilityBar.ButtonText",
+      "text": "位相適応投射物"
+    },
+    {
+      "key": "Puff Spores",
+      "context": "AbilityBar.ButtonText",
+      "text": "胞子を噴出"
+    },
+    {
+      "key": "Pyrokinesis Field",
+      "context": "AbilityBar.ButtonText",
+      "text": "発火念力場"
+    },
+    {
+      "key": "Set Target Temperature",
+      "context": "AbilityBar.ButtonText",
+      "text": "目標温度設定"
+    },
+    {
+      "key": "Stasis Arena",
+      "context": "AbilityBar.ButtonText",
+      "text": "静止アリーナ"
+    },
+    {
+      "key": "Stasis Entangler",
+      "context": "AbilityBar.ButtonText",
+      "text": "静止エンタングラー"
+    },
+    {
+      "key": "Stop Burrowing",
+      "context": "AbilityBar.ButtonText",
+      "text": "穴掘りをやめる"
+    },
+    {
+      "key": "Surface",
+      "context": "AbilityBar.ButtonText",
+      "text": "浮上"
+    },
+    {
+      "key": "Swoop",
+      "context": "AbilityBar.ButtonText",
+      "text": "急降下"
+    },
+    {
+      "key": "Wormhole",
+      "context": "AbilityBar.ButtonText",
+      "text": "ワームホール"
     }
   ]
 }

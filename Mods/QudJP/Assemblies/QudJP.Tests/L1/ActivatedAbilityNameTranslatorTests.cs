@@ -51,6 +51,48 @@ public sealed class ActivatedAbilityNameTranslatorTests
         });
     }
 
+    [Test]
+    public void TryTranslateVisibleName_TranslatesActivateAlreadyLocalizedTarget()
+    {
+        var translated = ActivatedAbilityNameTranslator.TryTranslateVisibleName(
+            "Activate ナインフォールドのブーツ",
+            out var result);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.True);
+            Assert.That(result, Is.EqualTo("ナインフォールドのブーツを起動"));
+        });
+    }
+
+    [Test]
+    public void TryTranslateVisibleName_ActivateFallsBackWhenTargetRemainsAscii()
+    {
+        var translated = ActivatedAbilityNameTranslator.TryTranslateVisibleName(
+            "Activate odd gizmo",
+            out var result);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.False);
+            Assert.That(result, Is.EqualTo("Activate odd gizmo"));
+        });
+    }
+
+    [Test]
+    public void TryTranslateVisibleName_TranslatesLayMineTargetPrefix()
+    {
+        var translated = ActivatedAbilityNameTranslator.TryTranslateVisibleName(
+            "Lay Mine [HE mine mk I]",
+            out var result);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.True);
+            Assert.That(result, Is.EqualTo("地雷設置 [HE mine mk I]"));
+        });
+    }
+
     [TestCase("")]
     [TestCase("Deactivate ")]
     [TestCase("Deactivate {{Y|odd gizmo}}")]

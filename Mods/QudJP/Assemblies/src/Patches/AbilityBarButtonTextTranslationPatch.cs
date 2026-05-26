@@ -24,6 +24,9 @@ public static class AbilityBarButtonTextTranslationPatch
     private static readonly Regex LaseChargesPattern = new Regex(
         "^Lase \\((?<count>\\d+) charges\\)$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex LayMineTargetPattern = new Regex(
+        "^Lay Mine \\[(?<target>.+)\\]$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex RecoilToZonePattern = new Regex(
         "^Recoil to (?<zone>.+)$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
@@ -267,6 +270,13 @@ public static class AbilityBarButtonTextTranslationPatch
         if (laseMatch.Success && TryTranslateAbilityBarBaseLeaf("Lase", out var lase))
         {
             translated = lase + " (" + laseMatch.Groups["count"].Value + "チャージ)";
+            return true;
+        }
+
+        var layMineTargetMatch = LayMineTargetPattern.Match(source);
+        if (layMineTargetMatch.Success && TryTranslateAbilityBarBaseLeaf("Lay Mine", out var layMine))
+        {
+            translated = layMine + " [" + layMineTargetMatch.Groups["target"].Value + "]";
             return true;
         }
 
