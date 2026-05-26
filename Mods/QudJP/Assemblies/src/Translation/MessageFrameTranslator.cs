@@ -761,6 +761,18 @@ internal static class MessageFrameTranslator
             case "FEET":
                 translated = "足";
                 return true;
+            case "FOREFOOT":
+            case "FOREFEET":
+                translated = "前足";
+                return true;
+            case "MIDFOOT":
+            case "MIDFEET":
+                translated = "中足";
+                return true;
+            case "HINDFOOT":
+            case "HINDFEET":
+                translated = "後足";
+                return true;
             case "MOUTH":
                 translated = "口";
                 return true;

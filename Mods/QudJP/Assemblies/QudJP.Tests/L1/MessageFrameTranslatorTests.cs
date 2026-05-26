@@ -1251,6 +1251,21 @@ public sealed class MessageFrameTranslatorTests
             Assert.That(flamingRayFromFeet, Is.EqualTo("変異体は足から火炎光線を放った！"));
 
             Assert.That(
+                MessageFrameTranslator.TryTranslateXDidY("変異体", "emit", "a flaming ray from its forefeet", "!", out var flamingRayFromForefeet),
+                Is.True);
+            Assert.That(flamingRayFromForefeet, Is.EqualTo("変異体は前足から火炎光線を放った！"));
+
+            Assert.That(
+                MessageFrameTranslator.TryTranslateXDidY("変異体", "emit", "a freezing ray from its hindfeet", "!", out var freezingRayFromHindfeet),
+                Is.True);
+            Assert.That(freezingRayFromHindfeet, Is.EqualTo("変異体は後足から凍結光線を放った！"));
+
+            Assert.That(
+                MessageFrameTranslator.TryTranslateXDidY("変異体", "emit", "a freezing ray from its midfeet", "!", out var freezingRayFromMidfeet),
+                Is.True);
+            Assert.That(freezingRayFromMidfeet, Is.EqualTo("変異体は中足から凍結光線を放った！"));
+
+            Assert.That(
                 MessageFrameTranslator.TryTranslateXDidY("変異体", "emit", "a vast freezing ray from its mouth", "!", out var vastFreezingRay),
                 Is.True);
             Assert.That(vastFreezingRay, Is.EqualTo("変異体は口から巨大な凍結光線を放った！"));
