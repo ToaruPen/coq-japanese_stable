@@ -77,6 +77,12 @@ public static class WingsDefaultEquipmentDescriptionTranslationPatch
             return "Back";
         }
 
-        return getPartParameter.Invoke(blueprint, new object[] { "Armor", "WornOn", "Back" }) as string ?? "Back";
+        var resolved = getPartParameter.Invoke(blueprint, new object[] { "Armor", "WornOn", "Back" }) as string;
+        if (resolved is null)
+        {
+            return "Back";
+        }
+
+        return resolved;
     }
 }

@@ -5495,6 +5495,30 @@ public sealed class CombatAndLogMessageQueuePatchTests
     }
 
     [Test]
+    public void EffectGeneratedFireEvent_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched()
+    {
+        AssertEffectGeneratedFireEventQueuedMessage(
+            MessageFrameTranslator.MarkDirectTranslation("The snapjaw is stunned!"),
+            "The snapjaw is stunned!");
+    }
+
+    [Test]
+    public void EffectGeneratedBeginTakeAction_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched()
+    {
+        AssertEffectGeneratedBeginTakeActionQueuedMessage(
+            MessageFrameTranslator.MarkDirectTranslation("The snapjaw remains stunned!"),
+            "The snapjaw remains stunned!");
+    }
+
+    [Test]
+    public void EffectGeneratedInventoryAction_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched()
+    {
+        AssertEffectGeneratedInventoryActionQueuedMessage(
+            MessageFrameTranslator.MarkDirectTranslation("you dismiss snapjaw from your service."),
+            "you dismiss snapjaw from your service.");
+    }
+
+    [Test]
     public void EffectGeneratedHandleEvent_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched()
     {
         AssertEffectGeneratedHandleEventQueuedMessage(string.Empty, string.Empty);
@@ -5504,6 +5528,24 @@ public sealed class CombatAndLogMessageQueuePatchTests
     public void EffectGeneratedApply_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched()
     {
         AssertEffectGeneratedApplyQueuedMessage(string.Empty, string.Empty);
+    }
+
+    [Test]
+    public void EffectGeneratedFireEvent_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched()
+    {
+        AssertEffectGeneratedFireEventQueuedMessage(string.Empty, string.Empty);
+    }
+
+    [Test]
+    public void EffectGeneratedBeginTakeAction_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched()
+    {
+        AssertEffectGeneratedBeginTakeActionQueuedMessage(string.Empty, string.Empty);
+    }
+
+    [Test]
+    public void EffectGeneratedInventoryAction_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched()
+    {
+        AssertEffectGeneratedInventoryActionQueuedMessage(string.Empty, string.Empty);
     }
 
     [TestCase(

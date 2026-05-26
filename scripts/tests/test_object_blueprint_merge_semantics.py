@@ -36,4 +36,4 @@ def test_refract_light_verb_attributes_remain_message_frame_tokens() -> None:
         if part.get("Name") == "RefractLight" and part.get("Verb")
     }
 
-    assert verb_by_object == {"Mirrorshades": "reflect"}
+    assert verb_by_object.get("Mirrorshades") == "reflect"

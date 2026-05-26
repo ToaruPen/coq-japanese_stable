@@ -156,6 +156,41 @@ public sealed class MutationActivatedAbilityNameTranslationPatchTests
         });
     }
 
+    [TestCase("")]
+    [TestCase("\u0001Boost Strength")]
+    public void Mutate_PreservesEmptyAndDirectMarkedActivationNames_WhenPatched(string source)
+    {
+        WithPatchedOwner(() =>
+        {
+            var mutation = new DummyMutationAbilityProvider(source);
+
+            mutation.Mutate(new object(), 1);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(mutation.StrengthEntry.DisplayName, Is.EqualTo(source));
+                Assert.That(HitCount(), Is.Zero);
+            });
+        });
+    }
+
+    [Test]
+    public void Mutate_TranslatesColorTaggedActivationName_WhenPatched()
+    {
+        WithPatchedOwner(() =>
+        {
+            var mutation = new DummyMutationAbilityProvider("{{C|Boost Strength}}");
+
+            mutation.Mutate(new object(), 1);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(mutation.StrengthEntry.DisplayName, Is.EqualTo("{{C|筋力強化}}"));
+                Assert.That(HitCount(), Is.EqualTo(1));
+            });
+        });
+    }
+
     private static void WithPatchedOwner(Action action)
     {
         var harmonyId = "qudjp.tests.mutation-activated-ability-name." + Guid.NewGuid().ToString("N");

@@ -49,9 +49,18 @@ public static class DecoyHologramDescriptionTranslationPatch
     {
         if (descriptionPart is null
             || !TryGetStringMemberValue(descriptionPart, "Short", out var current)
-            || string.IsNullOrEmpty(current)
-            || current!.StartsWith("\u0001", StringComparison.Ordinal)
-            || !current.StartsWith(SourcePrefix, StringComparison.Ordinal))
+            || string.IsNullOrEmpty(current))
+        {
+            return;
+        }
+
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(current!, out var markedText))
+        {
+            TrySetStringMemberValue(descriptionPart, "Short", markedText);
+            current = markedText;
+        }
+
+        if (!current!.StartsWith(SourcePrefix, StringComparison.Ordinal))
         {
             return;
         }

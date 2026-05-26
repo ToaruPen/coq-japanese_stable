@@ -72,7 +72,7 @@ public sealed class CyberneticsDescriptionAssignmentTranslationPatchTests
         Assert.Multiple(() =>
         {
             Assert.That(part.Name, Is.EqualTo("unknown body"));
-            Assert.That(part.Description, Is.EqualTo("\u0001Lower Body"));
+            Assert.That(part.Description, Is.EqualTo("Lower Body"));
         });
     }
 
@@ -107,7 +107,7 @@ public sealed class CyberneticsDescriptionAssignmentTranslationPatchTests
     }
 
     [Test]
-    public void TranslateStasisArenaDescription_PreservesUnknownAndMarkerPrefixedValues()
+    public void TranslateStasisArenaDescription_PreservesUnknownAndStripsMarkerPrefixedValues()
     {
         var unknown = new DummyCyberneticsDescriptionEvent { Description = "Unknown cybernetics behavior." };
         var marker = new DummyCyberneticsDescriptionEvent { Description = "\u0001Activated. Cooldown 25." };
@@ -118,7 +118,7 @@ public sealed class CyberneticsDescriptionAssignmentTranslationPatchTests
         Assert.Multiple(() =>
         {
             Assert.That(unknown.Description, Is.EqualTo("Unknown cybernetics behavior."));
-            Assert.That(marker.Description, Is.EqualTo("\u0001Activated. Cooldown 25."));
+            Assert.That(marker.Description, Is.EqualTo("Activated. Cooldown 25."));
         });
     }
 
@@ -153,7 +153,7 @@ public sealed class CyberneticsDescriptionAssignmentTranslationPatchTests
     }
 
     [Test]
-    public void TranslateOpticalMultiscannerEvent_PreservesUnknownAndMarkerPrefixedValues()
+    public void TranslateOpticalMultiscannerEvent_PreservesUnknownAndStripsMarkerPrefixedValues()
     {
         var unknown = new DummyCyberneticsDescriptionEvent
         {
@@ -173,8 +173,8 @@ public sealed class CyberneticsDescriptionAssignmentTranslationPatchTests
         {
             Assert.That(unknown.Description, Is.EqualTo("Unknown cybernetics behavior."));
             Assert.That(unknown.ToAdd, Is.EqualTo(new[] { "Unknown Sifrah behavior." }));
-            Assert.That(marker.Description, Does.StartWith("\u0001You gain access"));
-            Assert.That(marker.ToAdd, Is.EqualTo(new[] { "\u0001Adds a bonus turn, and is otherwise useful, in most tinkering Sifrah games, and is useful in many social Sifrah games." }));
+            Assert.That(marker.Description, Does.StartWith("You gain access"));
+            Assert.That(marker.ToAdd, Is.EqualTo(new[] { "Adds a bonus turn, and is otherwise useful, in most tinkering Sifrah games, and is useful in many social Sifrah games." }));
         });
     }
 
@@ -252,7 +252,7 @@ public sealed class CyberneticsDescriptionAssignmentTranslationPatchTests
     }
 
     [Test]
-    public void TranslateAdditionalCyberneticsEvents_PreserveUnknownAndMarkerPrefixedValues()
+    public void TranslateAdditionalCyberneticsEvents_PreserveUnknownAndStripMarkerPrefixedValues()
     {
         var singleSkillsoftMarker = new DummyCyberneticsDescriptionEvent
         {
@@ -278,10 +278,10 @@ public sealed class CyberneticsDescriptionAssignmentTranslationPatchTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(singleSkillsoftMarker.Description, Is.EqualTo("\u0001You gain the skill Tinkering."));
-            Assert.That(singleSkillsoftMarker.ToAdd, Is.EqualTo(new[] { "\u0001You gain the skill Proselytize." }));
-            Assert.That(treeSkillsoftMarker.Description, Is.EqualTo("\u0001You gain access to the Tactics skill tree."));
-            Assert.That(treeSkillsoftMarker.ToAdd, Is.EqualTo(new[] { "\u0001You gain access to the Cudgel skill tree." }));
+            Assert.That(singleSkillsoftMarker.Description, Is.EqualTo("You gain the skill Tinkering."));
+            Assert.That(singleSkillsoftMarker.ToAdd, Is.EqualTo(new[] { "You gain the skill Proselytize." }));
+            Assert.That(treeSkillsoftMarker.Description, Is.EqualTo("You gain access to the Tactics skill tree."));
+            Assert.That(treeSkillsoftMarker.ToAdd, Is.EqualTo(new[] { "You gain access to the Cudgel skill tree." }));
             Assert.That(socialUnknown.Description, Is.EqualTo("Unknown social coprocessor behavior."));
             Assert.That(techUnknown.Description, Is.EqualTo("Unknown tech indexer behavior."));
             Assert.That(techUnknown.ToAdd, Is.EqualTo(new[] { "Unknown Sifrah behavior." }));

@@ -432,9 +432,14 @@ public static class WaterRitualPopupTranslationPatch
             return true;
         }
 
-        if (source == "You can't be mutated.")
+        var (strippedSource, spansSource) = ColorAwareTranslationComposer.Strip(source);
+        if (string.Equals(strippedSource, "You can't be mutated.", StringComparison.Ordinal))
         {
-            translated = "変異できない。";
+            translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+                "変異できない。",
+                spansSource,
+                strippedSource.Length,
+                source);
             detail = "RandomMutationNonMutant";
             return true;
         }

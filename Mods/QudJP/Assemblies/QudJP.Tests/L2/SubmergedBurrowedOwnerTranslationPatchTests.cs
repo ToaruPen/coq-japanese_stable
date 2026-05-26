@@ -205,7 +205,12 @@ public sealed class SubmergedBurrowedOwnerTranslationPatchTests
 
             target.BurrowedApply();
 
-            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(source));
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(source));
+                Assert.That(HitCount("Queue", "Burrowed.BurrowIntoGround"), Is.Zero);
+                Assert.That(HitCount("Queue", "Burrowed.EmergeFromGround"), Is.Zero);
+            });
         });
     }
 

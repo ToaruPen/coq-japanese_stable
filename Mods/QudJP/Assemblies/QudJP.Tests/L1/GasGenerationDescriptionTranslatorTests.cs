@@ -58,6 +58,15 @@ public sealed class GasGenerationDescriptionTranslatorTests
         Assert.That(translated, Is.EqualTo("You breathe a cone of gas."));
     }
 
+    [TestCase("")]
+    [TestCase("\u0001You release a burst of {{G|corrosive gas}} around yourself.")]
+    public void TryTranslateDescription_PreservesEmptyAndDirectMarkedInput(string source)
+    {
+        var translated = GasGenerationDescriptionTranslationPatch.TranslateDescriptionForTests(source);
+
+        Assert.That(translated, Is.EqualTo(source));
+    }
+
     private static string GetRepositoryDictionaryDirectory()
     {
         return Path.GetFullPath(

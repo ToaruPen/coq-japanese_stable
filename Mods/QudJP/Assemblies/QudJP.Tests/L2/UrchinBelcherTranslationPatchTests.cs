@@ -32,7 +32,7 @@ public sealed class UrchinBelcherTranslationPatchTests
     }
 
     [Test]
-    public void Postfix_PreservesUnknownAndEmptyValues()
+    public void Postfix_PreservesUnknownAndEmptyValuesAndStripsMarkers()
     {
         var target = new DummyUrchinBelcher
         {
@@ -47,7 +47,7 @@ public sealed class UrchinBelcherTranslationPatchTests
         {
             Assert.That(target.Description, Is.EqualTo("Unknown belcher description."));
             Assert.That(target.CommandName, Is.EqualTo(string.Empty));
-            Assert.That(target.CommandDescription, Is.EqualTo("\u0001You belch forth various urchins."));
+            Assert.That(target.CommandDescription, Is.EqualTo("さまざまなウニを吐き出す。"));
         });
     }
 

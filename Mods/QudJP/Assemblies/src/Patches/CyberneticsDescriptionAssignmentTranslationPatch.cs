@@ -141,7 +141,11 @@ public static class CyberneticsDescriptionAssignmentTranslationPatch
     {
         try
         {
-            var declaringType = __originalMethod.DeclaringType?.FullName ?? string.Empty;
+            var declaringType = __originalMethod.DeclaringType?.FullName;
+            if (declaringType is null)
+            {
+                declaringType = string.Empty;
+            }
             if (string.Equals(declaringType, "XRL.World.Parts.CyberneticsMotorizedTreads", StringComparison.Ordinal)
                 && TryGetMemberValue(E, "Part", out var part)
                 && part is not null)
@@ -208,9 +212,14 @@ public static class CyberneticsDescriptionAssignmentTranslationPatch
     {
         if (eventInstance is null
             || !TryGetStringMemberValue(eventInstance, "Description", out var current)
-            || string.IsNullOrEmpty(current)
-            || current!.StartsWith("\u0001", StringComparison.Ordinal))
+            || string.IsNullOrEmpty(current))
         {
+            return;
+        }
+
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(current!, out var markedText))
+        {
+            TrySetStringMemberValue(eventInstance, "Description", markedText);
             return;
         }
 
@@ -247,9 +256,18 @@ public static class CyberneticsDescriptionAssignmentTranslationPatch
         for (var index = 0; index < additions.Count; index++)
         {
             var current = additions[index];
-            if (string.IsNullOrEmpty(current)
-                || current.StartsWith("\u0001", StringComparison.Ordinal)
-                || !string.Equals(current, OpticalMultiscannerSifrahRule, StringComparison.Ordinal))
+            if (string.IsNullOrEmpty(current))
+            {
+                continue;
+            }
+
+            if (MessageFrameTranslator.TryStripDirectTranslationMarker(current, out var markedText))
+            {
+                additions[index] = markedText;
+                continue;
+            }
+
+            if (!string.Equals(current, OpticalMultiscannerSifrahRule, StringComparison.Ordinal))
             {
                 continue;
             }
@@ -389,9 +407,14 @@ public static class CyberneticsDescriptionAssignmentTranslationPatch
         for (var index = 0; index < additions.Count; index++)
         {
             var current = additions[index];
-            if (string.IsNullOrEmpty(current)
-                || current.StartsWith("\u0001", StringComparison.Ordinal))
+            if (string.IsNullOrEmpty(current))
             {
+                continue;
+            }
+
+            if (MessageFrameTranslator.TryStripDirectTranslationMarker(current, out var markedText))
+            {
+                additions[index] = markedText;
                 continue;
             }
 
@@ -409,9 +432,14 @@ public static class CyberneticsDescriptionAssignmentTranslationPatch
     private static void TranslateStringMember(object target, string memberName, string family, Func<string, string> translate)
     {
         if (!TryGetStringMemberValue(target, memberName, out var current)
-            || string.IsNullOrEmpty(current)
-            || current!.StartsWith("\u0001", StringComparison.Ordinal))
+            || string.IsNullOrEmpty(current))
         {
+            return;
+        }
+
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(current!, out var markedText))
+        {
+            TrySetStringMemberValue(target, memberName, markedText);
             return;
         }
 

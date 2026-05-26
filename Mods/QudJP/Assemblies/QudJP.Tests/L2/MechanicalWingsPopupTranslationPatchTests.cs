@@ -107,6 +107,22 @@ public sealed class MechanicalWingsPopupTranslationPatchTests
     }
 
     [Test]
+    public void Patch_PreservesWholeSourceWrapperForLongFallWarning_WhenFireEventOwnerPatched()
+    {
+        RunWithOwnerAndPopupPatches([nameof(DummyMechanicalWingsProducer.FireEvent)], () =>
+        {
+            var target = new DummyMechanicalWingsProducer
+            {
+                PopupMessageToShow = "{{R|" + LongFallSource + "}}",
+            };
+
+            target.FireEvent();
+
+            Assert.That(DummyPopupShow.LastShowYesNoMessage, Is.EqualTo("{{R|" + LongFallTranslated + "}}"));
+        });
+    }
+
+    [Test]
     public void Patch_StripsDirectMarkedPopup_WhenOwnerPatched()
     {
         var source = MessageFrameTranslator.MarkDirectTranslation(StartupSource);

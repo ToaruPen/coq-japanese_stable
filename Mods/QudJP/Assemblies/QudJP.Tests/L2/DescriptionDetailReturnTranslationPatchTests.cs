@@ -179,6 +179,25 @@ public sealed class DescriptionDetailReturnTranslationPatchTests
             });
     }
 
+    [Test]
+    public void Postfix_StripsDirectMarkedReturnValue_WithoutRetranslating_WhenPatched()
+    {
+        WithPatchedOwner(
+            nameof(DummyDescriptionDetailReturnTarget.CyberneticsChoiceGetDescription),
+            () =>
+            {
+                var target = new DummyDescriptionDetailReturnTarget("\u0001made-up cyberware (Arm)");
+
+                var translated = target.CyberneticsChoiceGetDescription();
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(translated, Is.EqualTo("made-up cyberware (Arm)"));
+                    Assert.That(HitCount("CyberneticsChoiceDescription"), Is.Zero);
+                });
+            });
+    }
+
     private static void WithPatchedOwner(string ownerMethodName, Action action)
     {
         var harmonyId = "qudjp.tests.description-detail-return." + Guid.NewGuid().ToString("N");

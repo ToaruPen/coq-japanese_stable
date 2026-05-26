@@ -19,7 +19,7 @@ public sealed class DescriptionAssignmentOwnerTranslationPatchTests
     }
 
     [Test]
-    public void TranslateBiocapacitor_PreservesUnknownAndMarkerPrefixedDescription()
+    public void TranslateBiocapacitor_PreservesUnknownAndStripsMarkerPrefixedDescription()
     {
         var unknown = new DummyDescriptionTarget { Description = "capacitor" };
         var marker = new DummyDescriptionTarget { Description = "\u0001biocapacitor" };
@@ -30,7 +30,7 @@ public sealed class DescriptionAssignmentOwnerTranslationPatchTests
         Assert.Multiple(() =>
         {
             Assert.That(unknown.Description, Is.EqualTo("capacitor"));
-            Assert.That(marker.Description, Is.EqualTo("\u0001biocapacitor"));
+            Assert.That(marker.Description, Is.EqualTo("biocapacitor"));
         });
     }
 
@@ -75,7 +75,7 @@ public sealed class DescriptionAssignmentOwnerTranslationPatchTests
 
         DescriptionAssignmentOwnerTranslationPatch.TranslateMovementCapabilityDescriptionsForTests(target);
 
-        Assert.That(target.Descriptions, Is.EqualTo(new[] { "Charge [disabled]", "\u0001Sprint [toggled off]" }));
+        Assert.That(target.Descriptions, Is.EqualTo(new[] { "Charge [disabled]", "Sprint [toggled off]" }));
     }
 
     [TestCase(
@@ -94,7 +94,7 @@ public sealed class DescriptionAssignmentOwnerTranslationPatchTests
     }
 
     [Test]
-    public void TranslateCamouflageDescription_PreservesUnknownAndMarkerPrefixedDescription()
+    public void TranslateCamouflageDescription_PreservesUnknownAndStripsMarkerPrefixedDescription()
     {
         var unknown = new DummyDescriptionTarget { Description = "Camouflage: unchanged." };
         var marker = new DummyDescriptionTarget { Description = "\u0001Urban camouflage: This item grants the wearer +=level= DV near trash and furniture." };
@@ -105,7 +105,7 @@ public sealed class DescriptionAssignmentOwnerTranslationPatchTests
         Assert.Multiple(() =>
         {
             Assert.That(unknown.Description, Is.EqualTo("Camouflage: unchanged."));
-            Assert.That(marker.Description, Is.EqualTo("\u0001Urban camouflage: This item grants the wearer +=level= DV near trash and furniture."));
+            Assert.That(marker.Description, Is.EqualTo("Urban camouflage: This item grants the wearer +=level= DV near trash and furniture."));
         });
     }
 
@@ -169,7 +169,7 @@ public sealed class DescriptionAssignmentOwnerTranslationPatchTests
     }
 
     [Test]
-    public void TranslateRemainingDescriptionAssignments_PreserveUnknownAndMarkerPrefixedValues()
+    public void TranslateRemainingDescriptionAssignments_PreserveUnknownAndStripMarkerPrefixedValues()
     {
         var wingsUnknown = new DummyDescriptionTarget { Description = "Worn around Tail" };
         var wingsMarker = new DummyDescriptionTarget { Description = "\u0001Worn around Wings" };
@@ -186,8 +186,8 @@ public sealed class DescriptionAssignmentOwnerTranslationPatchTests
         Assert.Multiple(() =>
         {
             Assert.That(wingsUnknown.Description, Is.EqualTo("Worn around Tail"));
-            Assert.That(wingsMarker.Description, Is.EqualTo("\u0001Worn around Wings"));
-            Assert.That(banner.Description, Does.StartWith("\u0001Bestows"));
+            Assert.That(wingsMarker.Description, Is.EqualTo("Worn around Wings"));
+            Assert.That(banner.Description, Does.StartWith("Bestows"));
             Assert.That(evt.Postfix.ToString(), Is.EqualTo("Unknown banner rule."));
         });
     }

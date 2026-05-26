@@ -72,7 +72,10 @@ public static class SubmergedBurrowedOwnerTranslationPatch
     {
         try
         {
-            ownerStack ??= new Stack<string?>();
+            if (ownerStack is null)
+            {
+                ownerStack = new Stack<string?>();
+            }
             ownerStack.Push(activeOwner);
             activeOwner = ResolveOwner(__originalMethod);
             OwnerTranslationScope.Enter(ref activeDepth);

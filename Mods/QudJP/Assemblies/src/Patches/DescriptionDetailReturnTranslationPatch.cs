@@ -50,19 +50,20 @@ public static class DescriptionDetailReturnTranslationPatch
         if (tinkerDataType is null)
         {
             Trace.TraceError("QudJP: {0} failed to resolve TinkerData.", Context);
-            yield break;
         }
-
-        foreach (var propertyName in new[] { "UnclippedDescription", "Description" })
+        else
         {
-            var method = AccessTools.PropertyGetter(tinkerDataType, propertyName);
-            if (method is not null)
+            foreach (var propertyName in new[] { "UnclippedDescription", "Description" })
             {
-                yield return method;
-            }
-            else
-            {
-                Trace.TraceError("QudJP: {0} failed to resolve TinkerData.{1} getter.", Context, propertyName);
+                var method = AccessTools.PropertyGetter(tinkerDataType, propertyName);
+                if (method is not null)
+                {
+                    yield return method;
+                }
+                else
+                {
+                    Trace.TraceError("QudJP: {0} failed to resolve TinkerData.{1} getter.", Context, propertyName);
+                }
             }
         }
 
@@ -107,7 +108,11 @@ public static class DescriptionDetailReturnTranslationPatch
                 return;
             }
 
-            DynamicTextObservability.RecordTransform(Context, Family + "." + detail, __result, translated);
+            if (detail.Length > 0)
+            {
+                DynamicTextObservability.RecordTransform(Context, Family + "." + detail, __result, translated);
+            }
+
             __result = translated;
         }
         catch (Exception ex)
@@ -201,9 +206,23 @@ internal static class DescriptionDetailReturnTranslator
         out string translated,
         out string detail)
     {
-        if (string.IsNullOrEmpty(source) || source[0] == '\u0001' || kind == DescriptionDetailReturnKind.Unknown)
+        if (string.IsNullOrEmpty(source))
         {
             translated = source ?? string.Empty;
+            detail = string.Empty;
+            return false;
+        }
+
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
+        {
+            translated = markedText;
+            detail = string.Empty;
+            return true;
+        }
+
+        if (kind == DescriptionDetailReturnKind.Unknown)
+        {
+            translated = source;
             detail = string.Empty;
             return false;
         }

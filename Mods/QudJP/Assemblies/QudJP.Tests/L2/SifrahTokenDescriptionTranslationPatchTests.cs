@@ -79,6 +79,23 @@ public sealed class SifrahTokenDescriptionTranslationPatchTests
         });
     }
 
+    [Test]
+    public void OwnerPatch_StripsDirectMarkedDescriptionWithoutRetranslating_WhenPatched()
+    {
+        WithPatchedOwner(nameof(DummySifrahTokenDescriptionTarget.BuildLiquid), () =>
+        {
+            var target = new DummySifrahTokenDescriptionTarget("\u0001use liquid");
+
+            target.BuildLiquid();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(target.Description, Is.EqualTo("use liquid"));
+                Assert.That(HitCount("UseNamedLiquid"), Is.Zero);
+            });
+        });
+    }
+
     private static void WithPatchedOwner(string ownerMethodName, Action action)
     {
         var harmonyId = "qudjp.tests.sifrah-token-description." + Guid.NewGuid().ToString("N");

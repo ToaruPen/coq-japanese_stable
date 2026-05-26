@@ -1738,7 +1738,7 @@ public sealed class MessageFrameTranslatorTests
             Assert.That(
                 MessageFrameTranslator.TryTranslateXDidY("岩", "are", "knocked north", ".", out var knocked),
                 Is.True);
-            Assert.That(knocked, Is.EqualTo("岩は北に吹き飛ばされた。"));
+            Assert.That(knocked, Is.EqualTo("岩は北側に吹き飛ばされた。"));
 
             Assert.That(
                 MessageFrameTranslator.TryTranslateXDidYToZ(

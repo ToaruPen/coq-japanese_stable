@@ -2,10 +2,10 @@ using System.Text;
 using QudJP.Patches;
 using QudJP.Tests.DummyTargets;
 
-namespace QudJP.Tests.L2;
+namespace QudJP.Tests.L1;
 
 [TestFixture]
-[Category("L2")]
+[Category("L1")]
 [NonParallelizable]
 public sealed class CharGenMenuOptionOwnerTranslationPatchTests
 {

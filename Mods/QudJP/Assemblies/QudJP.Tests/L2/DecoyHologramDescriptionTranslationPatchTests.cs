@@ -1,9 +1,9 @@
 using QudJP.Patches;
 
-namespace QudJP.Tests.L2;
+namespace QudJP.Tests.L1;
 
 [TestFixture]
-[Category("L2")]
+[Category("L1")]
 public sealed class DecoyHologramDescriptionTranslationPatchTests
 {
     [Test]
@@ -20,7 +20,7 @@ public sealed class DecoyHologramDescriptionTranslationPatchTests
     }
 
     [Test]
-    public void TranslateHologramDescription_PreservesUnknownAndMarkerPrefixedValues()
+    public void TranslateHologramDescription_PreservesUnknownAndStripsMarkerPrefixedValues()
     {
         var unknown = new DummyDescriptionPart { Short = "A chrome chair hums quietly." };
         var marker = new DummyDescriptionPart
@@ -34,7 +34,8 @@ public sealed class DecoyHologramDescriptionTranslationPatchTests
         Assert.Multiple(() =>
         {
             Assert.That(unknown.Short, Is.EqualTo("A chrome chair hums quietly."));
-            Assert.That(marker.Short, Does.StartWith("\u0001Light stammers"));
+            Assert.That(marker.Short, Is.EqualTo("光が視差の中で明滅し、物体の像を形作っている。 A chrome chair hums quietly."));
+            Assert.That(marker.Short![0], Is.Not.EqualTo('\u0001'));
         });
     }
 

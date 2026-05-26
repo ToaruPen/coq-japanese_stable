@@ -57,10 +57,15 @@ public static class UrchinBelcherTranslationPatch
     private static void TranslateStringMember(object instance, string memberName, string detail)
     {
         if (!TryGetStringMemberValue(instance, memberName, out var current)
-            || string.IsNullOrEmpty(current)
-            || current!.StartsWith("\u0001", StringComparison.Ordinal))
+            || string.IsNullOrEmpty(current))
         {
             return;
+        }
+
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(current!, out var markedText))
+        {
+            TrySetStringMemberValue(instance, memberName, markedText);
+            current = markedText;
         }
 
         var translated = TranslateText(current!);

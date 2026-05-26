@@ -72,7 +72,11 @@ public static class CharGenDirectUiTranslationPatch
     {
         try
         {
-            var declaringTypeName = __originalMethod.DeclaringType?.FullName ?? string.Empty;
+            var declaringTypeName = __originalMethod.DeclaringType?.FullName;
+            if (declaringTypeName is null)
+            {
+                declaringTypeName = string.Empty;
+            }
             if (string.Equals(declaringTypeName, "XRL.CharacterBuilds.Qud.UI.AttributeSelectionControl", StringComparison.Ordinal)
                 && string.Equals(__originalMethod.Name, "Updated", StringComparison.Ordinal))
             {
@@ -296,7 +300,13 @@ public static class CharGenDirectUiTranslationPatch
         var formatMethod = sidebarType is null
             ? null
             : AccessTools.Method(sidebarType, "FormatToRTF", new[] { typeof(string) });
-        return formatMethod?.Invoke(null, new object[] { source }) as string ?? source;
+        var formatted = formatMethod?.Invoke(null, new object[] { source }) as string;
+        if (formatted is null)
+        {
+            return source;
+        }
+
+        return formatted;
     }
 
     private static void InvokeSetText(object target, string value)

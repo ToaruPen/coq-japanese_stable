@@ -161,8 +161,7 @@ public sealed class DescriptionDetailReturnTranslatorTests
 
     [TestCase("")]
     [TestCase("unknown phrase")]
-    [TestCase("\u0001optical bioscanner (Face)")]
-    public void TryTranslate_LeavesUnsupportedAndMarkedValuesUnchanged(string source)
+    public void TryTranslate_LeavesUnsupportedValuesUnchanged(string source)
     {
         WriteDictionary(("optical bioscanner", "光学バイオスキャナ"));
 
@@ -176,6 +175,25 @@ public sealed class DescriptionDetailReturnTranslatorTests
         {
             Assert.That(translated, Is.False);
             Assert.That(result, Is.EqualTo(source));
+            Assert.That(detail, Is.Empty);
+        });
+    }
+
+    [Test]
+    public void TryTranslate_StripsMarkedValuesWithoutRetranslating()
+    {
+        WriteDictionary(("optical bioscanner", "光学バイオスキャナ"));
+
+        var translated = DescriptionDetailReturnTranslator.TryTranslate(
+            "\u0001optical bioscanner (Face)",
+            DescriptionDetailReturnKind.CyberneticsChoiceDescription,
+            out var result,
+            out var detail);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.True);
+            Assert.That(result, Is.EqualTo("optical bioscanner (Face)"));
             Assert.That(detail, Is.Empty);
         });
     }

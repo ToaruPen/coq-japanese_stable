@@ -17,6 +17,8 @@ internal static class MessageFrameTranslator
         new Regex(@"\{(?<index>\d+)\}", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex TranslatedPlaceholderPattern =
         new Regex(@"\{t(?<index>\d+)\}", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex AdverbPlaceholderPattern =
+        new Regex(@"\{a(?<index>\d+)\}", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     private static LoadedVerbDictionary? loadedDictionary;
     private static string? dictionaryPathOverride;
@@ -489,7 +491,7 @@ internal static class MessageFrameTranslator
     {
         var value = capture.Value;
         var indexText = value.Remove(startIndex: value.Length - 1, count: 1).Remove(startIndex: 0, count: 1);
-        if (indexText.Length > 0 && indexText[0] == 't')
+        if (indexText.Length > 0 && (indexText[0] == 't' || indexText[0] == 'a'))
         {
             indexText = indexText.Substring(1);
         }
@@ -501,8 +503,18 @@ internal static class MessageFrameTranslator
 
     private static string ApplyPlaceholderValues(string template, IReadOnlyDictionary<int, string> values)
     {
-        var translated = TranslatedPlaceholderPattern.Replace(
+        var translated = AdverbPlaceholderPattern.Replace(
             template,
+            match =>
+            {
+                var index = ParsePlaceholderIndex(match);
+                return values.TryGetValue(index, out var value)
+                    ? TranslateAdverbPlaceholderValue(value)
+                    : match.Value;
+            });
+
+        translated = TranslatedPlaceholderPattern.Replace(
+            translated,
             match =>
             {
                 var index = ParsePlaceholderIndex(match);
@@ -520,6 +532,20 @@ internal static class MessageFrameTranslator
                     ? value
                     : match.Value;
             });
+    }
+
+    private static string TranslateAdverbPlaceholderValue(string value)
+    {
+        var trimmed = NormalizeFragment(value);
+        if (trimmed is null)
+        {
+            Trace.TraceWarning("QudJP: TranslateAdverbPlaceholderValue received empty placeholder value.");
+            return string.Empty;
+        }
+
+        return DirectionPhraseTranslator.TryTranslateAdverbPhrase(trimmed, out var direction)
+            ? direction
+            : TranslatePlaceholderValue(trimmed);
     }
 
     private static string BuildSentence(string? subject, string predicate, string? endMark)

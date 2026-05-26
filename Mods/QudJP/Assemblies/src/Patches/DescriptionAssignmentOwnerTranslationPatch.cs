@@ -101,7 +101,11 @@ public static class DescriptionAssignmentOwnerTranslationPatch
     {
         try
         {
-            var declaringType = __originalMethod.DeclaringType?.FullName ?? string.Empty;
+            var declaringType = __originalMethod.DeclaringType?.FullName;
+            if (declaringType is null)
+            {
+                declaringType = string.Empty;
+            }
             if (string.Equals(declaringType, "XRL.World.Parts.Biocapacitor", StringComparison.Ordinal))
             {
                 TranslateBiocapacitorForTests(__instance);
@@ -250,9 +254,14 @@ public static class DescriptionAssignmentOwnerTranslationPatch
         for (var index = 0; index < descriptions.Count; index++)
         {
             var current = descriptions[index];
-            if (string.IsNullOrEmpty(current)
-                || current.StartsWith("\u0001", StringComparison.Ordinal))
+            if (string.IsNullOrEmpty(current))
             {
+                continue;
+            }
+
+            if (MessageFrameTranslator.TryStripDirectTranslationMarker(current, out var markedText))
+            {
+                descriptions[index] = markedText;
                 continue;
             }
 
@@ -276,9 +285,14 @@ public static class DescriptionAssignmentOwnerTranslationPatch
 
     private static string TranslateBannerText(string source)
     {
-        if (string.IsNullOrEmpty(source) || source.StartsWith("\u0001", StringComparison.Ordinal))
+        if (string.IsNullOrEmpty(source))
         {
             return source;
+        }
+
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
+        {
+            return markedText;
         }
 
         const string prefix = "Bestows the ";
@@ -305,9 +319,14 @@ public static class DescriptionAssignmentOwnerTranslationPatch
     private static void TranslateStringMember(object target, string memberName, string family, Func<string, string> translate)
     {
         if (!TryGetStringMemberValue(target, memberName, out var current)
-            || string.IsNullOrEmpty(current)
-            || current!.StartsWith("\u0001", StringComparison.Ordinal))
+            || string.IsNullOrEmpty(current))
         {
+            return;
+        }
+
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(current!, out var markedText))
+        {
+            TrySetStringMemberValue(target, memberName, markedText);
             return;
         }
 

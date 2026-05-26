@@ -58,8 +58,26 @@ public static class ElementalPseudopodDisplayNameTranslationPatch
         }
 
         source = GetMemberValue(render, "DisplayName") as string ?? string.Empty;
-        if (source.Length == 0 || !DisplayNameTranslations.TryGetValue(source, out var translatedValue))
+        if (source.Length == 0)
         {
+            return false;
+        }
+
+        var lookupSource = source;
+        var hadMarker = MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText);
+        if (hadMarker)
+        {
+            lookupSource = markedText;
+        }
+
+        if (!DisplayNameTranslations.TryGetValue(lookupSource, out var translatedValue))
+        {
+            if (hadMarker)
+            {
+                translated = lookupSource;
+                return SetMemberValue(render, "DisplayName", lookupSource);
+            }
+
             return false;
         }
 

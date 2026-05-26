@@ -2364,7 +2364,7 @@
     {
       "verb": "are",
       "extra": "knocked (.+?)",
-      "text": "{t0}に吹き飛ばされた"
+      "text": "{a0}吹き飛ばされた"
     },
     {
       "verb": "butcher",

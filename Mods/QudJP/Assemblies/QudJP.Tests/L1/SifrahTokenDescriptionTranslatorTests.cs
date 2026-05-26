@@ -52,7 +52,6 @@ public sealed class SifrahTokenDescriptionTranslatorTests
 
     [TestCase("")]
     [TestCase("unsupported token description")]
-    [TestCase("\u0001use liquid")]
     public void TryTranslateDescription_LeavesUnsupportedAndMarkedTextUnchanged(string source)
     {
         var translated = SifrahTokenDescriptionTranslator.TryTranslateDescription(source, out var result, out var detail);
@@ -61,6 +60,22 @@ public sealed class SifrahTokenDescriptionTranslatorTests
         {
             Assert.That(translated, Is.False);
             Assert.That(result, Is.EqualTo(source));
+            Assert.That(detail, Is.Empty);
+        });
+    }
+
+    [Test]
+    public void TryTranslateDescription_StripsDirectMarkedTextWithoutRetranslating()
+    {
+        var translated = SifrahTokenDescriptionTranslator.TryTranslateDescription(
+            "\u0001use liquid",
+            out var result,
+            out var detail);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.True);
+            Assert.That(result, Is.EqualTo("use liquid"));
             Assert.That(detail, Is.Empty);
         });
     }

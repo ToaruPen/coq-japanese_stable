@@ -167,7 +167,7 @@ public static class SifrahTokenDescriptionTranslationPatch
                 return;
             }
 
-            if (TrySetDescription(__instance, translated))
+            if (TrySetDescription(__instance, translated) && detail.Length > 0)
             {
                 DynamicTextObservability.RecordTransform(Context, Family + "." + detail, source, translated);
             }
@@ -368,11 +368,18 @@ internal static class SifrahTokenDescriptionTranslator
 
     internal static bool TryTranslateDescription(string source, out string translated, out string detail)
     {
-        if (string.IsNullOrEmpty(source) || MessageFrameTranslator.TryStripDirectTranslationMarker(source, out _))
+        if (string.IsNullOrEmpty(source))
         {
             translated = source;
             detail = string.Empty;
             return false;
+        }
+
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
+        {
+            translated = markedText;
+            detail = string.Empty;
+            return true;
         }
 
         var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);

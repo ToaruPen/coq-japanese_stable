@@ -2,10 +2,10 @@ using System.Text;
 using QudJP.Patches;
 using QudJP.Tests.DummyTargets;
 
-namespace QudJP.Tests.L2;
+namespace QudJP.Tests.L1;
 
 [TestFixture]
-[Category("L2")]
+[Category("L1")]
 [NonParallelizable]
 public sealed class CharGenDirectUiTranslationPatchTests
 {
@@ -86,6 +86,45 @@ public sealed class CharGenDirectUiTranslationPatchTests
         });
     }
 
+    [TestCase("")]
+    [TestCase("\u0001+2 from Calling")]
+    public void AttributeUpdatedPostfix_PreservesEmptyAndDirectMarkedBonusSource(string bonusSource)
+    {
+        WriteDictionary(("Calling", "職能"));
+        var target = new DummyCharGenAttributeSelectionControlTarget
+        {
+            data =
+            {
+                BonusSource = bonusSource,
+                APToRaise = 1,
+            },
+        };
+
+        target.Updated();
+        CharGenDirectUiTranslationPatch.TranslateAttributeSelectionControlForTests(target);
+
+        Assert.That(target.tooltip.LastText, Is.EqualTo(bonusSource));
+    }
+
+    [Test]
+    public void AttributeUpdatedPostfix_TranslatesColorTaggedBonusSource()
+    {
+        WriteDictionary(("Calling", "職能"));
+        var target = new DummyCharGenAttributeSelectionControlTarget
+        {
+            data =
+            {
+                BonusSource = "+2 from {{C|Calling}}",
+                APToRaise = 1,
+            },
+        };
+
+        target.Updated();
+        CharGenDirectUiTranslationPatch.TranslateAttributeSelectionControlForTests(target);
+
+        Assert.That(target.tooltip.LastText, Is.EqualTo("{{C|職能}}による +2"));
+    }
+
     [Test]
     public void QudSubtypeBeforeShowPostfix_TranslatesColonWrappedSubtypeTitle()
     {
@@ -107,6 +146,31 @@ public sealed class CharGenDirectUiTranslationPatchTests
         CharGenDirectUiTranslationPatch.TranslateQudSubtypeModuleWindowForTests(target);
 
         Assert.That(target.prefabComponent.titleText.text, Is.EqualTo(":unknown subtype:"));
+    }
+
+    [TestCase("")]
+    [TestCase("\u0001choose subtype")]
+    public void QudSubtypeBeforeShowPostfix_PreservesEmptyAndDirectMarkedSubtypeTitle(string subtypeTitle)
+    {
+        WriteDictionary(("choose subtype", "職能を選択"));
+        var target = new DummyQudSubtypeModuleWindowTarget { SubtypeTitle = subtypeTitle };
+
+        target.BeforeShow(new DummyEmbarkBuilderModuleWindowDescriptor());
+        CharGenDirectUiTranslationPatch.TranslateQudSubtypeModuleWindowForTests(target);
+
+        Assert.That(target.prefabComponent.titleText.text, Is.EqualTo(":" + subtypeTitle + ":"));
+    }
+
+    [Test]
+    public void QudSubtypeBeforeShowPostfix_TranslatesColorTaggedSubtypeTitle()
+    {
+        WriteDictionary(("choose subtype", "職能を選択"));
+        var target = new DummyQudSubtypeModuleWindowTarget { SubtypeTitle = "{{C|choose subtype}}" };
+
+        target.BeforeShow(new DummyEmbarkBuilderModuleWindowDescriptor());
+        CharGenDirectUiTranslationPatch.TranslateQudSubtypeModuleWindowForTests(target);
+
+        Assert.That(target.prefabComponent.titleText.text, Is.EqualTo("：{{C|職能を選択}}："));
     }
 
     private void WriteDictionary(params (string key, string text)[] entries)

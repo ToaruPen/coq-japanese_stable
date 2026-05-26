@@ -119,7 +119,12 @@ public static class MechanicalWingsPopupTranslationPatch
                 longFallMatch.Groups["subject"].Value,
                 spans,
                 longFallMatch.Groups["subject"]).Trim();
-            translated = $"あなたがいる{longFallSubject}の下はかなり深そうだ。飛行をやめてもよいですか？";
+            var core = $"あなたがいる{longFallSubject}の下はかなり深そうだ。飛行をやめてもよいですか？";
+            translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+                core,
+                spans,
+                stripped.Length,
+                source);
             return true;
         }
 

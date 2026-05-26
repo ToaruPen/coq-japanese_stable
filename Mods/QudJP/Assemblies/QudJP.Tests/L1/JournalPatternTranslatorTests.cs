@@ -1316,6 +1316,7 @@ public sealed class JournalPatternTranslatorTests
                 Assert.That(
                     JournalPatternTranslator.Translate("<spice.elements.salt.weddingConditions.!random.capitalize>, =name= cemented your friendship with Barathrumites by marrying a snapjaw."),
                     Is.EqualTo("<spice.elements.salt.weddingConditions.!random.capitalize>、=name=はバラサルマイトとの友情を固めるためスナップジョーと結婚した。"));
+                AssertJournalPatternEdgeCases();
             });
         }
         finally
