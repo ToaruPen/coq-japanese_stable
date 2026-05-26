@@ -81,7 +81,30 @@ internal static class CookingIngredientFragmentTranslator
             return true;
         }
 
+        if (TryTranslateColoredIngredientName(source, out translated))
+        {
+            return true;
+        }
+
         return TryTranslateNonPossessiveIngredientName(source, out translated);
+    }
+
+    private static bool TryTranslateColoredIngredientName(string source, out string translated)
+    {
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        if (string.Equals(stripped, source, StringComparison.Ordinal)
+            || !TryTranslateNonPossessiveIngredientName(stripped, out var strippedTranslation))
+        {
+            translated = source;
+            return false;
+        }
+
+        translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+            strippedTranslation,
+            spans,
+            stripped.Length,
+            source);
+        return true;
     }
 
     private static bool TryTranslateNonPossessiveIngredientName(string source, out string translated)

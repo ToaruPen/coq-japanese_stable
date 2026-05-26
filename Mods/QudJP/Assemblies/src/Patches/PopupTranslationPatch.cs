@@ -519,12 +519,6 @@ public static class PopupTranslationPatch
             return true;
         }
 
-        if (IsAlreadyLocalizedPopupTextCore(stripped))
-        {
-            translated = source;
-            return true;
-        }
-
         if (CampfireCookFromIngredientsTranslationPatch.TryTranslatePopupProducerText(
                 source,
                 route,
@@ -532,6 +526,12 @@ public static class PopupTranslationPatch
                 out var campfireCookFromIngredientsTranslated))
         {
             translated = campfireCookFromIngredientsTranslated;
+            return true;
+        }
+
+        if (IsAlreadyLocalizedPopupTextCore(stripped))
+        {
+            translated = source;
             return true;
         }
 

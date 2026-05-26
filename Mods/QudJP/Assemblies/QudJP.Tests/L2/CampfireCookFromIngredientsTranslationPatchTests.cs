@@ -216,6 +216,40 @@ public sealed class CampfireCookFromIngredientsTranslationPatchTests
         });
     }
 
+    [TestCase(
+        "[ ]   a dram of brackish water {{K|x29}}",
+        "[ ]   塩気混じりの水1ドラム {{K|x29}}")]
+    [TestCase(
+        "[X]   {{Y|starapple jam}}",
+        "[X]   {{Y|スターアップルジャム}}")]
+    public void CookFromIngredients_TranslatesIngredientOptionRows_WhenOwnerActive(string source, string expected)
+    {
+        WriteHistorySpiceCommonDictionary(
+            ("brackish water", "塩気混じりの水"),
+            ("starapple jam", "スターアップルジャム"));
+
+        WithPatchedOwner(() =>
+        {
+            var target = new DummyCampfireCookFromIngredientsTarget
+            {
+                BeforePopup = () =>
+                {
+                    var translated = PopupTranslationPatch.TranslatePopupTextForProducerRoute(
+                        source,
+                        nameof(PopupPickOptionTranslationPatch));
+
+                    Assert.Multiple(() =>
+                    {
+                        Assert.That(translated, Is.EqualTo(expected));
+                        Assert.That(PickOptionProducerHitCount("IngredientOptionMenuRow"), Is.EqualTo(1));
+                    });
+                },
+            };
+
+            target.CookFromIngredients(random: false);
+        });
+    }
+
     [Test]
     public void CookFromIngredients_DoesNotTranslateSelectedIngredientMenuRows_WhenOwnerAbsent()
     {
@@ -355,6 +389,16 @@ public sealed class CampfireCookFromIngredientsTranslationPatchTests
         {
             harmony.UnpatchAll(harmonyId);
         }
+    }
+
+    private void WriteHistorySpiceCommonDictionary(params (string key, string text)[] entries)
+    {
+        var scopedDirectory = Path.Combine(tempDictionaryDirectory, "Scoped");
+        Directory.CreateDirectory(scopedDirectory);
+        var lines = entries.Select(entry => $"    {{ \"key\": \"{entry.key}\", \"text\": \"{entry.text}\" }}");
+        File.WriteAllText(
+            Path.Combine(scopedDirectory, "historyspice-common.ja.json"),
+            "{\n  \"entries\": [\n" + string.Join(",\n", lines) + "\n  ]\n}\n");
     }
 
     private static void PatchPopupShow(Harmony harmony)
