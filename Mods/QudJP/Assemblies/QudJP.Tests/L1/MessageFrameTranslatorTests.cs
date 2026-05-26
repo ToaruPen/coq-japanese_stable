@@ -914,6 +914,74 @@ public sealed class MessageFrameTranslatorTests
         });
     }
 
+    [Test]
+    public void TryTranslateXDidY_RepositoryDictionary_BeatFlamesWithPossessiveHands()
+    {
+        UseRepositoryDictionary();
+
+        var ok = MessageFrameTranslator.TryTranslateXDidY(
+            "あなた",
+            "beat",
+            "at the flames with your hands",
+            "!",
+            out var sentence);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(sentence, Is.EqualTo("あなたは手で炎を叩いた！"));
+            Assert.That(sentence, Does.Not.Contain("your"));
+            Assert.That(sentence, Does.Not.Contain("hands"));
+        });
+    }
+
+    [Test]
+    public void TryTranslateXDidYToZ_RepositoryDictionary_BeatFlamesOnTargetWithPossessiveHands()
+    {
+        UseRepositoryDictionary();
+
+        var ok = MessageFrameTranslator.TryTranslateXDidYToZ(
+            "あなた",
+            "beat",
+            "at the flames on",
+            "クマ",
+            "with your hands",
+            "!",
+            out var sentence);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(sentence, Is.EqualTo("あなたはクマの炎を手で叩いた！"));
+            Assert.That(sentence, Does.Not.Contain("your"));
+            Assert.That(sentence, Does.Not.Contain("hands"));
+        });
+    }
+
+    [Test]
+    public void TryTranslateXDidYToZ_RepositoryDictionary_TryBeatFlamesPassThroughPossessiveHands()
+    {
+        UseRepositoryDictionary();
+
+        var ok = MessageFrameTranslator.TryTranslateXDidYToZ(
+            "あなた",
+            "try",
+            "to beat at the flames on",
+            "幽霊",
+            ", but your hands pass through them",
+            "!",
+            out var sentence);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(sentence, Is.EqualTo("あなたは幽霊の炎を叩こうとしたが、手はすり抜けた！"));
+            Assert.That(sentence, Does.Not.Contain("your"));
+            Assert.That(sentence, Does.Not.Contain("hands"));
+            Assert.That(sentence, Does.Not.Contain("them"));
+        });
+    }
+
     // --- Tier3 test for XDidY frame (objectSlotCount=0, same as DidX) ---
 
     [Test]

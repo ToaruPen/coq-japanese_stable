@@ -2633,6 +2633,11 @@
     },
     {
       "verb": "beat",
+      "extra": "at the flames on {0} with {1} {2}",
+      "text": "{0}の炎を{t2}で叩いた"
+    },
+    {
+      "verb": "beat",
       "extra": "at the flames on {0} with {1}",
       "text": "{0}の炎を{1}で叩いた"
     },
@@ -2649,7 +2654,7 @@
     {
       "verb": "beat",
       "extra": "at the flames with {0} {1}",
-      "text": "{0}{1}で炎を叩いた"
+      "text": "{t1}で炎を叩いた"
     },
     {
       "verb": "beat",
@@ -3500,6 +3505,11 @@
       "verb": "try",
       "extra": "to beat at the flames on {0}, but {1} dodges",
       "text": "{0}の炎を叩こうとしたが、{1}はかわした"
+    },
+    {
+      "verb": "try",
+      "extra": "to beat at the flames on {0}, but {1} {2} pass through {3}",
+      "text": "{0}の炎を叩こうとしたが、{t2}はすり抜けた"
     },
     {
       "verb": "try",

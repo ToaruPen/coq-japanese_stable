@@ -697,6 +697,11 @@ internal static class MessageFrameTranslator
             return possessivePhrase;
         }
 
+        if (TryTranslateBodyPartPlaceholderValue(trimmed, out var bodyPartName))
+        {
+            return bodyPartName;
+        }
+
         if (trimmed.EndsWith("'s", StringComparison.Ordinal))
         {
             return TranslatePlaceholderValue(trimmed.Substring(0, trimmed.Length - 2)) + "の";
@@ -735,6 +740,24 @@ internal static class MessageFrameTranslator
         }
 
         return trimmed;
+    }
+
+    private static bool TryTranslateBodyPartPlaceholderValue(string source, out string translated)
+    {
+        switch (source.Trim().ToUpperInvariant())
+        {
+            case "HAND":
+            case "HANDS":
+                translated = "手";
+                return true;
+            case "FIST":
+            case "FISTS":
+                translated = "拳";
+                return true;
+            default:
+                translated = string.Empty;
+                return false;
+        }
     }
 
     private static bool TryTranslateArticleSeparatedList(string source, out string translated)
