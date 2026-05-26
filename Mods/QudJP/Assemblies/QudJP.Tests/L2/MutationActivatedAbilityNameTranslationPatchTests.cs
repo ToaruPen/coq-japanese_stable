@@ -156,9 +156,9 @@ public sealed class MutationActivatedAbilityNameTranslationPatchTests
         });
     }
 
-    [TestCase("")]
-    [TestCase("\u0001Boost Strength")]
-    public void Mutate_PreservesEmptyAndDirectMarkedActivationNames_WhenPatched(string source)
+    [TestCase("", "")]
+    [TestCase("\u0001Boost Strength", "Boost Strength")]
+    public void Mutate_PreservesEmptyAndDirectMarkedActivationNames_WhenPatched(string source, string expected)
     {
         WithPatchedOwner(() =>
         {
@@ -168,7 +168,7 @@ public sealed class MutationActivatedAbilityNameTranslationPatchTests
 
             Assert.Multiple(() =>
             {
-                Assert.That(mutation.StrengthEntry.DisplayName, Is.EqualTo(source));
+                Assert.That(mutation.StrengthEntry.DisplayName, Is.EqualTo(expected));
                 Assert.That(HitCount(), Is.Zero);
             });
         });

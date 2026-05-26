@@ -125,14 +125,14 @@ public sealed class ActivatedAbilityNameTranslatorTests
     }
 
     [Test]
-    public void TranslatePreservingColors_DeactivatePreservesOuterBoundaryMarkers()
+    public void TranslatePreservingColors_DeactivateStripsDirectTranslationMarker()
     {
         var result = ActivatedAbilityNameTranslator.TranslatePreservingColors(
             "\u0001Deactivate bronze long sword",
             nameof(ActivatedAbilityNameTranslatorTests),
             "Ability.Name");
 
-        Assert.That(result, Is.EqualTo("\u0001Deactivate bronze long sword"));
+        Assert.That(result, Is.EqualTo("Deactivate bronze long sword"));
     }
 
     [Test]

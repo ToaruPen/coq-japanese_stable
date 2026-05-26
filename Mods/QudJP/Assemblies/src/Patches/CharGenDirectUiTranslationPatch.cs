@@ -224,9 +224,14 @@ public static class CharGenDirectUiTranslationPatch
 
     private static string TranslateAttributeBonusSource(string source)
     {
-        if (source.Length == 0 || source[0] == '\u0001')
+        if (source.Length == 0)
         {
             return source;
+        }
+
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
+        {
+            return markedText;
         }
 
         var lines = source.Split('\n');
@@ -285,10 +290,20 @@ public static class CharGenDirectUiTranslationPatch
             && source[source.Length - 1] == ':')
         {
             var inner = source.Substring(1, source.Length - 2);
+            if (MessageFrameTranslator.TryStripDirectTranslationMarker(inner, out var markedInner))
+            {
+                return ":" + markedInner + ":";
+            }
+
             var translatedInner = CharGenProducerTranslationHelpers.TranslateText(inner);
             return string.Equals(translatedInner, inner, StringComparison.Ordinal)
                 ? source
                 : "：" + translatedInner + "：";
+        }
+
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
+        {
+            return markedText;
         }
 
         return CharGenProducerTranslationHelpers.TranslateText(source);

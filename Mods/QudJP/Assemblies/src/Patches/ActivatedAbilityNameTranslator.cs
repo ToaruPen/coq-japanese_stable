@@ -53,6 +53,11 @@ internal static class ActivatedAbilityNameTranslator
             return source;
         }
 
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
+        {
+            return markedText;
+        }
+
         if (TryTranslateRawFabricateName(source, out var rawFabricateTranslated))
         {
             DynamicTextObservability.RecordTransform(route, family, source, rawFabricateTranslated);

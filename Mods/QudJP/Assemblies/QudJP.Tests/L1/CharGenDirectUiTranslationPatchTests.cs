@@ -86,9 +86,9 @@ public sealed class CharGenDirectUiTranslationPatchTests
         });
     }
 
-    [TestCase("")]
-    [TestCase("\u0001+2 from Calling")]
-    public void AttributeUpdatedPostfix_PreservesEmptyAndDirectMarkedBonusSource(string bonusSource)
+    [TestCase("", "")]
+    [TestCase("\u0001+2 from Calling", "+2 from Calling")]
+    public void AttributeUpdatedPostfix_PreservesEmptyAndDirectMarkedBonusSource(string bonusSource, string expected)
     {
         WriteDictionary(("Calling", "職能"));
         var target = new DummyCharGenAttributeSelectionControlTarget
@@ -103,7 +103,7 @@ public sealed class CharGenDirectUiTranslationPatchTests
         target.Updated();
         CharGenDirectUiTranslationPatch.TranslateAttributeSelectionControlForTests(target);
 
-        Assert.That(target.tooltip.LastText, Is.EqualTo(bonusSource));
+        Assert.That(target.tooltip.LastText, Is.EqualTo(expected));
     }
 
     [Test]
@@ -148,9 +148,9 @@ public sealed class CharGenDirectUiTranslationPatchTests
         Assert.That(target.prefabComponent.titleText.text, Is.EqualTo(":unknown subtype:"));
     }
 
-    [TestCase("")]
-    [TestCase("\u0001choose subtype")]
-    public void QudSubtypeBeforeShowPostfix_PreservesEmptyAndDirectMarkedSubtypeTitle(string subtypeTitle)
+    [TestCase("", "::")]
+    [TestCase("\u0001choose subtype", ":choose subtype:")]
+    public void QudSubtypeBeforeShowPostfix_PreservesEmptyAndDirectMarkedSubtypeTitle(string subtypeTitle, string expected)
     {
         WriteDictionary(("choose subtype", "職能を選択"));
         var target = new DummyQudSubtypeModuleWindowTarget { SubtypeTitle = subtypeTitle };
@@ -158,7 +158,7 @@ public sealed class CharGenDirectUiTranslationPatchTests
         target.BeforeShow(new DummyEmbarkBuilderModuleWindowDescriptor());
         CharGenDirectUiTranslationPatch.TranslateQudSubtypeModuleWindowForTests(target);
 
-        Assert.That(target.prefabComponent.titleText.text, Is.EqualTo(":" + subtypeTitle + ":"));
+        Assert.That(target.prefabComponent.titleText.text, Is.EqualTo(expected));
     }
 
     [Test]

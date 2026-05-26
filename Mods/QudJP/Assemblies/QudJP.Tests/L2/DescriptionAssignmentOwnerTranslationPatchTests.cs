@@ -187,7 +187,9 @@ public sealed class DescriptionAssignmentOwnerTranslationPatchTests
         {
             Assert.That(wingsUnknown.Description, Is.EqualTo("Worn around Tail"));
             Assert.That(wingsMarker.Description, Is.EqualTo("Worn around Wings"));
-            Assert.That(banner.Description, Does.StartWith("Bestows"));
+            Assert.That(
+                banner.Description,
+                Is.EqualTo("Bestows the {{|inspired}} effect to {{w|Mechanimists}} who can see this item."));
             Assert.That(evt.Postfix.ToString(), Is.EqualTo("Unknown banner rule."));
         });
     }

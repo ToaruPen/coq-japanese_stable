@@ -173,7 +173,9 @@ public sealed class CyberneticsDescriptionAssignmentTranslationPatchTests
         {
             Assert.That(unknown.Description, Is.EqualTo("Unknown cybernetics behavior."));
             Assert.That(unknown.ToAdd, Is.EqualTo(new[] { "Unknown Sifrah behavior." }));
-            Assert.That(marker.Description, Does.StartWith("You gain access"));
+            Assert.That(
+                marker.Description,
+                Is.EqualTo("You gain access to the precise hit point, armor, and dodge values of robotic creatures, biological creatures, and structures."));
             Assert.That(marker.ToAdd, Is.EqualTo(new[] { "Adds a bonus turn, and is otherwise useful, in most tinkering Sifrah games, and is useful in many social Sifrah games." }));
         });
     }
