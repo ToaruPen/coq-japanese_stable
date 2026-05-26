@@ -754,6 +754,16 @@ internal static class MessageFrameTranslator
             case "FISTS":
                 translated = "拳";
                 return true;
+            case "FACE":
+                translated = "顔";
+                return true;
+            case "FOOT":
+            case "FEET":
+                translated = "足";
+                return true;
+            case "MOUTH":
+                translated = "口";
+                return true;
             default:
                 translated = string.Empty;
                 return false;

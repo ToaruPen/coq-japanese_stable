@@ -1238,17 +1238,22 @@ public sealed class MessageFrameTranslatorTests
             Assert.That(
                 MessageFrameTranslator.TryTranslateXDidY("変異体", "emit", "a freezing ray from its hands", "!", out var freezingRayFromHands),
                 Is.True);
-            Assert.That(freezingRayFromHands, Is.EqualTo("変異体は凍結光線を放った！"));
+            Assert.That(freezingRayFromHands, Is.EqualTo("変異体は手から凍結光線を放った！"));
 
             Assert.That(
                 MessageFrameTranslator.TryTranslateXDidY("変異体", "emit", "a flaming ray from its face", "!", out var flamingRay),
                 Is.True);
-            Assert.That(flamingRay, Is.EqualTo("変異体は火炎光線を放った！"));
+            Assert.That(flamingRay, Is.EqualTo("変異体は顔から火炎光線を放った！"));
+
+            Assert.That(
+                MessageFrameTranslator.TryTranslateXDidY("変異体", "emit", "a flaming ray from its feet", "!", out var flamingRayFromFeet),
+                Is.True);
+            Assert.That(flamingRayFromFeet, Is.EqualTo("変異体は足から火炎光線を放った！"));
 
             Assert.That(
                 MessageFrameTranslator.TryTranslateXDidY("変異体", "emit", "a vast freezing ray from its mouth", "!", out var vastFreezingRay),
                 Is.True);
-            Assert.That(vastFreezingRay, Is.EqualTo("変異体は巨大な凍結光線を放った！"));
+            Assert.That(vastFreezingRay, Is.EqualTo("変異体は口から巨大な凍結光線を放った！"));
 
             Assert.That(
                 MessageFrameTranslator.TryTranslateXDidY("磁気変異体", "emit", "a powerful magnetic pulse", "!", out var magneticPulse),

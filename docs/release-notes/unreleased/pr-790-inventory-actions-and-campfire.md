@@ -4,3 +4,4 @@
 - Localize campfire ingredient picker rows that include generated ingredient names and stack counts.
 - Localize ability-bar labels and direction prompts that are registered dynamically by activated abilities.
 - Localize firefighting message-frame text that includes possessive hand/body-part phrases.
+- Preserve localized body-part sources in ray mutation message-log lines.

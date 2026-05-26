@@ -2863,18 +2863,28 @@
     },
     {
       "verb": "emit",
-      "extra": "a freezing ray(?: from (?:your|his|her|its|their) .+?)?",
+      "extra": "a freezing ray",
       "text": "凍結光線を放った"
     },
     {
       "verb": "emit",
-      "extra": "a flaming ray(?: from (?:your|his|her|its|their) .+?)?",
+      "extra": "a freezing ray from {0} {1}",
+      "text": "{t1}から凍結光線を放った"
+    },
+    {
+      "verb": "emit",
+      "extra": "a flaming ray",
       "text": "火炎光線を放った"
     },
     {
       "verb": "emit",
-      "extra": "a vast freezing ray from (?:your|his|her|its|their) .+?",
-      "text": "巨大な凍結光線を放った"
+      "extra": "a flaming ray from {0} {1}",
+      "text": "{t1}から火炎光線を放った"
+    },
+    {
+      "verb": "emit",
+      "extra": "a vast freezing ray from {0} {1}",
+      "text": "{t1}から巨大な凍結光線を放った"
     },
     {
       "verb": "emit",
