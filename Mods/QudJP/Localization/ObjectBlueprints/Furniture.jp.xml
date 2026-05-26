@@ -2576,7 +2576,7 @@
 
 
   <object Name="Solar Pumping Station" Inherits="SolidHighTechInstallation" Replace="true">
-    <part Name="Render" DisplayName="{{W|solar}} {{c|pumping station}}" ColorString="&amp;K" TileColor="&amp;K" DetailColor="C" RenderString="232" Tile="Items/sw_solar_pumping_station.bmp" />
+    <part Name="Render" DisplayName="{{W|太陽光}} {{c|ポンプステーション}}" ColorString="&amp;K" TileColor="&amp;K" DetailColor="C" RenderString="232" Tile="Items/sw_solar_pumping_station.bmp" />
     <part Name="Description" Short="太陽光線は、クロームシリンダーの周囲の基礎全体で太陽光発電によって捕らえられ、その熱は分散のために水をパイプに送り込むのに使用される。" />
     <part Name="SolarArray" ChargeRate="10" />
     <part Name="Flywheel" Charge="10000" MaxCharge="10000" ChargeRate="10" StartCharge="0-10000" />

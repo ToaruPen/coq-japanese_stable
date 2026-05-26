@@ -12,6 +12,7 @@ internal static class WorldModsTextTranslator
     private const string MeleeWeaponShortDescriptionContext = "XRL.World.Parts.MeleeWeapon.GetShortDescription";
     private const string MasterworkDescriptionContext = "XRL.World.Parts.ModMasterwork.GetShortDescription";
     private const string BeamsplitterDescriptionContext = "XRL.World.Parts.ModBeamsplitter.GetShortDescription";
+    private const string JewelEncrustedDescriptionContext = "XRL.World.Parts.ModJewelEncrusted.GetShortDescription";
 
     private static readonly Regex JapaneseCharacterPattern = new Regex(
         "[\\p{IsHiragana}\\p{IsKatakana}\\p{IsCJKUnifiedIdeographs}]",
@@ -95,8 +96,8 @@ internal static class WorldModsTextTranslator
     private static readonly Regex FactionSlayerPattern = new Regex(
         "^(?<chance>\\d+)% chance to behead (?<target>.+) on hit\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
-    private static readonly Regex StrengthBonusCapPattern = new Regex(
-        "^Strength Bonus Cap: (?<cap>.+)$",
+    private static readonly Regex StatBonusCapPattern = new Regex(
+        "^(?<stat>Strength|Agility|Toughness|Intelligence|Willpower|Ego) Bonus Cap: (?<cap>.+)$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex WeaponClassPattern = new Regex(
         "^Weapon Class: (?<weaponClass>.+)$",
@@ -387,7 +388,8 @@ internal static class WorldModsTextTranslator
             JewelEncrustedPattern,
             "Jewel-Encrusted: This item is much more valuable than usual and grants the wearer {0} reputation with water barons.",
             (match, spans) => new[] { GetTranslatedCapture(match, spans, "amount") },
-            out translated))
+            out translated,
+            JewelEncrustedDescriptionContext))
         {
             return true;
         }
@@ -678,29 +680,21 @@ internal static class WorldModsTextTranslator
     private static bool TryTranslateStrengthBonusCapTemplate(string source, string route, string family, out string translated)
     {
         var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
-        var match = StrengthBonusCapPattern.Match(stripped);
+        var match = StatBonusCapPattern.Match(stripped);
         if (!match.Success)
         {
             translated = source;
             return false;
         }
 
-        const string templateKey = "Strength Bonus Cap: {0}";
-        var template = ScopedDictionaryLookup.TranslateExactOrLowerAsciiForContext(
-            templateKey,
-            MeleeWeaponShortDescriptionContext,
-            WorldModsDictionaryFile);
-        if (string.IsNullOrEmpty(template) || string.Equals(template, templateKey, StringComparison.Ordinal))
-        {
-            template = BuildStrengthBonusCapTemplate();
-        }
-
-        if (string.IsNullOrEmpty(template))
+        var bonusCap = BuildBonusCapLabel();
+        if (string.IsNullOrEmpty(bonusCap))
         {
             translated = source;
             return false;
         }
 
+        var template = "{0}" + bonusCap + " {1}";
         var contentSpans = ColorAwareTranslationComposer.WithoutTrueWholeSourceBoundarySpans(spans, stripped.Length);
         return TryFormatTemplate(
             source,
@@ -710,7 +704,11 @@ internal static class WorldModsTextTranslator
             family,
             match,
             template!,
-            new[] { GetTranslatedCapture(match, contentSpans, "cap") },
+            new[]
+            {
+                GetTranslatedCapture(match, contentSpans, "stat"),
+                GetTranslatedCapture(match, contentSpans, "cap", TranslateBonusCapValue),
+            },
             out translated);
     }
 
@@ -753,15 +751,14 @@ internal static class WorldModsTextTranslator
             out translated);
     }
 
-    private static string? BuildStrengthBonusCapTemplate()
+    private static string? BuildBonusCapLabel()
     {
         if (!StringHelpers.TryGetTranslationExactOrLowerAscii("Bonus Cap:", out var bonusCap))
         {
             return null;
         }
 
-        // Tooltip stat names are game contract labels; keep Strength/Intelligence/etc. in English.
-        return "Strength " + bonusCap + " {0}";
+        return bonusCap;
     }
 
     private static string? BuildWeaponClassTemplate()
@@ -1190,7 +1187,8 @@ internal static class WorldModsTextTranslator
         Regex pattern,
         string templateKey,
         Func<Match, IReadOnlyList<ColorSpan>, string[]> buildArguments,
-        out string translated)
+        out string translated,
+        string? templateContext = null)
     {
         var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
         var match = pattern.Match(stripped);
@@ -1200,7 +1198,9 @@ internal static class WorldModsTextTranslator
             return false;
         }
 
-        var template = ScopedDictionaryLookup.TranslateExactOrLowerAscii(templateKey, WorldModsDictionaryFile);
+        var template = templateContext is null
+            ? ScopedDictionaryLookup.TranslateExactOrLowerAscii(templateKey, WorldModsDictionaryFile)
+            : ScopedDictionaryLookup.TranslateExactOrLowerAsciiForContext(templateKey, templateContext, WorldModsDictionaryFile);
         if (string.IsNullOrEmpty(template) || string.Equals(template, templateKey, StringComparison.Ordinal))
         {
             translated = source;
@@ -1654,9 +1654,9 @@ internal static class WorldModsTextTranslator
 
     private static string TranslateTemplateCapture(string source)
     {
-        if (IsStatContractLabel(source))
+        if (TryTranslateStatContractLabel(source, out var statLabel))
         {
-            return source;
+            return statLabel;
         }
 
         using var _ = Translator.PushMissingKeyLoggingSuppression(true);
@@ -1671,14 +1671,26 @@ internal static class WorldModsTextTranslator
             : source;
     }
 
-    private static bool IsStatContractLabel(string source)
+    private static string TranslateBonusCapValue(string source)
     {
-        return source.Trim() switch
+        return string.Equals(source.Trim(), "no limit", StringComparison.OrdinalIgnoreCase)
+            ? "なし"
+            : TranslateTemplateCapture(source);
+    }
+
+    private static bool TryTranslateStatContractLabel(string source, out string translated)
+    {
+        translated = source.Trim() switch
         {
-            "Strength" or "Agility" or "Toughness" or "Intelligence" or "Willpower" or "Ego" => true,
-            "STR" or "AGI" or "TOU" or "INT" or "WIL" or "EGO" => true,
-            _ => false,
+            "Strength" or "STR" => "筋力",
+            "Agility" or "AGI" => "敏捷",
+            "Toughness" or "TOU" => "頑健",
+            "Intelligence" or "INT" => "知力",
+            "Willpower" or "WIL" => "意志力",
+            "Ego" or "EGO" => "自我",
+            _ => source,
         };
+        return !string.Equals(translated, source, StringComparison.Ordinal);
     }
 
     private static readonly Regex WhitespacePattern = new Regex(

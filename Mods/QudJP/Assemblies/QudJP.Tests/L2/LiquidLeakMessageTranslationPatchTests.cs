@@ -20,15 +20,19 @@ public sealed class LiquidLeakMessageTranslationPatchTests
     [TestCase(
         nameof(DummyLiquidLeakTarget.LeakWhenBrokenDistributeLiquid),
         "The {{Y|broken canteen}} leaks 1 dram of {{B|water}}.",
-        "{{Y|broken canteen}}から{{B|water}} 1ドラムが漏れ出た。")]
+        "{{Y|broken canteen}}から{{B|水}} 1ドラムが漏れ出た。")]
     [TestCase(
         nameof(DummyLiquidLeakTarget.LeaksFluidDistributeLiquid),
         "The {{Y|oozing vase}} leaks 2 drams of {{C|slime}}.",
-        "{{Y|oozing vase}}から{{C|slime}} 2ドラムが漏れ出た。")]
+        "{{Y|oozing vase}}から{{C|粘液}} 2ドラムが漏れ出た。")]
     [TestCase(
         nameof(DummyLiquidLeakTarget.LeaksFluidDistributeLiquid),
         "{{G|leaking pipes}} leak 2 drams of {{B|water}}.",
-        "{{G|leaking pipes}}から{{B|water}} 2ドラムが漏れ出た。")]
+        "{{G|leaking pipes}}から{{B|水}} 2ドラムが漏れ出た。")]
+    [TestCase(
+        nameof(DummyLiquidLeakTarget.LeakWhenBrokenDistributeLiquid),
+        "The 異様な装置 leaks 43 drams of {{g|algal}} {{B|water}}.",
+        "異様な装置から{{g|藻質の}} {{B|水}} 43ドラムが漏れ出た。")]
     public void LiquidLeak_TranslatesQueuedMessage_WhenOwnerPatched(
         string methodName,
         string source,

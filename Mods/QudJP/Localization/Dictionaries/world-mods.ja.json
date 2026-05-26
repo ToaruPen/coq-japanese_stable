@@ -641,102 +641,102 @@
     {
       "context": "XRL.World.Parts.MeleeWeapon.GetShortDescription",
       "key": "\n{{rules|Strength Bonus Cap: {0}}}",
-      "text": "\n{{rules|Strength ボーナス上限: {0}}}"
+      "text": "\n{{rules|筋力ボーナス上限: {0}}}"
     },
     {
       "context": "XRL.World.Parts.MeleeWeapon.GetShortDescription",
       "key": "\n{{rules|Strength Bonus Cap: no limit}}",
-      "text": "\n{{rules|Strength ボーナス上限: なし}}"
+      "text": "\n{{rules|筋力ボーナス上限: なし}}"
     },
     {
       "context": "XRL.World.Parts.MeleeWeapon.GetShortDescription",
       "key": "\n{{rules|Strength Bonus Cap: {0}\nWeapon Class: Short Blades (causes bleeding on critical hit)}}",
-      "text": "\n{{rules|Strength ボーナス上限: {0}\n武器カテゴリ: 短剣（クリティカル時に出血）}}"
+      "text": "\n{{rules|筋力ボーナス上限: {0}\n武器カテゴリ: 短剣（クリティカル時に出血）}}"
     },
     {
       "context": "XRL.World.Parts.MeleeWeapon.GetShortDescription",
       "key": "\n{{rules|Strength Bonus Cap: no limit\nWeapon Class: Short Blades (causes bleeding on critical hit)}}",
-      "text": "\n{{rules|Strength ボーナス上限: なし\n武器カテゴリ: 短剣（クリティカル時に出血）}}"
+      "text": "\n{{rules|筋力ボーナス上限: なし\n武器カテゴリ: 短剣（クリティカル時に出血）}}"
     },
     {
       "context": "XRL.World.Parts.MeleeWeapon.GetShortDescription",
       "key": "\n{{rules|Strength Bonus Cap: {0}\nWeapon Class: Long Blades (increased penetration on critical hit)}}",
-      "text": "\n{{rules|Strength ボーナス上限: {0}\n武器カテゴリ: 長剣（クリティカル時に貫通力上昇）}}"
+      "text": "\n{{rules|筋力ボーナス上限: {0}\n武器カテゴリ: 長剣（クリティカル時に貫通力上昇）}}"
     },
     {
       "context": "XRL.World.Parts.MeleeWeapon.GetShortDescription",
       "key": "\n{{rules|Strength Bonus Cap: no limit\nWeapon Class: Long Blades (increased penetration on critical hit)}}",
-      "text": "\n{{rules|Strength ボーナス上限: なし\n武器カテゴリ: 長剣（クリティカル時に貫通力上昇）}}"
+      "text": "\n{{rules|筋力ボーナス上限: なし\n武器カテゴリ: 長剣（クリティカル時に貫通力上昇）}}"
     },
     {
       "context": "XRL.World.Parts.MeleeWeapon.GetShortDescription",
       "key": "\n{{rules|Strength Bonus Cap: {0}\nWeapon Class: Axe (cleaves armor on critical hit)}}",
-      "text": "\n{{rules|Strength ボーナス上限: {0}\n武器カテゴリ: 斧（クリティカル時に装甲破砕）}}"
+      "text": "\n{{rules|筋力ボーナス上限: {0}\n武器カテゴリ: 斧（クリティカル時に装甲破砕）}}"
     },
     {
       "context": "XRL.World.Parts.MeleeWeapon.GetShortDescription",
       "key": "\n{{rules|Strength Bonus Cap: no limit\nWeapon Class: Axe (cleaves armor on critical hit)}}",
-      "text": "\n{{rules|Strength ボーナス上限: なし\n武器カテゴリ: 斧（クリティカル時に装甲破砕）}}"
+      "text": "\n{{rules|筋力ボーナス上限: なし\n武器カテゴリ: 斧（クリティカル時に装甲破砕）}}"
     },
     {
       "context": "XRL.World.Parts.MeleeWeapon.GetShortDescription",
       "key": "\n{{rules|Strength Bonus Cap: {0}\nWeapon Class: Cudgel (dazes on critical hit)}}",
-      "text": "\n{{rules|Strength ボーナス上限: {0}\n武器カテゴリ: 鈍器（クリティカル時に朦朧）}}"
+      "text": "\n{{rules|筋力ボーナス上限: {0}\n武器カテゴリ: 鈍器（クリティカル時に朦朧）}}"
     },
     {
       "context": "XRL.World.Parts.MeleeWeapon.GetShortDescription",
       "key": "\n{{rules|Strength Bonus Cap: no limit\nWeapon Class: Cudgel (dazes on critical hit)}}",
-      "text": "\n{{rules|Strength ボーナス上限: なし\n武器カテゴリ: 鈍器（クリティカル時に朦朧）}}"
+      "text": "\n{{rules|筋力ボーナス上限: なし\n武器カテゴリ: 鈍器（クリティカル時に朦朧）}}"
     },
     {
       "context": "XRL.World.Parts.MeleeWeapon.GetShortDescription",
       "key": "Strength Bonus Cap: {0}",
-      "text": "Strength ボーナス上限: {0}"
+      "text": "筋力ボーナス上限: {0}"
     },
     {
       "context": "XRL.World.Parts.MeleeWeapon.GetShortDescription",
       "key": "Strength Bonus Cap: no limit",
-      "text": "Strength ボーナス上限: なし"
+      "text": "筋力ボーナス上限: なし"
     },
     {
       "context": "XRL.World.Parts.MeleeWeapon.GetShortDescription",
       "key": "Strength Bonus Cap: {0}\nWeapon Class: Short Blades (causes bleeding on critical hit)",
-      "text": "Strength ボーナス上限: {0}\n武器カテゴリ: 短剣（クリティカル時に出血）"
+      "text": "筋力ボーナス上限: {0}\n武器カテゴリ: 短剣（クリティカル時に出血）"
     },
     {
       "context": "XRL.World.Parts.MeleeWeapon.GetShortDescription",
       "key": "Strength Bonus Cap: no limit\nWeapon Class: Short Blades (causes bleeding on critical hit)",
-      "text": "Strength ボーナス上限: なし\n武器カテゴリ: 短剣（クリティカル時に出血）"
+      "text": "筋力ボーナス上限: なし\n武器カテゴリ: 短剣（クリティカル時に出血）"
     },
     {
       "context": "XRL.World.Parts.MeleeWeapon.GetShortDescription",
       "key": "Strength Bonus Cap: {0}\nWeapon Class: Long Blades (increased penetration on critical hit)",
-      "text": "Strength ボーナス上限: {0}\n武器カテゴリ: 長剣（クリティカル時に貫通力上昇）"
+      "text": "筋力ボーナス上限: {0}\n武器カテゴリ: 長剣（クリティカル時に貫通力上昇）"
     },
     {
       "context": "XRL.World.Parts.MeleeWeapon.GetShortDescription",
       "key": "Strength Bonus Cap: no limit\nWeapon Class: Long Blades (increased penetration on critical hit)",
-      "text": "Strength ボーナス上限: なし\n武器カテゴリ: 長剣（クリティカル時に貫通力上昇）"
+      "text": "筋力ボーナス上限: なし\n武器カテゴリ: 長剣（クリティカル時に貫通力上昇）"
     },
     {
       "context": "XRL.World.Parts.MeleeWeapon.GetShortDescription",
       "key": "Strength Bonus Cap: {0}\nWeapon Class: Axe (cleaves armor on critical hit)",
-      "text": "Strength ボーナス上限: {0}\n武器カテゴリ: 斧（クリティカル時に装甲破砕）"
+      "text": "筋力ボーナス上限: {0}\n武器カテゴリ: 斧（クリティカル時に装甲破砕）"
     },
     {
       "context": "XRL.World.Parts.MeleeWeapon.GetShortDescription",
       "key": "Strength Bonus Cap: no limit\nWeapon Class: Axe (cleaves armor on critical hit)",
-      "text": "Strength ボーナス上限: なし\n武器カテゴリ: 斧（クリティカル時に装甲破砕）"
+      "text": "筋力ボーナス上限: なし\n武器カテゴリ: 斧（クリティカル時に装甲破砕）"
     },
     {
       "context": "XRL.World.Parts.MeleeWeapon.GetShortDescription",
       "key": "Strength Bonus Cap: {0}\nWeapon Class: Cudgel (dazes on critical hit)",
-      "text": "Strength ボーナス上限: {0}\n武器カテゴリ: 鈍器（クリティカル時に朦朧）"
+      "text": "筋力ボーナス上限: {0}\n武器カテゴリ: 鈍器（クリティカル時に朦朧）"
     },
     {
       "context": "XRL.World.Parts.MeleeWeapon.GetShortDescription",
       "key": "Strength Bonus Cap: no limit\nWeapon Class: Cudgel (dazes on critical hit)",
-      "text": "Strength ボーナス上限: なし\n武器カテゴリ: 鈍器（クリティカル時に朦朧）"
+      "text": "筋力ボーナス上限: なし\n武器カテゴリ: 鈍器（クリティカル時に朦朧）"
     },
     {
       "context": "XRL.World.Parts.MeleeWeapon.GetShortDescription",

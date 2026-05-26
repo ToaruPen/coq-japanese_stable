@@ -117,15 +117,38 @@ public sealed class WorldModsTextTranslatorTests
         });
     }
 
+    [Test]
+    public void TryTranslate_TranslatesJewelEncrustedTemplateFromScopedWorldModsDictionary()
+    {
+        WriteDictionaryWithContext(
+            "world-mods.ja.json",
+            (
+                "XRL.World.Parts.ModJewelEncrusted.GetShortDescription",
+                "Jewel-Encrusted: This item is much more valuable than usual and grants the wearer {0} reputation with water barons.",
+                "宝石象嵌: この品は通常よりはるかに高価で、装着者に水の男爵たちとの評判{0}を与える。"));
+
+        var ok = WorldModsTextTranslator.TryTranslate(
+            "Jewel-Encrusted: This item is much more valuable than usual and grants the wearer +100 reputation with water barons.",
+            "DescriptionShortDescriptionPatch",
+            "Description.WorldMods",
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(translated, Is.EqualTo("宝石象嵌: この品は通常よりはるかに高価で、装着者に水の男爵たちとの評判+100を与える。"));
+        });
+    }
+
     [TestCase(
         "Anti-gravity: When powered, this item's weight is reduced by 20% plus 2 lbs.",
         "反重力: 通電中、この品の重量は20%減り、さらに2lbs軽くなる。")]
     [TestCase(
         "Co-processor: When powered, this item grants +2 Intelligence and provides 13 units of compute power to the local lattice.",
-        "共同処理装置: 通電中、Intelligenceに+2を与え、局所格子に13ユニットの演算力を供給する。")]
+        "共同処理装置: 通電中、知力に+2を与え、局所格子に13ユニットの演算力を供給する。")]
     [TestCase(
         "Co-Processor: When powered, this item grants bonus Intelligence and provides compute power to the local lattice.",
-        "共同処理装置: 通電中、Intelligenceにボーナスを与え、局所格子に演算力を供給する。")]
+        "共同処理装置: 通電中、知力にボーナスを与え、局所格子に演算力を供給する。")]
     [TestCase(
         "Counterweighted: Adds +2 to hit.",
         "つり合い調整: 命中に+2のボーナスを与える。")]
@@ -176,10 +199,10 @@ public sealed class WorldModsTextTranslatorTests
         "イッサカリ族との評判-100")]
     [TestCase(
         "{{W|Co-processor: When powered, this item grants +2 Intelligence and provides 13 units of compute power to the local lattice.}}",
-        "{{W|共同処理装置: 通電中、Intelligenceに+2を与え、局所格子に13ユニットの演算力を供給する。}}")]
+        "{{W|共同処理装置: 通電中、知力に+2を与え、局所格子に13ユニットの演算力を供給する。}}")]
     [TestCase(
         "{{rules|Co-Processor: When powered, this item grants bonus Intelligence and provides compute power to the local lattice.}}",
-        "{{rules|共同処理装置: 通電中、Intelligenceにボーナスを与え、局所格子に演算力を供給する。}}")]
+        "{{rules|共同処理装置: 通電中、知力にボーナスを与え、局所格子に演算力を供給する。}}")]
     [TestCase(
         "Offhand Attack Chance: 15%",
         "オフハンド命中率: 15%")]
@@ -231,7 +254,7 @@ public sealed class WorldModsTextTranslatorTests
     }
 
     [Test]
-    public void TryTranslate_PreservesStatContractLabelInTooltipTemplates()
+    public void TryTranslate_TranslatesStatContractLabelsInTooltipTemplates()
     {
         WriteDictionary(
             "ui-default.ja.json",
@@ -252,15 +275,43 @@ public sealed class WorldModsTextTranslatorTests
             "DescriptionShortDescriptionPatch",
             "Description.WorldMods",
             out var intelligenceTranslated);
+        var egoOk = WorldModsTextTranslator.TryTranslate(
+            "Ego Bonus Cap: 2",
+            "DescriptionShortDescriptionPatch",
+            "Description.WorldMods",
+            out var egoTranslated);
+        var agilityOk = WorldModsTextTranslator.TryTranslate(
+            "Agility Bonus Cap: no limit",
+            "DescriptionShortDescriptionPatch",
+            "Description.WorldMods",
+            out var agilityTranslated);
+        var toughnessOk = WorldModsTextTranslator.TryTranslate(
+            "Toughness Bonus Cap: 5",
+            "DescriptionShortDescriptionPatch",
+            "Description.WorldMods",
+            out var toughnessTranslated);
+        var willpowerOk = WorldModsTextTranslator.TryTranslate(
+            "Willpower Bonus Cap: 6",
+            "DescriptionShortDescriptionPatch",
+            "Description.WorldMods",
+            out var willpowerTranslated);
 
         Assert.Multiple(() =>
         {
             Assert.That(strengthOk, Is.True);
-            Assert.That(strengthTranslated, Is.EqualTo("Strength ボーナス上限: 4"));
+            Assert.That(strengthTranslated, Is.EqualTo("筋力ボーナス上限: 4"));
             Assert.That(intelligenceOk, Is.True);
             Assert.That(
                 intelligenceTranslated,
-                Is.EqualTo("共同処理装置: 通電中、Intelligenceに+2を与え、局所格子に13ユニットの演算力を供給する。"));
+                Is.EqualTo("共同処理装置: 通電中、知力に+2を与え、局所格子に13ユニットの演算力を供給する。"));
+            Assert.That(egoOk, Is.True);
+            Assert.That(egoTranslated, Is.EqualTo("自我ボーナス上限: 2"));
+            Assert.That(agilityOk, Is.True);
+            Assert.That(agilityTranslated, Is.EqualTo("敏捷ボーナス上限: なし"));
+            Assert.That(toughnessOk, Is.True);
+            Assert.That(toughnessTranslated, Is.EqualTo("頑健ボーナス上限: 5"));
+            Assert.That(willpowerOk, Is.True);
+            Assert.That(willpowerTranslated, Is.EqualTo("意志力ボーナス上限: 6"));
         });
     }
 

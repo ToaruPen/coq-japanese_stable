@@ -130,6 +130,22 @@ public sealed class AutoActTranslationPatchTests
     }
 
     [Test]
+    public void InterruptWithReason_TranslatesShootingAtYouReason_WithRepositoryPattern()
+    {
+        AssertInterruptWithReasonMessage(
+            "{{r|You stop moving because something is shooting at you.}}",
+            "{{r|何かがあなたを撃っているので移動をやめた。}}");
+    }
+
+    [Test]
+    public void InterruptWithReason_TranslatesLocalizedActorInWayReason_WithRepositoryPattern()
+    {
+        AssertInterruptWithReasonMessage(
+            "{{y|You stop moving because 血まみれのラアーアー is in your way.}}",
+            "{{y|血まみれのラアーアーが邪魔なので移動をやめた。}}");
+    }
+
+    [Test]
     public void InterruptWithObject_TranslatesWaitingSpotMessage_WithRepositoryPattern()
     {
         AssertInterruptWithObjectMessage(

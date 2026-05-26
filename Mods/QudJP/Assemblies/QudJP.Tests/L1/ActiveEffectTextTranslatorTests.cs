@@ -238,6 +238,55 @@ public sealed class ActiveEffectTextTranslatorTests
     }
 
     [TestCase(
+        "-6 Agility.\n-5 DV.\n-80 move speed.\nMust spend a turn to stand up.",
+        "敏捷-6。\nDV-5。\n移動速度 -80。\n立ち上がるには1ターンを費やす必要がある。")]
+    [TestCase(
+        "Slightly improves natural healing rate.\nAids in examining and disassembling artifacts.\n-6 DV.\nMust spend a turn to stand up before moving.",
+        "自然治癒速度がわずかに向上する。\n遺物の調査と分解に役立つ。\nDV-6。\n移動する前に立ち上がるには1ターンを費やす必要がある。")]
+    public void TryTranslateText_TranslatesRuntimeBodyPositionDetails(string source, string expected)
+    {
+        var changed = ActiveEffectTextTranslator.TryTranslateText(
+            source,
+            "ActiveEffectTextTranslatorTests",
+            "ActiveEffects.Details.BodyPosition",
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(changed, Is.True);
+            Assert.That(translated, Is.EqualTo(expected));
+        });
+    }
+
+    [TestCase(
+        "Unknown body position detail.",
+        false,
+        "Unknown body position detail.")]
+    [TestCase("", false, "")]
+    [TestCase("\u0001-6 Agility.", false, "\u0001-6 Agility.")]
+    [TestCase(
+        "<color=#ff0>-6 Agility.\n-5 DV.\n-80 move speed.\nMust spend a turn to stand up.</color>",
+        true,
+        "<color=#ff0>敏捷-6。\nDV-5。\n移動速度 -80。\n立ち上がるには1ターンを費やす必要がある。</color>")]
+    public void TryTranslateText_BodyPositionDetails_CoversFallbackAndEdges(
+        string source,
+        bool expectedChanged,
+        string expected)
+    {
+        var changed = ActiveEffectTextTranslator.TryTranslateText(
+            source,
+            "ActiveEffectTextTranslatorTests",
+            "ActiveEffects.Details.BodyPosition",
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(changed, Is.EqualTo(expectedChanged));
+            Assert.That(translated, Is.EqualTo(expected));
+        });
+    }
+
+    [TestCase(
         "+2 DV while wielding a long blade in the primary hand.",
         "主手に長剣を装備しているあいだDV+2。")]
     [TestCase(

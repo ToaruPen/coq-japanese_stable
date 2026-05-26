@@ -1998,6 +1998,51 @@
       "key": "serene",
       "context": "GetDisplayName.Adjective",
       "text": "静穏"
+    },
+    {
+      "key": "solar",
+      "context": "GetDisplayName.Adjective",
+      "text": "太陽光"
+    },
+    {
+      "key": "hydraulic",
+      "context": "GetDisplayName.Adjective",
+      "text": "油圧式"
+    },
+    {
+      "key": "fusion",
+      "context": "GetDisplayName.Adjective",
+      "text": "{{C|核融合式}}"
+    },
+    {
+      "key": "{{C|fusion}}",
+      "context": "GetDisplayName.Adjective",
+      "text": "{{C|核融合式}}"
+    },
+    {
+      "key": "{{c|mechanical}}",
+      "context": "GetDisplayName.Adjective",
+      "text": "{{c|機械化}}"
+    },
+    {
+      "key": "deactivated",
+      "context": "GetDisplayName.Adjective",
+      "text": "停止中の"
+    },
+    {
+      "key": "{{K|deactivated}}",
+      "context": "GetDisplayName.Adjective",
+      "text": "{{K|停止中の}}"
+    },
+    {
+      "key": "wooden",
+      "context": "GetDisplayName.Adjective",
+      "text": "木製の"
+    },
+    {
+      "key": "{{w|wooden}}",
+      "context": "GetDisplayName.Adjective",
+      "text": "{{w|木製の}}"
     }
   ]
 }

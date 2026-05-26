@@ -137,7 +137,7 @@ internal static class GrammarPatchHelpers
         var normalizedItems = new string[items.Count];
         for (var index = 0; index < items.Count; index++)
         {
-            normalizedItems[index] = StripLeadingIndefiniteArticle(items[index]);
+            normalizedItems[index] = NormalizeListItem(StripLeadingIndefiniteArticle(items[index]));
         }
 
         if (items.Count == 1)
@@ -186,6 +186,47 @@ internal static class GrammarPatchHelpers
         }
 
         return source;
+    }
+
+    private static string NormalizeListItem(string source)
+    {
+        var fixedLeaf = source switch
+        {
+            "equipped" => "装備中",
+            "powered" => "給電中",
+            "in use" => "使用中",
+            "deactivated" => "停止中",
+            _ => null,
+        };
+        if (fixedLeaf is not null)
+        {
+            return fixedLeaf;
+        }
+
+        if (TryNormalizeQuantifiedSet(source, "pair of ", "一対", out var pair))
+        {
+            return pair;
+        }
+
+        if (TryNormalizeQuantifiedSet(source, "set of ", "一組", out var set))
+        {
+            return set;
+        }
+
+        return source;
+    }
+
+    private static bool TryNormalizeQuantifiedSet(string source, string prefix, string suffix, out string normalized)
+    {
+        if (!source.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+        {
+            normalized = source;
+            return false;
+        }
+
+        var target = source.Substring(prefix.Length).Trim();
+        normalized = target.Length == 0 ? source : target + suffix;
+        return target.Length > 0;
     }
 
     internal static List<string> SplitSentenceList(string text)

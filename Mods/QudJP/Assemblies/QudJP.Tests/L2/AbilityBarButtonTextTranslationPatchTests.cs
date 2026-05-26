@@ -217,6 +217,24 @@ public sealed class AbilityBarButtonTextTranslationPatchTests
     }
 
     [Test]
+    public void TranslateButtonTextForQudTest_PreservesPrecoloredLocalizedHotkeySuffix()
+    {
+        var source = "<color=#77BFCFFF>放電 [12000チャージ] </color><color=#FFFFFFFF><</color><color=#98875FFF>4</color><color=#FFFFFFFF>></color>";
+
+        var translated = AbilityBarButtonTextTranslationPatch.TranslateButtonTextForQudTest(source);
+
+        Assert.That(translated, Is.EqualTo(source));
+    }
+
+    [Test]
+    public void TranslateButtonTextForQudTest_DoesNotRecolorPlainLocalizedHotkeySuffix()
+    {
+        var translated = AbilityBarButtonTextTranslationPatch.TranslateButtonTextForQudTest("フェイント <2>");
+
+        Assert.That(translated, Is.EqualTo("フェイント <2>"));
+    }
+
+    [Test]
     public void Postfix_UsesSharedAbilityManagerLeavesForDuplicateAbilityBarNames()
     {
         WriteDictionary(

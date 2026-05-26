@@ -457,6 +457,78 @@ internal static class LiquidVolumeFragmentTranslator
         return null;
     }
 
+    internal static string? TranslateLiquidPhrasePreservingColors(string source)
+    {
+        if (!ColorAwareTranslationComposer.HasColorMarkup(source))
+        {
+            return TranslateLiquidPhrase(source);
+        }
+
+        if (source.IndexOf("}} {{", StringComparison.Ordinal) < 0)
+        {
+            var fullPhrase = ColorAwareTranslationComposer.TranslatePreservingColors(
+                source,
+                visible =>
+                {
+                    var phrase = TranslateLiquidPhrase(visible);
+                    if (phrase is not null)
+                    {
+                        return phrase;
+                    }
+
+                    var name = TranslateLiquidName(visible);
+                    if (name is not null)
+                    {
+                        return name;
+                    }
+
+                    var adjective = TranslateLiquidAdjective(visible);
+                    return adjective is not null ? adjective : visible;
+                });
+            if (!string.Equals(fullPhrase, source, StringComparison.Ordinal))
+            {
+                return fullPhrase;
+            }
+        }
+
+        var tokens = source.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+        if (tokens.Length == 0)
+        {
+            return null;
+        }
+
+        var builder = new StringBuilder();
+        for (var index = 0; index < tokens.Length; index++)
+        {
+            if (index > 0)
+            {
+                builder.Append(' ');
+            }
+
+            var translatedToken = ColorAwareTranslationComposer.TranslatePreservingColors(
+                tokens[index],
+                visible =>
+                {
+                    var translatedName = TranslateLiquidName(visible);
+                    if (translatedName is not null)
+                    {
+                        return translatedName;
+                    }
+
+                    var translatedAdjective = TranslateLiquidAdjective(visible);
+                    return translatedAdjective is not null ? translatedAdjective : visible;
+                });
+            if (string.Equals(translatedToken, tokens[index], StringComparison.Ordinal))
+            {
+                return null;
+            }
+
+            builder.Append(translatedToken);
+        }
+
+        return builder.ToString();
+    }
+
     private static string? TranslateLiquidName(string source)
     {
         var normalized = NormalizeLiquidPhrase(source);

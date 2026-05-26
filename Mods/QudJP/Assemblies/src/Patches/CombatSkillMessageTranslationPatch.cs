@@ -15,6 +15,7 @@ public static class CombatSkillMessageTranslationPatch
     private static readonly IReadOnlyDictionary<string, string> CombatSkillCaptureTranslations =
         new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
         {
+            ["armor"] = "装甲",
             ["shield slam"] = "シールドスラム",
         };
 

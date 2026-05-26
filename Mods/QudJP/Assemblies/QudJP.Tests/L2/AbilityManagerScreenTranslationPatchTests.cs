@@ -347,6 +347,72 @@ public sealed class AbilityManagerScreenTranslationPatchTests
     }
 
     [Test]
+    public void Postfix_TranslatesDurationIncreasedReasonLine_WhenHighlightChanges()
+    {
+        WriteDictionary(
+            ("Sprint", "疾走"),
+            ("Type: ", "種別: "),
+            ("Maneuvers", "戦技"),
+            ("Double-Hearted", "二重心臓"));
+
+        var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyAbilityManagerScreenTarget), nameof(DummyAbilityManagerScreenTarget.HandleHighlightLeft)),
+                postfix: new HarmonyMethod(RequirePatchPostfix()));
+
+            var screen = new DummyAbilityManagerScreenTarget();
+            screen.HandleHighlightLeft(new DummyAbilityManagerScreenLineData
+            {
+                Id = "ability",
+                ability = new DummyAbilityManagerEntryTarget
+                {
+                    DisplayName = "Sprint",
+                    Class = "Maneuvers",
+                    Description = "Duration: {{G|13}} round\n\nDuration increased by 30% due to Double-Hearted mutation.",
+                },
+            });
+
+            Assert.That(
+                screen.rightSideDescriptionArea.text,
+                Is.EqualTo("{{y|種別: }}戦技\n\n持続時間: {{G|13}} ラウンド\n\n二重心臓変異により持続時間が30%増加。"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [TestCase(
+        "Duration increased by 30% due to Double-Hearted mutation.",
+        "{{y|種別: }}戦技\n\nDouble-Hearted変異により持続時間が30%増加。")]
+    [TestCase("", "{{y|種別: }}戦技\n\n")]
+    [TestCase(
+        "Duration increased by 30 due to Double-Hearted mutation.",
+        "{{y|種別: }}戦技\n\nDuration increased by 30 due to Double-Hearted mutation.")]
+    [TestCase(
+        "Duration increased by 30% due to {{G|Double-Hearted}} mutation.",
+        "{{y|種別: }}戦技\n\n{{G|Double-Hearted}}変異により持続時間が30%増加。")]
+    [TestCase(
+        "\u0001Duration increased by 30% due to Double-Hearted mutation.",
+        "{{y|種別: }}戦技\n\n\u0001Double-Hearted変異により持続時間が30%増加。")]
+    public void Postfix_DurationIncreasedReasonLine_CoversFallbackAndEdges(
+        string sourceDescription,
+        string expectedDescription)
+    {
+        WriteDictionary(
+            ("Type: ", "種別: "),
+            ("Maneuvers", "戦技"));
+
+        var actual = TranslateAbilityHighlightDescription(sourceDescription);
+
+        Assert.That(actual, Is.EqualTo(expectedDescription));
+    }
+
+    [Test]
     public void Postfix_FallsBackToEnglish_WhenDictionaryEntriesAreMissing()
     {
         WriteDictionary(("Maneuvers", "戦技"));
@@ -916,6 +982,37 @@ public sealed class AbilityManagerScreenTranslationPatchTests
         return asyncStateMachine?.StateMachineType is null
             ? null
             : AccessTools.Method(asyncStateMachine.StateMachineType, "MoveNext");
+    }
+
+    private static string TranslateAbilityHighlightDescription(string sourceDescription)
+    {
+        var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyAbilityManagerScreenTarget), nameof(DummyAbilityManagerScreenTarget.HandleHighlightLeft)),
+                postfix: new HarmonyMethod(RequirePatchPostfix()));
+
+            var screen = new DummyAbilityManagerScreenTarget();
+            screen.HandleHighlightLeft(new DummyAbilityManagerScreenLineData
+            {
+                Id = "ability",
+                ability = new DummyAbilityManagerEntryTarget
+                {
+                    DisplayName = "Sprint",
+                    Class = "Maneuvers",
+                    Description = sourceDescription,
+                },
+            });
+
+            return screen.rightSideDescriptionArea.text ?? string.Empty;
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
     }
 
     private void WriteDictionary(params (string key, string text)[] entries)

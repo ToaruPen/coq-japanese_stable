@@ -57,6 +57,10 @@ internal static class ActiveEffectTextTranslator
         @"^(?<shift>[+-]\d+) move speed\.$",
         RegexOptions.CultureInvariant);
 
+    private static readonly Regex StatShiftLinePattern = new(
+        @"^(?<shift>[+-]\d+) (?<stat>Strength|Agility|Toughness|Intelligence|Willpower|Ego|AV|DV|MA)\.$",
+        RegexOptions.CultureInvariant);
+
     private static readonly Regex AllMentalAttributesPattern = new(
         @"^(?<shift>[+-]\d+) to all mental attributes$",
         RegexOptions.CultureInvariant);
@@ -627,10 +631,32 @@ internal static class ActiveEffectTextTranslator
             return string.Format(CultureInfo.InvariantCulture, "移動速度 {0}。", moveSpeedMatch.Groups["shift"].Value);
         }
 
+        var statShiftMatch = StatShiftLinePattern.Match(visible);
+        if (statShiftMatch.Success)
+        {
+            return TranslateEffectStat(statShiftMatch.Groups["stat"].Value) + statShiftMatch.Groups["shift"].Value + "。";
+        }
+
         var allMentalAttributesMatch = AllMentalAttributesPattern.Match(visible);
         if (allMentalAttributesMatch.Success)
         {
             return string.Format(CultureInfo.InvariantCulture, "全精神属性に {0}", allMentalAttributesMatch.Groups["shift"].Value);
+        }
+
+        var runtimeObservedLine = visible switch
+        {
+            "Must spend a turn to stand up." => "立ち上がるには1ターンを費やす必要がある。",
+            "Must spend a turn to stand up before moving." => "移動する前に立ち上がるには1ターンを費やす必要がある。",
+            "Slightly improves natural healing rate." => "自然治癒速度がわずかに向上する。",
+            "Improves natural healing rate." => "自然治癒速度が向上する。",
+            "Aids in examining and disassembling artifacts." => "遺物の調査と分解に役立つ。",
+            "Distracts from examining and disassembling artifacts." => "遺物の調査と分解を妨げる。",
+            "Inflicts ongoing damage." => "継続ダメージを与える。",
+            _ => null,
+        };
+        if (runtimeObservedLine is not null)
+        {
+            return runtimeObservedLine;
         }
 
         if (string.Equals(visible, "Moving at full speed.", StringComparison.Ordinal))
@@ -645,6 +671,20 @@ internal static class ActiveEffectTextTranslator
         }
 
         return visible;
+    }
+
+    private static string TranslateEffectStat(string stat)
+    {
+        return stat switch
+        {
+            "Strength" => "筋力",
+            "Agility" => "敏捷",
+            "Toughness" => "頑健",
+            "Intelligence" => "知力",
+            "Willpower" => "意志力",
+            "Ego" => "自我",
+            _ => stat,
+        };
     }
 
     private static string TranslateCoveredInLiquidMatch(Match coveredMatch)

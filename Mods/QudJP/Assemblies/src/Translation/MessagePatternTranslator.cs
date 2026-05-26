@@ -42,6 +42,9 @@ internal static class MessagePatternTranslator
     private static readonly Regex LevelUpStatLineMarkupPattern = new Regex(
         "^You gain (?<amount>.+?) (?<kind>hitpoints?|Skill Points?|Mutation Points?|Attribute Points?|to each attribute)$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex DirectionQualifiedCapturePattern = new Regex(
+        "^(?<target>.+?) to the (?<direction>north|south|east|west|northeast|northwest|southeast|southwest)$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
     internal static int LoadInvocationCount => Volatile.Read(ref loadInvocationCount);
 
@@ -1039,6 +1042,11 @@ internal static class MessagePatternTranslator
             return direction;
         }
 
+        if (TryTranslateDirectionQualifiedCapture(source, out var directionQualified))
+        {
+            return directionQualified;
+        }
+
         using var _ = Translator.PushMissingKeyLoggingSuppression(true);
         if (ActivatedAbilityNameTranslator.TryTranslateVisibleName(source, out var activatedAbilityCapture))
         {
@@ -1089,6 +1097,25 @@ internal static class MessagePatternTranslator
         }
 
         return source;
+    }
+
+    private static bool TryTranslateDirectionQualifiedCapture(string source, out string translated)
+    {
+        var match = DirectionQualifiedCapturePattern.Match(source);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        if (!DirectionPhraseTranslator.TryTranslateNounStem(match.Groups["direction"].Value, out var direction))
+        {
+            translated = source;
+            return false;
+        }
+
+        translated = TranslateTemplateCapture(match.Groups["target"].Value) + "（" + direction + "）";
+        return true;
     }
 
     private static string TranslateAdverbTemplateCapture(string source)

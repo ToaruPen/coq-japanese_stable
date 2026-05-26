@@ -104,6 +104,14 @@ public sealed class WorldPartsFragmentTranslatorTests
             expected);
     }
 
+    [Test]
+    public void LiquidVolumeTranslator_TranslatesColoredMultiWordLiquidPhrase()
+    {
+        Assert.That(
+            LiquidVolumeFragmentTranslator.TranslateLiquidPhrasePreservingColors("{{B|fresh water}}"),
+            Is.EqualTo("{{B|真水}}"));
+    }
+
     [TestCase("")]
     [TestCase("random garbage text")]
     [TestCase("\u0001It's fizzy.")]

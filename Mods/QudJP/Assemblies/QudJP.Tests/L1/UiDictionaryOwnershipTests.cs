@@ -221,6 +221,20 @@ public sealed class UiDictionaryOwnershipTests
                     && string.Equals(entry.Text, "wishコマンドを読み込み中", StringComparison.Ordinal)),
                 "WishManager loading status should be owned by ui-default.ja.json.");
             Assert.That(
+                uiDefaultEntries,
+                Has.Some.Matches<DictionaryEntry>(entry =>
+                    string.Equals(entry.Key, "Space-select", StringComparison.Ordinal)
+                    && string.IsNullOrEmpty(entry.Context)
+                    && string.Equals(entry.Text, "[Space] 選択", StringComparison.Ordinal)),
+                "Runtime key hints that arrive as Space-select should keep their key brackets in ui-default.ja.json.");
+            Assert.That(
+                uiDefaultEntries,
+                Has.Some.Matches<DictionaryEntry>(entry =>
+                    string.Equals(entry.Key, "space-select", StringComparison.Ordinal)
+                    && string.IsNullOrEmpty(entry.Context)
+                    && string.Equals(entry.Text, "[Space] 選択", StringComparison.Ordinal)),
+                "Runtime key hints that arrive as space-select should keep their key brackets in ui-default.ja.json.");
+            Assert.That(
                 pickTargetEntries,
                 Has.Some.Matches<DictionaryEntry>(entry =>
                     string.Equals(entry.Key, "Pick Target", StringComparison.Ordinal)

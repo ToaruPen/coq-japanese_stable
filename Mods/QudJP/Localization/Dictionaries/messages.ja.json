@@ -3,6 +3,21 @@
   "patterns": [
     {"pattern": "^You eat the meal\\.$", "template": "食事をとった。", "route": "popup"},
     {
+      "pattern": "^A loud buzz is emitted\\. The unauthorized glyph flashes on the display\\.$",
+      "template": "大きなブザー音が鳴った。認証されていないグリフがディスプレイに点滅した。",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^Youは(.+?)で滑った！$",
+      "template": "あなたは{0}で滑った！",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?)は(.+?)で滑った！$",
+      "template": "{0}は{1}で滑った！",
+      "route": "emit-message"
+    },
+    {
       "pattern": "^You toss (.+?) into a pot and stir\\.$",
       "template": "{0}を鍋に入れてかき混ぜた。",
       "route": "popup"
@@ -176,6 +191,11 @@
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+) hits you for (\\d+) damage[.!]?$",
       "template": "{0}の攻撃で{1}ダメージを受けた",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) hits you \\(x(\\d+)\\) from the ((?i:north|south|east|west|northeast|northwest|southeast|southwest)) for (\\d+) damage[.!]?$",
+      "template": "{t0}が{t2}からあなたに命中、{3}ダメージ！ (x{1})",
       "route": "emit-message"
     },
     {
@@ -481,6 +501,11 @@
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+) hits \\((x\\d+)\\) for (\\d+) damage with their (.+?)[.!] \\[(.+?)\\]$",
       "template": "{0}の{3}で{2}ダメージを受けた。({1}) [{4}]",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+) misses you with (?:his|her|its) (?:attack)?[.!] \\[(.+?) vs (.+?)\\]$",
+      "template": "{0}の攻撃は外れた。[{1} vs {2}]",
       "route": "emit-message"
     },
     {
@@ -1024,6 +1049,21 @@
       "route": "emit-message"
     },
     {
+      "pattern": "^You stop (moving|resting|digging|gathering|attacking|acting|auto-exploring|exploring|waiting|disassembling) because something is shooting at you[.!]?$",
+      "template": "何かがあなたを撃っているので{t0}をやめた。",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^You stop (moving|resting|digging|gathering|attacking|acting|auto-exploring|exploring|waiting|disassembling) because you see something shooting at you[.!]?$",
+      "template": "何かがあなたを撃っているのが見えたので{t0}をやめた。",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^You stop (moving|resting|digging|gathering|attacking|acting|auto-exploring|exploring|waiting|disassembling) because (?:the |a |an )?(.+?) is in your way[.!]?$",
+      "template": "{1}が邪魔なので{t0}をやめた。",
+      "route": "emit-message"
+    },
+    {
       "pattern": "^You stop (moving|resting|digging|gathering|attacking|acting|auto-exploring|exploring|waiting|disassembling) because (.+?)[.!]?$",
       "template": "{1}ので{t0}をやめた。",
       "route": "emit-message"
@@ -1129,8 +1169,18 @@
       "route": "emit-message"
     },
     {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) is stuck in (?:the |a |an )?(.+?)[.!]?$",
+      "template": "{t0}は{t1}にはまっている！",
+      "route": "emit-message"
+    },
+    {
       "pattern": "^(?:The )?(.+?) stands up[.!]?$",
       "template": "{0}は立ち上がった。",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) sits? down on (?:the |a |an )?(.+?)[.!]?$",
+      "template": "{t0}は{t1}に座った。",
       "route": "emit-message"
     },
     {
@@ -1494,6 +1544,11 @@
       "route": "emit-message"
     },
     {
+      "pattern": "^(.+?)の shot goes wild!$",
+      "template": "{0}の弾が逸れた！",
+      "route": "emit-message"
+    },
+    {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?)(?:'s|s') shot goes wild!$",
       "template": "{0}の弾が逸れた！",
       "route": "emit-message"
@@ -1599,8 +1654,23 @@
       "route": "emit-message"
     },
     {
+      "pattern": "^You extinguish (?:the |a |an )?(.+?)[.!]?$",
+      "template": "{t0}を消した。",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^You light (?:the |a |an )?(.+?)[.!]?$",
+      "template": "{t0}に火をつけた。",
+      "route": "emit-message"
+    },
+    {
       "pattern": "^You butcher (?:a |an |the )?(.+?) from (?:the |a |an )?(.+?)[.!]?$",
       "template": "{1}から{0}を解体した",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^You butcher (?:the |a |an )?(.+?) to the (north|south|east|west|northeast|northwest|southeast|southwest) into a set of (.+?)[.!]?$",
+      "template": "{t1}にある{t0}を解体して{t2}一組にした。",
       "route": "emit-message"
     },
     {
@@ -2200,7 +2270,7 @@
     },
     {
       "pattern": "^(?:An|The) electrical arc leaps from (?:the |a |an )?(.+?) toward (.+?)!$",
-      "template": "電弧が{0}から{1}へ走った！",
+      "template": "電弧が{t0}から{t1}へ走った！",
       "route": "emit-message"
     },
     {

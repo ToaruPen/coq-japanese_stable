@@ -194,6 +194,80 @@ public sealed class JournalPatternTranslatorTests
     }
 
     [Test]
+    public void Translate_TranslatesChallengeSultanCrownedDuelPattern()
+    {
+        WriteDictionaryFile(
+            Path.Combine("Scoped", "historyspice-common.ja.json"),
+            new[]
+            {
+                ("water barons", "水の男爵たち"),
+                ("seized the crown", "王冠を奪い取った"),
+            });
+        WritePatternDictionary((
+            "^((?:In|Early in|Late in|Sometime in))\\ (.+?)\\ (?:BR|AR),\\ (.+?)\\ challenged\\ the\\ sultan\\ of\\ Qud\\ to\\ a\\ duel\\ (?:over\\ the\\ rights\\ of|over\\ an\\ ordinance\\ prohibiting\\ the\\ practice\\ of|over\\ the\\ sanctioned\\ persecution\\ of)\\ (.+?)\\.\\ (.+?)\\ won\\ and\\ (.+?)\\.\\ (.+?)\\ was\\ (.+?)\\ years\\ old\\.$",
+            "{t1}{t0}、{t2}は{t3}を巡ってクッドのスルタンに決闘を挑んだ。{t4}は勝利し、{t5}。{t6}は{t7}歳であった。"));
+
+        var translated = JournalPatternTranslator.Translate(
+            "In 1925 BR, ナレドゥクフト challenged the sultan of Qud to a duel over the rights of water barons. She won and seized the crown. She was 49 years old.");
+
+        Assert.That(
+            translated,
+            Is.EqualTo("1925年、ナレドゥクフトは水の男爵たちを巡ってクッドのスルタンに決闘を挑んだ。その者は勝利し、王冠を奪い取った。その者は49歳であった。"));
+    }
+
+    [Test]
+    public void Translate_TranslatesChallengeSultanPretenderWhileLeadingPattern()
+    {
+        WriteDictionaryFile(
+            Path.Combine("Scoped", "historyspice-common.ja.json"),
+            new[]
+            {
+                ("aspirant", "野心家"),
+                ("mollusks", "軟体動物"),
+                ("drawn and quartered", "八つ裂きにされた"),
+            });
+        WritePatternDictionary((
+            "^While\\ leading\\ a\\ small\\ army\\ in\\ (.+?),\\ (.+?)\\ was\\ challenged\\ by\\ (?:a|an|the)\\ (.+?)\\ to\\ a\\ duel\\ (?:over\\ the\\ rights\\ of|over\\ an\\ ordinance\\ mandating\\ the\\ practice\\ of|over\\ the\\ sanctioned\\ persecution\\ of)\\ (.+?)\\.\\ (.+?)\\ lost\\ and\\ was\\ (.+?)\\.\\ (.+?)\\ was\\ (.+?)\\ years\\ old\\.$",
+            "{t0}で小軍を率いていたとき、{t1}は{t3}を巡って{t2}に決闘を挑まれた。{t4}は敗れ、{t5}。{t6}は{t7}歳であった。"));
+
+        var translated = JournalPatternTranslator.Translate(
+            "While leading a small army in The Great Salt Desert, ナレドゥクフト was challenged by an aspirant to a duel over the rights of mollusks. She lost and was drawn and quartered. She was 49 years old.");
+
+        Assert.That(
+            translated,
+            Is.EqualTo("Great Salt Desertで小軍を率いていたとき、ナレドゥクフトは軟体動物を巡って野心家に決闘を挑まれた。その者は敗れ、八つ裂きにされた。その者は49歳であった。"));
+    }
+
+    [Test]
+    public void Translate_ChallengeSultanDuelPatterns_CoverFallbackAndEdges()
+    {
+        WriteDictionaryFile(
+            Path.Combine("Scoped", "historyspice-common.ja.json"),
+            new[]
+            {
+                ("water barons", "水の男爵たち"),
+                ("seized the crown", "王冠を奪い取った"),
+            });
+        WritePatternDictionary((
+            "^((?:In|Early in|Late in|Sometime in))\\ (.+?)\\ (?:BR|AR),\\ (.+?)\\ challenged\\ the\\ sultan\\ of\\ Qud\\ to\\ a\\ duel\\ (?:over\\ the\\ rights\\ of|over\\ an\\ ordinance\\ prohibiting\\ the\\ practice\\ of|over\\ the\\ sanctioned\\ persecution\\ of)\\ (.+?)\\.\\ (.+?)\\ won\\ and\\ (.+?)\\.\\ (.+?)\\ was\\ (.+?)\\ years\\ old\\.$",
+            "{t1}{t0}、{t2}は{t3}を巡ってクッドのスルタンに決闘を挑んだ。{t4}は勝利し、{t5}。{t6}は{t7}歳であった。"));
+
+        const string source =
+            "In 1925 BR, ナレドゥクフト challenged the sultan of Qud to a duel over the rights of water barons. She won and seized the crown. She was 49 years old.";
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                JournalPatternTranslator.Translate(
+                    "In 1925 BR, ナレドゥクフト challenged the sultan of Qud to a duel over the rights of <color=#ff0>water barons</color>. She won and seized the crown. She was 49 years old."),
+                Is.EqualTo("1925年、ナレドゥクフトは<color=#ff0>水の男爵たち</color>を巡ってクッドのスルタンに決闘を挑んだ。その者は勝利し、王冠を奪い取った。その者は49歳であった。"));
+            Assert.That(JournalPatternTranslator.Translate("\u0001" + source), Is.EqualTo("\u0001" + source));
+            Assert.That(JournalPatternTranslator.Translate("A different chronicle entry."), Is.EqualTo("A different chronicle entry."));
+            Assert.That(JournalPatternTranslator.Translate(string.Empty), Is.EqualTo(string.Empty));
+        });
+    }
+
+    [Test]
     public void Translate_NewArticlelessAndDeathPatterns_ReturnEmptyString_WhenSourceIsEmpty()
     {
         WritePatternDictionary(

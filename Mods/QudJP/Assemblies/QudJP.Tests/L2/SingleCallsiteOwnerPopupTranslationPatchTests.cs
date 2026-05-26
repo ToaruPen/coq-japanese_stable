@@ -427,7 +427,7 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
     [TestCase(
         nameof(DummySingleCallsiteOwnerPopupTarget.ProcessTargetedMove),
         "Do you really want to attack {{Y|the snapjaw}}?",
-        "本当に{{Y|snapjaw}}を攻撃しますか？",
+        "本当に{{Y|スナップジョー}}を攻撃しますか？",
         "PhysicsAttackConfirm",
         PopupMethod.ShowYesNo)]
     [TestCase(

@@ -27,6 +27,9 @@ public static class AbilityBarButtonTextTranslationPatch
     private static readonly Regex RecoilToZonePattern = new Regex(
         "^Recoil to (?<zone>.+)$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex PrecoloredHotkeySuffixPattern = new Regex(
+        @"</color><color=#[0-9A-Fa-f]{8}><</color><color=#[0-9A-Fa-f]{8}>[^<>]+</color><color=#[0-9A-Fa-f]{8}>></color>$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static bool abilityBarButtonComponentTypeResolved;
     private static Type? abilityBarButtonComponentType;
 
@@ -187,7 +190,7 @@ public static class AbilityBarButtonTextTranslationPatch
 
     private static bool TryTranslateAbilityButtonText(string source, string route, out string translated)
     {
-        var suffixIndex = source.IndexOf(" {{", StringComparison.Ordinal);
+        var suffixIndex = FindHotkeySuffixIndex(source);
         var nameSegment = suffixIndex >= 0 ? source.Substring(0, suffixIndex) : source;
         var suffix = suffixIndex >= 0 ? source.Substring(suffixIndex) : string.Empty;
 
@@ -200,6 +203,18 @@ public static class AbilityBarButtonTextTranslationPatch
 
         translated = translatedName + translatedSuffix;
         return changed;
+    }
+
+    private static int FindHotkeySuffixIndex(string source)
+    {
+        var qudMarkupSuffixIndex = source.IndexOf(" {{", StringComparison.Ordinal);
+        if (qudMarkupSuffixIndex >= 0)
+        {
+            return qudMarkupSuffixIndex;
+        }
+
+        var precoloredMatch = PrecoloredHotkeySuffixPattern.Match(source);
+        return precoloredMatch.Success ? precoloredMatch.Index : -1;
     }
 
     internal static string TranslateButtonTextForQudTest(string source)
