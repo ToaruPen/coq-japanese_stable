@@ -197,6 +197,180 @@ public sealed class SifrahPureOwnerPopupTranslationPatchTests
     }
 
     [TestCase(
+        nameof(DummySifrahPureOwnerPopupProducerTarget.BaetylOfferingCheckEarlyExit),
+        nameof(DummyPopupShow.ShowYesNoCancel),
+        "Do you want to finish the offering ritual as matters stand?",
+        "現状のまま献上の儀式を終えますか？",
+        "BaetylOfferingCheckEarlyExit")]
+    [TestCase(
+        nameof(DummySifrahPureOwnerPopupProducerTarget.BaetylOfferingCheckEarlyExit),
+        nameof(DummyPopupShow.ShowYesNo),
+        "Exiting now will finish the offering ritual as matters stand. Are you sure you want to exit?",
+        "今終了すると現状のまま献上の儀式が終わる。本当に終了しますか？",
+        "BaetylOfferingCheckEarlyExit")]
+    [TestCase(
+        nameof(DummySifrahPureOwnerPopupProducerTarget.BeguilingCheckEarlyExit),
+        nameof(DummyPopupShow.ShowYesNoCancel),
+        "Do you want to finish the beguiling attempt as matters stand?",
+        "現状のまま魅了の試みを終えますか？",
+        "BeguilingCheckEarlyExit")]
+    [TestCase(
+        nameof(DummySifrahPureOwnerPopupProducerTarget.BeguilingCheckEarlyExit),
+        nameof(DummyPopupShow.ShowYesNo),
+        "Exiting now will finish the beguiling attempt as matters stand. Are you sure you want to exit?",
+        "今終了すると現状のまま魅了の試みが終わる。本当に終了しますか？",
+        "BeguilingCheckEarlyExit")]
+    [TestCase(
+        nameof(DummySifrahPureOwnerPopupProducerTarget.FormalWaterRitualCheckEarlyExit),
+        nameof(DummyPopupShow.ShowYesNoCancel),
+        "Do you want to finish the formal water ritual as matters stand?",
+        "現状のまま正式な水儀を終えますか？",
+        "FormalWaterRitualCheckEarlyExit")]
+    [TestCase(
+        nameof(DummySifrahPureOwnerPopupProducerTarget.FormalWaterRitualCheckEarlyExit),
+        nameof(DummyPopupShow.ShowYesNo),
+        "Exiting now will finish the formal water ritual as matters stand. Are you sure you want to exit?",
+        "今終了すると現状のまま正式な水儀が終わる。本当に終了しますか？",
+        "FormalWaterRitualCheckEarlyExit")]
+    [TestCase(
+        nameof(DummySifrahPureOwnerPopupProducerTarget.HagglingCheckEarlyExit),
+        nameof(DummyPopupShow.ShowYesNoCancel),
+        "Do you want to finish haggling as matters stand?",
+        "現状のまま取引を終えますか？",
+        "HagglingCheckEarlyExit")]
+    [TestCase(
+        nameof(DummySifrahPureOwnerPopupProducerTarget.HagglingCheckEarlyExit),
+        nameof(DummyPopupShow.ShowYesNo),
+        "Exiting now will finish haggling as matters stand. Are you sure you want to exit?",
+        "今終了すると現状のまま取引が終わる。本当に終了しますか？",
+        "HagglingCheckEarlyExit")]
+    [TestCase(
+        nameof(DummySifrahPureOwnerPopupProducerTarget.ItemNamingCheckEarlyExit),
+        nameof(DummyPopupShow.ShowYesNoCancel),
+        "Do you want to finish the naming ritual as matters stand?",
+        "現状のまま名付けの儀式を終えますか？",
+        "ItemNamingCheckEarlyExit")]
+    [TestCase(
+        nameof(DummySifrahPureOwnerPopupProducerTarget.ItemNamingCheckEarlyExit),
+        nameof(DummyPopupShow.ShowYesNo),
+        "Exiting now will finish the naming ritual as matters stand. Are you sure you want to exit?",
+        "今終了すると現状のまま名付けの儀式が終わる。本当に終了しますか？",
+        "ItemNamingCheckEarlyExit")]
+    [TestCase(
+        nameof(DummySifrahPureOwnerPopupProducerTarget.ProselytizationCheckEarlyExit),
+        nameof(DummyPopupShow.ShowYesNoCancel),
+        "Do you want to finish the proselytization attempt as matters stand?",
+        "現状のまま布教の試みを終えますか？",
+        "ProselytizationCheckEarlyExit")]
+    [TestCase(
+        nameof(DummySifrahPureOwnerPopupProducerTarget.ProselytizationCheckEarlyExit),
+        nameof(DummyPopupShow.ShowYesNo),
+        "Exiting now will finish the proselytization attempt as matters stand. Are you sure you want to exit?",
+        "今終了すると現状のまま布教の試みが終わる。本当に終了しますか？",
+        "ProselytizationCheckEarlyExit")]
+    [TestCase(
+        nameof(DummySifrahPureOwnerPopupProducerTarget.PsychicCombatCheckEarlyExit),
+        nameof(DummyPopupShow.ShowYesNoCancel),
+        "Do you want to finish psychic combat as matters stand?",
+        "現状のまま精神戦を終えますか？",
+        "PsychicCombatCheckEarlyExit")]
+    [TestCase(
+        nameof(DummySifrahPureOwnerPopupProducerTarget.PsychicCombatCheckEarlyExit),
+        nameof(DummyPopupShow.ShowYesNo),
+        "Exiting now will finish psychic combat as matters stand. Are you sure you want to exit?",
+        "今終了すると現状のまま精神戦が終わる。本当に終了しますか？",
+        "PsychicCombatCheckEarlyExit")]
+    [TestCase(
+        nameof(DummySifrahPureOwnerPopupProducerTarget.RebukingCheckEarlyExit),
+        nameof(DummyPopupShow.ShowYesNoCancel),
+        "Do you want to finish the rebuking attempt as matters stand?",
+        "現状のまま叱責の試みを終えますか？",
+        "RebukingCheckEarlyExit")]
+    [TestCase(
+        nameof(DummySifrahPureOwnerPopupProducerTarget.RebukingCheckEarlyExit),
+        nameof(DummyPopupShow.ShowYesNo),
+        "Exiting now will finish the rebuking attempt as matters stand. Are you sure you want to exit?",
+        "今終了すると現状のまま叱責の試みが終わる。本当に終了しますか？",
+        "RebukingCheckEarlyExit")]
+    public void Patch_TranslatesCheckEarlyExitPrompts_WhenOwnerPatched(
+        string methodName,
+        string popupMethod,
+        string source,
+        string expected,
+        string detail)
+    {
+        OwnerPopupRouteTestHarness.WithPatchedPopupOwner(
+            typeof(SifrahPureOwnerPopupTranslationPatch),
+            RequireOwnerMethod(methodName),
+            () =>
+            {
+                var target = new DummySifrahPureOwnerPopupProducerTarget
+                {
+                    PopupMethod = popupMethod,
+                    PopupMessageToShow = source,
+                };
+
+                InvokeOwnerMethod(target, methodName);
+
+                Assert.Multiple(() =>
+                {
+                    if (popupMethod == nameof(DummyPopupShow.ShowYesNoCancel))
+                    {
+                        Assert.That(DummyPopupShow.LastShowYesNoCancelMessage, Is.EqualTo(expected));
+                    }
+                    else
+                    {
+                        Assert.That(DummyPopupShow.LastShowYesNoMessage, Is.EqualTo(expected));
+                    }
+
+                    Assert.That(HitCount(detail), Is.EqualTo(1));
+                });
+            });
+    }
+
+    [TestCase(
+        nameof(DummyPopupShow.Show),
+        "You determine these options to not be valid responses to any requirement:\n\n{{Y|phase prism}}\n{{C|rusted key}}",
+        "どの条件にも有効な応答ではない選択肢を特定した:\n\n{{Y|phase prism}}\n{{C|rusted key}}",
+        "SifrahGameUseInsightInvalidOptions")]
+    [TestCase(
+        nameof(DummyPopupShow.ShowFail),
+        "All options which are not correct responses to any requirement have already been eliminated.",
+        "正しい応答ではない選択肢はすべてすでに除外されている。",
+        "SifrahGameUseInsightAlreadyEliminated")]
+    [TestCase(
+        nameof(DummyPopupShow.ShowFail),
+        "All options are correct responses to some requirement.",
+        "すべての選択肢が何らかの条件への正しい応答である。",
+        "SifrahGameUseInsightAllCorrect")]
+    public void Patch_TranslatesUseInsightPopups_WhenOwnerPatched(
+        string popupMethod,
+        string source,
+        string expected,
+        string detail)
+    {
+        OwnerPopupRouteTestHarness.WithPatchedPopupOwner(
+            typeof(SifrahPureOwnerPopupTranslationPatch),
+            RequireOwnerMethod(nameof(DummySifrahPureOwnerPopupProducerTarget.SifrahGameUseInsight)),
+            () =>
+            {
+                var target = new DummySifrahPureOwnerPopupProducerTarget
+                {
+                    PopupMethod = popupMethod,
+                    PopupMessageToShow = source,
+                };
+
+                target.SifrahGameUseInsight(new DummyGameObject());
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(expected));
+                    Assert.That(HitCount(detail), Is.EqualTo(1));
+                });
+            });
+    }
+
+    [TestCase(
         nameof(DummySifrahPureOwnerPopupProducerTarget.DisarmingSifrah),
         "You have mastered disarming operations of this complexity. Do you want to perform detailed disarming anyway, with an enhanced chance of exceptional success? If you answer 'No', you will automatically succeed.",
         "この難度での解除作業は熟達済みだ。それでも詳細に解除を試みますか？『いいえ』なら、自動で成功する。",

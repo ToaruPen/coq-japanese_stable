@@ -121,6 +121,12 @@ public sealed class WaterRitualPopupTranslationPatchTests
     [TestCase(
         nameof(DummyWaterRitualPopupProducerTarget.WaterRitualRandomMutationHandleEvent),
         nameof(DummyPopupShow.ShowFail),
+        "You can't be mutated.",
+        "変異できない。",
+        "RandomMutationNonMutant")]
+    [TestCase(
+        nameof(DummyWaterRitualPopupProducerTarget.WaterRitualRandomMutationHandleEvent),
+        nameof(DummyPopupShow.ShowFail),
         "You can't gain physical mutations.",
         "肉体変異は得られない。",
         "RandomMutationIncompatible")]
@@ -677,7 +683,6 @@ public sealed class WaterRitualPopupTranslationPatchTests
             });
     }
 
-    [TestCase("You can't be mutated.", nameof(DummyPopupShow.ShowFail))]
     [TestCase("{{G|Tam}} shares an unfamiliar mutation lesson with you.", nameof(DummyPopupShow.Show))]
     public void Patch_LeavesRandomMutationNonOwnerMessagesUnchanged_WhenOwnerPatched(string source, string popupMethod)
     {

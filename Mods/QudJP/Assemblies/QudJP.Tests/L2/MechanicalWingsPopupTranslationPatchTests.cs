@@ -20,6 +20,9 @@ public sealed class MechanicalWingsPopupTranslationPatchTests
     private const string UnresponsiveTranslated = "{{Y|mechanical wings}}は反応しなくなった。";
     private const string SingularStartupTranslated = "{{Y|gyrocopter backpack}}はまだ起動中だ";
     private const string SingularUnresponsiveTranslated = "{{Y|gyrocopter backpack}}は反応しなくなった。";
+    private const string LongFallSource =
+        "It looks like a long way down the {{Y|shaft}} you're above. Are you sure you want to stop flying?";
+    private const string LongFallTranslated = "あなたがいる{{Y|shaft}}の下はかなり深そうだ。飛行をやめてもよいですか？";
 
     [SetUp]
     public void SetUp()
@@ -80,6 +83,26 @@ public sealed class MechanicalWingsPopupTranslationPatchTests
         {
             Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(StartupSource));
             Assert.That(GetStartupHitCount(), Is.EqualTo(0));
+        });
+    }
+
+    [Test]
+    public void Patch_TranslatesLongFallWarning_WhenFireEventOwnerPatched()
+    {
+        RunWithOwnerAndPopupPatches([nameof(DummyMechanicalWingsProducer.FireEvent)], () =>
+        {
+            var target = new DummyMechanicalWingsProducer
+            {
+                PopupMessageToShow = LongFallSource,
+            };
+
+            target.FireEvent();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyPopupShow.LastShowYesNoMessage, Is.EqualTo(LongFallTranslated));
+                Assert.That(GetLongFallHitCount(), Is.EqualTo(1));
+            });
         });
     }
 
@@ -272,6 +295,9 @@ public sealed class MechanicalWingsPopupTranslationPatchTests
         harmony.Patch(
             original: RequireMethod(typeof(DummyPopupShow), nameof(DummyPopupShow.Show)),
             prefix: new HarmonyMethod(RequireMethod(typeof(PopupShowTranslationPatch), nameof(PopupShowTranslationPatch.Prefix))));
+        harmony.Patch(
+            original: RequireMethod(typeof(DummyPopupShow), nameof(DummyPopupShow.ShowYesNo)),
+            prefix: new HarmonyMethod(RequireMethod(typeof(PopupShowTranslationPatch), nameof(PopupShowTranslationPatch.Prefix))));
     }
 
     private static int GetStartupHitCount()
@@ -286,6 +312,13 @@ public sealed class MechanicalWingsPopupTranslationPatchTests
         return DynamicTextObservability.GetRouteFamilyHitCountForTests(
             nameof(PopupShowTranslationPatch),
             "Popup.Show.MechanicalWingsUnresponsive");
+    }
+
+    private static int GetLongFallHitCount()
+    {
+        return DynamicTextObservability.GetRouteFamilyHitCountForTests(
+            nameof(PopupShowTranslationPatch),
+            "Popup.Show.MechanicalWingsLongFallWarning");
     }
 
     private sealed class DummyMechanicalWingsProducer
@@ -306,6 +339,13 @@ public sealed class MechanicalWingsPopupTranslationPatchTests
         {
             DummyPopupShow.ShowFail(PopupMessageToShow);
             return false;
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public bool FireEvent()
+        {
+            DummyPopupShow.ShowYesNo(PopupMessageToShow);
+            return true;
         }
     }
 }

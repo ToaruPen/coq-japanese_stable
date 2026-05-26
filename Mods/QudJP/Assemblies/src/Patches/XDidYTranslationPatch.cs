@@ -292,6 +292,10 @@ public static class XDidYTranslationPatch
                 return true;
             }
 
+            ActiveEffectMessageFrameOwnerTranslationPatch.RecordMessageFrameTransformIfActive(
+                "Messaging.XDidY",
+                BuildObservedXDidYFrame(verbText, extra, endMark),
+                playerMessage);
             return !DispatchTranslatedMessage(
                 ResolveMessageSource(source, actor),
                 playerMessage,
@@ -325,6 +329,10 @@ public static class XDidYTranslationPatch
             return true;
         }
 
+        ActiveEffectMessageFrameOwnerTranslationPatch.RecordMessageFrameTransformIfActive(
+            "Messaging.XDidY",
+            BuildObservedXDidYFrame(verbText, extra, endMark),
+            translated);
         return FinalizeAndDispatch(translated, source, actor, color, colorAsGoodFor, colorAsBadFor, fromDialog, usePopup);
     }
 
@@ -389,6 +397,10 @@ public static class XDidYTranslationPatch
                 return true;
             }
 
+            ActiveEffectMessageFrameOwnerTranslationPatch.RecordMessageFrameTransformIfActive(
+                "Messaging.XDidYToZ",
+                BuildObservedXDidYToZFrame(verbText, preposition, extra, endMark),
+                playerMessage);
             return !DispatchTranslatedMessage(
                 ResolveMessageSource(source, actor),
                 playerMessage,
@@ -443,6 +455,10 @@ public static class XDidYTranslationPatch
             return true;
         }
 
+        ActiveEffectMessageFrameOwnerTranslationPatch.RecordMessageFrameTransformIfActive(
+            "Messaging.XDidYToZ",
+            BuildObservedXDidYToZFrame(verbText, preposition, extra, endMark),
+            translated);
         return FinalizeAndDispatch(translated, source, actor, color, colorAsGoodFor, colorAsBadFor, fromDialog, usePopup);
     }
 
@@ -1047,6 +1063,30 @@ public static class XDidYTranslationPatch
         return string.IsNullOrEmpty(colorCode)
             ? message
             : "{{" + colorCode + "|" + message + "}}";
+    }
+
+    private static string BuildObservedXDidYFrame(string verb, string? extra, string? endMark)
+    {
+        return string.Join(
+            "|",
+            verb,
+            extra ?? "<none>",
+            string.IsNullOrEmpty(endMark) ? "." : endMark!);
+    }
+
+    private static string BuildObservedXDidYToZFrame(
+        string verb,
+        string? preposition,
+        string? extra,
+        string? endMark)
+    {
+        return string.Join(
+            "|",
+            verb,
+            preposition ?? "<none>",
+            "{0}",
+            extra ?? "<none>",
+            string.IsNullOrEmpty(endMark) ? "." : endMark!);
     }
 
     private static string? ResolveConsequentialColor(object? colorAsGoodFor, object? colorAsBadFor)

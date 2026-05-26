@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 using QudJP.Patches;
 using QudJP.Tests.DummyTargets;
@@ -175,6 +176,42 @@ public sealed class ExaminerTranslationPatchTests
                 };
 
                 target.ResultPartialSuccess(new DummyGameObject());
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(expected));
+                    Assert.That(ExaminerHitCount(detail), Is.EqualTo(1));
+                });
+            });
+    }
+
+    [TestCase(
+        "MakeUnderstood",
+        "You identify your ピストル as a masterwork scoped チェーンピストル.",
+        "ピストルを傑作 スコープ付き チェーンピストルだと鑑定した。",
+        "Identify")]
+    [TestCase(
+        "MakePartiallyUnderstood",
+        "You make some progress understanding the {{Y|奇妙な遺物}}.",
+        "{{Y|奇妙な遺物}}の理解が少し進んだ。",
+        "ProgressOnly")]
+    public void Patch_TranslatesExaminerMakeUnderstandingPopups_WhenOwnerPatched(
+        string methodName,
+        string source,
+        string expected,
+        string detail)
+    {
+        OwnerPopupRouteTestHarness.WithPatchedPopupOwner(
+            typeof(ExaminerTranslationPatch),
+            RequireMakeUnderstandingOwnerMethod(methodName),
+            () =>
+            {
+                var target = new DummyExaminerMakeUnderstandingTarget
+                {
+                    PopupMessageToShow = source,
+                };
+
+                InvokeMakeUnderstandingOwnerMethod(target, methodName);
 
                 Assert.Multiple(() =>
                 {
@@ -510,9 +547,19 @@ public sealed class ExaminerTranslationPatchTests
         return OwnerPopupRouteTestHarness.RequireMethod(typeof(DummyExaminerProducerTarget), methodName, typeof(DummyGameObject));
     }
 
+    private static MethodInfo RequireMakeUnderstandingOwnerMethod(string methodName)
+    {
+        return OwnerPopupRouteTestHarness.RequireMethod(typeof(DummyExaminerMakeUnderstandingTarget), methodName, typeof(bool));
+    }
+
     private static void InvokeOwnerMethod(DummyExaminerProducerTarget target, string methodName)
     {
         _ = RequireOwnerMethod(methodName).Invoke(target, new object[] { new DummyGameObject() });
+    }
+
+    private static void InvokeMakeUnderstandingOwnerMethod(DummyExaminerMakeUnderstandingTarget target, string methodName)
+    {
+        _ = RequireMakeUnderstandingOwnerMethod(methodName).Invoke(target, new object[] { true });
     }
 
     private static int ExaminerHitCount(string detail)
@@ -569,5 +616,32 @@ public sealed class ExaminerTranslationPatchTests
     {
         return value.Replace("\\", "\\\\", StringComparison.Ordinal)
             .Replace("\"", "\\\"", StringComparison.Ordinal);
+    }
+
+    private sealed class DummyExaminerMakeUnderstandingTarget
+    {
+        public string PopupMessageToShow { get; set; } = string.Empty;
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public bool MakeUnderstood(bool showMessage)
+        {
+            return ShowPopup(showMessage);
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public bool MakePartiallyUnderstood(bool showMessage)
+        {
+            return ShowPopup(showMessage);
+        }
+
+        private bool ShowPopup(bool showMessage)
+        {
+            if (showMessage)
+            {
+                DummyPopupShow.Show(PopupMessageToShow);
+            }
+
+            return true;
+        }
     }
 }

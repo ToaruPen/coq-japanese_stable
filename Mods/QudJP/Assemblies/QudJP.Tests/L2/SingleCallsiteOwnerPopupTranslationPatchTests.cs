@@ -209,6 +209,12 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "GenocideCurioActivation",
         PopupMethod.Show)]
     [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.HandleSpiralBorerCurio),
+        "The metal satchel opens, folds itself inside out, and transforms into a contraption studded with pinions and drills. It starts to burrow into the ground.",
+        "金属製のバッグが開いて裏返り、ピニオンとドリルが突き出た装置へ変形した。それは地面に穴を掘り始めた。",
+        "SpiralBorerCurioActivation",
+        PopupMethod.Show)]
+    [TestCase(
         nameof(DummySingleCallsiteOwnerPopupTarget.HandleGritGateMainframeTerminal),
         "The mainframe is unresponsive.",
         "The mainframeは反応しない。",
@@ -490,6 +496,18 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "「Light Manipulation」のことか？",
         "MutationWishDidYouMean",
         PopupMethod.ShowYesNo)]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.WishMutation),
+        "No mutation by the name 'Light Manipulations' could be found.",
+        "「Light Manipulations」という変異は見つからない。",
+        "MutationWishMissingName",
+        PopupMethod.Show)]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.WishMutation),
+        "No mutation by the name 'Wings' and variant 'crystal' could be found.",
+        "「Wings」のバリアント「crystal」という変異は見つからない。",
+        "MutationWishMissingVariant",
+        PopupMethod.Show)]
     [TestCase(
         nameof(DummySingleCallsiteOwnerPopupTarget.HandleBlueprintXML),
         "No blueprint named \"Chrome Idol\" found.",
@@ -1167,14 +1185,6 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "{{Y|The steel boots}} become magnetized!",
         "MagnetizedApplicatorCrumbles")]
     [TestCase(
-        nameof(DummySingleCallsiteOwnerPopupTarget.WishMutation),
-        "No mutation by the name 'Light Manipulations' could be found.",
-        "MutationWishDidYouMean")]
-    [TestCase(
-        nameof(DummySingleCallsiteOwnerPopupTarget.WishMutation),
-        "No mutation by the name 'Wings' and variant 'crystal' could be found.",
-        "MutationWishDidYouMean")]
-    [TestCase(
         nameof(DummySingleCallsiteOwnerPopupTarget.WishGeneratePopulation),
         "The population 'JoppaVillagers' distributed as follows over 1000 generations;\nSnapjaw: 1.00000%",
         "PopulationManagerMissingTable")]
@@ -1284,6 +1294,8 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
                 "XRL.World.Parts.GameUnique|OnCreated",
             nameof(DummySingleCallsiteOwnerPopupTarget.HandleGenocideCurio) =>
                 "XRL.World.Parts.GenocideCurio|HandleEvent",
+            nameof(DummySingleCallsiteOwnerPopupTarget.HandleSpiralBorerCurio) =>
+                "XRL.World.Parts.SpiralBorerCurio|HandleEvent",
             nameof(DummySingleCallsiteOwnerPopupTarget.HandleGritGateMainframeTerminal) =>
                 "XRL.World.Parts.GritGateMainframeTerminal|HandleEvent",
             nameof(DummySingleCallsiteOwnerPopupTarget.HandleHindrenMysteryCriticalNpc) =>

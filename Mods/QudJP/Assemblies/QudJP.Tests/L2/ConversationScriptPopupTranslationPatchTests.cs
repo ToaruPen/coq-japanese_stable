@@ -57,6 +57,10 @@ public sealed class ConversationScriptPopupTranslationPatchTests
         "merchantはまったく反応しない",
         "UtterlyUnresponsive")]
     [TestCase(
+        "The merchant doesn't seem to understand you.",
+        "merchantはあなたの言葉を理解していないようだ",
+        "DoesNotUnderstand")]
+    [TestCase(
         "The merchant refuses to speak to you.",
         "merchantはあなたと話そうとしない。",
         "RefuseToSpeak")]
@@ -96,6 +100,14 @@ public sealed class ConversationScriptPopupTranslationPatchTests
         "You cannot seem to make contact with the merchant.",
         "merchantとうまく交信できない。",
         "MakeContact")]
+    [TestCase(
+        "The merchant's mind is in disarray.",
+        "merchantの精神は混乱している。",
+        "MindInDisarray")]
+    [TestCase(
+        "The merchant's mind seems to be elsewhere.",
+        "merchantの精神はどこか別のところにあるようだ。",
+        "MindElsewhere")]
     public void MentalConversation_TranslatesOwnerPopupShapes_WhenOwnerPatched(
         string source,
         string expected,

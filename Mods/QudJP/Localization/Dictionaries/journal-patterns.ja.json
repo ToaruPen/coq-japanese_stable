@@ -348,17 +348,52 @@
     },
     {
       "pattern": "^You convinced (.+?) to join your cause\\.$",
-      "template": "{0}を説得し仲間に加えた。",
+      "template": "{t0}を説得し仲間に加えた。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) ogled you lovingly after you employed your charm\\.$",
+      "template": "あなたの魅了術を受けて{t0}がうっとりとこちらを見つめた。",
       "route": "journal"
     },
     {
       "pattern": "^You rebuked (.+?) into submission\\.$",
-      "template": "{0}を叱責して従わせた。",
+      "template": "{t0}を叱責して従わせた。",
       "route": "journal"
     },
     {
       "pattern": "^Your heart sang at the sight of (.+?)\\.$",
-      "template": "{0}を見て心が歌った。",
+      "template": "{t0}を見て心が歌った。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^The troubadour-hero =name= rode the tides of (?:your|his|her|their|its) passions and shipwrecked on the shores of (.+?)\\.$",
+      "template": "吟遊詩人の英雄=name=は情熱の潮に乗り、{t0}の岸辺に漂着した。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^The storied eroticism of =name= became intimately known to (.+?)\\.$",
+      "template": "=name=の名高い色香は{t0}に深く知られることとなった。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^Few were possessed of such potent charm as =name=, who -- on the (.+?) of (.+?) -- bent the will of (.+?) with mere words\\.$",
+      "template": "{t1}の{t0}日、=name=ほど強力な魅力を備えた者は稀であり、ただ言葉だけで{t2}の意志を曲げた。",
+      "route": "journal"
+    },
+    {
+      "pattern": "^<spice\\.commonPhrases\\.onlooker\\.!random\\.capitalize>! <spice\\.commonPhrases\\.remember\\.!random\\.capitalize> the admonishment =name= gave (.+?) when (?:he|she|it|they) presumed to speak the sacred tongue!$",
+      "template": "<spice.commonPhrases.onlooker.!random.capitalize>！=name=が{t0}に与えた戒めを<spice.commonPhrases.remember.!random>。聖なる言葉を口にしようとしたためだ！",
+      "route": "journal"
+    },
+    {
+      "pattern": "^(.+)! (.+) the admonishment =name= gave (.+?) when (?:he|she|it|they) presumed to speak the sacred tongue!$",
+      "template": "見る者よ！=name=が{t2}に与えた戒めを思い起こせ。聖なる言葉を口にしようとしたためだ！",
+      "route": "journal"
+    },
+    {
+      "pattern": "^<spice\\.elements\\.(.+?)\\.weddingConditions\\.!random\\.capitalize>, =name= cemented (?:your|his|her|their|its) friendship with (.+?) by marrying (.+?)\\.$",
+      "template": "<spice.elements.{0}.weddingConditions.!random.capitalize>、=name=は{t1}との友情を固めるため{t2}と結婚した。",
       "route": "journal"
     },
     {

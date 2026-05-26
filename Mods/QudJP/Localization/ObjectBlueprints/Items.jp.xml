@@ -7072,7 +7072,7 @@
     <part Name="Spectacles" />
     <part Name="BreakableInMelee" Chance="1" />
     <part Name="FlareCompensation" />
-    <part Name="RefractLight" Chance="1" RetroVariance="1d121-61" Verb="反射する" />
+    <part Name="RefractLight" Chance="1" RetroVariance="1d121-61" Verb="reflect" />
     <part Name="ItemElements" Elements="glass::5" />
     <part Name="AddsRep" Faction="Strangers" Value="100" />
     <part Name="Metal" />

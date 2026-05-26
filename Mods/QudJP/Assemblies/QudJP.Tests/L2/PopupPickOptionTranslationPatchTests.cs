@@ -109,6 +109,50 @@ public sealed class PopupPickOptionTranslationPatchTests
     }
 
     [Test]
+    public void Prefix_RepositoryDictionary_TranslatesReviewedFixedProducerPickOptionPayload()
+    {
+        Translator.SetDictionaryDirectoryForTests(GetRepositoryDictionaryDirectory());
+
+        using var patch = PatchPickOption();
+
+        DummyPopupGenericTarget.PickOption(
+            Title: "Pick end game state",
+            Options: new[]
+            {
+                "Return",
+                "Return Ultra",
+                "Covenant",
+                "Covenant Ultra",
+                "Accede",
+                "Accede Ultra",
+                "Launch",
+                "Launch Ultra",
+                "Marooned",
+                "Marooned Ultra",
+            });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(DummyPopupGenericTarget.LastPickOptionTitle, Is.EqualTo("エンドゲーム状態を選ぶ"));
+            Assert.That(
+                DummyPopupGenericTarget.LastPickOptionOptions,
+                Is.EqualTo(new[]
+                {
+                    "帰還",
+                    "帰還（究極）",
+                    "契約",
+                    "契約（究極）",
+                    "同意",
+                    "同意（究極）",
+                    "発射",
+                    "発射（究極）",
+                    "遭難",
+                    "遭難（究極）",
+                }));
+        });
+    }
+
+    [Test]
     public void Prefix_PreservesInventoryActionMenuOptions_ForTutorialCommandGuards()
     {
         WriteDictionary(("get", "取得"), ("equip (auto)", "装備（自動）"));

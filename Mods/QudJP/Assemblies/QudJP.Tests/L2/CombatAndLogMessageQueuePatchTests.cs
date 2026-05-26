@@ -5154,6 +5154,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
     [TestCase("{{G|You sunder spacetime.}}")]
     [TestCase("You are sucked through the surface of the sphere!")]
     [TestCase("Your focus slips, causing you to dent spacetime in the local region.")]
+    [TestCase("You no longer feel ill.")]
     public void FixedOwnerQueue_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent(string source)
     {
         var harmonyId = CreateHarmonyId();
@@ -5209,6 +5210,26 @@ public sealed class CombatAndLogMessageQueuePatchTests
     public void MeditatingRemove_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched()
     {
         AssertMeditatingRemoveQueuedMessage(string.Empty, string.Empty);
+    }
+
+    [Test]
+    public void IllRemove_TranslatesFixedQueuedMessage_WhenOwnerPatched()
+    {
+        AssertIllRemoveQueuedMessage("You no longer feel ill.", "もう病気ではない。");
+    }
+
+    [Test]
+    public void IllRemove_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched()
+    {
+        AssertIllRemoveQueuedMessage(
+            MessageFrameTranslator.MarkDirectTranslation("You no longer feel ill."),
+            "You no longer feel ill.");
+    }
+
+    [Test]
+    public void IllRemove_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched()
+    {
+        AssertIllRemoveQueuedMessage(string.Empty, string.Empty);
     }
 
     [TestCase("You start to feel sluggish.", "体がだるくなってきた。")]
@@ -5358,11 +5379,94 @@ public sealed class CombatAndLogMessageQueuePatchTests
     [TestCase(
         "{{R|The 装置 was cracked.}}",
         "{{R|装置にひびが入った}}")]
+    [TestCase(
+        "The 鋼の剣 is reduced to dust!",
+        "鋼の剣は塵と化した！")]
+    [TestCase(
+        "The 鋼の剣 rusts.",
+        "鋼の剣は錆びた。")]
+    [TestCase(
+        "you raise your shield in wall formation!",
+        "あなたの盾を壁陣形に構えた！")]
     public void EffectGeneratedApply_TranslatesShatteredArmorQueuedMessages_WhenOwnerPatched(
         string source,
         string expected)
     {
         AssertEffectGeneratedApplyQueuedMessage(source, expected);
+    }
+
+    [TestCase(
+        "you clasp your レーザーピストル eagerly.",
+        "あなたのレーザーピストルを嬉々として握りしめた。")]
+    [TestCase(
+        "The snapjaw clasps its レーザーピストル eagerly.",
+        "snapjawはそのレーザーピストルを嬉々として握りしめた。")]
+    [TestCase(
+        "you clasp your pistols eagerly.",
+        "あなたのピストルを熱心に握りしめた。")]
+    [TestCase(
+        "The snapjaw clasps its pistols eagerly.",
+        "snapjawはそのピストルを熱心に握りしめた。")]
+    public void EffectGeneratedApply_TranslatesEmptyTheClipsClaspQueuedMessages_WhenOwnerPatched(
+        string source,
+        string expected)
+    {
+        AssertEffectGeneratedApplyQueuedMessage(source, expected);
+    }
+
+    [TestCase("you begin sprinting!", "あなたは全力疾走を始めた！")]
+    [TestCase("The snapjaw begins running!", "snapjawは走り始めた！")]
+    public void EffectGeneratedApply_TranslatesRunningQueuedMessages_WhenOwnerPatched(
+        string source,
+        string expected)
+    {
+        AssertEffectGeneratedApplyQueuedMessage(source, expected);
+    }
+
+    [TestCase(
+        "The chrome idol exits sleep mode by emergency interrupt.",
+        "chrome idolは緊急割り込みでスリープモードを解除した。")]
+    [TestCase(
+        "The snapjaw wakes up in a daze.",
+        "snapjawはもうろうとして目を覚ました。")]
+    [TestCase(
+        "The snapjaw is stunned!",
+        "snapjawは気絶した！")]
+    [TestCase(
+        "The snapjaw is held in place by the steel net!",
+        "snapjawはsteel netに押さえつけられている！")]
+    public void EffectGeneratedFireEvent_TranslatesGeneratedEffectQueuedMessages_WhenOwnerPatched(
+        string source,
+        string expected)
+    {
+        AssertEffectGeneratedFireEventQueuedMessage(source, expected);
+    }
+
+    [Test]
+    public void EffectGeneratedBeginTakeAction_TranslatesStunRemainQueuedMessage_WhenOwnerPatched()
+    {
+        AssertEffectGeneratedBeginTakeActionQueuedMessage(
+            "The snapjaw remains stunned!",
+            "snapjawは気絶したままだ！");
+    }
+
+    [Test]
+    public void EffectGeneratedFireEvent_TranslatesIllRecoveryQueuedMessage_WhenOwnerPatched()
+    {
+        AssertEffectGeneratedFireEventQueuedMessage("you are no longer ill.", "病気が治った。");
+    }
+
+    [TestCase(
+        "you dismiss snapjaw from your service.",
+        "あなたはsnapjawをあなたの配下から解放した。")]
+    [TestCase(
+        "The chrome idol dismisses snapjaw from its service.",
+        "chrome idolはsnapjawをその配下から解放した。")]
+    public void EffectGeneratedInventoryAction_TranslatesDismissQueuedMessages_WhenOwnerPatched(
+        string source,
+        string expected)
+    {
+        AssertEffectGeneratedInventoryActionQueuedMessage(source, expected);
     }
 
     [Test]
@@ -10249,6 +10353,33 @@ public sealed class CombatAndLogMessageQueuePatchTests
         }
     }
 
+    private static void AssertIllRemoveQueuedMessage(string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummySimpleOwnerQueueTarget), nameof(DummySimpleOwnerQueueTarget.Remove), typeof(DummyGameObject)),
+                typeof(IllRemoveTranslationPatch));
+
+            var target = new DummySimpleOwnerQueueTarget
+            {
+                MessageToSend = message,
+            };
+
+            target.Remove(new DummyGameObject());
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
     private static void AssertEffectStaticApplyQueuedMessage(string message, string expected)
     {
         var harmonyId = CreateHarmonyId();
@@ -10410,6 +10541,90 @@ public sealed class CombatAndLogMessageQueuePatchTests
             };
 
             _ = target.Apply(new DummyGameObject());
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertEffectGeneratedFireEventQueuedMessage(string message, string expected)
+    {
+        UseRepositoryMessageFrames();
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummySimpleOwnerQueueTarget), nameof(DummySimpleOwnerQueueTarget.FireEvent), typeof(DummyEvent)),
+                typeof(EffectGeneratedMessageTranslationPatch));
+
+            var target = new DummySimpleOwnerQueueTarget
+            {
+                MessageToSend = message,
+            };
+
+            _ = target.FireEvent(new DummyEvent());
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertEffectGeneratedBeginTakeActionQueuedMessage(string message, string expected)
+    {
+        UseRepositoryMessageFrames();
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummySimpleOwnerQueueTarget), nameof(DummySimpleOwnerQueueTarget.HandleEvent), typeof(DummyBeginTakeActionEvent)),
+                typeof(EffectGeneratedMessageTranslationPatch));
+
+            var target = new DummySimpleOwnerQueueTarget
+            {
+                MessageToSend = message,
+            };
+
+            _ = target.HandleEvent(new DummyBeginTakeActionEvent());
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertEffectGeneratedInventoryActionQueuedMessage(string message, string expected)
+    {
+        UseRepositoryMessageFrames();
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummySimpleOwnerQueueTarget), nameof(DummySimpleOwnerQueueTarget.HandleEvent), typeof(DummyInventoryActionEvent)),
+                typeof(EffectGeneratedMessageTranslationPatch));
+
+            var target = new DummySimpleOwnerQueueTarget
+            {
+                MessageToSend = message,
+            };
+
+            _ = target.HandleEvent(new DummyInventoryActionEvent());
 
             Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
         }

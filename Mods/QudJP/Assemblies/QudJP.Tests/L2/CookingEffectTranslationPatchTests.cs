@@ -125,15 +125,7 @@ public sealed class CookingEffectTranslationPatchTests
     [TestCase("Can use Intimidate. If @they already have Intimidate, gain a +2 bonus on the Ego roll when using Intimidate.", "〈威圧〉を使用できる。既に習得している場合は〈威圧〉使用時の意志判定に+2のボーナス。")]
     [TestCase("No effect.", "効果なし。")]
     public void Postfix_TranslatesDynamicFragments_WhenPatched(string source, string expected)
-    {
-        var target = new DummyCookingEffectTextTarget
-        {
-            ReturnValue = source,
-        };
-
-        var translated = InvokePatched(target, nameof(DummyCookingEffectTextTarget.GetDescription));
-        Assert.That(translated, Is.EqualTo(expected));
-    }
+        => AssertGetDescriptionTranslation(source, expected);
 
     [TestCase("@they get +31% max HP for 1 hour.", "@they は1時間のあいだ最大HP+31%を得る。")]
     [TestCase("@they get +<color=yellow>31</color>% max HP for 1 hour.", "@they は1時間のあいだ最大HP+<color=yellow>31</color>%を得る。")]
@@ -245,6 +237,47 @@ public sealed class CookingEffectTranslationPatchTests
         Assert.That(
             translated,
             Is.EqualTo("〈棘〉をレベル5～6で使用できる。既に持つ場合、さらにレベル3～4強化される。\r\n効果なし。"));
+    }
+
+    [TestCase(
+        "+10-15% to natural healing rate\nYou thirst at half rate.",
+        "自然治癒速度+10-15%\n喉の渇きが半減する。")]
+    [TestCase(
+        "Can use Burrowing Claws at level 5-6. If you already have Burrowing Claws, it's enhanced by 3-4 levels.\nWhenever you identify an artifact, you gain +6 AV for 50 turns.",
+        "〈掘爪〉をレベル5～6で使用できる。既に持つ場合、さらにレベル3～4強化される。\nアーティファクトを識別するたび、50ターンのあいだAV+6を得る。")]
+    [TestCase("?????", "？？？？？")]
+    [TestCase(
+        "Can use Psychometry at level 4-5.\nWhenever you take damage, there's a 12-15% chance you teleport all creatures surrounding you.",
+        "〈サイコメトリー〉をレベル4～5で使用できる。\nダメージを受けるたび、12-15%の確率で周囲のすべての生物をテレポートさせる。")]
+    [TestCase(
+        "+10-15 Heat Resist\nReflect 3-4% damage back at your attackers, rounded up.",
+        "熱耐性+10-15\n攻撃者にダメージの3-4%を切り上げて反射する。")]
+    [TestCase(
+        "Whenever you drink freshwater, there's a 25% chance you become immune to fear for 6 hours.",
+        "真水を飲むたび、25%の確率で6時間のあいだ恐怖を無効化する。")]
+    [TestCase(
+        "+4-5 Quickness\n+8-12 to saves vs. bleeding\n75% chance that itchy skin doesn't develop into a fungal infection.",
+        "クイックネス+4-5\n出血に対するセーヴ+8-12\nかゆみから真菌感染に進行しない確率が75%。")]
+    [TestCase(
+        "+3 to saves vs. disease\nWhenever you eat an unfermented yuckwheat stem, you release an electrical discharge per Electrical Generation at level 5-6.",
+        "病気に対するセーヴ+3\n未発酵のヤックウィートの茎を食べるたび、電気生成レベル5～6相当の放電を行う。")]
+    [TestCase(
+        "Can use Sticky Tongue at rank 4-5.\nWhenever you jump, you beguile a creature as per Beguiling at rank 7-8 for the duration of this effect.",
+        "〈粘着舌〉をランク4～5で使用できる。\nジャンプするたび、この効果のあいだ魅了ランク7～8相当で生物を魅了する。")]
+    public void Postfix_TranslatesPresetCookingRecipeDescriptions_WhenPatched(string source, string expected)
+    {
+        AssertGetDescriptionTranslation(source, expected);
+    }
+
+    private static void AssertGetDescriptionTranslation(string source, string expected)
+    {
+        var target = new DummyCookingEffectTextTarget
+        {
+            ReturnValue = source,
+        };
+
+        var translated = InvokePatched(target, nameof(DummyCookingEffectTextTarget.GetDescription));
+        Assert.That(translated, Is.EqualTo(expected));
     }
 
     private static string InvokePatched(DummyCookingEffectTextTarget target, string methodName)

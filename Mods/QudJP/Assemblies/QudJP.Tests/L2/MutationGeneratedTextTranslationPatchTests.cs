@@ -46,6 +46,11 @@ public sealed class MutationGeneratedTextTranslationPatchTests
         "{{Y|snapjaw}}からヴィムを吸い取れない。",
         "LifeDrainInvalidTarget")]
     [TestCase(
+        LifeDrainOwner,
+        "No one is there for you to syphon vim from.",
+        "ヴィムを吸い取れる相手がいない。",
+        "LifeDrainNoTarget")]
+    [TestCase(
         PackRatOwner,
         "You must wait 3 more turns to work up the willpower to drop something!",
         "何かを落とす意志力を奮い立たせるにはあと3ターン待たなければならない！",

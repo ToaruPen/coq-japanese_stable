@@ -137,6 +137,10 @@ internal static class ColorRouteCatalog
     internal static readonly SortedDictionary<string, GenericPopupProducerRouteAllowance> GenericPopupProducerRouteAllowlist =
         new SortedDictionary<string, GenericPopupProducerRouteAllowance>(StringComparer.Ordinal)
         {
+            ["Mods/QudJP/Assemblies/src/Patches/ActiveEffectMessageFrameOwnerTranslationPatch.cs|PopupTranslationPatch.TranslatePopupTextForProducerRoute("] =
+                new(
+                    1,
+                    "ActiveEffectMessageFrame owner scope handles the fixed CardiacArrest restart popup only after the exact active-effect owner route is active."),
             ["Mods/QudJP/Assemblies/src/Patches/OldSaveContinueMenuPopupTranslationPatch.cs|PopupTranslationPatch.TranslatePopupTextForProducerRoute("] =
                 new(
                     1,
@@ -202,7 +206,9 @@ internal static class ColorRouteCatalog
             ["Mods/QudJP/Assemblies/src/Patches/ActionManagerRunSegmentTranslationPatch.cs|ColorAwareTranslationComposer.TranslatePreservingColors("] = 1,
             ["Mods/QudJP/Assemblies/src/Patches/ActivatedAbilityCooldownTranslator.cs|ColorAwareTranslationComposer.TranslatePreservingColors("] = 3,
             ["Mods/QudJP/Assemblies/src/Patches/ActivatedAbilityNameTranslator.cs|ColorAwareTranslationComposer.TranslatePreservingColors("] = 1,
-            ["Mods/QudJP/Assemblies/src/Patches/ActivatedAbilityNameTranslator.cs|GetDisplayNameRouteTranslator.TranslatePreservingColors("] = 1,
+            ["Mods/QudJP/Assemblies/src/Patches/ActivatedAbilityNameTranslator.cs|GetDisplayNameRouteTranslator.TranslatePreservingColors("] = 2,
+            ["Mods/QudJP/Assemblies/src/Patches/ActiveEffectMessageFrameOwnerTranslationPatch.cs|MessagePatternTranslator.Translate("] = 1,
+            ["Mods/QudJP/Assemblies/src/Patches/ActiveEffectMessageFrameOwnerTranslationPatch.cs|PopupTranslationPatch.TranslatePopupTextForProducerRoute("] = 1,
             ["Mods/QudJP/Assemblies/src/Patches/ActiveEffectTextTranslator.cs|ColorAwareTranslationComposer.TranslatePreservingColors("] = 3,
             ["Mods/QudJP/Assemblies/src/Patches/BeginBeingUnequippedFailureMessageTranslationPatch.cs|GetDisplayNameRouteTranslator.TranslatePreservingColors("] = 1,
             ["Mods/QudJP/Assemblies/src/Patches/CharGenLocalizationPatch.cs|ColorAwareTranslationComposer.TranslatePreservingColors("] = 1,
@@ -222,6 +228,7 @@ internal static class ColorRouteCatalog
             ["Mods/QudJP/Assemblies/src/Patches/CyberneticsTerminalTextTranslator.cs|ColorAwareTranslationComposer.TranslatePreservingColors("] = 1,
             ["Mods/QudJP/Assemblies/src/Patches/DeathWrapperFamilyTranslator.cs|GetDisplayNameRouteTranslator.TranslatePreservingColors("] = 1,
             ["Mods/QudJP/Assemblies/src/Patches/DescriptionLongDescriptionPatch.cs|DescriptionTextTranslator.TranslateLongDescription("] = 1,
+            ["Mods/QudJP/Assemblies/src/Patches/DescriptionDetailReturnTranslationPatch.cs|DescriptionTextTranslator.TranslateLongDescription("] = 1,
             ["Mods/QudJP/Assemblies/src/Patches/DescriptionInspectStatusPatch.cs|ColorAwareTranslationComposer.TranslatePreservingColors("] = 1,
             ["Mods/QudJP/Assemblies/src/Patches/DescriptionTextTranslator.cs|ColorAwareTranslationComposer.TranslatePreservingColors("] = 1,
             ["Mods/QudJP/Assemblies/src/Patches/DescriptionTextTranslator.cs|GetDisplayNameRouteTranslator.TranslatePreservingColors("] = 1,
@@ -236,6 +243,7 @@ internal static class ColorRouteCatalog
             ["Mods/QudJP/Assemblies/src/Patches/AbilityBarButtonTextTranslationPatch.cs|GetDisplayNameRouteTranslator.TranslatePreservingColors("] = 1,
             ["Mods/QudJP/Assemblies/src/Patches/GameObjectMoveTranslationPatch.cs|MessagePatternTranslator.Translate("] = 1,
             ["Mods/QudJP/Assemblies/src/Patches/GameObjectPerformThrowTranslationPatch.cs|MessagePatternTranslator.Translate("] = 1,
+            ["Mods/QudJP/Assemblies/src/Patches/GasGenerationDescriptionTranslationPatch.cs|ColorAwareTranslationComposer.TranslatePreservingColors("] = 1,
             ["Mods/QudJP/Assemblies/src/Patches/MutationSelfTargetPopupTranslationPatch.cs|MessagePatternTranslator.Translate("] = 1,
             ["Mods/QudJP/Assemblies/src/Patches/GameSummaryTextTranslator.cs|ColorAwareTranslationComposer.TranslatePreservingColors("] = 2,
             ["Mods/QudJP/Assemblies/src/Patches/GameSummaryTextTranslator.cs|JournalPatternTranslator.Translate("] = 1,
@@ -245,6 +253,7 @@ internal static class ColorRouteCatalog
             ["Mods/QudJP/Assemblies/src/Patches/HelpRowTranslationPatch.cs|ColorAwareTranslationComposer.TranslatePreservingColors("] = 1,
             ["Mods/QudJP/Assemblies/src/Patches/HighScoresScreenTranslationPatch.cs|ColorAwareTranslationComposer.TranslatePreservingColors("] = 1,
             ["Mods/QudJP/Assemblies/src/Patches/HistoricStringExpanderPatch.cs|ColorAwareTranslationComposer.TranslatePreservingColors("] = 1,
+            ["Mods/QudJP/Assemblies/src/Patches/HookedOwnerTranslationPatch.cs|ColorAwareTranslationComposer.TranslatePreservingColors("] = 1,
             ["Mods/QudJP/Assemblies/src/Translation/HistoricNarrativeTextTranslator.cs|JournalPatternTranslator.Translate("] = 1,
             ["Mods/QudJP/Assemblies/src/Patches/InventoryAndEquipmentStatusScreenTranslationPatch.cs|ColorAwareTranslationComposer.TranslatePreservingColors("] = 1,
             ["Mods/QudJP/Assemblies/src/Patches/InventoryFireEventTranslationPatch.cs|GetDisplayNameRouteTranslator.TranslatePreservingColors("] = 1,

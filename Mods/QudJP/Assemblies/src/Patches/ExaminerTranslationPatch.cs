@@ -123,6 +123,23 @@ public static class ExaminerTranslationPatch
         {
             Trace.TraceError("QudJP: {0}.ResultPartialSuccess(GameObject, int) not found.", Context);
         }
+
+        foreach (var methodName in new[]
+                 {
+                     "MakeUnderstood",
+                     "MakePartiallyUnderstood",
+                 })
+        {
+            var method = AccessTools.Method(examinerType, methodName, [typeof(bool)]);
+            if (method is not null)
+            {
+                yield return method;
+            }
+            else
+            {
+                Trace.TraceError("QudJP: {0}.{1}(bool) not found.", Context, methodName);
+            }
+        }
     }
 
     public static void Prefix()

@@ -195,6 +195,18 @@ public static class MutationGeneratedTextTranslationPatch
             return true;
         }
 
+        if (stripped == "No one is there for you to syphon vim from."
+            && OwnerMatches(ownerKey, LifeDrainFireEventOwner))
+        {
+            translated = RestoreWholeSourceBoundaryWrappers(
+                "ヴィムを吸い取れる相手がいない。",
+                spans,
+                stripped.Length,
+                source);
+            detail = "LifeDrainNoTarget";
+            return true;
+        }
+
         match = PackRatDropCooldownPattern.Match(stripped);
         if (match.Success && OwnerMatches(ownerKey, PackRatFireEventOwner))
         {

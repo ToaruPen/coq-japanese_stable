@@ -51,13 +51,15 @@ public sealed class PopupShowSpaceTranslationPatchTests
     [Test]
     public void Prefix_TranslatesShowSpaceMessage()
     {
-        WriteDictionary(("Game saved!", "ゲームをセーブしました！"));
+        const string source = "You've reached the temporary end of the main questline.\n\nYou may continue to explore the world, and stay tuned for updates as we prepare to leave Early Access.";
+        const string expected = "メインクエストラインは一時的にここまでだ。\n\n世界の探索は続けられる。アーリーアクセス終了に向けた更新を待て。";
+        WriteDictionary((source, expected));
 
         using var patch = PatchShowSpace();
 
-        DummyPopupGenericTarget.ShowSpace("Game saved!");
+        DummyPopupGenericTarget.ShowSpace(source);
 
-        Assert.That(DummyPopupGenericTarget.LastShowSpaceMessage, Is.EqualTo("ゲームをセーブしました！"));
+        Assert.That(DummyPopupGenericTarget.LastShowSpaceMessage, Is.EqualTo(expected));
     }
 
     [Test]

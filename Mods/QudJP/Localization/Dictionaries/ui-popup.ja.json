@@ -2798,6 +2798,16 @@
             "text": "設置できるタレットが残っていない。"
         },
         {
+            "key": "The sealing mechanisms inside this sarcophagus will certainly kill you if you close itself inside. Are you sure you want to enter the sarcophagus?\n\nType 'ENTOMB' to confirm.",
+            "context": "XRL.UI.Popup.AskString.Prompt",
+            "text": "この石棺の内部の封印機構は、中に入ったまま閉じれば確実にあなたを殺す。本当に石棺に入りますか？\n\n確認するには「ENTOMB」と入力してください。"
+        },
+        {
+            "key": "Choose artifacts to throw down the well.",
+            "context": "XRL.UI.Popup.PickOption.Title",
+            "text": "井戸に投げ込むアーティファクトを選択してください。"
+        },
+        {
             "key": "{{c|You sense a sinister presence nearby.}}",
             "text": "{{c|近くに邪悪な気配を感じる。}}"
         }

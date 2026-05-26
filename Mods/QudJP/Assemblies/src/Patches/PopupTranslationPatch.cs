@@ -1152,17 +1152,11 @@ public static class PopupTranslationPatch
             }
 
             var hotkeySourceLength = hotkeyMatch.Groups["hotkey"].Length + 2;
-            var hotkey = isBottomContextRoute
-                ? ColorAwareTranslationComposer.RestoreWholeSliceBoundaryWrappersPreservingTranslatedOwnership(
-                    "[" + hotkeyMatch.Groups["hotkey"].Value + "]",
-                    spans,
-                    hotkeyMatch.Index,
-                    hotkeySourceLength)
-                : ColorAwareTranslationComposer.RestoreSlice(
-                    "[" + hotkeyMatch.Groups["hotkey"].Value + "]",
-                    spans,
-                    hotkeyMatch.Index,
-                    hotkeySourceLength);
+            var hotkey = ColorAwareTranslationComposer.RestoreWholeSliceBoundaryWrappersPreservingTranslatedOwnership(
+                "[" + hotkeyMatch.Groups["hotkey"].Value + "]",
+                spans,
+                hotkeyMatch.Index,
+                hotkeySourceLength);
             var labelSpans = WithoutLegacyDisabledInventoryActionColor(spans, hotkeyMatch.Groups["label"].Index);
             var labelWithWrappers = ColorAwareTranslationComposer.RestoreCaptureWholeBoundaryWrappersPreservingTranslatedOwnership(
                 translatedLabel,

@@ -432,6 +432,13 @@ public static class WaterRitualPopupTranslationPatch
             return true;
         }
 
+        if (source == "You can't be mutated.")
+        {
+            translated = "変異できない。";
+            detail = "RandomMutationNonMutant";
+            return true;
+        }
+
         if (TryTranslatePattern(
                 RandomMutationIncompatiblePattern,
                 source,

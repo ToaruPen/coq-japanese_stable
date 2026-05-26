@@ -816,6 +816,8 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.GameObject",
         "XRL.World.GameObject",
         "XRL.World.GameObject|System.Int32",
+        "System.Boolean",
+        "System.Boolean",
     })]
     [TestCase(typeof(ItemNamingTranslationPatch), new[]
     {
@@ -1160,6 +1162,15 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.PsychicCombatSifrah|.ctor|System.Void|XRL.World.GameObject|System.String|System.Int32|System.Int32|System.String",
         "XRL.World.RealityDistortionSifrah|.ctor|System.Void|XRL.World.GameObject|System.String|System.String|System.Int32|System.Int32",
         "XRL.World.ReverseEngineeringSifrah|.ctor|System.Void|XRL.World.GameObject|System.Int32|System.Int32|System.Int32|XRL.World.Tinkering.TinkerData",
+        "XRL.SifrahGame|UseInsight|System.Void|XRL.World.GameObject",
+        "XRL.World.BaetylOfferingSifrah|CheckEarlyExit|System.Boolean|XRL.World.GameObject",
+        "XRL.World.BeguilingSifrah|CheckEarlyExit|System.Boolean|XRL.World.GameObject",
+        "XRL.World.FormalWaterRitualSifrah|CheckEarlyExit|System.Boolean|XRL.World.GameObject",
+        "XRL.World.HagglingSifrah|CheckEarlyExit|System.Boolean|XRL.World.GameObject",
+        "XRL.World.ItemNamingSifrah|CheckEarlyExit|System.Boolean|XRL.World.GameObject",
+        "XRL.World.ProselytizationSifrah|CheckEarlyExit|System.Boolean|XRL.World.GameObject",
+        "XRL.World.PsychicCombatSifrah|CheckEarlyExit|System.Boolean|XRL.World.GameObject",
+        "XRL.World.RebukingSifrah|CheckEarlyExit|System.Boolean|XRL.World.GameObject",
         "XRL.World.ReverseEngineeringSifrah|CheckEarlyExit|System.Boolean|XRL.World.GameObject",
         "XRL.World.ReverseEngineeringSifrah|Finish|System.Void|XRL.World.GameObject",
         "XRL.World.RitualSifrahTokenAttributeSacrifice|CheckTokenUse|System.Boolean|XRL.SifrahGame|XRL.SifrahSlot|XRL.World.GameObject",
@@ -1224,6 +1235,8 @@ public sealed class TargetMethodResolutionTests
     [TestCase(typeof(TelekinesisTranslationPatch), new[]
     {
         "XRL.World.Parts.Mutation.Telekinesis|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
+        "XRL.World.Parts.Mutation.Telekinesis|Activate|System.Boolean|System.Boolean",
+        "XRL.World.Parts.Mutation.Telekinesis|AttemptTelekinesis|System.Boolean",
     })]
     [TestCase(typeof(CyberneticRejectionSyndromeTranslationPatch), new[]
     {
@@ -1744,6 +1757,8 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.Parts.Examiner|ResultFakeConfusionFailure|System.Void|XRL.World.GameObject",
         "XRL.World.Parts.Examiner|ResultCriticalFailure|System.Void|XRL.World.GameObject",
         "XRL.World.Parts.Examiner|ResultPartialSuccess|System.Void|XRL.World.GameObject|System.Int32",
+        "XRL.World.Parts.Examiner|MakeUnderstood|System.Boolean|System.Boolean",
+        "XRL.World.Parts.Examiner|MakePartiallyUnderstood|System.Boolean|System.Boolean",
     })]
     [TestCase(typeof(ItemNamingTranslationPatch), new[]
     {
@@ -1801,6 +1816,16 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.Effects.BasicCookingEffect_Regeneration|GetDetails|System.String",
         "XRL.World.Effects.BasicCookingEffect_RandomStat|GetDetails|System.String",
         "XRL.World.Effects.BasicTriggeredCookingStatEffect|GetDetails|System.String",
+        "XRL.World.Skills.Cooking.AppleMatz|GetDescription|System.String",
+        "XRL.World.Skills.Cooking.BoneBabka|GetDescription|System.String",
+        "XRL.World.Skills.Cooking.CloacaSurprise|GetDescription|System.String",
+        "XRL.World.Skills.Cooking.CrystalDelight|GetDescription|System.String",
+        "XRL.World.Skills.Cooking.GoatAndSweetLeaf|GetDescription|System.String",
+        "XRL.World.Skills.Cooking.HotandSpiny|GetDescription|System.String",
+        "XRL.World.Skills.Cooking.MahLahSoup|GetDescription|System.String",
+        "XRL.World.Skills.Cooking.MushroomCider|GetDescription|System.String",
+        "XRL.World.Skills.Cooking.ThePorridge|GetDescription|System.String",
+        "XRL.World.Skills.Cooking.TongueAndCheek|GetDescription|System.String",
     })]
     [TestCase(typeof(StatusScreenTabTranslationPatch), new[]
     {
@@ -1953,6 +1978,7 @@ public sealed class TargetMethodResolutionTests
     [TestCase(typeof(MechanicalWingsPopupTranslationPatch), new[]
     {
         "XRL.World.Parts.MechanicalWings|TryStartup|System.Boolean",
+        "XRL.World.Parts.MechanicalWings|FireEvent|System.Boolean|XRL.World.Event",
     })]
     [TestCase(typeof(OldSaveContinueMenuPopupTranslationPatch), new[]
     {
@@ -2015,8 +2041,19 @@ public sealed class TargetMethodResolutionTests
     })]
     [TestCase(typeof(EffectGeneratedMessageTranslationPatch), new[]
     {
+        "XRL.World.Effects.Rusted|Apply|System.Boolean|XRL.World.GameObject",
+        "XRL.World.Effects.Asleep|FireEvent|System.Boolean|XRL.World.Event",
+        "XRL.World.Effects.EmptyTheClips|Apply|System.Boolean|XRL.World.GameObject",
+        "XRL.World.Effects.Ill|FireEvent|System.Boolean|XRL.World.Event",
+        "XRL.World.Effects.LatchedOnto|FireEvent|System.Boolean|XRL.World.Event",
         "XRL.World.Effects.LifeDrain|HandleEvent|System.Boolean|XRL.World.EndTurnEvent",
+        "XRL.World.Effects.Proselytized|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
+        "XRL.World.Effects.Rebuked|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
+        "XRL.World.Effects.Running|Apply|System.Boolean|XRL.World.GameObject",
         "XRL.World.Effects.ShatteredArmor|Apply|System.Boolean|XRL.World.GameObject",
+        "XRL.World.Effects.ShieldWall|Apply|System.Boolean|XRL.World.GameObject",
+        "XRL.World.Effects.Stun|HandleEvent|System.Boolean|XRL.World.BeginTakeActionEvent",
+        "XRL.World.Effects.StunGasStun|FireEvent|System.Boolean|XRL.World.Event",
     })]
     [TestCase(typeof(GeneratedQueueDoesVerbTranslationPatch), new[]
     {
@@ -2203,6 +2240,7 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.Parts.Skill.Tinkering_Tinker1|FireEvent|System.Boolean|XRL.World.Event",
         "XRL.World.Parts.GameUnique|OnCreated|System.Void|System.String",
         "XRL.World.Parts.GenocideCurio|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
+        "XRL.World.Parts.SpiralBorerCurio|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
         "XRL.World.Parts.GritGateMainframeTerminal|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
         "XRL.World.Parts.HindrenMysteryCriticalNPC|HandleEvent|System.Boolean|XRL.World.BeforeDeathRemovalEvent",
         "XRL.World.Parts.IModification|WishModify|System.Void|System.String",
