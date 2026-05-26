@@ -234,6 +234,37 @@ public sealed class AbilityBarButtonTextTranslationPatchTests
     }
 
     [Test]
+    public void TranslateButtonTextForQudTest_TranslatesPrecoloredDynamicNamesWithHotkeySuffix()
+    {
+        WriteDictionary(
+            ("Discharge", "放電"),
+            ("Lase", "レーザー照射"),
+            ("Lay Mine", "地雷設置"),
+            ("Recoil", "帰還"),
+            ("Joppa", "ジョッパ"));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                AbilityBarButtonTextTranslationPatch.TranslateButtonTextForQudTest(
+                    "<color=#77BFCFFF>Discharge [12000 charge] </color><color=#FFFFFFFF><</color><color=#98875FFF>4</color><color=#FFFFFFFF>></color>"),
+                Is.EqualTo("<color=#77BFCFFF>放電 [12000チャージ] </color><color=#FFFFFFFF><</color><color=#98875FFF>4</color><color=#FFFFFFFF>></color>"));
+            Assert.That(
+                AbilityBarButtonTextTranslationPatch.TranslateButtonTextForQudTest(
+                    "<color=#77BFCFFF>Lase (4 charges) </color><color=#FFFFFFFF><</color><color=#98875FFF>5</color><color=#FFFFFFFF>></color>"),
+                Is.EqualTo("<color=#77BFCFFF>レーザー照射 (4チャージ) </color><color=#FFFFFFFF><</color><color=#98875FFF>5</color><color=#FFFFFFFF>></color>"));
+            Assert.That(
+                AbilityBarButtonTextTranslationPatch.TranslateButtonTextForQudTest(
+                    "<color=#77BFCFFF>Lay Mine [HE mine mk I] </color><color=#FFFFFFFF><</color><color=#98875FFF>6</color><color=#FFFFFFFF>></color>"),
+                Is.EqualTo("<color=#77BFCFFF>地雷設置 [HE mine mk I] </color><color=#FFFFFFFF><</color><color=#98875FFF>6</color><color=#FFFFFFFF>></color>"));
+            Assert.That(
+                AbilityBarButtonTextTranslationPatch.TranslateButtonTextForQudTest(
+                    "<color=#77BFCFFF>Recoil to Joppa </color><color=#FFFFFFFF><</color><color=#98875FFF>7</color><color=#FFFFFFFF>></color>"),
+                Is.EqualTo("<color=#77BFCFFF>ジョッパへ帰還 </color><color=#FFFFFFFF><</color><color=#98875FFF>7</color><color=#FFFFFFFF>></color>"));
+        });
+    }
+
+    [Test]
     public void TranslateButtonTextForQudTest_DoesNotRecolorPlainLocalizedHotkeySuffix()
     {
         var translated = AbilityBarButtonTextTranslationPatch.TranslateButtonTextForQudTest("フェイント <2>");

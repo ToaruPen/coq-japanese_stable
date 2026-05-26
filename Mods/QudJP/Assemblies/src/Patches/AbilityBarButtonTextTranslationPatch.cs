@@ -259,32 +259,35 @@ public static class AbilityBarButtonTextTranslationPatch
 
     private static bool TryTranslateDynamicAbilityBarName(string source, string route, out string translated)
     {
-        var dischargeMatch = DischargeChargePattern.Match(source);
+        var name = source.TrimEnd();
+        var trailingWhitespace = source.Substring(name.Length);
+
+        var dischargeMatch = DischargeChargePattern.Match(name);
         if (dischargeMatch.Success && TryTranslateAbilityBarBaseLeaf("Discharge", out var discharge))
         {
-            translated = discharge + " [" + dischargeMatch.Groups["count"].Value + "チャージ]";
+            translated = discharge + " [" + dischargeMatch.Groups["count"].Value + "チャージ]" + trailingWhitespace;
             return true;
         }
 
-        var laseMatch = LaseChargesPattern.Match(source);
+        var laseMatch = LaseChargesPattern.Match(name);
         if (laseMatch.Success && TryTranslateAbilityBarBaseLeaf("Lase", out var lase))
         {
-            translated = lase + " (" + laseMatch.Groups["count"].Value + "チャージ)";
+            translated = lase + " (" + laseMatch.Groups["count"].Value + "チャージ)" + trailingWhitespace;
             return true;
         }
 
-        var layMineTargetMatch = LayMineTargetPattern.Match(source);
+        var layMineTargetMatch = LayMineTargetPattern.Match(name);
         if (layMineTargetMatch.Success && TryTranslateAbilityBarBaseLeaf("Lay Mine", out var layMine))
         {
-            translated = layMine + " [" + layMineTargetMatch.Groups["target"].Value + "]";
+            translated = layMine + " [" + layMineTargetMatch.Groups["target"].Value + "]" + trailingWhitespace;
             return true;
         }
 
-        var recoilMatch = RecoilToZonePattern.Match(source);
+        var recoilMatch = RecoilToZonePattern.Match(name);
         if (recoilMatch.Success && TryTranslateAbilityBarBaseLeaf("Recoil", out var recoil))
         {
             var zone = TranslateRecoilZone(recoilMatch.Groups["zone"].Value, route);
-            translated = zone + "へ" + recoil;
+            translated = zone + "へ" + recoil + trailingWhitespace;
             return true;
         }
 
