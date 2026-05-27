@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 using HarmonyLib;
 using QudJP.Patches;
 using QudJP.Tests.DummyTargets;
+using QudJP.Tests.L1;
 
 namespace QudJP.Tests.L2;
 
@@ -14,6 +15,10 @@ public sealed class VehicleUnpoweredTranslationPatchTests
     [SetUp]
     public void SetUp()
     {
+        Translator.ResetForTests();
+        var localizationRoot = Path.Combine(TestProjectPaths.GetRepositoryRoot(), "Mods", "QudJP", "Localization");
+        LocalizationAssetResolver.SetLocalizationRootForTests(localizationRoot);
+        Translator.SetDictionaryDirectoryForTests(Path.Combine(localizationRoot, "Dictionaries"));
         DynamicTextObservability.ResetForTests();
         MessageFrameTranslator.ResetForTests();
         DummyPopupShow.Reset();
@@ -22,6 +27,8 @@ public sealed class VehicleUnpoweredTranslationPatchTests
     [TearDown]
     public void TearDown()
     {
+        Translator.ResetForTests();
+        LocalizationAssetResolver.SetLocalizationRootForTests(null);
         DummyPopupShow.Reset();
         MessageFrameTranslator.ResetForTests();
         DynamicTextObservability.ResetForTests();
@@ -29,19 +36,19 @@ public sealed class VehicleUnpoweredTranslationPatchTests
 
     [TestCase(
         "{{Y|chem cell}} is drained or nearly drained.\n\nRecharge or replace it to power {{C|phase cannon}}.",
-        "{{Y|chem cell}}は消耗しているか、ほとんど空だ。\n\n{{C|phase cannon}}に電力を供給するには再充電するか交換する必要がある。",
+        "{{Y|ケムセル}}は消耗しているか、ほとんど空だ。\n\n{{C|phase cannon}}に電力を供給するには再充電するか交換する必要がある。",
         "CellDrained")]
     [TestCase(
         "The {{Y|chem cell}} is drained or nearly drained.\n\nRecharge or replace it to power the {{C|phase cannon}}.",
-        "{{Y|chem cell}}は消耗しているか、ほとんど空だ。\n\n{{C|phase cannon}}に電力を供給するには再充電するか交換する必要がある。",
+        "{{Y|ケムセル}}は消耗しているか、ほとんど空だ。\n\n{{C|phase cannon}}に電力を供給するには再充電するか交換する必要がある。",
         "CellDrained")]
     [TestCase(
         "Insert a chem cell to power {{C|phase cannon}}.",
-        "{{C|phase cannon}}に電力を供給するにはchem cellを挿入する必要がある。",
+        "{{C|phase cannon}}に電力を供給するにはケムセルを挿入する必要がある。",
         "InsertCell")]
     [TestCase(
         "Insert a chem cell to power the {{C|phase cannon}}.",
-        "{{C|phase cannon}}に電力を供給するにはchem cellを挿入する必要がある。",
+        "{{C|phase cannon}}に電力を供給するにはケムセルを挿入する必要がある。",
         "InsertCell")]
     [TestCase(
         "{{C|phase cannon}} lacks the power to act.",

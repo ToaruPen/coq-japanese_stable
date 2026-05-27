@@ -270,11 +270,77 @@ public sealed class PopupMessageTranslationPatchTests
             target.ShowPopup("{{G|same text}}");
             var firstMessage = DummyPopupMessageTarget.LastMessage;
             target.ShowPopup("{{R|same text}}");
+            var secondMessage = DummyPopupMessageTarget.LastMessage;
+            target.ShowPopup("{{R|same text}}");
 
             Assert.Multiple(() =>
             {
                 Assert.That(firstMessage, Is.EqualTo("{{G|same text}}"));
+                Assert.That(secondMessage, Is.EqualTo("{{R|翻訳済み}}"));
                 Assert.That(DummyPopupMessageTarget.LastMessage, Is.EqualTo("{{R|same text}}"));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void Prefix_DoesNotDropPopupShowHandoff_WhenDifferentMessageArrivesFirst()
+    {
+        PopupTranslatedMessageHandoff.Remember("{{R|same text}}", "{{R|翻訳済み}}");
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyPopupMessageTarget), nameof(DummyPopupMessageTarget.ShowPopup)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(PopupMessageTranslationPatch), nameof(PopupMessageTranslationPatch.Prefix))));
+
+            var target = new DummyPopupMessageTarget();
+            target.ShowPopup("{{G|different text}}");
+            var unrelatedMessage = DummyPopupMessageTarget.LastMessage;
+            target.ShowPopup("{{R|same text}}");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(unrelatedMessage, Is.EqualTo("{{G|different text}}"));
+                Assert.That(DummyPopupMessageTarget.LastMessage, Is.EqualTo("{{R|翻訳済み}}"));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void Prefix_PreservesNestedPopupShowHandoffs()
+    {
+        PopupTranslatedMessageHandoff.Remember("{{R|outer text}}", "{{R|外側}}");
+        PopupTranslatedMessageHandoff.Remember("{{G|inner text}}", "{{G|内側}}");
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyPopupMessageTarget), nameof(DummyPopupMessageTarget.ShowPopup)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(PopupMessageTranslationPatch), nameof(PopupMessageTranslationPatch.Prefix))));
+
+            var target = new DummyPopupMessageTarget();
+            target.ShowPopup("{{G|inner text}}");
+            var innerMessage = DummyPopupMessageTarget.LastMessage;
+            target.ShowPopup("{{R|outer text}}");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(innerMessage, Is.EqualTo("{{G|内側}}"));
+                Assert.That(DummyPopupMessageTarget.LastMessage, Is.EqualTo("{{R|外側}}"));
             });
         }
         finally

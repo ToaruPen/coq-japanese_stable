@@ -162,7 +162,7 @@ public static class VehicleUnpoweredTranslationPatch
 
     private static string RestoreDisplayName(Match match, IReadOnlyList<ColorSpan> spans, string groupName)
     {
-        return DisplayNameCaptureTranslator.StripLeadingEnglishArticlePreservingColors(Restore(match, spans, groupName));
+        return DisplayNameCaptureTranslator.TranslatePreservingColors(Restore(match, spans, groupName), Context);
     }
 
     private static string RestoreWhole(

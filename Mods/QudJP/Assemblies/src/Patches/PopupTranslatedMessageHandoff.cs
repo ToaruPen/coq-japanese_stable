@@ -6,9 +6,10 @@ namespace QudJP.Patches;
 
 internal static class PopupTranslatedMessageHandoff
 {
-    private static readonly object Sync = new();
+    private const int MaxPendingEntries = 8;
 
-    private static Entry? pending;
+    [ThreadStatic]
+    private static List<Entry>? pendingEntries;
 
     internal static void Remember(string source, string translated)
     {
@@ -25,9 +26,11 @@ internal static class PopupTranslatedMessageHandoff
             return;
         }
 
-        lock (Sync)
+        pendingEntries ??= [];
+        pendingEntries.Add(new Entry(key.Visible, key.ColorSignature, translated));
+        if (pendingEntries.Count > MaxPendingEntries)
         {
-            pending = new Entry(key.Visible, key.ColorSignature, translated);
+            pendingEntries.RemoveAt(0);
         }
     }
 
@@ -40,28 +43,32 @@ internal static class PopupTranslatedMessageHandoff
         }
 
         var key = CreateKey(source);
-        lock (Sync)
+        var entries = pendingEntries;
+        if (entries is null)
         {
-            var entry = pending;
-            pending = null;
-            if (entry is null
-                || !string.Equals(entry.Visible, key.Visible, StringComparison.Ordinal)
+            return false;
+        }
+
+        for (var index = entries.Count - 1; index >= 0; index--)
+        {
+            var entry = entries[index];
+            if (!string.Equals(entry.Visible, key.Visible, StringComparison.Ordinal)
                 || !string.Equals(entry.ColorSignature, key.ColorSignature, StringComparison.Ordinal))
             {
-                return false;
+                continue;
             }
 
+            entries.RemoveAt(index);
             translated = entry.Translated;
             return true;
         }
+
+        return false;
     }
 
     internal static void ResetForTests()
     {
-        lock (Sync)
-        {
-            pending = null;
-        }
+        pendingEntries = null;
     }
 
     private static Key CreateKey(string source)
