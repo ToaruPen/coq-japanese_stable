@@ -133,7 +133,32 @@ internal static class PopupTranslatedMessageHandoff
         return false;
     }
 
-    private readonly record struct Key(string Visible, string ColorSignature);
+    private readonly struct Key
+    {
+        internal Key(string visible, string colorSignature)
+        {
+            Visible = visible;
+            ColorSignature = colorSignature;
+        }
 
-    private sealed record Entry(string Visible, string ColorSignature, string Translated);
+        internal string Visible { get; }
+
+        internal string ColorSignature { get; }
+    }
+
+    private sealed class Entry
+    {
+        internal Entry(string visible, string colorSignature, string translated)
+        {
+            Visible = visible;
+            ColorSignature = colorSignature;
+            Translated = translated;
+        }
+
+        internal string Visible { get; }
+
+        internal string ColorSignature { get; }
+
+        internal string Translated { get; }
+    }
 }
