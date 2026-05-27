@@ -51,23 +51,25 @@ public static class VehicleUnpoweredTranslationPatch
         }
     }
 
-    public static void Prefix()
+    public static void Prefix(out string? __state)
     {
         try
         {
-            OwnerTranslationScope.Enter(ref activeDepth);
+            __state = directMarkerPassThroughText;
+            OwnerDirectMarkerPopupScope.Enter(ref activeDepth);
         }
         catch (Exception ex)
         {
+            __state = directMarkerPassThroughText;
             Trace.TraceError("QudJP: {0}.Prefix failed: {1}", Context, ex);
         }
     }
 
-    public static Exception? Finalizer(Exception? __exception)
+    public static Exception? Finalizer(Exception? __exception, string? __state)
     {
         try
         {
-            OwnerTranslationScope.Exit(ref activeDepth);
+            OwnerDirectMarkerPopupScope.Exit(ref activeDepth, ref directMarkerPassThroughText, __state);
         }
         catch (Exception ex)
         {
@@ -118,7 +120,7 @@ public static class VehicleUnpoweredTranslationPatch
             translated = RestoreWhole(
                 RestoreDisplayName(insertCellMatch, spans, "vehicle")
                 + "に電力を供給するには"
-                + Restore(insertCellMatch, spans, "slot")
+                + RestoreDisplayName(insertCellMatch, spans, "slot")
                 + "を挿入する必要がある。",
                 spans,
                 stripped.Length,

@@ -37,11 +37,11 @@ public sealed class VehicleUnpoweredTranslationPatchTests
         "CellDrained")]
     [TestCase(
         "Insert a chem cell to power {{C|phase cannon}}.",
-        "{{C|phase cannon}}に電力を供給するにはa chem cellを挿入する必要がある。",
+        "{{C|phase cannon}}に電力を供給するにはchem cellを挿入する必要がある。",
         "InsertCell")]
     [TestCase(
         "Insert a chem cell to power the {{C|phase cannon}}.",
-        "{{C|phase cannon}}に電力を供給するにはa chem cellを挿入する必要がある。",
+        "{{C|phase cannon}}に電力を供給するにはchem cellを挿入する必要がある。",
         "InsertCell")]
     [TestCase(
         "{{C|phase cannon}} lacks the power to act.",
@@ -94,6 +94,49 @@ public sealed class VehicleUnpoweredTranslationPatchTests
                 Assert.That(HitCount("LacksPower"), Is.Zero);
             });
         });
+    }
+
+    [Test]
+    public void Patch_RestoresDirectMarkerPassThroughText_ForNestedOwnerScopes()
+    {
+        const string outerSource = "{{C|phase cannon}} lacks the power to act.";
+        const string innerSource = "Insert a chem cell to power {{C|phase cannon}}.";
+
+        VehicleUnpoweredTranslationPatch.Prefix(out var outerState);
+        try
+        {
+            _ = VehicleUnpoweredTranslationPatch.TryTranslatePopupMessage(
+                MessageFrameTranslator.MarkDirectTranslation(outerSource),
+                nameof(PopupShowTranslationPatch),
+                "Popup.Show",
+                out _);
+
+            Assert.That(DirectMarkerPassThroughText(), Is.EqualTo(outerSource));
+
+            VehicleUnpoweredTranslationPatch.Prefix(out var innerState);
+            try
+            {
+                _ = VehicleUnpoweredTranslationPatch.TryTranslatePopupMessage(
+                    MessageFrameTranslator.MarkDirectTranslation(innerSource),
+                    nameof(PopupShowTranslationPatch),
+                    "Popup.Show",
+                    out _);
+
+                Assert.That(DirectMarkerPassThroughText(), Is.EqualTo(innerSource));
+            }
+            finally
+            {
+                VehicleUnpoweredTranslationPatch.Finalizer(null, innerState);
+            }
+
+            Assert.That(DirectMarkerPassThroughText(), Is.EqualTo(outerSource));
+        }
+        finally
+        {
+            VehicleUnpoweredTranslationPatch.Finalizer(null, outerState);
+        }
+
+        Assert.That(DirectMarkerPassThroughText(), Is.Null);
     }
 
     [TestCase("")]
@@ -193,8 +236,15 @@ public sealed class VehicleUnpoweredTranslationPatchTests
     {
         harmony.Patch(
             original: RequireOwnerMethod(),
-            prefix: new HarmonyMethod(OwnerPopupRouteTestHarness.RequireMethod(typeof(VehicleUnpoweredTranslationPatch), "Prefix")),
-            finalizer: new HarmonyMethod(OwnerPopupRouteTestHarness.RequireMethod(typeof(VehicleUnpoweredTranslationPatch), "Finalizer")));
+            prefix: new HarmonyMethod(OwnerPopupRouteTestHarness.RequireMethod(
+                typeof(VehicleUnpoweredTranslationPatch),
+                "Prefix",
+                typeof(string).MakeByRefType())),
+            finalizer: new HarmonyMethod(OwnerPopupRouteTestHarness.RequireMethod(
+                typeof(VehicleUnpoweredTranslationPatch),
+                "Finalizer",
+                typeof(Exception),
+                typeof(string))));
     }
 
     private static void PatchProductionPopup(Harmony harmony, string methodName)
@@ -239,6 +289,15 @@ public sealed class VehicleUnpoweredTranslationPatchTests
         return DynamicTextObservability.GetRouteFamilyHitCountForTests(
             nameof(PopupShowTranslationPatch),
             "Popup.ProducerText." + nameof(VehicleUnpoweredTranslationPatch) + "." + detail);
+    }
+
+    private static string? DirectMarkerPassThroughText()
+    {
+        var field = typeof(VehicleUnpoweredTranslationPatch).GetField(
+            "directMarkerPassThroughText",
+            BindingFlags.NonPublic | BindingFlags.Static);
+        Assert.That(field, Is.Not.Null);
+        return field!.GetValue(null) as string;
     }
 
     private sealed class DummyVehicleUnpoweredProducer
