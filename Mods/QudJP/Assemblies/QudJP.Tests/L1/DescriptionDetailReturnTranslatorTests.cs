@@ -8,7 +8,8 @@ namespace QudJP.Tests.L1;
 [NonParallelizable]
 public sealed class DescriptionDetailReturnTranslatorTests
 {
-    private const DescriptionDetailReturnKind GameObjectUnitDescriptionKind = (DescriptionDetailReturnKind)4;
+    private const DescriptionDetailReturnKind GameObjectUnitDescriptionKind =
+        DescriptionDetailReturnKind.GameObjectUnitDescription;
 
     private string tempRoot = null!;
     private string dictionariesDirectory = null!;

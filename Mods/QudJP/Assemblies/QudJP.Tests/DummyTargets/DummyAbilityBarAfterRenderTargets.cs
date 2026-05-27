@@ -78,3 +78,30 @@ internal sealed class DummyAbilityBarButton
         Text.SetText(text);
     }
 }
+
+internal sealed class DummyAbilityBarButtonGameObject
+{
+    private readonly AbilityBarButton component;
+
+    public DummyAbilityBarButtonGameObject(string text)
+    {
+        component = new AbilityBarButton(text);
+    }
+
+    public DummyUITextSkin Text => component.Text;
+
+    public object? GetComponent(Type componentType)
+    {
+        return componentType == typeof(AbilityBarButton) ? component : null;
+    }
+}
+
+internal sealed class AbilityBarButton
+{
+    public DummyUITextSkin Text = new DummyUITextSkin();
+
+    public AbilityBarButton(string text)
+    {
+        Text.SetText(text);
+    }
+}

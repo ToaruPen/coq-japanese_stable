@@ -9,10 +9,10 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Final, Literal, TypedDict, cast
 
-try:
-    from scripts.static_producer_closure import COVERED_OWNER_FAMILIES
-except ModuleNotFoundError:  # pragma: no cover - direct script execution path
-    from static_producer_closure import COVERED_OWNER_FAMILIES
+if __package__ in {None, ""}:  # pragma: no cover - direct script execution path
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
+from scripts.static_producer_closure import COVERED_OWNER_FAMILIES
 
 Classification = Literal[
     "player_visible_api",
@@ -43,6 +43,7 @@ ClosureLane = Literal[
 ]
 ResidualDisposition = Literal[
     "existing_evidence_policy_overlay",
+    "covered_by_existing_route",
     "child_issue_needed",
     "runtime_evidence_required",
     "likely_implementation_gap",
@@ -12286,6 +12287,11 @@ def _issue719_residual_status(
             *evidence,
             "Static policy review cannot prove this route without runtime evidence.",
         ]
+    if residual_disposition == "covered_by_existing_route":
+        return "covered_by_owner_route", [
+            *evidence,
+            "Existing owner-route or data-route evidence already covers this row.",
+        ]
     return "action_required", [
         *evidence,
         "Exact owner-route implementation, promotion evidence, or narrower split is still required.",
@@ -12909,16 +12915,12 @@ def _producer_runtime_residual_bucket(entry: SurfaceQueueEntry) -> str:  # noqa:
         return _producer_runtime_inventory_action_surface_bucket(entry)
     if source_file.startswith("XRL.World.Parts/") and "Cybernetics" in source_file:
         return _producer_runtime_cybernetics_surface_bucket(entry)
-    owner_rules: tuple[tuple[tuple[str, ...], str | None, str], ...] = ()
     if source_file.startswith("XRL.World.Capabilities/"):
         return _producer_runtime_capability_bucket(entry)
     if source_file.startswith("XRL.Liquids/"):
         return _producer_runtime_liquid_bucket(entry)
     if source_file.startswith(("XRL.World.Quests/", "XRL.World.ZoneBuilders/", "XRL.World/DynamicQuest")):
         return _producer_runtime_quest_bucket(entry)
-    for prefixes, marker, bucket in owner_rules:
-        if source_file.startswith(prefixes) and (marker is None or marker in family_id):
-            return bucket
     if source_file.startswith(("XRL.World.Biomes/", "XRL.World.Parts/", "XRL.World.Tinkering/")):
         return _producer_runtime_world_part_surface_bucket(entry)
     ui_prefixes = ("Qud.UI/", "XRL.UI/", "XRL.UI.", "XRL.CharacterBuilds", "XRL.World/Gender.cs")

@@ -174,6 +174,43 @@ public sealed class AbilityBarButtonTextTranslationPatchTests
     }
 
     [Test]
+    public void Postfix_TranslatesAbilityButtonTextThroughGameObjectComponentRoute()
+    {
+        WriteDictionary(
+            ("Sprint", "ダッシュ"),
+            ("[disabled]", "[無効]"));
+
+        var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyAbilityBarButtonTextTarget), nameof(DummyAbilityBarButtonTextTarget.Update)),
+                postfix: new HarmonyMethod(RequirePatchMethod("Postfix", typeof(object))));
+
+            var target = new DummyAbilityBarButtonTextTarget();
+            var sprint = new DummyAbilityBarButtonGameObject("&CSprint {{K|[disabled]}}");
+            target.AbilityButtons.Add(sprint);
+
+            target.Update();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(sprint.Text.text, Is.EqualTo("&Cダッシュ {{K|[無効]}}"));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(AbilityBarButtonTextTranslationPatch),
+                        "AbilityBar.ButtonText"),
+                    Is.EqualTo(1));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void Postfix_RegistersRuntimeCompletedLabelsToSuppressFlatTranslatorMisses()
     {
         WriteDictionary(
