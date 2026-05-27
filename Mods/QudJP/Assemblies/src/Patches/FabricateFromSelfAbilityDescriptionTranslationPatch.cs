@@ -59,6 +59,19 @@ public static class FabricateFromSelfAbilityDescriptionTranslationPatch
             return source;
         }
 
-        return match.Groups["object"].Value + "を生成する";
+        var sourceObject = match.Groups["object"].Value;
+        var translatedObject = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            sourceObject,
+            nameof(FabricateFromSelfAbilityDescriptionTranslationPatch));
+        if (string.Equals(translatedObject, sourceObject, StringComparison.Ordinal))
+        {
+            translatedObject = ColorAwareTranslationComposer.TranslatePreservingColors(
+                sourceObject,
+                visible => StringHelpers.TryGetTranslationExactOrLowerAscii(visible, out var translated)
+                    ? translated
+                    : visible);
+        }
+
+        return translatedObject + "を生成する";
     }
 }

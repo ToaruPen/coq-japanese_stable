@@ -297,11 +297,13 @@ public sealed class ColorTagAllowlistCoverageTests
         "Mods/QudJP/Assemblies/src/Patches/DisplayNameCaptureTranslator.cs",
         "Mods/QudJP/Assemblies/src/Patches/DisplayNameSemanticPipeline.cs",
         "Mods/QudJP/Assemblies/src/Patches/ExaminerTranslationPatch.cs",
+        "Mods/QudJP/Assemblies/src/Patches/FabricateFromSelfAbilityDescriptionTranslationPatch.cs",
         "Mods/QudJP/Assemblies/src/Patches/GameManagerUpdateSelectedAbilityPatch.cs",
         "Mods/QudJP/Assemblies/src/Patches/InventoryFireEventTranslationPatch.cs",
         "Mods/QudJP/Assemblies/src/Patches/InventoryLineTranslationPatch.cs",
         "Mods/QudJP/Assemblies/src/Patches/LookTooltipInformationWrapPatch.cs",
         "Mods/QudJP/Assemblies/src/Patches/PopupTranslationPatch.cs",
+        "Mods/QudJP/Assemblies/src/Patches/SifrahTokenDescriptionTranslationPatch.cs",
         "Mods/QudJP/Assemblies/src/Patches/TinkeringDetailsLineTranslationPatch.cs",
         "Mods/QudJP/Assemblies/src/Patches/TradeUiPopupTranslationPatch.cs",
         "Mods/QudJP/Assemblies/src/Patches/TradeLineTranslationPatch.cs",
@@ -310,6 +312,7 @@ public sealed class ColorTagAllowlistCoverageTests
 
     private static readonly string[] MarkupAwareCaptureOwnerFiles =
     {
+        "Mods/QudJP/Assemblies/src/Patches/AbilityBarButtonTextTranslationPatch.cs",
         "Mods/QudJP/Assemblies/src/Patches/ActionManagerRunSegmentTranslationPatch.cs",
         "Mods/QudJP/Assemblies/src/Patches/ActivatedAbilitiesAddAbilityPopupTranslationPatch.cs",
         "Mods/QudJP/Assemblies/src/Patches/ActiveEffectPopupQueueTranslationPatch.cs",

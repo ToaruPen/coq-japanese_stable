@@ -102,6 +102,16 @@ public sealed class DescriptionDetailReturnTranslationPatchTests
         "時間遁走（レベル3）",
         "GameObjectUnitDescription")]
     [TestCase(
+        nameof(DummyDescriptionDetailReturnTarget.GameObjectAttributeUnitGetDescription),
+        "+2 to all stats",
+        "全能力値+2",
+        "GameObjectUnitDescription")]
+    [TestCase(
+        nameof(DummyDescriptionDetailReturnTarget.GameObjectTieredArmorUnitGetDescription),
+        "Spawns with 3 random pieces of gigantic, low-to-mid tier armor",
+        "巨大な低-中ティアのランダムな防具3個を所持して出現",
+        "GameObjectUnitDescription")]
+    [TestCase(
         nameof(DummyDescriptionDetailReturnTarget.GameObjectBaetylUnitGetDescription),
         "Spawns with 2 random baetyl rewards",
         "ランダムなベイティル報酬2個を所持して出現",
@@ -114,7 +124,7 @@ public sealed class DescriptionDetailReturnTranslationPatchTests
     [TestCase(
         nameof(DummyDescriptionDetailReturnTarget.GameObjectReputationUnitGetDescription),
         "+200 reputation with {{C|the Barathrumites}}",
-        "{{C|the Barathrumites}}との評判+200",
+        "{{C|バラサラム派（技師団）}}との評判+200",
         "GameObjectUnitDescription")]
     [TestCase(
         nameof(DummyDescriptionDetailReturnTarget.GameObjectSecretUnitGetDescription),
@@ -144,6 +154,7 @@ public sealed class DescriptionDetailReturnTranslationPatchTests
             ("carbide fists", "カーバイドフィスト"),
             ("arm", "腕"),
             ("Temporal Fugue", "時間遁走"),
+            ("the Barathrumites", "バラサラム派（技師団）"),
             ("Composite boon", "複合恩恵"));
 
         WithPatchedOwner(ownerMethodName, () =>
@@ -326,6 +337,12 @@ internal sealed class DummyDescriptionDetailReturnTarget
 
     [MethodImpl(MethodImplOptions.NoInlining)]
     public string GameObjectMutationUnitGetDescription(bool inscription = false) => source;
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public string GameObjectAttributeUnitGetDescription(bool inscription = false) => source;
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public string GameObjectTieredArmorUnitGetDescription(bool inscription = false) => source;
 
     [MethodImpl(MethodImplOptions.NoInlining)]
     public string GameObjectBaetylUnitGetDescription(bool inscription = false) => source;

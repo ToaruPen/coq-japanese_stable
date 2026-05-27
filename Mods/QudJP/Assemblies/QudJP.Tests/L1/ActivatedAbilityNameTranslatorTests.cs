@@ -80,16 +80,16 @@ public sealed class ActivatedAbilityNameTranslatorTests
     }
 
     [Test]
-    public void TryTranslateVisibleName_TranslatesLayMineTargetPrefix()
+    public void TryTranslateVisibleName_TranslatesLayMineTargetFromMinerProducerShape()
     {
         var translated = ActivatedAbilityNameTranslator.TryTranslateVisibleName(
-            "Lay Mine [HE mine mk I]",
+            "Lay Mine [{{W|high explosive}} mk I]",
             out var result);
 
         Assert.Multiple(() =>
         {
             Assert.That(translated, Is.True);
-            Assert.That(result, Is.EqualTo("地雷設置 [HE mine mk I]"));
+            Assert.That(result, Is.EqualTo("地雷設置 [{{W|高性能爆薬}}mk I]"));
         });
     }
 
@@ -147,6 +147,9 @@ public sealed class ActivatedAbilityNameTranslatorTests
     [TestCase("Temporal Fugue", "時間遁走")]
     [TestCase("Quantum Fugue", "量子フーガ")]
     [TestCase("Jump", "ジャンプ")]
+    [TestCase("Sprint", "スプリント")]
+    [TestCase("Power Skate", "パワースケート")]
+    [TestCase("Rocket Jump", "ロケットジャンプ")]
     public void TryTranslateVisibleName_TranslatesActivatedAbilityAssetBridgeNames(string source, string expected)
     {
         Assert.Multiple(() =>

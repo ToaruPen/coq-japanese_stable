@@ -311,9 +311,25 @@ public static class DescriptionAssignmentOwnerTranslationPatch
             return source;
         }
 
-        var effect = source.Substring(start, middleIndex - start);
-        var faction = source.Substring(middleIndex + middle.Length, source.Length - middleIndex - middle.Length - suffix.Length);
+        var effect = TranslateGeneratedCapture(source.Substring(start, middleIndex - start));
+        var faction = TranslateGeneratedCapture(source.Substring(middleIndex + middle.Length, source.Length - middleIndex - middle.Length - suffix.Length));
         return "このアイテムを見ることができる" + faction + "に" + effect + "効果を与える。";
+    }
+
+    private static string TranslateGeneratedCapture(string source)
+    {
+        return ColorAwareTranslationComposer.TranslatePreservingColors(
+            source,
+            visible =>
+            {
+                if (StringHelpers.TryGetTranslationExactOrLowerAscii(visible, out var translated))
+                {
+                    return translated;
+                }
+
+                var historySpice = HistorySpiceComponentLookup.TranslateExactOrLowerAscii(visible);
+                return historySpice ?? visible;
+            });
     }
 
     private static void TranslateStringMember(object target, string memberName, string family, Func<string, string> translate)

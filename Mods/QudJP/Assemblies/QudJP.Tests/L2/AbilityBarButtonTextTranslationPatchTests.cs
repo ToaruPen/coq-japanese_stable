@@ -55,6 +55,7 @@ public sealed class AbilityBarButtonTextTranslationPatchTests
             ("Discharge", "放電"),
             ("Lase", "レーザー照射"),
             ("Lay Mine", "地雷設置"),
+            ("{{W|high explosive}}", "{{W|高性能爆薬}}"),
             ("Aggressive Stance", "攻勢の構え"),
             ("Defensive Stance", "守勢の構え"),
             ("Rebuke Robot", "ロボットを叱責"),
@@ -92,7 +93,7 @@ public sealed class AbilityBarButtonTextTranslationPatchTests
             var mark = new DummyAbilityBarButton("&CMark");
             var activate = new DummyAbilityBarButton("Activate");
             var activateLocalizedItem = new DummyAbilityBarButton("Activate ナインフォールドのブーツ");
-            var layMineTarget = new DummyAbilityBarButton("Lay Mine [HE mine mk I]");
+            var layMineTarget = new DummyAbilityBarButton("Lay Mine [{{W|high explosive}} mk I]");
             var recoil = new DummyAbilityBarButton("Recoil");
             var recoilToJoppa = new DummyAbilityBarButton("Recoil to Joppa");
             var coloredRecoilToJoppa = new DummyAbilityBarButton("&CRecoil to Joppa {{K|[disabled]}}");
@@ -143,7 +144,7 @@ public sealed class AbilityBarButtonTextTranslationPatchTests
                 Assert.That(mark.Text.text, Is.EqualTo("&Cマーク"));
                 Assert.That(activate.Text.text, Is.EqualTo("起動"));
                 Assert.That(activateLocalizedItem.Text.text, Is.EqualTo("ナインフォールドのブーツを起動"));
-                Assert.That(layMineTarget.Text.text, Is.EqualTo("地雷設置 [HE mine mk I]"));
+                Assert.That(layMineTarget.Text.text, Is.EqualTo("地雷設置 [{{W|高性能爆薬}}mk I]"));
                 Assert.That(recoil.Text.text, Is.EqualTo("帰還"));
                 Assert.That(recoilToJoppa.Text.text, Is.EqualTo("ジョッパへ帰還"));
                 Assert.That(coloredRecoilToJoppa.Text.text, Is.EqualTo("&Cジョッパへ帰還 {{K|[無効]}}"));
@@ -240,6 +241,7 @@ public sealed class AbilityBarButtonTextTranslationPatchTests
             ("Discharge", "放電"),
             ("Lase", "レーザー照射"),
             ("Lay Mine", "地雷設置"),
+            ("{{W|high explosive}}", "{{W|高性能爆薬}}"),
             ("Recoil", "帰還"),
             ("Joppa", "ジョッパ"));
 
@@ -255,8 +257,8 @@ public sealed class AbilityBarButtonTextTranslationPatchTests
                 Is.EqualTo("<color=#77BFCFFF>レーザー照射 (4チャージ) </color><color=#FFFFFFFF><</color><color=#98875FFF>5</color><color=#FFFFFFFF>></color>"));
             Assert.That(
                 AbilityBarButtonTextTranslationPatch.TranslateButtonTextForQudTest(
-                    "<color=#77BFCFFF>Lay Mine [HE mine mk I] </color><color=#FFFFFFFF><</color><color=#98875FFF>6</color><color=#FFFFFFFF>></color>"),
-                Is.EqualTo("<color=#77BFCFFF>地雷設置 [HE mine mk I] </color><color=#FFFFFFFF><</color><color=#98875FFF>6</color><color=#FFFFFFFF>></color>"));
+                    "<color=#77BFCFFF>Lay Mine [{{W|high explosive}} mk I] </color><color=#FFFFFFFF><</color><color=#98875FFF>6</color><color=#FFFFFFFF>></color>"),
+                Is.EqualTo("<color=#77BFCFFF>地雷設置 [{{W|高性能爆薬}}mk I] </color><color=#FFFFFFFF><</color><color=#98875FFF>6</color><color=#FFFFFFFF>></color>"));
             Assert.That(
                 AbilityBarButtonTextTranslationPatch.TranslateButtonTextForQudTest(
                     "<color=#77BFCFFF>Recoil to Joppa </color><color=#FFFFFFFF><</color><color=#98875FFF>7</color><color=#FFFFFFFF>></color>"),

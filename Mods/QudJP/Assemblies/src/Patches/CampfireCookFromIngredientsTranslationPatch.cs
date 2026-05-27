@@ -22,7 +22,7 @@ public static class CampfireCookFromIngredientsTranslationPatch
         "^\\[(?:up to (?<remaining>\\d+) remaining|0 remaining)\\]$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex IngredientOptionPattern = new(
-        "^(?<prefix>\\[(?: |X|x)\\]\\s+)(?<ingredient>.+)$",
+        "^(?<prefix>(?:\\[(?: |X|x)\\]|\\{\\{y\\|\\[\\{\\{G\\|X\\}\\}\\]\\}\\})\\s+)(?<ingredient>.+)$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.Singleline);
     private static readonly Regex IngredientOptionQuantitySuffixPattern = new(
         "\\s+\\{\\{K\\|x\\d+\\}\\}$",

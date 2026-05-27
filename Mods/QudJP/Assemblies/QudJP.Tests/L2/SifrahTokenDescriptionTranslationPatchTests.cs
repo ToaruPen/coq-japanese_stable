@@ -13,19 +13,27 @@ public sealed class SifrahTokenDescriptionTranslationPatchTests
     [SetUp]
     public void SetUp()
     {
+        var localizationRoot = Path.Combine(QudJP.Tests.L1.TestProjectPaths.GetRepositoryRoot(), "Mods", "QudJP", "Localization");
+        Translator.ResetForTests();
+        ScopedDictionaryLookup.ResetForTests();
+        Translator.SetDictionaryDirectoryForTests(Path.Combine(localizationRoot, "Dictionaries"));
+        LocalizationAssetResolver.SetLocalizationRootForTests(localizationRoot);
         DynamicTextObservability.ResetForTests();
     }
 
     [TearDown]
     public void TearDown()
     {
+        LocalizationAssetResolver.SetLocalizationRootForTests(null);
+        ScopedDictionaryLookup.ResetForTests();
+        Translator.ResetForTests();
         DynamicTextObservability.ResetForTests();
     }
 
     [TestCase(
         nameof(DummySifrahTokenDescriptionTarget.BuildLiquid),
         "use water",
-        "waterを使う",
+        "水を使う",
         "UseNamedLiquid")]
     [TestCase(
         nameof(DummySifrahTokenDescriptionTarget.BuildAttributeSacrifice),
@@ -96,6 +104,45 @@ public sealed class SifrahTokenDescriptionTranslationPatchTests
         });
     }
 
+    [Test]
+    public void GetDescriptionPostfix_TranslatesDisplayedAvailabilitySuffix_WhenPatched()
+    {
+        WithPatchedGetDescription(() =>
+        {
+            var target = new DummySifrahTokenDescriptionTarget("use {{B|water}}");
+
+            var translated = target.GetDisplayedLiquidDescription();
+
+            Assert.That(translated, Is.EqualTo("{{B|水}}を使う [所持: {{C|2}}ドラム]"));
+        });
+    }
+
+    [Test]
+    public void GetDescriptionPostfix_TranslatesBareAvailabilitySuffix_WhenPatched()
+    {
+        WithPatchedGetDescription(nameof(DummySifrahTokenDescriptionTarget.GetDisplayedCountDescription), () =>
+        {
+            var target = new DummySifrahTokenDescriptionTarget("tell a secret");
+
+            var translated = target.GetDisplayedCountDescription();
+
+            Assert.That(translated, Is.EqualTo("秘密を話す [所持: {{C|2}}]"));
+        });
+    }
+
+    [Test]
+    public void GetDescriptionPostfix_TranslatesDynamicElectricalGenerationCharge_WhenPatched()
+    {
+        WithPatchedGetDescription(nameof(DummySifrahTokenDescriptionTarget.GetDisplayedElectricalGenerationChargeDescription), () =>
+        {
+            var target = new DummySifrahTokenDescriptionTarget("use {{C|10000}} charge");
+
+            var translated = target.GetDisplayedElectricalGenerationChargeDescription();
+
+            Assert.That(translated, Is.EqualTo("電気生成で{{C|10000}}チャージを使う"));
+        });
+    }
+
     private static void WithPatchedOwner(string ownerMethodName, Action action)
     {
         var harmonyId = "qudjp.tests.sifrah-token-description." + Guid.NewGuid().ToString("N");
@@ -108,6 +155,31 @@ public sealed class SifrahTokenDescriptionTranslationPatchTests
                     typeof(SifrahTokenDescriptionTranslationPatch),
                     nameof(SifrahTokenDescriptionTranslationPatch.Postfix),
                     typeof(object))));
+            action();
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void WithPatchedGetDescription(Action action)
+    {
+        WithPatchedGetDescription(nameof(DummySifrahTokenDescriptionTarget.GetDisplayedLiquidDescription), action);
+    }
+
+    private static void WithPatchedGetDescription(string ownerMethodName, Action action)
+    {
+        var harmonyId = "qudjp.tests.sifrah-token-get-description." + Guid.NewGuid().ToString("N");
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummySifrahTokenDescriptionTarget), ownerMethodName),
+                postfix: new HarmonyMethod(RequireMethod(
+                    typeof(SifrahTokenGetDescriptionTranslationPatch),
+                    nameof(SifrahTokenGetDescriptionTranslationPatch.Postfix),
+                    typeof(string).MakeByRefType())));
             action();
         }
         finally
@@ -169,5 +241,23 @@ internal sealed class DummySifrahTokenDescriptionTarget
     public void BuildFixedNoArgumentToken()
     {
         Description = sourceDescription;
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public string GetDisplayedLiquidDescription()
+    {
+        return sourceDescription + " [have {{C|2}} drams]";
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public string GetDisplayedCountDescription()
+    {
+        return sourceDescription + " [have {{C|2}}]";
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public string GetDisplayedElectricalGenerationChargeDescription()
+    {
+        return sourceDescription + " via Electrical Generation";
     }
 }

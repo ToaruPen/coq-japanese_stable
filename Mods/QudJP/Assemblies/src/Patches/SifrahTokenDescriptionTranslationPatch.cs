@@ -13,7 +13,7 @@ public static class SifrahTokenDescriptionTranslationPatch
     internal const string Context = nameof(SifrahTokenDescriptionTranslationPatch);
     internal const string Family = "SifrahToken.Description";
 
-    private static readonly string[] NoArgumentTokenTypeNames =
+    internal static readonly string[] NoArgumentTokenTypeNames =
     [
         "XRL.World.PsionicSifrahTokenApplyAncientLore",
         "XRL.World.PsionicSifrahTokenApplyIntellect",
@@ -258,10 +258,110 @@ public static class SifrahTokenDescriptionTranslationPatch
     }
 }
 
+internal static class SifrahTokenGetDescriptionTargetResolver
+{
+    internal static IEnumerable<MethodBase> ResolveTargetMethods(string context)
+    {
+        var sifrahGameType = AccessTools.TypeByName("XRL.SifrahGame");
+        var sifrahSlotType = AccessTools.TypeByName("XRL.SifrahSlot");
+        var gameObjectType = AccessTools.TypeByName("XRL.World.GameObject");
+        if (sifrahGameType is null || sifrahSlotType is null || gameObjectType is null)
+        {
+            Trace.TraceError("QudJP: {0} Sifrah GetDescription parameter type not found.", context);
+            yield break;
+        }
+
+        var parameterTypes = new[] { sifrahGameType, sifrahSlotType, gameObjectType };
+        foreach (var typeName in SifrahTokenDescriptionTranslationPatch.NoArgumentTokenTypeNames)
+        {
+            var targetType = AccessTools.TypeByName(typeName);
+            var method = targetType?.GetMethod(
+                "GetDescription",
+                BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly,
+                binder: null,
+                types: parameterTypes,
+                modifiers: null);
+            if (method is not null)
+            {
+                yield return method;
+            }
+        }
+    }
+}
+
+[HarmonyPatch]
+public static class SifrahTokenGetDescriptionTranslationPatch
+{
+    internal const string Context = nameof(SifrahTokenGetDescriptionTranslationPatch);
+
+    [HarmonyTargetMethods]
+    private static IEnumerable<MethodBase> TargetMethods()
+    {
+        return SifrahTokenGetDescriptionTargetResolver.ResolveTargetMethods(Context);
+    }
+
+    public static void Postfix(ref string __result)
+    {
+        try
+        {
+            if (!SifrahTokenDescriptionTranslator.TryTranslateDescription(__result, out var translated, out var detail))
+            {
+                return;
+            }
+
+            if (detail.Length > 0)
+            {
+                DynamicTextObservability.RecordTransform(Context, SifrahTokenDescriptionTranslationPatch.Family + "." + detail, __result, translated);
+            }
+
+            __result = translated;
+        }
+        catch (Exception ex)
+        {
+            Trace.TraceError("QudJP: {0}.Postfix failed: {1}", Context, ex);
+        }
+    }
+}
+
 internal static class SifrahTokenDescriptionTranslator
 {
+    private const string LiquidDictionaryFile = "ui-liquids.ja.json";
+    private const string LiquidContext = "XRL.Liquids";
+
     private static readonly Regex UseNamedLiquidPattern = new(
         "^use (?<liquid>.+)$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex ShareNamedLiquidPattern = new(
+        "^share (?<liquid>.+)$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex OfferNamedLiquidPattern = new(
+        "^offer (?<liquid>.+)$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex LiquidHaveDramsPattern = new(
+        "^(?<action>use|share|offer) (?<liquid>.+) \\[have (?<count>\\{\\{C\\|-?\\d+\\}\\}|-?\\d+) drams?\\]$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex DisplayHaveCountPattern = new(
+        "^(?<body>.+) \\[have (?<count>\\{\\{C\\|-?\\d+\\}\\}|-?\\d+)\\]$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex DisplayHaveDramsPattern = new(
+        "^(?<body>.+) \\[have (?<count>\\{\\{C\\|-?\\d+\\}\\}|-?\\d+) drams?\\]$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex ChargeActionPattern = new(
+        "^(?<action>use|offer) (?<count>\\{\\{C\\|-?\\d+\\}\\}|-?\\d+) charge (?<source>from an energy cell|via Electrical Generation)$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex LeverageFactionPattern = new(
+        "^leverage being (?<state>favored|loved) by (?<faction>.+)$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex GiftNamedItemPattern = new(
+        "^gift (?<item>.+)$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     private static readonly Regex SacrificeNamedAttributePattern = new(
@@ -413,6 +513,75 @@ internal static class SifrahTokenDescriptionTranslator
             return true;
         }
 
+        var chargeActionMatch = ChargeActionPattern.Match(stripped);
+        if (chargeActionMatch.Success)
+        {
+            translated = TranslateChargeAction(
+                chargeActionMatch.Groups["action"].Value,
+                Restore(chargeActionMatch, spans, "count"),
+                chargeActionMatch.Groups["source"].Value);
+            detail = chargeActionMatch.Groups["action"].Value == "offer" ? "OfferCharge" : "UseCharge";
+            return true;
+        }
+
+        var leverageFactionMatch = LeverageFactionPattern.Match(stripped);
+        if (leverageFactionMatch.Success)
+        {
+            var faction = TranslateGeneralCapture(Restore(leverageFactionMatch, spans, "faction"));
+            if (leverageFactionMatch.Groups["state"].Value == "favored")
+            {
+                translated = faction + "からの好意を利用する";
+                detail = "LeverageFavoredFaction";
+                return true;
+            }
+
+            translated = faction + "から愛されていることを利用する";
+            detail = "LeverageLovedFaction";
+            return true;
+        }
+
+        var haveDramsMatch = LiquidHaveDramsPattern.Match(stripped);
+        if (haveDramsMatch.Success)
+        {
+            translated = TranslateLiquidAction(
+                haveDramsMatch.Groups["action"].Value,
+                Restore(haveDramsMatch, spans, "liquid"))
+                + " [所持: "
+                + Restore(haveDramsMatch, spans, "count")
+                + "ドラム]";
+            detail = ActionDetail(haveDramsMatch.Groups["action"].Value) + ".HaveDrams";
+            return true;
+        }
+
+        var haveCountMatch = DisplayHaveDramsPattern.Match(stripped);
+        if (haveCountMatch.Success)
+        {
+            var body = Restore(haveCountMatch, spans, "body");
+            var translatedBody = TryTranslateDescription(body, out var bodyTranslated, out _) ? bodyTranslated : body;
+            translated = translatedBody + " [所持: " + Restore(haveCountMatch, spans, "count") + "ドラム]";
+            detail = "HaveDrams";
+            return true;
+        }
+
+        haveCountMatch = DisplayHaveCountPattern.Match(stripped);
+        if (haveCountMatch.Success)
+        {
+            var body = Restore(haveCountMatch, spans, "body");
+            var translatedBody = TryTranslateDescription(body, out var bodyTranslated, out _) ? bodyTranslated : body;
+            translated = translatedBody + " [所持: " + Restore(haveCountMatch, spans, "count") + "]";
+            detail = "HaveCount";
+            return true;
+        }
+
+        var giftMatch = GiftNamedItemPattern.Match(stripped);
+        if (giftMatch.Success)
+        {
+            var item = TranslateItemCapture(Restore(giftMatch, spans, "item"));
+            translated = item + "を贈る";
+            detail = "GiftNamedItem";
+            return true;
+        }
+
         if (string.Equals(stripped, "use liquid", StringComparison.Ordinal))
         {
             translated = "液体を使う";
@@ -423,8 +592,24 @@ internal static class SifrahTokenDescriptionTranslator
         var match = UseNamedLiquidPattern.Match(stripped);
         if (match.Success && !match.Groups["liquid"].Value.StartsWith("a ", StringComparison.Ordinal))
         {
-            translated = Restore(match, spans, "liquid") + "を使う";
+            translated = TranslateLiquidTarget(Restore(match, spans, "liquid")) + "を使う";
             detail = "UseNamedLiquid";
+            return true;
+        }
+
+        match = ShareNamedLiquidPattern.Match(stripped);
+        if (match.Success && !match.Groups["liquid"].Value.StartsWith("a ", StringComparison.Ordinal))
+        {
+            translated = TranslateLiquidTarget(Restore(match, spans, "liquid")) + "を分かち合う";
+            detail = "ShareNamedLiquid";
+            return true;
+        }
+
+        match = OfferNamedLiquidPattern.Match(stripped);
+        if (match.Success && !match.Groups["liquid"].Value.StartsWith("a ", StringComparison.Ordinal))
+        {
+            translated = TranslateLiquidTarget(Restore(match, spans, "liquid")) + "を差し出す";
+            detail = "OfferNamedLiquid";
             return true;
         }
 
@@ -464,5 +649,82 @@ internal static class SifrahTokenDescriptionTranslator
     {
         var group = match.Groups[groupName];
         return ColorAwareTranslationComposer.MarkupAwareRestoreCapture(group.Value, spans, group).Trim();
+    }
+
+    private static string TranslateLiquidAction(string action, string liquid)
+    {
+        return action switch
+        {
+            "use" => TranslateLiquidTarget(liquid) + "を使う",
+            "share" => TranslateLiquidTarget(liquid) + "を分かち合う",
+            "offer" => TranslateLiquidTarget(liquid) + "を差し出す",
+            _ => liquid,
+        };
+    }
+
+    private static string TranslateChargeAction(string action, string count, string source)
+    {
+        var sourcePrefix = source == "via Electrical Generation"
+            ? "電気生成で"
+            : "エネルギーセルから";
+        var verb = action == "offer" ? "差し出す" : "使う";
+        return sourcePrefix + count + "チャージを" + verb;
+    }
+
+    private static string ActionDetail(string action)
+    {
+        return action switch
+        {
+            "use" => "UseNamedLiquid",
+            "share" => "ShareNamedLiquid",
+            "offer" => "OfferNamedLiquid",
+            _ => "NamedLiquid",
+        };
+    }
+
+    private static string TranslateLiquidTarget(string source)
+    {
+        var exact = ScopedDictionaryLookup.TranslateExactOrLowerAsciiForContext(source, LiquidContext, LiquidDictionaryFile);
+        if (exact is not null)
+        {
+            return exact;
+        }
+
+        return ColorAwareTranslationComposer.TranslatePreservingColors(
+            source,
+            visible =>
+            {
+                var scoped = ScopedDictionaryLookup.TranslateExactOrLowerAsciiForContext(visible, LiquidContext, LiquidDictionaryFile);
+                if (scoped is not null)
+                {
+                    return scoped;
+                }
+
+                var broad = StringHelpers.TranslateExactOrLowerAscii(visible);
+                return broad ?? visible;
+            });
+    }
+
+    private static string TranslateGeneralCapture(string source)
+    {
+        return ColorAwareTranslationComposer.TranslatePreservingColors(
+            source,
+            visible => StringHelpers.TryGetTranslationExactOrLowerAscii(visible, out var translated)
+                ? translated
+                : visible);
+    }
+
+    private static string TranslateItemCapture(string source)
+    {
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            source,
+            nameof(SifrahTokenDescriptionTranslator) + ".Item");
+        if (!string.Equals(translated, source, StringComparison.Ordinal))
+        {
+            return translated;
+        }
+
+        var strippedArticle = StringHelpers.StripLeadingEnglishArticle(source);
+        return TranslateGeneralCapture(strippedArticle);
     }
 }

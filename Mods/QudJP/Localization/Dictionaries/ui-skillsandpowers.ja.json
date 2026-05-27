@@ -2626,6 +2626,16 @@
       "text": "ジャンプ"
     },
     {
+      "key": "Power Skate",
+      "context": "AbilityBar.ButtonText",
+      "text": "パワースケート"
+    },
+    {
+      "key": "Rocket Jump",
+      "context": "AbilityBar.ButtonText",
+      "text": "ロケットジャンプ"
+    },
+    {
       "key": "Aggressive Stance",
       "text": "攻勢の構え"
     },

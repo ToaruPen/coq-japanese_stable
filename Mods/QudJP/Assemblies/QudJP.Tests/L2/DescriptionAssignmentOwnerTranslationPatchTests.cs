@@ -8,6 +8,24 @@ namespace QudJP.Tests.L2;
 [NonParallelizable]
 public sealed class DescriptionAssignmentOwnerTranslationPatchTests
 {
+    [SetUp]
+    public void SetUp()
+    {
+        var localizationRoot = Path.Combine(QudJP.Tests.L1.TestProjectPaths.GetRepositoryRoot(), "Mods", "QudJP", "Localization");
+        Translator.ResetForTests();
+        ScopedDictionaryLookup.ResetForTests();
+        Translator.SetDictionaryDirectoryForTests(Path.Combine(localizationRoot, "Dictionaries"));
+        LocalizationAssetResolver.SetLocalizationRootForTests(localizationRoot);
+    }
+
+    [TearDown]
+    public void TearDown()
+    {
+        LocalizationAssetResolver.SetLocalizationRootForTests(null);
+        ScopedDictionaryLookup.ResetForTests();
+        Translator.ResetForTests();
+    }
+
     [Test]
     public void TranslateBiocapacitor_TranslatesFixedDescription()
     {
@@ -163,8 +181,8 @@ public sealed class DescriptionAssignmentOwnerTranslationPatchTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(banner.Description, Is.EqualTo("このアイテムを見ることができる{{w|Mechanimists}}に{{|inspired}}効果を与える。"));
-            Assert.That(evt.Postfix.ToString(), Is.EqualTo("このアイテムを見ることができる{{w|Mechanimists}}に{{|inspired}}効果を与える。"));
+            Assert.That(banner.Description, Is.EqualTo("このアイテムを見ることができる{{w|メカニマス教団}}に{{|鼓舞された}}効果を与える。"));
+            Assert.That(evt.Postfix.ToString(), Is.EqualTo("このアイテムを見ることができる{{w|メカニマス教団}}に{{|鼓舞された}}効果を与える。"));
         });
     }
 

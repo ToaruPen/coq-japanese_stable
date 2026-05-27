@@ -4057,6 +4057,34 @@ Verification for this tranche passed focused final-runtime policy tests, the
 full text-construction policy suite, ruff, markdown report check,
 translation-token-check, and `git diff --check`.
 
+## PR Review Route Correction Addendum
+
+The PR-level decompiled route review found and corrected several owner-route
+drifts before ready review. Campfire ingredient picker coverage now matches the
+actual selected-row producer shape `{{y|[{{G|X}}]}}`. Sifrah token visibility
+coverage now targets the displayed `SifrahToken.GetDescription(...)` override
+route instead of only constructor `Description` fields, including availability
+suffixes such as `[have {{C|n}} drams]`. Description-detail target resolution
+now includes the missing `GameObjectUnit*.GetDescription(bool)` overrides
+found in decompiled source. Generated captures in Lay Mine, Fabricate-from-self,
+banner description details, and reputation units now route through the relevant
+display-name or faction translation helpers instead of preserving raw English
+captures. Dynamic ability labels from `Run.SyncAbility`, `RocketSkates`, and
+`Acrobatics_Jump` now cover `Sprint`, `Power Skate`, and `Rocket Jump`.
+A follow-up read-only review found additional decompiled Sifrah displayed
+option shapes on the same `GetDescription(SifrahGame,SifrahSlot,GameObject)`
+route. The translator now covers dynamic `use/offer {{C|n}} charge from an
+energy cell`, `via Electrical Generation`, bare `[have {{C|n}}]` availability
+suffixes for secret/item/bit/copper-wire token families, faction-specific
+`leverage being favored/loved by ...` descriptions, and generated `gift ...`
+item captures. The `GameObjectTieredArmorUnit.GetDescription(bool)` branch now
+also translates decompiled range tiers such as `low-to-mid`, `mid-to-high`, and
+`low-to-high`.
+
+Verification after these corrections passed the focused route test filter, full
+L1/L2/L2G C# suites, `translation-token-check`, `localization-check`, `build`,
+and `qudtest:bindings`.
+
 ## Closeout Gate
 
 Issue #719 should not close solely because `unreviewed=0`. It can close only

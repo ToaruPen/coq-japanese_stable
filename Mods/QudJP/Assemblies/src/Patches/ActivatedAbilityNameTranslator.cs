@@ -151,7 +151,7 @@ internal static class ActivatedAbilityNameTranslator
         if (layMineTargetMatch.Success
             && TryTranslateBaseAbilityName("Lay Mine", out var layMine))
         {
-            translated = layMine + " [" + layMineTargetMatch.Groups["target"].Value + "]";
+            translated = layMine + " [" + TranslateDisplayNameTarget(layMineTargetMatch.Groups["target"].Value, ".LayMineTarget") + "]";
             return true;
         }
 
@@ -267,10 +267,38 @@ internal static class ActivatedAbilityNameTranslator
 
     private static string TranslateFabricateName(string target)
     {
-        var translatedTarget = GetDisplayNameRouteTranslator.TranslatePreservingColors(
-            target,
-            nameof(ActivatedAbilityNameTranslator) + ".FabricateTarget");
+        var translatedTarget = TranslateDisplayNameTarget(target, ".FabricateTarget");
         return translatedTarget + "を生成";
+    }
+
+    private static string TranslateDisplayNameTarget(string target, string segment)
+    {
+        var route = nameof(ActivatedAbilityNameTranslator) + segment;
+        var translatedTarget = GetDisplayNameRouteTranslator.TranslatePreservingColors(target, route);
+        if (!string.Equals(translatedTarget, target, StringComparison.Ordinal))
+        {
+            return TranslateKnownDisplayNameTargetTerms(translatedTarget);
+        }
+
+        var fallback = ColorAwareTranslationComposer.TranslatePreservingColors(
+            target,
+            visible =>
+            {
+                if (string.Equals(visible, "high explosive", StringComparison.Ordinal))
+                {
+                    return "高性能爆薬";
+                }
+
+                return StringHelpers.TryGetTranslationExactOrLowerAscii(visible, out var translated)
+                    ? translated
+                    : visible;
+            });
+        return TranslateKnownDisplayNameTargetTerms(fallback);
+    }
+
+    private static string TranslateKnownDisplayNameTargetTerms(string source)
+    {
+        return source.Replace("{{W|high explosive}}", "{{W|高性能爆薬}}");
     }
 
     private static bool TryTranslateRawFabricateName(string source, out string translated)

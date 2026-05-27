@@ -1187,6 +1187,18 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.SocialSifrahTokenGift|CheckTokenUse|System.Boolean|XRL.SifrahGame|XRL.SifrahSlot|XRL.World.GameObject",
         "XRL.World.SocialSifrahTokenItem|CheckTokenUse|System.Boolean|XRL.SifrahGame|XRL.SifrahSlot|XRL.World.GameObject",
     })]
+    [TestCase(typeof(SifrahTokenGetDescriptionTranslationPatch), new[]
+    {
+        "XRL.World.SocialSifrahTokenGift|GetDescription|System.String|XRL.SifrahGame|XRL.SifrahSlot|XRL.World.GameObject",
+        "XRL.World.SocialSifrahTokenItem|GetDescription|System.String|XRL.SifrahGame|XRL.SifrahSlot|XRL.World.GameObject",
+        "XRL.World.SocialSifrahTokenSecret|GetDescription|System.String|XRL.SifrahGame|XRL.SifrahSlot|XRL.World.GameObject",
+        "XRL.World.SocialSifrahTokenLeverageBeingFavored|GetDescription|System.String|XRL.SifrahGame|XRL.SifrahSlot|XRL.World.GameObject",
+        "XRL.World.SocialSifrahTokenLeverageBeingLoved|GetDescription|System.String|XRL.SifrahGame|XRL.SifrahSlot|XRL.World.GameObject",
+        "XRL.World.TinkeringSifrahTokenBit|GetDescription|System.String|XRL.SifrahGame|XRL.SifrahSlot|XRL.World.GameObject",
+        "XRL.World.TinkeringSifrahTokenCharge|GetDescription|System.String|XRL.SifrahGame|XRL.SifrahSlot|XRL.World.GameObject",
+        "XRL.World.TinkeringSifrahTokenCopperWire|GetDescription|System.String|XRL.SifrahGame|XRL.SifrahSlot|XRL.World.GameObject",
+        "XRL.World.TinkeringSifrahTokenLiquid|GetDescription|System.String|XRL.SifrahGame|XRL.SifrahSlot|XRL.World.GameObject",
+    })]
     [TestCase(typeof(SunderMindTranslationPatch), new[]
     {
         "XRL.World.Parts.Mutation.SunderMind|CancelSunder|System.Void",
@@ -2163,6 +2175,32 @@ public sealed class TargetMethodResolutionTests
     [TestCase(typeof(FabricateFromSelfTranslationPatch), new[]
     {
         "XRL.World.Parts.FabricateFromSelf|Activate|System.Boolean|System.Boolean",
+    })]
+    [TestCase(typeof(DescriptionDetailReturnTranslationPatch), new[]
+    {
+        "XRL.CharacterBuilds.Qud.QudCyberneticsModule+CyberneticsChoice|GetDescription|System.String",
+        "XRL.CharacterBuilds.Qud.QudCyberneticsModule+CyberneticsChoice|GetLongDescription|System.String",
+        "XRL.World.Tinkering.TinkerData|get_UnclippedDescription|System.String",
+        "XRL.World.Tinkering.TinkerData|get_Description|System.String",
+        "XRL.World.Units.GameObjectCyberneticsUnit|GetDescription|System.String|System.Boolean",
+        "XRL.World.Units.GameObjectSkillUnit|GetDescription|System.String|System.Boolean",
+        "XRL.World.Units.GameObjectRelicUnit|GetDescription|System.String|System.Boolean",
+        "XRL.World.Units.GameObjectGolemQuestRandomUnit|GetDescription|System.String|System.Boolean",
+        "XRL.World.Units.GameObjectMetachromeUnit|GetDescription|System.String|System.Boolean",
+        "XRL.World.Units.GameObjectBodyPartUnit|GetDescription|System.String|System.Boolean",
+        "XRL.World.Units.GameObjectExperienceUnit|GetDescription|System.String|System.Boolean",
+        "XRL.World.Units.GameObjectMutationUnit|GetDescription|System.String|System.Boolean",
+        "XRL.World.Units.GameObjectAttributeUnit|GetDescription|System.String|System.Boolean",
+        "XRL.World.Units.GameObjectPartUnit|GetDescription|System.String|System.Boolean",
+        "XRL.World.Units.GameObjectPlaceholderUnit|GetDescription|System.String|System.Boolean",
+        "XRL.World.Units.GameObjectSaveModifierUnit|GetDescription|System.String|System.Boolean",
+        "XRL.World.Units.GameObjectTieredArmorUnit|GetDescription|System.String|System.Boolean",
+        "XRL.World.Units.GameObjectBaetylUnit|GetDescription|System.String|System.Boolean",
+        "XRL.World.Units.GameObjectCloneUnit|GetDescription|System.String|System.Boolean",
+        "XRL.World.Units.GameObjectReputationUnit|GetDescription|System.String|System.Boolean",
+        "XRL.World.Units.GameObjectSecretUnit|GetDescription|System.String|System.Boolean",
+        "XRL.World.Units.GameObjectUnit|GetDescription|System.String|System.Boolean",
+        "XRL.World.Units.GameObjectUnitAggregate|GetDescription|System.String|System.Boolean",
     })]
     [TestCase(typeof(LevelerTranslationPatch), new[]
     {

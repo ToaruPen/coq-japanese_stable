@@ -77,6 +77,11 @@ public static class DescriptionDetailReturnTranslationPatch
             "XRL.World.Units.GameObjectBodyPartUnit",
             "XRL.World.Units.GameObjectExperienceUnit",
             "XRL.World.Units.GameObjectMutationUnit",
+            "XRL.World.Units.GameObjectAttributeUnit",
+            "XRL.World.Units.GameObjectPartUnit",
+            "XRL.World.Units.GameObjectPlaceholderUnit",
+            "XRL.World.Units.GameObjectSaveModifierUnit",
+            "XRL.World.Units.GameObjectTieredArmorUnit",
             "XRL.World.Units.GameObjectBaetylUnit",
             "XRL.World.Units.GameObjectCloneUnit",
             "XRL.World.Units.GameObjectReputationUnit",
@@ -188,6 +193,14 @@ internal static class DescriptionDetailReturnTranslator
         "^(?<mutation>.+) at level (?<level>\\d+)$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex AttributeAllStatsPattern = new(
+        "^(?<amount>[+-]\\d+%?) to all stats$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex AttributeStatPattern = new(
+        "^(?<amount>[+-]\\d+%?) (?<stat>Strength|Agility|Toughness|Intelligence|Willpower|Ego|AV|DV|MA)$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     private static readonly Regex BaetylRewardsPattern = new(
         "^Spawns with (?<count>.+?) random baetyl rewards?$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
@@ -198,6 +211,10 @@ internal static class DescriptionDetailReturnTranslator
 
     private static readonly Regex SecretsPattern = new(
         "^Reveals (?<count>\\d+) secrets on creation$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex TieredArmorPattern = new(
+        "^Spawns with (?<count>\\d+) random pieces of (?<gigantic>gigantic, )?(?<tier>low|mid|high|low-to-mid|mid-to-high|low-to-high) tier armor$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     internal static bool TryTranslate(
@@ -343,6 +360,30 @@ internal static class DescriptionDetailReturnTranslator
                 + "）";
         }
 
+        var attributeAllStatsMatch = AttributeAllStatsPattern.Match(source);
+        if (attributeAllStatsMatch.Success)
+        {
+            return "全能力値" + attributeAllStatsMatch.Groups["amount"].Value;
+        }
+
+        var attributeStatMatch = AttributeStatPattern.Match(source);
+        if (attributeStatMatch.Success)
+        {
+            return TranslateGameObjectUnitTerm(attributeStatMatch.Groups["stat"].Value)
+                + attributeStatMatch.Groups["amount"].Value;
+        }
+
+        var tieredArmorMatch = TieredArmorPattern.Match(source);
+        if (tieredArmorMatch.Success)
+        {
+            var gigantic = tieredArmorMatch.Groups["gigantic"].Success ? "巨大な" : string.Empty;
+            return gigantic
+                + TranslateRelicTier(tieredArmorMatch.Groups["tier"].Value)
+                + "ティアのランダムな防具"
+                + tieredArmorMatch.Groups["count"].Value
+                + "個を所持して出現";
+        }
+
         var baetylRewardsMatch = BaetylRewardsPattern.Match(source);
         if (baetylRewardsMatch.Success)
         {
@@ -352,7 +393,7 @@ internal static class DescriptionDetailReturnTranslator
         var reputationMatch = ReputationPattern.Match(source);
         if (reputationMatch.Success)
         {
-            return reputationMatch.Groups["faction"].Value + "との評判" + reputationMatch.Groups["amount"].Value;
+            return TranslateGameObjectUnitTerm(reputationMatch.Groups["faction"].Value) + "との評判" + reputationMatch.Groups["amount"].Value;
         }
 
         var secretsMatch = SecretsPattern.Match(source);
@@ -470,15 +511,19 @@ internal static class DescriptionDetailReturnTranslator
             "low" => "低",
             "mid" => "中",
             "high" => "高",
+            "low-to-mid" => "低-中",
+            "mid-to-high" => "中-高",
+            "low-to-high" => "低-高",
             _ => source,
         };
     }
 
     private static string TranslateGameObjectUnitTerm(string source)
     {
-        return StringHelpers.TryGetTranslationExactOrLowerAscii(source, out var translated)
-            && !string.Equals(translated, source, StringComparison.Ordinal)
-            ? translated
-            : source;
+        return ColorAwareTranslationComposer.TranslatePreservingColors(
+            source,
+            visible => StringHelpers.TryGetTranslationExactOrLowerAscii(visible, out var translated)
+                ? translated
+                : visible);
     }
 }
