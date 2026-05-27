@@ -1657,7 +1657,7 @@ def test_policy_records_issue719_look_tooltip_owner_overlays() -> None:
         family_ids["popup_update"],
         "PopupMessage.cs Update only manages hide/cancel/input runtime state",
     )
-    assert entries[family_ids["popup_wait"]]["closure_status"] == "covered_by_owner_route"
+    assert entries[family_ids["popup_wait"]]["closure_status"] == "not_owner_surface"
     _assert_evidence_contains(
         entries,
         family_ids["popup_wait"],
@@ -16373,13 +16373,13 @@ def test_policy_records_issue719_final_child_buckets_as_runtime_tranche() -> Non
         families["misc_text_filter"][0],
         families["active_effect_popup"][0],
     }
-    covered_family_ids = {
+    not_owner_family_ids = {
         families["ui_popup_sink"][0],
     }
     for family_id, _, _, _, _ in families.values():
         expected_status = (
-            "covered_by_owner_route"
-            if family_id in covered_family_ids
+            "not_owner_surface"
+            if family_id in not_owner_family_ids
             else "action_required"
             if family_id in implementation_gap_family_ids
             else "runtime_required"
@@ -16396,7 +16396,7 @@ def test_policy_records_issue719_final_child_buckets_as_runtime_tranche() -> Non
             "likely_implementation_gap" if family_id in implementation_gap_family_ids else "runtime_evidence_required",
         )
         for family_id, _, _, _, bucket in families.values()
-        if family_id not in covered_family_ids
+        if family_id not in not_owner_family_ids
     }
 
 
@@ -16610,7 +16610,7 @@ def test_policy_promotes_popup_message_wrappers_as_sink_pass_through() -> None:
     assert residual["entries"] == []
     for family_id, _, _ in families.values():
         evidence = " ".join(entries[family_id]["closure_evidence"])
-        assert entries[family_id]["closure_status"] == "covered_by_owner_route"
+        assert entries[family_id]["closure_status"] == "not_owner_surface"
         assert "generic PopupMessage.ShowPopup wrappers" in evidence
         assert "no route-local fixed English leaf" in evidence
 

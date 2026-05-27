@@ -24,6 +24,7 @@ OutputFormat = Literal["text", "json", "lanes-json", "residual-buckets-json", "f
 ClosureStatus = Literal[
     "action_required",
     "covered_by_owner_route",
+    "not_owner_surface",
     "partial_coverage",
     "runtime_required",
     "likely_true_gap",
@@ -653,9 +654,9 @@ ISSUE719_GAME_TEXT_THIRD_PERSON_DEATH_GAP_EVIDENCE: Final[list[str]] = [
 ]
 ISSUE719_POPUP_MESSAGE_WRAPPER_SINK_EVIDENCE: Final[list[str]] = [
     (
-        "Issue #719 Popup wrapper review promotes NewPopupMessageAsync and "
-        "WaitNewPopupMessage out of runtime-required because both methods are "
-        "generic PopupMessage.ShowPopup wrappers, not fixed-text owners."
+        "Issue #719 Popup wrapper review classifies NewPopupMessageAsync and "
+        "WaitNewPopupMessage as reviewed not-owner surfaces because both methods "
+        "are generic PopupMessage.ShowPopup wrappers, not fixed-text owners."
     ),
     (
         "decompiled owner source: XRL.UI/Popup.cs lines 751-920 pass caller "
@@ -11979,7 +11980,7 @@ def _issue719_closure_overlay(  # noqa: C901, PLR0911, PLR0912, PLR0915
         return "action_required", ISSUE719_GAME_TEXT_THIRD_PERSON_DEATH_GAP_EVIDENCE
 
     if family["family_id"] in ISSUE719_POPUP_MESSAGE_WRAPPER_SINK_FAMILIES:
-        return "covered_by_owner_route", ISSUE719_POPUP_MESSAGE_WRAPPER_SINK_EVIDENCE
+        return "not_owner_surface", ISSUE719_POPUP_MESSAGE_WRAPPER_SINK_EVIDENCE
 
     if family["family_id"] == "XRL.Core/Scores.cs::Scores.Show()":
         return "action_required", ISSUE719_SCORES_SHOW_STATIC_GAP_EVIDENCE

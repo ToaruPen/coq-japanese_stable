@@ -3581,24 +3581,26 @@ constructions. The largest remaining runtime construction buckets are
 `producer_runtime_core_game_text_does_runtime` 1 / 24, and
 `producer_runtime_world_part_does_message_frame_route_split` 1 / 19.
 
-The Popup wrapper sink promotion tranche removes `ui_popup_sink_route_split`
-2 rows / 26 constructions from residual. `Popup.NewPopupMessageAsync` and
-`Popup.WaitNewPopupMessage` are generic `PopupMessage.ShowPopup(...)` wrappers:
-they pass caller-owned `message`, `title`, `options`, and `inputDefault` through,
-perform CP437/input escaping, and return selected/input text. They do not own a
-route-local fixed English leaf, so the rows are exact sink-wrapper pass-through
-rather than runtime-required owner work.
+The Popup wrapper sink pass-through tranche removes `ui_popup_sink_route_split`
+2 rows / 26 constructions from residual without counting them as owner-route
+coverage. `Popup.NewPopupMessageAsync` and `Popup.WaitNewPopupMessage` are
+generic `PopupMessage.ShowPopup(...)` wrappers: they pass caller-owned
+`message`, `title`, `options`, and `inputDefault` through, perform CP437/input
+escaping, and return selected/input text. They do not own a route-local fixed
+English leaf, so the rows are reviewed `not_owner_surface` sink-wrapper
+pass-through rather than runtime-required owner work.
 
 Fresh residual output is
-`/tmp/qudjp-issue719-residual-after-popup-wrapper-promotion.json`.
+`/tmp/qudjp-issue719-residual-after-popup-wrapper-passthrough.json`.
 Fresh policy output is
-`/tmp/qudjp-issue719-policy-after-popup-wrapper-promotion.json`.
+`/tmp/qudjp-issue719-policy-after-popup-wrapper-passthrough.json`.
 Fresh follow-up output is
-`/tmp/qudjp-issue719-followup-after-popup-wrapper-promotion.json`.
+`/tmp/qudjp-issue719-followup-after-popup-wrapper-passthrough.json`.
 After regeneration, residual rows are 321 / 2434 constructions, with
 dispositions `likely_implementation_gap=267` rows / `2111` constructions and
 `runtime_evidence_required=54` rows / `323` constructions. Policy closure
-counts are `covered_by_owner_route=2320` rows / `17210` constructions,
+counts are `covered_by_owner_route=2318` rows / `17184` constructions,
+`not_owner_surface=2` rows / `26` constructions,
 `action_required=267` rows / `2111` constructions, and `runtime_required=54`
 rows / `323` constructions.
 
@@ -3632,7 +3634,8 @@ Fresh follow-up output is
 After regeneration, residual rows remain 321 / 2434 constructions, with
 dispositions `likely_implementation_gap=268` rows / `2135` constructions and
 `runtime_evidence_required=53` rows / `299` constructions. Policy closure
-counts are `covered_by_owner_route=2320` rows / `17210` constructions,
+counts are `covered_by_owner_route=2318` rows / `17184` constructions,
+`not_owner_surface=2` rows / `26` constructions,
 `action_required=268` rows / `2135` constructions, and `runtime_required=53`
 rows / `299` constructions.
 
@@ -3666,7 +3669,8 @@ Fresh follow-up output is
 After regeneration, residual rows remain 321 / 2434 constructions, with
 dispositions `likely_implementation_gap=269` rows / `2159` constructions and
 `runtime_evidence_required=52` rows / `275` constructions. Policy closure
-counts are `covered_by_owner_route=2320` rows / `17210` constructions,
+counts are `covered_by_owner_route=2318` rows / `17184` constructions,
+`not_owner_surface=2` rows / `26` constructions,
 `action_required=269` rows / `2159` constructions, and `runtime_required=52`
 rows / `275` constructions.
 
@@ -3699,7 +3703,8 @@ Fresh follow-up output is
 After regeneration, residual rows remain 321 / 2434 constructions, with
 dispositions `likely_implementation_gap=270` rows / `2178` constructions and
 `runtime_evidence_required=51` rows / `256` constructions. Policy closure
-counts are `covered_by_owner_route=2320` rows / `17210` constructions,
+counts are `covered_by_owner_route=2318` rows / `17184` constructions,
+`not_owner_surface=2` rows / `26` constructions,
 `action_required=270` rows / `2178` constructions, and `runtime_required=51`
 rows / `256` constructions.
 
@@ -3731,7 +3736,8 @@ Fresh follow-up output is
 After regeneration, residual rows are 320 / 2416 constructions, with
 dispositions `likely_implementation_gap=270` rows / `2178` constructions and
 `runtime_evidence_required=50` rows / `238` constructions. Policy closure
-counts are `covered_by_owner_route=2321` rows / `17228` constructions,
+counts are `covered_by_owner_route=2319` rows / `17202` constructions,
+`not_owner_surface=2` rows / `26` constructions,
 `action_required=270` rows / `2178` constructions, and `runtime_required=50`
 rows / `238` constructions.
 
@@ -3763,7 +3769,8 @@ Fresh follow-up output is
 After regeneration, residual rows remain 320 / 2416 constructions, with
 dispositions `likely_implementation_gap=273` rows / `2231` constructions and
 `runtime_evidence_required=47` rows / `185` constructions. Policy closure
-counts are `covered_by_owner_route=2321` rows / `17228` constructions,
+counts are `covered_by_owner_route=2319` rows / `17202` constructions,
+`not_owner_surface=2` rows / `26` constructions,
 `action_required=273` rows / `2231` constructions, and `runtime_required=47`
 rows / `185` constructions.
 
@@ -3801,7 +3808,8 @@ Fresh follow-up output is
 After regeneration, residual rows are 318 / 2388 constructions, with
 dispositions `likely_implementation_gap=275` rows / `2253` constructions and
 `runtime_evidence_required=43` rows / `135` constructions. Policy closure
-counts are `covered_by_owner_route=2323` rows / `17256` constructions,
+counts are `covered_by_owner_route=2321` rows / `17230` constructions,
+`not_owner_surface=2` rows / `26` constructions,
 `action_required=275` rows / `2253` constructions, and `runtime_required=43`
 rows / `135` constructions.
 
@@ -3841,7 +3849,8 @@ Fresh follow-up output is
 After regeneration, residual rows are 316 / 2370 constructions, with
 dispositions `likely_implementation_gap=275` rows / `2253` constructions and
 `runtime_evidence_required=41` rows / `117` constructions. Policy closure
-counts are `covered_by_owner_route=2325` rows / `17274` constructions,
+counts are `covered_by_owner_route=2323` rows / `17248` constructions,
+`not_owner_surface=2` rows / `26` constructions,
 `action_required=275` rows / `2253` constructions, and `runtime_required=41`
 rows / `117` constructions.
 
@@ -3882,7 +3891,8 @@ Fresh follow-up output is
 After regeneration, residual rows are 312 / 2343 constructions, with
 dispositions `likely_implementation_gap=276` rows / `2261` constructions and
 `runtime_evidence_required=36` rows / `82` constructions. Policy closure
-counts are `covered_by_owner_route=2329` rows / `17301` constructions,
+counts are `covered_by_owner_route=2327` rows / `17275` constructions,
+`not_owner_surface=2` rows / `26` constructions,
 `action_required=276` rows / `2261` constructions, and `runtime_required=36`
 rows / `82` constructions.
 
@@ -3926,7 +3936,8 @@ Fresh follow-up output is
 After regeneration, residual rows are 299 / 2319 constructions, with
 dispositions `likely_implementation_gap=279` rows / `2271` constructions and
 `runtime_evidence_required=20` rows / `48` constructions. Policy closure
-counts are `covered_by_owner_route=2343` rows / `17329` constructions,
+counts are `covered_by_owner_route=2341` rows / `17303` constructions,
+`not_owner_surface=2` rows / `26` constructions,
 `action_required=279` rows / `2271` constructions, and `runtime_required=20`
 rows / `48` constructions.
 
@@ -3965,7 +3976,8 @@ Fresh follow-up output is
 After regeneration, residual rows are 296 / 2315 constructions, with
 dispositions `likely_implementation_gap=281` rows / `2278` constructions and
 `runtime_evidence_required=15` rows / `37` constructions. Policy closure
-counts are `covered_by_owner_route=2346` rows / `17333` constructions,
+counts are `covered_by_owner_route=2344` rows / `17307` constructions,
+`not_owner_surface=2` rows / `26` constructions,
 `action_required=281` rows / `2278` constructions, and `runtime_required=15`
 rows / `37` constructions.
 
@@ -4006,7 +4018,8 @@ Fresh follow-up output is
 After regeneration, residual rows remain 296 / 2315 constructions, with
 dispositions `likely_implementation_gap=286` rows / `2298` constructions and
 `runtime_evidence_required=10` rows / `17` constructions. Policy closure
-counts are `covered_by_owner_route=2346` rows / `17333` constructions,
+counts are `covered_by_owner_route=2344` rows / `17307` constructions,
+`not_owner_surface=2` rows / `26` constructions,
 `action_required=286` rows / `2298` constructions, and `runtime_required=10`
 rows / `17` constructions.
 
@@ -4046,9 +4059,11 @@ Fresh PR follow-up output is
 `/tmp/qudjp-issue719-pr-followup.json`.
 After regeneration, residual rows are 290 / 2306 constructions, all with
 disposition `likely_implementation_gap`; `runtime_evidence_required=0`. Policy
-closure counts are `covered_by_owner_route=2351` rows / `17338`
-constructions, `action_required=290` rows / `2306` constructions, and
-`runtime_required=0`.
+closure counts are `covered_by_owner_route=2349` rows / `17312`
+constructions, `not_owner_surface=2` rows / `26` constructions,
+`action_required=290` rows / `2306` constructions, and
+`runtime_required=0`, with reviewed non-owner sink pass-through rows reported
+separately as `not_owner_surface`.
 
 Issue `#719` comment:
 <https://github.com/ToaruPen/coq-japanese_stable/issues/719#issuecomment-4543798973>.
@@ -4091,6 +4106,7 @@ Issue #719 should not close solely because `unreviewed=0`. It can close only
 after the current 290 residual rows are either:
 
 - tracked in #719's consolidated residual bucket ledger,
-- promoted to `covered_by_owner_route` or `runtime_required` by exact evidence,
+- promoted to `covered_by_owner_route`, `not_owner_surface`, or
+  `runtime_required` by exact evidence,
   or
 - documented as scoped implementation gaps inside #719.

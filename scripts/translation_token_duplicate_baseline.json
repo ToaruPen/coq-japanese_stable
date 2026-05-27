@@ -1785,9 +1785,10 @@
       "scope": "cross_file",
       "path": "Dictionaries",
       "key": "acid",
-      "entry_count": 2,
+      "entry_count": 3,
       "texts": [
         "{{G|酸の}}",
+        "酸",
         "酸"
       ],
       "occurrences": [
@@ -1795,6 +1796,11 @@
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
           "entry_index": 307,
           "text": "{{G|酸の}}"
+        },
+        {
+          "path": "Dictionaries/ui-liquids.ja.json",
+          "entry_index": 60,
+          "text": "酸"
         },
         {
           "path": "Dictionaries/world-gospels.ja.json",
@@ -1835,9 +1841,10 @@
       "scope": "cross_file",
       "path": "Dictionaries",
       "key": "algal",
-      "entry_count": 2,
+      "entry_count": 3,
       "texts": [
         "{{g|藻質の}}",
+        "藻質の",
         "藻類の"
       ],
       "occurrences": [
@@ -1845,6 +1852,11 @@
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
           "entry_index": 357,
           "text": "{{g|藻質の}}"
+        },
+        {
+          "path": "Dictionaries/ui-liquid-adjectives.ja.json",
+          "entry_index": 18,
+          "text": "藻質の"
         },
         {
           "path": "Dictionaries/world-gospels.ja.json",
@@ -1872,6 +1884,28 @@
           "path": "Dictionaries/world-gospels.ja.json",
           "entry_index": 427,
           "text": "隊"
+        }
+      ]
+    },
+    {
+      "scope": "cross_file",
+      "path": "Dictionaries",
+      "key": "black ooze",
+      "entry_count": 2,
+      "texts": [
+        "黒い粘液",
+        "黒い軟泥"
+      ],
+      "occurrences": [
+        {
+          "path": "Dictionaries/Scoped/historyspice-common.ja.json",
+          "entry_index": 1630,
+          "text": "黒い粘液"
+        },
+        {
+          "path": "Dictionaries/ui-liquids.ja.json",
+          "entry_index": 63,
+          "text": "黒い軟泥"
         }
       ]
     },
@@ -1928,6 +1962,50 @@
     {
       "scope": "cross_file",
       "path": "Dictionaries",
+      "key": "brackish",
+      "entry_count": 2,
+      "texts": [
+        "塩分混じりの",
+        "塩気混じりの"
+      ],
+      "occurrences": [
+        {
+          "path": "Dictionaries/ui-displayname-adjectives.ja.json",
+          "entry_index": 335,
+          "text": "塩気混じりの"
+        },
+        {
+          "path": "Dictionaries/ui-liquid-adjectives.ja.json",
+          "entry_index": 17,
+          "text": "塩分混じりの"
+        }
+      ]
+    },
+    {
+      "scope": "cross_file",
+      "path": "Dictionaries",
+      "key": "brain-brine",
+      "entry_count": 2,
+      "texts": [
+        "{{brainbrine|脳髄汁の}}",
+        "脳髄汁"
+      ],
+      "occurrences": [
+        {
+          "path": "Dictionaries/ui-displayname-adjectives.ja.json",
+          "entry_index": 344,
+          "text": "{{brainbrine|脳髄汁の}}"
+        },
+        {
+          "path": "Dictionaries/ui-liquids.ja.json",
+          "entry_index": 66,
+          "text": "脳髄汁"
+        }
+      ]
+    },
+    {
+      "scope": "cross_file",
+      "path": "Dictionaries",
       "key": "brass",
       "entry_count": 4,
       "texts": [
@@ -1962,6 +2040,28 @@
     {
       "scope": "cross_file",
       "path": "Dictionaries",
+      "key": "brown sludge",
+      "entry_count": 2,
+      "texts": [
+        "茶色いヘドロ",
+        "茶色い汚泥"
+      ],
+      "occurrences": [
+        {
+          "path": "Dictionaries/Scoped/historyspice-common.ja.json",
+          "entry_index": 1632,
+          "text": "茶色いヘドロ"
+        },
+        {
+          "path": "Dictionaries/ui-liquids.ja.json",
+          "entry_index": 67,
+          "text": "茶色い汚泥"
+        }
+      ]
+    },
+    {
+      "scope": "cross_file",
+      "path": "Dictionaries",
       "key": "chrome",
       "entry_count": 2,
       "texts": [
@@ -1985,9 +2085,10 @@
       "scope": "cross_file",
       "path": "Dictionaries",
       "key": "cider",
-      "entry_count": 2,
+      "entry_count": 3,
       "texts": [
         "{{cider|サイダーの}}",
+        "サイダー",
         "シードル"
       ],
       "occurrences": [
@@ -1997,9 +2098,36 @@
           "text": "{{cider|サイダーの}}"
         },
         {
+          "path": "Dictionaries/ui-liquids.ja.json",
+          "entry_index": 68,
+          "text": "サイダー"
+        },
+        {
           "path": "Dictionaries/world-gospels.ja.json",
           "entry_index": 529,
           "text": "シードル"
+        }
+      ]
+    },
+    {
+      "scope": "cross_file",
+      "path": "Dictionaries",
+      "key": "cloning-draught",
+      "entry_count": 2,
+      "texts": [
+        "{{cloning|クローン薬液の}}",
+        "クローン薬液"
+      ],
+      "occurrences": [
+        {
+          "path": "Dictionaries/ui-displayname-adjectives.ja.json",
+          "entry_index": 349,
+          "text": "{{cloning|クローン薬液の}}"
+        },
+        {
+          "path": "Dictionaries/ui-liquids.ja.json",
+          "entry_index": 70,
+          "text": "クローン薬液"
         }
       ]
     },
@@ -2022,6 +2150,28 @@
           "path": "Dictionaries/world-parts.ja.json",
           "entry_index": 68,
           "text": "液体を採取する"
+        }
+      ]
+    },
+    {
+      "scope": "cross_file",
+      "path": "Dictionaries",
+      "key": "convalessence",
+      "entry_count": 2,
+      "texts": [
+        "コンバレセンス",
+        "回復"
+      ],
+      "occurrences": [
+        {
+          "path": "Dictionaries/ui-liquids.ja.json",
+          "entry_index": 71,
+          "text": "コンバレセンス"
+        },
+        {
+          "path": "Dictionaries/world-gospels.ja.json",
+          "entry_index": 557,
+          "text": "回復"
         }
       ]
     },
@@ -2066,6 +2216,28 @@
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
           "entry_index": 243,
           "text": "{{engraved|彫り刻まれた}}"
+        }
+      ]
+    },
+    {
+      "scope": "cross_file",
+      "path": "Dictionaries",
+      "key": "entropic",
+      "entry_count": 2,
+      "texts": [
+        "{{Y|エントロピック}}",
+        "エントロピー性の"
+      ],
+      "occurrences": [
+        {
+          "path": "Dictionaries/ui-displayname-adjectives.ja.json",
+          "entry_index": 330,
+          "text": "{{Y|エントロピック}}"
+        },
+        {
+          "path": "Dictionaries/ui-liquid-adjectives.ja.json",
+          "entry_index": 19,
+          "text": "エントロピー性の"
         }
       ]
     },
@@ -2210,6 +2382,28 @@
     {
       "scope": "cross_file",
       "path": "Dictionaries",
+      "key": "gel",
+      "entry_count": 2,
+      "texts": [
+        "{{Y|ゲル状の}}",
+        "ゲル"
+      ],
+      "occurrences": [
+        {
+          "path": "Dictionaries/ui-displayname-adjectives.ja.json",
+          "entry_index": 331,
+          "text": "{{Y|ゲル状の}}"
+        },
+        {
+          "path": "Dictionaries/ui-liquids.ja.json",
+          "entry_index": 73,
+          "text": "ゲル"
+        }
+      ]
+    },
+    {
+      "scope": "cross_file",
+      "path": "Dictionaries",
       "key": "glass",
       "entry_count": 2,
       "texts": [
@@ -2233,16 +2427,22 @@
       "scope": "cross_file",
       "path": "Dictionaries",
       "key": "goo",
-      "entry_count": 2,
+      "entry_count": 3,
       "texts": [
         "{{G|どろどろの}}",
-        "どろどろ"
+        "どろどろ",
+        "粘液"
       ],
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
           "entry_index": 310,
           "text": "{{G|どろどろの}}"
+        },
+        {
+          "path": "Dictionaries/ui-liquids.ja.json",
+          "entry_index": 75,
+          "text": "粘液"
         },
         {
           "path": "Dictionaries/world-gospels.ja.json",
@@ -2255,16 +2455,22 @@
       "scope": "cross_file",
       "path": "Dictionaries",
       "key": "gooey",
-      "entry_count": 2,
+      "entry_count": 3,
       "texts": [
         "{{G|どろりとした}}",
-        "ねばねばの"
+        "ねばねばの",
+        "粘つく"
       ],
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
           "entry_index": 309,
           "text": "{{G|どろりとした}}"
+        },
+        {
+          "path": "Dictionaries/ui-liquid-adjectives.ja.json",
+          "entry_index": 20,
+          "text": "粘つく"
         },
         {
           "path": "Dictionaries/world-gospels.ja.json",
@@ -2277,9 +2483,10 @@
       "scope": "cross_file",
       "path": "Dictionaries",
       "key": "homogenized",
-      "entry_count": 2,
+      "entry_count": 3,
       "texts": [
         "{{cloning|均質化した}}",
+        "均質化された",
         "均質化した"
       ],
       "occurrences": [
@@ -2287,6 +2494,11 @@
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
           "entry_index": 351,
           "text": "{{cloning|均質化した}}"
+        },
+        {
+          "path": "Dictionaries/ui-liquid-adjectives.ja.json",
+          "entry_index": 21,
+          "text": "均質化された"
         },
         {
           "path": "Dictionaries/world-gospels.ja.json",
@@ -2299,9 +2511,10 @@
       "scope": "cross_file",
       "path": "Dictionaries",
       "key": "honey",
-      "entry_count": 3,
+      "entry_count": 4,
       "texts": [
         "{{w|はちみつの}}",
+        "はちみつ",
         "ハチミツ",
         "ハチミツ"
       ],
@@ -2317,9 +2530,42 @@
           "text": "{{w|はちみつの}}"
         },
         {
+          "path": "Dictionaries/ui-liquids.ja.json",
+          "entry_index": 76,
+          "text": "はちみつ"
+        },
+        {
           "path": "Dictionaries/world-gospels.ja.json",
           "entry_index": 744,
           "text": "ハチミツ"
+        }
+      ]
+    },
+    {
+      "scope": "cross_file",
+      "path": "Dictionaries",
+      "key": "honeyed",
+      "entry_count": 3,
+      "texts": [
+        "ハチミツ風味の",
+        "ハチミツ風味の",
+        "蜜味の"
+      ],
+      "occurrences": [
+        {
+          "path": "Dictionaries/Scoped/historyspice-common.ja.json",
+          "entry_index": 79,
+          "text": "ハチミツ風味の"
+        },
+        {
+          "path": "Dictionaries/ui-liquid-adjectives.ja.json",
+          "entry_index": 22,
+          "text": "蜜味の"
+        },
+        {
+          "path": "Dictionaries/world-gospels.ja.json",
+          "entry_index": 745,
+          "text": "ハチミツ風味の"
         }
       ]
     },
@@ -2342,6 +2588,50 @@
           "path": "Dictionaries/world-gospels.ja.json",
           "entry_index": 756,
           "text": "氷の"
+        }
+      ]
+    },
+    {
+      "scope": "cross_file",
+      "path": "Dictionaries",
+      "key": "ink",
+      "entry_count": 2,
+      "texts": [
+        "{{K|インクの}}",
+        "インク"
+      ],
+      "occurrences": [
+        {
+          "path": "Dictionaries/ui-displayname-adjectives.ja.json",
+          "entry_index": 313,
+          "text": "{{K|インクの}}"
+        },
+        {
+          "path": "Dictionaries/ui-liquids.ja.json",
+          "entry_index": 77,
+          "text": "インク"
+        }
+      ]
+    },
+    {
+      "scope": "cross_file",
+      "path": "Dictionaries",
+      "key": "inky",
+      "entry_count": 2,
+      "texts": [
+        "{{K|インクまみれの}}",
+        "インク混じりの"
+      ],
+      "occurrences": [
+        {
+          "path": "Dictionaries/ui-displayname-adjectives.ja.json",
+          "entry_index": 312,
+          "text": "{{K|インクまみれの}}"
+        },
+        {
+          "path": "Dictionaries/ui-liquid-adjectives.ja.json",
+          "entry_index": 23,
+          "text": "インク混じりの"
         }
       ]
     },
@@ -2471,16 +2761,22 @@
       "scope": "cross_file",
       "path": "Dictionaries",
       "key": "luminous",
-      "entry_count": 2,
+      "entry_count": 3,
       "texts": [
         "{{C|発光する}}",
-        "光を放つ"
+        "光を放つ",
+        "発光する"
       ],
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
           "entry_index": 304,
           "text": "{{C|発光する}}"
+        },
+        {
+          "path": "Dictionaries/ui-liquid-adjectives.ja.json",
+          "entry_index": 25,
+          "text": "発光する"
         },
         {
           "path": "Dictionaries/world-gospels.ja.json",
@@ -2492,17 +2788,45 @@
     {
       "scope": "cross_file",
       "path": "Dictionaries",
-      "key": "magmatic",
+      "key": "lush",
       "entry_count": 2,
       "texts": [
+        "{{m|芳醇な}}",
+        "豊潤な"
+      ],
+      "occurrences": [
+        {
+          "path": "Dictionaries/ui-displayname-adjectives.ja.json",
+          "entry_index": 363,
+          "text": "{{m|芳醇な}}"
+        },
+        {
+          "path": "Dictionaries/ui-liquid-adjectives.ja.json",
+          "entry_index": 24,
+          "text": "豊潤な"
+        }
+      ]
+    },
+    {
+      "scope": "cross_file",
+      "path": "Dictionaries",
+      "key": "magmatic",
+      "entry_count": 3,
+      "texts": [
         "{{lava|マグマ質の}}",
-        "マグマの"
+        "マグマの",
+        "マグマ質の"
       ],
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
           "entry_index": 362,
           "text": "{{lava|マグマ質の}}"
+        },
+        {
+          "path": "Dictionaries/ui-liquid-adjectives.ja.json",
+          "entry_index": 26,
+          "text": "マグマ質の"
         },
         {
           "path": "Dictionaries/world-gospels.ja.json",
@@ -2558,10 +2882,77 @@
     {
       "scope": "cross_file",
       "path": "Dictionaries",
-      "key": "oil",
+      "key": "nervous",
       "entry_count": 2,
       "texts": [
+        "{{nervous|神経質な}}",
+        "神経性の"
+      ],
+      "occurrences": [
+        {
+          "path": "Dictionaries/ui-displayname-adjectives.ja.json",
+          "entry_index": 366,
+          "text": "{{nervous|神経質な}}"
+        },
+        {
+          "path": "Dictionaries/ui-liquid-adjectives.ja.json",
+          "entry_index": 27,
+          "text": "神経性の"
+        }
+      ]
+    },
+    {
+      "scope": "cross_file",
+      "path": "Dictionaries",
+      "key": "neutron flux",
+      "entry_count": 2,
+      "texts": [
+        "中性子フラックス",
+        "中性子束"
+      ],
+      "occurrences": [
+        {
+          "path": "Dictionaries/ui-liquids.ja.json",
+          "entry_index": 80,
+          "text": "中性子フラックス"
+        },
+        {
+          "path": "Dictionaries/world-gospels.ja.json",
+          "entry_index": 872,
+          "text": "中性子束"
+        }
+      ]
+    },
+    {
+      "scope": "cross_file",
+      "path": "Dictionaries",
+      "key": "neutronic",
+      "entry_count": 2,
+      "texts": [
+        "{{neutronic|中性子質の}}",
+        "中性子質の"
+      ],
+      "occurrences": [
+        {
+          "path": "Dictionaries/ui-displayname-adjectives.ja.json",
+          "entry_index": 370,
+          "text": "{{neutronic|中性子質の}}"
+        },
+        {
+          "path": "Dictionaries/ui-liquid-adjectives.ja.json",
+          "entry_index": 28,
+          "text": "中性子質の"
+        }
+      ]
+    },
+    {
+      "scope": "cross_file",
+      "path": "Dictionaries",
+      "key": "oil",
+      "entry_count": 3,
+      "texts": [
         "{{K|油の}}",
+        "油",
         "油"
       ],
       "occurrences": [
@@ -2569,6 +2960,11 @@
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
           "entry_index": 316,
           "text": "{{K|油の}}"
+        },
+        {
+          "path": "Dictionaries/ui-liquids.ja.json",
+          "entry_index": 81,
+          "text": "油"
         },
         {
           "path": "Dictionaries/world-gospels.ja.json",
@@ -2609,16 +3005,22 @@
       "scope": "cross_file",
       "path": "Dictionaries",
       "key": "ooze",
-      "entry_count": 2,
+      "entry_count": 3,
       "texts": [
         "{{K|軟泥の}}",
-        "滲出液"
+        "滲出液",
+        "軟泥"
       ],
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
           "entry_index": 318,
           "text": "{{K|軟泥の}}"
+        },
+        {
+          "path": "Dictionaries/ui-liquids.ja.json",
+          "entry_index": 82,
+          "text": "軟泥"
         },
         {
           "path": "Dictionaries/world-gospels.ja.json",
@@ -2631,16 +3033,22 @@
       "scope": "cross_file",
       "path": "Dictionaries",
       "key": "oozing",
-      "entry_count": 2,
+      "entry_count": 3,
       "texts": [
         "{{K|滲み出ている}}",
-        "にじみ出る"
+        "にじみ出る",
+        "軟泥状の"
       ],
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
           "entry_index": 320,
           "text": "{{K|滲み出ている}}"
+        },
+        {
+          "path": "Dictionaries/ui-liquid-adjectives.ja.json",
+          "entry_index": 29,
+          "text": "軟泥状の"
         },
         {
           "path": "Dictionaries/world-gospels.ja.json",
@@ -2674,10 +3082,55 @@
     {
       "scope": "cross_file",
       "path": "Dictionaries",
-      "key": "radiant",
+      "key": "putrescence",
       "entry_count": 2,
       "texts": [
+        "{{putrid|腐敗液の}}",
+        "腐敗液"
+      ],
+      "occurrences": [
+        {
+          "path": "Dictionaries/ui-displayname-adjectives.ja.json",
+          "entry_index": 371,
+          "text": "{{putrid|腐敗液の}}"
+        },
+        {
+          "path": "Dictionaries/ui-liquids.ja.json",
+          "entry_index": 84,
+          "text": "腐敗液"
+        }
+      ]
+    },
+    {
+      "scope": "cross_file",
+      "path": "Dictionaries",
+      "key": "putrid",
+      "entry_count": 2,
+      "texts": [
+        "{{putrid|腐敗した}}",
+        "腐敗した"
+      ],
+      "occurrences": [
+        {
+          "path": "Dictionaries/ui-displayname-adjectives.ja.json",
+          "entry_index": 373,
+          "text": "{{putrid|腐敗した}}"
+        },
+        {
+          "path": "Dictionaries/ui-liquid-adjectives.ja.json",
+          "entry_index": 30,
+          "text": "腐敗した"
+        }
+      ]
+    },
+    {
+      "scope": "cross_file",
+      "path": "Dictionaries",
+      "key": "radiant",
+      "entry_count": 3,
+      "texts": [
         "{{radiant|輝く}}",
+        "輝く",
         "輝く"
       ],
       "occurrences": [
@@ -2685,6 +3138,11 @@
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
           "entry_index": 374,
           "text": "{{radiant|輝く}}"
+        },
+        {
+          "path": "Dictionaries/ui-liquid-adjectives.ja.json",
+          "entry_index": 31,
+          "text": "輝く"
         },
         {
           "path": "Dictionaries/world-gospels.ja.json",
@@ -2802,6 +3260,28 @@
     {
       "scope": "cross_file",
       "path": "Dictionaries",
+      "key": "sap",
+      "entry_count": 2,
+      "texts": [
+        "{{W|樹液の}}",
+        "樹液"
+      ],
+      "occurrences": [
+        {
+          "path": "Dictionaries/ui-displayname-adjectives.ja.json",
+          "entry_index": 327,
+          "text": "{{W|樹液の}}"
+        },
+        {
+          "path": "Dictionaries/ui-liquids.ja.json",
+          "entry_index": 85,
+          "text": "樹液"
+        }
+      ]
+    },
+    {
+      "scope": "cross_file",
+      "path": "Dictionaries",
       "key": "scaled",
       "entry_count": 2,
       "texts": [
@@ -2903,17 +3383,23 @@
       "scope": "cross_file",
       "path": "Dictionaries",
       "key": "slimy",
-      "entry_count": 3,
+      "entry_count": 4,
       "texts": [
         "{{slimy|粘液質の}}",
         "ぬめる",
-        "ぬるぬるの"
+        "ぬるぬるの",
+        "粘液質の"
       ],
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
           "entry_index": 378,
           "text": "{{slimy|粘液質の}}"
+        },
+        {
+          "path": "Dictionaries/ui-liquid-adjectives.ja.json",
+          "entry_index": 32,
+          "text": "粘液質の"
         },
         {
           "path": "Dictionaries/ui-zone-display.ja.json",
@@ -2931,10 +3417,11 @@
       "scope": "cross_file",
       "path": "Dictionaries",
       "key": "sludge",
-      "entry_count": 2,
+      "entry_count": 3,
       "texts": [
         "{{w|汚泥の}}",
-        "ヘドロ"
+        "ヘドロ",
+        "汚泥"
       ],
       "occurrences": [
         {
@@ -2943,9 +3430,36 @@
           "text": "{{w|汚泥の}}"
         },
         {
+          "path": "Dictionaries/ui-liquids.ja.json",
+          "entry_index": 87,
+          "text": "汚泥"
+        },
+        {
           "path": "Dictionaries/world-gospels.ja.json",
           "entry_index": 1026,
           "text": "ヘドロ"
+        }
+      ]
+    },
+    {
+      "scope": "cross_file",
+      "path": "Dictionaries",
+      "key": "sludgy",
+      "entry_count": 2,
+      "texts": [
+        "{{w|泥状の}}",
+        "汚泥状の"
+      ],
+      "occurrences": [
+        {
+          "path": "Dictionaries/ui-displayname-adjectives.ja.json",
+          "entry_index": 385,
+          "text": "{{w|泥状の}}"
+        },
+        {
+          "path": "Dictionaries/ui-liquid-adjectives.ja.json",
+          "entry_index": 33,
+          "text": "汚泥状の"
         }
       ]
     },
@@ -3024,9 +3538,54 @@
     {
       "scope": "cross_file",
       "path": "Dictionaries",
-      "key": "spiced",
+      "key": "soup",
       "entry_count": 2,
       "texts": [
+        "{{c|スープ状の}}",
+        "原始スープ"
+      ],
+      "occurrences": [
+        {
+          "path": "Dictionaries/ui-displayname-adjectives.ja.json",
+          "entry_index": 353,
+          "text": "{{c|スープ状の}}"
+        },
+        {
+          "path": "Dictionaries/ui-liquids.ja.json",
+          "entry_index": 88,
+          "text": "原始スープ"
+        }
+      ]
+    },
+    {
+      "scope": "cross_file",
+      "path": "Dictionaries",
+      "key": "soupy",
+      "entry_count": 2,
+      "texts": [
+        "{{c|どろどろの}}",
+        "スープ状の"
+      ],
+      "occurrences": [
+        {
+          "path": "Dictionaries/ui-displayname-adjectives.ja.json",
+          "entry_index": 352,
+          "text": "{{c|どろどろの}}"
+        },
+        {
+          "path": "Dictionaries/ui-liquid-adjectives.ja.json",
+          "entry_index": 34,
+          "text": "スープ状の"
+        }
+      ]
+    },
+    {
+      "scope": "cross_file",
+      "path": "Dictionaries",
+      "key": "spiced",
+      "entry_count": 3,
+      "texts": [
+        "スパイス入りの",
         "スパイス入りの",
         "香辛料入りの"
       ],
@@ -3035,6 +3594,11 @@
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
           "entry_index": 321,
           "text": "香辛料入りの"
+        },
+        {
+          "path": "Dictionaries/ui-liquid-adjectives.ja.json",
+          "entry_index": 35,
+          "text": "スパイス入りの"
         },
         {
           "path": "Dictionaries/world-gospels.ja.json",
@@ -3124,10 +3688,33 @@
     {
       "scope": "cross_file",
       "path": "Dictionaries",
-      "key": "tar",
+      "key": "sunslag",
       "entry_count": 2,
       "texts": [
+        "{{sunslag|サンスラグの}}",
+        "サンスラグ"
+      ],
+      "occurrences": [
+        {
+          "path": "Dictionaries/ui-displayname-adjectives.ja.json",
+          "entry_index": 379,
+          "text": "{{sunslag|サンスラグの}}"
+        },
+        {
+          "path": "Dictionaries/ui-liquids.ja.json",
+          "entry_index": 89,
+          "text": "サンスラグ"
+        }
+      ]
+    },
+    {
+      "scope": "cross_file",
+      "path": "Dictionaries",
+      "key": "tar",
+      "entry_count": 3,
+      "texts": [
         "{{K|タールの}}",
+        "タール",
         "タール"
       ],
       "occurrences": [
@@ -3135,6 +3722,11 @@
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
           "entry_index": 324,
           "text": "{{K|タールの}}"
+        },
+        {
+          "path": "Dictionaries/ui-liquids.ja.json",
+          "entry_index": 90,
+          "text": "タール"
         },
         {
           "path": "Dictionaries/world-gospels.ja.json",
@@ -3147,17 +3739,23 @@
       "scope": "cross_file",
       "path": "Dictionaries",
       "key": "tarry",
-      "entry_count": 3,
+      "entry_count": 4,
       "texts": [
         "{{K|タール質の}}",
         "べとつく",
-        "タール塗れの"
+        "タール塗れの",
+        "タール質の"
       ],
       "occurrences": [
         {
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
           "entry_index": 323,
           "text": "{{K|タール質の}}"
+        },
+        {
+          "path": "Dictionaries/ui-liquid-adjectives.ja.json",
+          "entry_index": 37,
+          "text": "タール質の"
         },
         {
           "path": "Dictionaries/ui-zone-display.ja.json",
@@ -3168,6 +3766,50 @@
           "path": "Dictionaries/world-gospels.ja.json",
           "entry_index": 1096,
           "text": "べとつく"
+        }
+      ]
+    },
+    {
+      "scope": "cross_file",
+      "path": "Dictionaries",
+      "key": "unctuous",
+      "entry_count": 2,
+      "texts": [
+        "{{Y|油っぽい}}",
+        "ぬるぬるした"
+      ],
+      "occurrences": [
+        {
+          "path": "Dictionaries/ui-displayname-adjectives.ja.json",
+          "entry_index": 338,
+          "text": "{{Y|油っぽい}}"
+        },
+        {
+          "path": "Dictionaries/ui-liquid-adjectives.ja.json",
+          "entry_index": 38,
+          "text": "ぬるぬるした"
+        }
+      ]
+    },
+    {
+      "scope": "cross_file",
+      "path": "Dictionaries",
+      "key": "warm static",
+      "entry_count": 2,
+      "texts": [
+        "{{Y|ウォームスタティック}}",
+        "ウォームスタティック"
+      ],
+      "occurrences": [
+        {
+          "path": "Dictionaries/ui-displayname-adjectives.ja.json",
+          "entry_index": 339,
+          "text": "{{Y|ウォームスタティック}}"
+        },
+        {
+          "path": "Dictionaries/ui-liquids.ja.json",
+          "entry_index": 91,
+          "text": "ウォームスタティック"
         }
       ]
     },
@@ -3208,6 +3850,28 @@
     {
       "scope": "cross_file",
       "path": "Dictionaries",
+      "key": "wax",
+      "entry_count": 2,
+      "texts": [
+        "{{Y|蝋の}}",
+        "蝋"
+      ],
+      "occurrences": [
+        {
+          "path": "Dictionaries/ui-displayname-adjectives.ja.json",
+          "entry_index": 342,
+          "text": "{{Y|蝋の}}"
+        },
+        {
+          "path": "Dictionaries/ui-liquids.ja.json",
+          "entry_index": 92,
+          "text": "蝋"
+        }
+      ]
+    },
+    {
+      "scope": "cross_file",
+      "path": "Dictionaries",
       "key": "wet",
       "entry_count": 2,
       "texts": [
@@ -3231,9 +3895,10 @@
       "scope": "cross_file",
       "path": "Dictionaries",
       "key": "wine",
-      "entry_count": 2,
+      "entry_count": 3,
       "texts": [
         "{{m|ワインの}}",
+        "ワイン",
         "ワイン"
       ],
       "occurrences": [
@@ -3241,6 +3906,11 @@
           "path": "Dictionaries/ui-displayname-adjectives.ja.json",
           "entry_index": 364,
           "text": "{{m|ワインの}}"
+        },
+        {
+          "path": "Dictionaries/ui-liquids.ja.json",
+          "entry_index": 93,
+          "text": "ワイン"
         },
         {
           "path": "Dictionaries/world-parts.ja.json",
