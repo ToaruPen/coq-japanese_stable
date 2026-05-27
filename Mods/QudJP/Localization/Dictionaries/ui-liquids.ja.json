@@ -292,7 +292,7 @@
         {
             "key": "{{w|brackish}}",
             "context": "XRL.Liquids",
-            "text": "{{w|汽水}}"
+            "text": "{{w|塩分混じりの}}"
         },
         {
             "key": "{{w|brown sludge}}",
@@ -305,9 +305,174 @@
             "text": "{{w|蜜味}}"
         },
         {
+            "key": "acid",
+            "context": "XRL.Liquids",
+            "text": "酸"
+        },
+        {
+            "key": "algae",
+            "context": "XRL.Liquids",
+            "text": "藻"
+        },
+        {
+            "key": "asphalt",
+            "context": "XRL.Liquids",
+            "text": "アスファルト"
+        },
+        {
+            "key": "black ooze",
+            "context": "XRL.Liquids",
+            "text": "黒い軟泥"
+        },
+        {
+            "key": "blood",
+            "context": "XRL.Liquids",
+            "text": "血"
+        },
+        {
+            "key": "brain brine",
+            "context": "XRL.Liquids",
+            "text": "脳髄汁"
+        },
+        {
+            "key": "brain-brine",
+            "context": "XRL.Liquids",
+            "text": "脳髄汁"
+        },
+        {
+            "key": "brown sludge",
+            "context": "XRL.Liquids",
+            "text": "茶色い汚泥"
+        },
+        {
+            "key": "cider",
+            "context": "XRL.Liquids",
+            "text": "サイダー"
+        },
+        {
+            "key": "cloning draught",
+            "context": "XRL.Liquids",
+            "text": "クローン薬液"
+        },
+        {
+            "key": "cloning-draught",
+            "context": "XRL.Liquids",
+            "text": "クローン薬液"
+        },
+        {
+            "key": "convalessence",
+            "context": "XRL.Liquids",
+            "text": "コンバレセンス"
+        },
+        {
+            "key": "fresh water",
+            "context": "XRL.Liquids",
+            "text": "真水"
+        },
+        {
+            "key": "gel",
+            "context": "XRL.Liquids",
+            "text": "ゲル"
+        },
+        {
+            "key": "green goo",
+            "context": "XRL.Liquids",
+            "text": "緑の粘液"
+        },
+        {
+            "key": "goo",
+            "context": "XRL.Liquids",
+            "text": "粘液"
+        },
+        {
+            "key": "honey",
+            "context": "XRL.Liquids",
+            "text": "はちみつ"
+        },
+        {
+            "key": "ink",
+            "context": "XRL.Liquids",
+            "text": "インク"
+        },
+        {
+            "key": "lava",
+            "context": "XRL.Liquids",
+            "text": "溶岩"
+        },
+        {
+            "key": "molten wax",
+            "context": "XRL.Liquids",
+            "text": "溶けた蝋"
+        },
+        {
+            "key": "neutron flux",
+            "context": "XRL.Liquids",
+            "text": "中性子フラックス"
+        },
+        {
+            "key": "oil",
+            "context": "XRL.Liquids",
+            "text": "油"
+        },
+        {
+            "key": "ooze",
+            "context": "XRL.Liquids",
+            "text": "軟泥"
+        },
+        {
+            "key": "primordial soup",
+            "context": "XRL.Liquids",
+            "text": "原始スープ"
+        },
+        {
+            "key": "putrescence",
+            "context": "XRL.Liquids",
+            "text": "腐敗液"
+        },
+        {
+            "key": "sap",
+            "context": "XRL.Liquids",
+            "text": "樹液"
+        },
+        {
             "key": "salty water",
             "context": "XRL.Liquids",
             "text": "塩水"
+        },
+        {
+            "key": "sludge",
+            "context": "XRL.Liquids",
+            "text": "汚泥"
+        },
+        {
+            "key": "soup",
+            "context": "XRL.Liquids",
+            "text": "原始スープ"
+        },
+        {
+            "key": "sunslag",
+            "context": "XRL.Liquids",
+            "text": "サンスラグ"
+        },
+        {
+            "key": "tar",
+            "context": "XRL.Liquids",
+            "text": "タール"
+        },
+        {
+            "key": "warm static",
+            "context": "XRL.Liquids",
+            "text": "ウォームスタティック"
+        },
+        {
+            "key": "wax",
+            "context": "XRL.Liquids",
+            "text": "蝋"
+        },
+        {
+            "key": "wine",
+            "context": "XRL.Liquids",
+            "text": "ワイン"
         }
     ]
 }

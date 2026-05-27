@@ -214,14 +214,14 @@ public sealed class CampfireCookFromIngredientsTranslationPatchTests
 
     [TestCase(
         "[ ]   a dram of brackish water {{K|x29}}",
-        "[ ]   塩気混じりの水1ドラム {{K|x29}}")]
+        "[ ]   塩分混じりの水1ドラム {{K|x29}}")]
     [TestCase(
         "{{y|[{{G|X}}]}}   {{Y|starapple jam}} {{K|x3}}",
         "{{y|[{{G|X}}]}}   {{Y|スターアップルジャム}} {{K|x3}}")]
     public void CookFromIngredients_TranslatesIngredientOptionRows_WhenOwnerActive(string source, string expected)
     {
         WriteHistorySpiceCommonDictionary(
-            ("brackish water", "塩気混じりの水"),
+            ("brackish water", "塩分混じりの水"),
             ("starapple jam", "スターアップルジャム"));
 
         WithPatchedOwner(() =>

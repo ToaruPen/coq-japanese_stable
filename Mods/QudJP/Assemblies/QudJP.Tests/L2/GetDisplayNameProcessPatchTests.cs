@@ -215,12 +215,12 @@ public sealed class GetDisplayNameProcessPatchTests
     }
 
     [TestCase("水たまり of salty water", "塩気のある水の水たまり")]
-    [TestCase("水たまり of brackish blood", "塩気混じりの血の水たまり")]
+    [TestCase("水たまり of brackish blood", "塩分混じりの血の水たまり")]
     public void Postfix_TranslatesLiquidPrepositionDisplayName_WhenPatched(string source, string expected)
     {
         WriteDictionary(
             ("salty", "塩気のある"),
-            ("brackish", "塩気混じりの"),
+            ("brackish", "塩分混じりの"),
             ("water", "水"),
             ("blood", "血"));
 
@@ -332,6 +332,110 @@ public sealed class GetDisplayNameProcessPatchTests
             {
                 Assert.That(result, Is.EqualTo("水筒 [32ドラムの真水]"));
                 Assert.That(Translator.GetMissingKeyHitCountForTests("水筒 [32 drams of fresh water]"), Is.EqualTo(0));
+            });
+        });
+    }
+
+    [Test]
+    public void Postfix_TranslatesLocalizedPuddleWithQuantifiedLiquidTail_WhenPatched()
+    {
+        WriteScopedDictionaryFile(
+            "ui-liquid-adjectives.ja.json",
+            "XRL.Liquids.Adjective",
+            ("{{Y|salty}}", "{{Y|塩気のある}}"),
+            ("salty", "塩気のある"));
+        WriteScopedDictionaryFile(
+            "ui-liquids.ja.json",
+            "XRL.Liquids",
+            ("{{B|water}}", "{{B|水}}"),
+            ("water", "水"),
+            ("salty water", "塩水"));
+
+        RunWithDisplayNameProcessPatch(() =>
+        {
+            var processor = new DummyDisplayNameProcessor();
+            var result = processor.ProcessFor("塩水の水たまり of {{rules|500}} drams of {{Y|salty}} {{B|water}}");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(result, Is.EqualTo("{{rules|500}}ドラムの{{Y|塩気のある}} {{B|水}}の水たまり"));
+                Assert.That(Translator.GetMissingKeyHitCountForTests("塩水の水たまり of 500 drams of salty water"), Is.EqualTo(0));
+            });
+        });
+    }
+
+    [Test]
+    public void Postfix_TranslatesBarePuddleWithQuantifiedLiquidTailPreservingLiquidColors_WhenPatched()
+    {
+        WriteScopedDictionaryFile(
+            "ui-liquid-adjectives.ja.json",
+            "XRL.Liquids.Adjective",
+            ("{{Y|salty}}", "{{Y|塩気のある}}"),
+            ("salty", "塩気のある"));
+        WriteScopedDictionaryFile(
+            "ui-liquids.ja.json",
+            "XRL.Liquids",
+            ("{{r|blood}}", "{{r|血}}"),
+            ("blood", "血"));
+
+        RunWithDisplayNameProcessPatch(() =>
+        {
+            var processor = new DummyDisplayNameProcessor();
+            var result = processor.ProcessFor("水たまり of 1 dram of {{Y|salty}} {{r|blood}}");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(result, Is.EqualTo("1ドラムの{{Y|塩気のある}} {{r|血}}の水たまり"));
+                Assert.That(Translator.GetMissingKeyHitCountForTests("水たまり of 1 dram of salty blood"), Is.EqualTo(0));
+            });
+        });
+    }
+
+    [Test]
+    public void Postfix_TranslatesPuddleWithChainedLiquidAdjectives_WhenPatched()
+    {
+        WriteScopedDictionaryFile(
+            "ui-liquid-adjectives.ja.json",
+            "XRL.Liquids.Adjective",
+            ("brackish", "塩分混じりの"),
+            ("bloody", "血混じりの"));
+        WriteScopedDictionaryFile("ui-liquids.ja.json", "XRL.Liquids", ("water", "水"));
+
+        RunWithDisplayNameProcessPatch(() =>
+        {
+            var processor = new DummyDisplayNameProcessor();
+            var result = processor.ProcessFor("水たまり of 7 drams of brackish bloody water");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(result, Is.EqualTo("7ドラムの塩分混じりの血混じりの水の水たまり"));
+                Assert.That(Translator.GetMissingKeyHitCountForTests("水たまり of 7 drams of brackish bloody water"), Is.EqualTo(0));
+            });
+        });
+    }
+
+    [Test]
+    public void Postfix_TranslatesMarkedBrackishWaterPuddleAsLiquidAdjective_WhenPatched()
+    {
+        WriteScopedDictionaryFile(
+            "ui-liquid-adjectives.ja.json",
+            "XRL.Liquids.Adjective",
+            ("brackish", "塩分混じりの"));
+        WriteScopedDictionaryFile(
+            "ui-liquids.ja.json",
+            "XRL.Liquids",
+            ("{{B|water}}", "{{B|水}}"),
+            ("water", "水"));
+
+        RunWithDisplayNameProcessPatch(() =>
+        {
+            var processor = new DummyDisplayNameProcessor();
+            var result = processor.ProcessFor("水たまり of {{rules|500}} drams of {{w|brackish}} {{B|water}}");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(result, Is.EqualTo("{{rules|500}}ドラムの{{w|塩分混じりの}} {{B|水}}の水たまり"));
+                Assert.That(Translator.GetMissingKeyHitCountForTests("水たまり of 500 drams of brackish water"), Is.EqualTo(0));
             });
         });
     }
@@ -927,6 +1031,18 @@ public sealed class GetDisplayNameProcessPatchTests
             new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
     }
 
+    private void WriteScopedDictionaryFile(
+        string fileName,
+        string context,
+        params (string key, string text)[] entries)
+    {
+        var builder = new StringBuilder();
+        builder.Append("{\"entries\":[");
+        AppendScopedEntries(builder, context, entries);
+        builder.AppendLine("]}");
+        WriteDictionaryFile(fileName, builder.ToString());
+    }
+
     private static string EscapeJson(string value)
     {
         return value
@@ -949,6 +1065,29 @@ public sealed class GetDisplayNameProcessPatchTests
             var (key, text) = entries[index];
             builder.Append("{\"key\":\"");
             builder.Append(EscapeJson(key));
+            builder.Append("\",\"text\":\"");
+            builder.Append(EscapeJson(text));
+            builder.Append("\"}");
+        }
+    }
+
+    private static void AppendScopedEntries(
+        StringBuilder builder,
+        string context,
+        IReadOnlyList<(string key, string text)> entries)
+    {
+        for (var index = 0; index < entries.Count; index++)
+        {
+            if (index > 0)
+            {
+                builder.Append(',');
+            }
+
+            var (key, text) = entries[index];
+            builder.Append("{\"key\":\"");
+            builder.Append(EscapeJson(key));
+            builder.Append("\",\"context\":\"");
+            builder.Append(EscapeJson(context));
             builder.Append("\",\"text\":\"");
             builder.Append(EscapeJson(text));
             builder.Append("\"}");

@@ -1265,9 +1265,9 @@ public sealed class GetDisplayNameRouteTranslatorTests
                 Is.EqualTo("スナップジョー [{{B|網にはまっている}}]"));
             Assert.That(
                 GetDisplayNameRouteTranslator.TranslatePreservingColors(
-                    "snapjaw [stuck in a 凍結した 塩気混じりの粘液の水たまり]",
+                    "snapjaw [stuck in a 凍結した 塩分混じりの粘液の水たまり]",
                     nameof(GetDisplayNamePatch)),
-                Is.EqualTo("スナップジョー [凍結した 塩気混じりの粘液の水たまりにはまっている]"));
+                Is.EqualTo("スナップジョー [凍結した 塩分混じりの粘液の水たまりにはまっている]"));
             Assert.That(
                 GetDisplayNameRouteTranslator.TranslatePreservingColors(
                     "snapjaw [{{B|grabbed by an iron sword}}]",

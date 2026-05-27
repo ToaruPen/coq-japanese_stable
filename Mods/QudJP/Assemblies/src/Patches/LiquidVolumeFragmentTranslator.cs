@@ -14,81 +14,6 @@ internal static class LiquidVolumeFragmentTranslator
     private const string OpenDirectionPattern =
         "to the north|to the south|to the east|to the west|to the northeast|to the northwest|to the southeast|to the southwest|the north|the south|the east|the west|the northeast|the northwest|the southeast|the southwest|north|south|east|west|northeast|northwest|southeast|southwest|nearby|above|below|here|somewhere";
 
-    private static readonly IReadOnlyDictionary<string, string> LiquidNameFallbacks =
-        new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
-        {
-            ["acid"] = "酸",
-            ["algae"] = "藻",
-            ["asphalt"] = "アスファルト",
-            ["black ooze"] = "黒い軟泥",
-            ["blood"] = "血",
-            ["brain brine"] = "脳髄汁",
-            ["brain-brine"] = "脳髄汁",
-            ["brown sludge"] = "茶色い汚泥",
-            ["cider"] = "サイダー",
-            ["cloning draught"] = "クローン薬液",
-            ["cloning-draught"] = "クローン薬液",
-            ["convalessence"] = "コンバレセンス",
-            ["fresh water"] = "真水",
-            ["gel"] = "ゲル",
-            ["green goo"] = "緑の粘液",
-            ["goo"] = "粘液",
-            ["honey"] = "はちみつ",
-            ["ink"] = "インク",
-            ["lava"] = "溶岩",
-            ["molten wax"] = "溶けた蝋",
-            ["neutron flux"] = "中性子フラックス",
-            ["oil"] = "油",
-            ["ooze"] = "軟泥",
-            ["primordial soup"] = "原始スープ",
-            ["putrescence"] = "腐敗液",
-            ["salt"] = "塩",
-            ["salty water"] = "塩水",
-            ["sap"] = "樹液",
-            ["slime"] = "粘液",
-            ["sludge"] = "汚泥",
-            ["soup"] = "原始スープ",
-            ["sunslag"] = "サンスラグ",
-            ["tar"] = "タール",
-            ["warm static"] = "ウォームスタティック",
-            ["water"] = "水",
-            ["wax"] = "蝋",
-            ["wine"] = "ワイン",
-        };
-
-    private static readonly IReadOnlyDictionary<string, string> LiquidAdjectiveFallbacks =
-        new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
-        {
-            ["acidic"] = "酸性の",
-            ["algal"] = "藻質の",
-            ["bloody"] = "血混じりの",
-            ["brackish"] = "塩気混じりの",
-            ["dilute"] = "薄めの",
-            ["entropic"] = "エントロピー性の",
-            ["gooey"] = "粘つく",
-            ["homogenized"] = "均質化された",
-            ["honeyed"] = "蜜味の",
-            ["inky"] = "インク混じりの",
-            ["lush"] = "豊潤な",
-            ["luminous"] = "発光する",
-            ["magmatic"] = "マグマ質の",
-            ["nervous"] = "神経性の",
-            ["neutronic"] = "中性子質の",
-            ["oily"] = "油っぽい",
-            ["oozing"] = "軟泥状の",
-            ["putrid"] = "腐敗した",
-            ["radiant"] = "輝く",
-            ["salty"] = "塩気のある",
-            ["slimy"] = "粘液質の",
-            ["sludgy"] = "汚泥状の",
-            ["soupy"] = "スープ状の",
-            ["spiced"] = "スパイス入りの",
-            ["sugary"] = "甘い",
-            ["tarry"] = "タール質の",
-            ["unctuous"] = "ぬるぬるした",
-            ["waxen"] = "蝋質の",
-        };
-
     private static readonly IReadOnlyList<TranslationRule> Rules =
     [
         new(
@@ -416,21 +341,26 @@ internal static class LiquidVolumeFragmentTranslator
 
     internal static string? TranslateLiquidPhrase(string source)
     {
-        var exact = TranslateLiquidName(source);
-        if (exact is not null)
+        var composed = TryTranslateComposedLiquidPhrase(source);
+        if (composed is not null)
         {
-            return exact;
+            return composed;
         }
 
+        return TranslateLiquidName(source);
+    }
+
+    private static string? TryTranslateComposedLiquidPhrase(string source)
+    {
         // LiquidVolume.GetLiquidName composes mixtures from zero or more GetAdjective() parts
-        // followed by the dominant liquid's GetName(), so match the longest translatable suffix.
+        // followed by the dominant liquid's GetName(), so prefer adjective + liquid reconstruction.
         var parts = source.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
         if (parts.Length < 2)
         {
             return null;
         }
 
-        for (var liquidStart = 0; liquidStart < parts.Length; liquidStart++)
+        for (var liquidStart = parts.Length - 1; liquidStart > 0; liquidStart--)
         {
             var liquidName = TranslateLiquidName(string.Join(" ", parts, liquidStart, parts.Length - liquidStart));
             if (liquidName is null)
@@ -439,19 +369,24 @@ internal static class LiquidVolumeFragmentTranslator
             }
 
             var builder = new StringBuilder();
+            var allAdjectivesTranslated = true;
             for (var index = 0; index < liquidStart; index++)
             {
                 var adjective = TranslateLiquidAdjective(parts[index]);
                 if (adjective is null)
                 {
-                    return null;
+                    allAdjectivesTranslated = false;
+                    break;
                 }
 
                 builder.Append(adjective);
             }
 
-            builder.Append(liquidName);
-            return builder.ToString();
+            if (allAdjectivesTranslated)
+            {
+                builder.Append(liquidName);
+                return builder.ToString();
+            }
         }
 
         return null;
@@ -532,31 +467,19 @@ internal static class LiquidVolumeFragmentTranslator
     private static string? TranslateLiquidName(string source)
     {
         var normalized = NormalizeLiquidPhrase(source);
-        var scoped = ScopedDictionaryLookup.TranslateExactOrLowerAsciiForContext(
+        return ScopedDictionaryLookup.TranslateExactOrLowerAsciiForContext(
             normalized,
             LiquidContext,
             LiquidDictionaryFile);
-        if (scoped is not null)
-        {
-            return scoped;
-        }
-
-        return LiquidNameFallbacks.TryGetValue(normalized, out var translated) ? translated : null;
     }
 
     private static string? TranslateLiquidAdjective(string source)
     {
         var normalized = NormalizeLiquidPhrase(source);
-        var scoped = ScopedDictionaryLookup.TranslateExactOrLowerAsciiForContext(
+        return ScopedDictionaryLookup.TranslateExactOrLowerAsciiForContext(
             normalized,
             LiquidAdjectiveContext,
             LiquidAdjectiveDictionaryFile);
-        if (scoped is not null)
-        {
-            return scoped;
-        }
-
-        return LiquidAdjectiveFallbacks.TryGetValue(normalized, out var translated) ? translated : null;
     }
 
     private static string NormalizeLiquidPhrase(string source) =>

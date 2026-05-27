@@ -240,6 +240,11 @@ internal static class GetDisplayNameRouteTranslator
 
         using var logScope = Translator.PushLogContext(context);
 
+        if (TryTranslateLiquidPrepositionDisplayName(source!, route, out var coloredLiquidPrepositionTranslation))
+        {
+            return coloredLiquidPrepositionTranslation;
+        }
+
         if (TryHandleParenthesizedColoredChargeStatusFallback(source!, route, out var chargeStatusFallback))
         {
             return chargeStatusFallback;
@@ -1743,7 +1748,7 @@ internal static class GetDisplayNameRouteTranslator
 
         var head = source.Substring(0, separatorIndex);
         var tail = source.Substring(separatorIndex + 4);
-        if (tail.Length == 0 || !LooksLikeAsciiPhrase(tail))
+        if (tail.Length == 0)
         {
             return false;
         }
@@ -1753,14 +1758,99 @@ internal static class GetDisplayNameRouteTranslator
             return false;
         }
 
-        var translatedTail = TranslateAsciiPhrase(tail);
+        if (TryTranslateQuantifiedLiquidPrepositionTail(tail, out var quantifiedTail))
+        {
+            translated = BuildQuantifiedLiquidPrepositionTranslation(head, quantifiedTail);
+            DynamicTextObservability.RecordTransform(route, "DisplayName.LiquidPreposition.Quantified", source, translated);
+            return true;
+        }
+
+        if (!LooksLikeAsciiPhrase(tail))
+        {
+            return false;
+        }
+
+        var translatedTail = TranslateAsciiPhraseByParts(tail);
+        if (translatedTail is null)
+        {
+            translatedTail = TranslateAsciiPhrase(tail);
+        }
+
         if (translatedTail is null)
         {
             return false;
         }
 
-        translated = translatedTail + "の" + head;
+        translated = !IsBareLiquidDisplayNameHead(head) && HeadAlreadyContainsLiquid(head, BuildLiquidComparableCandidates(tail))
+            ? head
+            : translatedTail + "の" + head;
         DynamicTextObservability.RecordTransform(route, "DisplayName.LiquidPreposition", source, translated);
+        return true;
+    }
+
+    private static string BuildQuantifiedLiquidPrepositionTranslation(
+        string head,
+        (string Amount, string Liquid, IReadOnlyList<string> ComparableLiquids) quantifiedTail)
+    {
+        if (IsBareLiquidDisplayNameHead(head))
+        {
+            return quantifiedTail.Amount + "ドラムの" + quantifiedTail.Liquid + "の" + head;
+        }
+
+        if (HeadAlreadyContainsLiquid(head, quantifiedTail.Liquid))
+        {
+            return quantifiedTail.Amount + "ドラムの" + head;
+        }
+
+        return HeadAlreadyContainsLiquid(head, quantifiedTail.ComparableLiquids)
+            ? quantifiedTail.Amount + "ドラムの" + quantifiedTail.Liquid + "の" + StripLiquidPrefixFromDisplayNameHead(head)
+            : quantifiedTail.Amount + "ドラムの" + quantifiedTail.Liquid + "の" + head;
+    }
+
+    private static string StripLiquidPrefixFromDisplayNameHead(string head)
+    {
+        var poolIndex = head.LastIndexOf("の水たまり", StringComparison.Ordinal);
+        if (poolIndex >= 0)
+        {
+            return head.Substring(poolIndex + 1);
+        }
+
+        var pondIndex = head.LastIndexOf("の池", StringComparison.Ordinal);
+        return pondIndex >= 0 ? head.Substring(pondIndex + 1) : head;
+    }
+
+    private static bool TryTranslateQuantifiedLiquidPrepositionTail(
+        string source,
+        out (string Amount, string Liquid, IReadOnlyList<string> ComparableLiquids) translated)
+    {
+        var match = QuantifiedLiquidStatePattern.Match(source);
+        if (!match.Success || match.Groups["state"].Success)
+        {
+            translated = default;
+            return false;
+        }
+
+        var liquidSource = match.Groups["liquid"].Value;
+        var visibleLiquid = ColorAwareTranslationComposer.GetVisibleText(liquidSource);
+        var translatedLiquid = LiquidVolumeFragmentTranslator.TranslateLiquidPhrasePreservingColors(liquidSource);
+        if (translatedLiquid is null)
+        {
+            translatedLiquid = TranslateAsciiPhraseByParts(visibleLiquid);
+        }
+
+        if (translatedLiquid is null)
+        {
+            var direct = Translator.Translate(liquidSource);
+            if (string.Equals(direct, liquidSource, StringComparison.Ordinal))
+            {
+                translated = default;
+                return false;
+            }
+
+            translatedLiquid = direct;
+        }
+
+        translated = (match.Groups["amount"].Value, translatedLiquid, BuildLiquidComparableCandidates(visibleLiquid));
         return true;
     }
 
@@ -3691,6 +3781,32 @@ internal static class GetDisplayNameRouteTranslator
             || source.EndsWith("池", StringComparison.Ordinal);
     }
 
+    private static bool IsBareLiquidDisplayNameHead(string source)
+    {
+        return string.Equals(source, "水たまり", StringComparison.Ordinal)
+            || string.Equals(source, "池", StringComparison.Ordinal);
+    }
+
+    private static bool HeadAlreadyContainsLiquid(string head, IReadOnlyList<string> translatedLiquids)
+    {
+        for (var index = 0; index < translatedLiquids.Count; index++)
+        {
+            if (HeadAlreadyContainsLiquid(head, translatedLiquids[index]))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static bool HeadAlreadyContainsLiquid(string head, string translatedLiquid)
+    {
+        var visibleLiquid = ColorAwareTranslationComposer.GetVisibleText(translatedLiquid).Trim();
+        return visibleLiquid.Length > 0
+            && head.StartsWith(visibleLiquid + "の", StringComparison.Ordinal);
+    }
+
     private static bool LooksLikeAsciiPhrase(string source)
     {
         var hasLetter = false;
@@ -3736,6 +3852,11 @@ internal static class GetDisplayNameRouteTranslator
             return direct;
         }
 
+        return TranslateAsciiPhraseByParts(source);
+    }
+
+    private static string? TranslateAsciiPhraseByParts(string source)
+    {
         var parts = source.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
         if (parts.Length == 0)
         {
@@ -3755,6 +3876,33 @@ internal static class GetDisplayNameRouteTranslator
         }
 
         return builder.ToString();
+    }
+
+    private static IReadOnlyList<string> BuildLiquidComparableCandidates(string source)
+    {
+        var candidates = new List<string>();
+        AddCandidate(candidates, TranslateAsciiPhraseByParts(source));
+        AddCandidate(candidates, LiquidVolumeFragmentTranslator.TranslateLiquidPhrase(source));
+        AddCandidate(candidates, TranslateAsciiPhrase(source));
+        return candidates;
+    }
+
+    private static void AddCandidate(List<string> candidates, string? candidate)
+    {
+        if (string.IsNullOrWhiteSpace(candidate))
+        {
+            return;
+        }
+
+        for (var index = 0; index < candidates.Count; index++)
+        {
+            if (string.Equals(candidates[index], candidate, StringComparison.Ordinal))
+            {
+                return;
+            }
+        }
+
+        candidates.Add(candidate!);
     }
 
     private static string TranslateAsciiPhrasePart(string source)

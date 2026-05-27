@@ -25,7 +25,7 @@ public sealed class CookingIngredientFragmentTranslatorTests
     [TestCase("a pinch of salt", "塩ひとつまみ")]
     [TestCase("a dash of algae", "藻少量")]
     [TestCase("a dram of {{C|water}}", "{{C|水}}1ドラム")]
-    [TestCase("a dram of brackish water", "塩気混じりの水1ドラム")]
+    [TestCase("a dram of brackish water", "塩分混じりの水1ドラム")]
     [TestCase("some bread", "パン少々")]
     [TestCase("a bread", "パン")]
     [TestCase("glass berries", "ガラスベリー")]

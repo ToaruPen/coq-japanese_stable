@@ -32,6 +32,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
         MessagePatternTranslator.SetPatternFileForTests(patternFilePath);
         File.WriteAllText(patternFilePath, "{\"patterns\":[]}\n", new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
         MessagePatternTranslator.InvalidatePatternFileCacheForTests(patternFilePath);
+        WriteLiquidDictionaries();
         DummyMessageQueue.Reset();
         DummyPopupShow.Reset();
         DummyPopupTarget.Reset();
@@ -11776,6 +11777,14 @@ public sealed class CombatAndLogMessageQueuePatchTests
             builder.ToString(),
             new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
         MessagePatternTranslator.SetLeafFileForTests(Path.Combine(tempDirectory, "ui-messagelog-leaf.ja.json"));
+    }
+
+    private void WriteLiquidDictionaries()
+    {
+        File.WriteAllText(
+            Path.Combine(tempDirectory, "ui-liquids.ja.json"),
+            "{\"entries\":[{\"key\":\"water\",\"context\":\"XRL.Liquids\",\"text\":\"水\"},{\"key\":\"fresh water\",\"context\":\"XRL.Liquids\",\"text\":\"真水\"}]}\n",
+            new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
     }
 
     private static string EscapeJson(string value)

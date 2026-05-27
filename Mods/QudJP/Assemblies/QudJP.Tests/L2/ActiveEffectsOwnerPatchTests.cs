@@ -110,8 +110,13 @@ public sealed class ActiveEffectsOwnerPatchTests
     public void EffectDescriptionAndDetailsPatches_TranslateOverrideOwnerText_WhenPatched()
     {
         WriteDictionary(
-            ("{{B|wet}}", "{{B|濡れている}}"),
-            ("salty water", "塩水"));
+            ("{{B|wet}}", "{{B|濡れている}}"));
+        WriteScopedDictionary(
+            "ui-liquid-adjectives.ja.json",
+            ("salty", "XRL.Liquids.Adjective", "塩気のある"));
+        WriteScopedDictionary(
+            "ui-liquids.ja.json",
+            ("water", "XRL.Liquids", "水"));
 
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
@@ -129,7 +134,7 @@ public sealed class ActiveEffectsOwnerPatchTests
             Assert.Multiple(() =>
             {
                 Assert.That(effect.GetDescription(), Is.EqualTo("{{B|濡れている}}"));
-                Assert.That(effect.GetDetails(), Is.EqualTo("塩水を30ドラム浴びている。"));
+                Assert.That(effect.GetDetails(), Is.EqualTo("塩気のある水を30ドラム浴びている。"));
             });
         }
         finally
@@ -230,8 +235,13 @@ public sealed class ActiveEffectsOwnerPatchTests
     public void EffectOwnerTargetResolver_IncludesBaseAndNonCookingOverrideDetailsMethods()
     {
         WriteDictionary(
-            ("base details", "基本詳細"),
-            ("salty water", "塩水"));
+            ("base details", "基本詳細"));
+        WriteScopedDictionary(
+            "ui-liquid-adjectives.ja.json",
+            ("salty", "XRL.Liquids.Adjective", "塩気のある"));
+        WriteScopedDictionary(
+            "ui-liquids.ja.json",
+            ("water", "XRL.Liquids", "水"));
 
         var targets = ActiveEffectOwnerTargetResolver.ResolveTargetMethods(
                 typeof(DummyEffectBaseTarget),
@@ -260,7 +270,7 @@ public sealed class ActiveEffectsOwnerPatchTests
             Assert.Multiple(() =>
             {
                 Assert.That(new DummyEffectBaseTarget().GetDetails(), Is.EqualTo("基本詳細"));
-                Assert.That(new DummyLiquidCoveredEffectTarget().GetDetails(), Is.EqualTo("塩水を30ドラム浴びている。"));
+                Assert.That(new DummyLiquidCoveredEffectTarget().GetDetails(), Is.EqualTo("塩気のある水を30ドラム浴びている。"));
             });
         }
         finally
@@ -308,8 +318,13 @@ public sealed class ActiveEffectsOwnerPatchTests
     public void EffectDescriptionAndDetailsPatches_DoNotCorruptNestedLiquidColorMarkup_WhenPatched()
     {
         WriteDictionary(
-            ("wet", "{{B|濡れた}}"),
-            ("salty water", "塩水"));
+            ("wet", "{{B|濡れた}}"));
+        WriteScopedDictionary(
+            "ui-liquid-adjectives.ja.json",
+            ("salty", "XRL.Liquids.Adjective", "塩気のある"));
+        WriteScopedDictionary(
+            "ui-liquids.ja.json",
+            ("water", "XRL.Liquids", "水"));
 
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
@@ -331,7 +346,7 @@ public sealed class ActiveEffectsOwnerPatchTests
             Assert.Multiple(() =>
             {
                 Assert.That(effect.GetDescription(), Is.EqualTo("{{B|濡れた}}"));
-                Assert.That(effect.GetDetails(), Is.EqualTo("塩水を43ドラム浴びている。"));
+                Assert.That(effect.GetDetails(), Is.EqualTo("塩気のある水を43ドラム浴びている。"));
             });
         }
         finally
@@ -345,8 +360,13 @@ public sealed class ActiveEffectsOwnerPatchTests
     {
         WriteDictionary(
             ("{{B|wet}}", "{{B|濡れている}}"),
-            ("wading", "浅瀬を進んでいる"),
-            ("salty water", "塩水"));
+            ("wading", "浅瀬を進んでいる"));
+        WriteScopedDictionary(
+            "ui-liquid-adjectives.ja.json",
+            ("salty", "XRL.Liquids.Adjective", "塩気のある"));
+        WriteScopedDictionary(
+            "ui-liquids.ja.json",
+            ("water", "XRL.Liquids", "水"));
 
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
@@ -374,7 +394,7 @@ public sealed class ActiveEffectsOwnerPatchTests
 
             Assert.That(
                 screen.mutationsDetails.Text,
-                Is.EqualTo("{{B|濡れている}}\n\n塩水を30ドラム浴びている。\n\n浅瀬を進んでいる\n移動速度 -20。"));
+                Is.EqualTo("{{B|濡れている}}\n\n塩気のある水を30ドラム浴びている。\n\n浅瀬を進んでいる\n移動速度 -20。"));
         }
         finally
         {
