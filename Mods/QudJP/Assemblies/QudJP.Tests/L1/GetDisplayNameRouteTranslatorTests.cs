@@ -1715,6 +1715,20 @@ public sealed class GetDisplayNameRouteTranslatorTests
     }
 
     [Test]
+    public void TranslatePreservingColors_TranslatesModifierChainBeforeLocalizedChargeStatus()
+    {
+        UseProductionDictionaries();
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            "deactivated spring-loaded {{ninefold|ナインフォールド}}のブーツ {{y|({{G|残量十分}})}}",
+            nameof(GetDisplayNamePatch));
+
+        Assert.That(
+            translated,
+            Is.EqualTo("停止中の バネ仕掛けの{{ninefold|ナインフォールド}}のブーツ {{y|({{G|残量十分}})}}"));
+    }
+
+    [Test]
     public void TranslatePreservingColors_TranslatesDisguiseDisplayNameClauses()
     {
         WriteDictionary(

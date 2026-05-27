@@ -323,6 +323,12 @@ internal static class GetDisplayNameRouteTranslator
             return modifierChainTranslation;
         }
 
+        if (StringHelpers.ContainsOrdinal(source, "{{")
+            && TryTranslateLeadingModifierChain(source, route, out var visibleModifierChainTranslation))
+        {
+            return visibleModifierChainTranslation;
+        }
+
         if (TryTranslateLeadingMarkupWrappedModifier(source!, route, out var markupLeadingTranslation))
         {
             return markupLeadingTranslation;
@@ -446,6 +452,12 @@ internal static class GetDisplayNameRouteTranslator
                 }
 
                 if (EnergyStorageChargeStatusTranslationPatch.TryTranslateChargeStatus(status, out _))
+                {
+                    return match.Value;
+                }
+
+                if (IsAlreadyLocalizedDisplayNameStateText(
+                    ColorAwareTranslationComposer.GetVisibleText(status)))
                 {
                     return match.Value;
                 }

@@ -206,6 +206,7 @@ public sealed class TargetMethodResolutionTests
     [TestCase(typeof(TradeLineTranslationPatch), "setData", "Qud.UI.TradeLine", "System.Void", new[] { "XRL.UI.Framework.FrameworkDataElement" })]
     [TestCase(typeof(TradeUiLegacyScreenTranslationPatch), "ShowTradeScreen", "XRL.UI.TradeUI", "System.Void", new[] { "XRL.World.GameObject", "System.Single", "XRL.UI.TradeUI+TradeScreenMode" })]
     [TestCase(typeof(SkillsAndPowersStatusScreenTranslationPatch), "UpdateViewFromData", "Qud.UI.SkillsAndPowersStatusScreen", "System.Void", new string[0])]
+    [TestCase(typeof(ActivatedAbilityNotUsableDescriptionTranslationPatch), "get_NotUsableDescription", "XRL.World.Parts.ActivatedAbilityEntry", "System.String", new string[0])]
     [TestCase(typeof(MessageQueueTranslationPatch), "AddPlayerMessage", "XRL.Messages.MessageQueue", "System.Void", new[] { "System.String", "System.String", "System.Boolean" })]
     [TestCase(typeof(MessageLogLineTranslationPatch), "setData", "Qud.UI.MessageLogLine", "System.Void", new[] { "XRL.UI.Framework.FrameworkDataElement" })]
     [TestCase(typeof(TutorialManagerTranslationPatch), "ShowCIDPopupAsync", "TutorialManager", "System.Threading.Tasks.Task", new[]

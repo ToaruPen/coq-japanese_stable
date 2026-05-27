@@ -85,9 +85,22 @@ public static class AbilityManagerShowTranslationPatch
         if (match.Success)
         {
             var duration = match.Groups["duration"].Value;
-            var cooldownTranslated = ActivatedAbilityCooldownTranslator.TryTranslateRawCooldown(duration, out var nestedRawCooldown)
-                ? nestedRawCooldown
-                : $"その能力を再び使うには{ActivatedAbilityCooldownTranslator.TranslateCooldownDuration(duration)}待つ必要がある。";
+            string cooldownTranslated;
+            if (ActivatedAbilityCooldownTranslator.TryStripDirectMarkedCooldownDuration(
+                    duration,
+                    out var directMarkedCooldown))
+            {
+                cooldownTranslated = directMarkedCooldown;
+            }
+            else if (ActivatedAbilityCooldownTranslator.TryTranslateRawCooldown(duration, out var nestedRawCooldown))
+            {
+                cooldownTranslated = nestedRawCooldown;
+            }
+            else
+            {
+                cooldownTranslated = $"その能力を再び使うには{ActivatedAbilityCooldownTranslator.TranslateCooldownDuration(duration)}待つ必要がある。";
+            }
+
             DynamicTextObservability.RecordTransform("MessageQueue.AddPlayerMessage", Context, message, cooldownTranslated);
             message = MessageFrameTranslator.MarkDirectTranslation(cooldownTranslated);
             return true;

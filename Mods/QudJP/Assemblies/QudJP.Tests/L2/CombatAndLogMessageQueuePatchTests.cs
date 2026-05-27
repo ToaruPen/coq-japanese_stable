@@ -5728,6 +5728,9 @@ public sealed class CombatAndLogMessageQueuePatchTests
     [TestCase(
         "You must wait {{C|You must wait 7 round before using Freezing Ray.}} to use that ability again.",
         "{{C|凍結線を使うには7ラウンド待つ必要がある。}}")]
+    [TestCase(
+        "You must wait {{C|\u0001凍結線を使うには1ラウンド待つ必要がある。}} to use that ability again.",
+        "{{C|凍結線を使うには1ラウンド待つ必要がある。}}")]
     public void AbilityManagerShow_TranslatesCooldownQueuedMessage_WhenOwnerPatched(
         string source,
         string expected)

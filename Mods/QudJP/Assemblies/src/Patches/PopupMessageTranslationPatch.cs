@@ -82,6 +82,11 @@ public static class PopupMessageTranslationPatch
             return source;
         }
 
+        if (PopupTranslatedMessageHandoff.TryGet(source!, out var handedOff))
+        {
+            return handedOff;
+        }
+
         return PopupTranslationPatch.TranslatePopupTextForProducerRoute(source!, Context);
     }
 }

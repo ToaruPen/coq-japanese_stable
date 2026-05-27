@@ -236,6 +236,45 @@ public sealed class StatusScreenPopupTranslationPatchTests
     }
 
     [Test]
+    public void ShowMutationPopup_TranslatesUpgradePromptOnShowYesNoSurface_WhenOwnerPatched()
+    {
+        const string source =
+            "You generate a wall of force.\n\n{{w|This rank}}:\n9 contiguous stationary force fields.\n\n{{w|Next rank}}:\n10 contiguous stationary force fields.\n\nIt will cost {{C|1}} mutation point to increase Force Wall's rank by 1.\nDo you wish to increase this mutation's rank?";
+
+        var translated = TranslateMutationShowYesNoPopupMessage(source);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Does.StartWith("力の壁を生み出し、9マス連続の力場で敵を遮る。"));
+            Assert.That(translated, Does.Contain("{{w|現在ランク}}:"));
+            Assert.That(translated, Does.Contain("{{w|次ランク}}:"));
+            Assert.That(translated, Does.EndWith("力場壁のランクを1上げるには変異ポイントが{{C|1}}ポイント必要だ。\nこの変異のランクを上げますか？"));
+        });
+    }
+
+    [Test]
+    public void ShowMutationPopup_TranslatesShowYesNoSurfaceAfterPossessiveGrammarPatch_WhenOwnerPatched()
+    {
+        const string source =
+            "Your joints stretch much further than usual.\n\n{{w|This rank}}:\n+{{rules|2}} Agility\n{{rules|10%}} chance that Sprint and skills with Agility prerequisites don't go on cooldown after use\n\n{{w|Next rank}}:\n+{{rules|2}} Agility\n{{rules|13%}} chance that Sprint and skills with Agility prerequisites don't go on cooldown after use\n\n{{C|* This mutationの base rank is 1.}}\n\nIt will cost {{C|1}} mutation point to increase 三重関節's rank by 1.\nDo you wish to increase this mutationの rank?";
+
+        var translated = TranslateMutationShowYesNoPopupMessage(
+            source,
+            new DummyCharacterMutation { EntryName = "Triple-jointed", DisplayName = "三重関節", Level = 1 });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Does.Contain("関節が異様に柔らかい。"));
+            Assert.That(translated, Does.Contain("{{w|現在ランク}}:"));
+            Assert.That(translated, Does.Contain("{{w|次ランク}}:"));
+            Assert.That(translated, Does.Contain("{{C|* この変異の基本ランクは1。}}"));
+            Assert.That(translated, Does.EndWith("三重関節のランクを1上げるには変異ポイントが{{C|1}}ポイント必要だ。\nこの変異のランクを上げますか？"));
+            Assert.That(translated, Does.Not.Contain("Your joints"));
+            Assert.That(translated, Does.Not.Contain("mutationの"));
+        });
+    }
+
+    [Test]
     public void ShowMutationPopup_PreservesRankBoostReasonsBeforeUpgradePrompt_WhenOwnerPatched()
     {
         const string source =
@@ -294,6 +333,9 @@ public sealed class StatusScreenPopupTranslationPatchTests
         "{{R|- All your defects' ranks are decreased by 1.}}",
         "{{R|- すべての欠陥ランクが1低下している。}}")]
     [TestCase(
+        "{{R|- All your defectsの ranks are decreased by 1.}}",
+        "{{R|- すべての欠陥ランクが1低下している。}}")]
+    [TestCase(
         "{{G|+ All your Physical mutations' ranks are increased by 2.}}",
         "{{G|+ すべての身体的変異ランクが2上昇している。}}")]
     [TestCase(
@@ -302,6 +344,9 @@ public sealed class StatusScreenPopupTranslationPatchTests
     [TestCase(
         "{{G|+ This mutation's rank is increased by 2 due to your high adrenaline.}}",
         "{{G|+ この変異のランクは高いアドレナリンにより2上昇している。}}")]
+    [TestCase(
+        "{{G|+ This defectの rank is increased by 2 due to your high adrenaline.}}",
+        "{{G|+ この欠陥のランクは高いアドレナリンにより2上昇している。}}")]
     [TestCase(
         "{{G|+ This mutation's rank is increased by 3 due to being rapidly advanced 1 time.}}",
         "{{G|+ この変異のランクは1回の急速成長により3上昇している。}}")]
@@ -528,6 +573,35 @@ public sealed class StatusScreenPopupTranslationPatchTests
         }
     }
 
+    private static string TranslateMutationShowYesNoPopupMessage(string source, DummyCharacterMutation? mutation = null)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShowYesNo(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(
+                    typeof(DummyStatusScreenPopupTarget),
+                    nameof(DummyStatusScreenPopupTarget.ShowMutationPopup),
+                    typeof(DummyGameObject),
+                    typeof(DummyCharacterMutation)));
+
+            DummyStatusScreenPopupTarget.MessageToSend = source;
+            DummyStatusScreenPopupTarget.UseShowYesNoForMutationPopup = true;
+            DummyStatusScreenPopupTarget.ShowMutationPopup(
+                new DummyGameObject(),
+                mutation ?? new DummyCharacterMutation { EntryName = "Force Wall", DisplayName = "Force Wall", Level = 1 });
+
+            return DummyPopupShow.LastShowYesNoMessage ?? string.Empty;
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
     private static (string? intro, IReadOnlyList<string>? options) TranslateMutationPickOption(
         string intro,
         IReadOnlyList<string> options)
@@ -587,6 +661,19 @@ public sealed class StatusScreenPopupTranslationPatchTests
                 typeof(bool),
                 typeof(bool),
                 typeof(bool)),
+            prefix: new HarmonyMethod(RequireMethod(typeof(PopupShowTranslationPatch), nameof(PopupShowTranslationPatch.Prefix))));
+    }
+
+    private static void PatchPopupShowYesNo(Harmony harmony)
+    {
+        harmony.Patch(
+            original: RequireMethod(
+                typeof(DummyPopupShow),
+                nameof(DummyPopupShow.ShowYesNo),
+                typeof(string),
+                typeof(string),
+                typeof(bool),
+                typeof(int)),
             prefix: new HarmonyMethod(RequireMethod(typeof(PopupShowTranslationPatch), nameof(PopupShowTranslationPatch.Prefix))));
     }
 

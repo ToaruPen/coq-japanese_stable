@@ -733,34 +733,64 @@ public static class StatusScreenMutationPopupTranslationPatch
 
     private static string TranslatePossessiveMutationTerm(string term)
     {
-        return term switch
+        return GetMutationTermKind(term) switch
         {
-            "mutation's" or "mutation" => "変異の",
-            "mutations'" or "mutations" => "変異の",
-            "defect's" or "defect" => "欠陥の",
-            "defects'" or "defects" => "欠陥の",
+            MutationTermKind.Mutation => "変異の",
+            MutationTermKind.Defect => "欠陥の",
             _ => term + " ",
         };
     }
 
     private static string TranslatePluralPossessiveMutationTerm(string term)
     {
-        return term switch
+        return GetMutationTermKind(term) switch
         {
-            "mutation's" or "mutations'" or "mutation" or "mutations" => "変異",
-            "defect's" or "defects'" or "defect" or "defects" => "欠陥",
+            MutationTermKind.Mutation => "変異",
+            MutationTermKind.Defect => "欠陥",
             _ => term + " ",
         };
     }
 
     private static string TranslateMutationTerm(string term)
     {
-        return term switch
+        return GetMutationTermKind(term) switch
         {
-            "mutation" or "Mutation" or "mutations" => "変異",
-            "defect" or "Defect" or "defects" => "欠陥",
+            MutationTermKind.Mutation => "変異",
+            MutationTermKind.Defect => "欠陥",
             _ => term,
         };
+    }
+
+    private static MutationTermKind GetMutationTermKind(string term)
+    {
+        var normalized = term.Trim();
+        if (normalized.EndsWith("の", StringComparison.Ordinal))
+        {
+            normalized = normalized.Substring(0, normalized.Length - 1);
+        }
+
+        if (normalized.EndsWith("'s", StringComparison.Ordinal))
+        {
+            normalized = normalized.Substring(0, normalized.Length - 2);
+        }
+        else if (normalized.EndsWith("'", StringComparison.Ordinal))
+        {
+            normalized = normalized.Substring(0, normalized.Length - 1);
+        }
+
+        return normalized.ToUpperInvariant() switch
+        {
+            "MUTATION" or "MUTATIONS" => MutationTermKind.Mutation,
+            "DEFECT" or "DEFECTS" => MutationTermKind.Defect,
+            _ => MutationTermKind.Unknown,
+        };
+    }
+
+    private enum MutationTermKind
+    {
+        Unknown,
+        Mutation,
+        Defect,
     }
 
     private static string TranslateMutationCategory(string category)

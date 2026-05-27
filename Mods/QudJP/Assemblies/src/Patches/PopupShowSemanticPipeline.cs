@@ -169,12 +169,14 @@ internal static class PopupShowSemanticPipeline
                 route,
                 out var translated))
             {
+                PopupTranslatedMessageHandoff.Remember(source, translated);
                 return translated;
             }
         }
 
         if (SifrahPureOwnerPopupTranslationPatch.TryGetPureOwnerBatchPopupCandidateText(source, out var candidateText))
         {
+            PopupTranslatedMessageHandoff.Remember(source, candidateText);
             return candidateText;
         }
 

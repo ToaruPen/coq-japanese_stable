@@ -1560,7 +1560,7 @@ internal static class WorldModsTextTranslator
                 continue;
             }
 
-            parts.Add(part switch
+            var translatedPart = part switch
             {
                 "equipped" => "装備",
                 "implanted" => "埋め込み",
@@ -1568,7 +1568,8 @@ internal static class WorldModsTextTranslator
                 "in use" => "使用",
                 "operational" => "稼働",
                 _ => TranslateTemplateCapture(part),
-            });
+            };
+            parts.Add(NormalizeActivePartCondition(translatedPart));
         }
 
         if (parts.Count == 0)
@@ -1582,6 +1583,21 @@ internal static class WorldModsTextTranslator
         }
 
         return string.Join("・", parts) + "中";
+    }
+
+    private static string NormalizeActivePartCondition(string source)
+    {
+        return source switch
+        {
+            "装備中" => "装備",
+            "埋め込み中" => "埋め込み",
+            "給電" => "通電",
+            "給電中" => "通電",
+            "通電中" => "通電",
+            "使用中" => "使用",
+            "稼働中" => "稼働",
+            _ => source,
+        };
     }
 
     private static string TranslateGasLocation(Match match)
