@@ -150,43 +150,43 @@ public static class CyberneticsDescriptionAssignmentTranslationPatch
                 && TryGetMemberValue(E, "Part", out var part)
                 && part is not null)
             {
-                TranslateMotorizedTreadsPartForTests(part);
+                TranslateMotorizedTreadsPart(part);
                 return;
             }
 
             if (string.Equals(declaringType, "XRL.World.Parts.CyberneticsStasisArena", StringComparison.Ordinal))
             {
-                TranslateStasisArenaEventForTests(E);
+                TranslateStasisArenaEvent(E);
                 return;
             }
 
             if (string.Equals(declaringType, "XRL.World.Parts.CyberneticsOpticalMultiscanner", StringComparison.Ordinal))
             {
-                TranslateOpticalMultiscannerEventForTests(E);
+                TranslateOpticalMultiscannerEvent(E);
                 return;
             }
 
             if (string.Equals(declaringType, "XRL.World.Parts.CyberneticsSingleSkillsoft", StringComparison.Ordinal))
             {
-                TranslateSingleSkillsoftEventForTests(E);
+                TranslateSingleSkillsoftEvent(E);
                 return;
             }
 
             if (string.Equals(declaringType, "XRL.World.Parts.CyberneticsTreeSkillsoft", StringComparison.Ordinal))
             {
-                TranslateTreeSkillsoftEventForTests(E);
+                TranslateTreeSkillsoftEvent(E);
                 return;
             }
 
             if (string.Equals(declaringType, "XRL.World.Parts.CyberneticsSocialCoprocessor", StringComparison.Ordinal))
             {
-                TranslateSocialCoprocessorEventForTests(E);
+                TranslateSocialCoprocessorEvent(E);
                 return;
             }
 
             if (string.Equals(declaringType, "XRL.World.Parts.CyberneticsTechIndexer", StringComparison.Ordinal))
             {
-                TranslateTechIndexerEventForTests(E);
+                TranslateTechIndexerEvent(E);
             }
         }
         catch (Exception ex)
@@ -195,7 +195,7 @@ public static class CyberneticsDescriptionAssignmentTranslationPatch
         }
     }
 
-    internal static void TranslateMotorizedTreadsPartForTests(object? part)
+    internal static void TranslateMotorizedTreadsPart(object? part)
     {
         if (part is null)
         {
@@ -208,7 +208,7 @@ public static class CyberneticsDescriptionAssignmentTranslationPatch
             string.Equals(source, "Lower Body", StringComparison.Ordinal) ? "下半身" : source);
     }
 
-    internal static void TranslateStasisArenaEventForTests(object? eventInstance)
+    internal static void TranslateStasisArenaEvent(object? eventInstance)
     {
         if (eventInstance is null
             || !TryGetStringMemberValue(eventInstance, "Description", out var current)
@@ -235,7 +235,7 @@ public static class CyberneticsDescriptionAssignmentTranslationPatch
         }
     }
 
-    internal static void TranslateOpticalMultiscannerEventForTests(object? eventInstance)
+    internal static void TranslateOpticalMultiscannerEvent(object? eventInstance)
     {
         if (eventInstance is null)
         {
@@ -281,7 +281,7 @@ public static class CyberneticsDescriptionAssignmentTranslationPatch
         }
     }
 
-    internal static void TranslateSingleSkillsoftEventForTests(object? eventInstance)
+    internal static void TranslateSingleSkillsoftEvent(object? eventInstance)
     {
         if (eventInstance is null)
         {
@@ -292,7 +292,7 @@ public static class CyberneticsDescriptionAssignmentTranslationPatch
         TranslateAddedRules(eventInstance, "CyberneticsSingleSkillsoft.Add", TranslateSingleSkillsoftText);
     }
 
-    internal static void TranslateTreeSkillsoftEventForTests(object? eventInstance)
+    internal static void TranslateTreeSkillsoftEvent(object? eventInstance)
     {
         if (eventInstance is null)
         {
@@ -303,7 +303,7 @@ public static class CyberneticsDescriptionAssignmentTranslationPatch
         TranslateAddedRules(eventInstance, "CyberneticsTreeSkillsoft.Add", TranslateTreeSkillsoftText);
     }
 
-    internal static void TranslateSocialCoprocessorEventForTests(object? eventInstance)
+    internal static void TranslateSocialCoprocessorEvent(object? eventInstance)
     {
         if (eventInstance is null)
         {
@@ -313,7 +313,7 @@ public static class CyberneticsDescriptionAssignmentTranslationPatch
         TranslateStringMember(eventInstance, "Description", "CyberneticsSocialCoprocessor.Description", TranslateSocialCoprocessorText);
     }
 
-    internal static void TranslateTechIndexerEventForTests(object? eventInstance)
+    internal static void TranslateTechIndexerEvent(object? eventInstance)
     {
         if (eventInstance is null)
         {

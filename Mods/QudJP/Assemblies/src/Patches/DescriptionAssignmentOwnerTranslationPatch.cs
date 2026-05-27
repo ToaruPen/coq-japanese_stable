@@ -108,14 +108,14 @@ public static class DescriptionAssignmentOwnerTranslationPatch
             }
             if (string.Equals(declaringType, "XRL.World.Parts.Biocapacitor", StringComparison.Ordinal))
             {
-                TranslateBiocapacitorForTests(__instance);
+                TranslateBiocapacitor(__instance);
                 return;
             }
 
             if (string.Equals(declaringType, "XRL.World.Parts.FoliageCamouflage", StringComparison.Ordinal)
                 || string.Equals(declaringType, "XRL.World.Parts.UrbanCamouflage", StringComparison.Ordinal))
             {
-                TranslateCamouflageForTests(__instance);
+                TranslateCamouflage(__instance);
                 return;
             }
 
@@ -123,13 +123,13 @@ public static class DescriptionAssignmentOwnerTranslationPatch
                 && TryGetMemberValue(__instance, "ParentObject", out var parent)
                 && parent is not null)
             {
-                TranslateMechanimistLibrarianForTests(parent);
+                TranslateMechanimistLibrarian(parent);
                 return;
             }
 
             if (string.Equals(declaringType, "XRL.World.GetMovementCapabilitiesEvent", StringComparison.Ordinal))
             {
-                TranslateMovementCapabilityDescriptionsForTests(__instance);
+                TranslateMovementCapabilityDescriptions(__instance);
             }
         }
         catch (Exception ex)
@@ -138,7 +138,7 @@ public static class DescriptionAssignmentOwnerTranslationPatch
         }
     }
 
-    internal static void TranslateBiocapacitorForTests(object? target)
+    internal static void TranslateBiocapacitor(object? target)
     {
         if (target is null)
         {
@@ -149,7 +149,7 @@ public static class DescriptionAssignmentOwnerTranslationPatch
             string.Equals(source, "biocapacitor", StringComparison.Ordinal) ? "生体コンデンサー" : source);
     }
 
-    internal static void TranslateCamouflageForTests(object? target)
+    internal static void TranslateCamouflage(object? target)
     {
         if (target is null)
         {
@@ -169,7 +169,7 @@ public static class DescriptionAssignmentOwnerTranslationPatch
         });
     }
 
-    internal static void TranslateMechanimistLibrarianForTests(object? target)
+    internal static void TranslateMechanimistLibrarian(object? target)
     {
         if (target is null)
         {
@@ -196,7 +196,7 @@ public static class DescriptionAssignmentOwnerTranslationPatch
         }
     }
 
-    internal static void TranslateWingsPartForTests(object? target)
+    internal static void TranslateWingsPart(object? target)
     {
         if (target is null)
         {
@@ -207,7 +207,7 @@ public static class DescriptionAssignmentOwnerTranslationPatch
             string.Equals(source, "Worn around Wings", StringComparison.Ordinal) ? "翼の周囲に着用する" : source);
     }
 
-    internal static void TranslateBannerDescriptionForTests(object? banner, object? eventInstance)
+    internal static void TranslateBannerDescription(object? banner, object? eventInstance)
     {
         string? source = null;
         if (banner is not null && TryGetStringMemberValue(banner, "Description", out var current))
@@ -242,7 +242,7 @@ public static class DescriptionAssignmentOwnerTranslationPatch
         }
     }
 
-    internal static void TranslateMovementCapabilityDescriptionsForTests(object? target)
+    internal static void TranslateMovementCapabilityDescriptions(object? target)
     {
         if (target is null
             || !TryGetMemberValue(target, "Descriptions", out var raw)

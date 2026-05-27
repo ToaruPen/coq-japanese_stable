@@ -54,7 +54,7 @@ public sealed class CharGenMenuOptionOwnerTranslationPatchTests
             new() { Description = "Save Build To Library", InputCommand = "CmdSaveBuildToLibrary", KeyDescription = "None" },
         };
 
-        var translated = CharGenMenuOptionOwnerTranslationPatch.TranslateMenuOptionsForTests(options).Cast<DummyCharGenMenuOption>().ToList();
+        var translated = CharGenMenuOptionOwnerTranslationPatch.TranslateMenuOptions(options).Cast<DummyCharGenMenuOption>().ToList();
 
         Assert.Multiple(() =>
         {
@@ -78,7 +78,7 @@ public sealed class CharGenMenuOptionOwnerTranslationPatchTests
             new() { Description = "Choose Variant", InputCommand = "CmdChargenMutationVariant" },
         };
 
-        var translated = CharGenMenuOptionOwnerTranslationPatch.TranslateMenuOptionsForTests(options).Cast<DummyCharGenMenuOption>().ToList();
+        var translated = CharGenMenuOptionOwnerTranslationPatch.TranslateMenuOptions(options).Cast<DummyCharGenMenuOption>().ToList();
 
         Assert.Multiple(() =>
         {
@@ -97,7 +97,7 @@ public sealed class CharGenMenuOptionOwnerTranslationPatchTests
             new() { Description = "{{y|Points Remaining: 4}}", InputCommand = string.Empty, KeyDescription = null },
         };
 
-        var translated = CharGenMenuOptionOwnerTranslationPatch.TranslateMenuOptionsForTests(options).Cast<DummyCharGenMenuOption>().ToList();
+        var translated = CharGenMenuOptionOwnerTranslationPatch.TranslateMenuOptions(options).Cast<DummyCharGenMenuOption>().ToList();
 
         Assert.Multiple(() =>
         {
@@ -117,7 +117,7 @@ public sealed class CharGenMenuOptionOwnerTranslationPatchTests
             new() { Title = "Add a new build code", Description = string.Empty },
         };
 
-        var translated = CharGenMenuOptionOwnerTranslationPatch.TranslateChoiceTitlesForTests(selections).Cast<DummyChoiceWithColorIcon>().ToList();
+        var translated = CharGenMenuOptionOwnerTranslationPatch.TranslateChoiceTitles(selections).Cast<DummyChoiceWithColorIcon>().ToList();
 
         Assert.Multiple(() =>
         {
@@ -143,7 +143,7 @@ public sealed class CharGenMenuOptionOwnerTranslationPatchTests
             },
         };
 
-        var translated = CharGenMenuOptionOwnerTranslationPatch.TranslateChoiceTitlesAndDescriptionsForTests(selections).Cast<DummyChoiceWithColorIcon>().ToList();
+        var translated = CharGenMenuOptionOwnerTranslationPatch.TranslateChoiceTitlesAndDescriptions(selections).Cast<DummyChoiceWithColorIcon>().ToList();
 
         Assert.Multiple(() =>
         {
@@ -161,7 +161,7 @@ public sealed class CharGenMenuOptionOwnerTranslationPatchTests
             new() { Title = "unused", Description = "Albino ape" },
         };
 
-        var translated = CharGenMenuOptionOwnerTranslationPatch.TranslateMenuOptionsForTests(pets).Cast<DummyChoiceWithColorIcon>().ToList();
+        var translated = CharGenMenuOptionOwnerTranslationPatch.TranslateMenuOptions(pets).Cast<DummyChoiceWithColorIcon>().ToList();
 
         Assert.Multiple(() =>
         {
@@ -182,7 +182,7 @@ public sealed class CharGenMenuOptionOwnerTranslationPatchTests
             new() { Description = "{{y|Export Code to Clipboard}}" },
         };
 
-        var translated = CharGenMenuOptionOwnerTranslationPatch.TranslateMenuOptionsForTests(options).Cast<DummyCharGenMenuOption>().ToList();
+        var translated = CharGenMenuOptionOwnerTranslationPatch.TranslateMenuOptions(options).Cast<DummyCharGenMenuOption>().ToList();
 
         Assert.Multiple(() =>
         {
@@ -202,7 +202,7 @@ public sealed class CharGenMenuOptionOwnerTranslationPatchTests
             new() { Description = "Options", InputCommand = "CmdChargenItemOptions", KeyDescription = "O" },
         };
 
-        var translated = CharGenMenuOptionOwnerTranslationPatch.TranslateMenuOptionsForTests(options).Cast<DummyCharGenMenuOption>().ToList();
+        var translated = CharGenMenuOptionOwnerTranslationPatch.TranslateMenuOptions(options).Cast<DummyCharGenMenuOption>().ToList();
 
         Assert.Multiple(() =>
         {
@@ -221,7 +221,7 @@ public sealed class CharGenMenuOptionOwnerTranslationPatchTests
             new() { Description = "[Debug] Quickstart", InputCommand = "CmdDebugQuickstart", KeyDescription = "Q" },
         };
 
-        var translated = CharGenMenuOptionOwnerTranslationPatch.TranslateMenuOptionsForTests(options).Cast<DummyCharGenMenuOption>().ToList();
+        var translated = CharGenMenuOptionOwnerTranslationPatch.TranslateMenuOptions(options).Cast<DummyCharGenMenuOption>().ToList();
 
         Assert.Multiple(() =>
         {

@@ -31,7 +31,7 @@ public sealed class DescriptionAssignmentOwnerTranslationPatchTests
     {
         var target = new DummyDescriptionTarget { Description = "biocapacitor" };
 
-        DescriptionAssignmentOwnerTranslationPatch.TranslateBiocapacitorForTests(target);
+        DescriptionAssignmentOwnerTranslationPatch.TranslateBiocapacitor(target);
 
         Assert.That(target.Description, Is.EqualTo("生体コンデンサー"));
     }
@@ -42,8 +42,8 @@ public sealed class DescriptionAssignmentOwnerTranslationPatchTests
         var unknown = new DummyDescriptionTarget { Description = "capacitor" };
         var marker = new DummyDescriptionTarget { Description = "\u0001biocapacitor" };
 
-        DescriptionAssignmentOwnerTranslationPatch.TranslateBiocapacitorForTests(unknown);
-        DescriptionAssignmentOwnerTranslationPatch.TranslateBiocapacitorForTests(marker);
+        DescriptionAssignmentOwnerTranslationPatch.TranslateBiocapacitor(unknown);
+        DescriptionAssignmentOwnerTranslationPatch.TranslateBiocapacitor(marker);
 
         Assert.Multiple(() =>
         {
@@ -66,7 +66,7 @@ public sealed class DescriptionAssignmentOwnerTranslationPatchTests
             ],
         };
 
-        DescriptionAssignmentOwnerTranslationPatch.TranslateMovementCapabilityDescriptionsForTests(target);
+        DescriptionAssignmentOwnerTranslationPatch.TranslateMovementCapabilityDescriptions(target);
 
         Assert.That(
             target.Descriptions,
@@ -91,7 +91,7 @@ public sealed class DescriptionAssignmentOwnerTranslationPatchTests
             ],
         };
 
-        DescriptionAssignmentOwnerTranslationPatch.TranslateMovementCapabilityDescriptionsForTests(target);
+        DescriptionAssignmentOwnerTranslationPatch.TranslateMovementCapabilityDescriptions(target);
 
         Assert.That(target.Descriptions, Is.EqualTo(new[] { "Charge [disabled]", "Sprint [toggled off]" }));
     }
@@ -106,7 +106,7 @@ public sealed class DescriptionAssignmentOwnerTranslationPatchTests
     {
         var target = new DummyDescriptionTarget { Description = source };
 
-        DescriptionAssignmentOwnerTranslationPatch.TranslateCamouflageForTests(target);
+        DescriptionAssignmentOwnerTranslationPatch.TranslateCamouflage(target);
 
         Assert.That(target.Description, Is.EqualTo(expected));
     }
@@ -117,8 +117,8 @@ public sealed class DescriptionAssignmentOwnerTranslationPatchTests
         var unknown = new DummyDescriptionTarget { Description = "Camouflage: unchanged." };
         var marker = new DummyDescriptionTarget { Description = "\u0001Urban camouflage: This item grants the wearer +=level= DV near trash and furniture." };
 
-        DescriptionAssignmentOwnerTranslationPatch.TranslateCamouflageForTests(unknown);
-        DescriptionAssignmentOwnerTranslationPatch.TranslateCamouflageForTests(marker);
+        DescriptionAssignmentOwnerTranslationPatch.TranslateCamouflage(unknown);
+        DescriptionAssignmentOwnerTranslationPatch.TranslateCamouflage(marker);
 
         Assert.Multiple(() =>
         {
@@ -143,7 +143,7 @@ public sealed class DescriptionAssignmentOwnerTranslationPatchTests
             },
         };
 
-        DescriptionAssignmentOwnerTranslationPatch.TranslateMechanimistLibrarianForTests(target);
+        DescriptionAssignmentOwnerTranslationPatch.TranslateMechanimistLibrarian(target);
 
         Assert.Multiple(() =>
         {
@@ -160,7 +160,7 @@ public sealed class DescriptionAssignmentOwnerTranslationPatchTests
     {
         var target = new DummyDescriptionTarget { Description = "Worn around Wings" };
 
-        DescriptionAssignmentOwnerTranslationPatch.TranslateWingsPartForTests(target);
+        DescriptionAssignmentOwnerTranslationPatch.TranslateWingsPart(target);
 
         Assert.That(target.Description, Is.EqualTo("翼の周囲に着用する"));
     }
@@ -177,7 +177,7 @@ public sealed class DescriptionAssignmentOwnerTranslationPatchTests
             Postfix = new StringBuilder(banner.Description),
         };
 
-        DescriptionAssignmentOwnerTranslationPatch.TranslateBannerDescriptionForTests(banner, evt);
+        DescriptionAssignmentOwnerTranslationPatch.TranslateBannerDescription(banner, evt);
 
         Assert.Multiple(() =>
         {
@@ -197,9 +197,9 @@ public sealed class DescriptionAssignmentOwnerTranslationPatchTests
             Postfix = new StringBuilder("Unknown banner rule."),
         };
 
-        DescriptionAssignmentOwnerTranslationPatch.TranslateWingsPartForTests(wingsUnknown);
-        DescriptionAssignmentOwnerTranslationPatch.TranslateWingsPartForTests(wingsMarker);
-        DescriptionAssignmentOwnerTranslationPatch.TranslateBannerDescriptionForTests(banner, evt);
+        DescriptionAssignmentOwnerTranslationPatch.TranslateWingsPart(wingsUnknown);
+        DescriptionAssignmentOwnerTranslationPatch.TranslateWingsPart(wingsMarker);
+        DescriptionAssignmentOwnerTranslationPatch.TranslateBannerDescription(banner, evt);
 
         Assert.Multiple(() =>
         {

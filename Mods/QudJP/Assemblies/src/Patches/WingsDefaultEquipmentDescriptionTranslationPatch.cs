@@ -35,7 +35,7 @@ public static class WingsDefaultEquipmentDescriptionTranslationPatch
         try
         {
             var part = ResolveWingsBodyPart(__instance, body);
-            DescriptionAssignmentOwnerTranslationPatch.TranslateWingsPartForTests(part);
+            DescriptionAssignmentOwnerTranslationPatch.TranslateWingsPart(part);
         }
         catch (Exception ex)
         {

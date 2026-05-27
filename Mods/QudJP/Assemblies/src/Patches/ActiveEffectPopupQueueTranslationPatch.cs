@@ -28,152 +28,47 @@ public static class ActiveEffectPopupQueueTranslationPatch
             yield break;
         }
 
-        foreach (var method in ResolveTarget("XRL.World.Effects.IrisdualCallow", "Apply", [gameObjectType]))
+        var gameObjectParameters = new[] { gameObjectType };
+        var eventParameters = new[] { eventType };
+        var targetSpecs = new (string TypeName, string MethodName, Type[] Parameters)[]
         {
-            yield return method;
-        }
+            ("XRL.World.Effects.IrisdualCallow", "Apply", gameObjectParameters),
+            ("XRL.World.Effects.CookingDomainTongue_ThreeTongues_ProceduralCookingTriggeredAction", "Apply", gameObjectParameters),
+            ("XRL.World.Effects.Hobbled", "Apply", gameObjectParameters),
+            ("XRL.World.Effects.Terrified", "Apply", gameObjectParameters),
+            ("XRL.World.Effects.GeometricHeal", "Apply", gameObjectParameters),
+            ("XRL.World.Effects.Trance", "Apply", gameObjectParameters),
+            ("XRL.World.Effects.StingerPoisoned", "Apply", gameObjectParameters),
+            ("XRL.World.Effects.FuriouslyConfused", "Apply", gameObjectParameters),
+            ("XRL.World.Effects.Confused", "Apply", gameObjectParameters),
+            ("XRL.World.Effects.Poisoned", "Apply", gameObjectParameters),
+            ("XRL.World.Effects.PhasePoisoned", "Apply", gameObjectParameters),
+            ("XRL.World.Effects.Healing", "Apply", gameObjectParameters),
+            ("XRL.World.Effects.Dazed", "Apply", gameObjectParameters),
+            ("XRL.World.Effects.Paralyzed", "Apply", gameObjectParameters),
+            ("XRL.World.Effects.Poisoned", "FireEvent", eventParameters),
+            ("XRL.World.Effects.PhasePoisoned", "FireEvent", eventParameters),
+            ("XRL.World.Effects.AshPoison", "FireEvent", eventParameters),
+            ("XRL.World.Effects.BasiliskPoison", "FireEvent", eventParameters),
+            ("XRL.World.Effects.Cripple", "FireEvent", eventParameters),
+            ("XRL.World.Effects.PoisonGasPoison", "FireEvent", eventParameters),
+            ("XRL.World.Effects.Luminous", "Apply", gameObjectParameters),
+            ("XRL.World.Effects.Meditating", "Apply", gameObjectParameters),
+            ("XRL.World.Effects.Scintillating", "Apply", gameObjectParameters),
+            ("XRL.World.Effects.Suppressed", "Apply", gameObjectParameters),
+            ("XRL.World.Effects.ShadeOil_Tonic", "Apply", gameObjectParameters),
+            ("XRL.World.Effects.Asleep", "Remove", gameObjectParameters),
+            ("XRL.World.Effects.ShadeOil_Tonic", "FireEvent", eventParameters),
+            ("XRL.World.Effects.BrainBrineCurse", "FireEvent", eventParameters),
+            ("XRL.World.Effects.SphynxSalt_Tonic", "Apply", gameObjectParameters),
+        };
 
-        foreach (var method in ResolveTarget(
-                     "XRL.World.Effects.CookingDomainTongue_ThreeTongues_ProceduralCookingTriggeredAction",
-                     "Apply",
-                     [gameObjectType]))
+        foreach (var targetSpec in targetSpecs)
         {
-            yield return method;
-        }
-
-        foreach (var method in ResolveTarget("XRL.World.Effects.Hobbled", "Apply", [gameObjectType]))
-        {
-            yield return method;
-        }
-
-        foreach (var method in ResolveTarget("XRL.World.Effects.Terrified", "Apply", [gameObjectType]))
-        {
-            yield return method;
-        }
-
-        foreach (var method in ResolveTarget("XRL.World.Effects.GeometricHeal", "Apply", [gameObjectType]))
-        {
-            yield return method;
-        }
-
-        foreach (var method in ResolveTarget("XRL.World.Effects.Trance", "Apply", [gameObjectType]))
-        {
-            yield return method;
-        }
-
-        foreach (var method in ResolveTarget("XRL.World.Effects.StingerPoisoned", "Apply", [gameObjectType]))
-        {
-            yield return method;
-        }
-
-        foreach (var method in ResolveTarget("XRL.World.Effects.FuriouslyConfused", "Apply", [gameObjectType]))
-        {
-            yield return method;
-        }
-
-        foreach (var method in ResolveTarget("XRL.World.Effects.Confused", "Apply", [gameObjectType]))
-        {
-            yield return method;
-        }
-
-        foreach (var method in ResolveTarget("XRL.World.Effects.Poisoned", "Apply", [gameObjectType]))
-        {
-            yield return method;
-        }
-
-        foreach (var method in ResolveTarget("XRL.World.Effects.PhasePoisoned", "Apply", [gameObjectType]))
-        {
-            yield return method;
-        }
-
-        foreach (var method in ResolveTarget("XRL.World.Effects.Healing", "Apply", [gameObjectType]))
-        {
-            yield return method;
-        }
-
-        foreach (var method in ResolveTarget("XRL.World.Effects.Dazed", "Apply", [gameObjectType]))
-        {
-            yield return method;
-        }
-
-        foreach (var method in ResolveTarget("XRL.World.Effects.Paralyzed", "Apply", [gameObjectType]))
-        {
-            yield return method;
-        }
-
-        foreach (var method in ResolveTarget("XRL.World.Effects.Poisoned", "FireEvent", [eventType]))
-        {
-            yield return method;
-        }
-
-        foreach (var method in ResolveTarget("XRL.World.Effects.PhasePoisoned", "FireEvent", [eventType]))
-        {
-            yield return method;
-        }
-
-        foreach (var method in ResolveTarget("XRL.World.Effects.AshPoison", "FireEvent", [eventType]))
-        {
-            yield return method;
-        }
-
-        foreach (var method in ResolveTarget("XRL.World.Effects.BasiliskPoison", "FireEvent", [eventType]))
-        {
-            yield return method;
-        }
-
-        foreach (var method in ResolveTarget("XRL.World.Effects.Cripple", "FireEvent", [eventType]))
-        {
-            yield return method;
-        }
-
-        foreach (var method in ResolveTarget("XRL.World.Effects.PoisonGasPoison", "FireEvent", [eventType]))
-        {
-            yield return method;
-        }
-
-        foreach (var method in ResolveTarget("XRL.World.Effects.Luminous", "Apply", [gameObjectType]))
-        {
-            yield return method;
-        }
-
-        foreach (var method in ResolveTarget("XRL.World.Effects.Meditating", "Apply", [gameObjectType]))
-        {
-            yield return method;
-        }
-
-        foreach (var method in ResolveTarget("XRL.World.Effects.Scintillating", "Apply", [gameObjectType]))
-        {
-            yield return method;
-        }
-
-        foreach (var method in ResolveTarget("XRL.World.Effects.Suppressed", "Apply", [gameObjectType]))
-        {
-            yield return method;
-        }
-
-        foreach (var method in ResolveTarget("XRL.World.Effects.ShadeOil_Tonic", "Apply", [gameObjectType]))
-        {
-            yield return method;
-        }
-
-        foreach (var method in ResolveTarget("XRL.World.Effects.Asleep", "Remove", [gameObjectType]))
-        {
-            yield return method;
-        }
-
-        foreach (var method in ResolveTarget("XRL.World.Effects.ShadeOil_Tonic", "FireEvent", [eventType]))
-        {
-            yield return method;
-        }
-
-        foreach (var method in ResolveTarget("XRL.World.Effects.BrainBrineCurse", "FireEvent", [eventType]))
-        {
-            yield return method;
-        }
-
-        foreach (var method in ResolveTarget("XRL.World.Effects.SphynxSalt_Tonic", "Apply", [gameObjectType]))
-        {
-            yield return method;
+            foreach (var method in ResolveTarget(targetSpec.TypeName, targetSpec.MethodName, targetSpec.Parameters))
+            {
+                yield return method;
+            }
         }
     }
 

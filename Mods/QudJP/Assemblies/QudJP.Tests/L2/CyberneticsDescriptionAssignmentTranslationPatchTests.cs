@@ -48,7 +48,7 @@ public sealed class CyberneticsDescriptionAssignmentTranslationPatchTests
             Manager = "MotorizedTreadsChanges",
         };
 
-        CyberneticsDescriptionAssignmentTranslationPatch.TranslateMotorizedTreadsPartForTests(part);
+        CyberneticsDescriptionAssignmentTranslationPatch.TranslateMotorizedTreadsPart(part);
 
         Assert.Multiple(() =>
         {
@@ -67,7 +67,7 @@ public sealed class CyberneticsDescriptionAssignmentTranslationPatchTests
             Description = "\u0001Lower Body",
         };
 
-        CyberneticsDescriptionAssignmentTranslationPatch.TranslateMotorizedTreadsPartForTests(part);
+        CyberneticsDescriptionAssignmentTranslationPatch.TranslateMotorizedTreadsPart(part);
 
         Assert.Multiple(() =>
         {
@@ -84,7 +84,7 @@ public sealed class CyberneticsDescriptionAssignmentTranslationPatchTests
             Description = "Activated. Cooldown 50.\nPick an exclusion zone of up to 3 squares; the rest of the zone, other than the square you are in, is enveloped in stasis fields that last 10-20 turns.\nCompute power on the local lattice increases this implant's effectiveness.",
         };
 
-        CyberneticsDescriptionAssignmentTranslationPatch.TranslateStasisArenaEventForTests(evt);
+        CyberneticsDescriptionAssignmentTranslationPatch.TranslateStasisArenaEvent(evt);
 
         Assert.That(
             evt.Description,
@@ -99,7 +99,7 @@ public sealed class CyberneticsDescriptionAssignmentTranslationPatchTests
             Description = "Activated. Cooldown 25.\nPick an exclusion zone of up to 1 square; the rest of the zone, other than the square you are in, is enveloped in stasis fields that last 8 turns.\nCompute power on the local lattice increases this implant's effectiveness.",
         };
 
-        CyberneticsDescriptionAssignmentTranslationPatch.TranslateStasisArenaEventForTests(evt);
+        CyberneticsDescriptionAssignmentTranslationPatch.TranslateStasisArenaEvent(evt);
 
         Assert.That(
             evt.Description,
@@ -112,8 +112,8 @@ public sealed class CyberneticsDescriptionAssignmentTranslationPatchTests
         var unknown = new DummyCyberneticsDescriptionEvent { Description = "Unknown cybernetics behavior." };
         var marker = new DummyCyberneticsDescriptionEvent { Description = "\u0001Activated. Cooldown 25." };
 
-        CyberneticsDescriptionAssignmentTranslationPatch.TranslateStasisArenaEventForTests(unknown);
-        CyberneticsDescriptionAssignmentTranslationPatch.TranslateStasisArenaEventForTests(marker);
+        CyberneticsDescriptionAssignmentTranslationPatch.TranslateStasisArenaEvent(unknown);
+        CyberneticsDescriptionAssignmentTranslationPatch.TranslateStasisArenaEvent(marker);
 
         Assert.Multiple(() =>
         {
@@ -135,7 +135,7 @@ public sealed class CyberneticsDescriptionAssignmentTranslationPatchTests
             ],
         };
 
-        CyberneticsDescriptionAssignmentTranslationPatch.TranslateOpticalMultiscannerEventForTests(evt);
+        CyberneticsDescriptionAssignmentTranslationPatch.TranslateOpticalMultiscannerEvent(evt);
 
         Assert.Multiple(() =>
         {
@@ -166,8 +166,8 @@ public sealed class CyberneticsDescriptionAssignmentTranslationPatchTests
             ToAdd = ["\u0001Adds a bonus turn, and is otherwise useful, in most tinkering Sifrah games, and is useful in many social Sifrah games."],
         };
 
-        CyberneticsDescriptionAssignmentTranslationPatch.TranslateOpticalMultiscannerEventForTests(unknown);
-        CyberneticsDescriptionAssignmentTranslationPatch.TranslateOpticalMultiscannerEventForTests(marker);
+        CyberneticsDescriptionAssignmentTranslationPatch.TranslateOpticalMultiscannerEvent(unknown);
+        CyberneticsDescriptionAssignmentTranslationPatch.TranslateOpticalMultiscannerEvent(marker);
 
         Assert.Multiple(() =>
         {
@@ -191,7 +191,7 @@ public sealed class CyberneticsDescriptionAssignmentTranslationPatchTests
             ToAdd = ["You gain the skill Proselytize."],
         };
 
-        CyberneticsDescriptionAssignmentTranslationPatch.TranslateSingleSkillsoftEventForTests(evt);
+        CyberneticsDescriptionAssignmentTranslationPatch.TranslateSingleSkillsoftEvent(evt);
 
         Assert.Multiple(() =>
         {
@@ -211,7 +211,7 @@ public sealed class CyberneticsDescriptionAssignmentTranslationPatchTests
             ToAdd = ["You gain access to the Cudgel skill tree."],
         };
 
-        CyberneticsDescriptionAssignmentTranslationPatch.TranslateTreeSkillsoftEventForTests(evt);
+        CyberneticsDescriptionAssignmentTranslationPatch.TranslateTreeSkillsoftEvent(evt);
 
         Assert.Multiple(() =>
         {
@@ -228,7 +228,7 @@ public sealed class CyberneticsDescriptionAssignmentTranslationPatchTests
             Description = "Whenever you perform the water ritual with a new creature, you gain an extra 125 reputation. If you install this implant after you treat with a creature for the first time, you gain 125 reputation the next time you treat with them.\nReputation costs in the water ritual are reduced by 20%.\nYou may Proselytize 1 additional creature.\nCompute power on the local lattice increases this implant's effectiveness.",
         };
 
-        CyberneticsDescriptionAssignmentTranslationPatch.TranslateSocialCoprocessorEventForTests(evt);
+        CyberneticsDescriptionAssignmentTranslationPatch.TranslateSocialCoprocessorEvent(evt);
 
         Assert.That(
             evt.Description,
@@ -244,7 +244,7 @@ public sealed class CyberneticsDescriptionAssignmentTranslationPatchTests
             ToAdd = ["Adds a bonus turn, and is otherwise useful, in many tinkering Sifrah games, and is useful in some social Sifrah games involving robots."],
         };
 
-        CyberneticsDescriptionAssignmentTranslationPatch.TranslateTechIndexerEventForTests(evt);
+        CyberneticsDescriptionAssignmentTranslationPatch.TranslateTechIndexerEvent(evt);
 
         Assert.Multiple(() =>
         {
@@ -273,10 +273,10 @@ public sealed class CyberneticsDescriptionAssignmentTranslationPatchTests
             ToAdd = ["Unknown Sifrah behavior."],
         };
 
-        CyberneticsDescriptionAssignmentTranslationPatch.TranslateSingleSkillsoftEventForTests(singleSkillsoftMarker);
-        CyberneticsDescriptionAssignmentTranslationPatch.TranslateTreeSkillsoftEventForTests(treeSkillsoftMarker);
-        CyberneticsDescriptionAssignmentTranslationPatch.TranslateSocialCoprocessorEventForTests(socialUnknown);
-        CyberneticsDescriptionAssignmentTranslationPatch.TranslateTechIndexerEventForTests(techUnknown);
+        CyberneticsDescriptionAssignmentTranslationPatch.TranslateSingleSkillsoftEvent(singleSkillsoftMarker);
+        CyberneticsDescriptionAssignmentTranslationPatch.TranslateTreeSkillsoftEvent(treeSkillsoftMarker);
+        CyberneticsDescriptionAssignmentTranslationPatch.TranslateSocialCoprocessorEvent(socialUnknown);
+        CyberneticsDescriptionAssignmentTranslationPatch.TranslateTechIndexerEvent(techUnknown);
 
         Assert.Multiple(() =>
         {

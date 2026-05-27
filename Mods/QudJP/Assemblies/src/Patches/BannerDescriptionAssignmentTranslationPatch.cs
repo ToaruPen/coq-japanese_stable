@@ -34,7 +34,7 @@ public static class BannerDescriptionAssignmentTranslationPatch
     {
         try
         {
-            DescriptionAssignmentOwnerTranslationPatch.TranslateBannerDescriptionForTests(__instance, E);
+            DescriptionAssignmentOwnerTranslationPatch.TranslateBannerDescription(__instance, E);
         }
         catch (Exception ex)
         {

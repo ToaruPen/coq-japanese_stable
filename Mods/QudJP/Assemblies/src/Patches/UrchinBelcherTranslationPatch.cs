@@ -34,7 +34,7 @@ public static class UrchinBelcherTranslationPatch
     {
         try
         {
-            TranslateForTests(__instance);
+            Translate(__instance);
         }
         catch (Exception ex)
         {
@@ -42,7 +42,7 @@ public static class UrchinBelcherTranslationPatch
         }
     }
 
-    internal static void TranslateForTests(object? instance)
+    internal static void Translate(object? instance)
     {
         if (instance is null)
         {

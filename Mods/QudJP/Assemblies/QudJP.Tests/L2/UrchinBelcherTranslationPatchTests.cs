@@ -19,7 +19,7 @@ public sealed class UrchinBelcherTranslationPatchTests
             CommandDescription = "You belch forth various urchins.",
         };
 
-        UrchinBelcherTranslationPatch.TranslateForTests(target);
+        UrchinBelcherTranslationPatch.Translate(target);
 
         Assert.Multiple(() =>
         {
@@ -41,7 +41,7 @@ public sealed class UrchinBelcherTranslationPatchTests
             CommandDescription = "\u0001You belch forth various urchins.",
         };
 
-        UrchinBelcherTranslationPatch.TranslateForTests(target);
+        UrchinBelcherTranslationPatch.Translate(target);
 
         Assert.Multiple(() =>
         {

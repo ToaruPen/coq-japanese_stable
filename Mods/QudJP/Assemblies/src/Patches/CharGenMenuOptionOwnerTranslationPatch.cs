@@ -75,11 +75,11 @@ public static class CharGenMenuOptionOwnerTranslationPatch
 
             if (string.Equals(__originalMethod.Name, "GetSelections", StringComparison.Ordinal))
             {
-                __result = TranslateChoiceTitlesAndDescriptionsForTests(__result);
+                __result = TranslateChoiceTitlesAndDescriptions(__result);
                 return;
             }
 
-            __result = TranslateMenuOptionsForTests(__result);
+            __result = TranslateMenuOptions(__result);
         }
         catch (Exception ex)
         {
@@ -87,7 +87,7 @@ public static class CharGenMenuOptionOwnerTranslationPatch
         }
     }
 
-    internal static IEnumerable TranslateMenuOptionsForTests(IEnumerable values)
+    internal static IEnumerable TranslateMenuOptions(IEnumerable values)
     {
         return CharGenProducerTranslationHelpers.MaterializeTranslatedEnumerable(
             values,
@@ -96,7 +96,7 @@ public static class CharGenMenuOptionOwnerTranslationPatch
             TranslateOwnerText);
     }
 
-    internal static IEnumerable TranslateChoiceTitlesForTests(IEnumerable values)
+    internal static IEnumerable TranslateChoiceTitles(IEnumerable values)
     {
         return CharGenProducerTranslationHelpers.MaterializeTranslatedEnumerable(
             values,
@@ -105,9 +105,9 @@ public static class CharGenMenuOptionOwnerTranslationPatch
             TranslateOwnerText);
     }
 
-    internal static IEnumerable TranslateChoiceTitlesAndDescriptionsForTests(IEnumerable values)
+    internal static IEnumerable TranslateChoiceTitlesAndDescriptions(IEnumerable values)
     {
-        var translatedTitles = TranslateChoiceTitlesForTests(values);
+        var translatedTitles = TranslateChoiceTitles(values);
         return CharGenProducerTranslationHelpers.MaterializeTranslatedEnumerable(
             translatedTitles,
             "Description",
