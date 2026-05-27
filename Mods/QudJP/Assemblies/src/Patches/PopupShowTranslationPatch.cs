@@ -186,6 +186,7 @@ public static class PopupShowTranslationPatch
     {
         try
         {
+            PopupTranslatedMessageHandoff.EnterScope();
             if (string.IsNullOrEmpty(__0))
             {
                 return;
@@ -212,6 +213,8 @@ public static class PopupShowTranslationPatch
             {
                 pendingDirectMarkerWrapperDepth--;
             }
+
+            PopupTranslatedMessageHandoff.ExitCurrentScope();
         }
         catch (Exception ex)
         {

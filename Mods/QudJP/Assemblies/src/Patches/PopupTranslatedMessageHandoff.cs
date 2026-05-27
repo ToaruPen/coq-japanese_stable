@@ -11,11 +11,71 @@ internal static class PopupTranslatedMessageHandoff
     [ThreadStatic]
     private static List<Entry>? pendingEntries;
 
+    [ThreadStatic]
+    private static List<int>? activeScopes;
+
+    [ThreadStatic]
+    private static int nextScopeId;
+
+    internal static void EnterScope()
+    {
+        EnterScope(out _);
+    }
+
+    internal static void EnterScope(out int scopeId)
+    {
+        scopeId = ++nextScopeId;
+        activeScopes ??= [];
+        activeScopes.Add(scopeId);
+    }
+
+    internal static void ExitCurrentScope()
+    {
+        var scopeId = GetCurrentScopeId();
+        if (scopeId != 0)
+        {
+            ExitScope(scopeId);
+        }
+    }
+
+    internal static void ExitScope(int scopeId)
+    {
+        RemovePendingEntriesForScope(scopeId);
+
+        var scopes = activeScopes;
+        if (scopes is null)
+        {
+            return;
+        }
+
+        for (var index = scopes.Count - 1; index >= 0; index--)
+        {
+            if (scopes[index] != scopeId)
+            {
+                continue;
+            }
+
+            scopes.RemoveAt(index);
+            break;
+        }
+
+        if (scopes.Count == 0)
+        {
+            activeScopes = null;
+        }
+    }
+
     internal static void Remember(string source, string translated)
     {
         if (string.IsNullOrEmpty(source)
             || string.IsNullOrEmpty(translated)
             || string.Equals(source, translated, StringComparison.Ordinal))
+        {
+            return;
+        }
+
+        var scopeId = GetCurrentScopeId();
+        if (scopeId == 0)
         {
             return;
         }
@@ -27,7 +87,7 @@ internal static class PopupTranslatedMessageHandoff
         }
 
         pendingEntries ??= [];
-        pendingEntries.Add(new Entry(key.Visible, key.ColorSignature, translated));
+        pendingEntries.Add(new Entry(scopeId, key.Visible, key.ColorSignature, translated));
         if (pendingEntries.Count > MaxPendingEntries)
         {
             pendingEntries.RemoveAt(0);
@@ -43,6 +103,12 @@ internal static class PopupTranslatedMessageHandoff
         }
 
         var key = CreateKey(source);
+        var scopeId = GetCurrentScopeId();
+        if (scopeId == 0)
+        {
+            return false;
+        }
+
         var entries = pendingEntries;
         if (entries is null)
         {
@@ -52,7 +118,8 @@ internal static class PopupTranslatedMessageHandoff
         for (var index = entries.Count - 1; index >= 0; index--)
         {
             var entry = entries[index];
-            if (!string.Equals(entry.Visible, key.Visible, StringComparison.Ordinal)
+            if (entry.ScopeId != scopeId
+                || !string.Equals(entry.Visible, key.Visible, StringComparison.Ordinal)
                 || !string.Equals(entry.ColorSignature, key.ColorSignature, StringComparison.Ordinal))
             {
                 continue;
@@ -69,6 +136,36 @@ internal static class PopupTranslatedMessageHandoff
     internal static void ResetForTests()
     {
         pendingEntries = null;
+        activeScopes = null;
+        nextScopeId = 0;
+    }
+
+    private static int GetCurrentScopeId()
+    {
+        var scopes = activeScopes;
+        return scopes is null || scopes.Count == 0 ? 0 : scopes[scopes.Count - 1];
+    }
+
+    private static void RemovePendingEntriesForScope(int scopeId)
+    {
+        var entries = pendingEntries;
+        if (entries is null)
+        {
+            return;
+        }
+
+        for (var index = entries.Count - 1; index >= 0; index--)
+        {
+            if (entries[index].ScopeId == scopeId)
+            {
+                entries.RemoveAt(index);
+            }
+        }
+
+        if (entries.Count == 0)
+        {
+            pendingEntries = null;
+        }
     }
 
     private static Key CreateKey(string source)
@@ -148,12 +245,15 @@ internal static class PopupTranslatedMessageHandoff
 
     private sealed class Entry
     {
-        internal Entry(string visible, string colorSignature, string translated)
+        internal Entry(int scopeId, string visible, string colorSignature, string translated)
         {
+            ScopeId = scopeId;
             Visible = visible;
             ColorSignature = colorSignature;
             Translated = translated;
         }
+
+        internal int ScopeId { get; }
 
         internal string Visible { get; }
 
