@@ -122,6 +122,14 @@ family contract issue, then check:
 - scoped dictionary homes
 - owner-vs-sink boundaries that share the same behavior
 
+When a review fix adds a color-preserving translation call such as
+`ColorAwareTranslationComposer.TranslatePreservingColors(...)`,
+`GetDisplayNameRouteTranslator.TranslatePreservingColors(...)`, or another
+cataloged color-sensitive helper, update or verify
+`ColorRouteCatalogTests.ExpectedSymbolOccurrences` in the same pass. The
+focused route test can pass while the deterministic color-route inventory still
+correctly fails on the new callsite.
+
 ## CodeRabbit state
 
 When interpreting CodeRabbit state after force-pushes, report the current check
