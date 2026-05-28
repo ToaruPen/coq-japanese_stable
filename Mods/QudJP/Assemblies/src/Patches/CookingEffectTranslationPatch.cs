@@ -163,6 +163,16 @@ public static class CookingEffectTranslationPatch
             ("XRL.World.Effects.BasicCookingEffect_Regeneration", "GetDetails"),
             ("XRL.World.Effects.BasicCookingEffect_RandomStat", "GetDetails"),
             ("XRL.World.Effects.BasicTriggeredCookingStatEffect", "GetDetails"),
+            ("XRL.World.Skills.Cooking.AppleMatz", "GetDescription"),
+            ("XRL.World.Skills.Cooking.BoneBabka", "GetDescription"),
+            ("XRL.World.Skills.Cooking.CloacaSurprise", "GetDescription"),
+            ("XRL.World.Skills.Cooking.CrystalDelight", "GetDescription"),
+            ("XRL.World.Skills.Cooking.GoatAndSweetLeaf", "GetDescription"),
+            ("XRL.World.Skills.Cooking.HotandSpiny", "GetDescription"),
+            ("XRL.World.Skills.Cooking.MahLahSoup", "GetDescription"),
+            ("XRL.World.Skills.Cooking.MushroomCider", "GetDescription"),
+            ("XRL.World.Skills.Cooking.ThePorridge", "GetDescription"),
+            ("XRL.World.Skills.Cooking.TongueAndCheek", "GetDescription"),
         })
         {
             var type = AccessTools.TypeByName(target.typeName);

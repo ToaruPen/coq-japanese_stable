@@ -383,6 +383,65 @@ public sealed class PopupTranslationPatchTests
     }
 
     [Test]
+    public void TranslatePopupText_RepositoryDictionary_TranslatesTranche41CardiacArrestRestartPopups()
+    {
+        UseRepositoryPopupDictionary();
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyPopupTarget), nameof(DummyPopupTarget.ShowBlock)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(PopupTranslationPatch), nameof(PopupTranslationPatch.Prefix))));
+
+            DummyPopupTarget.ShowBlock("{{G|Your heart restarts!}}", "Recovery");
+            Assert.That(DummyPopupTarget.LastShowBlockMessage, Is.EqualTo("{{G|心臓が再起動する！}}"));
+
+            DummyPopupTarget.ShowBlock("{{G|Your hearts restart!}}", "Recovery");
+            Assert.That(DummyPopupTarget.LastShowBlockMessage, Is.EqualTo("{{G|心臓たちが再起動する！}}"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void TranslatePopupText_RepositoryDictionary_TranslatesReviewedFixedProducerPopupPrompts()
+    {
+        UseRepositoryPopupDictionary();
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyPopupTarget), nameof(DummyPopupTarget.ShowBlock)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(PopupTranslationPatch), nameof(PopupTranslationPatch.Prefix))));
+
+            DummyPopupTarget.ShowBlock("Are you sure you want to discard your changes?", "Confirm");
+            Assert.That(DummyPopupTarget.LastShowBlockMessage, Is.EqualTo("本当に変更を破棄しますか？"));
+
+            DummyPopupTarget.ShowBlock("Cannot proceed, no usable base genders", "Error");
+            Assert.That(DummyPopupTarget.LastShowBlockMessage, Is.EqualTo("進行できない。使える基本性別がない。"));
+
+            DummyPopupTarget.ShowBlock(
+                "If you retire this character, your score will be recorded and your character will be lost. Are you sure you want to RETIRE THIS CHARACTER FOREVER? Type 'RETIRE' to confirm.",
+                "Confirm");
+            Assert.That(
+                DummyPopupTarget.LastShowBlockMessage,
+                Is.EqualTo("このキャラクターを引退するとスコアは記録されますがキャラクターは失われます。本当にこのキャラクターを永遠に引退させますか？「RETIRE」と入力すると確定します。"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void TranslatePopupTextForProducerRoute_TranslatesStoneStatuePrayerPattern_ForPopupShow()
     {
         WritePatternDictionary((
@@ -2002,6 +2061,16 @@ public sealed class PopupTranslationPatchTests
             "verbs.ja.json");
 
         MessageFrameTranslator.SetDictionaryPathForTests(repositoryDictionaryPath);
+    }
+
+    private static void UseRepositoryPopupDictionary()
+    {
+        Translator.SetDictionaryDirectoryForTests(Path.Combine(
+            QudJP.Tests.L1.TestProjectPaths.GetRepositoryRoot(),
+            "Mods",
+            "QudJP",
+            "Localization",
+            "Dictionaries"));
     }
 
     private void WriteDictionary(params (string key, string text)[] entries)

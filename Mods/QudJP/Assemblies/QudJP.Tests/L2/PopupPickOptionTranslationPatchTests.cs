@@ -109,6 +109,50 @@ public sealed class PopupPickOptionTranslationPatchTests
     }
 
     [Test]
+    public void Prefix_RepositoryDictionary_TranslatesReviewedFixedProducerPickOptionPayload()
+    {
+        Translator.SetDictionaryDirectoryForTests(GetRepositoryDictionaryDirectory());
+
+        using var patch = PatchPickOption();
+
+        DummyPopupGenericTarget.PickOption(
+            Title: "Pick end game state",
+            Options: new[]
+            {
+                "Return",
+                "Return Ultra",
+                "Covenant",
+                "Covenant Ultra",
+                "Accede",
+                "Accede Ultra",
+                "Launch",
+                "Launch Ultra",
+                "Marooned",
+                "Marooned Ultra",
+            });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(DummyPopupGenericTarget.LastPickOptionTitle, Is.EqualTo("エンドゲーム状態を選ぶ"));
+            Assert.That(
+                DummyPopupGenericTarget.LastPickOptionOptions,
+                Is.EqualTo(new[]
+                {
+                    "帰還",
+                    "帰還（究極）",
+                    "契約",
+                    "契約（究極）",
+                    "同意",
+                    "同意（究極）",
+                    "発射",
+                    "発射（究極）",
+                    "遭難",
+                    "遭難（究極）",
+                }));
+        });
+    }
+
+    [Test]
     public void Prefix_PreservesInventoryActionMenuOptions_ForTutorialCommandGuards()
     {
         WriteDictionary(("get", "取得"), ("equip (auto)", "装備（自動）"));
@@ -145,6 +189,7 @@ public sealed class PopupPickOptionTranslationPatchTests
             ("detonate", "QudMenuItem", "QUD-MENU-DETONATE-POISON"));
         WriteInventoryActionDictionary(
             ("equip (manual)", "XRL.World.IInventoryActionsEvent", "手動で装備"),
+            ("fight fire", "XRL.World.IInventoryActionsEvent", "消火する"),
             ("mark important", "XRL.World.IInventoryActionsEvent", "重要にする"),
             ("add notes", "XRL.World.IInventoryActionsEvent", "メモを追加"),
             ("remove", "XRL.World.IInventoryActionsEvent", "外す"),
@@ -196,6 +241,11 @@ public sealed class PopupPickOptionTranslationPatchTests
                     "{{W|[E]}} {{y|equip (manual)}}",
                     "InventoryActionMenu:ABC123"),
                 Is.EqualTo("{{W|[E]}} {{y|手動で装備}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[f]}} {{y|{{hotkey|f}}ight fire}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[f]}} {{y|消火する}}"));
             Assert.That(
                 SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
                     "{{W|[i]}} {{y|mark important}}",

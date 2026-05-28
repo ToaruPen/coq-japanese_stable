@@ -277,6 +277,20 @@ public sealed class GetDisplayNameRouteTranslatorTests
     }
 
     [Test]
+    public void TranslatePreservingColors_DoesNotDuplicateColoredLiquidPrefixInLocalizedHead()
+    {
+        WriteDictionaryFile(
+            "ui-liquids.ja.json",
+            ("acid", "{{R|酸}}"));
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            "{{R|酸}}の水たまり of acid",
+            nameof(GetDisplayNamePatch));
+
+        Assert.That(translated, Is.EqualTo("{{R|酸}}の水たまり"));
+    }
+
+    [Test]
     public void TranslatePreservingColors_TranslatesMarkedUpWorshipperTargetWithMarkedUpBracketState()
     {
         WriteDictionaryFile(
@@ -1265,9 +1279,9 @@ public sealed class GetDisplayNameRouteTranslatorTests
                 Is.EqualTo("スナップジョー [{{B|網にはまっている}}]"));
             Assert.That(
                 GetDisplayNameRouteTranslator.TranslatePreservingColors(
-                    "snapjaw [stuck in a 凍結した 塩気混じりの粘液の水たまり]",
+                    "snapjaw [stuck in a 凍結した 塩分混じりの粘液の水たまり]",
                     nameof(GetDisplayNamePatch)),
-                Is.EqualTo("スナップジョー [凍結した 塩気混じりの粘液の水たまりにはまっている]"));
+                Is.EqualTo("スナップジョー [凍結した 塩分混じりの粘液の水たまりにはまっている]"));
             Assert.That(
                 GetDisplayNameRouteTranslator.TranslatePreservingColors(
                     "snapjaw [{{B|grabbed by an iron sword}}]",
@@ -1712,6 +1726,20 @@ public sealed class GetDisplayNameRouteTranslatorTests
                 "{{K|deactivated}} spring-loaded {{w|wooden}} {{c|mechanical}} チェーンピストル",
                 translated).MarkupSemanticStatus,
             Is.EqualTo("clean"));
+    }
+
+    [Test]
+    public void TranslatePreservingColors_TranslatesModifierChainBeforeLocalizedChargeStatus()
+    {
+        UseProductionDictionaries();
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            "deactivated spring-loaded {{ninefold|ナインフォールド}}のブーツ {{y|({{G|残量十分}})}}",
+            nameof(GetDisplayNamePatch));
+
+        Assert.That(
+            translated,
+            Is.EqualTo("停止中の バネ仕掛けの{{ninefold|ナインフォールド}}のブーツ {{y|({{G|残量十分}})}}"));
     }
 
     [Test]

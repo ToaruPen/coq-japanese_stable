@@ -116,6 +116,36 @@ public static class SifrahPureOwnerPopupTranslationPatch
         "^Choosing (?<value>.+) is disabled for this turn\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex SifrahUseInsightInvalidOptionsPattern = new(
+        "^You determine these options to not be valid responses to any requirement:(?<options>(?:\\r?\\n|.)*)$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Dictionary<string, string> CheckEarlyExitTranslations = new(StringComparer.Ordinal)
+    {
+        ["Do you want to finish the offering ritual as matters stand?"] = "現状のまま献上の儀式を終えますか？",
+        ["Exiting now will finish the offering ritual as matters stand. Are you sure you want to exit?"] = "今終了すると現状のまま献上の儀式が終わる。本当に終了しますか？",
+        ["Do you want to finish the beguiling attempt as matters stand?"] = "現状のまま魅了の試みを終えますか？",
+        ["Exiting now will finish the beguiling attempt as matters stand. Are you sure you want to exit?"] = "今終了すると現状のまま魅了の試みが終わる。本当に終了しますか？",
+        ["Do you want to finish the formal water ritual as matters stand?"] = "現状のまま正式な水儀を終えますか？",
+        ["Exiting now will finish the formal water ritual as matters stand. Are you sure you want to exit?"] = "今終了すると現状のまま正式な水儀が終わる。本当に終了しますか？",
+        ["Do you want to finish haggling as matters stand?"] = "現状のまま取引を終えますか？",
+        ["Exiting now will finish haggling as matters stand. Are you sure you want to exit?"] = "今終了すると現状のまま取引が終わる。本当に終了しますか？",
+        ["Do you want to finish the naming ritual as matters stand?"] = "現状のまま名付けの儀式を終えますか？",
+        ["Exiting now will finish the naming ritual as matters stand. Are you sure you want to exit?"] = "今終了すると現状のまま名付けの儀式が終わる。本当に終了しますか？",
+        ["Do you want to finish the proselytization attempt as matters stand?"] = "現状のまま布教の試みを終えますか？",
+        ["Exiting now will finish the proselytization attempt as matters stand. Are you sure you want to exit?"] = "今終了すると現状のまま布教の試みが終わる。本当に終了しますか？",
+        ["Do you want to finish psychic combat as matters stand?"] = "現状のまま精神戦を終えますか？",
+        ["Exiting now will finish psychic combat as matters stand. Are you sure you want to exit?"] = "今終了すると現状のまま精神戦が終わる。本当に終了しますか？",
+        ["Do you want to finish the rebuking attempt as matters stand?"] = "現状のまま叱責の試みを終えますか？",
+        ["Exiting now will finish the rebuking attempt as matters stand. Are you sure you want to exit?"] = "今終了すると現状のまま叱責の試みが終わる。本当に終了しますか？",
+    };
+
+    private static readonly Dictionary<string, string> UseInsightTranslations = new(StringComparer.Ordinal)
+    {
+        ["All options which are not correct responses to any requirement have already been eliminated."] = "正しい応答ではない選択肢はすべてすでに除外されている。",
+        ["All options are correct responses to some requirement."] = "すべての選択肢が何らかの条件への正しい応答である。",
+    };
+
     private static readonly Regex[] CandidatePatterns =
     [
         BaetylOfferingPattern,
@@ -138,6 +168,7 @@ public static class SifrahPureOwnerPopupTranslationPatch
         SifrahChosenCorrectPattern,
         SifrahEliminatedPattern,
         SifrahDisabledPattern,
+        SifrahUseInsightInvalidOptionsPattern,
     ];
 
     [ThreadStatic]
@@ -223,6 +254,14 @@ public static class SifrahPureOwnerPopupTranslationPatch
 
         foreach (var target in new[]
                  {
+                     new TargetMethod("XRL.World.BaetylOfferingSifrah", "CheckEarlyExit", [gameObjectType]),
+                     new TargetMethod("XRL.World.BeguilingSifrah", "CheckEarlyExit", [gameObjectType]),
+                     new TargetMethod("XRL.World.FormalWaterRitualSifrah", "CheckEarlyExit", [gameObjectType]),
+                     new TargetMethod("XRL.World.HagglingSifrah", "CheckEarlyExit", [gameObjectType]),
+                     new TargetMethod("XRL.World.ItemNamingSifrah", "CheckEarlyExit", [gameObjectType]),
+                     new TargetMethod("XRL.World.ProselytizationSifrah", "CheckEarlyExit", [gameObjectType]),
+                     new TargetMethod("XRL.World.PsychicCombatSifrah", "CheckEarlyExit", [gameObjectType]),
+                     new TargetMethod("XRL.World.RebukingSifrah", "CheckEarlyExit", [gameObjectType]),
                      new TargetMethod("XRL.World.ReverseEngineeringSifrah", "CheckEarlyExit", [gameObjectType]),
                      new TargetMethod("XRL.World.ReverseEngineeringSifrah", "Finish", [gameObjectType]),
                      new TargetMethod(
@@ -254,6 +293,7 @@ public static class SifrahPureOwnerPopupTranslationPatch
                          "CheckTokenUse",
                          SifrahTokenCheckParameterTypes(sifrahGameType, sifrahSlotType, gameObjectType)),
                      new TargetMethod("XRL.SifrahGame", "MakeMoveForSlot", [intType, gameObjectType]),
+                     new TargetMethod("XRL.SifrahGame", "UseInsight", [gameObjectType]),
                  })
         {
             if (Array.Exists(target.ParameterTypes, static parameterType => parameterType is null))
@@ -495,6 +535,22 @@ public static class SifrahPureOwnerPopupTranslationPatch
                    "ReverseEngineeringEarlyExit",
                    target => "終了しても" + target + "は分解され、現状のままリバースエンジニアリングを試みることになる。それでも終了する？",
                    out translated)
+               || IsActiveOwner("XRL.World.BaetylOfferingSifrah", "CheckEarlyExit", "BaetylOfferingCheckEarlyExit")
+               && TryTranslateCheckEarlyExit(source, stripped, spans, route, "BaetylOfferingCheckEarlyExit", out translated)
+               || IsActiveOwner("XRL.World.BeguilingSifrah", "CheckEarlyExit", "BeguilingCheckEarlyExit")
+               && TryTranslateCheckEarlyExit(source, stripped, spans, route, "BeguilingCheckEarlyExit", out translated)
+               || IsActiveOwner("XRL.World.FormalWaterRitualSifrah", "CheckEarlyExit", "FormalWaterRitualCheckEarlyExit")
+               && TryTranslateCheckEarlyExit(source, stripped, spans, route, "FormalWaterRitualCheckEarlyExit", out translated)
+               || IsActiveOwner("XRL.World.HagglingSifrah", "CheckEarlyExit", "HagglingCheckEarlyExit")
+               && TryTranslateCheckEarlyExit(source, stripped, spans, route, "HagglingCheckEarlyExit", out translated)
+               || IsActiveOwner("XRL.World.ItemNamingSifrah", "CheckEarlyExit", "ItemNamingCheckEarlyExit")
+               && TryTranslateCheckEarlyExit(source, stripped, spans, route, "ItemNamingCheckEarlyExit", out translated)
+               || IsActiveOwner("XRL.World.ProselytizationSifrah", "CheckEarlyExit", "ProselytizationCheckEarlyExit")
+               && TryTranslateCheckEarlyExit(source, stripped, spans, route, "ProselytizationCheckEarlyExit", out translated)
+               || IsActiveOwner("XRL.World.PsychicCombatSifrah", "CheckEarlyExit", "PsychicCombatCheckEarlyExit")
+               && TryTranslateCheckEarlyExit(source, stripped, spans, route, "PsychicCombatCheckEarlyExit", out translated)
+               || IsActiveOwner("XRL.World.RebukingSifrah", "CheckEarlyExit", "RebukingCheckEarlyExit")
+               && TryTranslateCheckEarlyExit(source, stripped, spans, route, "RebukingCheckEarlyExit", out translated)
                || IsActiveOwner("XRL.World.ReverseEngineeringSifrah", "Finish", "ReverseEngineeringFinish")
                && TryTranslate(
                    ReverseEngineeringFailurePattern,
@@ -626,7 +682,11 @@ public static class SifrahPureOwnerPopupTranslationPatch
                    family,
                    "MakeMoveForSlotDisabled",
                    value => value + "を選ぶことはこのターン無効化されている。",
-                   out translated);
+                   out translated)
+               || IsActiveOwner("XRL.SifrahGame", "UseInsight", "SifrahGameUseInsight")
+               && TryTranslateUseInsightInvalidOptions(source, stripped, spans, route, out translated)
+               || IsActiveOwner("XRL.SifrahGame", "UseInsight", "SifrahGameUseInsight")
+               && TryTranslateUseInsightExact(source, stripped, spans, route, out translated);
     }
 
     internal static bool TryGetPureOwnerBatchPopupCandidateText(string source, out string candidateText)
@@ -644,7 +704,9 @@ public static class SifrahPureOwnerPopupTranslationPatch
 
         candidateText = source;
         var (stripped, _) = ColorAwareTranslationComposer.Strip(source);
-        return Array.Exists(CandidatePatterns, pattern => pattern.IsMatch(stripped));
+        return Array.Exists(CandidatePatterns, pattern => pattern.IsMatch(stripped))
+               || CheckEarlyExitTranslations.ContainsKey(stripped)
+               || UseInsightTranslations.ContainsKey(stripped);
     }
 
     private static bool TryTranslate(
@@ -692,6 +754,88 @@ public static class SifrahPureOwnerPopupTranslationPatch
             spans,
             stripped.Length,
             source);
+        DynamicTextObservability.RecordTransform(route, "Popup.ProducerText." + Context + "." + detail, source, translated);
+        return true;
+    }
+
+    private static bool TryTranslateCheckEarlyExit(
+        string source,
+        string stripped,
+        IReadOnlyList<ColorSpan> spans,
+        string route,
+        string detail,
+        out string translated)
+    {
+        if (!CheckEarlyExitTranslations.TryGetValue(stripped, out var replacement))
+        {
+            translated = source;
+            return false;
+        }
+
+        translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+            replacement,
+            spans,
+            stripped.Length,
+            source);
+        DynamicTextObservability.RecordTransform(route, "Popup.ProducerText." + Context + "." + detail, source, translated);
+        return true;
+    }
+
+    private static bool TryTranslateUseInsightInvalidOptions(
+        string source,
+        string stripped,
+        IReadOnlyList<ColorSpan> spans,
+        string route,
+        out string translated)
+    {
+        var match = SifrahUseInsightInvalidOptionsPattern.Match(stripped);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        var options = ColorAwareTranslationComposer.MarkupAwareRestoreCapture(
+            match.Groups["options"].Value,
+            spans,
+            match.Groups["options"]);
+        translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+            "どの条件にも有効な応答ではない選択肢を特定した:" + options,
+            spans,
+            stripped.Length,
+            source);
+        DynamicTextObservability.RecordTransform(
+            route,
+            "Popup.ProducerText." + Context + ".SifrahGameUseInsightInvalidOptions",
+            source,
+            translated);
+        return true;
+    }
+
+    private static bool TryTranslateUseInsightExact(
+        string source,
+        string stripped,
+        IReadOnlyList<ColorSpan> spans,
+        string route,
+        out string translated)
+    {
+        if (!UseInsightTranslations.TryGetValue(stripped, out var replacement))
+        {
+            translated = source;
+            return false;
+        }
+
+        translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+            replacement,
+            spans,
+            stripped.Length,
+            source);
+        var detail = string.Equals(
+            stripped,
+            "All options which are not correct responses to any requirement have already been eliminated.",
+            StringComparison.Ordinal)
+            ? "SifrahGameUseInsightAlreadyEliminated"
+            : "SifrahGameUseInsightAllCorrect";
         DynamicTextObservability.RecordTransform(route, "Popup.ProducerText." + Context + "." + detail, source, translated);
         return true;
     }

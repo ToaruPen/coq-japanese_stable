@@ -6007,7 +6007,7 @@ def _effect_generated_message_families() -> tuple[CoveredOwnerFamily, ...]:
         "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
         (
             "EffectGeneratedHandleEvent_TranslatesLifeDrainQueuedMessages_WhenOwnerPatched",
-            "EffectGeneratedApply_TranslatesShatteredArmorQueuedMessages_WhenOwnerPatched",
+            "EffectGeneratedApply_TranslatesGeneratedEffectQueuedMessages_WhenOwnerPatched",
             "EffectGeneratedHandleEvent_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
             "EffectGeneratedApply_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
             "EffectGeneratedHandleEvent_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched",

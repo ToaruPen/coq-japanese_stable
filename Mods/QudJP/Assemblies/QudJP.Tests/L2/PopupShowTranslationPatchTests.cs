@@ -47,10 +47,13 @@ public sealed class PopupShowTranslationPatchTests
         }
     }
 
-    [Test]
-    public void Prefix_TranslatesPopupShowMessage()
+    [TestCase("We're not quite ready to leave yet.", "まだ出発の準備が整っていない。")]
+    [TestCase("{{C|Your golem is ready for use.}}", "{{C|ゴーレムは使用可能だ。}}")]
+    [TestCase("You feel some ambient astral friction here.", "ここでは周囲の星界摩擦を感じる。")]
+    [TestCase("{{r|Your domination is broken!}}", "{{r|支配が破られた！}}")]
+    public void Prefix_TranslatesPopupShowMessage(string source, string expected)
     {
-        WriteDictionary(("Delete save game?", "セーブデータを削除しますか？"));
+        WriteDictionary((source, expected));
 
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
@@ -61,9 +64,9 @@ public sealed class PopupShowTranslationPatchTests
                 original: RequireMethod(typeof(DummyPopupShow), nameof(DummyPopupShow.Show)),
                 prefix: new HarmonyMethod(RequireMethod(typeof(PopupShowTranslationPatch), nameof(PopupShowTranslationPatch.Prefix))));
 
-            DummyPopupShow.Show("Delete save game?");
+            DummyPopupShow.Show(source);
 
-            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("セーブデータを削除しますか？"));
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(expected));
         }
         finally
         {
@@ -228,6 +231,55 @@ public sealed class PopupShowTranslationPatchTests
         {
             harmony.UnpatchAll(harmonyId);
         }
+    }
+
+    [TestCase("There are no creatures in range.", "範囲内に生き物がいない。")]
+    [TestCase("Your bilge sphincter is missing.", "ビルジ括約筋がない。")]
+    [TestCase("There is no liquid here for you to spew.", "ここには噴き出せる液体がない。")]
+    [TestCase("That is out of range! (10 squares)", "射程外だ！(10マス)")]
+    [TestCase("There is no one there to sting.", "そこに刺す相手がいない。")]
+    [TestCase("There is no one there you can sting.", "そこに刺せる相手がいない。")]
+    [TestCase("You may not use this mutation on the world map.", "ワールドマップではこの変異は使えない。")]
+    [TestCase("That target is out of range! (5 squares)", "その対象は射程外だ！(5マス)")]
+    [TestCase("You are already burrowed.", "もう潜伏している。")]
+    [TestCase("You cannot burrow on the world map.", "ワールドマップでは潜伏できない。")]
+    [TestCase(
+        "The sealing mechanisms inside this sarcophagus will certainly kill you if you close itself inside. Are you sure you want to enter the sarcophagus?\n\nType 'ENTOMB' to confirm.",
+        "この石棺の内部の封印機構は、中に入ったまま閉じれば確実にあなたを殺す。本当に石棺に入りますか？\n\n確認するには「ENTOMB」と入力してください。")]
+    [TestCase(
+        "Choose artifacts to throw down the well.",
+        "井戸に投げ込むアーティファクトを選択してください。")]
+    [TestCase(
+        "You have run out of {{B|water}}! Do you want to stop travelling?",
+        "{{B|水}}が尽きた！移動を止めますか？")]
+    [TestCase(
+        "You are dying of thirst! Do you want to stop travelling?",
+        "渇きで死にかけている！移動を止めますか？")]
+    [TestCase(
+        "You are leaving the ambient broadcast power grid and transitioning to backup power. Are you sure?",
+        "環境放送電力網を離れ、予備電源に切り替えますか？")]
+    [TestCase(
+        "Death has no meaning here.",
+        "ここでは死に意味はない。")]
+    [TestCase(
+        "Just before your demise, your health is restored!",
+        "死の寸前で体力が回復する！")]
+    [TestCase(
+        "You are suddenly elsewhere!",
+        "気がつくと別の場所にいた！")]
+    [TestCase(
+        "[{{R|!!! ERROR: REMOTE MANAGEMENT OFFLINE !!!}}]\n[{{R|!!! CHAIN LASER EMPLACEMENTS MUST BE ACTIVATED MANUALLY !!!}}]",
+        "[{{R|!!! エラー: リモート管理はオフライン !!!}}]\n[{{R|!!! チェーンレーザー設置は手動で起動する必要がある !!!}}]")]
+    [TestCase(
+        "[{{R|!!! ERROR: REMOTE MANAGEMENT OFFLINE !!!}}]\n[{{R|!!! FORCE PROJECTORS MUST BE ACTIVATED MANUALLY !!!}}]",
+        "[{{R|!!! エラー: リモート管理はオフライン !!!}}]\n[{{R|!!! フォース・プロジェクターは手動で起動する必要がある !!!}}]")]
+    public void Prefix_TranslatesReviewedResidualFixedPopups_FromRepositoryDictionary(
+        string source,
+        string expected)
+    {
+        Translator.SetDictionaryDirectoryForTests(Path.Combine(GetLocalizationRoot(), "Dictionaries"));
+
+        Assert.That(RunShowFailWithPopupPatch(source), Is.EqualTo(expected));
     }
 
     [Test]
@@ -447,7 +499,7 @@ public sealed class PopupShowTranslationPatchTests
     [Test]
     public void Prefix_TranslatesPopupShowFailMessage()
     {
-        WriteDictionary(("You are frozen solid!", "あなたは完全に凍り付いている！"));
+        WriteDictionary(("You can't excavate with hostiles nearby.", "敵対者が近くにいると掘削できない。"));
 
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
@@ -458,9 +510,9 @@ public sealed class PopupShowTranslationPatchTests
                 original: RequireMethod(typeof(DummyPopupShow), nameof(DummyPopupShow.ShowFail)),
                 prefix: new HarmonyMethod(RequireMethod(typeof(PopupShowTranslationPatch), nameof(PopupShowTranslationPatch.Prefix))));
 
-            DummyPopupShow.ShowFail("You are frozen solid!");
+            DummyPopupShow.ShowFail("You can't excavate with hostiles nearby.");
 
-            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("あなたは完全に凍り付いている！"));
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("敵対者が近くにいると掘削できない。"));
         }
         finally
         {
@@ -757,7 +809,7 @@ public sealed class PopupShowTranslationPatchTests
     [Test]
     public void Prefix_TranslatesPopupShowYesNoCancelAsyncMessage()
     {
-        WriteDictionary(("Delete save game?", "セーブデータを削除しますか？"));
+        WriteDictionary(("Would you like to save your changes?", "変更内容を保存しますか？"));
 
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
@@ -768,9 +820,9 @@ public sealed class PopupShowTranslationPatchTests
                 original: RequireMethod(typeof(DummyPopupShow), nameof(DummyPopupShow.ShowYesNoCancelAsync)),
                 prefix: new HarmonyMethod(RequireMethod(typeof(PopupShowTranslationPatch), nameof(PopupShowTranslationPatch.Prefix))));
 
-            _ = DummyPopupShow.ShowYesNoCancelAsync("Delete save game?").GetAwaiter().GetResult();
+            _ = DummyPopupShow.ShowYesNoCancelAsync("Would you like to save your changes?").GetAwaiter().GetResult();
 
-            Assert.That(DummyPopupShow.LastShowYesNoCancelAsyncMessage, Is.EqualTo("セーブデータを削除しますか？"));
+            Assert.That(DummyPopupShow.LastShowYesNoCancelAsyncMessage, Is.EqualTo("変更内容を保存しますか？"));
         }
         finally
         {

@@ -7,6 +7,21 @@ namespace QudJP.Tests.L1;
 [NonParallelizable]
 public sealed class WorldPartsFragmentTranslatorTests
 {
+    [SetUp]
+    public void SetUp()
+    {
+        Translator.ResetForTests();
+        ScopedDictionaryLookup.ResetForTests();
+        Translator.SetDictionaryDirectoryForTests(GetRepositoryDictionaryDirectory());
+    }
+
+    [TearDown]
+    public void TearDown()
+    {
+        ScopedDictionaryLookup.ResetForTests();
+        Translator.ResetForTests();
+    }
+
     [TestCase("You cannot seem to interact with canteen in any way.", "canteenにはどうやっても干渉できないようだ。")]
     [TestCase("The canteen is not owned by you. Are you sure you want to drink from it?", "canteenはあなたの所有物ではない。本当にそこから飲みますか？")]
     [TestCase("You are now {{B|hydrated}}.", "あなたは今、{{B|hydrated}}。")]
@@ -92,7 +107,7 @@ public sealed class WorldPartsFragmentTranslatorTests
     [TestCase("You collect 8 dram of fresh water from nearby in your 水筒.", "近くから真水を8ドラム集めた（水筒に入れた）。")]
     [TestCase("You collect 5 drams of honey from the 花瓶 to the southwest in your 水袋.", "花瓶（南西側）からはちみつを5ドラム集めた（水袋に入れた）。")]
     [TestCase("You collect 50 drams of Oil from the west in your 水袋.", "西から油を50ドラム集めた（水袋に入れた）。")]
-    [TestCase("You collect 3 drams of brackish bloody slime from here.", "ここから塩気混じりの血混じりの粘液を3ドラム集めた。")]
+    [TestCase("You collect 3 drams of brackish bloody slime from here.", "ここから塩分混じりの血混じりの粘液を3ドラム集めた。")]
     [TestCase("You collect 4 drams of dilute warm static.", "薄めのウォームスタティックを4ドラム集めた。")]
     [TestCase("2 drams of {{C|water}} pours out all over snapjaw!", "{{C|水}} 2ドラムがsnapjawの全身にかかった！")]
     public void LiquidVolumeTranslator_TranslatesInventoriedOwnerQueuedFragments(string input, string expected)
@@ -348,4 +363,18 @@ public sealed class WorldPartsFragmentTranslatorTests
     }
 
     private delegate bool TranslatorDelegate(string source, string route, string family, out string translated);
+
+    private static string GetRepositoryDictionaryDirectory()
+    {
+        return Path.GetFullPath(
+            Path.Combine(
+                AppDomain.CurrentDomain.BaseDirectory,
+                "..",
+                "..",
+                "..",
+                "..",
+                "..",
+                "Localization",
+                "Dictionaries"));
+    }
 }

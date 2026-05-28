@@ -7,6 +7,14 @@ internal static class DirectionPhraseTranslator
         var normalized = source.ToUpperInvariant();
         translated = normalized switch
         {
+            "NORTH" => "北側に",
+            "SOUTH" => "南側に",
+            "EAST" => "東側に",
+            "WEST" => "西側に",
+            "NORTHEAST" => "北東側に",
+            "NORTHWEST" => "北西側に",
+            "SOUTHEAST" => "南東側に",
+            "SOUTHWEST" => "南西側に",
             "TO THE NORTH" => "北側に",
             "TO THE SOUTH" => "南側に",
             "TO THE EAST" => "東側に",

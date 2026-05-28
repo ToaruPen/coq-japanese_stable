@@ -14,6 +14,10 @@ public sealed class ZoneManagerGenerateZoneTranslationPatchTests
         "There was an issue building this zone. Automatically report it to us? System.InvalidOperationException: boom";
     private const string ReportIssueExpected =
         "このゾーンの構築中に問題が発生した。自動的に報告しますか？ System.InvalidOperationException: boom";
+    private const string ForceStopSource =
+        "This zone isn't building properly. Do you want to force it to stop and build immediately?";
+    private const string ForceStopExpected =
+        "このゾーンは正しく構築されていない。強制的に停止して、すぐに構築しますか？";
 
     [SetUp]
     public void SetUp()
@@ -34,7 +38,13 @@ public sealed class ZoneManagerGenerateZoneTranslationPatchTests
     [Test]
     public void Patch_TranslatesReportIssueConfirmation_WhenOwnerPatched()
     {
-        AssertOwnerPopup(ReportIssueSource, ReportIssueExpected, expectedHits: 1);
+        AssertOwnerPopup(ReportIssueSource, ReportIssueExpected, "GenerateZoneReportIssuePopup", expectedHits: 1);
+    }
+
+    [Test]
+    public void Patch_TranslatesForceStopConfirmation_WhenOwnerPatched()
+    {
+        AssertOwnerPopup(ForceStopSource, ForceStopExpected, "GenerateZoneForceStopPopup", expectedHits: 1);
     }
 
     [Test]
@@ -55,17 +65,17 @@ public sealed class ZoneManagerGenerateZoneTranslationPatchTests
         AssertOwnerPopup(
             MessageFrameTranslator.MarkDirectTranslation(ReportIssueSource),
             ReportIssueSource,
+            "GenerateZoneReportIssuePopup",
             expectedHits: 0);
     }
 
-    [TestCase("This zone isn't building properly. Do you want to force it to stop and build immediately?")]
     [TestCase("Zone build failure:<none>")]
     public void Patch_DoesNotClaimOtherGenerateZoneShapes_WhenOwnerPatched(string source)
     {
-        AssertOwnerPopup(source, source, expectedHits: 0);
+        AssertOwnerPopup(source, source, "GenerateZoneReportIssuePopup", expectedHits: 0);
     }
 
-    private static void AssertOwnerPopup(string source, string expected, int expectedHits)
+    private static void AssertOwnerPopup(string source, string expected, string detail, int expectedHits)
     {
         OwnerPopupRouteTestHarness.WithPatchedPopupOwner(
             typeof(ZoneManagerGenerateZoneTranslationPatch),
@@ -80,7 +90,7 @@ public sealed class ZoneManagerGenerateZoneTranslationPatchTests
                 Assert.Multiple(() =>
                 {
                     Assert.That(DummyPopupShow.LastShowYesNoMessage, Is.EqualTo(expected));
-                    Assert.That(HitCount(), Is.EqualTo(expectedHits));
+                    Assert.That(HitCount(detail), Is.EqualTo(expectedHits));
                 });
             });
     }
@@ -96,10 +106,10 @@ public sealed class ZoneManagerGenerateZoneTranslationPatchTests
                    nameof(DummyZoneManagerGenerateZoneTarget.GenerateZone));
     }
 
-    private static int HitCount()
+    private static int HitCount(string detail = "GenerateZoneReportIssuePopup")
     {
         return OwnerPopupRouteTestHarness.RouteHitCount(
             typeof(ZoneManagerGenerateZoneTranslationPatch),
-            "GenerateZoneReportIssuePopup");
+            detail);
     }
 }

@@ -50,6 +50,7 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
     private const string ReputationSetFactionRankOwner = "XRL.World.Reputation|SetFactionRank";
     private const string RecoilOnDeathOwner = "XRL.World.Parts.RecoilOnDeath|HandleEvent";
     private const string SpraybottleOwner = "XRL.World.Parts.Spraybottle|HandleEvent";
+    private const string SpiralBorerCurioOwner = "XRL.World.Parts.SpiralBorerCurio|HandleEvent";
     private const string FixitSprayOwner = "XRL.World.Parts.FixitSpray|HandleEvent";
     private const string AnimatorSprayOwner = "XRL.World.Parts.AnimatorSpray|HandleEvent";
     private const string StairsDownCheckPullDownOwner = "XRL.World.Parts.StairsDown|CheckPullDown";
@@ -78,6 +79,8 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         "You violated the covenant of the water ritual and killed your bonded kith. You are cursed.\n\n";
     private const string GivesRepWaterRitualCursePrefixJa =
         "水の契りを破り、結んだ仲間を殺した。あなたは呪われている。\n\n";
+    private const string SpiralBorerCurioActivation =
+        "The metal satchel opens, folds itself inside out, and transforms into a contraption studded with pinions and drills. It starts to burrow into the ground.";
 
     private static readonly Regex DecoyOutOfRangePattern = new(
         "^That is out of range \\((?<range>.+?) (?<unit>squares?)\\)$",
@@ -355,6 +358,14 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         "^Did you mean (?<mutation>.+?)\\?$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex MutationWishMissingNamePattern = new(
+        "^No mutation by the name '(?<name>.+?)' could be found\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex MutationWishMissingVariantPattern = new(
+        "^No mutation by the name '(?<name>.+?)' and variant '(?<variant>.+?)' could be found\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     private static readonly Regex NephalPropertiesChordAbsorbedPattern = new(
         "^A sphere of light in the chord of (?<name>.+?) radiates away\\.\\n\\nYou feel it absorbed elsewhere\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
@@ -552,6 +563,11 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         AddTarget(
             targets,
             "XRL.World.Parts.GenocideCurio",
+            "HandleEvent",
+            [inventoryActionEventType]);
+        AddTarget(
+            targets,
+            "XRL.World.Parts.SpiralBorerCurio",
             "HandleEvent",
             [inventoryActionEventType]);
         AddTarget(
@@ -1308,6 +1324,13 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
             return true;
         }
 
+        if (source == SpiralBorerCurioActivation && OwnerMatches(ownerKey, SpiralBorerCurioOwner))
+        {
+            translated = Translator.Translate(source);
+            detail = "SpiralBorerCurioActivation";
+            return true;
+        }
+
         match = GritGateMainframeUnresponsivePattern.Match(source);
         if (match.Success && OwnerMatches(ownerKey, GritGateMainframeOwner))
         {
@@ -1636,6 +1659,22 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         {
             translated = $"「{match.Groups["mutation"].Value}」のことか？";
             detail = "MutationWishDidYouMean";
+            return true;
+        }
+
+        match = MutationWishMissingVariantPattern.Match(source);
+        if (match.Success && OwnerMatches(ownerKey, MutationsWishMutationOwner))
+        {
+            translated = $"「{match.Groups["name"].Value}」のバリアント「{match.Groups["variant"].Value}」という変異は見つからない。";
+            detail = "MutationWishMissingVariant";
+            return true;
+        }
+
+        match = MutationWishMissingNamePattern.Match(source);
+        if (match.Success && OwnerMatches(ownerKey, MutationsWishMutationOwner))
+        {
+            translated = $"「{match.Groups["name"].Value}」という変異は見つからない。";
+            detail = "MutationWishMissingName";
             return true;
         }
 

@@ -69,12 +69,37 @@ internal sealed class DummyTextMeshProText
     public string text = string.Empty;
 }
 
-internal sealed class DummyAbilityBarButton
+internal class DummyAbilityBarButton
 {
     public DummyUITextSkin Text = new DummyUITextSkin();
 
     public DummyAbilityBarButton(string text)
     {
         Text.SetText(text);
+    }
+}
+
+internal sealed class DummyAbilityBarButtonGameObject
+{
+    private readonly AbilityBarButton component;
+
+    public DummyAbilityBarButtonGameObject(string text)
+    {
+        component = new AbilityBarButton(text);
+    }
+
+    public DummyUITextSkin Text => component.Text;
+
+    public object? GetComponent(Type componentType)
+    {
+        return componentType == typeof(AbilityBarButton) ? component : null;
+    }
+}
+
+internal sealed class AbilityBarButton : DummyAbilityBarButton
+{
+    public AbilityBarButton(string text)
+        : base(text)
+    {
     }
 }

@@ -415,11 +415,16 @@ public static class UITextSkinTranslationPatch
 
     private static bool LooksLikePickTargetCommandBar(string source)
     {
-        return source.Contains(" | ")
-            && source.Contains("-select")
+        if (!source.Contains(" | "))
+        {
+            return false;
+        }
+
+        var isMissileOrLockCommandBar = source.Contains("-select")
             && (source.Contains("Fire Missile Weapon")
                 || source.Contains(" lock (")
                 || source.Contains(" unlock ("));
+        return isMissileOrLockCommandBar || source.Contains("[Select a direction]");
     }
 
     internal static bool IsAlreadyLocalizedDirectRouteTextForContext(string source, string? context)

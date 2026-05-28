@@ -32,6 +32,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
         MessagePatternTranslator.SetPatternFileForTests(patternFilePath);
         File.WriteAllText(patternFilePath, "{\"patterns\":[]}\n", new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
         MessagePatternTranslator.InvalidatePatternFileCacheForTests(patternFilePath);
+        WriteLiquidDictionaries();
         DummyMessageQueue.Reset();
         DummyPopupShow.Reset();
         DummyPopupTarget.Reset();
@@ -5154,6 +5155,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
     [TestCase("{{G|You sunder spacetime.}}")]
     [TestCase("You are sucked through the surface of the sphere!")]
     [TestCase("Your focus slips, causing you to dent spacetime in the local region.")]
+    [TestCase("You no longer feel ill.")]
     public void FixedOwnerQueue_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent(string source)
     {
         var harmonyId = CreateHarmonyId();
@@ -5209,6 +5211,38 @@ public sealed class CombatAndLogMessageQueuePatchTests
     public void MeditatingRemove_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched()
     {
         AssertMeditatingRemoveQueuedMessage(string.Empty, string.Empty);
+    }
+
+    [Test]
+    public void IllRemove_TranslatesFixedQueuedMessage_WhenOwnerPatched()
+    {
+        AssertIllRemoveQueuedMessage("You no longer feel ill.", "もう病気ではない。");
+    }
+
+    [Test]
+    public void IllRemove_LeavesUnknownQueuedMessageUnchanged_WhenOwnerPatched()
+    {
+        AssertIllRemoveQueuedMessage("You no longer feel seasick.", "You no longer feel seasick.");
+    }
+
+    [Test]
+    public void IllRemove_LeavesColorTaggedUnknownQueuedMessageUnchanged_WhenOwnerPatched()
+    {
+        AssertIllRemoveQueuedMessage("{{G|You no longer feel seasick.}}", "{{G|You no longer feel seasick.}}");
+    }
+
+    [Test]
+    public void IllRemove_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched()
+    {
+        AssertIllRemoveQueuedMessage(
+            MessageFrameTranslator.MarkDirectTranslation("You no longer feel ill."),
+            "You no longer feel ill.");
+    }
+
+    [Test]
+    public void IllRemove_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched()
+    {
+        AssertIllRemoveQueuedMessage(string.Empty, string.Empty);
     }
 
     [TestCase("You start to feel sluggish.", "体がだるくなってきた。")]
@@ -5358,11 +5392,150 @@ public sealed class CombatAndLogMessageQueuePatchTests
     [TestCase(
         "{{R|The 装置 was cracked.}}",
         "{{R|装置にひびが入った}}")]
-    public void EffectGeneratedApply_TranslatesShatteredArmorQueuedMessages_WhenOwnerPatched(
+    [TestCase(
+        "The 鋼の剣 is reduced to dust!",
+        "鋼の剣は塵と化した！")]
+    [TestCase(
+        "The 鋼の剣 rusts.",
+        "鋼の剣は錆びた。")]
+    [TestCase(
+        "you raise your shield in wall formation!",
+        "あなたの盾を壁陣形に構えた！")]
+    public void EffectGeneratedApply_TranslatesGeneratedEffectQueuedMessages_WhenOwnerPatched(
         string source,
         string expected)
     {
         AssertEffectGeneratedApplyQueuedMessage(source, expected);
+    }
+
+    [TestCase(
+        "you clasp your レーザーピストル eagerly.",
+        "あなたのレーザーピストルを嬉々として握りしめた。")]
+    [TestCase(
+        "The snapjaw clasps its レーザーピストル eagerly.",
+        "snapjawはそのレーザーピストルを嬉々として握りしめた。")]
+    [TestCase(
+        "you clasp your pistols eagerly.",
+        "あなたのピストルを熱心に握りしめた。")]
+    [TestCase(
+        "The snapjaw clasps its pistols eagerly.",
+        "snapjawはそのピストルを熱心に握りしめた。")]
+    public void EffectGeneratedApply_TranslatesEmptyTheClipsClaspQueuedMessages_WhenOwnerPatched(
+        string source,
+        string expected)
+    {
+        AssertEffectGeneratedApplyQueuedMessage(source, expected);
+    }
+
+    [TestCase("you begin sprinting!", "あなたは全力疾走を始めた！")]
+    [TestCase("The snapjaw begins running!", "snapjawは走り始めた！")]
+    public void EffectGeneratedApply_TranslatesRunningQueuedMessages_WhenOwnerPatched(
+        string source,
+        string expected)
+    {
+        AssertEffectGeneratedApplyQueuedMessage(source, expected);
+    }
+
+    [TestCase(
+        "The chrome idol exits sleep mode by emergency interrupt.",
+        "chrome idolは緊急割り込みでスリープモードを解除した。")]
+    [TestCase(
+        "The snapjaw wakes up in a daze.",
+        "snapjawはもうろうとして目を覚ました。")]
+    [TestCase(
+        "The snapjaw is stunned!",
+        "snapjawは気絶した！")]
+    [TestCase(
+        "The snapjaw is held in place by the steel net!",
+        "snapjawはsteel netに押さえつけられている！")]
+    public void EffectGeneratedFireEvent_TranslatesGeneratedEffectQueuedMessages_WhenOwnerPatched(
+        string source,
+        string expected)
+    {
+        AssertEffectGeneratedFireEventQueuedMessage(source, expected);
+    }
+
+    [Test]
+    public void EffectGeneratedBeginTakeAction_TranslatesStunRemainQueuedMessage_WhenOwnerPatched()
+    {
+        AssertEffectGeneratedBeginTakeActionQueuedMessage(
+            "The snapjaw remains stunned!",
+            "snapjawは気絶したままだ！");
+    }
+
+    [Test]
+    public void EffectGeneratedFireEvent_TranslatesIllRecoveryQueuedMessage_WhenOwnerPatched()
+    {
+        AssertEffectGeneratedFireEventQueuedMessage("you are no longer ill.", "病気が治った。");
+    }
+
+    [Test]
+    public void EffectGeneratedFireEvent_LeavesUnknownQueuedMessageUnchanged_WhenOwnerPatched()
+    {
+        AssertEffectGeneratedFireEventQueuedMessage("A strange event occurs.", "A strange event occurs.");
+    }
+
+    [Test]
+    public void EffectGeneratedFireEvent_TranslatesColorTaggedQueuedMessage_WhenOwnerPatched()
+    {
+        AssertEffectGeneratedFireEventQueuedMessage("{{R|you are no longer ill.}}", "{{R|病気が治った。}}");
+    }
+
+    [Test]
+    public void EffectGeneratedFireEvent_PreservesSubjectColorTag_WhenOwnerPatched()
+    {
+        AssertEffectGeneratedFireEventQueuedMessage(
+            "{{G|The snapjaw}} is no longer ill.",
+            "{{G|snapjaw}}は病気が治った。");
+    }
+
+    [TestCase(
+        "you dismiss snapjaw from your service.",
+        "あなたはsnapjawをあなたの配下から解放した。")]
+    [TestCase(
+        "The chrome idol dismisses snapjaw from its service.",
+        "chrome idolはsnapjawをその配下から解放した。")]
+    public void EffectGeneratedInventoryAction_TranslatesDismissQueuedMessages_WhenOwnerPatched(
+        string source,
+        string expected)
+    {
+        AssertEffectGeneratedInventoryActionQueuedMessage(source, expected);
+    }
+
+    [Test]
+    public void EffectGeneratedBeginTakeAction_LeavesUnknownQueuedMessageUnchanged_WhenOwnerPatched()
+    {
+        AssertEffectGeneratedBeginTakeActionQueuedMessage("The snapjaw remains dizzy!", "The snapjaw remains dizzy!");
+    }
+
+    [Test]
+    public void EffectGeneratedBeginTakeAction_TranslatesColorTaggedQueuedMessage_WhenOwnerPatched()
+    {
+        AssertEffectGeneratedBeginTakeActionQueuedMessage("{{R|The snapjaw remains stunned!}}", "{{R|snapjawは気絶したままだ！}}");
+    }
+
+    [Test]
+    public void EffectGeneratedInventoryAction_LeavesUnknownQueuedMessageUnchanged_WhenOwnerPatched()
+    {
+        AssertEffectGeneratedInventoryActionQueuedMessage(
+            "you invite snapjaw into your service.",
+            "you invite snapjaw into your service.");
+    }
+
+    [Test]
+    public void EffectGeneratedInventoryAction_TranslatesColorTaggedQueuedMessage_WhenOwnerPatched()
+    {
+        AssertEffectGeneratedInventoryActionQueuedMessage(
+            "{{R|you dismiss snapjaw from your service.}}",
+            "{{R|あなたはsnapjawをあなたの配下から解放した。}}");
+    }
+
+    [Test]
+    public void EffectGeneratedInventoryAction_PreservesSubjectColorTag_WhenOwnerPatched()
+    {
+        AssertEffectGeneratedInventoryActionQueuedMessage(
+            "{{G|The snapjaw}} dismisses you from its service.",
+            "{{G|snapjaw}}はあなたをその配下から解放した。");
     }
 
     [Test]
@@ -5391,6 +5564,30 @@ public sealed class CombatAndLogMessageQueuePatchTests
     }
 
     [Test]
+    public void EffectGeneratedFireEvent_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched()
+    {
+        AssertEffectGeneratedFireEventQueuedMessage(
+            MessageFrameTranslator.MarkDirectTranslation("The snapjaw is stunned!"),
+            "The snapjaw is stunned!");
+    }
+
+    [Test]
+    public void EffectGeneratedBeginTakeAction_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched()
+    {
+        AssertEffectGeneratedBeginTakeActionQueuedMessage(
+            MessageFrameTranslator.MarkDirectTranslation("The snapjaw remains stunned!"),
+            "The snapjaw remains stunned!");
+    }
+
+    [Test]
+    public void EffectGeneratedInventoryAction_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched()
+    {
+        AssertEffectGeneratedInventoryActionQueuedMessage(
+            MessageFrameTranslator.MarkDirectTranslation("you dismiss snapjaw from your service."),
+            "you dismiss snapjaw from your service.");
+    }
+
+    [Test]
     public void EffectGeneratedHandleEvent_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched()
     {
         AssertEffectGeneratedHandleEventQueuedMessage(string.Empty, string.Empty);
@@ -5400,6 +5597,24 @@ public sealed class CombatAndLogMessageQueuePatchTests
     public void EffectGeneratedApply_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched()
     {
         AssertEffectGeneratedApplyQueuedMessage(string.Empty, string.Empty);
+    }
+
+    [Test]
+    public void EffectGeneratedFireEvent_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched()
+    {
+        AssertEffectGeneratedFireEventQueuedMessage(string.Empty, string.Empty);
+    }
+
+    [Test]
+    public void EffectGeneratedBeginTakeAction_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched()
+    {
+        AssertEffectGeneratedBeginTakeActionQueuedMessage(string.Empty, string.Empty);
+    }
+
+    [Test]
+    public void EffectGeneratedInventoryAction_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched()
+    {
+        AssertEffectGeneratedInventoryActionQueuedMessage(string.Empty, string.Empty);
     }
 
     [TestCase(
@@ -5582,6 +5797,9 @@ public sealed class CombatAndLogMessageQueuePatchTests
     [TestCase(
         "You must wait {{C|You must wait 7 round before using Freezing Ray.}} to use that ability again.",
         "{{C|凍結線を使うには7ラウンド待つ必要がある。}}")]
+    [TestCase(
+        "You must wait {{C|\u0001凍結線を使うには1ラウンド待つ必要がある。}} to use that ability again.",
+        "{{C|凍結線を使うには1ラウンド待つ必要がある。}}")]
     public void AbilityManagerShow_TranslatesCooldownQueuedMessage_WhenOwnerPatched(
         string source,
         string expected)
@@ -10249,6 +10467,33 @@ public sealed class CombatAndLogMessageQueuePatchTests
         }
     }
 
+    private static void AssertIllRemoveQueuedMessage(string message, string expected)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummySimpleOwnerQueueTarget), nameof(DummySimpleOwnerQueueTarget.Remove), typeof(DummyGameObject)),
+                typeof(IllRemoveTranslationPatch));
+
+            var target = new DummySimpleOwnerQueueTarget
+            {
+                MessageToSend = message,
+            };
+
+            target.Remove(new DummyGameObject());
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
     private static void AssertEffectStaticApplyQueuedMessage(string message, string expected)
     {
         var harmonyId = CreateHarmonyId();
@@ -10410,6 +10655,90 @@ public sealed class CombatAndLogMessageQueuePatchTests
             };
 
             _ = target.Apply(new DummyGameObject());
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertEffectGeneratedFireEventQueuedMessage(string message, string expected)
+    {
+        UseRepositoryMessageFrames();
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummySimpleOwnerQueueTarget), nameof(DummySimpleOwnerQueueTarget.FireEvent), typeof(DummyEvent)),
+                typeof(EffectGeneratedMessageTranslationPatch));
+
+            var target = new DummySimpleOwnerQueueTarget
+            {
+                MessageToSend = message,
+            };
+
+            _ = target.FireEvent(new DummyEvent());
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertEffectGeneratedBeginTakeActionQueuedMessage(string message, string expected)
+    {
+        UseRepositoryMessageFrames();
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummySimpleOwnerQueueTarget), nameof(DummySimpleOwnerQueueTarget.HandleEvent), typeof(DummyBeginTakeActionEvent)),
+                typeof(EffectGeneratedMessageTranslationPatch));
+
+            var target = new DummySimpleOwnerQueueTarget
+            {
+                MessageToSend = message,
+            };
+
+            _ = target.HandleEvent(new DummyBeginTakeActionEvent());
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void AssertEffectGeneratedInventoryActionQueuedMessage(string message, string expected)
+    {
+        UseRepositoryMessageFrames();
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummySimpleOwnerQueueTarget), nameof(DummySimpleOwnerQueueTarget.HandleEvent), typeof(DummyInventoryActionEvent)),
+                typeof(EffectGeneratedMessageTranslationPatch));
+
+            var target = new DummySimpleOwnerQueueTarget
+            {
+                MessageToSend = message,
+            };
+
+            _ = target.HandleEvent(new DummyInventoryActionEvent());
 
             Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
         }
@@ -11516,6 +11845,14 @@ public sealed class CombatAndLogMessageQueuePatchTests
             builder.ToString(),
             new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
         MessagePatternTranslator.SetLeafFileForTests(Path.Combine(tempDirectory, "ui-messagelog-leaf.ja.json"));
+    }
+
+    private void WriteLiquidDictionaries()
+    {
+        File.WriteAllText(
+            Path.Combine(tempDirectory, "ui-liquids.ja.json"),
+            "{\"entries\":[{\"key\":\"water\",\"context\":\"XRL.Liquids\",\"text\":\"水\"},{\"key\":\"fresh water\",\"context\":\"XRL.Liquids\",\"text\":\"真水\"}]}\n",
+            new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
     }
 
     private static string EscapeJson(string value)

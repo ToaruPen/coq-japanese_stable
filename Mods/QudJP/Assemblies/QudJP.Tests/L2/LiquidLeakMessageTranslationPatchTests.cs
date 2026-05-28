@@ -11,10 +11,31 @@ namespace QudJP.Tests.L2;
 [NonParallelizable]
 public sealed class LiquidLeakMessageTranslationPatchTests
 {
+    private string tempDirectory = null!;
+
     [SetUp]
     public void SetUp()
     {
+        tempDirectory = Path.Combine(Path.GetTempPath(), "qudjp-liquid-leak-l2", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(tempDirectory);
+
+        Translator.ResetForTests();
+        ScopedDictionaryLookup.ResetForTests();
+        Translator.SetDictionaryDirectoryForTests(tempDirectory);
+        WriteLiquidDictionaries();
         DummyMessageQueue.Reset();
+    }
+
+    [TearDown]
+    public void TearDown()
+    {
+        Translator.ResetForTests();
+        ScopedDictionaryLookup.ResetForTests();
+
+        if (Directory.Exists(tempDirectory))
+        {
+            Directory.Delete(tempDirectory, recursive: true);
+        }
     }
 
     [TestCase(
@@ -126,6 +147,16 @@ public sealed class LiquidLeakMessageTranslationPatchTests
                 prefix: new HarmonyMethod(RequireMethod(typeof(LiquidLeakMessageTranslationPatch), nameof(LiquidLeakMessageTranslationPatch.Prefix))),
                 finalizer: new HarmonyMethod(RequireMethod(typeof(LiquidLeakMessageTranslationPatch), nameof(LiquidLeakMessageTranslationPatch.Finalizer), typeof(Exception))));
         }
+    }
+
+    private void WriteLiquidDictionaries()
+    {
+        File.WriteAllText(
+            Path.Combine(tempDirectory, "ui-liquids.ja.json"),
+            "{\"entries\":[{\"key\":\"water\",\"context\":\"XRL.Liquids\",\"text\":\"水\"},{\"key\":\"slime\",\"context\":\"XRL.Liquids\",\"text\":\"粘液\"}]}\n");
+        File.WriteAllText(
+            Path.Combine(tempDirectory, "ui-liquid-adjectives.ja.json"),
+            "{\"entries\":[{\"key\":\"algal\",\"context\":\"XRL.Liquids.Adjective\",\"text\":\"藻質の\"}]}\n");
     }
 
     private static void InvokeOwnerMethod(string methodName)

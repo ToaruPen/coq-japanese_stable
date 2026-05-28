@@ -17,6 +17,8 @@ internal static class MessageFrameTranslator
         new Regex(@"\{(?<index>\d+)\}", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex TranslatedPlaceholderPattern =
         new Regex(@"\{t(?<index>\d+)\}", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex AdverbPlaceholderPattern =
+        new Regex(@"\{a(?<index>\d+)\}", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     private static LoadedVerbDictionary? loadedDictionary;
     private static string? dictionaryPathOverride;
@@ -489,7 +491,7 @@ internal static class MessageFrameTranslator
     {
         var value = capture.Value;
         var indexText = value.Remove(startIndex: value.Length - 1, count: 1).Remove(startIndex: 0, count: 1);
-        if (indexText.Length > 0 && indexText[0] == 't')
+        if (indexText.Length > 0 && (indexText[0] == 't' || indexText[0] == 'a'))
         {
             indexText = indexText.Substring(1);
         }
@@ -501,8 +503,18 @@ internal static class MessageFrameTranslator
 
     private static string ApplyPlaceholderValues(string template, IReadOnlyDictionary<int, string> values)
     {
-        var translated = TranslatedPlaceholderPattern.Replace(
+        var translated = AdverbPlaceholderPattern.Replace(
             template,
+            match =>
+            {
+                var index = ParsePlaceholderIndex(match);
+                return values.TryGetValue(index, out var value)
+                    ? TranslateAdverbPlaceholderValue(value)
+                    : match.Value;
+            });
+
+        translated = TranslatedPlaceholderPattern.Replace(
+            translated,
             match =>
             {
                 var index = ParsePlaceholderIndex(match);
@@ -520,6 +532,20 @@ internal static class MessageFrameTranslator
                     ? value
                     : match.Value;
             });
+    }
+
+    private static string TranslateAdverbPlaceholderValue(string value)
+    {
+        var trimmed = NormalizeFragment(value);
+        if (trimmed is null)
+        {
+            Trace.TraceWarning("QudJP: TranslateAdverbPlaceholderValue received empty placeholder value.");
+            return string.Empty;
+        }
+
+        return DirectionPhraseTranslator.TryTranslateAdverbPhrase(trimmed, out var direction)
+            ? direction
+            : TranslatePlaceholderValue(trimmed);
     }
 
     private static string BuildSentence(string? subject, string predicate, string? endMark)
@@ -671,6 +697,11 @@ internal static class MessageFrameTranslator
             return possessivePhrase;
         }
 
+        if (TryTranslateBodyPartPlaceholderValue(trimmed, out var bodyPartName))
+        {
+            return bodyPartName;
+        }
+
         if (trimmed.EndsWith("'s", StringComparison.Ordinal))
         {
             return TranslatePlaceholderValue(trimmed.Substring(0, trimmed.Length - 2)) + "の";
@@ -709,6 +740,46 @@ internal static class MessageFrameTranslator
         }
 
         return trimmed;
+    }
+
+    private static bool TryTranslateBodyPartPlaceholderValue(string source, out string translated)
+    {
+        switch (source.Trim().ToUpperInvariant())
+        {
+            case "HAND":
+            case "HANDS":
+                translated = "手";
+                return true;
+            case "FIST":
+            case "FISTS":
+                translated = "拳";
+                return true;
+            case "FACE":
+                translated = "顔";
+                return true;
+            case "FOOT":
+            case "FEET":
+                translated = "足";
+                return true;
+            case "FOREFOOT":
+            case "FOREFEET":
+                translated = "前足";
+                return true;
+            case "MIDFOOT":
+            case "MIDFEET":
+                translated = "中足";
+                return true;
+            case "HINDFOOT":
+            case "HINDFEET":
+                translated = "後足";
+                return true;
+            case "MOUTH":
+                translated = "口";
+                return true;
+            default:
+                translated = string.Empty;
+                return false;
+        }
     }
 
     private static bool TryTranslateArticleSeparatedList(string source, out string translated)

@@ -13,9 +13,13 @@ public static class MechanicalWingsPopupTranslationPatch
     private const string Context = nameof(MechanicalWingsPopupTranslationPatch);
     private const string StartupFamily = "MechanicalWingsStartup";
     private const string UnresponsiveFamily = "MechanicalWingsUnresponsive";
+    private const string LongFallWarningFamily = "MechanicalWingsLongFallWarning";
 
     private static readonly Regex StatusPattern = new(
         "^(?:The |the |A |a |An |an )?(?<subject>.+?) (?:is|are) (?<extra>still starting up|unresponsive)(?<endmark>[.!])?$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex LongFallWarningPattern = new(
+        "^It looks like a long way down (?:the |a |an )?(?<subject>.+?) you're above\\. Are you sure you want to stop flying\\?$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     [ThreadStatic]
@@ -32,14 +36,27 @@ public static class MechanicalWingsPopupTranslationPatch
             return targets;
         }
 
-        var method = AccessTools.Method(targetType, "TryStartup", Type.EmptyTypes);
-        if (method is null)
+        var tryStartup = AccessTools.Method(targetType, "TryStartup", Type.EmptyTypes);
+        if (tryStartup is null)
         {
             Trace.TraceError("QudJP: {0}.TryStartup target not found.", Context);
-            return targets;
+        }
+        else
+        {
+            targets.Add(tryStartup);
         }
 
-        targets.Add(method);
+        var eventType = AccessTools.TypeByName("XRL.World.Event");
+        var fireEvent = eventType is null ? null : AccessTools.Method(targetType, "FireEvent", [eventType]);
+        if (fireEvent is null)
+        {
+            Trace.TraceError("QudJP: {0}.FireEvent target not found.", Context);
+        }
+        else
+        {
+            targets.Add(fireEvent);
+        }
+
         return targets;
     }
 
@@ -95,6 +112,22 @@ public static class MechanicalWingsPopupTranslationPatch
     private static bool TryTranslateCore(string source, out string translated)
     {
         var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        var longFallMatch = LongFallWarningPattern.Match(stripped);
+        if (longFallMatch.Success)
+        {
+            var longFallSubject = ColorAwareTranslationComposer.RestoreCapture(
+                longFallMatch.Groups["subject"].Value,
+                spans,
+                longFallMatch.Groups["subject"]).Trim();
+            var core = $"あなたがいる{longFallSubject}の下はかなり深そうだ。飛行をやめてもよいですか？";
+            translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+                core,
+                spans,
+                stripped.Length,
+                source);
+            return true;
+        }
+
         var match = StatusPattern.Match(stripped);
         if (!match.Success)
         {
@@ -114,6 +147,11 @@ public static class MechanicalWingsPopupTranslationPatch
     private static string GetFamilySuffix(string source)
     {
         var stripped = ColorAwareTranslationComposer.GetVisibleText(source);
+        if (stripped.Contains("long way down"))
+        {
+            return LongFallWarningFamily;
+        }
+
         return stripped.Contains("still starting up")
             ? StartupFamily
             : UnresponsiveFamily;

@@ -585,6 +585,30 @@ public sealed class XDidYTranslationPatchTests
     }
 
     [Test]
+    public void Prefix_TranslatesXDidYToZWadeThroughLiquid_DoesNotDuplicateLocalizedPuddleLiquid()
+    {
+        WriteDictionary(tier3: new[] { ("wade", "through {0}", "{0}の中をかき分けて進んだ") });
+        WriteUiDictionary(("salty water", "塩水"));
+
+        RunWithXDidYToZPatch(() =>
+        {
+            DummyXDidYTarget.XDidYToZ(
+                Actor: null,
+                Verb: "wade",
+                Preposition: "through",
+                Object: "塩水の水たまり of salty water",
+                SubjectOverride: "あなた",
+                AlwaysVisible: true);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyXDidYTarget.OriginalExecuted, Is.False);
+                Assert.That(lastMessage, Is.EqualTo("\u0001あなたは塩水の水たまりの中をかき分けて進んだ。"));
+            });
+        });
+    }
+
+    [Test]
     public void Prefix_TranslatesXDidYToZObjectDisplayNameBeforePrepositionSuffix()
     {
         File.WriteAllText(

@@ -9,6 +9,10 @@ namespace QudJP.Patches;
 public static class ZoneManagerGenerateZoneTranslationPatch
 {
     private const string Context = nameof(ZoneManagerGenerateZoneTranslationPatch);
+    private const string ForceStopPrompt =
+        "This zone isn't building properly. Do you want to force it to stop and build immediately?";
+    private const string TranslatedForceStopPrompt =
+        "このゾーンは正しく構築されていない。強制的に停止して、すぐに構築しますか？";
     private const string ReportIssuePrefix = "There was an issue building this zone. Automatically report it to us? ";
     private const string TranslatedReportIssuePrefix = "このゾーンの構築中に問題が発生した。自動的に報告しますか？ ";
 
@@ -86,6 +90,17 @@ public static class ZoneManagerGenerateZoneTranslationPatch
         if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
         {
             translated = markedText;
+            return true;
+        }
+
+        if (source == ForceStopPrompt)
+        {
+            translated = TranslatedForceStopPrompt;
+            DynamicTextObservability.RecordTransform(
+                route,
+                "Popup.ProducerText." + Context + ".GenerateZoneForceStopPopup",
+                source,
+                translated);
             return true;
         }
 

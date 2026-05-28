@@ -26,6 +26,7 @@ public sealed class WorldPartsProducerTranslationPatchTests
         MessagePatternTranslator.ResetForTests();
         MessagePatternTranslator.SetPatternFileForTests(patternFilePath);
         File.WriteAllText(patternFilePath, "{\"patterns\":[]}\n", new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
+        WriteLiquidDictionaries();
         DynamicTextObservability.ResetForTests();
         SinkObservation.ResetForTests();
         DummyPopupShow.Reset();
@@ -2145,6 +2146,14 @@ public sealed class WorldPartsProducerTranslationPatchTests
         builder.AppendLine();
 
         File.WriteAllText(patternFilePath, builder.ToString(), new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
+    }
+
+    private void WriteLiquidDictionaries()
+    {
+        File.WriteAllText(
+            Path.Combine(tempDirectory, "ui-liquids.ja.json"),
+            "{\"entries\":[{\"key\":\"water\",\"context\":\"XRL.Liquids\",\"text\":\"水\"},{\"key\":\"fresh water\",\"context\":\"XRL.Liquids\",\"text\":\"真水\"}]}\n",
+            new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
     }
 
     private static string EscapeJson(string value)

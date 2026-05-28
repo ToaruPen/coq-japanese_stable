@@ -27,7 +27,6 @@ public static class TelekinesisTranslationPatch
         if (eventType is null)
         {
             Trace.TraceError("QudJP: {0} InventoryActionEvent type not found.", Context);
-            return targets;
         }
 
         var targetType = AccessTools.TypeByName("XRL.World.Parts.Mutation.Telekinesis");
@@ -37,14 +36,36 @@ public static class TelekinesisTranslationPatch
             return targets;
         }
 
-        var method = AccessTools.Method(targetType, "HandleEvent", [eventType]);
+        var method = eventType is null ? null : AccessTools.Method(targetType, "HandleEvent", [eventType]);
         if (method is not null)
         {
             targets.Add(method);
-            return targets;
+        }
+        else
+        {
+            Trace.TraceError("QudJP: {0}.{1}.HandleEvent target not found.", Context, targetType.FullName);
         }
 
-        Trace.TraceError("QudJP: {0}.{1}.HandleEvent target not found.", Context, targetType.FullName);
+        var activateMethod = AccessTools.Method(targetType, "Activate", [typeof(bool)]);
+        if (activateMethod is not null)
+        {
+            targets.Add(activateMethod);
+        }
+        else
+        {
+            Trace.TraceError("QudJP: {0}.{1}.Activate target not found.", Context, targetType.FullName);
+        }
+
+        var attemptMethod = AccessTools.Method(targetType, "AttemptTelekinesis");
+        if (attemptMethod is not null)
+        {
+            targets.Add(attemptMethod);
+        }
+        else
+        {
+            Trace.TraceError("QudJP: {0}.{1}.AttemptTelekinesis target not found.", Context, targetType.FullName);
+        }
+
         return targets;
     }
 
@@ -89,6 +110,11 @@ public static class TelekinesisTranslationPatch
         }
 
         var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        if (TryTranslateExactPopup(stripped, spans, source, route, family, out translated))
+        {
+            return true;
+        }
+
         var match = ObjectNotBudgePattern.Match(stripped);
         if (!match.Success || string.Equals(match.Groups["object"].Value, "You", StringComparison.Ordinal))
         {
@@ -99,6 +125,37 @@ public static class TelekinesisTranslationPatch
         var subject = RestoreObject(match, spans);
         translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
             $"{subject}はびくともしない。",
+            spans,
+            stripped.Length,
+            source);
+        DynamicTextObservability.RecordTransform(route, family + "." + Context, source, translated);
+        return true;
+    }
+
+    private static bool TryTranslateExactPopup(
+        string stripped,
+        IReadOnlyList<ColorSpan> spans,
+        string source,
+        string route,
+        string family,
+        out string translated)
+    {
+        var replacement = stripped switch
+        {
+            "Your psyche is too exhausted." => "精神が疲弊しすぎている。",
+            "There is nothing you can telekinetically manipulate there." => "そこには念動力で操作できるものがない。",
+            "You do not budge." => "あなたはびくともしない。",
+            _ => null,
+        };
+
+        if (replacement is null)
+        {
+            translated = source;
+            return false;
+        }
+
+        translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+            replacement,
             spans,
             stripped.Length,
             source);

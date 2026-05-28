@@ -53,6 +53,7 @@ public static class PopupShowSpaceTranslationPatch
     {
         try
         {
+            PopupTranslatedMessageHandoff.EnterScope();
             if (__args.Length == 0)
             {
                 return;
@@ -72,5 +73,19 @@ public static class PopupShowSpaceTranslationPatch
         {
             Trace.TraceError("QudJP: {0}.Prefix failed: {1}", Context, ex);
         }
+    }
+
+    public static Exception? Finalizer(Exception? __exception)
+    {
+        try
+        {
+            PopupTranslatedMessageHandoff.ExitCurrentScope();
+        }
+        catch (Exception ex)
+        {
+            Trace.TraceError("QudJP: {0}.Finalizer failed: {1}", Context, ex);
+        }
+
+        return __exception;
     }
 }

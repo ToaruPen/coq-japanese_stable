@@ -749,6 +749,54 @@ internal sealed class DummySifrahPureOwnerPopupProducerTarget
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
+    public void BaetylOfferingCheckEarlyExit(DummyGameObject contextObject)
+    {
+        ShowPopup(nameof(BaetylOfferingCheckEarlyExit), contextObject);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public void BeguilingCheckEarlyExit(DummyGameObject contextObject)
+    {
+        ShowPopup(nameof(BeguilingCheckEarlyExit), contextObject);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public void FormalWaterRitualCheckEarlyExit(DummyGameObject contextObject)
+    {
+        ShowPopup(nameof(FormalWaterRitualCheckEarlyExit), contextObject);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public void HagglingCheckEarlyExit(DummyGameObject contextObject)
+    {
+        ShowPopup(nameof(HagglingCheckEarlyExit), contextObject);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public void ItemNamingCheckEarlyExit(DummyGameObject contextObject)
+    {
+        ShowPopup(nameof(ItemNamingCheckEarlyExit), contextObject);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public void ProselytizationCheckEarlyExit(DummyGameObject contextObject)
+    {
+        ShowPopup(nameof(ProselytizationCheckEarlyExit), contextObject);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public void PsychicCombatCheckEarlyExit(DummyGameObject contextObject)
+    {
+        ShowPopup(nameof(PsychicCombatCheckEarlyExit), contextObject);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public void RebukingCheckEarlyExit(DummyGameObject contextObject)
+    {
+        ShowPopup(nameof(RebukingCheckEarlyExit), contextObject);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
     public void ReverseEngineeringCheckEarlyExit(DummyGameObject contextObject)
     {
         ShowPopup(nameof(ReverseEngineeringCheckEarlyExit), contextObject);
@@ -808,6 +856,12 @@ internal sealed class DummySifrahPureOwnerPopupProducerTarget
         ShowPopup(nameof(SifrahGameMakeMoveForSlot), contextObject);
     }
 
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public void SifrahGameUseInsight(DummyGameObject contextObject)
+    {
+        ShowPopup(nameof(SifrahGameUseInsight), contextObject);
+    }
+
     private void ShowPopup(string methodName, DummyGameObject contextObject)
     {
         _ = methodName;
@@ -815,6 +869,12 @@ internal sealed class DummySifrahPureOwnerPopupProducerTarget
         if (PopupMethod == nameof(DummyPopupShow.ShowYesNoCancel))
         {
             _ = DummyPopupShow.ShowYesNoCancel(PopupMessageToShow);
+            return;
+        }
+
+        if (PopupMethod == nameof(DummyPopupShow.ShowYesNo))
+        {
+            _ = DummyPopupShow.ShowYesNo(PopupMessageToShow);
             return;
         }
 

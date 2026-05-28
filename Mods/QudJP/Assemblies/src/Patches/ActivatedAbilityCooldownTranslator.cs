@@ -44,6 +44,24 @@ internal static class ActivatedAbilityCooldownTranslator
         return ColorAwareTranslationComposer.TranslatePreservingColors(source, TranslateVisibleDuration);
     }
 
+    internal static bool TryStripDirectMarkedCooldownDuration(string source, out string translated)
+    {
+        var matched = false;
+        translated = ColorAwareTranslationComposer.TranslatePreservingColors(
+            source,
+            visible =>
+            {
+                if (!MessageFrameTranslator.TryStripDirectTranslationMarker(visible, out var stripped))
+                {
+                    return visible;
+                }
+
+                matched = true;
+                return stripped;
+            });
+        return matched;
+    }
+
     private static string TranslateRawCooldown(
         string source,
         Match match,

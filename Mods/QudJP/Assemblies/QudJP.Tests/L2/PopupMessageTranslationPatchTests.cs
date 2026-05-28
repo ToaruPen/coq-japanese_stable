@@ -30,6 +30,7 @@ public sealed class PopupMessageTranslationPatchTests
         MessagePatternTranslator.SetPatternFileForTests(patternFilePath);
         DynamicTextObservability.ResetForTests();
         SinkObservation.ResetForTests();
+        PopupTranslatedMessageHandoff.ResetForTests();
         File.WriteAllText(patternFilePath, "{\"patterns\":[]}\n", new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
         DummyPopupMessageTarget.Reset();
     }
@@ -41,6 +42,7 @@ public sealed class PopupMessageTranslationPatchTests
         MessagePatternTranslator.ResetForTests();
         DynamicTextObservability.ResetForTests();
         SinkObservation.ResetForTests();
+        PopupTranslatedMessageHandoff.ResetForTests();
 
         if (Directory.Exists(tempDirectory))
         {
@@ -189,6 +191,233 @@ public sealed class PopupMessageTranslationPatchTests
             target.ShowPopup("Unknown English Text");
 
             Assert.That(DummyPopupMessageTarget.LastMessage, Is.EqualTo("Unknown English Text"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void Prefix_UsesPopupShowOwnerHandoff_WhenNewPopupQueueReceivesMarkupTransformedOriginal()
+    {
+        WriteDictionary(
+            ("mutation:Triple-jointed", "関節が異様に柔らかい。"),
+            ("mutation:Triple-jointed:rank:1", "敏捷+{{rules|2}}\nスプリントと敏捷前提のスキルが使用後にクールダウンしない確率 {{rules|10%}}"),
+            ("mutation:Triple-jointed:rank:2", "敏捷+{{rules|2}}\nスプリントと敏捷前提のスキルが使用後にクールダウンしない確率 {{rules|13%}}"),
+            ("This rank", "現在ランク"),
+            ("Next rank", "次ランク"));
+
+        const string source =
+            "Your joints stretch much further than usual.\n\n{{w|This rank}}:\n+{{rules|2}} Agility\n{{rules|10%}} chance that Sprint and skills with Agility prerequisites don't go on cooldown after use\n\n{{w|Next rank}}:\n+{{rules|2}} Agility\n{{rules|13%}} chance that Sprint and skills with Agility prerequisites don't go on cooldown after use\n\n{{C|* This mutationの base rank is 1.}}\n\nIt will cost {{C|1}} mutation point to increase 三重関節's rank by 1.\nDo you wish to increase this mutationの rank?";
+        const string markupTransformedSource =
+            "&yYour joints stretch much further than usual.\n\n&wThis rank&y:\n+&C2&y Agility\n&C10%&y chance that Sprint and skills with Agility prerequisites don't go on cooldown after use\n\n&wNext rank&y:\n+&C2&y Agility\n&C13%&y chance that Sprint and skills with Agility prerequisites don't go on cooldown after use\n\n&C* This mutationの base rank is 1.&y\n\nIt will cost &C1&y mutation point to increase 三重関節's rank by 1.\nDo you wish to increase this mutationの rank?";
+
+        object? ownerState = null;
+        StatusScreenMutationPopupTranslationPatch.Prefix(
+            new DummyCharacterMutation { EntryName = "Triple-jointed", DisplayName = "三重関節", Level = 1 },
+            out ownerState);
+        PopupTranslatedMessageHandoff.EnterScope(out var handoffScope);
+        try
+        {
+            _ = PopupShowSemanticPipeline.TranslateMessage(source, nameof(PopupShowTranslationPatch));
+
+            var harmonyId = CreateHarmonyId();
+            var harmony = new Harmony(harmonyId);
+
+            try
+            {
+                harmony.Patch(
+                    original: RequireMethod(typeof(DummyPopupMessageTarget), nameof(DummyPopupMessageTarget.ShowPopup)),
+                    prefix: new HarmonyMethod(RequireMethod(typeof(PopupMessageTranslationPatch), nameof(PopupMessageTranslationPatch.Prefix))));
+
+                new DummyPopupMessageTarget().ShowPopup(markupTransformedSource);
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(DummyPopupMessageTarget.LastMessage, Does.Contain("関節が異様に柔らかい。"));
+                    Assert.That(DummyPopupMessageTarget.LastMessage, Does.Contain("{{w|現在ランク}}:"));
+                    Assert.That(DummyPopupMessageTarget.LastMessage, Does.Contain("{{C|* この変異の基本ランクは1。}}"));
+                    Assert.That(DummyPopupMessageTarget.LastMessage, Does.EndWith("三重関節のランクを1上げるには変異ポイントが{{C|1}}ポイント必要だ。\nこの変異のランクを上げますか？"));
+                    Assert.That(DummyPopupMessageTarget.LastMessage, Does.Not.Contain("Your joints"));
+                });
+            }
+            finally
+            {
+                harmony.UnpatchAll(harmonyId);
+            }
+        }
+        finally
+        {
+            PopupTranslatedMessageHandoff.ExitScope(handoffScope);
+            _ = StatusScreenMutationPopupTranslationPatch.Finalizer(null, ownerState);
+        }
+    }
+
+    [Test]
+    public void Prefix_DoesNotReusePopupShowHandoffAcrossDifferentColorShape()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyPopupMessageTarget), nameof(DummyPopupMessageTarget.ShowPopup)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(PopupMessageTranslationPatch), nameof(PopupMessageTranslationPatch.Prefix))));
+
+            var target = new DummyPopupMessageTarget();
+            string? firstMessage = null;
+            string? secondMessage = null;
+            WithPopupHandoffScope(() =>
+            {
+                PopupTranslatedMessageHandoff.Remember("{{R|same text}}", "{{R|翻訳済み}}");
+                target.ShowPopup("{{G|same text}}");
+                firstMessage = DummyPopupMessageTarget.LastMessage;
+                target.ShowPopup("{{R|same text}}");
+                secondMessage = DummyPopupMessageTarget.LastMessage;
+                target.ShowPopup("{{R|same text}}");
+            });
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(firstMessage, Is.EqualTo("{{G|same text}}"));
+                Assert.That(secondMessage, Is.EqualTo("{{R|翻訳済み}}"));
+                Assert.That(DummyPopupMessageTarget.LastMessage, Is.EqualTo("{{R|same text}}"));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void Prefix_DoesNotDropPopupShowHandoff_WhenDifferentMessageArrivesFirst()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyPopupMessageTarget), nameof(DummyPopupMessageTarget.ShowPopup)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(PopupMessageTranslationPatch), nameof(PopupMessageTranslationPatch.Prefix))));
+
+            var target = new DummyPopupMessageTarget();
+            string? unrelatedMessage = null;
+            WithPopupHandoffScope(() =>
+            {
+                PopupTranslatedMessageHandoff.Remember("{{R|same text}}", "{{R|翻訳済み}}");
+                target.ShowPopup("{{G|different text}}");
+                unrelatedMessage = DummyPopupMessageTarget.LastMessage;
+                target.ShowPopup("{{R|same text}}");
+            });
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(unrelatedMessage, Is.EqualTo("{{G|different text}}"));
+                Assert.That(DummyPopupMessageTarget.LastMessage, Is.EqualTo("{{R|翻訳済み}}"));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void Prefix_PreservesNestedPopupShowHandoffs()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyPopupMessageTarget), nameof(DummyPopupMessageTarget.ShowPopup)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(PopupMessageTranslationPatch), nameof(PopupMessageTranslationPatch.Prefix))));
+
+            var target = new DummyPopupMessageTarget();
+            string? innerMessage = null;
+            WithPopupHandoffScope(() =>
+            {
+                PopupTranslatedMessageHandoff.Remember("{{R|outer text}}", "{{R|外側}}");
+                WithPopupHandoffScope(() =>
+                {
+                    PopupTranslatedMessageHandoff.Remember("{{G|inner text}}", "{{G|内側}}");
+                    target.ShowPopup("{{G|inner text}}");
+                    innerMessage = DummyPopupMessageTarget.LastMessage;
+                });
+
+                target.ShowPopup("{{R|outer text}}");
+            });
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(innerMessage, Is.EqualTo("{{G|内側}}"));
+                Assert.That(DummyPopupMessageTarget.LastMessage, Is.EqualTo("{{R|外側}}"));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void Prefix_ConsumesPopupShowHandoffOnce()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyPopupMessageTarget), nameof(DummyPopupMessageTarget.ShowPopup)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(PopupMessageTranslationPatch), nameof(PopupMessageTranslationPatch.Prefix))));
+
+            var target = new DummyPopupMessageTarget();
+            string? firstMessage = null;
+            WithPopupHandoffScope(() =>
+            {
+                PopupTranslatedMessageHandoff.Remember("{{R|same text}}", "{{R|翻訳済み}}");
+                target.ShowPopup("{{R|same text}}");
+                firstMessage = DummyPopupMessageTarget.LastMessage;
+                target.ShowPopup("{{R|same text}}");
+            });
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(firstMessage, Is.EqualTo("{{R|翻訳済み}}"));
+                Assert.That(DummyPopupMessageTarget.LastMessage, Is.EqualTo("{{R|same text}}"));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void Prefix_DoesNotConsumeStaleHandoffAfterPopupShowScopeExits()
+    {
+        WithPopupHandoffScope(() =>
+            PopupTranslatedMessageHandoff.Remember("{{R|same text}}", "{{R|翻訳済み}}"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyPopupMessageTarget), nameof(DummyPopupMessageTarget.ShowPopup)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(PopupMessageTranslationPatch), nameof(PopupMessageTranslationPatch.Prefix))));
+
+            WithPopupHandoffScope(() =>
+                new DummyPopupMessageTarget().ShowPopup("{{R|same text}}"));
+
+            Assert.That(DummyPopupMessageTarget.LastMessage, Is.EqualTo("{{R|same text}}"));
         }
         finally
         {
@@ -435,6 +664,19 @@ public sealed class PopupMessageTranslationPatchTests
     {
         return AccessTools.Method(type, methodName)
             ?? throw new InvalidOperationException($"Method not found: {type.FullName}.{methodName}");
+    }
+
+    private static void WithPopupHandoffScope(Action action)
+    {
+        PopupTranslatedMessageHandoff.EnterScope(out var scopeId);
+        try
+        {
+            action();
+        }
+        finally
+        {
+            PopupTranslatedMessageHandoff.ExitScope(scopeId);
+        }
     }
 
     private void WriteDictionary(params (string key, string text)[] entries)

@@ -430,6 +430,14 @@ public sealed class DoesVerbFamilyTests
     [TestCase("The 回収装置 reclaims a 金属片.", "回収装置は金属片を回収した。")]
     [TestCase("The 盗賊 bot snags your 光線銃!", "盗賊 botはあなたの光線銃をかすめ取った！")]
     [TestCase("The 装置 needs 3 more rounds before it can be fired again.", "装置は再発射まであと3ラウンド必要だ。")]
+    [TestCase("The 装置 is unresponsive as it cools down.", "装置は冷却中で反応しない。")]
+    [TestCase("The 装置 is not loaded with the correct liquid.", "装置には正しい液体が装填されていない。")]
+    [TestCase("The 装置 is empty.", "装置は空になった。")]
+    [TestCase("The 武器 is already fully loaded.", "武器はすでに完全に装填されている")]
+    [TestCase("The 武器 has no more ammo!", "武器の弾薬が尽きた！")]
+    [TestCase("The 武器 is jammed!", "武器は動作不良を起こした！")]
+    [TestCase("The リコイラー has been hacked.", "リコイラーはハッキングされた")]
+    [TestCase("The スナップジョー resists your domination!", "スナップジョーはあなたの支配に抵抗した！")]
     [TestCase("The 商人 is already your follower. Do you want to beguile it anyway?", "商人はすでにあなたの仲間だ。それでも魅了しますか？")]
     public void Translate_ReviewedDoesFamilies(string input, string expected)
     {

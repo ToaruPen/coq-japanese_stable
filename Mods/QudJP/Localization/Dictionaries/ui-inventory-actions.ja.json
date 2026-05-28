@@ -288,6 +288,51 @@
       "key": "Treat disease onset.",
       "context": "XRL.World.IInventoryActionsEvent",
       "text": "発症前の病を治療する。"
+    },
+    {
+      "key": "fight fire",
+      "context": "XRL.World.IInventoryActionsEvent",
+      "text": "消火する"
+    },
+    {
+      "key": "wake",
+      "context": "XRL.World.IInventoryActionsEvent",
+      "text": "起こす"
+    },
+    {
+      "key": "cancel life drain",
+      "context": "XRL.World.IInventoryActionsEvent",
+      "text": "生命吸収を中止する"
+    },
+    {
+      "key": "dismiss",
+      "context": "XRL.World.IInventoryActionsEvent",
+      "text": "解散させる"
+    },
+    {
+      "key": "direct to stop flying",
+      "context": "XRL.World.IInventoryActionsEvent",
+      "text": "飛行をやめるよう指示"
+    },
+    {
+      "key": "stop auto-collecting liquid",
+      "context": "XRL.World.IInventoryActionsEvent",
+      "text": "液体の自動採取をやめる"
+    },
+    {
+      "key": "auto-collect liquid",
+      "context": "XRL.World.IInventoryActionsEvent",
+      "text": "液体を自動採取する"
+    },
+    {
+      "key": "clean all your items [1 dram]",
+      "context": "XRL.World.IInventoryActionsEvent",
+      "text": "手持ちのアイテムをすべて洗う [1 ドラム]"
+    },
+    {
+      "key": "stand up",
+      "context": "XRL.World.IInventoryActionsEvent",
+      "text": "立ち上がる"
     }
   ]
 }

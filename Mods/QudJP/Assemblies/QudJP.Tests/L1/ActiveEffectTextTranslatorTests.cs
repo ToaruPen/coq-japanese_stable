@@ -56,9 +56,15 @@ public sealed class ActiveEffectTextTranslatorTests
     }
 
     [Test]
-    public void TryTranslateText_DoesNotLeaveEmptyLiquidColorWrappers_WhenCoveredLiquidIsColoredByParts()
+    public void TryTranslateText_ComposesCoveredLiquidFromAdjectiveAndLiquid_WhenCoveredLiquidIsColoredByParts()
     {
         WriteDictionary(("salty water", "塩水"));
+        WriteScopedDictionary(
+            "ui-liquid-adjectives.ja.json",
+            ("salty", "XRL.Liquids.Adjective", "塩気のある"));
+        WriteScopedDictionary(
+            "ui-liquids.ja.json",
+            ("water", "XRL.Liquids", "水"));
 
         var changed = ActiveEffectTextTranslator.TryTranslateText(
             "Covered in 43 dram of {{Y|salty}} {{B|water}}.",
@@ -69,7 +75,7 @@ public sealed class ActiveEffectTextTranslatorTests
         Assert.Multiple(() =>
         {
             Assert.That(changed, Is.True);
-            Assert.That(translated, Is.EqualTo("塩水を43ドラム浴びている。"));
+            Assert.That(translated, Is.EqualTo("塩気のある水を43ドラム浴びている。"));
             Assert.That(translated, Does.Not.Contain("{{Y|}}"));
             Assert.That(translated, Does.Not.Contain("{{B|}}"));
         });
@@ -104,7 +110,7 @@ public sealed class ActiveEffectTextTranslatorTests
     {
         WriteScopedDictionary(
             "ui-liquid-adjectives.ja.json",
-            ("brackish", "XRL.Liquids.Adjective", "塩気混じりの"),
+            ("brackish", "XRL.Liquids.Adjective", "塩分混じりの"),
             ("bloody", "XRL.Liquids.Adjective", "血混じりの"));
         WriteScopedDictionary(
             "ui-liquids.ja.json",
@@ -119,7 +125,7 @@ public sealed class ActiveEffectTextTranslatorTests
         Assert.Multiple(() =>
         {
             Assert.That(changed, Is.True);
-            Assert.That(translated, Is.EqualTo("塩気混じりの血混じりの粘液を31ドラム浴びている。"));
+            Assert.That(translated, Is.EqualTo("塩分混じりの血混じりの粘液を31ドラム浴びている。"));
             Assert.That(Translator.GetMissingKeyHitCountForTests("brackish bloody slime"), Is.EqualTo(0));
         });
     }

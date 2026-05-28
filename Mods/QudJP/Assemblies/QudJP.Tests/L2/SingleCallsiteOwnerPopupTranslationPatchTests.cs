@@ -209,6 +209,12 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "GenocideCurioActivation",
         PopupMethod.Show)]
     [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.HandleSpiralBorerCurio),
+        "The metal satchel opens, folds itself inside out, and transforms into a contraption studded with pinions and drills. It starts to burrow into the ground.",
+        "金属製のバッグが開いて裏返り、ピニオンとドリルが突き出た装置へ変形した。それは地面に穴を掘り始めた。",
+        "SpiralBorerCurioActivation",
+        PopupMethod.Show)]
+    [TestCase(
         nameof(DummySingleCallsiteOwnerPopupTarget.HandleGritGateMainframeTerminal),
         "The mainframe is unresponsive.",
         "The mainframeは反応しない。",
@@ -491,6 +497,18 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "MutationWishDidYouMean",
         PopupMethod.ShowYesNo)]
     [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.WishMutation),
+        "No mutation by the name 'Light Manipulations' could be found.",
+        "「Light Manipulations」という変異は見つからない。",
+        "MutationWishMissingName",
+        PopupMethod.Show)]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.WishMutation),
+        "No mutation by the name 'Wings' and variant 'crystal' could be found.",
+        "「Wings」のバリアント「crystal」という変異は見つからない。",
+        "MutationWishMissingVariant",
+        PopupMethod.Show)]
+    [TestCase(
         nameof(DummySingleCallsiteOwnerPopupTarget.HandleBlueprintXML),
         "No blueprint named \"Chrome Idol\" found.",
         "「Chrome Idol」というブループリントは見つからない。",
@@ -714,6 +732,10 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "GenocideCurioActivation",
         PopupMethod.Show)]
     [TestCase(
+        "The metal satchel opens, folds itself inside out, and transforms into a contraption studded with pinions and drills. It starts to burrow into the ground.",
+        "SpiralBorerCurioActivation",
+        PopupMethod.Show)]
+    [TestCase(
         "The mainframe is unresponsive.",
         "GritGateMainframeUnresponsive",
         PopupMethod.Show)]
@@ -858,6 +880,14 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "MutationWishDidYouMean",
         PopupMethod.ShowYesNo)]
     [TestCase(
+        "No mutation by the name 'Light Manipulations' could be found.",
+        "MutationWishMissingName",
+        PopupMethod.Show)]
+    [TestCase(
+        "No mutation by the name 'Wings' and variant 'crystal' could be found.",
+        "MutationWishMissingVariant",
+        PopupMethod.Show)]
+    [TestCase(
         "No blueprint named \"Chrome Idol\" found.",
         "GameObjectFactoryMissingBlueprint",
         PopupMethod.Show)]
@@ -980,6 +1010,9 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "You activate the curio and toss it on the ground. It erupts into a throng of tiny polygons, which amalgamate into a fully formed {{Y|polygonal snapjaw}}.",
         "SummoningCurioActivation")]
     [TestCase(
+        "The metal satchel opens, folds itself inside out, and transforms into a contraption studded with pinions and drills. It starts to burrow into the ground.",
+        "SpiralBorerCurioActivation")]
+    [TestCase(
         "You eat the {{Y|jerky}}.\n塩辛い。\nYou are now {{|{{g|Sated}}}} and {{|{{g|Quenched}}}}.",
         "FoodConsumptionFrame")]
     [TestCase(
@@ -1019,6 +1052,12 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "Did you mean Light Manipulation?",
         "MutationWishDidYouMean")]
     [TestCase(
+        "No mutation by the name 'Light Manipulations' could be found.",
+        "MutationWishMissingName")]
+    [TestCase(
+        "No mutation by the name 'Wings' and variant 'crystal' could be found.",
+        "MutationWishMissingVariant")]
+    [TestCase(
         "No blueprint named \"Chrome Idol\" found.",
         "GameObjectFactoryMissingBlueprint")]
     [TestCase(
@@ -1055,6 +1094,33 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         {
             Assert.That(translated, Is.EqualTo(source));
             Assert.That(HitCount("BaetylRewardWish"), Is.Zero);
+        });
+    }
+
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.HandleSpiralBorerCurio),
+        "The metal satchel opens, folds itself inside out, and transforms into a contraption studded with pinions and drills. It starts to burrow into the ground.",
+        "SpiralBorerCurioActivation")]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.WishMutation),
+        "No mutation by the name 'Light Manipulations' could be found.",
+        "MutationWishMissingName")]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.WishMutation),
+        "No mutation by the name 'Wings' and variant 'crystal' could be found.",
+        "MutationWishMissingVariant")]
+    public void Patch_DoesNotRetranslateDirectMarkedNewFamilyPopup_WhenOwnerPatched(
+        string methodName,
+        string unmarked,
+        string detail)
+    {
+        Assert.That(
+            TryTranslateForOwner(methodName, MessageFrameTranslator.MarkDirectTranslation(unmarked), out var translated),
+            Is.True);
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.EqualTo(unmarked));
+            Assert.That(HitCount(detail), Is.Zero);
         });
     }
 
@@ -1167,14 +1233,6 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "{{Y|The steel boots}} become magnetized!",
         "MagnetizedApplicatorCrumbles")]
     [TestCase(
-        nameof(DummySingleCallsiteOwnerPopupTarget.WishMutation),
-        "No mutation by the name 'Light Manipulations' could be found.",
-        "MutationWishDidYouMean")]
-    [TestCase(
-        nameof(DummySingleCallsiteOwnerPopupTarget.WishMutation),
-        "No mutation by the name 'Wings' and variant 'crystal' could be found.",
-        "MutationWishDidYouMean")]
-    [TestCase(
         nameof(DummySingleCallsiteOwnerPopupTarget.WishGeneratePopulation),
         "The population 'JoppaVillagers' distributed as follows over 1000 generations;\nSnapjaw: 1.00000%",
         "PopulationManagerMissingTable")]
@@ -1284,6 +1342,8 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
                 "XRL.World.Parts.GameUnique|OnCreated",
             nameof(DummySingleCallsiteOwnerPopupTarget.HandleGenocideCurio) =>
                 "XRL.World.Parts.GenocideCurio|HandleEvent",
+            nameof(DummySingleCallsiteOwnerPopupTarget.HandleSpiralBorerCurio) =>
+                "XRL.World.Parts.SpiralBorerCurio|HandleEvent",
             nameof(DummySingleCallsiteOwnerPopupTarget.HandleGritGateMainframeTerminal) =>
                 "XRL.World.Parts.GritGateMainframeTerminal|HandleEvent",
             nameof(DummySingleCallsiteOwnerPopupTarget.HandleHindrenMysteryCriticalNpc) =>

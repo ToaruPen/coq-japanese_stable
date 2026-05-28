@@ -54,6 +54,8 @@ public sealed class AbilityBarButtonTextTranslationPatchTests
             ("Sense", "感知"),
             ("Discharge", "放電"),
             ("Lase", "レーザー照射"),
+            ("Lay Mine", "地雷設置"),
+            ("{{W|high explosive}}", "{{W|高性能爆薬}}"),
             ("Aggressive Stance", "攻勢の構え"),
             ("Defensive Stance", "守勢の構え"),
             ("Rebuke Robot", "ロボットを叱責"),
@@ -90,6 +92,8 @@ public sealed class AbilityBarButtonTextTranslationPatchTests
             var trashRifling = new DummyAbilityBarButton("&CRifle through Trash {{K|[{{g|on}}]}}");
             var mark = new DummyAbilityBarButton("&CMark");
             var activate = new DummyAbilityBarButton("Activate");
+            var activateLocalizedItem = new DummyAbilityBarButton("Activate ナインフォールドのブーツ");
+            var layMineTarget = new DummyAbilityBarButton("Lay Mine [{{W|high explosive}} mk I]");
             var recoil = new DummyAbilityBarButton("Recoil");
             var recoilToJoppa = new DummyAbilityBarButton("Recoil to Joppa");
             var coloredRecoilToJoppa = new DummyAbilityBarButton("&CRecoil to Joppa {{K|[disabled]}}");
@@ -111,6 +115,8 @@ public sealed class AbilityBarButtonTextTranslationPatchTests
             target.AbilityButtons.Add(trashRifling);
             target.AbilityButtons.Add(mark);
             target.AbilityButtons.Add(activate);
+            target.AbilityButtons.Add(activateLocalizedItem);
+            target.AbilityButtons.Add(layMineTarget);
             target.AbilityButtons.Add(recoil);
             target.AbilityButtons.Add(recoilToJoppa);
             target.AbilityButtons.Add(coloredRecoilToJoppa);
@@ -137,6 +143,8 @@ public sealed class AbilityBarButtonTextTranslationPatchTests
                 Assert.That(trashRifling.Text.text, Is.EqualTo("&Cゴミ漁り {{K|[{{g|オン}}]}}"));
                 Assert.That(mark.Text.text, Is.EqualTo("&Cマーク"));
                 Assert.That(activate.Text.text, Is.EqualTo("起動"));
+                Assert.That(activateLocalizedItem.Text.text, Is.EqualTo("ナインフォールドのブーツを起動"));
+                Assert.That(layMineTarget.Text.text, Is.EqualTo("地雷設置 [{{W|高性能爆薬}}mk I]"));
                 Assert.That(recoil.Text.text, Is.EqualTo("帰還"));
                 Assert.That(recoilToJoppa.Text.text, Is.EqualTo("ジョッパへ帰還"));
                 Assert.That(coloredRecoilToJoppa.Text.text, Is.EqualTo("&Cジョッパへ帰還 {{K|[無効]}}"));
@@ -148,7 +156,7 @@ public sealed class AbilityBarButtonTextTranslationPatchTests
                     DynamicTextObservability.GetRouteFamilyHitCountForTests(
                         nameof(AbilityBarButtonTextTranslationPatch),
                         "AbilityBar.ButtonText"),
-                    Is.EqualTo(18));
+                    Is.EqualTo(20));
                 Assert.That(
                     SinkObservation.GetHitCountForTests(
                         nameof(UITextSkinTranslationPatch),
@@ -157,6 +165,43 @@ public sealed class AbilityBarButtonTextTranslationPatchTests
                         "&CSprint {{K|[disabled]}} {{Y|<{{w|S}}>}}",
                         "&CSprint {{K|[disabled]}} {{Y|<{{w|S}}>}}"),
                     Is.EqualTo(0));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void Postfix_TranslatesAbilityButtonTextThroughGameObjectComponentRoute()
+    {
+        WriteDictionary(
+            ("Sprint", "ダッシュ"),
+            ("[disabled]", "[無効]"));
+
+        var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyAbilityBarButtonTextTarget), nameof(DummyAbilityBarButtonTextTarget.Update)),
+                postfix: new HarmonyMethod(RequirePatchMethod("Postfix", typeof(object))));
+
+            var target = new DummyAbilityBarButtonTextTarget();
+            var sprint = new DummyAbilityBarButtonGameObject("&CSprint {{K|[disabled]}}");
+            target.AbilityButtons.Add(sprint);
+
+            target.Update();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(sprint.Text.text, Is.EqualTo("&Cダッシュ {{K|[無効]}}"));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(AbilityBarButtonTextTranslationPatch),
+                        "AbilityBar.ButtonText"),
+                    Is.EqualTo(1));
             });
         }
         finally
@@ -224,6 +269,38 @@ public sealed class AbilityBarButtonTextTranslationPatchTests
         var translated = AbilityBarButtonTextTranslationPatch.TranslateButtonTextForQudTest(source);
 
         Assert.That(translated, Is.EqualTo(source));
+    }
+
+    [Test]
+    public void TranslateButtonTextForQudTest_TranslatesPrecoloredDynamicNamesWithHotkeySuffix()
+    {
+        WriteDictionary(
+            ("Discharge", "放電"),
+            ("Lase", "レーザー照射"),
+            ("Lay Mine", "地雷設置"),
+            ("{{W|high explosive}}", "{{W|高性能爆薬}}"),
+            ("Recoil", "帰還"),
+            ("Joppa", "ジョッパ"));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                AbilityBarButtonTextTranslationPatch.TranslateButtonTextForQudTest(
+                    "<color=#77BFCFFF>Discharge [12000 charge] </color><color=#FFFFFFFF><</color><color=#98875FFF>4</color><color=#FFFFFFFF>></color>"),
+                Is.EqualTo("<color=#77BFCFFF>放電 [12000チャージ] </color><color=#FFFFFFFF><</color><color=#98875FFF>4</color><color=#FFFFFFFF>></color>"));
+            Assert.That(
+                AbilityBarButtonTextTranslationPatch.TranslateButtonTextForQudTest(
+                    "<color=#77BFCFFF>Lase (4 charges) </color><color=#FFFFFFFF><</color><color=#98875FFF>5</color><color=#FFFFFFFF>></color>"),
+                Is.EqualTo("<color=#77BFCFFF>レーザー照射 (4チャージ) </color><color=#FFFFFFFF><</color><color=#98875FFF>5</color><color=#FFFFFFFF>></color>"));
+            Assert.That(
+                AbilityBarButtonTextTranslationPatch.TranslateButtonTextForQudTest(
+                    "<color=#77BFCFFF>Lay Mine [{{W|high explosive}} mk I] </color><color=#FFFFFFFF><</color><color=#98875FFF>6</color><color=#FFFFFFFF>></color>"),
+                Is.EqualTo("<color=#77BFCFFF>地雷設置 [{{W|高性能爆薬}}mk I] </color><color=#FFFFFFFF><</color><color=#98875FFF>6</color><color=#FFFFFFFF>></color>"));
+            Assert.That(
+                AbilityBarButtonTextTranslationPatch.TranslateButtonTextForQudTest(
+                    "<color=#77BFCFFF>Recoil to Joppa </color><color=#FFFFFFFF><</color><color=#98875FFF>7</color><color=#FFFFFFFF>></color>"),
+                Is.EqualTo("<color=#77BFCFFF>ジョッパへ帰還 </color><color=#FFFFFFFF><</color><color=#98875FFF>7</color><color=#FFFFFFFF>></color>"));
+        });
     }
 
     [Test]

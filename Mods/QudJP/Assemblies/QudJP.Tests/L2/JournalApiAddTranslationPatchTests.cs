@@ -565,6 +565,73 @@ public sealed class JournalApiAddTranslationPatchTests
     }
 
     [Test]
+    public void AddAccomplishment_TranslatesTranche42SocialActiveEffectVariants_FromAssets_WhenPatched()
+    {
+        WriteExactDictionary(
+            ("chrome idol", "クローム偶像"),
+            ("snapjaw", "スナップジョー"),
+            ("clockwork beetle", "クロックワークビートル"),
+            ("5th", "第5"),
+            ("Iyur Ut", "イユル・ウト"),
+            ("Barathrumites", "バラサルマイト"));
+        var localizationRoot = Path.Combine(
+            QudJP.Tests.L1.TestProjectPaths.GetRepositoryRoot(),
+            "Mods",
+            "QudJP",
+            "Localization");
+        LocalizationAssetResolver.SetLocalizationRootForTests(localizationRoot);
+        JournalPatternTranslator.ResetForTests();
+
+        try
+        {
+            WithPatchedJournalApi(() =>
+            {
+                DummyJournalApi.AddAccomplishment(
+                    "Your heart sang at the sight of a chrome idol.",
+                    "The troubadour-hero =name= rode the tides of your passions and shipwrecked on the shores of a chrome idol.",
+                    "<spice.elements.salt.weddingConditions.!random.capitalize>, =name= cemented your friendship with Barathrumites by marrying a snapjaw.",
+                    category: "general");
+                DummyJournalApi.AddAccomplishment(
+                    "A snapjaw ogled you lovingly after you employed your charm.",
+                    "The storied eroticism of =name= became intimately known to a snapjaw.",
+                    "<spice.elements.salt.weddingConditions.!random.capitalize>, =name= cemented your friendship with Barathrumites by marrying a snapjaw.",
+                    category: "general");
+                DummyJournalApi.AddAccomplishment(
+                    "You convinced a snapjaw to join your cause.",
+                    "Few were possessed of such potent charm as =name=, who -- on the 5th of Iyur Ut -- bent the will of a snapjaw with mere words.",
+                    "<spice.elements.salt.weddingConditions.!random.capitalize>, =name= cemented your friendship with Barathrumites by marrying a snapjaw.",
+                    category: "general");
+                DummyJournalApi.AddAccomplishment(
+                    "You rebuked a clockwork beetle into submission.",
+                    "Onlookers! Remember the admonishment =name= gave a clockwork beetle when it presumed to speak the sacred tongue!",
+                    "<spice.elements.salt.weddingConditions.!random.capitalize>, =name= cemented your friendship with Barathrumites by marrying a snapjaw.",
+                    category: "general");
+            });
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyJournalApi.Accomplishments[0].Text, Is.EqualTo("\u0001クローム偶像を見て心が歌った。"));
+                Assert.That(DummyJournalApi.Accomplishments[0].MuralText, Is.EqualTo("\u0001吟遊詩人の英雄=name=は情熱の潮に乗り、クローム偶像の岸辺に漂着した。"));
+                Assert.That(DummyJournalApi.Accomplishments[0].GospelText, Is.EqualTo("\u0001<spice.elements.salt.weddingConditions.!random.capitalize>、=name=はバラサルマイトとの友情を固めるためスナップジョーと結婚した。"));
+                Assert.That(DummyJournalApi.Accomplishments[1].Text, Is.EqualTo("\u0001あなたの魅了術を受けてスナップジョーがうっとりとこちらを見つめた。"));
+                Assert.That(DummyJournalApi.Accomplishments[1].MuralText, Is.EqualTo("\u0001=name=の名高い色香はスナップジョーに深く知られることとなった。"));
+                Assert.That(DummyJournalApi.Accomplishments[1].GospelText, Is.EqualTo("\u0001<spice.elements.salt.weddingConditions.!random.capitalize>、=name=はバラサルマイトとの友情を固めるためスナップジョーと結婚した。"));
+                Assert.That(DummyJournalApi.Accomplishments[2].Text, Is.EqualTo("\u0001スナップジョーを説得し仲間に加えた。"));
+                Assert.That(DummyJournalApi.Accomplishments[2].MuralText, Is.EqualTo("\u0001イユル・ウトの第5日、=name=ほど強力な魅力を備えた者は稀であり、ただ言葉だけでスナップジョーの意志を曲げた。"));
+                Assert.That(DummyJournalApi.Accomplishments[2].GospelText, Is.EqualTo("\u0001<spice.elements.salt.weddingConditions.!random.capitalize>、=name=はバラサルマイトとの友情を固めるためスナップジョーと結婚した。"));
+                Assert.That(DummyJournalApi.Accomplishments[3].Text, Is.EqualTo("\u0001クロックワークビートルを叱責して従わせた。"));
+                Assert.That(DummyJournalApi.Accomplishments[3].MuralText, Is.EqualTo("\u0001見る者よ！=name=がクロックワークビートルに与えた戒めを思い起こせ。聖なる言葉を口にしようとしたためだ！"));
+                Assert.That(DummyJournalApi.Accomplishments[3].GospelText, Is.EqualTo("\u0001<spice.elements.salt.weddingConditions.!random.capitalize>、=name=はバラサルマイトとの友情を固めるためスナップジョーと結婚した。"));
+            });
+        }
+        finally
+        {
+            LocalizationAssetResolver.SetLocalizationRootForTests(null);
+            JournalPatternTranslator.SetPatternFileForTests(patternFilePath);
+        }
+    }
+
+    [Test]
     public void AddMapNote_TranslatesText_WhenPatched()
     {
         WritePatternDictionary(("^A \"SATED\" baetyl$", "「満足した」ベテル"));

@@ -166,6 +166,17 @@ public sealed class DoesVerbRouteTranslatorTests
         "are",
         " encoded with the imprint of a remote pocket dimension, 秘境, that is inaccessible from your present context.",
         "リコイラーは遠方のポケット次元秘境の刻印で符号化されているが、現在の状況ではアクセスできない")]
+    [TestCase(
+        "The リコイラー does",
+        "do",
+        " not have enough charge to be imprinted with the current location.",
+        "リコイラーには現在地を刻印するだけの充電がない")]
+    [TestCase("The クテシフス shies", "shy", " away from you.", "クテシフスはあなたから怯えて離れた")]
+    [TestCase(
+        "The ロボット is",
+        "are",
+        " robotic and cannot be affected by salve tonic.",
+        "ロボットは機械なのでsalve tonicの効果を受けない。")]
     public void TryTranslateMarkedMessage_RepositoryDictionary_TranslatesVerifiedDoesFamilies(
         string fragment,
         string verb,

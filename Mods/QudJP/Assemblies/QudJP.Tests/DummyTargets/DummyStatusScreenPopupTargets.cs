@@ -12,12 +12,15 @@ internal static class DummyStatusScreenPopupTarget
 
     public static IReadOnlyList<string>? PickOptionOptionsToSend { get; set; }
 
+    public static bool UseShowYesNoForMutationPopup { get; set; }
+
     public static void Reset()
     {
         MessageToSend = string.Empty;
         PickOptionTitleToSend = string.Empty;
         PickOptionIntroToSend = string.Empty;
         PickOptionOptionsToSend = null;
+        UseShowYesNoForMutationPopup = false;
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
@@ -59,6 +62,12 @@ internal static class DummyStatusScreenPopupTarget
     {
         _ = go;
         _ = mutation;
+        if (UseShowYesNoForMutationPopup)
+        {
+            _ = DummyPopupShow.ShowYesNo(MessageToSend);
+            return;
+        }
+
         DummyPopupShow.Show(MessageToSend);
     }
 }

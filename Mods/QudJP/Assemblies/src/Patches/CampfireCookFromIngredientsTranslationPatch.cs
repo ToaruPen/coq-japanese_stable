@@ -21,6 +21,12 @@ public static class CampfireCookFromIngredientsTranslationPatch
     private static readonly Regex RemainingIngredientsPattern = new(
         "^\\[(?:up to (?<remaining>\\d+) remaining|0 remaining)\\]$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex IngredientOptionPattern = new(
+        "^(?<prefix>(?:\\[(?: |X|x)\\]|\\{\\{y\\|\\[\\{\\{G\\|X\\}\\}\\]\\}\\})\\s+)(?<ingredient>.+)$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.Singleline);
+    private static readonly Regex IngredientOptionQuantitySuffixPattern = new(
+        "\\s+\\{\\{K\\|x\\d+\\}\\}$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.Singleline);
 
     [ThreadStatic]
     private static int activeDepth;
@@ -130,16 +136,55 @@ public static class CampfireCookFromIngredientsTranslationPatch
             return true;
         }
 
-        if (!TryTranslateSelectedIngredientsMenuRow(source, out translated))
+        if (TryTranslateSelectedIngredientsMenuRow(source, out translated))
         {
+            DynamicTextObservability.RecordTransform(
+                route,
+                family + "." + Context + ".SelectedIngredientsMenuRow",
+                source,
+                translated);
+            return true;
+        }
+
+        if (TryTranslateIngredientOptionMenuRow(source, out translated))
+        {
+            DynamicTextObservability.RecordTransform(
+                route,
+                family + "." + Context + ".IngredientOptionMenuRow",
+                source,
+                translated);
+            return true;
+        }
+
+        translated = source;
+        return false;
+    }
+
+    private static bool TryTranslateIngredientOptionMenuRow(string source, out string translated)
+    {
+        var match = IngredientOptionPattern.Match(source);
+        if (!match.Success)
+        {
+            translated = source;
             return false;
         }
 
-        DynamicTextObservability.RecordTransform(
-            route,
-            family + "." + Context + ".SelectedIngredientsMenuRow",
-            source,
-            translated);
+        var ingredientSource = match.Groups["ingredient"].Value;
+        var quantityMatch = IngredientOptionQuantitySuffixPattern.Match(ingredientSource);
+        var quantity = string.Empty;
+        if (quantityMatch.Success)
+        {
+            quantity = quantityMatch.Value;
+            ingredientSource = ingredientSource.Substring(0, quantityMatch.Index);
+        }
+
+        if (!CookingIngredientFragmentTranslator.TryTranslate(ingredientSource, out var ingredient))
+        {
+            translated = source;
+            return false;
+        }
+
+        translated = match.Groups["prefix"].Value + ingredient + quantity;
         return true;
     }
 

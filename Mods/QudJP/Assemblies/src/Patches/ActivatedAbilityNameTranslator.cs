@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 
@@ -17,20 +18,56 @@ internal static class ActivatedAbilityNameTranslator
     private static readonly Regex DeactivatePattern =
         new Regex("^Deactivate (?<target>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex ActivatePattern =
+        new Regex("^Activate (?<target>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     private static readonly Regex DischargeChargePattern =
         new Regex("^Discharge \\[(?<count>\\d+) charge\\]$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     private static readonly Regex LaseChargesPattern =
         new Regex("^Lase \\((?<count>\\d+) charges\\)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex LayMineTargetPattern =
+        new Regex("^Lay Mine \\[(?<target>.+)\\]$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     private static readonly Regex TinkerTurretRemainingPattern =
         new Regex("^Tinker Turret\\s+\\[(?<count>\\d+) remaining\\]$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex CloneRemainingPattern =
+        new Regex("^Clone \\[(?<count>\\d+) left\\]$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex FabricatePattern =
+        new Regex("^Fabricate (?<target>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex RawFabricatePattern =
+        new Regex("^(?<prefix>(?:&[A-Za-z])*)Fabricate (?<target>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly IReadOnlyDictionary<string, string> MiscProviderAbilityNames =
+        new Dictionary<string, string>(StringComparer.Ordinal)
+        {
+            ["Clone"] = "クローン作成",
+            ["Dig"] = "掘る",
+            ["Engulf"] = "呑み込む",
+            ["Run"] = "走る",
+            ["Run Over"] = "轢く",
+        };
 
     internal static string TranslatePreservingColors(string source, string route, string family)
     {
         if (string.IsNullOrEmpty(source))
         {
             return source;
+        }
+
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
+        {
+            return markedText;
+        }
+
+        if (TryTranslateRawFabricateName(source, out var rawFabricateTranslated))
+        {
+            DynamicTextObservability.RecordTransform(route, family, source, rawFabricateTranslated);
+            return rawFabricateTranslated;
         }
 
         var translated = ColorAwareTranslationComposer.TranslatePreservingColors(
@@ -60,6 +97,12 @@ internal static class ActivatedAbilityNameTranslator
             return true;
         }
 
+        if (MiscProviderAbilityNames.TryGetValue(source, out var miscProviderName))
+        {
+            translated = miscProviderName;
+            return true;
+        }
+
         var releaseGasMatch = ReleaseGasPattern.Match(source);
         if (releaseGasMatch.Success
             && TryTranslateReleaseGasName(releaseGasMatch.Groups["gas"].Value, out translated))
@@ -81,6 +124,13 @@ internal static class ActivatedAbilityNameTranslator
             return true;
         }
 
+        var activateMatch = ActivatePattern.Match(source);
+        if (activateMatch.Success
+            && TryTranslateActivateName(activateMatch.Groups["target"].Value, out translated))
+        {
+            return true;
+        }
+
         var dischargeMatch = DischargeChargePattern.Match(source);
         if (dischargeMatch.Success
             && TryTranslateBaseAbilityName("Discharge", out var discharge))
@@ -97,10 +147,32 @@ internal static class ActivatedAbilityNameTranslator
             return true;
         }
 
+        var layMineTargetMatch = LayMineTargetPattern.Match(source);
+        if (layMineTargetMatch.Success
+            && TryTranslateBaseAbilityName("Lay Mine", out var layMine))
+        {
+            translated = layMine + " [" + TranslateDisplayNameTarget(layMineTargetMatch.Groups["target"].Value, ".LayMineTarget") + "]";
+            return true;
+        }
+
         var tinkerTurretMatch = TinkerTurretRemainingPattern.Match(source);
         if (tinkerTurretMatch.Success)
         {
             translated = "タレット製作 [残り" + tinkerTurretMatch.Groups["count"].Value + "]";
+            return true;
+        }
+
+        var cloneRemainingMatch = CloneRemainingPattern.Match(source);
+        if (cloneRemainingMatch.Success)
+        {
+            translated = "クローン作成 [残り" + cloneRemainingMatch.Groups["count"].Value + "]";
+            return true;
+        }
+
+        var fabricateMatch = FabricatePattern.Match(source);
+        if (fabricateMatch.Success)
+        {
+            translated = TranslateFabricateName(fabricateMatch.Groups["target"].Value);
             return true;
         }
 
@@ -161,6 +233,21 @@ internal static class ActivatedAbilityNameTranslator
         return true;
     }
 
+    private static bool TryTranslateActivateName(string target, out string translated)
+    {
+        var translatedTarget = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            target,
+            nameof(ActivatedAbilityNameTranslator));
+        if (ContainsAsciiLetter(ColorAwareTranslationComposer.GetVisibleText(translatedTarget)))
+        {
+            translated = "Activate " + target;
+            return false;
+        }
+
+        translated = translatedTarget + "を起動";
+        return true;
+    }
+
     private static bool TryTranslateBaseAbilityName(string source, out string translated)
     {
         var scoped = ScopedDictionaryLookup.TranslateExactOrLowerAscii(source, SkillsAndPowersDictionaryFile);
@@ -176,6 +263,55 @@ internal static class ActivatedAbilityNameTranslator
         }
 
         return false;
+    }
+
+    private static string TranslateFabricateName(string target)
+    {
+        var translatedTarget = TranslateDisplayNameTarget(target, ".FabricateTarget");
+        return translatedTarget + "を生成";
+    }
+
+    private static string TranslateDisplayNameTarget(string target, string segment)
+    {
+        var route = nameof(ActivatedAbilityNameTranslator) + segment;
+        var translatedTarget = GetDisplayNameRouteTranslator.TranslatePreservingColors(target, route);
+        if (!string.Equals(translatedTarget, target, StringComparison.Ordinal))
+        {
+            return TranslateKnownDisplayNameTargetTerms(translatedTarget);
+        }
+
+        var fallback = ColorAwareTranslationComposer.TranslatePreservingColors(
+            target,
+            visible =>
+            {
+                if (string.Equals(visible, "high explosive", StringComparison.Ordinal))
+                {
+                    return "高性能爆薬";
+                }
+
+                return StringHelpers.TryGetTranslationExactOrLowerAscii(visible, out var translated)
+                    ? translated
+                    : visible;
+            });
+        return TranslateKnownDisplayNameTargetTerms(fallback);
+    }
+
+    private static string TranslateKnownDisplayNameTargetTerms(string source)
+    {
+        return source.Replace("{{W|high explosive}}", "{{W|高性能爆薬}}");
+    }
+
+    private static bool TryTranslateRawFabricateName(string source, out string translated)
+    {
+        var match = RawFabricatePattern.Match(source);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        translated = match.Groups["prefix"].Value + TranslateFabricateName(match.Groups["target"].Value);
+        return true;
     }
 
     private static bool TryTranslateStructuredAbilityName(string source, out string translated)

@@ -121,6 +121,18 @@ public sealed class WaterRitualPopupTranslationPatchTests
     [TestCase(
         nameof(DummyWaterRitualPopupProducerTarget.WaterRitualRandomMutationHandleEvent),
         nameof(DummyPopupShow.ShowFail),
+        "You can't be mutated.",
+        "変異できない。",
+        "RandomMutationNonMutant")]
+    [TestCase(
+        nameof(DummyWaterRitualPopupProducerTarget.WaterRitualRandomMutationHandleEvent),
+        nameof(DummyPopupShow.ShowFail),
+        "{{R|You can't be mutated.}}",
+        "{{R|変異できない。}}",
+        "RandomMutationNonMutant")]
+    [TestCase(
+        nameof(DummyWaterRitualPopupProducerTarget.WaterRitualRandomMutationHandleEvent),
+        nameof(DummyPopupShow.ShowFail),
         "You can't gain physical mutations.",
         "肉体変異は得られない。",
         "RandomMutationIncompatible")]
@@ -233,6 +245,16 @@ public sealed class WaterRitualPopupTranslationPatchTests
         nameof(DummyPopupShow.Show),
         "Despite your genetic limitations, {{G|Tam}} teaches you to improvise {{M|Wings}}!",
         "GainMutation")]
+    [TestCase(
+        nameof(DummyWaterRitualPopupProducerTarget.WaterRitualRandomMutationHandleEvent),
+        nameof(DummyPopupShow.ShowFail),
+        "You can't be mutated.",
+        "RandomMutationNonMutant")]
+    [TestCase(
+        nameof(DummyWaterRitualPopupProducerTarget.WaterRitualRandomMutationHandleEvent),
+        nameof(DummyPopupShow.ShowFail),
+        "{{R|You can't be mutated.}}",
+        "RandomMutationNonMutant")]
     [TestCase(
         nameof(DummyWaterRitualPopupProducerTarget.WaterRitualRandomMutationHandleEvent),
         nameof(DummyPopupShow.ShowFail),
@@ -677,7 +699,6 @@ public sealed class WaterRitualPopupTranslationPatchTests
             });
     }
 
-    [TestCase("You can't be mutated.", nameof(DummyPopupShow.ShowFail))]
     [TestCase("{{G|Tam}} shares an unfamiliar mutation lesson with you.", nameof(DummyPopupShow.Show))]
     public void Patch_LeavesRandomMutationNonOwnerMessagesUnchanged_WhenOwnerPatched(string source, string popupMethod)
     {

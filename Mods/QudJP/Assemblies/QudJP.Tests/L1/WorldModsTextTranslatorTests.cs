@@ -219,6 +219,9 @@ public sealed class WorldModsTextTranslatorTests
         "When equipped、powered、とin use, provides light in radius 2.",
         "装備・通電・使用中、半径2に光を提供する。")]
     [TestCase(
+        "{{rules|When 装備中、給電中、と使用中, provides light in radius 2.}}",
+        "{{rules|装備・通電・使用中、半径2に光を提供する。}}")]
+    [TestCase(
         "25% chance per turn to repel gases near its wielderまたはwearer.",
         "使用者または着用者近くのガスを毎ターン25%の確率で退ける。")]
     [TestCase(

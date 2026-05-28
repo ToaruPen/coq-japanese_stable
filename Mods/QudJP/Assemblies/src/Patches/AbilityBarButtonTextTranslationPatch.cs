@@ -24,6 +24,9 @@ public static class AbilityBarButtonTextTranslationPatch
     private static readonly Regex LaseChargesPattern = new Regex(
         "^Lase \\((?<count>\\d+) charges\\)$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex LayMineTargetPattern = new Regex(
+        "^Lay Mine \\[(?<target>.+)\\]$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex RecoilToZonePattern = new Regex(
         "^Recoil to (?<zone>.+)$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
@@ -229,6 +232,12 @@ public static class AbilityBarButtonTextTranslationPatch
     {
         var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
         string? translated;
+        if (TryTranslateLayMineAbilityBarName(stripped, route, spans, source, out var layMineTranslated))
+        {
+            changed = !string.Equals(layMineTranslated, source, StringComparison.Ordinal);
+            return layMineTranslated;
+        }
+
         if (TryTranslateDynamicAbilityBarName(stripped, route, out var dynamicTranslated))
         {
             translated = dynamicTranslated;
@@ -254,27 +263,62 @@ public static class AbilityBarButtonTextTranslationPatch
         return restored;
     }
 
+    private static bool TryTranslateLayMineAbilityBarName(
+        string source,
+        string route,
+        IReadOnlyList<ColorSpan> spans,
+        string originalSource,
+        out string translated)
+    {
+        var name = source.TrimEnd();
+        var trailingWhitespace = source.Substring(name.Length);
+        var layMineTargetMatch = LayMineTargetPattern.Match(name);
+        if (layMineTargetMatch.Success && TryTranslateAbilityBarBaseLeaf("Lay Mine", out var layMine))
+        {
+            var target = ColorAwareTranslationComposer.MarkupAwareRestoreCapture(
+                layMineTargetMatch.Groups["target"].Value,
+                spans,
+                layMineTargetMatch.Groups["target"]).Trim();
+            translated = layMine + " [" + TranslateDisplayNameRoutePreservingColors(
+                target,
+                ObservabilityHelpers.ComposeContext(route, "segment=lay-mine-target")) + "]" + trailingWhitespace;
+            translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+                translated,
+                spans,
+                source.Length,
+                originalSource);
+            translated = RestoreLeadingHtmlColorOpening(originalSource, translated);
+            return true;
+        }
+
+        translated = source;
+        return false;
+    }
+
     private static bool TryTranslateDynamicAbilityBarName(string source, string route, out string translated)
     {
-        var dischargeMatch = DischargeChargePattern.Match(source);
+        var name = source.TrimEnd();
+        var trailingWhitespace = source.Substring(name.Length);
+
+        var dischargeMatch = DischargeChargePattern.Match(name);
         if (dischargeMatch.Success && TryTranslateAbilityBarBaseLeaf("Discharge", out var discharge))
         {
-            translated = discharge + " [" + dischargeMatch.Groups["count"].Value + "チャージ]";
+            translated = discharge + " [" + dischargeMatch.Groups["count"].Value + "チャージ]" + trailingWhitespace;
             return true;
         }
 
-        var laseMatch = LaseChargesPattern.Match(source);
+        var laseMatch = LaseChargesPattern.Match(name);
         if (laseMatch.Success && TryTranslateAbilityBarBaseLeaf("Lase", out var lase))
         {
-            translated = lase + " (" + laseMatch.Groups["count"].Value + "チャージ)";
+            translated = lase + " (" + laseMatch.Groups["count"].Value + "チャージ)" + trailingWhitespace;
             return true;
         }
 
-        var recoilMatch = RecoilToZonePattern.Match(source);
+        var recoilMatch = RecoilToZonePattern.Match(name);
         if (recoilMatch.Success && TryTranslateAbilityBarBaseLeaf("Recoil", out var recoil))
         {
             var zone = TranslateRecoilZone(recoilMatch.Groups["zone"].Value, route);
-            translated = zone + "へ" + recoil;
+            translated = zone + "へ" + recoil + trailingWhitespace;
             return true;
         }
 
@@ -290,6 +334,18 @@ public static class AbilityBarButtonTextTranslationPatch
         }
 
         return true;
+    }
+
+    private static string RestoreLeadingHtmlColorOpening(string source, string translated)
+    {
+        if (!source.StartsWith("<color=", StringComparison.Ordinal)
+            || translated.StartsWith("<color=", StringComparison.Ordinal))
+        {
+            return translated;
+        }
+
+        var end = source.IndexOf('>');
+        return end <= 0 ? translated : source.Substring(0, end + 1) + translated;
     }
 
     private static string TranslateRecoilZone(string zone, string route)
@@ -314,7 +370,31 @@ public static class AbilityBarButtonTextTranslationPatch
 
     private static string TranslateDisplayNameRoutePreservingColors(string source, string route)
     {
-        return GetDisplayNameRouteTranslator.TranslatePreservingColors(source, route);
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(source, route);
+        if (!string.Equals(translated, source, StringComparison.Ordinal))
+        {
+            return TranslateKnownDisplayNameTargetTerms(translated);
+        }
+
+        var fallback = ColorAwareTranslationComposer.TranslatePreservingColors(
+            source,
+            visible =>
+            {
+                if (string.Equals(visible, "high explosive", StringComparison.Ordinal))
+                {
+                    return "高性能爆薬";
+                }
+
+                return StringHelpers.TryGetTranslationExactOrLowerAscii(visible, out var exact)
+                    ? exact
+                    : visible;
+            });
+        return TranslateKnownDisplayNameTargetTerms(fallback);
+    }
+
+    private static string TranslateKnownDisplayNameTargetTerms(string source)
+    {
+        return source.Replace("{{W|high explosive}}", "{{W|高性能爆薬}}");
     }
 
     private static string TranslateSuffix(string source, out bool changed)

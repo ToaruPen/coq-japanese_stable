@@ -70,6 +70,15 @@ internal static class CookingEffectFragmentTranslator
                 NormalizeChance(RestoreVisible(match.Groups["chance"], spans)),
                 "の確率で")),
         new(
+            "TakeDamageTeleportSurrounding",
+            new Regex(
+                "^Whenever you take damage, there's a (?<chance>\\d+(?:-\\d+)?%) chance you teleport all creatures surrounding you\\.$",
+                RegexOptions.CultureInvariant | RegexOptions.Compiled),
+            static (match, spans) => string.Concat(
+                "ダメージを受けるたび、",
+                RestoreVisible(match.Groups["chance"], spans),
+                "の確率で周囲のすべての生物をテレポートさせる。")),
+        new(
             "PhaseOnDamage",
             new Regex(
                 "^whenever @thisCreature take@s damage, there's (?<chance>.+?) chance @they start phasing for (?<turns>.+?) turns\\.$",
@@ -89,6 +98,46 @@ internal static class CookingEffectFragmentTranslator
                 "@thisCreature が回避可能なダメージを受けると",
                 NormalizeChance(RestoreVisible(match.Groups["chance"], spans)),
                 "の確率で代わりにマップ内のランダムな地点へテレポートする。")),
+        new(
+            "IdentifyArtifactAv",
+            new Regex(
+                "^Whenever you identify an artifact, you gain \\+(?<value>\\d+(?:-\\d+)?) AV for (?<duration>\\d+(?:-\\d+)?) turns\\.$",
+                RegexOptions.CultureInvariant | RegexOptions.Compiled),
+            static (match, spans) => string.Concat(
+                "アーティファクトを識別するたび、",
+                RestoreVisible(match.Groups["duration"], spans),
+                "ターンのあいだAV+",
+                RestoreVisible(match.Groups["value"], spans),
+                "を得る。")),
+        new(
+            "DrinkFreshwaterFearImmunity",
+            new Regex(
+                "^Whenever you drink freshwater, there's a (?<chance>\\d+(?:-\\d+)?%) chance you become immune to fear for (?<duration>\\d+(?:-\\d+)?) hours\\.$",
+                RegexOptions.CultureInvariant | RegexOptions.Compiled),
+            static (match, spans) => string.Concat(
+                "真水を飲むたび、",
+                RestoreVisible(match.Groups["chance"], spans),
+                "の確率で",
+                RestoreVisible(match.Groups["duration"], spans),
+                "時間のあいだ恐怖を無効化する。")),
+        new(
+            "EatYuckwheatElectricalDischarge",
+            new Regex(
+                "^Whenever you eat an unfermented yuckwheat stem, you release an electrical discharge per Electrical Generation at level (?<level>\\d+(?:-\\d+)?)\\.$",
+                RegexOptions.CultureInvariant | RegexOptions.Compiled),
+            static (match, spans) => string.Concat(
+                "未発酵のヤックウィートの茎を食べるたび、電気生成レベル",
+                FormatRange(RestoreVisible(match.Groups["level"], spans)),
+                "相当の放電を行う。")),
+        new(
+            "JumpBeguileCreature",
+            new Regex(
+                "^Whenever you jump, you beguile a creature as per Beguiling at rank (?<rank>\\d+(?:-\\d+)?) for the duration of this effect\\.$",
+                RegexOptions.CultureInvariant | RegexOptions.Compiled),
+            static (match, spans) => string.Concat(
+                "ジャンプするたび、この効果のあいだ魅了ランク",
+                FormatRange(RestoreVisible(match.Groups["rank"], spans)),
+                "相当で生物を魅了する。")),
         new(
             "TimedStatGain",
             new Regex(
@@ -199,7 +248,7 @@ internal static class CookingEffectFragmentTranslator
         new(
             "UnitStat",
             new Regex(
-                "^\\+(?<value>\\d+(?:-\\d+)?) (?<stat>Acid Resistance|Cold Resistance|Electric Resist(?:ance)?|Heat Resistance|AV|DV|Agility|Ego|Intelligence|MA|Quickness|Strength|Toughness|Willpower|STR)$",
+                "^\\+(?<value>\\d+(?:-\\d+)?) (?<stat>Acid Resistance|Cold Resistance|Electric Resist(?:ance)?|Heat Resist(?:ance)?|AV|DV|Agility|Ego|Intelligence|MA|Quickness|Strength|Toughness|Willpower|STR)$",
                 RegexOptions.CultureInvariant | RegexOptions.Compiled),
             static (match, spans) => string.Concat(
                 TranslateUnitStat(match.Groups["stat"].Value),
@@ -221,12 +270,26 @@ internal static class CookingEffectFragmentTranslator
                 RegexOptions.CultureInvariant | RegexOptions.Compiled),
             static (_, _) => "喉の渇きが半減する。"),
         new(
+            "YouLessThirst",
+            new Regex(
+                "^You thirst at half rate\\.$",
+                RegexOptions.CultureInvariant | RegexOptions.Compiled),
+            static (_, _) => "喉の渇きが半減する。"),
+        new(
             "BleedingSaveBonus",
             new Regex(
                 "^\\+(?<value>\\d+(?:-\\d+)?) to saves vs\\. bleeding$",
                 RegexOptions.CultureInvariant | RegexOptions.Compiled),
             static (match, spans) => string.Concat(
                 "出血に対するセーヴ+",
+                RestoreVisible(match.Groups["value"], spans))),
+        new(
+            "DiseaseSaveBonus",
+            new Regex(
+                "^\\+(?<value>\\d+(?:-\\d+)?) to saves vs\\. disease$",
+                RegexOptions.CultureInvariant | RegexOptions.Compiled),
+            static (match, spans) => string.Concat(
+                "病気に対するセーヴ+",
                 RestoreVisible(match.Groups["value"], spans))),
         new(
             "ReflectDamageBack",
@@ -238,9 +301,31 @@ internal static class CookingEffectFragmentTranslator
                 RestoreVisible(match.Groups["percent"], spans),
                 "%を切り上げて反射する。")),
         new(
+            "ReflectDamageBackAtYourAttackers",
+            new Regex(
+                "^Reflect (?<percent>\\d+(?:-\\d+)?)% damage back at your attackers, rounded up\\.$",
+                RegexOptions.CultureInvariant | RegexOptions.Compiled),
+            static (match, spans) => string.Concat(
+                "攻撃者にダメージの",
+                RestoreVisible(match.Groups["percent"], spans),
+                "%を切り上げて反射する。")),
+        new(
             "CanUseMutationWithBonus",
             new Regex(
                 "^Can use (?<name>.+?) at level (?<level>\\d+(?:-\\d+)?)\\. If @they already have \\k<name>, it's enhanced by (?<bonus>\\d+(?:-\\d+)?) levels\\.$",
+                RegexOptions.CultureInvariant | RegexOptions.Compiled),
+            static (match, spans) => string.Concat(
+                "〈",
+                TranslateCapturedAbilityName(match.Groups["name"], spans),
+                "〉をレベル",
+                FormatRange(RestoreVisible(match.Groups["level"], spans)),
+                "で使用できる。既に持つ場合、さらにレベル",
+                FormatRange(RestoreVisible(match.Groups["bonus"], spans)),
+                "強化される。")),
+        new(
+            "CanUseMutationWithBonusYou",
+            new Regex(
+                "^Can use (?<name>.+?) at level (?<level>\\d+(?:-\\d+)?)\\. If you already have \\k<name>, it's enhanced by (?<bonus>\\d+(?:-\\d+)?) levels\\.$",
                 RegexOptions.CultureInvariant | RegexOptions.Compiled),
             static (match, spans) => string.Concat(
                 "〈",
@@ -260,6 +345,17 @@ internal static class CookingEffectFragmentTranslator
                 TranslateCapturedAbilityName(match.Groups["name"], spans),
                 "〉をレベル",
                 FormatRange(RestoreVisible(match.Groups["level"], spans)),
+                "で使用できる。")),
+        new(
+            "CanUseMutationRank",
+            new Regex(
+                "^Can use (?<name>.+?) at rank (?<rank>\\d+(?:-\\d+)?)\\.$",
+                RegexOptions.CultureInvariant | RegexOptions.Compiled),
+            static (match, spans) => string.Concat(
+                "〈",
+                TranslateCapturedAbilityName(match.Groups["name"], spans),
+                "〉をランク",
+                FormatRange(RestoreVisible(match.Groups["rank"], spans)),
                 "で使用できる。")),
         new(
             "MutationLevelBonus",
@@ -311,6 +407,18 @@ internal static class CookingEffectFragmentTranslator
                 "^No effect\\.$",
                 RegexOptions.CultureInvariant | RegexOptions.Compiled),
             static (_, _) => "効果なし。"),
+        new(
+            "QuestionMarks",
+            new Regex(
+                "^\\?\\?\\?\\?\\?$",
+                RegexOptions.CultureInvariant | RegexOptions.Compiled),
+            static (_, _) => "？？？？？"),
+        new(
+            "ItchySkinFungalInfectionResist",
+            new Regex(
+                "^75% chance that itchy skin doesn't develop into a fungal infection\\.$",
+                RegexOptions.CultureInvariant | RegexOptions.Compiled),
+            static (_, _) => "かゆみから真菌感染に進行しない確率が75%。"),
     ];
 
     internal static bool TryTranslate(string source, string route, string family, out string translated)

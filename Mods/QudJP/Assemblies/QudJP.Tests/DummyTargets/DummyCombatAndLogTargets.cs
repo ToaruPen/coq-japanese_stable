@@ -1422,6 +1422,13 @@ internal sealed class DummySimpleOwnerQueueTarget
         return true;
     }
 
+    public bool HandleEvent(DummyInventoryActionEvent? eventObject = null)
+    {
+        _ = eventObject;
+        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+        return true;
+    }
+
     public bool HandleEvent(DummyEndTurnEvent? eventObject = null)
     {
         _ = eventObject;
@@ -1922,6 +1929,14 @@ internal sealed class DummySingleCallsiteOwnerPopupTarget
     {
         _ = e;
         _ = nameof(HandleGenocideCurio);
+        DummyPopupShow.Show(PopupMessageToShow);
+        return true;
+    }
+
+    public bool HandleSpiralBorerCurio(DummyInventoryActionEvent? e = null)
+    {
+        _ = e;
+        _ = nameof(HandleSpiralBorerCurio);
         DummyPopupShow.Show(PopupMessageToShow);
         return true;
     }

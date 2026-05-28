@@ -94,6 +94,7 @@ internal static class PopupShowSemanticPipeline
         LocationFinderPopupTranslationPatch.TryTranslatePopupMessage,
         MapRevealPopupTranslationPatch.TryTranslatePopupMessage,
         MechanicalWingsPopupTranslationPatch.TryTranslatePopupMessage,
+        VehicleUnpoweredTranslationPatch.TryTranslatePopupMessage,
         SupplyableIntegratedHostPopupTranslationPatch.TryTranslatePopupMessage,
         DataDiskLearnPopupTranslationPatch.TryTranslatePopupMessage,
         HighScoresDeletePopupTranslationPatch.TryTranslatePopupMessage,
@@ -106,6 +107,8 @@ internal static class PopupShowSemanticPipeline
         PopupPickSeveralTranslationPatch.TryTranslatePopupMessage,
         ZoneManagerGenerateZoneTranslationPatch.TryTranslatePopupMessage,
         SingleCallsiteOwnerPopupTranslationPatch.TryTranslatePopupMessage,
+        ActiveEffectMessageFrameOwnerTranslationPatch.TryTranslatePopupMessage,
+        ActiveEffectPopupQueueTranslationPatch.TryTranslatePopupMessage,
         BrainWriteFeelingSamplesPopupTranslationPatch.TryTranslatePopupMessage,
         BrainBrineCurseTranslationPatch.TryTranslatePopupMessage,
         StatusScreenMutationPopupTranslationPatch.TryTranslatePopupMessage,
@@ -143,6 +146,7 @@ internal static class PopupShowSemanticPipeline
         PoweredFloatingTranslationPatch.TryTranslatePopupMessage,
         FungalSporeInfectionTranslationPatch.TryTranslatePopupMessage,
         EffectMobilityBlockTranslationPatch.TryTranslatePopupMessage,
+        SubmergedBurrowedOwnerTranslationPatch.TryTranslatePopupMessage,
     ];
 
     internal static string TranslateMessage(string source, string route)
@@ -165,12 +169,14 @@ internal static class PopupShowSemanticPipeline
                 route,
                 out var translated))
             {
+                PopupTranslatedMessageHandoff.Remember(source, translated);
                 return translated;
             }
         }
 
         if (SifrahPureOwnerPopupTranslationPatch.TryGetPureOwnerBatchPopupCandidateText(source, out var candidateText))
         {
+            PopupTranslatedMessageHandoff.Remember(source, candidateText);
             return candidateText;
         }
 

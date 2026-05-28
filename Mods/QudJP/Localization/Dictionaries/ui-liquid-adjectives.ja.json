@@ -92,7 +92,117 @@
     {
       "key": "brackish",
       "context": "XRL.Liquids.Adjective",
-      "text": "塩気混じりの"
+      "text": "塩分混じりの"
+    },
+    {
+      "key": "algal",
+      "context": "XRL.Liquids.Adjective",
+      "text": "藻質の"
+    },
+    {
+      "key": "entropic",
+      "context": "XRL.Liquids.Adjective",
+      "text": "エントロピー性の"
+    },
+    {
+      "key": "gooey",
+      "context": "XRL.Liquids.Adjective",
+      "text": "粘つく"
+    },
+    {
+      "key": "homogenized",
+      "context": "XRL.Liquids.Adjective",
+      "text": "均質化された"
+    },
+    {
+      "key": "honeyed",
+      "context": "XRL.Liquids.Adjective",
+      "text": "蜜味の"
+    },
+    {
+      "key": "inky",
+      "context": "XRL.Liquids.Adjective",
+      "text": "インク混じりの"
+    },
+    {
+      "key": "lush",
+      "context": "XRL.Liquids.Adjective",
+      "text": "豊潤な"
+    },
+    {
+      "key": "luminous",
+      "context": "XRL.Liquids.Adjective",
+      "text": "発光する"
+    },
+    {
+      "key": "magmatic",
+      "context": "XRL.Liquids.Adjective",
+      "text": "マグマ質の"
+    },
+    {
+      "key": "nervous",
+      "context": "XRL.Liquids.Adjective",
+      "text": "神経性の"
+    },
+    {
+      "key": "neutronic",
+      "context": "XRL.Liquids.Adjective",
+      "text": "中性子質の"
+    },
+    {
+      "key": "oozing",
+      "context": "XRL.Liquids.Adjective",
+      "text": "軟泥状の"
+    },
+    {
+      "key": "putrid",
+      "context": "XRL.Liquids.Adjective",
+      "text": "腐敗した"
+    },
+    {
+      "key": "radiant",
+      "context": "XRL.Liquids.Adjective",
+      "text": "輝く"
+    },
+    {
+      "key": "slimy",
+      "context": "XRL.Liquids.Adjective",
+      "text": "粘液質の"
+    },
+    {
+      "key": "sludgy",
+      "context": "XRL.Liquids.Adjective",
+      "text": "汚泥状の"
+    },
+    {
+      "key": "soupy",
+      "context": "XRL.Liquids.Adjective",
+      "text": "スープ状の"
+    },
+    {
+      "key": "spiced",
+      "context": "XRL.Liquids.Adjective",
+      "text": "スパイス入りの"
+    },
+    {
+      "key": "sugary",
+      "context": "XRL.Liquids.Adjective",
+      "text": "甘い"
+    },
+    {
+      "key": "tarry",
+      "context": "XRL.Liquids.Adjective",
+      "text": "タール質の"
+    },
+    {
+      "key": "unctuous",
+      "context": "XRL.Liquids.Adjective",
+      "text": "ぬるぬるした"
+    },
+    {
+      "key": "waxen",
+      "context": "XRL.Liquids.Adjective",
+      "text": "蝋質の"
     }
   ]
 }

@@ -801,6 +801,11 @@
       "text": "スプリント"
     },
     {
+      "key": "Catapult",
+      "context": "AbilityBar.ButtonText",
+      "text": "カタパルト"
+    },
+    {
       "key": "Freezing Ray",
       "context": "AbilityBar.ButtonText",
       "text": "凍結線"
@@ -809,6 +814,11 @@
       "key": "Butcher Corpses",
       "context": "AbilityBar.ButtonText",
       "text": "死体を解体"
+    },
+    {
+      "key": "Howl",
+      "context": "AbilityBar.ButtonText",
+      "text": "遠吠え"
     },
     {
       "key": "Teleport",
@@ -2081,6 +2091,11 @@
       "text": "精神断裂"
     },
     {
+      "key": "Submerge",
+      "context": "AbilityBar.ButtonText",
+      "text": "潜る"
+    },
+    {
       "key": "Lay Mine",
       "context": "AbilityBar.ButtonText",
       "text": "地雷設置"
@@ -2431,6 +2446,196 @@
       "text": "破壊的な突進"
     },
     {
+      "key": "Repelling Force",
+      "context": "AbilityBar.ButtonText",
+      "text": "反発力"
+    },
+    {
+      "key": "Conk",
+      "context": "AbilityBar.ButtonText",
+      "text": "コンク"
+    },
+    {
+      "key": "Sweep",
+      "context": "AbilityBar.ButtonText",
+      "text": "掃射"
+    },
+    {
+      "key": "Berate",
+      "context": "AbilityBar.ButtonText",
+      "text": "罵倒"
+    },
+    {
+      "key": "Intimidate",
+      "context": "AbilityBar.ButtonText",
+      "text": "威圧"
+    },
+    {
+      "key": "Mark Target",
+      "context": "AbilityBar.ButtonText",
+      "text": "目標をマーク"
+    },
+    {
+      "key": "Shield Wall",
+      "context": "AbilityBar.ButtonText",
+      "text": "シールドウォール"
+    },
+    {
+      "key": "Shield Slam",
+      "context": "AbilityBar.ButtonText",
+      "text": "シールドスラム"
+    },
+    {
+      "key": "Charge",
+      "context": "AbilityBar.ButtonText",
+      "text": "突進"
+    },
+    {
+      "key": "Death From Above",
+      "context": "AbilityBar.ButtonText",
+      "text": "デス・フロム・アバブ"
+    },
+    {
+      "key": "Juke",
+      "context": "AbilityBar.ButtonText",
+      "text": "フェイント"
+    },
+    {
+      "key": "Belch Urchins",
+      "context": "AbilityBar.ButtonText",
+      "text": "ウニを吐く"
+    },
+    {
+      "key": "Breathe Fire",
+      "context": "AbilityBar.ButtonText",
+      "text": "火炎ブレス"
+    },
+    {
+      "key": "Breathe Ice",
+      "context": "AbilityBar.ButtonText",
+      "text": "氷結ブレス"
+    },
+    {
+      "key": "Breathe Normality Gas",
+      "context": "AbilityBar.ButtonText",
+      "text": "正常化ブレス"
+    },
+    {
+      "key": "Breathe Corrosive Gas",
+      "context": "AbilityBar.ButtonText",
+      "text": "腐食ブレス"
+    },
+    {
+      "key": "Breathe Confusion Gas",
+      "context": "AbilityBar.ButtonText",
+      "text": "混乱ブレス"
+    },
+    {
+      "key": "Breathe Stun Gas",
+      "context": "AbilityBar.ButtonText",
+      "text": "朦朧ブレス"
+    },
+    {
+      "key": "Breathe Poison Gas",
+      "context": "AbilityBar.ButtonText",
+      "text": "毒ブレス"
+    },
+    {
+      "key": "Breathe Sleep Gas",
+      "context": "AbilityBar.ButtonText",
+      "text": "睡眠ブレス"
+    },
+    {
+      "key": "Breathe Shame Gas",
+      "context": "AbilityBar.ButtonText",
+      "text": "恥辱ブレス"
+    },
+    {
+      "key": "Release Corrosive Gas",
+      "context": "AbilityBar.ButtonText",
+      "text": "腐食性ガス放出"
+    },
+    {
+      "key": "Release Sleep Gas",
+      "context": "AbilityBar.ButtonText",
+      "text": "睡眠ガス放出"
+    },
+    {
+      "key": "Release Poison Gas",
+      "context": "AbilityBar.ButtonText",
+      "text": "毒ガス放出"
+    },
+    {
+      "key": "Release Confusion Gas",
+      "context": "AbilityBar.ButtonText",
+      "text": "混乱ガス放出"
+    },
+    {
+      "key": "Release Normality Gas",
+      "context": "AbilityBar.ButtonText",
+      "text": "正常化ガス放出"
+    },
+    {
+      "key": "Release Defoliant",
+      "context": "AbilityBar.ButtonText",
+      "text": "落葉剤放出"
+    },
+    {
+      "key": "Release Fungicide",
+      "context": "AbilityBar.ButtonText",
+      "text": "殺真菌剤放出"
+    },
+    {
+      "key": "Release Glitter Dust",
+      "context": "AbilityBar.ButtonText",
+      "text": "グリッターダスト放出"
+    },
+    {
+      "key": "Release Plasma",
+      "context": "AbilityBar.ButtonText",
+      "text": "プラズマ放出"
+    },
+    {
+      "key": "Crungling Gaze",
+      "context": "AbilityBar.ButtonText",
+      "text": "クラングリングの視線"
+    },
+    {
+      "key": "Lithifying Gaze",
+      "context": "AbilityBar.ButtonText",
+      "text": "石化の視線"
+    },
+    {
+      "key": "Quill Fling",
+      "context": "AbilityBar.ButtonText",
+      "text": "棘毛投げ"
+    },
+    {
+      "key": "Temporal Fugue",
+      "context": "AbilityBar.ButtonText",
+      "text": "時間遁走"
+    },
+    {
+      "key": "Quantum Fugue",
+      "context": "AbilityBar.ButtonText",
+      "text": "量子フーガ"
+    },
+    {
+      "key": "Jump",
+      "context": "AbilityBar.ButtonText",
+      "text": "ジャンプ"
+    },
+    {
+      "key": "Power Skate",
+      "context": "AbilityBar.ButtonText",
+      "text": "パワースケート"
+    },
+    {
+      "key": "Rocket Jump",
+      "context": "AbilityBar.ButtonText",
+      "text": "ロケットジャンプ"
+    },
+    {
       "key": "Aggressive Stance",
       "text": "攻勢の構え"
     },
@@ -2492,6 +2697,121 @@
     {
       "key": "DV penalty and no jumping removed due to Hurdle skill.",
       "text": "障害物越えスキルにより、DVペナルティとジャンプ不可は取り除かれている。"
+    },
+    {
+      "key": "Activate Flume-Flier",
+      "context": "AbilityBar.ButtonText",
+      "text": "フルーム・フライヤーを起動"
+    },
+    {
+      "key": "Activate Stopsvalinn",
+      "context": "AbilityBar.ButtonText",
+      "text": "Stopsvalinnを起動"
+    },
+    {
+      "key": "Anchor Spikes",
+      "context": "AbilityBar.ButtonText",
+      "text": "アンカースパイク"
+    },
+    {
+      "key": "Anomaly Fumigator",
+      "context": "AbilityBar.ButtonText",
+      "text": "アノマリー燻蒸器"
+    },
+    {
+      "key": "Change Grip",
+      "context": "AbilityBar.ButtonText",
+      "text": "握りを変える"
+    },
+    {
+      "key": "End Domination",
+      "context": "AbilityBar.ButtonText",
+      "text": "支配を終了"
+    },
+    {
+      "key": "Exit pilot seat",
+      "context": "AbilityBar.ButtonText",
+      "text": "操縦席を降りる"
+    },
+    {
+      "key": "Fire Suppression",
+      "context": "AbilityBar.ButtonText",
+      "text": "消火システム"
+    },
+    {
+      "key": "Glitter Bomb",
+      "context": "AbilityBar.ButtonText",
+      "text": "グリッター爆弾"
+    },
+    {
+      "key": "Medassist Module",
+      "context": "AbilityBar.ButtonText",
+      "text": "メッドアシスト・モジュール"
+    },
+    {
+      "key": "Night Vision",
+      "context": "AbilityBar.ButtonText",
+      "text": "暗視"
+    },
+    {
+      "key": "Penetrating Radar",
+      "context": "AbilityBar.ButtonText",
+      "text": "透過レーダー"
+    },
+    {
+      "key": "Phase Harmonic Modulator",
+      "context": "AbilityBar.ButtonText",
+      "text": "位相調和モジュレーター"
+    },
+    {
+      "key": "Phase-Adaptive Projectiles",
+      "context": "AbilityBar.ButtonText",
+      "text": "位相適応投射物"
+    },
+    {
+      "key": "Puff Spores",
+      "context": "AbilityBar.ButtonText",
+      "text": "胞子を噴出"
+    },
+    {
+      "key": "Pyrokinesis Field",
+      "context": "AbilityBar.ButtonText",
+      "text": "発火念力場"
+    },
+    {
+      "key": "Set Target Temperature",
+      "context": "AbilityBar.ButtonText",
+      "text": "目標温度設定"
+    },
+    {
+      "key": "Stasis Arena",
+      "context": "AbilityBar.ButtonText",
+      "text": "静止アリーナ"
+    },
+    {
+      "key": "Stasis Entangler",
+      "context": "AbilityBar.ButtonText",
+      "text": "静止エンタングラー"
+    },
+    {
+      "key": "Stop Burrowing",
+      "context": "AbilityBar.ButtonText",
+      "text": "穴掘りをやめる"
+    },
+    {
+      "key": "Surface",
+      "context": "AbilityBar.ButtonText",
+      "text": "浮上"
+    },
+    {
+      "key": "Swoop",
+      "context": "AbilityBar.ButtonText",
+      "text": "急降下"
+    },
+    {
+      "key": "Wormhole",
+      "context": "AbilityBar.ButtonText",
+      "text": "ワームホール"
     }
   ]
 }

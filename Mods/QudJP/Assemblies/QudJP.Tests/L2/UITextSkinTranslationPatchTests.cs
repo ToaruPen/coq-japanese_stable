@@ -472,6 +472,35 @@ public sealed class UITextSkinTranslationPatchTests
     }
 
     [Test]
+    public void HarmonyPatch_TranslatesPickDirectionAbilityLabelAtTextSink()
+    {
+        WriteContextDictionaryFile(
+            "ui-pick-target.ja.json",
+            ("[Select a direction]", "PickTarget.DirectionPrompt", "[方向を選択]"));
+        WriteContextDictionaryFile(
+            "ui-skillsandpowers.ja.json",
+            ("Discharge", "AbilityBar.ButtonText", "放電"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyUITextSkin), nameof(DummyUITextSkin.SetText)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(UITextSkinTranslationPatch), nameof(UITextSkinTranslationPatch.Prefix))));
+            var textSkin = new DummyUITextSkin();
+
+            textSkin.SetText("Discharge | [Select a direction]");
+
+            Assert.That(textSkin.Text, Is.EqualTo("放電 | [方向を選択]"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void TranslatePreservingColors_TranslatesRuntimeObservedPickTargetCommandBarMarkup()
     {
         WriteDictionaryFile(

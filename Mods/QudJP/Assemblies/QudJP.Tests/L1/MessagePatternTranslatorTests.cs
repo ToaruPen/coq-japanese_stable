@@ -339,6 +339,8 @@ public sealed class MessagePatternTranslatorTests
     [TestCase("You receive tinkering bits <{{|AB}}>.", "修理ビット<{{|AB}}>を受け取った。")]
     [TestCase("You make some progress disarming 地雷.", "地雷の解除が少し進んだ。")]
     [TestCase("An image of タム disappears.", "タムの映像が消えた。")]
+    [TestCase("An image of タム appears.", "タムの映像が現れた。")]
+    [TestCase("Some dimensional interlopers attempt to enter this region of spacetime, but the ambient normality field keeps them at bay.", "異次元からの侵入者がこの時空領域に入り込もうとするが、周囲の常在性場がそれを食い止める。")]
     [TestCase("The 熊's carapace loosens.", "熊の甲殻が緩んだ")]
     [TestCase("熊の carapace loosens.", "熊の甲殻が緩んだ")]
     [TestCase("濡れた気難しいカメの 甲殻 loosens.", "濡れた気難しいカメの甲殻が緩んだ")]

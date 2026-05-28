@@ -24,6 +24,18 @@ public static class ConversationScriptPopupTranslationPatch
         "^(?<subject>.+?) (?:is|are) utterly unresponsive\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex DoesNotUnderstandPattern = new(
+        "^(?<subject>.+?) (?:doesn't|don't|does not|do not) seem to understand you\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex MindInDisarrayPattern = new(
+        "^(?<subject>.+?)'s mind is in disarray\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex MindElsewherePattern = new(
+        "^(?<subject>.+?)'s mind seems to be elsewhere\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     private static readonly Regex EngageConversationPattern = new(
         "^You cannot seem to engage (?<subject>.+?) in conversation\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
@@ -170,6 +182,42 @@ public static class ConversationScriptPopupTranslationPatch
             UtterlyUnresponsivePattern,
             subject => subject + "はまったく反応しない",
             "UtterlyUnresponsive",
+            out translated,
+            out detail))
+        {
+            return true;
+        }
+
+        if (TryTranslateSubjectTemplate(
+            stripped,
+            spans,
+            DoesNotUnderstandPattern,
+            subject => subject + "はあなたの言葉を理解していないようだ",
+            "DoesNotUnderstand",
+            out translated,
+            out detail))
+        {
+            return true;
+        }
+
+        if (TryTranslateSubjectTemplate(
+            stripped,
+            spans,
+            MindInDisarrayPattern,
+            subject => subject + "の精神は混乱している。",
+            "MindInDisarray",
+            out translated,
+            out detail))
+        {
+            return true;
+        }
+
+        if (TryTranslateSubjectTemplate(
+            stripped,
+            spans,
+            MindElsewherePattern,
+            subject => subject + "の精神はどこか別のところにあるようだ。",
+            "MindElsewhere",
             out translated,
             out detail))
         {
