@@ -2962,6 +2962,11 @@
       "text": "{t1}から飛んできた{0}をかわした"
     },
     {
+      "verb": "flinch",
+      "extra": "away as {0} flickers past from the {1}",
+      "text": "{t1}から飛んできた{0}をかわした"
+    },
+    {
       "verb": "pass",
       "extra": "through {0}",
       "text": "{0}を通り抜けた"

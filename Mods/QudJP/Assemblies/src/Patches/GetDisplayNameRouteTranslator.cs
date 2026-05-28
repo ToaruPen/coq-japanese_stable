@@ -38,6 +38,8 @@ internal static class GetDisplayNameRouteTranslator
         };
     private static readonly Regex BracketedDisplayNameSuffixPattern =
         new Regex("^(?<base>.+?)\\s+\\[(?<state>.+)\\]$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex WholeBracketedDisplayNameStatePattern =
+        new Regex("^\\[(?<state>.+)\\]$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex MarkedUpBracketedStateSuffixPattern =
         new Regex(
             "^(?<base>.+?)\\s+(?<open>\\{\\{[^{}|]+\\|\\[)(?<state>.+)(?<close>\\]\\}\\})(?:\\s+(?<parenOpen>\\{\\{[^{}|]+\\|\\()(?<parenState>.+)(?<parenClose>\\)\\}\\}))?$",
@@ -96,6 +98,8 @@ internal static class GetDisplayNameRouteTranslator
             RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex AngleCodeDisplayNameSuffixPattern =
         new Regex("^(?<base>.+?)\\s+(?<angle><(?<code>[^>]+)>)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex TransparentAngleCodeWrapperPattern =
+        new Regex("<\\{\\{\\|(?<inner>(?:\\{\\{[^{}]*\\}\\}|[^{}])*)\\}\\}>", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex WithClauseDisplayNamePattern =
         new Regex("^(?<base>.+?) with (?<clause>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex PairOfDisplayNamePattern =
@@ -138,6 +142,8 @@ internal static class GetDisplayNameRouteTranslator
         new Regex("^(?<count>\\d+) cooking servings?$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex EnergyCellsDisplayNameStatePattern =
         new Regex("^(?<count>\\d+) cells?$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex LoadedEnergyCellDisplayNameStatePattern =
+        new Regex("^(?<cell>.+?) (?<chargeWithParens>\\((?<charge>.+?)\\)) (?<code><[^>]+>)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex ChapterDisplayNameStatePattern =
         new Regex("^(?<owner>.+?) chapter$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex FlywheelDisplayNameStatePattern =
@@ -290,6 +296,11 @@ internal static class GetDisplayNameRouteTranslator
         if (stripped.Length == 0)
         {
             return source!;
+        }
+
+        if (TryTranslateWholeBracketedDisplayNameState(stripped, spans, route, out var wholeBracketedStateTranslation))
+        {
+            return wholeBracketedStateTranslation;
         }
 
         using var __ = Translator.PushMissingKeyLoggingSuppression(
@@ -745,6 +756,32 @@ internal static class GetDisplayNameRouteTranslator
         return true;
     }
 
+    private static bool TryTranslateWholeBracketedDisplayNameState(
+        string source,
+        IReadOnlyList<ColorSpan> spans,
+        string route,
+        out string translated)
+    {
+        var match = WholeBracketedDisplayNameStatePattern.Match(source);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        var stateGroup = match.Groups["state"];
+        var translatedState = TranslateDisplayNameStatePreservingColors(stateGroup, spans, route);
+        if (string.Equals(translatedState, stateGroup.Value, StringComparison.Ordinal))
+        {
+            translated = source;
+            return false;
+        }
+
+        translated = RestoreBracketedDisplayNameStateSuffix(translatedState, stateGroup, spans);
+        DynamicTextObservability.RecordTransform(route, "DisplayName.WholeBracketedState", source, translated);
+        return true;
+    }
+
     private static bool TryTranslateMarkedUpBracketedStateSuffix(
         string source,
         string route,
@@ -941,13 +978,13 @@ internal static class GetDisplayNameRouteTranslator
         var stats = RestoreCompactWeaponStatsSlice(match.Groups["stats"], spans);
         var stateGroup = match.Groups["state"];
         var translatedState = stateGroup.Success
-            ? RestoreWholeSlice(TranslateDisplayNameState(stateGroup.Value, route), spans, stateGroup)
+            ? TranslateDisplayNameStatePreservingColors(stateGroup, spans, route)
             : string.Empty;
 
         translated = RestoreWholeSlice(translatedBase, spans, baseGroup) + " " + stats;
         if (stateGroup.Success)
         {
-            translated += " [" + translatedState + "]";
+            translated += " " + RestoreBracketedDisplayNameStateSuffix(translatedState, stateGroup, spans);
         }
 
         translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
@@ -985,13 +1022,13 @@ internal static class GetDisplayNameRouteTranslator
         var stats = RestoreCompactWeaponStatsSlice(match.Groups["stats"], spans);
         var stateGroup = match.Groups["state"];
         var translatedState = stateGroup.Success
-            ? RestoreWholeSlice(TranslateDisplayNameState(stateGroup.Value, route), spans, stateGroup)
+            ? TranslateDisplayNameStatePreservingColors(stateGroup, spans, route)
             : string.Empty;
 
         translated = translatedBase + "（" + translatedClause + "） " + stats;
         if (stateGroup.Success)
         {
-            translated += " [" + translatedState + "]";
+            translated += " " + RestoreBracketedDisplayNameStateSuffix(translatedState, stateGroup, spans);
         }
 
         translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
@@ -1039,7 +1076,7 @@ internal static class GetDisplayNameRouteTranslator
             if (suffixMatch.Groups["bracket"].Success)
             {
                 var stateGroup = suffixMatch.Groups["state"];
-                var translatedState = TranslateDisplayNameState(stateGroup.Value, route);
+                var translatedState = TranslateDisplayNameStatePreservingColors(stateGroup, spans, route);
                 if (string.Equals(translatedState, stateGroup.Value, StringComparison.Ordinal))
                 {
                     builder.Append(' ');
@@ -1047,9 +1084,8 @@ internal static class GetDisplayNameRouteTranslator
                     continue;
                 }
 
-                builder.Append(" [");
-                builder.Append(RestoreWholeSlice(translatedState, spans, stateGroup));
-                builder.Append(']');
+                builder.Append(' ');
+                builder.Append(RestoreBracketedDisplayNameSuffix(translatedState, suffixMatch.Groups["bracket"], spans));
                 continue;
             }
 
@@ -1104,7 +1140,7 @@ internal static class GetDisplayNameRouteTranslator
             if (suffixMatch.Groups["bracket"].Success)
             {
                 var stateGroup = suffixMatch.Groups["state"];
-                var translatedState = TranslateDisplayNameState(stateGroup.Value, route);
+                var translatedState = TranslateDisplayNameStatePreservingColors(stateGroup, spans, route);
                 if (string.Equals(translatedState, stateGroup.Value, StringComparison.Ordinal))
                 {
                     builder.Append(' ');
@@ -1112,9 +1148,8 @@ internal static class GetDisplayNameRouteTranslator
                     continue;
                 }
 
-                builder.Append(" [");
-                builder.Append(RestoreWholeSlice(translatedState, spans, stateGroup));
-                builder.Append(']');
+                builder.Append(' ');
+                builder.Append(RestoreBracketedDisplayNameSuffix(translatedState, suffixMatch.Groups["bracket"], spans));
                 changed = true;
                 continue;
             }
@@ -1163,7 +1198,7 @@ internal static class GetDisplayNameRouteTranslator
         var stateGroup = match.Groups["state"];
 
         var translatedState = stateGroup.Success
-            ? RestoreWholeSlice(TranslateDisplayNameState(stateGroup.Value, route), spans, stateGroup)
+            ? TranslateDisplayNameStatePreservingColors(stateGroup, spans, route)
             : string.Empty;
 
         if (string.Equals(translatedBase, baseSource, StringComparison.Ordinal)
@@ -1176,7 +1211,7 @@ internal static class GetDisplayNameRouteTranslator
         translated = translatedBase + " " + stats;
         if (stateGroup.Success)
         {
-            translated += " [" + translatedState + "]";
+            translated += " " + RestoreBracketedDisplayNameStateSuffix(translatedState, stateGroup, spans);
         }
 
         translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
@@ -1276,7 +1311,7 @@ internal static class GetDisplayNameRouteTranslator
         var translatedBase = TranslateDisplayNameFragmentPreservingColors(
             RestoreVisibleSlice(baseGroup, innerSpans),
             route);
-        var angle = RestoreVisibleSlice(match.Groups["angle"], innerSpans);
+        var angle = NormalizeTransparentAngleCodeWrapper(RestoreVisibleSlice(match.Groups["angle"], innerSpans));
 
         if (string.Equals(translatedBase, baseSource, StringComparison.Ordinal)
             && string.Equals(angle, match.Groups["angle"].Value, StringComparison.Ordinal))
@@ -1384,7 +1419,7 @@ internal static class GetDisplayNameRouteTranslator
             && translatedModifiers.Count == 1
             && source[0] != '{'
             && source[0] != '['
-            && !CompoundStainedModifierPattern.IsMatch(sourceModifiers[0]))
+            && !IsStainedDisplayNameModifier(sourceModifiers[0]))
         {
             return false;
         }
@@ -1419,6 +1454,12 @@ internal static class GetDisplayNameRouteTranslator
     {
         var visible = ColorAwareTranslationComposer.GetVisibleText(modifier);
         return visible is "a" or "an" or "the";
+    }
+
+    private static bool IsStainedDisplayNameModifier(string modifier)
+    {
+        return modifier.EndsWith("-stained", StringComparison.Ordinal)
+            || CompoundStainedModifierPattern.IsMatch(modifier);
     }
 
     private static bool TryReadLeadingModifierToken(
@@ -2204,12 +2245,11 @@ internal static class GetDisplayNameRouteTranslator
                 if (suffixMatch.Groups["bracket"].Success)
                 {
                     var stateGroup = suffixMatch.Groups["state"];
-                    var translatedState = TranslateDisplayNameState(stateGroup.Value, route);
-                    builder.Append(" [");
+                    var translatedState = TranslateDisplayNameStatePreservingColors(stateGroup, spans, route);
+                    builder.Append(' ');
                     builder.Append(string.Equals(translatedState, stateGroup.Value, StringComparison.Ordinal)
-                        ? RestoreCompactWeaponSuffixSlice(suffixMatch.Groups["bracket"], spans).Trim('[', ']')
-                        : RestoreWholeSlice(translatedState, spans, stateGroup));
-                    builder.Append(']');
+                        ? RestoreCompactWeaponSuffixSlice(suffixMatch.Groups["bracket"], spans)
+                        : RestoreBracketedDisplayNameSuffix(translatedState, suffixMatch.Groups["bracket"], spans));
                     continue;
                 }
 
@@ -2231,7 +2271,11 @@ internal static class GetDisplayNameRouteTranslator
             var stateGroup = match.Groups["state"];
             if (stateGroup.Success)
             {
-                translated += " [" + RestoreWholeSlice(TranslateDisplayNameState(stateGroup.Value, route), spans, stateGroup) + "]";
+                translated += " "
+                    + RestoreBracketedDisplayNameStateSuffix(
+                        TranslateDisplayNameStatePreservingColors(stateGroup, spans, route),
+                        stateGroup,
+                        spans);
             }
 
             return true;
@@ -2953,6 +2997,70 @@ internal static class GetDisplayNameRouteTranslator
         return source;
     }
 
+    private static string TranslateDisplayNameStatePreservingColors(
+        Group stateGroup,
+        IReadOnlyList<ColorSpan> spans,
+        string route)
+    {
+        return TryTranslateLoadedEnergyCellDisplayNameState(stateGroup, spans, route, out var loadedCellState)
+            ? loadedCellState
+            : RestoreWholeSlice(TranslateDisplayNameState(stateGroup.Value, route), spans, stateGroup);
+    }
+
+    private static bool TryTranslateLoadedEnergyCellDisplayNameState(
+        Group stateGroup,
+        IReadOnlyList<ColorSpan> spans,
+        string route,
+        out string translated)
+    {
+        var match = LoadedEnergyCellDisplayNameStatePattern.Match(stateGroup.Value);
+        if (!match.Success)
+        {
+            translated = stateGroup.Value;
+            return false;
+        }
+
+        var cellSource = RestoreStateComponent(stateGroup, match.Groups["cell"], spans);
+        var translatedCell = ColorAwareTranslationComposer.TranslatePreservingColors(
+            cellSource,
+            visible => TranslateDisplayNameFragment(visible, route));
+
+        var chargeWithParensSource = RestoreStateComponent(stateGroup, match.Groups["chargeWithParens"], spans);
+        var translatedChargeWithParens = ColorAwareTranslationComposer.TranslatePreservingColors(
+            chargeWithParensSource,
+            visible =>
+            {
+                if (visible.Length < 2 || visible[0] != '(' || visible[visible.Length - 1] != ')')
+                {
+                    return visible;
+                }
+
+                var charge = visible.Substring(1, visible.Length - 2);
+                if (TryStripDirectTranslationMarkerFromChargeStatus(charge, out var strippedCharge))
+                {
+                    charge = strippedCharge;
+                }
+
+                return EnergyStorageChargeStatusTranslationPatch.TryTranslateChargeStatus(charge, out var translatedCharge)
+                    ? "(" + translatedCharge + ")"
+                    : "(" + charge + ")";
+            });
+
+        var codeSource = ColorizeRawAngleCodeSuffix(RestoreStateComponent(stateGroup, match.Groups["code"], spans));
+
+        translated = translatedCell + " " + translatedChargeWithParens + " " + codeSource;
+        return !string.Equals(translated, stateGroup.Value, StringComparison.Ordinal);
+    }
+
+    private static string RestoreStateComponent(Group stateGroup, Group componentGroup, IReadOnlyList<ColorSpan> spans)
+    {
+        return RestoreVisibleSlice(
+            componentGroup.Value,
+            spans,
+            stateGroup.Index + componentGroup.Index,
+            componentGroup.Length);
+    }
+
     private static bool TryTranslateGeneratedDisplayNameState(string source, string route, out string translated)
     {
         var timedMatch = TimedDisplayNameStatePattern.Match(source);
@@ -3520,6 +3628,35 @@ internal static class GetDisplayNameRouteTranslator
         return ColorizeRawAngleCodeSuffix(restored);
     }
 
+    private static string RestoreBracketedDisplayNameStateSuffix(
+        string translatedState,
+        Group stateGroup,
+        IReadOnlyList<ColorSpan> spans)
+    {
+        if (stateGroup.Index <= 0)
+        {
+            return "[" + translatedState + "]";
+        }
+
+        return ColorAwareTranslationComposer.RestoreWholeSliceBoundaryWrappersPreservingTranslatedOwnership(
+            "[" + translatedState + "]",
+            spans,
+            stateGroup.Index - 1,
+            stateGroup.Length + 2);
+    }
+
+    private static string RestoreBracketedDisplayNameSuffix(
+        string translatedState,
+        Group bracketGroup,
+        IReadOnlyList<ColorSpan> spans)
+    {
+        return ColorAwareTranslationComposer.RestoreWholeSliceBoundaryWrappersPreservingTranslatedOwnership(
+            "[" + translatedState + "]",
+            spans,
+            bracketGroup.Index,
+            bracketGroup.Length);
+    }
+
     private static string ColorizeRawCompactWeaponStats(string source)
     {
         if (!StringHelpers.ContainsOrdinal(source, "\u001a") && !StringHelpers.ContainsOrdinal(source, "\u0003"))
@@ -3592,6 +3729,7 @@ internal static class GetDisplayNameRouteTranslator
 
     private static string ColorizeRawAngleCodeSuffix(string source)
     {
+        source = NormalizeTransparentAngleCodeWrapper(source);
         if (source.Length < 3
             || source[0] != '<'
             || source[source.Length - 1] != '>'
@@ -3632,6 +3770,13 @@ internal static class GetDisplayNameRouteTranslator
 
         builder.Append(">}}");
         return builder.ToString();
+    }
+
+    private static string NormalizeTransparentAngleCodeWrapper(string source)
+    {
+        return source.IndexOf("<{{|", StringComparison.Ordinal) < 0
+            ? source
+            : TransparentAngleCodeWrapperPattern.Replace(source, "<${inner}>");
     }
 
     private static string ColorizeRawBracketSuffix(string source)

@@ -33,18 +33,25 @@ internal static class PopupTranslatedMessageHandoff
         activeScopes.Add(scopeId);
     }
 
-    internal static void ExitCurrentScope()
+    internal static void ExitCurrentScope(bool retainPendingEntries = false)
     {
         var scopeId = GetCurrentScopeId();
         if (scopeId != 0)
         {
-            ExitScope(scopeId);
+            ExitScope(scopeId, retainPendingEntries);
         }
     }
 
-    internal static void ExitScope(int scopeId)
+    internal static void ExitScope(int scopeId, bool retainPendingEntries = false)
     {
-        RemovePendingEntriesForScope(scopeId);
+        if (retainPendingEntries)
+        {
+            DetachPendingEntriesForScope(scopeId);
+        }
+        else
+        {
+            RemovePendingEntriesForScope(scopeId);
+        }
 
         var scopes = activeScopes;
         if (scopes is null)
@@ -111,16 +118,38 @@ internal static class PopupTranslatedMessageHandoff
         }
 
         var key = CreateKey(source);
-        var scopeId = GetCurrentScopeId();
-        if (scopeId == 0)
-        {
-            return false;
-        }
-
         var entries = pendingEntries;
         if (entries is null)
         {
             return false;
+        }
+
+        var scopeId = GetCurrentScopeId();
+        if (scopeId == 0)
+        {
+            Entry? detachedMatch = null;
+            for (var index = entries.Count - 1; index >= 0; index--)
+            {
+                var entry = entries[index];
+                if (entry.ScopeId != 0
+                    || !string.Equals(entry.Visible, key.Visible, StringComparison.Ordinal)
+                    || !string.Equals(entry.ColorSignature, key.ColorSignature, StringComparison.Ordinal))
+                {
+                    continue;
+                }
+
+                detachedMatch = entry;
+                break;
+            }
+
+            RemoveDetachedEntries();
+            if (detachedMatch is null)
+            {
+                return false;
+            }
+
+            translated = detachedMatch.Translated;
+            return true;
         }
 
         for (var index = entries.Count - 1; index >= 0; index--)
@@ -165,6 +194,45 @@ internal static class PopupTranslatedMessageHandoff
         for (var index = entries.Count - 1; index >= 0; index--)
         {
             if (entries[index].ScopeId == scopeId)
+            {
+                entries.RemoveAt(index);
+            }
+        }
+
+        if (entries.Count == 0)
+        {
+            pendingEntries = null;
+        }
+    }
+
+    private static void DetachPendingEntriesForScope(int scopeId)
+    {
+        var entries = pendingEntries;
+        if (entries is null)
+        {
+            return;
+        }
+
+        for (var index = 0; index < entries.Count; index++)
+        {
+            if (entries[index].ScopeId == scopeId)
+            {
+                entries[index].Detach();
+            }
+        }
+    }
+
+    private static void RemoveDetachedEntries()
+    {
+        var entries = pendingEntries;
+        if (entries is null)
+        {
+            return;
+        }
+
+        for (var index = entries.Count - 1; index >= 0; index--)
+        {
+            if (entries[index].ScopeId == 0)
             {
                 entries.RemoveAt(index);
             }
@@ -261,12 +329,17 @@ internal static class PopupTranslatedMessageHandoff
             Translated = translated;
         }
 
-        internal int ScopeId { get; }
+        internal int ScopeId { get; private set; }
 
         internal string Visible { get; }
 
         internal string ColorSignature { get; }
 
         internal string Translated { get; }
+
+        internal void Detach()
+        {
+            ScopeId = 0;
+        }
     }
 }

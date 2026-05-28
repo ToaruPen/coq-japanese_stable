@@ -156,6 +156,27 @@ public sealed class MessageLogPatchTests
         });
     }
 
+    [TestCase(
+        "The {{mercurial|マーキュリアル}} to the southwest disappears.",
+        "南西にいる{{mercurial|マーキュリアル}}が姿を消した。")]
+    [TestCase(
+        "&yThe &cマー&Cキ&Wュリ&Cア&cル&y to the east disappears.",
+        "&y東にいる&cマー&Cキ&Wュリ&Cア&cル&yが姿を消した。")]
+    public void Prefix_SubjectDirectionDisappears_TranslatesVisibilityObservation(
+        string source,
+        string expected)
+    {
+        var message = source;
+
+        var result = MessageLogPatch.Prefix(ref message);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(message, Is.EqualTo(expected));
+            Assert.That(result, Is.True);
+        });
+    }
+
     [Test]
     public void Prefix_TranslatesCampfirePreserveMessageLogFrameAndPreservesColors()
     {

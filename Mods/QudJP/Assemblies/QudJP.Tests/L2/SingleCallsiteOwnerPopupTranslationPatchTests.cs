@@ -419,6 +419,12 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "FoodConsumptionFrame",
         PopupMethod.Show)]
     [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.HandleFood),
+        "You eat your {{R|恋人の花}}.\nThat hits the spot!\nYou are now {{|Sated}} and {{|Quenched}}.",
+        "{{R|恋人の花}}を食べた。\nおいしく腹に収まった！\n現在、{{|満腹}}、{{|潤っている}}だ。",
+        "FoodConsumptionFrame",
+        PopupMethod.Show)]
+    [TestCase(
         nameof(DummySingleCallsiteOwnerPopupTarget.ApplySpaceTimeVortex),
         "Your companion, {{G|Q Girl}},has been sucked into the space-time vortex to the east!",
         "あなたの仲間である{{G|Q Girl}}は東側のspace-time vortexに吸い込まれた！",

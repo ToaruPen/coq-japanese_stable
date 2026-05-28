@@ -74,6 +74,18 @@ public sealed class GetDisplayNameRouteTranslatorTests
     }
 
     [Test]
+    public void TranslatePreservingColors_ProductionDictionary_TranslatesWaterStainedPrefix()
+    {
+        UseProductionDictionaries();
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            "water-stained chem cell",
+            nameof(GetDisplayNamePatch));
+
+        Assert.That(translated, Is.EqualTo("水染みのケムセル"));
+    }
+
+    [Test]
     public void TranslatePreservingColors_TranslatesHydraulicLiquidAndFlywheelSuffixes()
     {
         WriteDictionaryFile(
@@ -519,6 +531,53 @@ public sealed class GetDisplayNameRouteTranslatorTests
         Assert.That(translated, Is.EqualTo("使い込まれた青銅の剣 <{{R|A}}{{C|C}}>"));
     }
 
+    [TestCase(
+        "chem cell <{{|{{G|B}}{{C|D}}{{r|1}}}}>",
+        "ケムセル <{{G|B}}{{C|D}}{{r|1}}>")]
+    [TestCase(
+        "{{y|[{{c|chem cell}} {{y|({{g|Fresh}})}} <{{|{{G|B}}{{C|D}}{{r|1}}}}>]}}",
+        "{{y|[{{c|ケムセル}} {{y|({{g|残量多}})}} <{{G|B}}{{C|D}}{{r|1}}>]}}")]
+    public void TranslatePreservingColors_RemovesEmptyQudWrapperFromRuntimeAngleCodeSuffix(
+        string source,
+        string expected)
+    {
+        WriteDictionary(("chem cell", "ケムセル"));
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            source,
+            nameof(GetDisplayNamePatch));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.EqualTo(expected));
+            Assert.That(
+                ColorShapeCaptureObservability.Capture(
+                    nameof(InventoryLineTranslationPatch),
+                    nameof(TranslatePreservingColors_RemovesEmptyQudWrapperFromRuntimeAngleCodeSuffix),
+                    source,
+                    translated).MarkupSemanticStatus,
+                Is.EqualTo("clean"));
+        });
+    }
+
+    [TestCase(
+        "Fresh",
+        "{{y|[{{c|ケムセル}} {{y|(残量多)}} <{{G|B}}{{C|D}}{{r|1}}>]}}")]
+    [TestCase(
+        "SomeUnknownState",
+        "{{y|[{{c|ケムセル}} {{y|(SomeUnknownState)}} <{{G|B}}{{C|D}}{{r|1}}>]}}")]
+    public void TranslatePreservingColors_StripsDirectMarkerFromLoadedCellChargeStatus(string charge, string expected)
+    {
+        WriteDictionary(("chem cell", "ケムセル"));
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            "{{y|[{{c|chem cell}} {{y|(" + MessageFrameTranslator.DirectTranslationMarker + charge
+            + ")}} <{{|{{G|B}}{{C|D}}{{r|1}}}}>]}}",
+            nameof(GetDisplayNamePatch));
+
+        Assert.That(translated, Is.EqualTo(expected));
+    }
+
     [Test]
     public void TranslatePreservingColors_TranslatesLeadingWhitespaceModifierChainBeforeWeaponStats()
     {
@@ -598,6 +657,28 @@ public sealed class GetDisplayNameRouteTranslatorTests
         Assert.That(
             translated,
             Is.EqualTo("アイゲンライフル（{{R-R-r-r-g-g-G-G-B-B-b-b sequence|ビームスプリッタ装着}}） {{W|\u001a}}10 {{r|\u0003}}1d12 {{y|[{{w|フィジェット}} {{c|セル}} {{b|\u0004}}0 {{K|\t}}0 {{y|({{g|残量多}})}}]}}"));
+    }
+
+    [Test]
+    public void TranslatePreservingColors_PreservesLoadedCellColorsAfterPrefixModifierAndWeaponStats()
+    {
+        WriteDictionary(
+            ("carbide battle axe", "カーバイドの戦斧"),
+            ("chem cell", "ケムセル"));
+        WriteContextDictionaryFile(
+            "ui-displayname-adjectives.ja.json",
+            ("{{electrical|electrified}}", "GetDisplayName.Adjective", "{{electrical|帯電}}"));
+
+        var source =
+            "{{electrical|electrified}} {{b|carbide battle axe}} {{W|\u001a}}6 {{r|\u0003}}1d4+1 {{y|[{{c|chem cell}} {{y|({{g|Fresh}})}} <{{G|B}}{{C|D}}{{r|1}}>]}}";
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            source,
+            nameof(GetDisplayNamePatch));
+
+        Assert.That(
+            translated,
+            Is.EqualTo("{{electrical|帯電}} {{b|カーバイドの戦斧}} {{W|\u001a}}6 {{r|\u0003}}1d4+1 {{y|[{{c|ケムセル}} {{y|({{g|残量多}})}} <{{G|B}}{{C|D}}{{r|1}}>]}}"));
     }
 
     [Test]

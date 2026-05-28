@@ -137,7 +137,7 @@ public sealed class LookTooltipContentPatchTests
                 Is.EqualTo("{{rules|つり合い調整: 命中に+2のボーナスを与える。}}"));
             Assert.That(
                 LookTooltipContentPatch.TranslateTooltipContent("{{rules|Electrified: When powered, this weapon deals an additional 2-3 electrical damage on hit.}}"),
-                Is.EqualTo("{{rules|電化: 通電中、この武器は命中時に追加で2-3の電撃ダメージを与える。}}"));
+                Is.EqualTo("{{rules|帯電: 通電中、この武器は命中時に追加で2-3の電撃ダメージを与える。}}"));
             Assert.That(
                 LookTooltipContentPatch.TranslateTooltipContent("{{rules|Scaled: This item grants the wearer +250 reputation with unshelled reptiles.}}"),
                 Is.EqualTo("{{rules|鱗状の: 装着者に甲無し爬虫類との評判+250を与える。}}"));

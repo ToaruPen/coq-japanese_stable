@@ -24,7 +24,7 @@
 
   <mod Part="ModGigantic" Tables="CommonMods,PotteryMods,ShevaPotteryMods,EnergyCellMods,GrenadeMods,NuggetMods,GemstoneMods,TonicMods" Rarity="R2" TinkerDisplayName="巨大" TinkerAllowed="false" CanAutoTinker="false" BonusAllowed="false" Value="1.5" TinkerCategory="utility" />
 
-  <mod Part="ModElectrified" Tables="WeaponMods" Rarity="U" TinkerTier="2" CanAutoTinker="false" TinkerDisplayName="電化" Value="1.2" TinkerCategory="melee weapons" />
+  <mod Part="ModElectrified" Tables="WeaponMods" Rarity="U" TinkerTier="2" CanAutoTinker="false" TinkerDisplayName="帯電" Value="1.2" TinkerCategory="melee weapons" />
   <mod Part="ModFreezing" Tables="WeaponMods" Rarity="U" TinkerTier="2" CanAutoTinker="false" NoSparkingQuest="true" TinkerDisplayName="冷却" Value="1.2" TinkerCategory="melee weapons" />
   <mod Part="ModFlaming" Tables="WeaponMods" Rarity="U" TinkerTier="2" CanAutoTinker="false" NoSparkingQuest="true" TinkerDisplayName="火炎" Value="1.2" TinkerCategory="melee weapons" />
   <mod Part="ModCounterweighted" Tables="WeaponMods" Rarity="C" TinkerTier="2" TinkerDisplayName="つり合い調整" Value="1.1" TinkerCategory="melee weapons" />

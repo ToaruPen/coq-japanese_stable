@@ -1103,11 +1103,11 @@
     },
     {
       "key": "Electrified: When powered, this weapon deals additional electrical damage on hit.",
-      "text": "電化: 通電中、この武器は命中時に追加の電撃ダメージを与える。"
+      "text": "帯電: 通電中、この武器は命中時に追加の電撃ダメージを与える。"
     },
     {
       "key": "Electrified: When powered, this weapon deals an additional {0} electrical damage on hit.",
-      "text": "電化: 通電中、この武器は命中時に追加で{0}の電撃ダメージを与える。"
+      "text": "帯電: 通電中、この武器は命中時に追加で{0}の電撃ダメージを与える。"
     },
     {
       "key": "Feathered: This item grants the wearer {0} reputation with birds.",

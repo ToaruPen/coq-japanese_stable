@@ -122,11 +122,17 @@ internal static class DescriptionTextTranslator
 
     private static readonly Regex StatAdjustLinePattern =
         new Regex(
-            "^(?<activated>When activated, )?(?<amount>[+-]\\d+)(?<percent>%?) (?<stat>Strength|Toughness|Willpower|Agility|Ego|Intelligence|quickness|hit points|move speed|acid resistance|cold resistance|electric resistance|heat resistance|AV|DV|MA|PV)$",
+            "^(?<activated>When activated, )?(?<amount>[+-]\\d+)(?<percent>%?) (?<stat>Strength|Toughness|Willpower|Agility|Ego|Intelligence|quickness|hit points|move speed|acid resistance|cold resistance|electric resistance|heat resistance|AV|DV|MA|PV)(?<suffix>（[^）]+）)?$",
             RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     private static readonly Regex ItReadsLinePattern =
         new Regex("^It reads, '(?<text>.+)'\\.$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex StartupReadoutLinePattern =
+        new Regex("^Its readout indicates that its startup sequence will take an estimated (?<rounds>\\d+) more rounds?\\.$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex LostChanceReducedLinePattern =
+        new Regex("^Chance of becoming lost reduced by (?<amount>\\d+)%\\.$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     private static readonly Regex DisarmedSuffixPattern =
         new Regex("^(?<body>.+) It's been disarmed\\.$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
@@ -1220,6 +1226,23 @@ internal static class DescriptionTextTranslator
             return true;
         }
 
+        if (string.Equals(source, "Graffiti is scrawled across the surface. It reads: ", StringComparison.Ordinal))
+        {
+            translated = "表面に落書きが走り書きされている。そこにはこう書かれている: ";
+            DynamicTextObservability.RecordTransform(route, "Description.RuntimeObservedLine", source, translated);
+            return true;
+        }
+
+        var startupReadoutMatch = StartupReadoutLinePattern.Match(source);
+        if (startupReadoutMatch.Success)
+        {
+            translated = "表示には、起動シーケンス完了まであとおよそ"
+                + startupReadoutMatch.Groups["rounds"].Value
+                + "ラウンドかかると示されている。";
+            DynamicTextObservability.RecordTransform(route, "Description.RuntimeObservedLine", source, translated);
+            return true;
+        }
+
         var disarmedMatch = DisarmedSuffixPattern.Match(source);
         if (disarmedMatch.Success)
         {
@@ -1362,6 +1385,14 @@ internal static class DescriptionTextTranslator
             return true;
         }
 
+        var lostChanceReducedMatch = LostChanceReducedLinePattern.Match(source);
+        if (lostChanceReducedMatch.Success)
+        {
+            translated = "道に迷う確率が" + lostChanceReducedMatch.Groups["amount"].Value + "%低下する。";
+            DynamicTextObservability.RecordTransform(route, "Description.RuntimeObservedLine", source, translated);
+            return true;
+        }
+
         if (PoweredOffLinePattern.IsMatch(source))
         {
             translated = "電源が切れている。";
@@ -1375,7 +1406,8 @@ internal static class DescriptionTextTranslator
             translated = (statAdjustMatch.Groups["activated"].Success ? "起動時、" : string.Empty)
                 + TranslateRuntimeStatAdjustLabel(statAdjustMatch.Groups["stat"].Value)
                 + statAdjustMatch.Groups["amount"].Value
-                + statAdjustMatch.Groups["percent"].Value;
+                + statAdjustMatch.Groups["percent"].Value
+                + statAdjustMatch.Groups["suffix"].Value;
             DynamicTextObservability.RecordTransform(route, "Description.RuntimeObservedLine", source, translated);
             return true;
         }

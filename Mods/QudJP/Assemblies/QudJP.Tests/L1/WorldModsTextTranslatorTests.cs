@@ -163,7 +163,7 @@ public sealed class WorldModsTextTranslatorTests
         "ビームスプリッタ装着: この武器は1射撃ごとに3方向へ拡散し、各射撃の貫通判定が-1される。")]
     [TestCase(
         "Electrified: When powered, this weapon deals an additional 2-3 electrical damage on hit.",
-        "電化: 通電中、この武器は命中時に追加で2-3の電撃ダメージを与える。")]
+        "帯電: 通電中、この武器は命中時に追加で2-3の電撃ダメージを与える。")]
     [TestCase(
         "Flaming: When powered, this weapon deals additional heat damage on hit.",
         "火炎: 通電中、この武器は命中時に追加の熱ダメージを与える。")]
@@ -410,7 +410,7 @@ public sealed class WorldModsTextTranslatorTests
         Assert.Multiple(() =>
         {
             Assert.That(ok, Is.True);
-            Assert.That(translated, Is.EqualTo("{{Y|電化: 通電中、この武器は命中時に追加で2-3の電撃ダメージを与える。}}"));
+            Assert.That(translated, Is.EqualTo("{{Y|帯電: 通電中、この武器は命中時に追加で2-3の電撃ダメージを与える。}}"));
         });
     }
 
@@ -739,6 +739,32 @@ public sealed class WorldModsTextTranslatorTests
     }
 
     [Test]
+    public void TryTranslateActiveEffectsLine_TranslatesLiquidCoveredPrefixChains()
+    {
+        WriteDictionary(
+            "world-mods.ja.json",
+            ("ACTIVE EFFECTS:", "発動中の効果:"));
+        WriteDictionaryWithContext(
+            "ui-displayname-adjectives.ja.json",
+            ("GetDisplayName.Adjective", "bloody", "{{r|血まみれの}}"),
+            ("GetDisplayName.Adjective", "slimy", "{{slimy|粘液質の}}"),
+            ("GetDisplayName.Adjective", "wet", "{{B|濡れた}}"));
+
+        var ok = StatusLineTranslationHelpers.TryTranslateActiveEffectsLine(
+            "ACTIVE EFFECTS: bloody slimy wet",
+            "AbilityBarAfterRenderTranslationPatch",
+            "AbilityBar.ActiveEffects",
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(translated, Is.EqualTo("発動中の効果: {{r|血まみれの}}{{slimy|粘液質の}}{{B|濡れた}}"));
+            Assert.That(Translator.GetMissingKeyHitCountForTests("bloody slimy wet"), Is.EqualTo(0));
+        });
+    }
+
+    [Test]
     public void TryTranslateActiveEffectsLine_TranslatesGeneratedStuckInEffectPart()
     {
         WriteDictionary(
@@ -825,8 +851,8 @@ public sealed class WorldModsTextTranslatorTests
             ("Counterweighted: Adds {0} to hit.", "つり合い調整: 命中に{0}のボーナスを与える。"),
             ("Displacer: When powered, this weapon randomly teleports its target {0} tiles away on a successful hit.", "位相転移: 通電中、この武器は命中時に対象を無作為に{0}マス離れた場所へ転移させる。"),
             ("Fitted with beamsplitter: This weapon has a {0}-way spread with each shot at -1 penetration roll.", "ビームスプリッタ装着: この武器は1射撃ごとに{0}方向へ拡散し、各射撃の貫通判定が-1される。"),
-            ("Electrified: When powered, this weapon deals additional electrical damage on hit.", "電化: 通電中、この武器は命中時に追加の電撃ダメージを与える。"),
-            ("Electrified: When powered, this weapon deals an additional {0} electrical damage on hit.", "電化: 通電中、この武器は命中時に追加で{0}の電撃ダメージを与える。"),
+            ("Electrified: When powered, this weapon deals additional electrical damage on hit.", "帯電: 通電中、この武器は命中時に追加の電撃ダメージを与える。"),
+            ("Electrified: When powered, this weapon deals an additional {0} electrical damage on hit.", "帯電: 通電中、この武器は命中時に追加で{0}の電撃ダメージを与える。"),
             ("Flaming: When powered, this weapon deals additional heat damage on hit.", "火炎: 通電中、この武器は命中時に追加の熱ダメージを与える。"),
             ("Flaming: When powered, this weapon deals an additional {0} heat damage on hit.", "火炎: 通電中、この武器は命中時に追加で{0}の熱ダメージを与える。"),
             ("Freezing: When powered, this weapon deals additional cold damage on hit.", "冷却: 通電中、この武器は命中時に追加の冷気ダメージを与える。"),

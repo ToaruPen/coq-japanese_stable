@@ -110,6 +110,40 @@ public sealed class CombatAndLogMessageQueuePatchTests
         }
     }
 
+    [TestCase(
+        "A {{W|ribbon of electricity}} leaps from you and {{Y|ケムセル}} on you into the air.",
+        "{{W|電光のリボン}}があなたとあなたの{{Y|ケムセル}}から空中へ走った。")]
+    [TestCase(
+        "A {{W|ribbon of electricity}} leaps from {{Y|ケムセル}} on your person to {{C|高級工具セット}}.",
+        "{{W|電光のリボン}}が身につけた{{Y|ケムセル}}から{{C|高級工具セット}}へ走った。")]
+    public void SapChargeOnHitCheckApply_TranslatesRibbonMessages_WhenOwnerPatched(string source, string expected)
+    {
+        WritePatternDictionary(
+            ("^A ribbon of electricity leaps from you and (.+?) on you into the air\\.$", "{{{{W|電光のリボン}}}}があなたとあなたの{0}から空中へ走った。"),
+            ("^A ribbon of electricity leaps from (.+?) on your person to (.+?)\\.$", "{{{{W|電光のリボン}}}}が身につけた{0}から{1}へ走った。"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummySapChargeOnHitTarget), nameof(DummySapChargeOnHitTarget.CheckApply), typeof(DummyGameEvent)),
+                typeof(SapChargeOnHitTranslationPatch));
+
+            var target = new DummySapChargeOnHitTarget { MessageToSend = source };
+
+            target.CheckApply(new DummyGameEvent());
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
     [Test]
     public void PhysicsProcessTakeDamage_TranslatesDamageFrames_WhenOwnerPatched()
     {
@@ -3656,6 +3690,15 @@ public sealed class CombatAndLogMessageQueuePatchTests
         "意志の力で混乱を振り払った。")]
     [TestCase("You lose sight of your mark.", "標的を見失った。")]
     [TestCase("Your tracking of your mark has been disrupted.", "印付けの追跡が乱された。")]
+    [TestCase(
+        "{{&R|The {{mercurial|マーキュリアル}} draws a bead on you. \u0002are\u001F3\u001F7\u001F\u0003You are marked.}}",
+        "{{&R|{{mercurial|マーキュリアル}}があなたに照準を合わせた。あなたはマークされた。}}")]
+    [TestCase(
+        "The snapjaw hunter draws a bead on you. \u0002are\u001F3\u001F7\u001F\u0003You are marked.",
+        "snapjaw hunterがあなたに照準を合わせた。あなたはマークされた。")]
+    [TestCase(
+        "The snapjaw hunter draws a bead on you. You are marked.",
+        "snapjaw hunterがあなたに照準を合わせた。あなたはマークされた。")]
     [TestCase("The snapjaw resists your shield slam.", "snapjawはあなたのシールドスラムに抵抗した。")]
     [TestCase("You resist {{R|the snapjaw's shield slam}}.", "{{R|snapjawのシールドスラム}}に抵抗した。")]
     [TestCase("You rejoinder with {{Y|your dagger}}.", "{{Y|あなたのdagger}}で反撃した。")]

@@ -820,10 +820,7 @@ internal static class WorldModsTextTranslator
 
         var body = match.Groups["body"].Value;
         var status = TranslateActivePartStatus(match.Groups["status"].Value);
-        if (!TryTranslate(body, route, family, out var translatedBody))
-        {
-            translatedBody = body;
-        }
+        var translatedBody = TranslateActivePartStatusBody(body, route, family);
 
         var visible = translatedBody + "（" + status + "）";
         var contentSpans = ColorAwareTranslationComposer.WithoutTrueWholeSourceBoundarySpans(spans, stripped.Length);
@@ -834,6 +831,17 @@ internal static class WorldModsTextTranslator
             stripped.Length);
         DynamicTextObservability.RecordTransform(route, family, source, translated);
         return !string.Equals(source, translated, StringComparison.Ordinal);
+    }
+
+    private static string TranslateActivePartStatusBody(string source, string route, string family)
+    {
+        if (TryTranslate(source, route, family, out var translated))
+        {
+            return translated;
+        }
+
+        translated = Patches.DescriptionTextTranslator.TranslateShortDescription(source, route);
+        return string.Equals(source, translated, StringComparison.Ordinal) ? source : translated;
     }
 
     private static bool TryTranslateComputeNodeTemplate(string source, string route, string family, out string translated)

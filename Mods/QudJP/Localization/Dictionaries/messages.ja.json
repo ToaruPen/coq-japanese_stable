@@ -1189,6 +1189,11 @@
       "route": "emit-message"
     },
     {
+      "pattern": "^You disassemble (?:the |your )(.+?)\\.$",
+      "template": "{0}を分解した。",
+      "route": "emit-message"
+    },
+    {
       "pattern": "^(.+?) (to the north|to the south|to the east|to the west|to the northeast|to the northwest|to the southeast|to the southwest|here)を分解し、修理ビット<(.+?)>を受け取った。$",
       "template": "{0}（{t1}）を分解し、修理ビット<{2}>を受け取った。",
       "route": "emit-message"
@@ -2266,6 +2271,41 @@
     {
       "pattern": "^Zone build failure:(.+)$",
       "template": "ゾーン構築失敗:{0}",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^Its readout indicates that its startup sequence will take an estimated (\\d+) more rounds?\\.$",
+      "template": "表示には、起動シーケンス完了まであとおよそ{0}ラウンドかかると示されている。",
+      "route": "description"
+    },
+    {
+      "pattern": "^A ribbon of electricity leaps from you and (.+?) on you into the air\\.$",
+      "template": "{{{{W|電光のリボン}}}}があなたとあなたの{t0}から空中へ走った。",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^A ribbon of electricity leaps from (.+?) on your person into the air\\.$",
+      "template": "{{{{W|電光のリボン}}}}が身につけた{t0}から空中へ走った。",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^A ribbon of electricity leaps from you and (.+?) on you to (.+?)\\.$",
+      "template": "{{{{W|電光のリボン}}}}があなたとあなたの{t0}から{t1}へ走った。",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^A ribbon of electricity leaps from (.+?) on your person to (.+?)\\.$",
+      "template": "{{{{W|電光のリボン}}}}が身につけた{t0}から{t1}へ走った。",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^A ribbon of electricity leaps from (.+?) into the air\\.$",
+      "template": "{{{{W|電光のリボン}}}}が{t0}から空中へ走った。",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^A ribbon of electricity leaps from (.+?) to (.+?)\\.$",
+      "template": "{{{{W|電光のリボン}}}}が{t0}から{t1}へ走った。",
       "route": "emit-message"
     },
     {

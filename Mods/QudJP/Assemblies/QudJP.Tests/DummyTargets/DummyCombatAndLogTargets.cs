@@ -117,6 +117,18 @@ internal sealed class DummyPhysicsApplyDischargeTarget
     }
 }
 
+internal sealed class DummySapChargeOnHitTarget
+{
+    public string MessageToSend { get; set; } = string.Empty;
+
+    public bool CheckApply(DummyGameEvent e)
+    {
+        _ = e;
+        DummyMessageQueue.AddPlayerMessage(MessageToSend);
+        return true;
+    }
+}
+
 internal sealed class DummyPhysicsProcessTakeDamageTarget
 {
     public string MessageToSend { get; set; } = string.Empty;
