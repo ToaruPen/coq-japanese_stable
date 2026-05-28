@@ -32,7 +32,7 @@ public sealed class FabricateFromSelfAbilityDescriptionTranslationPatchTests
     }
 
     [Test]
-    public void TranslateAbilityDescription_PreservesUnknownAndMarkerPrefixedValues()
+    public void TranslateAbilityDescription_PreservesUnknownAndStripsMarkerPrefixedValues()
     {
         Assert.Multiple(() =>
         {
@@ -41,7 +41,7 @@ public sealed class FabricateFromSelfAbilityDescriptionTranslationPatchTests
                 Is.EqualTo("Excavate phase cannons"));
             Assert.That(
                 FabricateFromSelfAbilityDescriptionTranslationPatch.TranslateAbilityDescriptionForTests("\u0001Fabricate phase cannons"),
-                Is.EqualTo("\u0001Fabricate phase cannons"));
+                Is.EqualTo("Fabricate phase cannons"));
         });
     }
 }

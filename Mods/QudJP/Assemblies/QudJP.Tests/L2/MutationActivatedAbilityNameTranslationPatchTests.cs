@@ -191,6 +191,24 @@ public sealed class MutationActivatedAbilityNameTranslationPatchTests
         });
     }
 
+    [Test]
+    public void RegistrationNameFallbackSetter_RejectsNonStringDisplayNameMember()
+    {
+        var entry = new DummyMutationActivatedAbilityEntryWithObjectDisplayName();
+        var method = typeof(ActivatedAbilityRegistrationNameTranslation).GetMethod(
+            "SetStringMemberValue",
+            BindingFlags.Static | BindingFlags.NonPublic);
+
+        Assert.That(method, Is.Not.Null);
+        var result = method!.Invoke(null, new object[] { entry, "DisplayName", "筋力強化" });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.EqualTo(false));
+            Assert.That(entry.DisplayName, Is.EqualTo("Boost Strength"));
+        });
+    }
+
     private static void WithPatchedOwner(Action action)
     {
         var harmonyId = "qudjp.tests.mutation-activated-ability-name." + Guid.NewGuid().ToString("N");
@@ -325,4 +343,9 @@ internal sealed class DummyMutationActivatedAbilityEntry
     public Guid ID { get; init; }
 
     public string DisplayName { get; set; } = string.Empty;
+}
+
+internal sealed class DummyMutationActivatedAbilityEntryWithObjectDisplayName
+{
+    public object DisplayName = "Boost Strength";
 }

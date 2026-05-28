@@ -2294,7 +2294,7 @@
     {
       "verb": "prevents",
       "extra": "you from dominating {0}",
-      "text": "{0}を支配できないよう妨げた"
+      "text": "{subject}が{0}を支配できないよう妨げた{endmark}"
     },
     {
       "verb": "resist",

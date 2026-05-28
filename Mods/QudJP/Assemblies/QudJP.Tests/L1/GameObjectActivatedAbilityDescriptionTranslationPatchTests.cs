@@ -20,7 +20,7 @@ public sealed class GameObjectActivatedAbilityDescriptionTranslationPatchTests
     }
 
     [Test]
-    public void TranslateActivatedAbilityDescription_PreservesUnknownAndMarkerPrefixedValues()
+    public void TranslateActivatedAbilityDescription_PreservesUnknownAndStripsMarkerPrefixedValues()
     {
         var unknown = new DummyActivatedAbility { Description = "Special generated detail." };
         var marker = new DummyActivatedAbility { Description = "\u0001Cooldown: 40" };
@@ -31,7 +31,7 @@ public sealed class GameObjectActivatedAbilityDescriptionTranslationPatchTests
         Assert.Multiple(() =>
         {
             Assert.That(unknown.Description, Is.EqualTo("Special generated detail."));
-            Assert.That(marker.Description, Is.EqualTo("\u0001Cooldown: 40"));
+            Assert.That(marker.Description, Is.EqualTo("Cooldown: 40"));
         });
     }
 

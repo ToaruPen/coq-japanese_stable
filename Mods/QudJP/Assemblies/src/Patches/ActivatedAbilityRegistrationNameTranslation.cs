@@ -142,14 +142,19 @@ internal static class ActivatedAbilityRegistrationNameTranslation
     {
         var type = instance.GetType();
         var property = AccessTools.Property(type, memberName);
-        if (property is not null && property.CanWrite)
+        if (property is not null)
         {
+            if (!property.CanWrite || property.PropertyType != typeof(string))
+            {
+                return false;
+            }
+
             property.SetValue(instance, value);
             return true;
         }
 
         var field = AccessTools.Field(type, memberName);
-        if (field is null)
+        if (field is null || field.FieldType != typeof(string))
         {
             return false;
         }

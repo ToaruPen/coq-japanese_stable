@@ -5220,6 +5220,18 @@ public sealed class CombatAndLogMessageQueuePatchTests
     }
 
     [Test]
+    public void IllRemove_LeavesUnknownQueuedMessageUnchanged_WhenOwnerPatched()
+    {
+        AssertIllRemoveQueuedMessage("You no longer feel seasick.", "You no longer feel seasick.");
+    }
+
+    [Test]
+    public void IllRemove_LeavesColorTaggedUnknownQueuedMessageUnchanged_WhenOwnerPatched()
+    {
+        AssertIllRemoveQueuedMessage("{{G|You no longer feel seasick.}}", "{{G|You no longer feel seasick.}}");
+    }
+
+    [Test]
     public void IllRemove_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched()
     {
         AssertIllRemoveQueuedMessage(
@@ -5389,7 +5401,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
     [TestCase(
         "you raise your shield in wall formation!",
         "あなたの盾を壁陣形に構えた！")]
-    public void EffectGeneratedApply_TranslatesShatteredArmorQueuedMessages_WhenOwnerPatched(
+    public void EffectGeneratedApply_TranslatesGeneratedEffectQueuedMessages_WhenOwnerPatched(
         string source,
         string expected)
     {
@@ -5457,6 +5469,18 @@ public sealed class CombatAndLogMessageQueuePatchTests
         AssertEffectGeneratedFireEventQueuedMessage("you are no longer ill.", "病気が治った。");
     }
 
+    [Test]
+    public void EffectGeneratedFireEvent_LeavesUnknownQueuedMessageUnchanged_WhenOwnerPatched()
+    {
+        AssertEffectGeneratedFireEventQueuedMessage("A strange event occurs.", "A strange event occurs.");
+    }
+
+    [Test]
+    public void EffectGeneratedFireEvent_TranslatesColorTaggedQueuedMessage_WhenOwnerPatched()
+    {
+        AssertEffectGeneratedFireEventQueuedMessage("{{R|you are no longer ill.}}", "{{R|病気が治った。}}");
+    }
+
     [TestCase(
         "you dismiss snapjaw from your service.",
         "あなたはsnapjawをあなたの配下から解放した。")]
@@ -5468,6 +5492,34 @@ public sealed class CombatAndLogMessageQueuePatchTests
         string expected)
     {
         AssertEffectGeneratedInventoryActionQueuedMessage(source, expected);
+    }
+
+    [Test]
+    public void EffectGeneratedBeginTakeAction_LeavesUnknownQueuedMessageUnchanged_WhenOwnerPatched()
+    {
+        AssertEffectGeneratedBeginTakeActionQueuedMessage("The snapjaw remains dizzy!", "The snapjaw remains dizzy!");
+    }
+
+    [Test]
+    public void EffectGeneratedBeginTakeAction_TranslatesColorTaggedQueuedMessage_WhenOwnerPatched()
+    {
+        AssertEffectGeneratedBeginTakeActionQueuedMessage("{{R|The snapjaw remains stunned!}}", "{{R|snapjawは気絶したままだ！}}");
+    }
+
+    [Test]
+    public void EffectGeneratedInventoryAction_LeavesUnknownQueuedMessageUnchanged_WhenOwnerPatched()
+    {
+        AssertEffectGeneratedInventoryActionQueuedMessage(
+            "you invite snapjaw into your service.",
+            "you invite snapjaw into your service.");
+    }
+
+    [Test]
+    public void EffectGeneratedInventoryAction_TranslatesColorTaggedQueuedMessage_WhenOwnerPatched()
+    {
+        AssertEffectGeneratedInventoryActionQueuedMessage(
+            "{{R|you dismiss snapjaw from your service.}}",
+            "{{R|あなたはsnapjawをあなたの配下から解放した。}}");
     }
 
     [Test]

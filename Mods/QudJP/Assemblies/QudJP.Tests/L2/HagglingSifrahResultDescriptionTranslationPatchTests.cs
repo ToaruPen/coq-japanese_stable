@@ -84,6 +84,24 @@ public sealed class HagglingSifrahResultDescriptionTranslationPatchTests
         });
     }
 
+    [Test]
+    public void ResultMethod_StripsDirectMarkedDescriptionWithoutObservabilityHit_WhenPatched()
+    {
+        WithPatchedOwner(nameof(DummyHagglingSifrahResultTarget.ResultSuccess), () =>
+        {
+            var target = new DummyHagglingSifrahResultTarget(
+                MessageFrameTranslator.MarkDirectTranslation("A different haggling outcome."));
+
+            target.ResultSuccess();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(target.Description, Is.EqualTo("A different haggling outcome."));
+                Assert.That(HitCount("Success"), Is.Zero);
+            });
+        });
+    }
+
     private static void WithPatchedOwner(string ownerMethodName, Action action)
     {
         var harmonyId = "qudjp.tests.haggling-sifrah-result-description." + Guid.NewGuid().ToString("N");

@@ -82,6 +82,27 @@ public sealed class GasGenerationDescriptionTranslationPatchTests
         });
     }
 
+    [Test]
+    public void SyncFromBlueprint_StripsDirectMarkedDescriptionWithoutObservabilityHit_WhenPatched()
+    {
+        WithPatchedSyncFromBlueprint(() =>
+        {
+            var mutation = new DummyGasGeneration
+            {
+                SourceDescription = MessageFrameTranslator.MarkDirectTranslation(
+                    "You release a burst of {{G|corrosive gas}} around yourself."),
+            };
+
+            mutation.SyncFromBlueprint();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(mutation.GetDescription(), Is.EqualTo("You release a burst of {{G|corrosive gas}} around yourself."));
+                Assert.That(HitCount(), Is.Zero);
+            });
+        });
+    }
+
     private static void WithPatchedSyncFromBlueprint(Action action)
     {
         var harmonyId = "qudjp.tests.gas-generation-description." + Guid.NewGuid().ToString("N");

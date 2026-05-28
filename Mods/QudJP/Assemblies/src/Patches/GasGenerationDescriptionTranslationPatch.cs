@@ -50,6 +50,12 @@ public static class GasGenerationDescriptionTranslationPatch
             }
 
             var source = DescriptionPartReflectionHelpers.GetStringMemberValue(__instance, "Description");
+            if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
+            {
+                _ = DescriptionPartReflectionHelpers.SetStringMemberValue(__instance, "Description", markedText);
+                return;
+            }
+
             if (!TryTranslateDescription(source, out var translated))
             {
                 return;
@@ -73,10 +79,22 @@ public static class GasGenerationDescriptionTranslationPatch
 
     internal static bool TryTranslateDescription(string? source, out string translated)
     {
-        translated = source ?? string.Empty;
-        if (string.IsNullOrEmpty(source))
+        if (source is null)
+        {
+            translated = string.Empty;
+            return false;
+        }
+
+        translated = source;
+        if (source.Length == 0)
         {
             return false;
+        }
+
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
+        {
+            translated = markedText;
+            return true;
         }
 
         if (string.Equals(source, "You release a gaseous burst around yourself.", StringComparison.Ordinal))

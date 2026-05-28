@@ -35,9 +35,14 @@ public static class ActivatedAbilityNotUsableDescriptionTranslationPatch
     {
         try
         {
-            if (string.IsNullOrEmpty(__result)
-                || MessageFrameTranslator.TryStripDirectTranslationMarker(__result, out _))
+            if (string.IsNullOrEmpty(__result))
             {
+                return;
+            }
+
+            if (MessageFrameTranslator.TryStripDirectTranslationMarker(__result, out var markedText))
+            {
+                __result = markedText;
                 return;
             }
 

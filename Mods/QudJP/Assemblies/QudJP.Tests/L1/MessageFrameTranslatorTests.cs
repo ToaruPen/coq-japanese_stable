@@ -2206,7 +2206,7 @@ public sealed class MessageFrameTranslatorTests
             Assert.That(
                 MessageFrameTranslator.TryTranslateXDidY("何か", "prevents", "you from dominating 標的", ".", out var prevents),
                 Is.True);
-            Assert.That(prevents, Is.EqualTo("何か標的を支配できないよう妨げた。"));
+            Assert.That(prevents, Is.EqualTo("何かが標的を支配できないよう妨げた。"));
 
             Assert.That(
                 MessageFrameTranslator.TryTranslateXDidYToZ(

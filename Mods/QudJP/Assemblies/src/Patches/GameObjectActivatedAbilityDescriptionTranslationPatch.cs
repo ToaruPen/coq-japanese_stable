@@ -54,9 +54,14 @@ public static class GameObjectActivatedAbilityDescriptionTranslationPatch
     {
         if (ability is null
             || !TryGetStringMemberValue(ability, "Description", out var current)
-            || string.IsNullOrEmpty(current)
-            || current!.StartsWith("\u0001", StringComparison.Ordinal))
+            || string.IsNullOrEmpty(current))
         {
+            return;
+        }
+
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(current!, out var markedText))
+        {
+            _ = TrySetStringMemberValue(ability, "Description", markedText);
             return;
         }
 

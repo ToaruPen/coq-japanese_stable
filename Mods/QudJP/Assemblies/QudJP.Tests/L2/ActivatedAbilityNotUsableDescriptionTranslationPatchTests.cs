@@ -116,6 +116,35 @@ public sealed class ActivatedAbilityNotUsableDescriptionTranslationPatchTests
         }
     }
 
+    [Test]
+    public void NotUsableDescription_StripsDirectMarker_WhenPatched()
+    {
+        var harmonyId = "qudjp.tests.activated-ability-not-usable." + Guid.NewGuid().ToString("N");
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(
+                    typeof(DummyActivatedAbilityEntry),
+                    "get_" + nameof(DummyActivatedAbilityEntry.NotUsableDescription)),
+                postfix: new HarmonyMethod(RequireMethod(
+                    typeof(ActivatedAbilityNotUsableDescriptionTranslationPatch),
+                    nameof(ActivatedAbilityNotUsableDescriptionTranslationPatch.Postfix),
+                    typeof(string).MakeByRefType())));
+
+            var entry = new DummyActivatedAbilityEntry
+            {
+                SourceNotUsableDescription = MessageFrameTranslator.MarkDirectTranslation("Already translated."),
+            };
+
+            Assert.That(entry.NotUsableDescription, Is.EqualTo("Already translated."));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
     private static MethodInfo RequireMethod(Type type, string name, params Type[] parameters)
     {
         return AccessTools.Method(type, name, parameters)

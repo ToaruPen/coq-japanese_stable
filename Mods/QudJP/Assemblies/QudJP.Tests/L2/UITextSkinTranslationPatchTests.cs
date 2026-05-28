@@ -472,7 +472,7 @@ public sealed class UITextSkinTranslationPatchTests
     }
 
     [Test]
-    public void TranslatePreservingColors_TranslatesPickDirectionAbilityLabelAtTextSink()
+    public void HarmonyPatch_TranslatesPickDirectionAbilityLabelAtTextSink()
     {
         WriteContextDictionaryFile(
             "ui-pick-target.ja.json",
@@ -481,11 +481,23 @@ public sealed class UITextSkinTranslationPatchTests
             "ui-skillsandpowers.ja.json",
             ("Discharge", "AbilityBar.ButtonText", "放電"));
 
-        var translated = UITextSkinTranslationPatch.TranslatePreservingColors(
-            "Discharge | [Select a direction]",
-            nameof(UITextSkinTranslationPatch));
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyUITextSkin), nameof(DummyUITextSkin.SetText)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(UITextSkinTranslationPatch), nameof(UITextSkinTranslationPatch.Prefix))));
+            var textSkin = new DummyUITextSkin();
 
-        Assert.That(translated, Is.EqualTo("放電 | [方向を選択]"));
+            textSkin.SetText("Discharge | [Select a direction]");
+
+            Assert.That(textSkin.Text, Is.EqualTo("放電 | [方向を選択]"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
     }
 
     [Test]

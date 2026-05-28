@@ -282,7 +282,11 @@ public sealed class SubmergedBurrowedOwnerTranslationPatchTests
 
     private static Type RequirePatchType()
     {
-        var type = Type.GetType(PatchTypeName + ", QudJP.Tests");
+        var type = Type.GetType(PatchTypeName)
+            ?? Type.GetType(PatchTypeName + ", QudJP")
+            ?? AppDomain.CurrentDomain.GetAssemblies()
+                .Select(assembly => assembly.GetType(PatchTypeName, throwOnError: false))
+                .FirstOrDefault(candidate => candidate is not null);
         Assert.That(type, Is.Not.Null, PatchTypeName + " not found");
         return type!;
     }

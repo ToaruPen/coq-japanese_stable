@@ -117,9 +117,14 @@ public static class CharGenMenuOptionOwnerTranslationPatch
 
     private static string TranslateOwnerText(string source)
     {
-        if (string.IsNullOrEmpty(source) || source.StartsWith("\u0001", StringComparison.Ordinal))
+        if (string.IsNullOrEmpty(source))
         {
             return source;
+        }
+
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
+        {
+            return markedText;
         }
 
         var translated = CharGenProducerTranslationHelpers.TranslateText(source);

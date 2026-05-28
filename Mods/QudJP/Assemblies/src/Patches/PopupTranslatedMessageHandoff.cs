@@ -25,7 +25,11 @@ internal static class PopupTranslatedMessageHandoff
     internal static void EnterScope(out int scopeId)
     {
         scopeId = ++nextScopeId;
-        activeScopes ??= [];
+        if (activeScopes is null)
+        {
+            activeScopes = new List<int>();
+        }
+
         activeScopes.Add(scopeId);
     }
 
@@ -86,7 +90,11 @@ internal static class PopupTranslatedMessageHandoff
             return;
         }
 
-        pendingEntries ??= [];
+        if (pendingEntries is null)
+        {
+            pendingEntries = new List<Entry>();
+        }
+
         pendingEntries.Add(new Entry(scopeId, key.Visible, key.ColorSignature, translated));
         if (pendingEntries.Count > MaxPendingEntries)
         {

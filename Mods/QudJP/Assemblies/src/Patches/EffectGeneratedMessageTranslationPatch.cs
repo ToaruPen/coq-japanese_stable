@@ -171,7 +171,7 @@ public static class EffectGeneratedMessageTranslationPatch
             return false;
         }
 
-        var subject = NormalizeActor(Restore(match, spans, "subject"));
+        var subject = NormalizeActor(match.Groups["subject"].Value);
         var target = NormalizeActor(Restore(match, spans, "target"));
         var owner = NormalizePossessive(Restore(match, spans, "owner"));
         translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
@@ -221,7 +221,7 @@ public static class EffectGeneratedMessageTranslationPatch
             return false;
         }
 
-        var subject = NormalizeActor(Restore(match, spans, "subject"));
+        var subject = NormalizeActor(match.Groups["subject"].Value);
         var predicate = "病気が治った" + TranslateEndMark(match.Groups["end"].Value);
         translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
             IsSecondPersonSubject(subject) ? predicate : $"{subject}は{predicate}",

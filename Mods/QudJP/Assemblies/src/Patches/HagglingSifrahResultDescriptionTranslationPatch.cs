@@ -52,6 +52,12 @@ public static class HagglingSifrahResultDescriptionTranslationPatch
                 return;
             }
 
+            if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
+            {
+                _ = TrySetDescription(__instance, markedText);
+                return;
+            }
+
             if (!TryTranslateDescription(source, out var translated, out var detail))
             {
                 return;

@@ -171,7 +171,7 @@ public sealed class CharGenMenuOptionOwnerTranslationPatchTests
     }
 
     [Test]
-    public void OwnerEnumerablePostfix_PreservesFallbacksEmptyStringsAndMarkers()
+    public void OwnerEnumerablePostfix_PreservesFallbacksEmptyStringsAndStripsMarkers()
     {
         WriteDictionary(("Export Code to Clipboard", "コードをクリップボードにコピー"));
         var options = new List<DummyCharGenMenuOption>
@@ -188,7 +188,7 @@ public sealed class CharGenMenuOptionOwnerTranslationPatchTests
         {
             Assert.That(translated[0].Description, Is.EqualTo("Unknown Owner Text"));
             Assert.That(translated[1].Description, Is.EqualTo(string.Empty));
-            Assert.That(translated[2].Description, Is.EqualTo("\u0001Export Code to Clipboard"));
+            Assert.That(translated[2].Description, Is.EqualTo("Export Code to Clipboard"));
             Assert.That(translated[3].Description, Is.EqualTo("{{y|コードをクリップボードにコピー}}"));
         });
     }
