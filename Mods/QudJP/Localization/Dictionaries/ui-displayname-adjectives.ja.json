@@ -2043,6 +2043,11 @@
       "key": "{{w|wooden}}",
       "context": "GetDisplayName.Adjective",
       "text": "{{w|木製の}}"
+    },
+    {
+      "key": "water-stained",
+      "context": "GetDisplayName.Adjective",
+      "text": "水染みの"
     }
   ]
 }

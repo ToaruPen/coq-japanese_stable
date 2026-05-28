@@ -74,6 +74,18 @@ public sealed class GetDisplayNameRouteTranslatorTests
     }
 
     [Test]
+    public void TranslatePreservingColors_ProductionDictionary_TranslatesWaterStainedPrefix()
+    {
+        UseProductionDictionaries();
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            "water-stained chem cell",
+            nameof(GetDisplayNamePatch));
+
+        Assert.That(translated, Is.EqualTo("水染みのケムセル"));
+    }
+
+    [Test]
     public void TranslatePreservingColors_TranslatesHydraulicLiquidAndFlywheelSuffixes()
     {
         WriteDictionaryFile(

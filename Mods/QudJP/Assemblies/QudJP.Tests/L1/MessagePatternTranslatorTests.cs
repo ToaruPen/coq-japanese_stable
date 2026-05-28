@@ -1918,6 +1918,16 @@ public sealed class MessagePatternTranslatorTests
     }
 
     [Test]
+    public void Translate_RepositoryDictionary_TranslatesDisassembleOnlyAutoActMessage()
+    {
+        UseRepositoryPatternDictionary();
+
+        var translated = MessagePatternTranslator.Translate("You disassemble your HEミサイル x4.");
+
+        Assert.That(translated, Is.EqualTo("HEミサイル x4を分解した。"));
+    }
+
+    [Test]
     public void Translate_RepositoryDictionary_TranslatesCapitalizedDirectionQualifiedCapture()
     {
         UseRepositoryPatternDictionary();

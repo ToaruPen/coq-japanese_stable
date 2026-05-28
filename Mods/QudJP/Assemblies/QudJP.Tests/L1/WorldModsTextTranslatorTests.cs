@@ -739,6 +739,32 @@ public sealed class WorldModsTextTranslatorTests
     }
 
     [Test]
+    public void TryTranslateActiveEffectsLine_TranslatesLiquidCoveredPrefixChains()
+    {
+        WriteDictionary(
+            "world-mods.ja.json",
+            ("ACTIVE EFFECTS:", "発動中の効果:"));
+        WriteDictionaryWithContext(
+            "ui-displayname-adjectives.ja.json",
+            ("GetDisplayName.Adjective", "bloody", "{{r|血まみれの}}"),
+            ("GetDisplayName.Adjective", "slimy", "{{slimy|粘液質の}}"),
+            ("GetDisplayName.Adjective", "wet", "{{B|濡れた}}"));
+
+        var ok = StatusLineTranslationHelpers.TryTranslateActiveEffectsLine(
+            "ACTIVE EFFECTS: bloody slimy wet",
+            "AbilityBarAfterRenderTranslationPatch",
+            "AbilityBar.ActiveEffects",
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(translated, Is.EqualTo("発動中の効果: {{r|血まみれの}}{{slimy|粘液質の}}{{B|濡れた}}"));
+            Assert.That(Translator.GetMissingKeyHitCountForTests("bloody slimy wet"), Is.EqualTo(0));
+        });
+    }
+
+    [Test]
     public void TryTranslateActiveEffectsLine_TranslatesGeneratedStuckInEffectPart()
     {
         WriteDictionary(

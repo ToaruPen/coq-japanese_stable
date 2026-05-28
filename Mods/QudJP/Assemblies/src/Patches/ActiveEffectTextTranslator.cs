@@ -659,6 +659,11 @@ internal static class ActiveEffectTextTranslator
             return runtimeObservedLine;
         }
 
+        if (StatusLineTranslationHelpers.TryTranslateGeneratedActiveEffectPart(visible, out var generatedEffectName))
+        {
+            return generatedEffectName;
+        }
+
         if (string.Equals(visible, "Moving at full speed.", StringComparison.Ordinal))
         {
             return "通常速度で移動している。";

@@ -67,9 +67,17 @@ public static class CharacterEffectLineTranslationPatch
         var route = ObservabilityHelpers.ComposeContext(Context, "field=text");
         var translated = ColorAwareTranslationComposer.TranslatePreservingColors(
             source,
-            static visible => StringHelpers.TryGetTranslationExactOrLowerAscii(visible, out var candidate)
-                ? candidate
-                : visible);
+            static visible =>
+            {
+                if (StringHelpers.TryGetTranslationExactOrLowerAscii(visible, out var candidate))
+                {
+                    return candidate;
+                }
+
+                return StatusLineTranslationHelpers.TryTranslateGeneratedActiveEffectPart(visible, out var generated)
+                    ? generated
+                    : visible;
+            });
         if (!string.Equals(source, translated, StringComparison.Ordinal))
         {
             DynamicTextObservability.RecordTransform(route, "CharacterStatus.EffectName", source, translated);

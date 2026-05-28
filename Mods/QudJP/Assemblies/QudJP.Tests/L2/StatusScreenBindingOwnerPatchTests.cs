@@ -170,8 +170,12 @@ public sealed class StatusScreenBindingOwnerPatchTests
     {
         WriteDictionary(
             ("Beguiled", "魅了"),
-            ("astrally burdened", "星界的に重く縛られた"),
-            ("bloody wet", "血に濡れている"));
+            ("astrally burdened", "星界的に重く縛られた"));
+        WriteDictionaryFile(
+            "ui-displayname-adjectives.ja.json",
+            ("bloody", "{{r|血まみれの}}"),
+            ("slimy", "{{slimy|粘液質の}}"),
+            ("wet", "{{B|濡れた}}"));
 
         RunWithCharacterEffectLinePatch(() =>
         {
@@ -196,7 +200,7 @@ public sealed class StatusScreenBindingOwnerPatchTests
             {
                 effect = new DummyStatusEffect
                 {
-                    DisplayName = "bloody wet",
+                    DisplayName = "bloody slimy wet",
                 },
             });
 
@@ -204,7 +208,7 @@ public sealed class StatusScreenBindingOwnerPatchTests
             {
                 Assert.That(target.text.Text, Is.EqualTo("魅了"));
                 Assert.That(uncoloredTarget.text.Text, Is.EqualTo("星界的に重く縛られた"));
-                Assert.That(compoundTarget.text.Text, Is.EqualTo("血に濡れている"));
+                Assert.That(compoundTarget.text.Text, Is.EqualTo("{{r|血まみれの}}{{slimy|粘液質の}}{{B|濡れた}}"));
                 Assert.That(
                     DynamicTextObservability.GetRouteFamilyHitCountForTests(
                         nameof(CharacterEffectLineTranslationPatch),
@@ -397,6 +401,11 @@ public sealed class StatusScreenBindingOwnerPatchTests
 
     private void WriteDictionary(params (string key, string text)[] entries)
     {
+        WriteDictionaryFile("status-binding-l2.ja.json", entries);
+    }
+
+    private void WriteDictionaryFile(string fileName, params (string key, string text)[] entries)
+    {
         var builder = new StringBuilder();
         builder.Append('{');
         builder.Append("\"entries\":[");
@@ -417,7 +426,7 @@ public sealed class StatusScreenBindingOwnerPatchTests
         builder.Append("]}");
         builder.AppendLine();
         File.WriteAllText(
-            Path.Combine(tempDirectory, "status-binding-l2.ja.json"),
+            Path.Combine(tempDirectory, fileName),
             builder.ToString(),
             new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
     }

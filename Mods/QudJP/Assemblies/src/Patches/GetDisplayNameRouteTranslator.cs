@@ -1419,7 +1419,7 @@ internal static class GetDisplayNameRouteTranslator
             && translatedModifiers.Count == 1
             && source[0] != '{'
             && source[0] != '['
-            && !CompoundStainedModifierPattern.IsMatch(sourceModifiers[0]))
+            && !IsStainedDisplayNameModifier(sourceModifiers[0]))
         {
             return false;
         }
@@ -1454,6 +1454,12 @@ internal static class GetDisplayNameRouteTranslator
     {
         var visible = ColorAwareTranslationComposer.GetVisibleText(modifier);
         return visible is "a" or "an" or "the";
+    }
+
+    private static bool IsStainedDisplayNameModifier(string modifier)
+    {
+        return modifier.EndsWith("-stained", StringComparison.Ordinal)
+            || CompoundStainedModifierPattern.IsMatch(modifier);
     }
 
     private static bool TryReadLeadingModifierToken(
