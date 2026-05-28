@@ -86,8 +86,18 @@ public static class GameObjectActivatedAbilityDescriptionTranslationPatch
 
     private static bool TryGetStringMemberValue(object target, string memberName, out string? value)
     {
-        value = AccessTools.Property(target.GetType(), memberName)?.GetValue(target) as string
-            ?? AccessTools.Field(target.GetType(), memberName)?.GetValue(target) as string;
+        var property = AccessTools.Property(target.GetType(), memberName);
+        if (property is not null)
+        {
+            value = property.GetValue(target) as string;
+            if (value is not null)
+            {
+                return true;
+            }
+        }
+
+        var field = AccessTools.Field(target.GetType(), memberName);
+        value = field is null ? null : field.GetValue(target) as string;
         return value is not null;
     }
 

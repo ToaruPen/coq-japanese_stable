@@ -128,7 +128,25 @@ public static class DescriptionDetailReturnTranslationPatch
 
     private static DescriptionDetailReturnKind ResolveKind(MethodBase originalMethod)
     {
-        var declaringTypeName = originalMethod.DeclaringType?.FullName ?? string.Empty;
+        string declaringTypeName;
+        if (originalMethod.DeclaringType is null)
+        {
+            Trace.TraceWarning("QudJP: {0} original method has no declaring type: {1}.", Context, originalMethod.Name);
+            declaringTypeName = string.Empty;
+        }
+        else
+        {
+            var fullName = originalMethod.DeclaringType.FullName;
+            if (fullName is null)
+            {
+                Trace.TraceWarning("QudJP: {0} original method declaring type has no full name: {1}.", Context, originalMethod.Name);
+                declaringTypeName = string.Empty;
+            }
+            else
+            {
+                declaringTypeName = fullName;
+            }
+        }
         if (declaringTypeName.StartsWith("XRL.World.Units.GameObject", StringComparison.Ordinal)
             || (originalMethod.Name.StartsWith("GameObject", StringComparison.Ordinal)
                 && originalMethod.Name.EndsWith("GetDescription", StringComparison.Ordinal)))
@@ -225,7 +243,7 @@ internal static class DescriptionDetailReturnTranslator
     {
         if (string.IsNullOrEmpty(source))
         {
-            translated = source ?? string.Empty;
+            translated = source;
             detail = string.Empty;
             return false;
         }

@@ -3802,9 +3802,10 @@ internal static class GetDisplayNameRouteTranslator
 
     private static bool HeadAlreadyContainsLiquid(string head, string translatedLiquid)
     {
+        var visibleHead = ColorAwareTranslationComposer.GetVisibleText(head).Trim();
         var visibleLiquid = ColorAwareTranslationComposer.GetVisibleText(translatedLiquid).Trim();
         return visibleLiquid.Length > 0
-            && head.StartsWith(visibleLiquid + "の", StringComparison.Ordinal);
+            && visibleHead.StartsWith(visibleLiquid + "の", StringComparison.Ordinal);
     }
 
     private static bool LooksLikeAsciiPhrase(string source)

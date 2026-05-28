@@ -41,6 +41,37 @@ public sealed class ActiveEffectPopupQueueTranslatorTests
         });
     }
 
+    [Test]
+    public void TryTranslateQueuedMessage_PreservesWholeSourceColorWrapper()
+    {
+        var translated = ActiveEffectPopupQueueTranslator.TryTranslateQueuedMessage(
+            "{{R|you are no longer poisoned!}}",
+            out var result,
+            out var detail);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.True);
+            Assert.That(result, Is.EqualTo("{{R|あなたはもう毒を受けていない！}}"));
+            Assert.That(detail, Is.EqualTo("NoLongerPoisonedFireEvent"));
+        });
+    }
+
+    [TestCase("")]
+    [TestCase("unknown active effect queue message")]
+    [TestCase("\u0001you are no longer poisoned!")]
+    public void TryTranslateQueuedMessage_LeavesUnsupportedAndMarkedTextUnchanged(string source)
+    {
+        var translated = ActiveEffectPopupQueueTranslator.TryTranslateQueuedMessage(source, out var result, out var detail);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.False);
+            Assert.That(result, Is.EqualTo(source));
+            Assert.That(detail, Is.Empty);
+        });
+    }
+
     [TestCase(
         "You cannot do that on the world map.",
         "ワールドマップではそれはできない。",
@@ -85,6 +116,22 @@ public sealed class ActiveEffectPopupQueueTranslatorTests
             Assert.That(translated, Is.True);
             Assert.That(result, Is.EqualTo("{{y|心の中で雲が割れ、明晰さの光が差し込む。}}"));
             Assert.That(detail, Is.EqualTo("SphynxSaltClarity"));
+        });
+    }
+
+    [Test]
+    public void TryTranslatePopupMessage_PreservesTonicNameColorWrapper()
+    {
+        var translated = ActiveEffectPopupQueueTranslator.TryTranslatePopupMessage(
+            "{{R|Shade oil}} has been applied. Do you wish to phase out immediately?",
+            out var result,
+            out var detail);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.True);
+            Assert.That(result, Is.EqualTo("{{R|シェードオイル}}が適用された。すぐに位相をずらす？"));
+            Assert.That(detail, Is.EqualTo("ShadeOilPhasePrompt"));
         });
     }
 

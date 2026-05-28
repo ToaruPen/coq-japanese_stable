@@ -92,6 +92,23 @@ public sealed class ActivatedAbilityMiscProviderTranslationPatchTests
         });
     }
 
+    [Test]
+    public void Initialize_StripsDirectMarkerWithoutRetranslating_WhenPatched()
+    {
+        WithPatchedOwner(nameof(DummyAbilityProvider.Initialize), () =>
+        {
+            var provider = new DummyAbilityProvider("\u0001Already Translated");
+
+            provider.Initialize();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(provider.Entry.DisplayName, Is.EqualTo("Already Translated"));
+                Assert.That(HitCount(), Is.Zero);
+            });
+        });
+    }
+
     private static void WithPatchedOwner(string methodName, Action action)
     {
         var harmonyId = "qudjp.tests.activated-ability-misc-provider." + Guid.NewGuid().ToString("N");

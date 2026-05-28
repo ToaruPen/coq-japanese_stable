@@ -623,6 +623,10 @@ internal static class ActiveEffectPopupQueueTranslator
     private static string TranslateTonicName(string source)
     {
         var visible = ColorAwareTranslationComposer.GetVisibleText(source);
-        return ShadeOilNamePattern.IsMatch(visible) ? "シェードオイル" : source;
+        return ShadeOilNamePattern.IsMatch(visible)
+            ? ColorAwareTranslationComposer.TranslatePreservingColors(
+                source,
+                static visibleText => ShadeOilNamePattern.Replace(visibleText, "シェードオイル"))
+            : source;
     }
 }

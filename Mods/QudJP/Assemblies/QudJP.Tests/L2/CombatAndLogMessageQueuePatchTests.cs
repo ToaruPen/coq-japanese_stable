@@ -5481,6 +5481,14 @@ public sealed class CombatAndLogMessageQueuePatchTests
         AssertEffectGeneratedFireEventQueuedMessage("{{R|you are no longer ill.}}", "{{R|病気が治った。}}");
     }
 
+    [Test]
+    public void EffectGeneratedFireEvent_PreservesSubjectColorTag_WhenOwnerPatched()
+    {
+        AssertEffectGeneratedFireEventQueuedMessage(
+            "{{G|The snapjaw}} is no longer ill.",
+            "{{G|snapjaw}}は病気が治った。");
+    }
+
     [TestCase(
         "you dismiss snapjaw from your service.",
         "あなたはsnapjawをあなたの配下から解放した。")]
@@ -5520,6 +5528,14 @@ public sealed class CombatAndLogMessageQueuePatchTests
         AssertEffectGeneratedInventoryActionQueuedMessage(
             "{{R|you dismiss snapjaw from your service.}}",
             "{{R|あなたはsnapjawをあなたの配下から解放した。}}");
+    }
+
+    [Test]
+    public void EffectGeneratedInventoryAction_PreservesSubjectColorTag_WhenOwnerPatched()
+    {
+        AssertEffectGeneratedInventoryActionQueuedMessage(
+            "{{G|The snapjaw}} dismisses you from its service.",
+            "{{G|snapjaw}}はあなたをその配下から解放した。");
     }
 
     [Test]

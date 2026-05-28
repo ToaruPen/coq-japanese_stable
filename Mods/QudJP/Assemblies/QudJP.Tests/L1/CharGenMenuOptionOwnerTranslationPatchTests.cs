@@ -41,7 +41,7 @@ public sealed class CharGenMenuOptionOwnerTranslationPatchTests
     }
 
     [Test]
-    public void SummaryMenuBarPostfix_TranslatesOwnerYieldedDescriptions()
+    public void SummaryMenuBar_TranslatesOwnerYieldedDescriptions()
     {
         WriteDictionary(
             ("Re-Randomize Selections", "選択を再ランダム化"),
@@ -67,7 +67,7 @@ public sealed class CharGenMenuOptionOwnerTranslationPatchTests
     }
 
     [Test]
-    public void MutationsMenuBarPostfix_TranslatesStructuredPointsAndVariantAction()
+    public void MutationsMenuBar_TranslatesStructuredPointsAndVariantAction()
     {
         WriteDictionary(
             ("Points Remaining:", "残りポイント:"),
@@ -89,7 +89,7 @@ public sealed class CharGenMenuOptionOwnerTranslationPatchTests
     }
 
     [Test]
-    public void AttributesMenuBarPostfix_TranslatesStructuredPointsRemainingDescription()
+    public void AttributesMenuBar_TranslatesStructuredPointsRemainingDescription()
     {
         WriteDictionary(("Points Remaining:", "残りポイント:"));
         var options = new List<DummyCharGenMenuOption>
@@ -108,7 +108,7 @@ public sealed class CharGenMenuOptionOwnerTranslationPatchTests
     }
 
     [Test]
-    public void BuildLibrarySelectionsPostfix_TranslatesStaticAddBuildTitle()
+    public void BuildLibrarySelections_TranslatesStaticAddBuildTitle()
     {
         WriteDictionary(("Add a new build code", "新しいビルドコードを追加"));
         var selections = new List<DummyChoiceWithColorIcon>
@@ -129,7 +129,7 @@ public sealed class CharGenMenuOptionOwnerTranslationPatchTests
     }
 
     [Test]
-    public void GamemodeSelectionsPostfix_TranslatesTitleAndDescription()
+    public void GamemodeSelections_TranslatesTitleAndDescription()
     {
         WriteDictionary(
             ("Classic", "クラシック"),
@@ -153,7 +153,7 @@ public sealed class CharGenMenuOptionOwnerTranslationPatchTests
     }
 
     [Test]
-    public void CustomizePetsPostfix_TranslatesPetDescriptions()
+    public void CustomizePets_TranslatesPetDescriptions()
     {
         WriteDictionary(("Albino ape", "白化した類人猿"));
         var pets = new List<DummyChoiceWithColorIcon>
@@ -171,7 +171,7 @@ public sealed class CharGenMenuOptionOwnerTranslationPatchTests
     }
 
     [Test]
-    public void OwnerEnumerablePostfix_PreservesFallbacksEmptyStringsAndStripsMarkers()
+    public void OwnerEnumerable_PreservesFallbacksEmptyStringsAndStripsMarkers()
     {
         WriteDictionary(("Export Code to Clipboard", "コードをクリップボードにコピー"));
         var options = new List<DummyCharGenMenuOption>
@@ -194,7 +194,7 @@ public sealed class CharGenMenuOptionOwnerTranslationPatchTests
     }
 
     [Test]
-    public void BuildLibraryMenuBarPostfix_TranslatesOptionsDescription()
+    public void BuildLibraryMenuBar_TranslatesOptionsDescription()
     {
         WriteDictionary(("Options", "オプション"));
         var options = new List<DummyCharGenMenuOption>
@@ -213,7 +213,7 @@ public sealed class CharGenMenuOptionOwnerTranslationPatchTests
     }
 
     [Test]
-    public void GamemodeMenuBarPostfix_TranslatesDebugQuickstartDescription()
+    public void GamemodeMenuBar_TranslatesDebugQuickstartDescription()
     {
         WriteDictionary(("[Debug] Quickstart", "[デバッグ] クイックスタート"));
         var options = new List<DummyCharGenMenuOption>

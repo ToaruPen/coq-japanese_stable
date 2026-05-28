@@ -57,7 +57,13 @@ public static class ElementalPseudopodDisplayNameTranslationPatch
             return false;
         }
 
-        source = GetMemberValue(render, "DisplayName") as string ?? string.Empty;
+        var displayName = GetMemberValue(render, "DisplayName") as string;
+        if (displayName is null)
+        {
+            displayName = string.Empty;
+        }
+
+        source = displayName;
         if (source.Length == 0)
         {
             return false;

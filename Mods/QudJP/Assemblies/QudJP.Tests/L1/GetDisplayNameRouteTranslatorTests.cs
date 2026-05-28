@@ -277,6 +277,20 @@ public sealed class GetDisplayNameRouteTranslatorTests
     }
 
     [Test]
+    public void TranslatePreservingColors_DoesNotDuplicateColoredLiquidPrefixInLocalizedHead()
+    {
+        WriteDictionaryFile(
+            "ui-liquids.ja.json",
+            ("acid", "{{R|酸}}"));
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            "{{R|酸}}の水たまり of acid",
+            nameof(GetDisplayNamePatch));
+
+        Assert.That(translated, Is.EqualTo("{{R|酸}}の水たまり"));
+    }
+
+    [Test]
     public void TranslatePreservingColors_TranslatesMarkedUpWorshipperTargetWithMarkedUpBracketState()
     {
         WriteDictionaryFile(

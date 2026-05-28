@@ -25,9 +25,9 @@ public static class ActiveEffectMessageFrameOwnerTranslationPatch
     {
         var gameObjectType = AccessTools.TypeByName("XRL.World.GameObject");
         var beginTakeActionEventType = AccessTools.TypeByName("XRL.World.BeginTakeActionEvent");
-        if (gameObjectType is null || beginTakeActionEventType is null)
+        if (gameObjectType is null)
         {
-            Trace.TraceError("QudJP: {0} required target parameter types not found.", Context);
+            Trace.TraceError("QudJP: {0} required GameObject target parameter type not found.", Context);
             yield break;
         }
 
@@ -41,9 +41,16 @@ public static class ActiveEffectMessageFrameOwnerTranslationPatch
             yield return method;
         }
 
-        foreach (var method in ResolveTarget("XRL.World.Effects.LatchedOnto", "HandleEvent", [beginTakeActionEventType]))
+        if (beginTakeActionEventType is null)
         {
-            yield return method;
+            Trace.TraceWarning("QudJP: {0} BeginTakeActionEvent target parameter type not found; skipping LatchedOnto.HandleEvent only.", Context);
+        }
+        else
+        {
+            foreach (var method in ResolveTarget("XRL.World.Effects.LatchedOnto", "HandleEvent", [beginTakeActionEventType]))
+            {
+                yield return method;
+            }
         }
 
         foreach (var method in ResolveTarget("XRL.World.Effects.Lovesick", "Apply", [gameObjectType]))

@@ -171,7 +171,7 @@ public static class EffectGeneratedMessageTranslationPatch
             return false;
         }
 
-        var subject = NormalizeActor(match.Groups["subject"].Value);
+        var subject = NormalizeActor(RestoreWithoutWholeSourceBoundary(match, spans, "subject", stripped.Length));
         var target = NormalizeActor(Restore(match, spans, "target"));
         var owner = NormalizePossessive(Restore(match, spans, "owner"));
         translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
@@ -192,7 +192,7 @@ public static class EffectGeneratedMessageTranslationPatch
             return false;
         }
 
-        var subject = NormalizeActor(Restore(match, spans, "subject"));
+        var subject = NormalizeActor(RestoreWithoutWholeSourceBoundary(match, spans, "subject", stripped.Length));
         var owner = NormalizePossessive(Restore(match, spans, "owner"));
         var target = Restore(match, spans, "target");
         var translatedTarget = string.Equals(target, "pistols", StringComparison.Ordinal)
@@ -221,7 +221,7 @@ public static class EffectGeneratedMessageTranslationPatch
             return false;
         }
 
-        var subject = NormalizeActor(match.Groups["subject"].Value);
+        var subject = NormalizeActor(RestoreWithoutWholeSourceBoundary(match, spans, "subject", stripped.Length));
         var predicate = "病気が治った" + TranslateEndMark(match.Groups["end"].Value);
         translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
             IsSecondPersonSubject(subject) ? predicate : $"{subject}は{predicate}",
@@ -299,6 +299,23 @@ public static class EffectGeneratedMessageTranslationPatch
         return ColorAwareTranslationComposer.RestoreCapture(group.Value, spans, group).Trim();
     }
 
+    private static string RestoreWithoutWholeSourceBoundary(
+        Match match,
+        IReadOnlyList<ColorSpan> spans,
+        string groupName,
+        int sourceLength)
+    {
+        var group = match.Groups[groupName];
+        var visible = group.Value.Trim();
+        if (visible is "You" or "you" or "Your" or "your")
+        {
+            return visible;
+        }
+
+        var filteredSpans = ColorAwareTranslationComposer.WithoutTrueWholeSourceBoundarySpans(spans, sourceLength);
+        return ColorAwareTranslationComposer.RestoreCapture(group.Value, filteredSpans, group).Trim();
+    }
+
     private static string NormalizeActor(string source)
     {
         var trimmed = source.Trim();
@@ -306,10 +323,7 @@ public static class EffectGeneratedMessageTranslationPatch
         {
             "You" or "you" => "あなた",
             "Your" or "your" => "あなたの",
-            _ => StringHelpers.StripLeadingEnglishArticle(
-                trimmed,
-                includeCapitalizedDefiniteArticle: true,
-                includeCapitalizedIndefiniteArticle: true),
+            _ => DisplayNameCaptureTranslator.StripLeadingEnglishArticlePreservingColors(trimmed),
         };
     }
 

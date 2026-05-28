@@ -197,6 +197,11 @@ public sealed class VehicleUnpoweredTranslationPatchTests
                 prefix: new HarmonyMethod(OwnerPopupRouteTestHarness.RequireMethod(
                     typeof(VehicleUnpoweredTranslationPatchTests),
                     nameof(TranslateVehicleUnpoweredPopup))));
+            harmony.Patch(
+                original: OwnerPopupRouteTestHarness.RequireMethod(typeof(DummyPopupShow), nameof(DummyPopupShow.ShowFail)),
+                prefix: new HarmonyMethod(OwnerPopupRouteTestHarness.RequireMethod(
+                    typeof(VehicleUnpoweredTranslationPatchTests),
+                    nameof(TranslateVehicleUnpoweredPopup))));
 
             action(harmony);
         }

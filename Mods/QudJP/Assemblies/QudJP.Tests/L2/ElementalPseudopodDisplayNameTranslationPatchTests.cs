@@ -86,6 +86,22 @@ public sealed class ElementalPseudopodDisplayNameTranslationPatchTests
             });
     }
 
+    [Test]
+    public void SetupPod_LeavesEmptyDisplayNameUnchanged_WhenPatched()
+    {
+        WithPatchedSetupPod(
+            typeof(DummyElementalJelly),
+            () =>
+            {
+                var owner = new DummyElementalJelly { Form = "Unknown" };
+                var pod = new DummyPod { Render = new DummyRender { DisplayName = string.Empty } };
+
+                owner.SetupPod(pod);
+
+                Assert.That(pod.Render.DisplayName, Is.EqualTo(string.Empty));
+            });
+    }
+
     private static void WithPatchedSetupPod(Type targetType, Action action)
     {
         var harmonyId = "qudjp.tests.elemental-pseudopod-display-name." + Guid.NewGuid().ToString("N");

@@ -248,6 +248,16 @@ public sealed class WaterRitualPopupTranslationPatchTests
     [TestCase(
         nameof(DummyWaterRitualPopupProducerTarget.WaterRitualRandomMutationHandleEvent),
         nameof(DummyPopupShow.ShowFail),
+        "You can't be mutated.",
+        "RandomMutationNonMutant")]
+    [TestCase(
+        nameof(DummyWaterRitualPopupProducerTarget.WaterRitualRandomMutationHandleEvent),
+        nameof(DummyPopupShow.ShowFail),
+        "{{R|You can't be mutated.}}",
+        "RandomMutationNonMutant")]
+    [TestCase(
+        nameof(DummyWaterRitualPopupProducerTarget.WaterRitualRandomMutationHandleEvent),
+        nameof(DummyPopupShow.ShowFail),
         "You can't gain physical mutations.",
         "RandomMutationIncompatible")]
     [TestCase(

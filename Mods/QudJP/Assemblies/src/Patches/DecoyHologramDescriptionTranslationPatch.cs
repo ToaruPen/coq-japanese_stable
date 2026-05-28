@@ -84,14 +84,40 @@ public static class DecoyHologramDescriptionTranslationPatch
             }
         }
 
-        return AccessTools.Property(target.GetType(), memberName)?.GetValue(target)
-            ?? AccessTools.Field(target.GetType(), memberName)?.GetValue(target);
+        var property = AccessTools.Property(target.GetType(), memberName);
+        if (property is not null)
+        {
+            var propertyValue = property.GetValue(target);
+            if (propertyValue is not null)
+            {
+                return propertyValue;
+            }
+        }
+
+        var field = AccessTools.Field(target.GetType(), memberName);
+        if (field is not null)
+        {
+            return field.GetValue(target);
+        }
+
+        Trace.TraceWarning("QudJP: {0} member '{1}' not found on '{2}'.", Context, memberName, target.GetType().FullName);
+        return null;
     }
 
     private static bool TryGetStringMemberValue(object target, string memberName, out string? value)
     {
-        value = AccessTools.Property(target.GetType(), memberName)?.GetValue(target) as string
-            ?? AccessTools.Field(target.GetType(), memberName)?.GetValue(target) as string;
+        var property = AccessTools.Property(target.GetType(), memberName);
+        if (property is not null)
+        {
+            value = property.GetValue(target) as string;
+            if (value is not null)
+            {
+                return true;
+            }
+        }
+
+        var field = AccessTools.Field(target.GetType(), memberName);
+        value = field is null ? null : field.GetValue(target) as string;
         return value is not null;
     }
 

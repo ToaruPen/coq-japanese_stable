@@ -371,6 +371,69 @@ public sealed class SifrahPureOwnerPopupTranslationPatchTests
     }
 
     [TestCase(
+        nameof(DummyPopupShow.ShowYesNoCancel),
+        "Do you want to finish the offering ritual as matters stand?",
+        "BaetylOfferingCheckEarlyExit")]
+    [TestCase(
+        nameof(DummyPopupShow.Show),
+        "You determine these options to not be valid responses to any requirement:\n\n{{Y|phase prism}}\n{{C|rusted key}}",
+        "SifrahGameUseInsightInvalidOptions")]
+    public void Patch_DoesNotTranslateNewSifrahFamilyPopup_WhenOwnerAbsent(
+        string popupMethod,
+        string source,
+        string detail)
+    {
+        OwnerPopupRouteTestHarness.WithPatchedPopupOnly(
+            () =>
+            {
+                InvokePopup(popupMethod, source);
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(LastPopupMessage(popupMethod), Is.EqualTo(source));
+                    Assert.That(HitCount(detail), Is.Zero);
+                });
+            });
+    }
+
+    [TestCase(
+        nameof(DummySifrahPureOwnerPopupProducerTarget.BaetylOfferingCheckEarlyExit),
+        nameof(DummyPopupShow.ShowYesNoCancel),
+        "Do you want to finish the offering ritual as matters stand?",
+        "BaetylOfferingCheckEarlyExit")]
+    [TestCase(
+        nameof(DummySifrahPureOwnerPopupProducerTarget.SifrahGameUseInsight),
+        nameof(DummyPopupShow.Show),
+        "You determine these options to not be valid responses to any requirement:\n\n{{Y|phase prism}}\n{{C|rusted key}}",
+        "SifrahGameUseInsightInvalidOptions")]
+    public void Patch_DoesNotRetranslateDirectMarkedNewSifrahFamilyPopup_WhenOwnerPatched(
+        string methodName,
+        string popupMethod,
+        string unmarked,
+        string detail)
+    {
+        OwnerPopupRouteTestHarness.WithPatchedPopupOwner(
+            typeof(SifrahPureOwnerPopupTranslationPatch),
+            RequireOwnerMethod(methodName),
+            () =>
+            {
+                var target = new DummySifrahPureOwnerPopupProducerTarget
+                {
+                    PopupMethod = popupMethod,
+                    PopupMessageToShow = MessageFrameTranslator.MarkDirectTranslation(unmarked),
+                };
+
+                InvokeOwnerMethod(target, methodName);
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(LastPopupMessage(popupMethod), Is.EqualTo(unmarked));
+                    Assert.That(HitCount(detail), Is.Zero);
+                });
+            });
+    }
+
+    [TestCase(
         nameof(DummySifrahPureOwnerPopupProducerTarget.DisarmingSifrah),
         "You have mastered disarming operations of this complexity. Do you want to perform detailed disarming anyway, with an enhanced chance of exceptional success? If you answer 'No', you will automatically succeed.",
         "この難度での解除作業は熟達済みだ。それでも詳細に解除を試みますか？『いいえ』なら、自動で成功する。",
@@ -617,6 +680,44 @@ public sealed class SifrahPureOwnerPopupTranslationPatchTests
     private static int HitCount(string detail)
     {
         return OwnerPopupRouteTestHarness.RouteHitCount(typeof(SifrahPureOwnerPopupTranslationPatch), detail);
+    }
+
+    private static void InvokePopup(string popupMethod, string source)
+    {
+        if (popupMethod == nameof(DummyPopupShow.ShowYesNoCancel))
+        {
+            DummyPopupShow.ShowYesNoCancel(source);
+            return;
+        }
+
+        if (popupMethod == nameof(DummyPopupShow.ShowYesNo))
+        {
+            DummyPopupShow.ShowYesNo(source);
+            return;
+        }
+
+        if (popupMethod == nameof(DummyPopupShow.ShowFail))
+        {
+            DummyPopupShow.ShowFail(source);
+            return;
+        }
+
+        DummyPopupShow.Show(source);
+    }
+
+    private static string? LastPopupMessage(string popupMethod)
+    {
+        if (popupMethod == nameof(DummyPopupShow.ShowYesNoCancel))
+        {
+            return DummyPopupShow.LastShowYesNoCancelMessage;
+        }
+
+        if (popupMethod == nameof(DummyPopupShow.ShowYesNo))
+        {
+            return DummyPopupShow.LastShowYesNoMessage;
+        }
+
+        return DummyPopupShow.LastShowMessage;
     }
 
     private static string PopupMethodForPureOwnerPopup(string methodName)

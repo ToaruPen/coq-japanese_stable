@@ -69,7 +69,7 @@ internal sealed class DummyTextMeshProText
     public string text = string.Empty;
 }
 
-internal sealed class DummyAbilityBarButton
+internal class DummyAbilityBarButton
 {
     public DummyUITextSkin Text = new DummyUITextSkin();
 
@@ -96,12 +96,10 @@ internal sealed class DummyAbilityBarButtonGameObject
     }
 }
 
-internal sealed class AbilityBarButton
+internal sealed class AbilityBarButton : DummyAbilityBarButton
 {
-    public DummyUITextSkin Text = new DummyUITextSkin();
-
     public AbilityBarButton(string text)
+        : base(text)
     {
-        Text.SetText(text);
     }
 }

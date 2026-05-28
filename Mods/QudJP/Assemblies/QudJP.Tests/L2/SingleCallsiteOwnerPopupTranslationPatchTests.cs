@@ -732,6 +732,10 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "GenocideCurioActivation",
         PopupMethod.Show)]
     [TestCase(
+        "The metal satchel opens, folds itself inside out, and transforms into a contraption studded with pinions and drills. It starts to burrow into the ground.",
+        "SpiralBorerCurioActivation",
+        PopupMethod.Show)]
+    [TestCase(
         "The mainframe is unresponsive.",
         "GritGateMainframeUnresponsive",
         PopupMethod.Show)]
@@ -876,6 +880,14 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "MutationWishDidYouMean",
         PopupMethod.ShowYesNo)]
     [TestCase(
+        "No mutation by the name 'Light Manipulations' could be found.",
+        "MutationWishMissingName",
+        PopupMethod.Show)]
+    [TestCase(
+        "No mutation by the name 'Wings' and variant 'crystal' could be found.",
+        "MutationWishMissingVariant",
+        PopupMethod.Show)]
+    [TestCase(
         "No blueprint named \"Chrome Idol\" found.",
         "GameObjectFactoryMissingBlueprint",
         PopupMethod.Show)]
@@ -998,6 +1010,9 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "You activate the curio and toss it on the ground. It erupts into a throng of tiny polygons, which amalgamate into a fully formed {{Y|polygonal snapjaw}}.",
         "SummoningCurioActivation")]
     [TestCase(
+        "The metal satchel opens, folds itself inside out, and transforms into a contraption studded with pinions and drills. It starts to burrow into the ground.",
+        "SpiralBorerCurioActivation")]
+    [TestCase(
         "You eat the {{Y|jerky}}.\n塩辛い。\nYou are now {{|{{g|Sated}}}} and {{|{{g|Quenched}}}}.",
         "FoodConsumptionFrame")]
     [TestCase(
@@ -1037,6 +1052,12 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "Did you mean Light Manipulation?",
         "MutationWishDidYouMean")]
     [TestCase(
+        "No mutation by the name 'Light Manipulations' could be found.",
+        "MutationWishMissingName")]
+    [TestCase(
+        "No mutation by the name 'Wings' and variant 'crystal' could be found.",
+        "MutationWishMissingVariant")]
+    [TestCase(
         "No blueprint named \"Chrome Idol\" found.",
         "GameObjectFactoryMissingBlueprint")]
     [TestCase(
@@ -1073,6 +1094,33 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         {
             Assert.That(translated, Is.EqualTo(source));
             Assert.That(HitCount("BaetylRewardWish"), Is.Zero);
+        });
+    }
+
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.HandleSpiralBorerCurio),
+        "The metal satchel opens, folds itself inside out, and transforms into a contraption studded with pinions and drills. It starts to burrow into the ground.",
+        "SpiralBorerCurioActivation")]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.WishMutation),
+        "No mutation by the name 'Light Manipulations' could be found.",
+        "MutationWishMissingName")]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.WishMutation),
+        "No mutation by the name 'Wings' and variant 'crystal' could be found.",
+        "MutationWishMissingVariant")]
+    public void Patch_DoesNotRetranslateDirectMarkedNewFamilyPopup_WhenOwnerPatched(
+        string methodName,
+        string unmarked,
+        string detail)
+    {
+        Assert.That(
+            TryTranslateForOwner(methodName, MessageFrameTranslator.MarkDirectTranslation(unmarked), out var translated),
+            Is.True);
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.EqualTo(unmarked));
+            Assert.That(HitCount(detail), Is.Zero);
         });
     }
 

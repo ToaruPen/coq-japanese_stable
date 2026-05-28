@@ -50,18 +50,15 @@ public static class GasGenerationDescriptionTranslationPatch
             }
 
             var source = DescriptionPartReflectionHelpers.GetStringMemberValue(__instance, "Description");
-            if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
-            {
-                _ = DescriptionPartReflectionHelpers.SetStringMemberValue(__instance, "Description", markedText);
-                return;
-            }
-
+            var hadDirectMarker = source is not null
+                && source.Contains(MessageFrameTranslator.DirectTranslationMarker.ToString());
             if (!TryTranslateDescription(source, out var translated))
             {
                 return;
             }
 
-            if (DescriptionPartReflectionHelpers.SetStringMemberValue(__instance, "Description", translated))
+            if (DescriptionPartReflectionHelpers.SetStringMemberValue(__instance, "Description", translated)
+                && !hadDirectMarker)
             {
                 DynamicTextObservability.RecordTransform(Context, Family, source!, translated);
             }

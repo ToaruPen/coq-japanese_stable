@@ -123,6 +123,38 @@ public sealed class MechanicalWingsPopupTranslationPatchTests
     }
 
     [Test]
+    public void Patch_DoesNotTranslateLongFallWarning_WhenOwnerAbsent()
+    {
+        RunWithPopupPatchOnly(() => DummyPopupShow.ShowYesNo(LongFallSource));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(DummyPopupShow.LastShowYesNoMessage, Is.EqualTo(LongFallSource));
+            Assert.That(GetLongFallHitCount(), Is.Zero);
+        });
+    }
+
+    [Test]
+    public void Patch_DoesNotRetranslateDirectMarkedLongFallWarning_WhenFireEventOwnerPatched()
+    {
+        RunWithOwnerAndPopupPatches([nameof(DummyMechanicalWingsProducer.FireEvent)], () =>
+        {
+            var target = new DummyMechanicalWingsProducer
+            {
+                PopupMessageToShow = MessageFrameTranslator.MarkDirectTranslation(LongFallSource),
+            };
+
+            target.FireEvent();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyPopupShow.LastShowYesNoMessage, Is.EqualTo(LongFallSource));
+                Assert.That(GetLongFallHitCount(), Is.Zero);
+            });
+        });
+    }
+
+    [Test]
     public void Patch_StripsDirectMarkedPopup_WhenOwnerPatched()
     {
         var source = MessageFrameTranslator.MarkDirectTranslation(StartupSource);
