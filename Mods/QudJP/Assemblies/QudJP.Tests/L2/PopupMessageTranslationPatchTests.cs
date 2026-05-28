@@ -423,6 +423,46 @@ public sealed class PopupMessageTranslationPatchTests
     }
 
     [Test]
+    public void Prefix_RemovesAllDetachedPopupShowHandoffs_WhenDetachedEntryMatches()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        PopupTranslatedMessageHandoff.EnterScope(out var handoffScope);
+        try
+        {
+            PopupTranslatedMessageHandoff.Remember("{{R|same text}}", "{{R|翻訳済み}}");
+            PopupTranslatedMessageHandoff.Remember("{{B|stale text}}", "{{B|残留}}");
+        }
+        finally
+        {
+            PopupTranslatedMessageHandoff.ExitScope(handoffScope, retainPendingEntries: true);
+        }
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyPopupMessageTarget), nameof(DummyPopupMessageTarget.ShowPopup)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(PopupMessageTranslationPatch), nameof(PopupMessageTranslationPatch.Prefix))));
+
+            var target = new DummyPopupMessageTarget();
+            target.ShowPopup("{{R|same text}}");
+            var matchedMessage = DummyPopupMessageTarget.LastMessage;
+            target.ShowPopup("{{B|stale text}}");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(matchedMessage, Is.EqualTo("{{R|翻訳済み}}"));
+                Assert.That(DummyPopupMessageTarget.LastMessage, Is.EqualTo("{{B|stale text}}"));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void Prefix_PreservesNestedPopupShowHandoffs()
     {
         var harmonyId = CreateHarmonyId();

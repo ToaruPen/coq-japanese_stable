@@ -112,7 +112,7 @@ public static class CombatSkillMessageTranslationPatch
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     private static readonly Regex ActorDrawsBeadOnYouMarkedPattern = new(
-        "^The (?<actor>.+?) draws? a bead on you\\. .+You are marked\\.$",
+        "^The (?<actor>.+?) draws? a bead on you\\. (?:.+?)?You are marked\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     [ThreadStatic]

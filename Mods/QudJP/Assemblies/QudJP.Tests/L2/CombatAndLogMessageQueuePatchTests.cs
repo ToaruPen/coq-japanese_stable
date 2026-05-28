@@ -3696,6 +3696,9 @@ public sealed class CombatAndLogMessageQueuePatchTests
     [TestCase(
         "The snapjaw hunter draws a bead on you. \u0002are\u001F3\u001F7\u001F\u0003You are marked.",
         "snapjaw hunterがあなたに照準を合わせた。あなたはマークされた。")]
+    [TestCase(
+        "The snapjaw hunter draws a bead on you. You are marked.",
+        "snapjaw hunterがあなたに照準を合わせた。あなたはマークされた。")]
     [TestCase("The snapjaw resists your shield slam.", "snapjawはあなたのシールドスラムに抵抗した。")]
     [TestCase("You resist {{R|the snapjaw's shield slam}}.", "{{R|snapjawのシールドスラム}}に抵抗した。")]
     [TestCase("You rejoinder with {{Y|your dagger}}.", "{{Y|あなたのdagger}}で反撃した。")]

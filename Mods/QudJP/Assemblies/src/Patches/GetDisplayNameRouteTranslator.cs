@@ -3036,9 +3036,14 @@ internal static class GetDisplayNameRouteTranslator
                 }
 
                 var charge = visible.Substring(1, visible.Length - 2);
+                if (TryStripDirectTranslationMarkerFromChargeStatus(charge, out var strippedCharge))
+                {
+                    charge = strippedCharge;
+                }
+
                 return EnergyStorageChargeStatusTranslationPatch.TryTranslateChargeStatus(charge, out var translatedCharge)
                     ? "(" + translatedCharge + ")"
-                    : visible;
+                    : "(" + charge + ")";
             });
 
         var codeSource = ColorizeRawAngleCodeSuffix(RestoreStateComponent(stateGroup, match.Groups["code"], spans));

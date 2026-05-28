@@ -125,6 +125,33 @@ internal static class PopupTranslatedMessageHandoff
         }
 
         var scopeId = GetCurrentScopeId();
+        if (scopeId == 0)
+        {
+            Entry? detachedMatch = null;
+            for (var index = entries.Count - 1; index >= 0; index--)
+            {
+                var entry = entries[index];
+                if (entry.ScopeId != 0
+                    || !string.Equals(entry.Visible, key.Visible, StringComparison.Ordinal)
+                    || !string.Equals(entry.ColorSignature, key.ColorSignature, StringComparison.Ordinal))
+                {
+                    continue;
+                }
+
+                detachedMatch = entry;
+                break;
+            }
+
+            RemoveDetachedEntries();
+            if (detachedMatch is null)
+            {
+                return false;
+            }
+
+            translated = detachedMatch.Translated;
+            return true;
+        }
+
         for (var index = entries.Count - 1; index >= 0; index--)
         {
             var entry = entries[index];
@@ -140,34 +167,7 @@ internal static class PopupTranslatedMessageHandoff
             return true;
         }
 
-        if (scopeId != 0)
-        {
-            return false;
-        }
-
-        Entry? detachedMatch = null;
-        for (var index = entries.Count - 1; index >= 0; index--)
-        {
-            var entry = entries[index];
-            if (entry.ScopeId != 0
-                || !string.Equals(entry.Visible, key.Visible, StringComparison.Ordinal)
-                || !string.Equals(entry.ColorSignature, key.ColorSignature, StringComparison.Ordinal))
-            {
-                continue;
-            }
-
-            detachedMatch = entry;
-            break;
-        }
-
-        RemoveDetachedEntries();
-        if (detachedMatch is null)
-        {
-            return false;
-        }
-
-        translated = detachedMatch.Translated;
-        return true;
+        return false;
     }
 
     internal static void ResetForTests()

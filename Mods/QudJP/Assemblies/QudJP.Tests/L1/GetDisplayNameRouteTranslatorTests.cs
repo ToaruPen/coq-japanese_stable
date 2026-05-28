@@ -560,6 +560,24 @@ public sealed class GetDisplayNameRouteTranslatorTests
         });
     }
 
+    [TestCase(
+        "Fresh",
+        "{{y|[{{c|ケムセル}} {{y|(残量多)}} <{{G|B}}{{C|D}}{{r|1}}>]}}")]
+    [TestCase(
+        "SomeUnknownState",
+        "{{y|[{{c|ケムセル}} {{y|(SomeUnknownState)}} <{{G|B}}{{C|D}}{{r|1}}>]}}")]
+    public void TranslatePreservingColors_StripsDirectMarkerFromLoadedCellChargeStatus(string charge, string expected)
+    {
+        WriteDictionary(("chem cell", "ケムセル"));
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            "{{y|[{{c|chem cell}} {{y|(" + MessageFrameTranslator.DirectTranslationMarker + charge
+            + ")}} <{{|{{G|B}}{{C|D}}{{r|1}}}}>]}}",
+            nameof(GetDisplayNamePatch));
+
+        Assert.That(translated, Is.EqualTo(expected));
+    }
+
     [Test]
     public void TranslatePreservingColors_TranslatesLeadingWhitespaceModifierChainBeforeWeaponStats()
     {
