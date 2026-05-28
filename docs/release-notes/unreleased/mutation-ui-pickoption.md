@@ -1,3 +1,0 @@
-### Fixed
-
-- Localize mutation selection and rapid advancement popup option text, and stabilize pick-target command bar updates.
