@@ -111,6 +111,10 @@ public static class CombatSkillMessageTranslationPatch
         "^(?<actor>.+?) rejoinders? with (?<weapon>.+?)\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex ActorDrawsBeadOnYouMarkedPattern = new(
+        "^The (?<actor>.+?) draws? a bead on you\\. .+You are marked\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     [ThreadStatic]
     private static int activeDepth;
 
@@ -186,6 +190,14 @@ public static class CombatSkillMessageTranslationPatch
                      "XRL.World.Parts.Skill.Rifle_DrawABead",
                      "ValidateMark",
                      Type.EmptyTypes))
+        {
+            yield return method;
+        }
+
+        foreach (var method in ResolveTargets(
+                     "XRL.World.Parts.Skill.Rifle_DrawABead",
+                     "SetMark",
+                     [gameObjectType]))
         {
             yield return method;
         }
@@ -413,6 +425,11 @@ public static class CombatSkillMessageTranslationPatch
                 ActorRejoinderPattern,
                 source,
                 (match, spans) => $"{Restore(match, spans, "actor")}が{Restore(match, spans, "weapon")}で反撃した。",
+                out translated)
+            || TryTranslatePattern(
+                ActorDrawsBeadOnYouMarkedPattern,
+                source,
+                (match, spans) => $"{Restore(match, spans, "actor")}があなたに照準を合わせた。あなたはマークされた。",
                 out translated);
     }
 

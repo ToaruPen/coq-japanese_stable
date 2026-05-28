@@ -75,6 +75,21 @@
       "text": "充電する"
     },
     {
+      "key": "drink charge",
+      "context": "XRL.World.IInventoryActionsEvent",
+      "text": "チャージを飲む"
+    },
+    {
+      "key": "treat these as scrap",
+      "context": "XRL.World.IInventoryActionsEvent",
+      "text": "スクラップ扱いにする"
+    },
+    {
+      "key": "stop treating these as scrap",
+      "context": "XRL.World.IInventoryActionsEvent",
+      "text": "スクラップ扱いをやめる"
+    },
+    {
       "key": "disassemble all",
       "context": "XRL.World.IInventoryActionsEvent",
       "text": "すべて分解"

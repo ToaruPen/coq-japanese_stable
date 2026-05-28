@@ -419,6 +419,27 @@ public sealed class MessageFrameTranslatorTests
     }
 
     [Test]
+    public void TryTranslateXDidYToZ_RepositoryDictionary_FlinchesAwayAsProjectileFlickersPastFromDirection()
+    {
+        UseRepositoryDictionary();
+
+        var translated = MessageFrameTranslator.TryTranslateXDidYToZ(
+            "あなた",
+            "flinch",
+            preposition: "away as",
+            objectText: "{{G|ネオンの閃光}}",
+            extra: "flickers past from the northwest",
+            endMark: "!",
+            out var sentence);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.True);
+            Assert.That(sentence, Is.EqualTo("あなたは北西から飛んできた{{G|ネオンの閃光}}をかわした！"));
+        });
+    }
+
+    [Test]
     public void TryTranslateXDidYToZ_RepositoryDictionary_ButchersCorpseIntoSingleYield()
     {
         UseRepositoryDictionary();

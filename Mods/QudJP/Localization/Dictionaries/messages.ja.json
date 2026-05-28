@@ -2269,6 +2269,41 @@
       "route": "emit-message"
     },
     {
+      "pattern": "^Its readout indicates that its startup sequence will take an estimated (\\d+) more rounds?\\.$",
+      "template": "表示には、起動シーケンス完了まであとおよそ{0}ラウンドかかると示されている。",
+      "route": "description"
+    },
+    {
+      "pattern": "^A ribbon of electricity leaps from you and (.+?) on you into the air\\.$",
+      "template": "{{{{W|電光のリボン}}}}があなたとあなたの{t0}から空中へ走った。",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^A ribbon of electricity leaps from (.+?) on your person into the air\\.$",
+      "template": "{{{{W|電光のリボン}}}}が身につけた{t0}から空中へ走った。",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^A ribbon of electricity leaps from you and (.+?) on you to (.+?)\\.$",
+      "template": "{{{{W|電光のリボン}}}}があなたとあなたの{t0}から{t1}へ走った。",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^A ribbon of electricity leaps from (.+?) on your person to (.+?)\\.$",
+      "template": "{{{{W|電光のリボン}}}}が身につけた{t0}から{t1}へ走った。",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^A ribbon of electricity leaps from (.+?) into the air\\.$",
+      "template": "{{{{W|電光のリボン}}}}が{t0}から空中へ走った。",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^A ribbon of electricity leaps from (.+?) to (.+?)\\.$",
+      "template": "{{{{W|電光のリボン}}}}が{t0}から{t1}へ走った。",
+      "route": "emit-message"
+    },
+    {
       "pattern": "^(?:An|The) electrical arc leaps from (?:the |a |an )?(.+?) toward (.+?)!$",
       "template": "電弧が{t0}から{t1}へ走った！",
       "route": "emit-message"

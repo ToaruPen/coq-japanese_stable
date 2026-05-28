@@ -1551,10 +1551,12 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         match = FoodConsumptionFramePattern.Match(source);
         if (match.Success && OwnerMatches(ownerKey, FoodOwner))
         {
-            var food = StringHelpers.StripLeadingEnglishArticle(match.Groups["food"].Value, includeCapitalizedDefiniteArticle: true);
+            var food = StripLeadingFoodOwnerPhrase(
+                StringHelpers.StripLeadingEnglishArticle(match.Groups["food"].Value, includeCapitalizedDefiniteArticle: true));
+            var message = TranslateFoodConsumptionMessage(match.Groups["message"].Value);
             var foodStatus = TranslateFoodOrWaterStatus(match.Groups["foodStatus"].Value);
             var waterStatus = TranslateFoodOrWaterStatus(match.Groups["waterStatus"].Value);
-            translated = $"{food}を食べた。\n{match.Groups["message"].Value}現在、{{{{|{foodStatus}}}}}、{{{{|{waterStatus}}}}}だ。";
+            translated = $"{food}を食べた。\n{message}現在、{{{{|{foodStatus}}}}}、{{{{|{waterStatus}}}}}だ。";
             detail = "FoodConsumptionFrame";
             return true;
         }
@@ -1894,6 +1896,21 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
     private static string TranslateFoodOrWaterStatus(string source)
     {
         return ColorAwareTranslationComposer.TranslatePreservingColors(source, TranslateFoodOrWaterStatusVisible);
+    }
+
+    private static string StripLeadingFoodOwnerPhrase(string source)
+    {
+        const string yourPrefix = "your ";
+        return source.StartsWith(yourPrefix, StringComparison.Ordinal)
+            ? source.Substring(yourPrefix.Length)
+            : source;
+    }
+
+    private static string TranslateFoodConsumptionMessage(string source)
+    {
+        return string.Equals(source, "That hits the spot!\n", StringComparison.Ordinal)
+            ? "おいしく腹に収まった！\n"
+            : source;
     }
 
     private static string TranslateFoodOrWaterStatusVisible(string source)

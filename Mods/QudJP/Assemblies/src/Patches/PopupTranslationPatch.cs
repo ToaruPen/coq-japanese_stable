@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
+using System.Text;
 using System.Text.RegularExpressions;
 using HarmonyLib;
 
@@ -24,6 +25,12 @@ public static class PopupTranslationPatch
         new Regex("[A-Za-z]", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex HotkeyLabelPattern =
         new Regex("^\\[(?<hotkey>[^\\]]+)\\]\\s+(?<label>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex EnergyCellSocketPickerTitlePattern =
+        new Regex("^Choose a cell for (?<target>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex EnergyCellSocketRemoveCellPattern =
+        new Regex("^remove cell: (?<cell>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex InventoryActionRechargeCellPattern =
+        new Regex("^Recharge (?<cell>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex PlainHotkeyLabelPattern =
         new Regex("^(?<hotkey>Enter|Esc|Tab|Space|space)\\s+(?<label>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex NumberedConversationChoicePattern =
@@ -565,6 +572,12 @@ public static class PopupTranslationPatch
                 out var hotkeyLabelTranslated))
         {
             translated = hotkeyLabelTranslated;
+            return true;
+        }
+
+        if (TryTranslateEnergyCellSocketPickerText(source, stripped, spans, route, family, out var cellSocketTranslated))
+        {
+            translated = cellSocketTranslated;
             return true;
         }
 
@@ -1139,8 +1152,9 @@ public static class PopupTranslationPatch
         var hotkeyMatch = HotkeyLabelPattern.Match(stripped);
         if (hotkeyMatch.Success && !int.TryParse(hotkeyMatch.Groups["hotkey"].Value, out _))
         {
-            var label = hotkeyMatch.Groups["label"].Value;
-            var translatedLabel = TranslatePopupMenuItemLabel(label, popupId);
+            var labelGroup = hotkeyMatch.Groups["label"];
+            var label = labelGroup.Value;
+            var translatedLabel = TranslatePopupMenuItemLabel(label, popupId, spans, labelGroup);
             if (translatedLabel is null)
             {
                 return TryAcceptInventoryActionMenuOwnerMiss(source, popupId, out translated);
@@ -1203,7 +1217,7 @@ public static class PopupTranslationPatch
             return false;
         }
 
-        var embeddedTranslated = TranslatePopupMenuItemLabel(stripped, popupId);
+        var embeddedTranslated = TranslatePopupMenuItemLabel(stripped, popupId, spans, null, 0);
         if (embeddedTranslated is null)
         {
             return TryAcceptInventoryActionMenuOwnerMiss(source, popupId, out translated);
@@ -1249,7 +1263,7 @@ public static class PopupTranslationPatch
         }
 
         var label = stripped.Substring(labelStart);
-        var translatedLabel = TranslatePopupMenuItemLabel(label, popupId);
+        var translatedLabel = TranslatePopupMenuItemLabel(label, popupId, spans, null, labelStart);
         if (translatedLabel is null)
         {
             translated = source;
@@ -1349,7 +1363,12 @@ public static class PopupTranslationPatch
         return IsInventoryActionMenuPopup(popupId);
     }
 
-    private static string? TranslatePopupMenuItemLabel(string label, string? popupId)
+    private static string? TranslatePopupMenuItemLabel(
+        string label,
+        string? popupId,
+        IReadOnlyList<ColorSpan>? spans,
+        Group? labelGroup,
+        int? labelStart = null)
     {
         if (IsInventoryActionMenuPopup(popupId))
         {
@@ -1362,7 +1381,12 @@ public static class PopupTranslationPatch
                 return inventoryActionTranslation;
             }
 
-            if (TryTranslateInventoryActionMenuLabelPattern(label, out var inventoryActionPatternTranslation))
+            if (TryTranslateInventoryActionMenuLabelPattern(
+                    label,
+                    spans,
+                    labelGroup,
+                    labelStart,
+                    out var inventoryActionPatternTranslation))
             {
                 return inventoryActionPatternTranslation;
             }
@@ -1379,29 +1403,87 @@ public static class PopupTranslationPatch
             : ScopedDictionaryLookup.TranslateExactOrLowerAscii(label, CommonMenuActionDictionaryFile);
     }
 
-    private static bool TryTranslateInventoryActionMenuLabelPattern(string label, out string translated)
+    private static bool TryTranslateInventoryActionMenuLabelPattern(
+        string label,
+        IReadOnlyList<ColorSpan>? spans,
+        Group? labelGroup,
+        int? labelStart,
+        out string translated)
     {
         translated = label;
+        var rechargeMatch = InventoryActionRechargeCellPattern.Match(label);
+        if (rechargeMatch.Success)
+        {
+            var cell = rechargeMatch.Groups["cell"].Value;
+            if (spans is not null && labelGroup is not null)
+            {
+                cell = RestoreNestedVisibleSlice(labelGroup, rechargeMatch.Groups["cell"], spans);
+            }
+            else if (spans is not null && labelStart.HasValue)
+            {
+                cell = RestoreNestedVisibleSlice(
+                    label,
+                    rechargeMatch.Groups["cell"].Index,
+                    rechargeMatch.Groups["cell"].Length,
+                    labelStart.Value,
+                    spans);
+            }
+
+            cell = RemoveUnmatchedQudClosings(cell);
+            var translatedCell = ColorAwareTranslationComposer.TranslatePreservingColors(
+                cell,
+                visible => GetDisplayNameRouteTranslator.TranslatePreservingColors(
+                    visible,
+                    nameof(PopupTranslationPatch)));
+            translated = AppendDefaultColorAfterInlineColor(translatedCell) + "を充電する";
+            return true;
+        }
+
         const string eatPrefix = "Eat ";
         if (!label.StartsWith(eatPrefix, StringComparison.Ordinal) || label.Length == eatPrefix.Length)
         {
             return false;
         }
 
-        var meal = label.Substring(eatPrefix.Length).Trim();
-        if (meal.Length == 0)
+        var mealStart = eatPrefix.Length;
+        var mealEnd = label.Length;
+        while (mealStart < mealEnd && char.IsWhiteSpace(label[mealStart]))
+        {
+            mealStart++;
+        }
+
+        while (mealEnd > mealStart && char.IsWhiteSpace(label[mealEnd - 1]))
+        {
+            mealEnd--;
+        }
+
+        if (mealEnd == mealStart)
         {
             return false;
         }
 
-        if (meal.EndsWith(".", StringComparison.Ordinal))
+        if (label[mealEnd - 1] == '.')
         {
-            meal = meal.Substring(0, meal.Length - 1).TrimEnd();
+            mealEnd--;
+            while (mealEnd > mealStart && char.IsWhiteSpace(label[mealEnd - 1]))
+            {
+                mealEnd--;
+            }
+        }
+
+        var meal = label.Substring(mealStart, mealEnd - mealStart);
+        if (spans is not null && labelGroup is not null)
+        {
+            meal = RestoreNestedVisibleSlice(labelGroup, mealStart, mealEnd - mealStart, spans);
+        }
+        else if (spans is not null && labelStart.HasValue)
+        {
+            meal = RestoreNestedVisibleSlice(label, mealStart, mealEnd - mealStart, labelStart.Value, spans);
         }
 
         var translatedMeal = TranslateCookingRecipeNameForInventoryActionMenu(meal);
         if (translatedMeal.Length == 0
-            || (string.Equals(translatedMeal, meal, StringComparison.Ordinal) && ContainsAsciiLetters(meal)))
+            || (string.Equals(translatedMeal, meal, StringComparison.Ordinal) && ContainsVisibleAsciiLetters(meal)))
         {
             return false;
         }
@@ -1410,8 +1492,98 @@ public static class PopupTranslationPatch
         return true;
     }
 
+    private static string RestoreNestedVisibleSlice(Group parentGroup, Group childGroup, IReadOnlyList<ColorSpan> spans)
+    {
+        if (!parentGroup.Success || !childGroup.Success || spans.Count == 0)
+        {
+            return childGroup.Value;
+        }
+
+        return RestoreNestedVisibleSlice(parentGroup, childGroup.Index, childGroup.Length, spans);
+    }
+
+    private static string RestoreNestedVisibleSlice(
+        Group parentGroup,
+        int childStartIndex,
+        int childLength,
+        IReadOnlyList<ColorSpan> spans)
+    {
+        if (!parentGroup.Success || childLength < 0 || spans.Count == 0)
+        {
+            return parentGroup.Success && childLength >= 0
+                ? parentGroup.Value.Substring(childStartIndex, childLength)
+                : string.Empty;
+        }
+
+        return RestoreNestedVisibleSlice(parentGroup.Value, childStartIndex, childLength, parentGroup.Index, spans);
+    }
+
+    private static string RestoreNestedVisibleSlice(
+        string parentValue,
+        int childStartIndex,
+        int childLength,
+        int parentStartIndex,
+        IReadOnlyList<ColorSpan> spans)
+    {
+        if (childLength < 0 || spans.Count == 0)
+        {
+            return childLength >= 0
+                ? parentValue.Substring(childStartIndex, childLength)
+                : string.Empty;
+        }
+
+        var startIndex = parentStartIndex + childStartIndex;
+        var captureSpans = WithoutUnmatchedBoundaryClosings(
+            ColorCodePreserver.SliceSpans(spans, startIndex, childLength));
+        return ColorAwareTranslationComposer.Restore(
+            parentValue.Substring(childStartIndex, childLength),
+            captureSpans);
+    }
+
+    private static List<ColorSpan> WithoutUnmatchedBoundaryClosings(List<ColorSpan> spans)
+    {
+        if (spans.Count == 0)
+        {
+            return spans;
+        }
+
+        List<ColorSpan>? filtered = null;
+        var openBoundaryCount = 0;
+        for (var index = 0; index < spans.Count; index++)
+        {
+            var span = spans[index];
+            if (ColorCodePreserver.IsOpeningBoundaryToken(span.Token))
+            {
+                openBoundaryCount++;
+            }
+            else if (ColorCodePreserver.IsClosingBoundaryToken(span.Token))
+            {
+                if (openBoundaryCount == 0)
+                {
+                    if (filtered is null)
+                    {
+                        filtered = new List<ColorSpan>(spans.Count - 1);
+                        for (var earlierIndex = 0; earlierIndex < index; earlierIndex++)
+                        {
+                            filtered.Add(spans[earlierIndex]);
+                        }
+                    }
+
+                    continue;
+                }
+
+                openBoundaryCount--;
+            }
+
+            filtered?.Add(span);
+        }
+
+        return filtered ?? spans;
+    }
+
     private static string TranslateCookingRecipeNameForInventoryActionMenu(string meal)
     {
+        var (strippedMeal, mealSpans) = ColorAwareTranslationComposer.Strip(meal);
         var sourceDisplayName = "{{W|" + meal + "}}";
         if (CookingRecipeDisplayNameTranslationPatch.TryProcessDisplayName(
                 sourceDisplayName,
@@ -1422,22 +1594,161 @@ public static class PopupTranslationPatch
             var (translatedMeal, _) = ColorAwareTranslationComposer.Strip(translatedDisplayName);
             if (!string.IsNullOrEmpty(translatedMeal))
             {
-                return translatedMeal;
+                return ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+                    translatedMeal,
+                    mealSpans,
+                    strippedMeal.Length);
             }
         }
 
-        var presetMeal = ScopedDictionaryLookup.TranslateExactOrLowerAscii(meal, PresetMealNameDictionaryFile);
+        var presetMeal = ScopedDictionaryLookup.TranslateExactOrLowerAscii(strippedMeal, PresetMealNameDictionaryFile);
         if (presetMeal is not null)
         {
-            return presetMeal;
+            return ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+                presetMeal,
+                mealSpans,
+                strippedMeal.Length);
         }
 
         return meal;
     }
 
+    private static bool TryTranslateEnergyCellSocketPickerText(
+        string source,
+        string stripped,
+        IReadOnlyList<ColorSpan> spans,
+        string route,
+        string family,
+        out string translated)
+    {
+        translated = source;
+        if (!string.Equals(route, nameof(PopupPickOptionTranslationPatch), StringComparison.Ordinal)
+            && !string.Equals(route, nameof(SelectableTextMenuItemTranslationPatch), StringComparison.Ordinal)
+            && !string.Equals(route, nameof(PopupMessageTranslationPatch), StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        var titleMatch = EnergyCellSocketPickerTitlePattern.Match(stripped);
+        if (titleMatch.Success)
+        {
+            var targetGroup = titleMatch.Groups["target"];
+            var targetPrefixLength = targetGroup.Value.StartsWith("your ", StringComparison.Ordinal)
+                ? "your ".Length
+                : 0;
+            var target = RestoreNestedVisibleSlice(
+                targetGroup,
+                targetPrefixLength,
+                targetGroup.Length - targetPrefixLength,
+                spans);
+            target = RemoveUnmatchedQudClosings(target);
+
+            var visibleTranslated = AppendDefaultColorAfterInlineColor(target) + "用のセルを選ぶ";
+            translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+                visibleTranslated,
+                spans,
+                stripped.Length);
+            DynamicTextObservability.RecordTransform(route, family + ".EnergyCellSocketPickerTitle", source, translated);
+            return true;
+        }
+
+        var removeCellMatch = EnergyCellSocketRemoveCellPattern.Match(stripped);
+        if (removeCellMatch.Success)
+        {
+            const string rawRemovePrefix = "remove cell: ";
+            if (source.StartsWith(rawRemovePrefix, StringComparison.Ordinal))
+            {
+                translated = "セルを外す: " + source.Substring(rawRemovePrefix.Length);
+            }
+            else
+            {
+                var visibleTranslated = "セルを外す: " + removeCellMatch.Groups["cell"].Value;
+                translated = ColorAwareTranslationComposer.RestoreSourceBoundaryWrappersByVisibleTextPreservingTranslatedOwnership(
+                    visibleTranslated,
+                    spans,
+                    stripped);
+            }
+
+            DynamicTextObservability.RecordTransform(route, family + ".EnergyCellSocketRemoveCell", source, translated);
+            return true;
+        }
+
+        if (string.Equals(stripped, "disassemble cell", StringComparison.Ordinal))
+        {
+            var disassembleCell = ScopedDictionaryLookup.TranslateExactOrLowerAscii(stripped, CommonMenuActionDictionaryFile);
+            if (disassembleCell is { Length: > 0 } && !string.Equals(disassembleCell, stripped, StringComparison.Ordinal))
+            {
+                translated = spans.Count == 0
+                    ? disassembleCell
+                    : ColorAwareTranslationComposer.RestoreSourceBoundaryWrappersByVisibleTextPreservingTranslatedOwnership(
+                        disassembleCell,
+                        spans,
+                        stripped);
+                DynamicTextObservability.RecordTransform(route, family + ".EnergyCellSocketDisassembleCell", source, translated);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static string AppendDefaultColorAfterInlineColor(string source)
+    {
+        return source.IndexOf('&') < 0
+            ? source
+            : source + "&y";
+    }
+
+    private static string RemoveUnmatchedQudClosings(string source)
+    {
+        if (source.IndexOf("}}", StringComparison.Ordinal) < 0)
+        {
+            return source;
+        }
+
+        var builder = new StringBuilder(source.Length);
+        var openCount = 0;
+        for (var index = 0; index < source.Length; index++)
+        {
+            if (index + 1 < source.Length
+                && source[index] == '{'
+                && source[index + 1] == '{')
+            {
+                openCount++;
+                builder.Append("{{");
+                index++;
+                continue;
+            }
+
+            if (index + 1 < source.Length
+                && source[index] == '}'
+                && source[index + 1] == '}')
+            {
+                if (openCount > 0)
+                {
+                    openCount--;
+                    builder.Append("}}");
+                }
+
+                index++;
+                continue;
+            }
+
+            builder.Append(source[index]);
+        }
+
+        return builder.ToString();
+    }
+
     private static bool ContainsAsciiLetters(string source)
     {
         return AsciiLetterPattern.IsMatch(source);
+    }
+
+    private static bool ContainsVisibleAsciiLetters(string source)
+    {
+        var (visible, _) = ColorAwareTranslationComposer.Strip(source);
+        return ContainsAsciiLetters(visible);
     }
 
     internal static bool IsInventoryActionMenuPopup(string? popupId)

@@ -1907,6 +1907,17 @@ public sealed class MessagePatternTranslatorTests
     }
 
     [Test]
+    public void Translate_RepositoryDictionary_TranslatesBootSequenceReadoutDescription()
+    {
+        UseRepositoryPatternDictionary();
+
+        var translated = MessagePatternTranslator.Translate(
+            "Its readout indicates that its startup sequence will take an estimated 7 more rounds.");
+
+        Assert.That(translated, Is.EqualTo("表示には、起動シーケンス完了まであとおよそ7ラウンドかかると示されている。"));
+    }
+
+    [Test]
     public void Translate_RepositoryDictionary_TranslatesCapitalizedDirectionQualifiedCapture()
     {
         UseRepositoryPatternDictionary();

@@ -79,7 +79,7 @@ public static class PopupShowSpaceTranslationPatch
     {
         try
         {
-            PopupTranslatedMessageHandoff.ExitCurrentScope();
+            PopupTranslatedMessageHandoff.ExitCurrentScope(retainPendingEntries: true);
         }
         catch (Exception ex)
         {

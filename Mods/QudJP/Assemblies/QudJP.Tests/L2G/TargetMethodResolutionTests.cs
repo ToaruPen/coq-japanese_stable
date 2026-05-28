@@ -359,6 +359,7 @@ public sealed class TargetMethodResolutionTests
     })]
     [TestCase(typeof(PhysicsObjectEnteringCellTranslationPatch), "HandleEvent", "XRL.World.Parts.Physics", "System.Boolean", new[] { "XRL.World.ObjectEnteringCellEvent" })]
     [TestCase(typeof(PhysicsProcessTakeDamageTranslationPatch), "ProcessTakeDamage", "XRL.World.Parts.Physics", "System.Boolean", new[] { "XRL.World.Event" })]
+    [TestCase(typeof(SapChargeOnHitTranslationPatch), "CheckApply", "XRL.World.Parts.SapChargeOnHit", "System.Boolean", new[] { "XRL.World.Event" })]
     [TestCase(typeof(PhysicsApplyDischargeTranslationPatch), "ApplyDischarge", "XRL.World.Parts.Physics", "System.Int32", new[]
     {
         "XRL.World.Cell",
@@ -1901,6 +1902,7 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.Parts.Skill.Cudgel_SmashUp|FireEvent|System.Boolean|XRL.World.Event",
         "XRL.World.Parts.Skill.Discipline_IronMind|FireEvent|System.Boolean|XRL.World.Event",
         "XRL.World.Parts.Skill.Rifle_DrawABead|ValidateMark|System.Void",
+        "XRL.World.Parts.Skill.Rifle_DrawABead|SetMark|System.Boolean|XRL.World.GameObject",
         "XRL.World.Parts.Skill.Shield_Slam|Slam|System.Boolean|XRL.World.GameObject|XRL.World.GameObject|XRL.World.Cell|System.Boolean",
         "XRL.World.Parts.Skill.ShortBlades_Rejoinder|FireEvent|System.Boolean|XRL.World.Event",
     })]

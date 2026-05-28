@@ -255,6 +255,102 @@ public sealed class PopupMessageTranslationPatchTests
     }
 
     [Test]
+    public void Prefix_UsesDetachedPopupShowOwnerHandoff_WhenNewPopupRunsAfterShowScopeExits()
+    {
+        WriteDictionary(
+            ("mutation:Freezing Ray", "任意の方向へ冷気の光線を放つ。近接攻撃でも目標の体温を下げる力を帯びる。"),
+            ("mutation:Freezing Ray:rank:9", "選んだ方向に9マスの冷気線を放つ。\nダメージ: {{rules|9d3}}\nクールダウン: 20ラウンド\n近接攻撃時に敵を{{rules|-9d4}}度冷却する。"),
+            ("mutation:Freezing Ray:rank:10", "選んだ方向に9マスの冷気線を放つ。\nダメージ: {{rules|10d3}}\nクールダウン: 20ラウンド\n近接攻撃時に敵を{{rules|-10d4}}度冷却する。"),
+            ("This rank", "現在ランク"),
+            ("Next rank", "次ランク"));
+
+        const string source =
+            "You emit a ray of frost from your forefeet.\n\n{{w|This rank}}:\nEmits a 9-square ray of frost in the direction of your choice.\nDamage: {{rules|9d3+2}}\nCooldown: 20 rounds\nMelee attacks cool opponents by {{rules|-9d4}} degrees\n\n{{w|Next rank}}:\nEmits a 9-square ray of frost in the direction of your choice.\nDamage: {{rules|10d3+2}}\nCooldown: 20 rounds\nMelee attacks cool opponents by {{rules|-10d4}} degrees\n\n{{C|* This mutationの base rank is 6.}}\n{{G|+ This mutationの rank is increased by 3 due to being rapidly advanced 1 time.}}\n\nIt will cost {{C|1}} mutation point to increase 凍結線's rank by 1.\nDo you wish to increase this mutationの rank?";
+        const string markupTransformedSource =
+            "&yYou emit a ray of frost from your forefeet.\n\n&wThis rank&y:\nEmits a 9-square ray of frost in the direction of your choice.\nDamage: &C9d3+2&y\nCooldown: 20 rounds\nMelee attacks cool opponents by &C-9d4&y degrees\n\n&wNext rank&y:\nEmits a 9-square ray of frost in the direction of your choice.\nDamage: &C10d3+2&y\nCooldown: 20 rounds\nMelee attacks cool opponents by &C-10d4&y degrees\n\n&C* This mutationの base rank is 6.&y\n&G+ This mutationの rank is increased by 3 due to being rapidly advanced 1 time.&y\n\nIt will cost &C1&y mutation point to increase 凍結線's rank by 1.\nDo you wish to increase this mutationの rank?";
+
+        object? ownerState = null;
+        StatusScreenMutationPopupTranslationPatch.Prefix(
+            new DummyCharacterMutation { EntryName = "Freezing Ray", DisplayName = "凍結線", Level = 9 },
+            out ownerState);
+        PopupTranslatedMessageHandoff.EnterScope(out var handoffScope);
+        try
+        {
+            _ = PopupShowSemanticPipeline.TranslateMessage(source, nameof(PopupShowTranslationPatch));
+        }
+        finally
+        {
+            PopupTranslatedMessageHandoff.ExitScope(handoffScope, retainPendingEntries: true);
+            _ = StatusScreenMutationPopupTranslationPatch.Finalizer(null, ownerState);
+        }
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyPopupMessageTarget), nameof(DummyPopupMessageTarget.ShowPopup)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(PopupMessageTranslationPatch), nameof(PopupMessageTranslationPatch.Prefix))));
+
+            new DummyPopupMessageTarget().ShowPopup(markupTransformedSource);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyPopupMessageTarget.LastMessage, Does.Contain("任意の方向へ冷気の光線を放つ。"));
+                Assert.That(DummyPopupMessageTarget.LastMessage, Does.Contain("{{w|現在ランク}}:"));
+                Assert.That(DummyPopupMessageTarget.LastMessage, Does.Contain("{{C|* この変異の基本ランクは6。}}"));
+                Assert.That(DummyPopupMessageTarget.LastMessage, Does.Contain("{{G|+ この変異のランクは1回の急速成長により3上昇している。}}"));
+                Assert.That(DummyPopupMessageTarget.LastMessage, Does.EndWith("凍結線のランクを1上げるには変異ポイントが{{C|1}}ポイント必要だ。\nこの変異のランクを上げますか？"));
+                Assert.That(DummyPopupMessageTarget.LastMessage, Does.Not.Contain("You emit a ray"));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void Prefix_DropsDetachedPopupShowHandoff_WhenDifferentPopupArrivesFirst()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        PopupTranslatedMessageHandoff.EnterScope(out var handoffScope);
+        try
+        {
+            PopupTranslatedMessageHandoff.Remember("{{R|same text}}", "{{R|翻訳済み}}");
+        }
+        finally
+        {
+            PopupTranslatedMessageHandoff.ExitScope(handoffScope, retainPendingEntries: true);
+        }
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyPopupMessageTarget), nameof(DummyPopupMessageTarget.ShowPopup)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(PopupMessageTranslationPatch), nameof(PopupMessageTranslationPatch.Prefix))));
+
+            var target = new DummyPopupMessageTarget();
+            target.ShowPopup("{{G|different text}}");
+            var firstMessage = DummyPopupMessageTarget.LastMessage;
+            target.ShowPopup("{{R|same text}}");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(firstMessage, Is.EqualTo("{{G|different text}}"));
+                Assert.That(DummyPopupMessageTarget.LastMessage, Is.EqualTo("{{R|same text}}"));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void Prefix_DoesNotReusePopupShowHandoffAcrossDifferentColorShape()
     {
         var harmonyId = CreateHarmonyId();

@@ -273,7 +273,7 @@ public sealed partial class Issue201StatusScreensBatch2Tests
             Assert.Multiple(() =>
             {
                 Assert.That(itemTarget.OriginalExecuted, Is.True);
-                Assert.That(itemTarget.text.Text, Is.EqualTo("{{c|ケムセル}} {{y|[清水]}}"));
+                Assert.That(itemTarget.text.Text, Is.EqualTo("{{c|ケムセル}} {{y|[{{g|清水}}]}}"));
                 Assert.That(output, Does.Contain("ColorShapeProbe/v1"));
                 Assert.That(output, Does.Contain("producer='InventoryLine.GameObjectDisplayName'"));
                 Assert.That(output, Does.Contain("source_visible='chem cell [fresh water]'"));

@@ -75,6 +75,36 @@ public sealed class PopupPickOptionTranslationPatchTests
     }
 
     [Test]
+    public void Prefix_TranslatesEnergyCellSocketPickerTitleAndOptions_WhenPatched()
+    {
+        WriteCommonMenuActionDictionary(("disassemble cell", "セルを分解する"));
+
+        using var patch = PatchPickOption();
+
+        DummyPopupGenericTarget.PickOption(
+            Title: "{{W|&yChoose a cell for your &W帯電&y &bカーバイドの戦斧}}",
+            Options: new[]
+            {
+                "remove cell: {{c|ケムセル}} {{y|({{g|残量多}})}} {{y|<{{|{{G|B}}{{C|D}}{{r|1}}}}>}}",
+                "disassemble cell",
+            });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                DummyPopupGenericTarget.LastPickOptionTitle,
+                Is.EqualTo("{{W|&W帯電&y &bカーバイドの戦斧&y用のセルを選ぶ}}"));
+            Assert.That(
+                DummyPopupGenericTarget.LastPickOptionOptions,
+                Is.EqualTo(new[]
+                {
+                    "セルを外す: {{c|ケムセル}} {{y|({{g|残量多}})}} {{y|<{{|{{G|B}}{{C|D}}{{r|1}}}}>}}",
+                    "セルを分解する",
+                }));
+        });
+    }
+
+    [Test]
     public void Prefix_DoesNotTreatOpeningSentenceAsContainerTitle()
     {
         using var patch = PatchPickOption();
@@ -202,6 +232,9 @@ public sealed class PopupPickOptionTranslationPatchTests
             ("deactivate", "XRL.World.IInventoryActionsEvent", "停止する"),
             ("repair", "XRL.World.IInventoryActionsEvent", "修理する"),
             ("recharge", "XRL.World.IInventoryActionsEvent", "充電する"),
+            ("drink charge", "XRL.World.IInventoryActionsEvent", "チャージを飲む"),
+            ("treat these as scrap", "XRL.World.IInventoryActionsEvent", "スクラップ扱いにする"),
+            ("stop treating these as scrap", "XRL.World.IInventoryActionsEvent", "スクラップ扱いをやめる"),
             ("disassemble all", "XRL.World.IInventoryActionsEvent", "すべて分解"),
             ("clean", "XRL.World.IInventoryActionsEvent", "掃除する"),
             ("show internals", "XRL.World.IInventoryActionsEvent", "内部構造を表示"),
@@ -306,6 +339,21 @@ public sealed class PopupPickOptionTranslationPatchTests
                     "{{W|[R]}} {{y|{{hotkey|R}}echarge}}",
                     "InventoryActionMenu:ABC123"),
                 Is.EqualTo("{{W|[R]}} {{y|充電する}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[R]}} {{y|{{hotkey|R}}echarge ケムセル}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[R]}} {{y|ケムセルを充電する}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[k]}} {{y|drin{{hotkey|k}} charge}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[k]}} {{y|チャージを飲む}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[S]}} {{y|treat these as {{hotkey|S}}crap}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[S]}} {{y|スクラップ扱いにする}}"));
             Assert.That(
                 SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
                     "{{W|[D]}} {{y|drop all}}",
@@ -573,12 +621,12 @@ public sealed class PopupPickOptionTranslationPatchTests
                 SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
                     "{{W|[a]}} {{y|Eat {{Y|Velvety Porridge}}}}",
                     "InventoryActionMenu:ABC123"),
-                Is.EqualTo("{{W|[a]}} {{y|なめらか粥を食べる}}"));
+                Is.EqualTo("{{W|[a]}} {{y|{{Y|なめらか粥}}を食べる}}"));
             Assert.That(
                 SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
                     "{{W|[a]}} {{y|Eat {{Y|なめらか粥}}}}",
                     "InventoryActionMenu:ABC123"),
-                Is.EqualTo("{{W|[a]}} {{y|なめらか粥を食べる}}"));
+                Is.EqualTo("{{W|[a]}} {{y|{{Y|なめらか粥}}を食べる}}"));
             Assert.That(
                 SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
                     "{{W|[a]}} {{y|Eat {{Y|クダング's Jewel}}}}",
@@ -589,6 +637,11 @@ public sealed class PopupPickOptionTranslationPatchTests
                     "{{W|[a]}} {{y|Eat Apple Matz.}}",
                     "InventoryActionMenu:ABC123"),
                 Is.EqualTo("{{W|[a]}} {{y|アップルマッツァを食べる}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[a]}} {{y|Eat {{Y|Apple Matz}}.}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[a]}} {{y|{{Y|アップルマッツァ}}を食べる}}"));
             Assert.That(
                 SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
                     "{{W|[a]}} {{y|Eat {{Y|Uncatalogued Feast}}}}",
@@ -777,6 +830,36 @@ public sealed class PopupPickOptionTranslationPatchTests
             "InventoryActionMenu:ABC123");
 
         Assert.That(translated, Is.EqualTo("    {{y|外す}}"));
+    }
+
+    [Test]
+    public void SelectableTextMenuItemDisplayTranslation_TranslatesRechargeWithCellNamePattern()
+    {
+        WriteDisplayNameDictionary(("chem cell", "ケムセル"));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[R]}} {{y|{{hotkey|R}}echarge {{c|ケムセル}}}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[R]}} {{y|{{c|ケムセル}}を充電する}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[R]}} {{y|{{hotkey|R}}echarge {{c|chem cell}}}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[R]}} {{y|{{c|ケムセル}}を充電する}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "    {{y|Recharge {{c|chem cell}}}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("    {{y|{{c|ケムセル}}を充電する}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "    {{y|Recharge &bchem cell}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("    &bケムセル&yを充電する"));
+        });
     }
 
     [Test]
@@ -1165,6 +1248,11 @@ public sealed class PopupPickOptionTranslationPatchTests
             new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
     }
 
+    private void WriteDisplayNameDictionary(params (string key, string text)[] entries)
+    {
+        WriteFlatDictionary("ui-displayname-atomic.ja.json", entries);
+    }
+
     private void WriteInventoryActionDictionaryContents(string contents)
     {
         File.WriteAllText(
@@ -1190,6 +1278,33 @@ public sealed class PopupPickOptionTranslationPatchTests
             builder.Append(EscapeJson(entries[index].key));
             builder.Append("\",\"context\":\"");
             builder.Append(EscapeJson(entries[index].context));
+            builder.Append("\",\"text\":\"");
+            builder.Append(EscapeJson(entries[index].text));
+            builder.Append("\"}");
+        }
+
+        builder.Append("]}");
+        File.WriteAllText(
+            Path.Combine(dictionaryDirectory, fileName),
+            builder.ToString(),
+            new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
+    }
+
+    private void WriteFlatDictionary(string fileName, params (string key, string text)[] entries)
+    {
+        var builder = new StringBuilder();
+        builder.Append('{');
+        builder.Append("\"entries\":[");
+
+        for (var index = 0; index < entries.Length; index++)
+        {
+            if (index > 0)
+            {
+                builder.Append(',');
+            }
+
+            builder.Append("{\"key\":\"");
+            builder.Append(EscapeJson(entries[index].key));
             builder.Append("\",\"text\":\"");
             builder.Append(EscapeJson(entries[index].text));
             builder.Append("\"}");
