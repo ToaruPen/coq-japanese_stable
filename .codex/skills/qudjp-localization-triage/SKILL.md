@@ -85,6 +85,12 @@ Use this skill to turn runtime untranslated text into the smallest correct QudJP
    - C# behavior tests: `just test-l1`, `just test-l2`, `just test-l2g`
    - Analyzer-inclusive local gates: `just build`, `just check`, or `just pr-check`
    - Localization checks: `just localization-check`, `just translation-token-check`
+   - When changing message-pattern route counts, verify the CI workflow contract too. Run
+     `just python-test-filter test_ci_message_pattern_route_counts_match_python_contract`
+     or the broader `just python-test` after updating `justfile`,
+     `scripts/tests/test_validate_pattern_routes.py`, and `.github/workflows/ci.yml`;
+     `just localization-check` alone does not prove those duplicated
+     `--expect-count` values are synchronized.
    - Static coverage map check: `just localization-coverage-map-check`
    - Broad local gate: `just check`
    - Sync only when the user wants local game deployment: `just sync-mod`
