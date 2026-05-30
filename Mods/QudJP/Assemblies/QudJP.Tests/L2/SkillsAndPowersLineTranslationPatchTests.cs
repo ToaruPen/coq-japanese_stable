@@ -105,6 +105,29 @@ public sealed class SkillsAndPowersLineTranslationPatchTests
                 },
             });
 
+            var partialSkillTarget = new DummySkillsAndPowersLineTarget();
+            partialSkillTarget.setData(new DummySkillsAndPowersLineDataTarget
+            {
+                entry = new DummySPNodeTarget
+                {
+                    Name = "Persuasion",
+                    Skill = new DummySkillDefinition
+                    {
+                        Cost = 100,
+                    },
+                    LearnedStatus = DummyLearnedStatus.Partial,
+                    powers =
+                    {
+                        new DummySPNodeTarget { LearnedStatus = DummyLearnedStatus.Learned },
+                        new DummySPNodeTarget { LearnedStatus = DummyLearnedStatus.Learned },
+                        new DummySPNodeTarget { LearnedStatus = DummyLearnedStatus.None },
+                        new DummySPNodeTarget { LearnedStatus = DummyLearnedStatus.None },
+                        new DummySPNodeTarget { LearnedStatus = DummyLearnedStatus.None },
+                        new DummySPNodeTarget { LearnedStatus = DummyLearnedStatus.None },
+                    },
+                },
+            });
+
             Assert.Multiple(() =>
             {
                 Assert.That(skillTarget.skillText.Text, Is.EqualTo("長刃"));
@@ -112,6 +135,8 @@ public sealed class SkillsAndPowersLineTranslationPatchTests
                 Assert.That(powerTarget.powerText.Text, Is.EqualTo("    {{K|:}}{{K|工匠 II}} [{{K|200}}sp] {{C|23}} {{R|INT}}, {{R|工匠 I}}"));
                 Assert.That(learnedSkillTarget.skillText.Text, Is.EqualTo(" {{G|工匠}}"));
                 Assert.That(learnedSkillTarget.skillRightText.Text, Is.EqualTo("{{g|習得済み}} [2/4]"));
+                Assert.That(partialSkillTarget.skillText.Text, Is.EqualTo(" {{g|Persuasion}}"));
+                Assert.That(partialSkillTarget.skillRightText.Text, Is.EqualTo("開始コスト {{g|[100 sp]}} [2/6]"));
                 Assert.That(
                     DynamicTextObservability.GetRouteFamilyHitCountForTests(
                         nameof(SkillsAndPowersLineTranslationPatch),

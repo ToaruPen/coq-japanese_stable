@@ -288,7 +288,7 @@ internal static class PopupTranslatedMessageHandoff
         {
             family = token.Substring(2, token.Length - 3);
             family = string.Equals(family, "rules", StringComparison.Ordinal) ? "C" : family;
-            return family.Length > 0;
+            return family.Length > 0 && !string.Equals(family, "y", StringComparison.Ordinal);
         }
 
         if (token.Length == 2 && (token[0] == '&' || token[0] == '^'))

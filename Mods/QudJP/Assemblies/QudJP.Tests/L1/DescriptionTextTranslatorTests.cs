@@ -283,6 +283,19 @@ public sealed class DescriptionTextTranslatorTests
     [TestCase("Graffiti is scrawled across the surface. It reads: ", "表面に落書きが走り書きされている。そこにはこう書かれている: ")]
     [TestCase("表情豊かな顔と筋肉質な胴体は明らかに人間の血脈を示すが、厚い毛がまだらの脇腹を覆い、ぴくぴく動く尖った耳と誇らしい角は別の遺伝子の strand を語る。", "表情豊かな顔と筋肉質な胴体は明らかに人間の血脈を示すが、厚い毛がまだらの脇腹を覆い、ぴくぴく動く尖った耳と誇らしい角は別の遺伝子の系統を物語る。")]
     [TestCase("stuck in a 凍結した 黒い滲出液の水たまり", "凍結した 黒い滲出液の水たまりにはまっている")]
+    [TestCase("+20% carry capacity", "運搬容量+20%")]
+    [TestCase("Provides 100% reduction in 注射器を適用する際のエネルギー消費.", "注射器を適用する際のエネルギー消費が100%軽減される。")]
+    [TestCase("This object has a broadcast power receiver that can pick up electrical charge either from satellites if not too far underground or from a nearby broadcast power transmitter.", "この物体にはブロードキャスト電力受信機があり、地下深すぎない場所では衛星から、または近くのブロードキャスト電力送信機から電荷を受け取れる。")]
+    [TestCase("Reflects 5% damage back at your attackers, rounded up.", "攻撃者に受けたダメージの5%（端数切り上げ）を反射する。")]
+    [TestCase("Gigantic: This item has twice the energy capacityとis much heavier than usual.", "巨大: このアイテムはエネルギー容量が2倍で、通常より大幅に重い。")]
+    [TestCase("Fighting a 血まみれの 電気カタツムリ", "血まみれの 電気カタツムリと交戦中")]
+    [TestCase("gold で作られた細やかな彫像で、a 徘徊迫撃砲 を表現している。", "金で作られた細やかな彫像で、徘徊迫撃砲を表現している。")]
+    [TestCase("jasper で作られた細やかな彫像で、a イノシシ を表現している。", "碧玉で作られた細やかな彫像で、イノシシを表現している。")]
+    [TestCase("5555年、ウーヒム、Sorrow of ダビッパ、Cyan Bad Omenは自然の理により身罷った。その者は享年90歳であった。", "5555年、ウーヒム、ダビッパの悲哀、青き凶兆は自然の理により身罷った。その者は享年90歳であった。")]
+    [TestCase("3423年、ウーヒム IV、Shining Heir of 犬、Wife to テッム、Bane of ナシャンは自然の理により身罷った。その者は享年88歳であった。", "3423年、ウーヒム IV、犬の輝く後継者、テッムの妻、ナシャンの災いは自然の理により身罷った。その者は享年88歳であった。")]
+    [TestCase("At daybreak on the first day of autumn、ひとりの嬰児（with colossal mace in each hand）がin the mouth of a she-wolfにて産着に包まれて見いだされた。その嬰児はのちにウーヒム IIとして知られるようになった。", "秋の第一日、夜明けに、両手に巨大なメイスを握ったひとりの嬰児が雌狼の口の中で産着に包まれて見いだされた。その嬰児はのちにウーヒム IIとして知られるようになった。")]
+    [TestCase("While、visiting an obscure observatory in the Jewelersの Province of ドゥシュル, ウーヒム IV fabricated horoscope reading that evoked the presence of lucent ruby. SheはそれをRubycusと名づけた。", "宝石商の州ドゥシュルの無名の天文台を訪れていたとき、ウーヒム IVは透明なルビーの存在を呼び起こす星占いを作り上げた。彼女はそれをRubycusと名づけた。")]
+    [TestCase("After treating with 昆虫, ウーヒム IV convinced them to help her found observatory in the Stargazersの Province of カルクヘタラ for the purpose of mapping stars to the shapes of jewels. They named it the Jeweled O...", "昆虫と交渉した後、ウーヒム IVは宝石の形に星を対応づける目的で、カルクヘタラの星見の州に天文台を創設する手助けをするよう彼らを説得した。彼らはそれをJeweled O...と名づけた。")]
     public void TranslateShortDescription_TranslatesRuntimeObservedDescriptionLines(
         string source,
         string expected)

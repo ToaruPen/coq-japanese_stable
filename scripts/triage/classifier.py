@@ -15,6 +15,7 @@ _TRAILING_WHITESPACE = re.compile(r"\s+$")
 _LEADING_WHITESPACE = re.compile(r"^\s+(?!\s*\{\{)")
 _JAPANESE_CHARS = re.compile(r"[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF]")
 _ASCII_LETTERS = re.compile(r"[A-Za-z]")
+_ASCII_LOWERCASE_WORD = re.compile(r"\b[A-Z]?[a-z]{2,}\b")
 _EMBEDDED_NUMBER = re.compile(r"(?<!\.)\b-?\d+\b(?!\.)")
 _NO_CONTEXT_TRANSLATOR_REENTRY_TOKENS = frozenset({"items", "off", "on"})
 _PLAYER_STATUS_BAR_READOUT_ROUTES = frozenset(
@@ -65,11 +66,12 @@ def classify(entry: LogEntry) -> TriageResult:
         _classify_sink_observe,
         _classify_final_output_probe,
         _classify_blank_runtime_noise,
+        _classify_separator_runtime_noise,
         _classify_player_status_bar_readout,
         _classify_fragment,
         _classify_lbs_only_english_text,
-        _classify_no_pattern,
         _classify_japanese_text,
+        _classify_no_pattern,
         _classify_no_context_reentry_token,
         _classify_slot_text,
         _classify_version,
@@ -135,6 +137,18 @@ def _classify_blank_runtime_noise(entry: LogEntry) -> TriageResult | None:
     )
 
 
+def _classify_separator_runtime_noise(entry: LogEntry) -> TriageResult | None:
+    """Classify rule/separator-only observations as runtime noise."""
+    stripped = entry.text.strip()
+    if not stripped or set(stripped) - {"-", "=", "_"}:
+        return None
+    return TriageResult(
+        entry=entry,
+        classification=TriageClassification.RUNTIME_NOISE,
+        reason="Separator-only observation — runtime formatting noise, not untranslated text",
+    )
+
+
 def _classify_player_status_bar_readout(entry: LogEntry) -> TriageResult | None:
     """Classify route-owned status bar numeric readouts as preserved runtime values."""
     if entry.route not in _PLAYER_STATUS_BAR_READOUT_ROUTES:
@@ -191,6 +205,8 @@ def _classify_lbs_only_english_text(entry: LogEntry) -> TriageResult | None:
 def _classify_japanese_text(entry: LogEntry) -> TriageResult | None:
     """Classify observations that already include Japanese text."""
     if not _JAPANESE_CHARS.search(entry.text):
+        return None
+    if entry.kind == LogEntryKind.NO_PATTERN and _ASCII_LOWERCASE_WORD.search(entry.text):
         return None
     return TriageResult(
         entry=entry,

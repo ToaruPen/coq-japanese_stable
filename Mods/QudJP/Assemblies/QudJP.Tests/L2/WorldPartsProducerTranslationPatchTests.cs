@@ -330,6 +330,66 @@ public sealed class WorldPartsProducerTranslationPatchTests
     }
 
     [Test]
+    public void LiquidVolumePatch_TranslatesPourDestinationPickOption_WhenOwnerPatched()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            PatchPickOption(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(
+                    typeof(DummyLiquidVolumeProducerTarget),
+                    nameof(DummyLiquidVolumeProducerTarget.Pour),
+                    typeof(bool).MakeByRefType(),
+                    typeof(DummyGameObject),
+                    typeof(DummyCell),
+                    typeof(bool),
+                    typeof(bool),
+                    typeof(int),
+                    typeof(bool)),
+                typeof(LiquidVolumeTranslationPatch));
+
+            var requestExit = false;
+            var target = new DummyLiquidVolumeProducerTarget
+            {
+                PickOptionIntroToShow = "Where do you want to pour your 水筒?",
+                PickOptionOptionsToShow =
+                [
+                    "Pour it into another container.",
+                    "Pour it nearby.",
+                    "Pour it on yourself.",
+                ],
+            };
+
+            target.Pour(ref requestExit, new DummyGameObject());
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyPopupGenericTarget.LastPickOptionIntro, Is.EqualTo("水筒をどこに注ぎますか？"));
+                Assert.That(
+                    DummyPopupGenericTarget.LastPickOptionOptions,
+                    Is.EqualTo(new[]
+                    {
+                        "別の容器に注ぐ。",
+                        "近くに注ぐ。",
+                        "自分に注ぐ。",
+                    }));
+                Assert.That(LiquidVolumePopupPickOptionHitCount("WherePour"), Is.EqualTo(1));
+                Assert.That(LiquidVolumePopupPickOptionHitCount("PourIntoAnotherContainerOption", "Popup.ProducerMenuItem"), Is.EqualTo(1));
+                Assert.That(LiquidVolumePopupPickOptionHitCount("PourNearbyOption", "Popup.ProducerMenuItem"), Is.EqualTo(1));
+                Assert.That(LiquidVolumePopupPickOptionHitCount("PourOnSelfOption", "Popup.ProducerMenuItem"), Is.EqualTo(1));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void LiquidVolumePatch_DoesNotTranslatePopup_WhenOwnerAbsent()
     {
         var harmonyId = CreateHarmonyId();
@@ -1935,6 +1995,14 @@ public sealed class WorldPartsProducerTranslationPatchTests
             prefix: new HarmonyMethod(RequireMethod(typeof(PopupAskNumberTranslationPatch), nameof(PopupAskNumberTranslationPatch.Prefix))));
     }
 
+    private static void PatchPickOption(Harmony harmony)
+    {
+        harmony.Patch(
+            original: RequireMethod(typeof(DummyPopupGenericTarget), nameof(DummyPopupGenericTarget.PickOption)),
+            prefix: new HarmonyMethod(RequireMethod(typeof(PopupPickOptionTranslationPatch), nameof(PopupPickOptionTranslationPatch.Prefix))),
+            finalizer: new HarmonyMethod(RequireMethod(typeof(PopupPickOptionTranslationPatch), nameof(PopupPickOptionTranslationPatch.Finalizer))));
+    }
+
     private static void PatchMessageLog(Harmony harmony)
     {
         harmony.Patch(
@@ -2120,6 +2188,13 @@ public sealed class WorldPartsProducerTranslationPatchTests
         return DynamicTextObservability.GetRouteFamilyHitCountForTests(
             "MessageQueue.AddPlayerMessage",
             nameof(LiquidVolumeTranslationPatch) + ".Queued." + detail);
+    }
+
+    private static int LiquidVolumePopupPickOptionHitCount(string detail, string family = "Popup.ProducerText")
+    {
+        return DynamicTextObservability.GetRouteFamilyHitCountForTests(
+            nameof(PopupPickOptionTranslationPatch),
+            family + ".LiquidVolumeTranslationPatch." + detail);
     }
 
     private void WritePatternDictionary(params (string pattern, string template)[] patterns)

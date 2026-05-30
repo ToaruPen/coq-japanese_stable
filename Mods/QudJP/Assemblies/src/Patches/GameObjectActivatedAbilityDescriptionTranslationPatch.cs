@@ -79,7 +79,8 @@ public static class GameObjectActivatedAbilityDescriptionTranslationPatch
 
     private static string TranslateDescriptionText(string source)
     {
-        return source
+        return AbilityManagerScreenTranslationPatch
+            .TranslateAbilityDetailText(source, Context, Context + ".Description")
             .Replace("Cooldown:", "クールダウン:")
             .Replace("Range:", "射程:");
     }

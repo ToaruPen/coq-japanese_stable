@@ -239,9 +239,27 @@ public static class AsleepOwnerTranslationPatch
 
     private static string NormalizeSubject(string subject)
     {
-        return string.Equals(subject, "You", StringComparison.Ordinal)
-            ? "あなた"
-            : subject;
+        if (string.Equals(subject, "You", StringComparison.Ordinal))
+        {
+            return "あなた";
+        }
+
+        return StripLeadingSubjectArticle(subject);
+    }
+
+    private static string StripLeadingSubjectArticle(string subject)
+    {
+        var markerEnd = subject.LastIndexOf('\u0003');
+        if (markerEnd >= 0 && markerEnd + 1 < subject.Length)
+        {
+            return subject.Substring(0, markerEnd + 1)
+                + StripLeadingSubjectArticle(subject.Substring(markerEnd + 1));
+        }
+
+        return StringHelpers.StripLeadingEnglishArticle(
+            subject,
+            includeCapitalizedDefiniteArticle: true,
+            includeCapitalizedIndefiniteArticle: true);
     }
 
     private static string TranslateSleepTerm(string term)

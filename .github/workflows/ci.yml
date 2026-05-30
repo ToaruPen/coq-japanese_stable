@@ -348,7 +348,7 @@ jobs:
           --expect-count popup=24
           --expect-count journal=1
           --expect-count leaf=0
-          --expect-count emit-message=384
+          --expect-count emit-message=386
           --expect-count does-verb=0
           --expect-count message-log=1
           --expect-count description=14

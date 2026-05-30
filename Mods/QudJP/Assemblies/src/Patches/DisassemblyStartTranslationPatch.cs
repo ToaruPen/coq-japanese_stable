@@ -17,6 +17,9 @@ public static class DisassemblyStartTranslationPatch
     private static readonly Regex StartDisassemblingPattern = new(
         "^You start disassembling (?<item>.+?)\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex DisassembleEurekaBuildReceiptPattern = new(
+        "^You disassemble\\s+(?:(?:the|your)\\s+)?(?<item>.+?)\\.\\s+Eureka! You may now build\\s+(?<build>.+?)\\.\\s+You receive tinkering bits <(?<bits>.+?)>\\.*!?$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.Singleline);
 
     [ThreadStatic]
     private static int activeDepth;
@@ -32,14 +35,18 @@ public static class DisassemblyStartTranslationPatch
             return targets;
         }
 
-        var method = AccessTools.Method(targetType, "Continue", Type.EmptyTypes);
-        if (method is not null)
+        foreach (var methodName in new[] { "Continue", "End" })
         {
-            targets.Add(method);
-            return targets;
+            var method = AccessTools.Method(targetType, methodName, Type.EmptyTypes);
+            if (method is not null)
+            {
+                targets.Add(method);
+                continue;
+            }
+
+            Trace.TraceError("QudJP: {0}.{1}.{2} target not found.", Context, targetType.FullName, methodName);
         }
 
-        Trace.TraceError("QudJP: {0}.{1}.Continue target not found.", Context, targetType.FullName);
         return targets;
     }
 
@@ -77,7 +84,8 @@ public static class DisassemblyStartTranslationPatch
             return false;
         }
 
-        if (!TryTranslateStartDisassemblingMessage(message, out var translated))
+        if (!TryTranslateStartDisassemblingMessage(message, out var translated)
+            && !TryTranslateDisassembleEurekaBuildReceiptMessage(message, out translated))
         {
             return false;
         }
@@ -97,7 +105,8 @@ public static class DisassemblyStartTranslationPatch
             return false;
         }
 
-        if (TryTranslateReverseEngineerPrompt(source, out translated))
+        if (TryTranslateReverseEngineerPrompt(source, out translated)
+            || TryTranslateDisassembleEurekaBuildReceiptMessage(source, out translated))
         {
             DynamicTextObservability.RecordTransform("Popup.Show", Context, source, translated);
             return true;
@@ -145,6 +154,36 @@ public static class DisassemblyStartTranslationPatch
 
         translated = $"{RestoreCapture(match, spans, "item")}の分解を始めた。";
         return true;
+    }
+
+    private static bool TryTranslateDisassembleEurekaBuildReceiptMessage(string source, out string translated)
+    {
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
+        {
+            translated = markedText;
+            return true;
+        }
+
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        var match = DisassembleEurekaBuildReceiptPattern.Match(stripped);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        var item = TranslateDisplayNameCapture(RestoreCapture(match, spans, "item"));
+        var build = TranslateDisplayNameCapture(RestoreCapture(match, spans, "build"));
+        var bits = RestoreCapture(match, spans, "bits");
+        translated = $"{item}を分解し、修理ビット<{bits}>を受け取った。ひらめいた！ {build}を作れるようになった。";
+        return true;
+    }
+
+    private static string TranslateDisplayNameCapture(string source)
+    {
+        return ColorAwareTranslationComposer.TranslatePreservingColors(
+            source,
+            visible => GetDisplayNameRouteTranslator.TranslatePreservingColors(visible, Context));
     }
 
     private static string RestoreCapture(Match match, IReadOnlyList<ColorSpan> spans, string groupName)

@@ -127,6 +127,93 @@ public sealed class PopupPickOptionTranslationPatchTests
     }
 
     [Test]
+    public void Prefix_TranslatesWaitStyleOptions_WhenPatched()
+    {
+        WriteQudMenuItemDictionary(
+            ("Wait 1 Turn", "QudMenuItem", "1ターン待機"),
+            ("Wait N Turns", "QudMenuItem", "Nターン待機"),
+            ("Wait 20 Turns", "QudMenuItem", "20ターン待機"),
+            ("Wait 100 Turns", "QudMenuItem", "100ターン待機"),
+            ("Wait Until Healed", "QudMenuItem", "完全回復まで待機"),
+            ("Wait Until Party Healed", "QudMenuItem", "パーティー全員の回復まで待機"),
+            ("Wait Until Morning", "QudMenuItem", "朝まで待機"));
+
+        using var patch = PatchPickOption();
+
+        DummyPopupGenericTarget.PickOption(
+            Title: "Select Wait Style",
+            Options: new[]
+            {
+                "Wait 1 Turn",
+                "Wait N Turns",
+                "Wait 20 Turns",
+                "Wait 100 Turns",
+                "Wait Until Healed",
+                "Wait Until Party Healed",
+                "Wait Until Morning",
+            },
+            Buttons: new[] { new DummyPopupMenuItem("{{W|[a]}} {{y|Wait 1 Turn}}") });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                DummyPopupGenericTarget.LastPickOptionOptions,
+                Is.EqualTo(new[]
+                {
+                    "1ターン待機",
+                    "Nターン待機",
+                    "20ターン待機",
+                    "100ターン待機",
+                    "完全回復まで待機",
+                    "パーティー全員の回復まで待機",
+                    "朝まで待機",
+                }));
+            Assert.That(DummyPopupGenericTarget.LastPickOptionButtons, Is.Not.Null);
+            Assert.That(DummyPopupGenericTarget.LastPickOptionButtons![0].text, Is.EqualTo("{{W|[a]}} {{y|1ターン待機}}"));
+        });
+    }
+
+    [Test]
+    public void Prefix_TranslatesRenamePopupTitleAndOptions_WhenPatched()
+    {
+        WriteQudMenuItemDictionary(
+            ("Enter a name.", "QudMenuItem", "名前を入力する。"),
+            ("Name it based on its qualities.", "QudMenuItem", "特徴に基づいて名前を付ける。"),
+            ("Choose a random name from your own culture.", "QudMenuItem", "自分の文化からランダムな名前を選ぶ。"));
+
+        using var patch = PatchPickOption();
+
+        DummyPopupGenericTarget.PickOption(
+            Title: "Rename your カービン.",
+            Options: new[]
+            {
+                "Enter a name.",
+                "Name it based on its qualities.",
+                "Choose a random name from your own culture.",
+                "Choose a random name from リヴィッド・クリーバーの culture.",
+            },
+            Buttons: new[] { new DummyPopupMenuItem("{{W|[d]}} {{y|Choose a random name from リヴィッド・クリーバーの culture.}}") });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(DummyPopupGenericTarget.LastPickOptionTitle, Is.EqualTo("カービンの名前を変更する。"));
+            Assert.That(
+                DummyPopupGenericTarget.LastPickOptionOptions,
+                Is.EqualTo(new[]
+                {
+                    "名前を入力する。",
+                    "特徴に基づいて名前を付ける。",
+                    "自分の文化からランダムな名前を選ぶ。",
+                    "リヴィッド・クリーバーの文化からランダムな名前を選ぶ。",
+                }));
+            Assert.That(DummyPopupGenericTarget.LastPickOptionButtons, Is.Not.Null);
+            Assert.That(
+                DummyPopupGenericTarget.LastPickOptionButtons![0].text,
+                Is.EqualTo("{{W|[d]}} {{y|リヴィッド・クリーバーの文化からランダムな名前を選ぶ。}}"));
+        });
+    }
+
+    [Test]
     public void Prefix_TranslatesPickOptionOptions()
     {
         WriteDictionary(("Continue", "続ける"), ("Cancel", "キャンセル"));
@@ -1124,7 +1211,7 @@ public sealed class PopupPickOptionTranslationPatchTests
             Assert.That(
                 DynamicTextObservability.GetRouteFamilyHitCountForTests(
                     nameof(PopupPickOptionTranslationPatch),
-                    "Popup.ProducerText.EmbeddedHotkeyLabel"),
+                    "Popup.ProducerMenuItem.EmbeddedHotkeyLabel"),
                 Is.GreaterThan(0));
             Assert.That(
                 DynamicTextObservability.GetRouteFamilyHitCountForTests(

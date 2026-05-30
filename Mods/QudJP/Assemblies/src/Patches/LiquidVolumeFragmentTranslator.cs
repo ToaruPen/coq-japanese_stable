@@ -156,6 +156,32 @@ internal static class LiquidVolumeFragmentTranslator
                 match.Groups["amount"].Value,
                 "ドラム集められる。本当にそうしますか？")),
         new(
+            "WherePour",
+            new Regex(
+                "^Where do you want to pour (?<target>.+?)\\?$",
+                RegexOptions.CultureInvariant | RegexOptions.Compiled),
+            static (match, spans) => string.Concat(
+                StripPossessivePrefixPreservingColors(RestoreVisible(match.Groups["target"], spans)),
+                "をどこに注ぎますか？")),
+        new(
+            "PourIntoAnotherContainerOption",
+            new Regex(
+                "^Pour it into another container\\.$",
+                RegexOptions.CultureInvariant | RegexOptions.Compiled),
+            static (_, _) => "別の容器に注ぐ。"),
+        new(
+            "PourNearbyOption",
+            new Regex(
+                "^Pour it nearby\\.$",
+                RegexOptions.CultureInvariant | RegexOptions.Compiled),
+            static (_, _) => "近くに注ぐ。"),
+        new(
+            "PourOnSelfOption",
+            new Regex(
+                "^Pour it on yourself\\.$",
+                RegexOptions.CultureInvariant | RegexOptions.Compiled),
+            static (_, _) => "自分に注ぐ。"),
+        new(
             "NoAvailableCollectionContainer",
             new Regex(
                 "^You have nowhere available to collect that\\.$",

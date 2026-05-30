@@ -477,7 +477,7 @@ public sealed class CampfireCookFromIngredientsTranslationPatchTests
     {
         return DynamicTextObservability.GetRouteFamilyHitCountForTests(
             nameof(PopupPickOptionTranslationPatch),
-            "Popup.ProducerText." + nameof(CampfireCookFromIngredientsTranslationPatch) + "." + detail);
+            "Popup.ProducerMenuItem." + nameof(CampfireCookFromIngredientsTranslationPatch) + "." + detail);
     }
 
     private static MethodInfo RequireMethod(Type type, string name, params Type[] parameterTypes)

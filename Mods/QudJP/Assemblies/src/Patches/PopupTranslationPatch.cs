@@ -31,6 +31,10 @@ public static class PopupTranslationPatch
         new Regex("^remove cell: (?<cell>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex InventoryActionRechargeCellPattern =
         new Regex("^Recharge (?<cell>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex RenameItemTitlePattern =
+        new Regex("^Rename (?<target>.+)\\.$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex RandomNameCultureOptionPattern =
+        new Regex("^Choose a random name from (?<culture>.+?) culture\\.$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex PlainHotkeyLabelPattern =
         new Regex("^(?<hotkey>Enter|Esc|Tab|Space|space)\\s+(?<label>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex NumberedConversationChoicePattern =
@@ -572,6 +576,25 @@ public static class PopupTranslationPatch
                 out var hotkeyLabelTranslated))
         {
             translated = hotkeyLabelTranslated;
+            return true;
+        }
+
+        if (TryTranslatePlainPopupMenuItemText(
+                source,
+                stripped,
+                spans,
+                route,
+                family,
+                popupId,
+                out var plainPopupMenuItemTranslated))
+        {
+            translated = plainPopupMenuItemTranslated;
+            return true;
+        }
+
+        if (TryTranslateRenameItemTitle(source, stripped, spans, route, family, out var renameItemTitleTranslated))
+        {
+            translated = renameItemTitleTranslated;
             return true;
         }
 
@@ -1130,6 +1153,74 @@ public static class PopupTranslationPatch
         return false;
     }
 
+    private static bool TryTranslatePlainPopupMenuItemText(
+        string source,
+        string stripped,
+        IReadOnlyList<ColorSpan> spans,
+        string route,
+        string family,
+        string? popupId,
+        out string translated)
+    {
+        translated = source;
+        if (!string.Equals(family, "Popup.ProducerMenuItem", StringComparison.Ordinal)
+            || string.IsNullOrWhiteSpace(stripped)
+            || source.Contains("{{hotkey|"))
+        {
+            return false;
+        }
+
+        var translatedLabel = TranslatePopupMenuItemLabel(stripped, popupId, spans, null, 0);
+        if (translatedLabel is null)
+        {
+            return TryAcceptInventoryActionMenuOwnerMiss(source, popupId, out translated);
+        }
+
+        if (string.Equals(translatedLabel, stripped, StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+            translatedLabel,
+            spans,
+            stripped.Length);
+        DynamicTextObservability.RecordTransform(route, family + ".PlainMenuItem", source, translated);
+        return true;
+    }
+
+    private static bool TryTranslateRenameItemTitle(
+        string source,
+        string stripped,
+        IReadOnlyList<ColorSpan> spans,
+        string route,
+        string family,
+        out string translated)
+    {
+        translated = source;
+        var match = RenameItemTitlePattern.Match(stripped);
+        if (!match.Success)
+        {
+            return false;
+        }
+
+        var targetGroup = match.Groups["target"];
+        var targetPrefixLength = targetGroup.Value.StartsWith("your ", StringComparison.Ordinal)
+            ? "your ".Length
+            : 0;
+        var target = RestoreNestedVisibleSlice(
+            targetGroup,
+            targetPrefixLength,
+            targetGroup.Length - targetPrefixLength,
+            spans);
+        translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+            target + "の名前を変更する。",
+            spans,
+            stripped.Length);
+        DynamicTextObservability.RecordTransform(route, family + ".RenameItemTitle", source, translated);
+        return true;
+    }
+
     private static bool TryTranslatePopupPickOptionHotkeyLabel(
         string source,
         string stripped,
@@ -1398,9 +1489,67 @@ public static class PopupTranslationPatch
             label,
             QudMenuItemContext,
             QudMenuItemDictionaryFile);
-        return qudMenuItemTranslation is not null
-            ? qudMenuItemTranslation
-            : ScopedDictionaryLookup.TranslateExactOrLowerAscii(label, CommonMenuActionDictionaryFile);
+        if (qudMenuItemTranslation is not null)
+        {
+            return qudMenuItemTranslation;
+        }
+
+        if (TryTranslateRandomNameCultureOption(label, spans, labelGroup, labelStart, out var randomCultureTranslated))
+        {
+            return randomCultureTranslated;
+        }
+
+        return ScopedDictionaryLookup.TranslateExactOrLowerAscii(label, CommonMenuActionDictionaryFile);
+    }
+
+    private static bool TryTranslateRandomNameCultureOption(
+        string label,
+        IReadOnlyList<ColorSpan>? spans,
+        Group? labelGroup,
+        int? labelStart,
+        out string translated)
+    {
+        translated = label;
+        var match = RandomNameCultureOptionPattern.Match(label);
+        if (!match.Success)
+        {
+            return false;
+        }
+
+        var culture = NormalizeCulturePossessive(match.Groups["culture"].Value);
+        if (spans is not null && labelGroup is not null)
+        {
+            culture = RestoreNestedVisibleSlice(labelGroup, match.Groups["culture"], spans);
+            culture = NormalizeCulturePossessive(culture);
+        }
+        else if (spans is not null && labelStart.HasValue)
+        {
+            culture = RestoreNestedVisibleSlice(
+                label,
+                match.Groups["culture"].Index,
+                match.Groups["culture"].Length,
+                labelStart.Value,
+                spans);
+            culture = NormalizeCulturePossessive(culture);
+        }
+
+        translated = culture + "文化からランダムな名前を選ぶ。";
+        return true;
+    }
+
+    private static string NormalizeCulturePossessive(string culture)
+    {
+        if (culture.EndsWith("'s", StringComparison.Ordinal))
+        {
+            return culture.Substring(0, culture.Length - 2) + "の";
+        }
+
+        if (culture.EndsWith("'", StringComparison.Ordinal))
+        {
+            return culture.Substring(0, culture.Length - 1) + "の";
+        }
+
+        return culture;
     }
 
     private static bool TryTranslateInventoryActionMenuLabelPattern(

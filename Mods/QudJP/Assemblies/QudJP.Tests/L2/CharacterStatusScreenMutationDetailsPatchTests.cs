@@ -346,6 +346,80 @@ public sealed class CharacterStatusScreenMutationDetailsPatchTests
         });
     }
 
+    [TestCase(
+        "Freezing Ray",
+        "凍結線",
+        "Icy Vapor Feet",
+        "frost",
+        "10d3+2",
+        "-10d4",
+        "11d3+2",
+        "-11d4",
+        "冷気線",
+        "冷却",
+        "任意の方向へ冷気の光線を放つ。近接攻撃でも目標の体温を下げる力を帯びる。")]
+    [TestCase(
+        "Flaming Ray",
+        "火炎線",
+        "Ghostly Flames Feet",
+        "flame",
+        "10d4+2",
+        "20d8",
+        "11d4+2",
+        "22d8",
+        "炎線",
+        "加熱",
+        "任意の方向へ火炎の光線を放つ。近接攻撃でも目標を加熱する力を帯びる。")]
+    public void TryTranslateMutationDetails_TranslatesRuntimeElementalRayNumbers_WhenRankDictionaryDoesNotContainEffectiveNextLevel(
+        string mutationName,
+        string displayName,
+        string variant,
+        string element,
+        string currentDamage,
+        string currentTemperature,
+        string nextDamage,
+        string nextTemperature,
+        string translatedRayNoun,
+        string translatedTemperatureVerb,
+        string description)
+    {
+        WriteDictionary(
+            ($"mutation:{mutationName}", description),
+            ("This rank", "現在ランク"),
+            ("Next rank", "次ランク"));
+
+        var temperatureVerb = element == "flame" ? "heat" : "cool";
+        var source =
+            $"You emit a ray of {element} from your forefeet.\n\n{{{{w|This rank}}}}:\nEmits a 9-square ray of {element} in the direction of your choice.\nDamage: {{{{rules|{currentDamage}}}}}\nCooldown: 20 rounds\nMelee attacks {temperatureVerb} opponents by {{{{rules|{currentTemperature}}}}} degrees\n\n{{{{w|Next rank}}}}:\nEmits a 9-square ray of {element} in the direction of your choice.\nDamage: {{{{rules|{nextDamage}}}}}\nCooldown: 20 rounds\nMelee attacks {temperatureVerb} opponents by {{{{rules|{nextTemperature}}}}} degrees";
+
+        var changed = CharacterStatusScreenTextTranslator.TryTranslateMutationDetails(
+            new DummyCharacterMutation
+            {
+                EntryName = mutationName,
+                DisplayName = displayName,
+                Variant = variant,
+                Level = 10,
+            },
+            source,
+            nameof(CharacterStatusScreenTranslationPatch),
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(changed, Is.True);
+            Assert.That(translated, Does.Contain(description));
+            Assert.That(translated, Does.Contain("{{w|現在ランク}}:"));
+            Assert.That(translated, Does.Contain($"選んだ方向に9マスの{translatedRayNoun}を放つ。"));
+            Assert.That(translated, Does.Contain($"ダメージ: {{{{rules|{currentDamage}}}}}"));
+            Assert.That(translated, Does.Contain($"近接攻撃時に敵を{{{{rules|{currentTemperature}}}}}度{translatedTemperatureVerb}する。"));
+            Assert.That(translated, Does.Contain("{{w|次ランク}}:"));
+            Assert.That(translated, Does.Contain($"ダメージ: {{{{rules|{nextDamage}}}}}"));
+            Assert.That(translated, Does.Contain($"近接攻撃時に敵を{{{{rules|{nextTemperature}}}}}度{translatedTemperatureVerb}する。"));
+            Assert.That(translated, Does.Not.Contain("You emit a ray"));
+            Assert.That(translated, Does.Not.Contain("This rank"));
+        });
+    }
+
     [Test]
     public void TryTranslateMutationDetails_PassesThroughComparisonFamily_WhenAnyRequiredBlockIsMissing()
     {

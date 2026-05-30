@@ -275,6 +275,40 @@ public sealed class StatusScreenPopupTranslationPatchTests
     }
 
     [Test]
+    public void ShowMutationPopup_TranslatesFreezingRayPopup_WhenRuntimeLevelExceedsRankDictionary()
+    {
+        const string source =
+            "You emit a ray of frost from your forefeet.\n\n{{w|This rank}}:\nEmits a 9-square ray of frost in the direction of your choice.\nDamage: {{rules|10d3+2}}\nCooldown: 20 rounds\nCooldown reduced by 15 due to high Willpower.\nMelee attacks cool opponents by {{rules|-10d4}} degrees\n\n{{w|Next rank}}:\nEmits a 9-square ray of frost in the direction of your choice.\nDamage: {{rules|11d3+2}}\nCooldown: 20 rounds\nCooldown reduced by 3 due to high Willpower.\nMelee attacks cool opponents by {{rules|-11d4}} degrees\n\n{{C|* This mutationの base rank is 7.}}\n{{G|+ This mutationの rank is increased by 3 due to being rapidly advanced 1 time.}}\n\n{{C|You do not have enough mutation points to increase that mutationの rank.}}";
+
+        var translated = TranslatePopupMessage(
+            ownerMethod: RequireMethod(
+                typeof(DummyStatusScreenPopupTarget),
+                nameof(DummyStatusScreenPopupTarget.ShowMutationPopup),
+                typeof(DummyGameObject),
+                typeof(DummyCharacterMutation)),
+            source,
+            new DummyCharacterMutation { EntryName = "Freezing Ray", DisplayName = "凍結線", Variant = "Icy Vapor Feet", Level = 10 });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Does.Contain("冷気の光線"));
+            Assert.That(translated, Does.Contain("{{w|現在ランク}}:"));
+            Assert.That(translated, Does.Contain("ダメージ: {{rules|10d3+2}}"));
+            Assert.That(translated, Does.Contain("高い意志力によりクールダウンが15短縮される。"));
+            Assert.That(translated, Does.Contain("{{w|次ランク}}:"));
+            Assert.That(translated, Does.Contain("ダメージ: {{rules|11d3+2}}"));
+            Assert.That(translated, Does.Contain("高い意志力によりクールダウンが3短縮される。"));
+            Assert.That(translated, Does.Contain("{{C|* この変異の基本ランクは7。}}"));
+            Assert.That(translated, Does.Contain("{{G|+ この変異のランクは1回の急速成長により3上昇している。}}"));
+            Assert.That(translated, Does.EndWith("{{C|その変異のランクを上げるための変異ポイントが足りない。}}"));
+            Assert.That(translated, Does.Not.Contain("You emit a ray"));
+            Assert.That(translated, Does.Not.Contain("Cooldown reduced"));
+            Assert.That(translated, Does.Not.Contain("This rank"));
+            Assert.That(translated, Does.Not.Contain("mutationの"));
+        });
+    }
+
+    [Test]
     public void ShowMutationPopup_PreservesRankBoostReasonsBeforeUpgradePrompt_WhenOwnerPatched()
     {
         const string source =
@@ -555,6 +589,11 @@ public sealed class StatusScreenPopupTranslationPatchTests
 
     private static string TranslatePopupMessage(MethodInfo ownerMethod, string source)
     {
+        return TranslatePopupMessage(ownerMethod, source, null);
+    }
+
+    private static string TranslatePopupMessage(MethodInfo ownerMethod, string source, DummyCharacterMutation? mutation)
+    {
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
         try
@@ -563,7 +602,7 @@ public sealed class StatusScreenPopupTranslationPatchTests
             PatchOwner(harmony, ownerMethod);
 
             DummyStatusScreenPopupTarget.MessageToSend = source;
-            _ = ownerMethod.Invoke(null, CreateOwnerArguments(ownerMethod));
+            _ = ownerMethod.Invoke(null, CreateOwnerArguments(ownerMethod, mutation));
 
             return DummyPopupShow.LastShowMessage ?? string.Empty;
         }
@@ -632,7 +671,7 @@ public sealed class StatusScreenPopupTranslationPatchTests
         }
     }
 
-    private static object[] CreateOwnerArguments(MethodInfo ownerMethod)
+    private static object[] CreateOwnerArguments(MethodInfo ownerMethod, DummyCharacterMutation? mutation = null)
     {
         return ownerMethod.Name switch
         {
@@ -642,7 +681,7 @@ public sealed class StatusScreenPopupTranslationPatchTests
             nameof(DummyStatusScreenPopupTarget.ShowMutationPopup) => new object[]
             {
                 new DummyGameObject(),
-                new DummyCharacterMutation { EntryName = "Force Wall", DisplayName = "Force Wall", Level = 1 },
+                mutation ?? new DummyCharacterMutation { EntryName = "Force Wall", DisplayName = "Force Wall", Level = 1 },
             },
             _ => Array.Empty<object>(),
         };

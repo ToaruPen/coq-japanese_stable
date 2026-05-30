@@ -21,11 +21,11 @@ public static class InventoryFireEventTranslationPatch
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     private static readonly Regex CannotEquipPattern = new(
-        "^You cannot equip (?<item>.+?)\\.$",
+        "^You cannot equip (?:your )?(?<item>.+?)\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     private static readonly Regex CannotEquipOnSlotPattern = new(
-        "^You cannot equip (?<item>.+?) on your (?<slot>.+?)\\.$",
+        "^You cannot equip (?:your )?(?<item>.+?) on your (?<slot>.+?)\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     private static readonly Regex CannotBudgePattern = new(
@@ -236,7 +236,7 @@ public static class InventoryFireEventTranslationPatch
         try
         {
             return GetDisplayNameRouteTranslator.TranslatePreservingColors(
-                source,
+                StripOwnedItemPrefix(source),
                 Context + ".InventoryFailurePopup");
         }
         catch (Exception ex)
@@ -246,10 +246,24 @@ public static class InventoryFireEventTranslationPatch
         }
     }
 
+    private static string StripOwnedItemPrefix(string source)
+    {
+        const string ownedItemPrefix = "your ";
+        return source.StartsWith(ownedItemPrefix, StringComparison.Ordinal)
+            ? source.Substring(ownedItemPrefix.Length)
+            : source;
+    }
+
     private static string TranslateInventorySlot(string source)
     {
         try
         {
+            var visible = ColorAwareTranslationComposer.GetVisibleText(source).Trim();
+            if (TryTranslateInventorySlotName(visible, out var slotName))
+            {
+                return ColorAwareTranslationComposer.TranslatePreservingColors(source, _ => slotName);
+            }
+
             var translated = Translator.Translate(source);
             return string.Equals(translated, source, StringComparison.Ordinal)
                 ? source
@@ -260,6 +274,30 @@ public static class InventoryFireEventTranslationPatch
             Trace.TraceError("QudJP: {0}.TranslateInventorySlot failed: {1}", Context, ex);
             return source;
         }
+    }
+
+    private static bool TryTranslateInventorySlotName(string source, out string translated)
+    {
+        translated = source.ToUpperInvariant() switch
+        {
+            "RIGHT HAND" => "右手",
+            "LEFT HAND" => "左手",
+            "RIGHT FOOT" => "右足",
+            "LEFT FOOT" => "左足",
+            "RIGHT ARM" => "右腕",
+            "LEFT ARM" => "左腕",
+            "HAND" => "手",
+            "FOOT" => "足",
+            "HEAD" => "頭",
+            "FACE" => "顔",
+            "ARM" => "腕",
+            "LEG" => "脚",
+            "TAIL" => "尾",
+            "WING" => "翼",
+            "HORN" => "角",
+            _ => string.Empty,
+        };
+        return translated.Length > 0;
     }
 
     private static string Restore(Match match, IReadOnlyList<ColorSpan> spans, string groupName)

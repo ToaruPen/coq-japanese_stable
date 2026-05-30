@@ -1549,6 +1549,7 @@ public sealed class TargetMethodResolutionTests
     [TestCase(typeof(DisassemblyStartTranslationPatch), new[]
     {
         "XRL.World.Tinkering.Disassembly|Continue|System.Boolean",
+        "XRL.World.Tinkering.Disassembly|End|System.Void",
     })]
     [TestCase(typeof(DanceRitualOpponentTranslationPatch), new[]
     {

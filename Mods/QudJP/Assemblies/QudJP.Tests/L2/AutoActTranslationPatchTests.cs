@@ -146,6 +146,14 @@ public sealed class AutoActTranslationPatchTests
     }
 
     [Test]
+    public void InterruptWithReason_TranslatesHeardFightingReason_WithRepositoryPattern()
+    {
+        AssertInterruptWithReasonMessage(
+            "{{y|You stop 分解中 because you hear 血まみれのラアーアー fighting to the north.}}",
+            "{{y|北で血まみれのラアーアーが戦っている音が聞こえたので分解中をやめた。}}");
+    }
+
+    [Test]
     public void InterruptWithObject_TranslatesWaitingSpotMessage_WithRepositoryPattern()
     {
         AssertInterruptWithObjectMessage(

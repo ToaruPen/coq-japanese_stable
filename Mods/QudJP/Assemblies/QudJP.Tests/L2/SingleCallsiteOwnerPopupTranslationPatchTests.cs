@@ -665,6 +665,28 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         });
     }
 
+    [Test]
+    public void ProselytizeUnconvinced_StripsArticleBeforeDirectMarkedDisplayName()
+    {
+        var source = "The "
+            + MessageFrameTranslator.MarkDirectTranslation("ウォーターヴァイン農家のメカニマス教徒改宗者")
+            + " is unconvinced by your pleas.";
+
+        Assert.That(
+            SingleCallsiteOwnerPopupTranslationPatch.TryTranslatePopupMessageForOwnerKey(
+                source,
+                "XRL.World.Parts.Skill.Persuasion_Proselytize|Proselytize",
+                nameof(PopupShowTranslationPatch),
+                "SingleCallsiteOwnerPopup",
+                out var translated),
+            Is.True);
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.EqualTo("ウォーターヴァイン農家のメカニマス教徒改宗者はあなたの嘆願に心を動かされない。"));
+            Assert.That(HitCount("ProselytizeUnconvinced"), Is.EqualTo(1));
+        });
+    }
+
     [TestCase(
         "Barathrum has left your party.",
         "AscensionBarathrumLeftParty",

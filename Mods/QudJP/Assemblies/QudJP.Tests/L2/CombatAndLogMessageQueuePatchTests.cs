@@ -3664,6 +3664,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
     [TestCase("You cleave through snapjaw's armor.", "snapjawの装甲を切り裂いた。")]
     [TestCase("snapjaw cleaves through your armor.", "snapjawがあなたの装甲を切り裂いた。")]
     [TestCase("snapjaw cleaves through glowfish's armor.", "snapjawがglowfishの装甲を切り裂いた。")]
+    [TestCase("監視官ニーラヒンド cleaves through ゼラチンの角柱の armor.", "監視官ニーラヒンドがゼラチンの角柱の装甲を切り裂いた。")]
     [TestCase("You shook off the stun.", "スタンを振り払った。")]
     [TestCase("You shook off the dazing.", "朦朧を振り払った。")]
     [TestCase("The snapjaw shook off the stun.", "snapjawはスタンを振り払った。")]
@@ -3871,6 +3872,10 @@ public sealed class CombatAndLogMessageQueuePatchTests
         "Apply",
         "You fall {{C|asleep}}!",
         "あなたは{{C|眠り}}に落ちた。")]
+    [TestCase(
+        "Apply",
+        "\u0002fall\u001F16\u001F22\u001F\u0003The シュグルイスの渦動ワイト falls {{C|asleep}}.",
+        "\u0002fall\u001F16\u001F22\u001F\u0003シュグルイスの渦動ワイトは{{C|眠り}}に落ちた。")]
     [TestCase(
         "BeginTakeAction",
         "You are asleep.",

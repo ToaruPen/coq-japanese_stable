@@ -27,6 +27,10 @@ internal sealed class DummyLiquidVolumeProducerTarget
 
     public string AskNumberMessageToShow { get; set; } = string.Empty;
 
+    public string PickOptionIntroToShow { get; set; } = string.Empty;
+
+    public IReadOnlyList<string>? PickOptionOptionsToShow { get; set; }
+
     public string? PickItemTitleToShow { get; set; }
 
     public string? LastPickItemTitle { get; private set; }
@@ -61,6 +65,7 @@ internal sealed class DummyLiquidVolumeProducerTarget
         requestInterfaceExit = false;
         ShowConfiguredPopup();
         AddConfiguredQueuedMessage();
+        ShowConfiguredPickOption();
         return true;
     }
 
@@ -117,6 +122,19 @@ internal sealed class DummyLiquidVolumeProducerTarget
                 ref title);
             LastPickItemTitle = title;
         }
+    }
+
+    private void ShowConfiguredPickOption()
+    {
+        if (string.IsNullOrEmpty(PickOptionIntroToShow) && PickOptionOptionsToShow is null)
+        {
+            return;
+        }
+
+        _ = DummyPopupGenericTarget.PickOption(
+            Title: string.Empty,
+            Intro: PickOptionIntroToShow,
+            Options: PickOptionOptionsToShow);
     }
 }
 

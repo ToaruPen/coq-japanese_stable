@@ -183,6 +183,26 @@ public sealed class GetDisplayNameRouteTranslatorTests
     }
 
     [Test]
+    public void TranslatePreservingColors_TranslatesPlainMultipleLiquidAndStateSuffixes()
+    {
+        WriteDictionaryFile(
+            "ui-displayname-adjectives.ja.json",
+            ("[auto-collecting]", "[自動収集中]"));
+        WriteDictionaryFile(
+            "ui-displayname-atomic.ja.json",
+            ("lead-acid cell", "鉛酸セル"));
+        WriteDictionaryFile(
+            "ui-liquids.ja.json",
+            ("acid", "酸"));
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            "lead-acid cell [8 drams of acid] [auto-collecting]",
+            nameof(GetDisplayNamePatch));
+
+        Assert.That(translated, Is.EqualTo("鉛酸セル [8ドラムの酸] [自動収集中]"));
+    }
+
+    [Test]
     public void TranslatePreservingColors_TranslatesHydraulicAndFusionModifiers()
     {
         WriteDictionaryFile(
@@ -576,6 +596,63 @@ public sealed class GetDisplayNameRouteTranslatorTests
             nameof(GetDisplayNamePatch));
 
         Assert.That(translated, Is.EqualTo(expected));
+    }
+
+    [Test]
+    public void TranslatePreservingColors_PreservesLoadedCellColorsInsideBracketSuffix()
+    {
+        var source = "{{C|高級工具セット}} {{y|[{{c|ケムセル}} {{y|({{G|残量十分}})}} {{y|<{{G|B}}{{C|D}}{{r|1}}>}}]}}";
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            source,
+            nameof(GetDisplayNamePatch));
+
+        Assert.That(translated, Is.EqualTo(source));
+    }
+
+    [Test]
+    public void TranslatePreservingColors_TranslatesNestedLoadedCellLiquidAndStateInsideBracketSuffix()
+    {
+        WriteDictionaryFile(
+            "ui-displayname-adjectives.ja.json",
+            ("[auto-collecting]", "[自動収集中]"));
+        WriteDictionaryFile(
+            "ui-liquids.ja.json",
+            ("oil", "油"),
+            ("{{K|oil}}", "{{K|油}}"));
+
+        const string source =
+            "リストファン {{b|\u0004}}0 {{K|\t}}0 {{y|[{{K|燃焼}} {{c|セル}} {{y|[{{rules|8}} drams of {{K|oil}}]}} {{y|[{{c|auto-collecting}}]}} {{y|<{{G|B}}{{C|D}}{{g|2}}>}}]}} {{y|<{{B|C}}{{B|C}}{{r|1}}{{b|3}}>}}";
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            source,
+            nameof(GetDisplayNamePatch));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Does.Contain("{{y|[{{rules|8}}ドラムの{{K|油}}]}}"));
+            Assert.That(translated, Does.Contain("{{y|[{{c|自動収集中}}]}}"));
+            Assert.That(translated, Does.Not.Contain("drams of"));
+            Assert.That(translated, Does.Not.Contain("auto-collecting"));
+        });
+    }
+
+    [Test]
+    public void TranslatePreservingColors_TranslatesLoadedCellStateInsideBracketBeforeOuterAngleCode()
+    {
+        const string source = "濡れたリスト計算機 \u00040 \t0 [ケムセル (残量十分) <BD1>] <B124>";
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            source,
+            nameof(LookTooltipInformationWrapPatch));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Does.Contain("{{c|ケムセル}} {{y|({{G|残量十分}})}} {{y|<{{G|B}}{{C|D}}{{r|1}}>}}"));
+            Assert.That(translated, Does.Contain("{{y|<{{G|B}}{{r|1}}{{g|2}}{{c|4}}>}}"));
+            Assert.That(translated, Does.Not.Contain("[ケムセル (残量十分) <BD1>]"));
+            Assert.That(translated, Does.Not.Contain("<B124>"));
+        });
     }
 
     [Test]
@@ -1488,6 +1565,40 @@ public sealed class GetDisplayNameRouteTranslatorTests
     }
 
     [Test]
+    public void TranslatePreservingColors_TranslatesRuntimeObservedSocialRoleTitleSuffixes()
+    {
+        WriteDictionaryFile(
+            "ui-displayname-atomic.ja.json",
+            ("fungi", "菌類"));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                GetDisplayNameRouteTranslator.TranslatePreservingColors(
+                    "ヒヒand friend to fungi",
+                    nameof(GetDisplayNamePatch)),
+                Is.EqualTo("ヒヒ、菌類の友"));
+            Assert.That(
+                GetDisplayNameRouteTranslator.TranslatePreservingColors(
+                    "種吐きの蔓 and pariah to their people [座っている]",
+                    nameof(GetDisplayNamePatch)),
+                Is.EqualTo("種吐きの蔓、同胞からの追放者 [座っている]"));
+        });
+    }
+
+    [Test]
+    public void TranslatePreservingColors_TranslatesReshephRuntimeTitle()
+    {
+        UseProductionDictionaries();
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            "Ghost-in-Cerulean",
+            nameof(GetDisplayNamePatch));
+
+        Assert.That(translated, Is.EqualTo("瑠璃の幽鬼"));
+    }
+
+    [Test]
     public void TranslatePreservingColors_TranslatesImplantedMarkupAdjective()
     {
         WriteDictionaryFile(
@@ -1821,6 +1932,31 @@ public sealed class GetDisplayNameRouteTranslatorTests
         Assert.That(
             translated,
             Is.EqualTo("停止中の バネ仕掛けの{{ninefold|ナインフォールド}}のブーツ {{y|({{G|残量十分}})}}"));
+    }
+
+    [Test]
+    public void TranslatePreservingColors_TranslatesColoredStainedModifierChainWithoutShiftingCellTags()
+    {
+        UseProductionDictionaries();
+
+        const string source =
+            "{{r|blood}}-stained {{K|deactivated}} spring-loaded {{ninefold|ナインフォールド}}のブーツ \u00041 \t-1 [ケムセル (残量半分) <BD1>] <A12346>";
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            source,
+            nameof(GetDisplayNamePatch));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Does.Contain("{{r|血に染まった}} {{K|停止中の}} バネ仕掛けの{{ninefold|ナインフォールド}}のブーツ"));
+            Assert.That(translated, Does.Contain("[{{c|ケムセル}} {{y|("));
+            Assert.That(translated, Does.Contain("{{y|<{{G|B}}{{C|D}}{{r|1}}>}}]"));
+            Assert.That(translated, Does.Contain("{{y|<{{R|A}}{{r|1}}{{g|2}}{{b|3}}{{c|4}}{{g|6}}>}}"));
+            Assert.That(translated, Does.Not.Contain("blood"));
+            Assert.That(translated, Does.Not.Contain("deactivated"));
+            Assert.That(translated, Does.Not.Contain("ケムセ{{ninefold|ル"));
+            Assert.That(translated, Does.Not.Contain("<BD}}1"));
+        });
     }
 
     [Test]

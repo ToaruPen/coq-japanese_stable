@@ -111,6 +111,28 @@ public sealed class PickTargetWindowUpdateTranslationPatchTests
     }
 
     [Test]
+    public void TranslateCurrentText_TranslatesLiquidPourDirectionPrompt()
+    {
+        WriteDictionary(
+            ("Pour", "注ぐ"),
+            ("[Select a direction]", "[方向を選択]"));
+        DummyPickTargetWindow.currentText = "Pour | [Select a direction]";
+
+        var changed = PickTargetWindowUpdateTranslationPatch.TranslateCurrentTextForTests(typeof(DummyPickTargetWindow));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(changed, Is.True);
+            Assert.That(DummyPickTargetWindow.currentText, Is.EqualTo("注ぐ | [方向を選択]"));
+            Assert.That(
+                DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                    nameof(PickTargetWindowUpdateTranslationPatch),
+                    "PickTarget.CommandBar"),
+                Is.GreaterThan(0));
+        });
+    }
+
+    [Test]
     public void Prefix_DoesNotCallSetTextAgain_WhenProducerRegeneratesSameEnglishCommandBar()
     {
         WriteDictionary(

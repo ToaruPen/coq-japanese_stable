@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -22,6 +23,8 @@ internal static class CharacterStatusScreenTextTranslator
         new Regex("^(?<name>.+?) \\((?<level>\\d+)\\)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex StatusSummaryPattern =
         new Regex("^Level: (?<level>\\d+) ¯ HP: (?<hpCurrent>\\d+)\\/(?<hpMax>\\d+) ¯ XP: (?<xpCurrent>\\d+)\\/(?<xpMax>\\d+) ¯ Weight: (?<weight>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex ElementalRayRankSectionPattern =
+        new Regex("^Emits a (?<range>\\d+)-square ray of (?<element>frost|flame) in the direction of your choice\\.\\nDamage: (?<damage>.+)\\nCooldown: (?<cooldown>\\d+) rounds(?:\\nCooldown reduced by (?<cooldownReduction>\\d+) due to high Willpower\\.)?\\nMelee attacks (?<verb>cool|heat) opponents by (?<temperature>.+) degrees$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     private static readonly string[] CharacterArchetypes =
     {
@@ -426,6 +429,8 @@ internal static class CharacterStatusScreenTextTranslator
         var hasDescriptionSection = RequiresComparisonDescription(source, hasCurrentRankSection, hasNextRankSection);
         var thisRankLabel = hasCurrentRankSection ? Translator.Translate("This rank") : null;
         var nextRankLabel = hasNextRankSection ? Translator.Translate("Next rank") : null;
+        currentRank = ResolveRuntimeRankSection(source, "This rank", currentRank);
+        nextRank = ResolveRuntimeRankSection(source, "Next rank", nextRank);
         if ((!hasCurrentRankSection && !hasNextRankSection)
             || (hasDescriptionSection && string.IsNullOrEmpty(description))
             || (hasCurrentRankSection
@@ -474,6 +479,101 @@ internal static class CharacterStatusScreenTextTranslator
         translated = builder.Length == 0 ? source : builder.ToString();
         DynamicTextObservability.RecordTransform(route, "CharacterStatus.MutationDetailComparison", source, translated);
         return !string.Equals(source, translated, StringComparison.Ordinal);
+    }
+
+    private static string? ResolveRuntimeRankSection(string source, string label, string? fallback)
+    {
+        return TryExtractRankSection(source, label, out var rankSection)
+            && TryTranslateRuntimeMutationRankSection(rankSection, out var translatedSection)
+            ? translatedSection
+            : fallback;
+    }
+
+    private static bool TryExtractRankSection(string source, string label, out string section)
+    {
+        section = string.Empty;
+        var labelIndex = source.IndexOf(label, StringComparison.Ordinal);
+        if (labelIndex < 0)
+        {
+            return false;
+        }
+
+        var contentStart = source.IndexOf(":\n", labelIndex, StringComparison.Ordinal);
+        if (contentStart < 0)
+        {
+            return false;
+        }
+
+        contentStart += 2;
+        var contentEnd = source.IndexOf("\n\n", contentStart, StringComparison.Ordinal);
+        if (contentEnd < 0)
+        {
+            contentEnd = source.Length;
+        }
+
+        section = source.Substring(contentStart, contentEnd - contentStart).Trim();
+        return section.Length > 0;
+    }
+
+    private static bool TryTranslateRuntimeMutationRankSection(string section, out string translated)
+    {
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(section);
+        var match = ElementalRayRankSectionPattern.Match(stripped);
+        if (!match.Success)
+        {
+            translated = section;
+            return false;
+        }
+
+        var range = RestoreRuntimeCapture(match, spans, "range");
+        var damage = RestoreRuntimeCapture(match, spans, "damage");
+        var cooldown = RestoreRuntimeCapture(match, spans, "cooldown");
+        var cooldownReduction = match.Groups["cooldownReduction"].Success
+            ? RestoreRuntimeCapture(match, spans, "cooldownReduction")
+            : string.Empty;
+        var temperature = RestoreRuntimeCapture(match, spans, "temperature");
+        var element = match.Groups["element"].Value;
+        var verb = match.Groups["verb"].Value;
+        if ((string.Equals(element, "flame", StringComparison.Ordinal) && !string.Equals(verb, "heat", StringComparison.Ordinal))
+            || (string.Equals(element, "frost", StringComparison.Ordinal) && !string.Equals(verb, "cool", StringComparison.Ordinal)))
+        {
+            translated = section;
+            return false;
+        }
+
+        var rayNoun = string.Equals(element, "flame", StringComparison.Ordinal) ? "炎線" : "冷気線";
+        var temperatureVerb = string.Equals(element, "flame", StringComparison.Ordinal) ? "加熱" : "冷却";
+
+        translated = string.Concat(
+            "選んだ方向に",
+            range,
+            "マスの",
+            rayNoun,
+            "を放つ。\nダメージ: ",
+            damage,
+            "\nクールダウン: ",
+            cooldown,
+            "ラウンド");
+        if (cooldownReduction.Length > 0)
+        {
+            translated += "\n高い意志力によりクールダウンが"
+                + cooldownReduction
+                + "短縮される。";
+        }
+
+        translated += string.Concat(
+            "\n近接攻撃時に敵を",
+            temperature,
+            "度",
+            temperatureVerb,
+            "する。");
+        return true;
+    }
+
+    private static string RestoreRuntimeCapture(Match match, IReadOnlyList<ColorSpan> spans, string groupName)
+    {
+        var group = match.Groups[groupName];
+        return ColorAwareTranslationComposer.MarkupAwareRestoreCapture(group.Value, spans, group).Trim();
     }
 
     private static bool RequiresComparisonDescription(string source, bool hasCurrentRankSection, bool hasNextRankSection)

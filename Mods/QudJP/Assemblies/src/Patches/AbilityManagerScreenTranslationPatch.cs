@@ -431,10 +431,15 @@ public static class AbilityManagerScreenTranslationPatch
 
     private static string TranslateBindingText(string source, string family)
     {
+        return TranslateAbilityDetailText(source, Context, family);
+    }
+
+    internal static string TranslateAbilityDetailText(string source, string route, string family)
+    {
         var translated = TranslateRawFragments(source);
         var detail = SkillsAndPowersStatusScreenTranslationPatch.TryTranslateDetailText(
             translated,
-            ObservabilityHelpers.ComposeContext(Context, family),
+            ObservabilityHelpers.ComposeContext(route, family),
             recordTransform: false);
         if (detail.changed)
         {
@@ -452,7 +457,7 @@ public static class AbilityManagerScreenTranslationPatch
 
         if (!string.Equals(translated, source, StringComparison.Ordinal))
         {
-            DynamicTextObservability.RecordTransform(Context, family, source, translated);
+            DynamicTextObservability.RecordTransform(route, family, source, translated);
         }
 
         return translated;

@@ -2636,6 +2636,11 @@
       "text": "ロケットジャンプ"
     },
     {
+      "key": "Fly",
+      "context": "AbilityBar.ButtonText",
+      "text": "飛行"
+    },
+    {
       "key": "Aggressive Stance",
       "text": "攻勢の構え"
     },

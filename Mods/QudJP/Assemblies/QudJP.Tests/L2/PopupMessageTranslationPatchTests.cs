@@ -312,6 +312,62 @@ public sealed class PopupMessageTranslationPatchTests
     }
 
     [Test]
+    public void Prefix_UsesDetachedPopupShowOwnerHandoff_WhenNewPopupWrapsMarkupTransformedBody()
+    {
+        WriteDictionary(
+            ("mutation:Multiple Legs", "脚がもう1組ある。\n\n移動速度が上がり、所持重量の許容量も増える。"),
+            ("mutation:Multiple Legs:rank:4", "移動速度+{{rules|80}}\n運搬容量+{{rules|9%}}"),
+            ("mutation:Multiple Legs:rank:5", "移動速度+{{rules|100}}\n運搬容量+{{rules|10%}}"),
+            ("This rank", "現在ランク"),
+            ("Next rank", "次ランク"));
+
+        const string source =
+            "You have an extra set of legs.\n\n{{w|This rank}}:\n+{{rules|80}} move speed\n+{{rules|9%}} carry capacity\n\n{{w|Next rank}}:\n+{{rules|100}} move speed\n+{{rules|10%}} carry capacity\n\n{{C|* This mutationの base rank is 4.}}\n\nIt will cost {{C|1}} mutation point to increase 多脚's rank by 1.\nDo you wish to increase this mutationの rank?";
+        const string markupTransformedSource =
+            "{{y|&yYou have an extra set of legs.\n\n&wThis rank&y:\n+&C80&y move speed\n+&C9%&y carry capacity\n\n&wNext rank&y:\n+&C100&y move speed\n+&C10%&y carry capacity\n\n&C* This mutationの base rank is 4.&y\n\nIt will cost &C1&y mutation point to increase 多脚's rank by 1.\nDo you wish to increase this mutationの rank?}}";
+
+        object? ownerState = null;
+        StatusScreenMutationPopupTranslationPatch.Prefix(
+            new DummyCharacterMutation { EntryName = "Multiple Legs", DisplayName = "多脚", Level = 4 },
+            out ownerState);
+        PopupTranslatedMessageHandoff.EnterScope(out var handoffScope);
+        try
+        {
+            _ = PopupShowSemanticPipeline.TranslateMessage(source, nameof(PopupShowTranslationPatch));
+        }
+        finally
+        {
+            PopupTranslatedMessageHandoff.ExitScope(handoffScope, retainPendingEntries: true);
+            _ = StatusScreenMutationPopupTranslationPatch.Finalizer(null, ownerState);
+        }
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyPopupMessageTarget), nameof(DummyPopupMessageTarget.ShowPopup)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(PopupMessageTranslationPatch), nameof(PopupMessageTranslationPatch.Prefix))));
+
+            new DummyPopupMessageTarget().ShowPopup(markupTransformedSource);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyPopupMessageTarget.LastMessage, Does.Contain("脚がもう1組ある。"));
+                Assert.That(DummyPopupMessageTarget.LastMessage, Does.Contain("{{w|現在ランク}}:"));
+                Assert.That(DummyPopupMessageTarget.LastMessage, Does.Contain("{{C|* この変異の基本ランクは4。}}"));
+                Assert.That(DummyPopupMessageTarget.LastMessage, Does.EndWith("多脚のランクを1上げるには変異ポイントが{{C|1}}ポイント必要だ。\nこの変異のランクを上げますか？"));
+                Assert.That(DummyPopupMessageTarget.LastMessage, Does.Not.Contain("You have an extra set of legs"));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void Prefix_DropsDetachedPopupShowHandoff_WhenDifferentPopupArrivesFirst()
     {
         var harmonyId = CreateHarmonyId();
