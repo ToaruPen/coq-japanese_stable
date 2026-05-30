@@ -7,6 +7,8 @@ namespace QudJP.Patches;
 internal static class PopupTranslatedMessageHandoff
 {
     private const int MaxPendingEntries = 8;
+    private static readonly object DetachedEntriesLock = new();
+    private static readonly List<Entry> DetachedEntries = new();
 
     [ThreadStatic]
     private static List<Entry>? pendingEntries;
@@ -119,37 +121,21 @@ internal static class PopupTranslatedMessageHandoff
 
         var key = CreateKey(source);
         var entries = pendingEntries;
-        if (entries is null)
-        {
-            return false;
-        }
-
         var scopeId = GetCurrentScopeId();
         if (scopeId == 0)
         {
-            Entry? detachedMatch = null;
-            for (var index = entries.Count - 1; index >= 0; index--)
+            if (entries is not null && TryConsumeDetachedEntry(entries, key, out translated))
             {
-                var entry = entries[index];
-                if (entry.ScopeId != 0
-                    || !string.Equals(entry.Visible, key.Visible, StringComparison.Ordinal)
-                    || !string.Equals(entry.ColorSignature, key.ColorSignature, StringComparison.Ordinal))
-                {
-                    continue;
-                }
-
-                detachedMatch = entry;
-                break;
+                ClearDetachedEntriesForAnyThread();
+                return true;
             }
 
-            RemoveDetachedEntries();
-            if (detachedMatch is null)
-            {
-                return false;
-            }
+            return TryConsumeDetachedEntryFromAnyThread(key, out translated);
+        }
 
-            translated = detachedMatch.Translated;
-            return true;
+        if (entries is null)
+        {
+            return false;
         }
 
         for (var index = entries.Count - 1; index >= 0; index--)
@@ -175,6 +161,10 @@ internal static class PopupTranslatedMessageHandoff
         pendingEntries = null;
         activeScopes = null;
         nextScopeId = 0;
+        lock (DetachedEntriesLock)
+        {
+            DetachedEntries.Clear();
+        }
     }
 
     private static int GetCurrentScopeId()
@@ -218,18 +208,91 @@ internal static class PopupTranslatedMessageHandoff
             if (entries[index].ScopeId == scopeId)
             {
                 entries[index].Detach();
+                AddDetachedEntryForAnyThread(entries[index]);
             }
         }
     }
 
-    private static void RemoveDetachedEntries()
+    private static bool TryConsumeDetachedEntry(List<Entry> entries, Key key, out string translated)
     {
-        var entries = pendingEntries;
-        if (entries is null)
+        translated = string.Empty;
+        Entry? detachedMatch = null;
+        for (var index = entries.Count - 1; index >= 0; index--)
         {
-            return;
+            var entry = entries[index];
+            if (entry.ScopeId != 0
+                || !string.Equals(entry.Visible, key.Visible, StringComparison.Ordinal)
+                || !string.Equals(entry.ColorSignature, key.ColorSignature, StringComparison.Ordinal))
+            {
+                continue;
+            }
+
+            detachedMatch = entry;
+            break;
         }
 
+        RemoveDetachedEntries(entries);
+        if (detachedMatch is null)
+        {
+            return false;
+        }
+
+        translated = detachedMatch.Translated;
+        return true;
+    }
+
+    private static bool TryConsumeDetachedEntryFromAnyThread(Key key, out string translated)
+    {
+        translated = string.Empty;
+        lock (DetachedEntriesLock)
+        {
+            Entry? detachedMatch = null;
+            for (var index = DetachedEntries.Count - 1; index >= 0; index--)
+            {
+                var entry = DetachedEntries[index];
+                if (!string.Equals(entry.Visible, key.Visible, StringComparison.Ordinal)
+                    || !string.Equals(entry.ColorSignature, key.ColorSignature, StringComparison.Ordinal))
+                {
+                    continue;
+                }
+
+                detachedMatch = entry;
+                break;
+            }
+
+            DetachedEntries.Clear();
+            if (detachedMatch is null)
+            {
+                return false;
+            }
+
+            translated = detachedMatch.Translated;
+            return true;
+        }
+    }
+
+    private static void AddDetachedEntryForAnyThread(Entry entry)
+    {
+        lock (DetachedEntriesLock)
+        {
+            DetachedEntries.Add(new Entry(0, entry.Visible, entry.ColorSignature, entry.Translated));
+            if (DetachedEntries.Count > MaxPendingEntries)
+            {
+                DetachedEntries.RemoveAt(0);
+            }
+        }
+    }
+
+    private static void ClearDetachedEntriesForAnyThread()
+    {
+        lock (DetachedEntriesLock)
+        {
+            DetachedEntries.Clear();
+        }
+    }
+
+    private static void RemoveDetachedEntries(List<Entry> entries)
+    {
         for (var index = entries.Count - 1; index >= 0; index--)
         {
             if (entries[index].ScopeId == 0)

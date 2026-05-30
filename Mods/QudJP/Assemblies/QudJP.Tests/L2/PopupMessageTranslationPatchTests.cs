@@ -312,6 +312,53 @@ public sealed class PopupMessageTranslationPatchTests
     }
 
     [Test]
+    public void Prefix_UsesDetachedPopupShowOwnerHandoff_WhenNewPopupRunsOnUiThread()
+    {
+        PopupTranslatedMessageHandoff.EnterScope(out var handoffScope);
+        try
+        {
+            PopupTranslatedMessageHandoff.Remember("{{C|same text}}", "{{C|翻訳済み}}");
+        }
+        finally
+        {
+            PopupTranslatedMessageHandoff.ExitScope(handoffScope, retainPendingEntries: true);
+        }
+
+        string? translated = null;
+        Exception? thrown = null;
+        var thread = new System.Threading.Thread(() =>
+        {
+            try
+            {
+                var message = "&Csame text&y";
+                string? title = null;
+                string? contextTitle = null;
+                PopupMessageTranslationPatch.Prefix(
+                    ref message,
+                    null,
+                    null,
+                    ref title,
+                    ref contextTitle,
+                    null);
+                translated = message;
+            }
+            catch (Exception ex)
+            {
+                thrown = ex;
+            }
+        });
+
+        thread.Start();
+        Assert.That(thread.Join(5000), Is.True);
+        if (thrown is not null)
+        {
+            Assert.Fail(thrown.ToString());
+        }
+
+        Assert.That(translated, Is.EqualTo("{{C|翻訳済み}}"));
+    }
+
+    [Test]
     public void Prefix_UsesDetachedPopupShowOwnerHandoff_WhenNewPopupWrapsMarkupTransformedBody()
     {
         WriteDictionary(
