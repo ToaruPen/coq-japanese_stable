@@ -2223,7 +2223,12 @@ internal static class GetDisplayNameRouteTranslator
             RestoreBracketedDisplayNameSuffix(translatedCollectState, match.Groups["collectBracket"], spans),
             " ",
             RestoreCompactWeaponSuffixSlice(match.Groups["cellCode"], spans));
-        var builder = new StringBuilder(RestoreVisibleSlice(match.Groups["prefix"], spans));
+        var prefixGroup = match.Groups["prefix"];
+        var builder = new StringBuilder(TranslateDisplayNameFragmentPreservingColors(
+            prefixGroup.Value,
+            spans,
+            prefixGroup,
+            route));
         builder.Append(' ');
         builder.Append(RestoreBracketedDisplayNameSuffix(translatedBracketContent, match.Groups["bracket"], spans));
 
@@ -4785,22 +4790,12 @@ internal static class GetDisplayNameRouteTranslator
             return null;
         }
 
-        var liquidVisible = ColorAwareTranslationComposer.GetVisibleText(liquid).Trim();
-        if (liquidVisible.EndsWith("の", StringComparison.Ordinal))
-        {
-            liquidVisible = liquidVisible.Substring(0, liquidVisible.Length - 1);
-        }
-
-        if (liquidVisible.Length == 0)
+        if (ColorAwareTranslationComposer.GetVisibleText(liquid).Trim().Length == 0)
         {
             return null;
         }
 
-        var translatedVisible = liquidVisible + "に染まった";
-        var liquidSource = match.Groups["liquid"].Value;
-        return TryReadWholeQudWrapperTag(liquidSource, out var tag)
-            ? "{{" + tag + "|" + translatedVisible + "}}"
-            : translatedVisible;
+        return liquid + "に染まった";
     }
 
     private static bool IsSingleStainedModifierWithMarkupLiquid(string source)
@@ -4886,24 +4881,6 @@ internal static class GetDisplayNameRouteTranslator
         return translatedModifier is null
             ? null
             : translatedModifier + "(" + match.Groups["level"].Value + ")";
-    }
-
-    private static bool TryReadWholeQudWrapperTag(string source, out string tag)
-    {
-        tag = string.Empty;
-        if (!TryReadWrappedModifierVisible(source, out _))
-        {
-            return false;
-        }
-
-        var separator = source.IndexOf('|', 2);
-        if (separator <= 2)
-        {
-            return false;
-        }
-
-        tag = source.Substring(2, separator - 2);
-        return tag.Length > 0;
     }
 
     private static bool TryTranslateMarkupWrappedDisplayNameModifier(string source, out string translated)

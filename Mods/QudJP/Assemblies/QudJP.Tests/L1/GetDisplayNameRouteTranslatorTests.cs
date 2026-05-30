@@ -614,6 +614,9 @@ public sealed class GetDisplayNameRouteTranslatorTests
     public void TranslatePreservingColors_TranslatesNestedLoadedCellLiquidAndStateInsideBracketSuffix()
     {
         WriteDictionaryFile(
+            "ui-displayname-atomic.ja.json",
+            ("wrist calculator", "リスト計算機"));
+        WriteDictionaryFile(
             "ui-displayname-adjectives.ja.json",
             ("[auto-collecting]", "[自動収集中]"));
         WriteDictionaryFile(
@@ -630,6 +633,11 @@ public sealed class GetDisplayNameRouteTranslatorTests
 
         Assert.Multiple(() =>
         {
+            Assert.That(
+                GetDisplayNameRouteTranslator.TranslatePreservingColors(
+                    "wrist calculator [燃焼 セル [8 drams of oil] [auto-collecting] <BD2>] <CC13>",
+                    nameof(GetDisplayNamePatch)),
+                Does.StartWith("リスト計算機 "));
             Assert.That(translated, Does.Contain("{{y|[{{rules|8}}ドラムの{{K|油}}]}}"));
             Assert.That(translated, Does.Contain("{{y|[{{c|自動収集中}}]}}"));
             Assert.That(translated, Does.Not.Contain("drams of"));
@@ -1948,7 +1956,7 @@ public sealed class GetDisplayNameRouteTranslatorTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(translated, Does.Contain("{{r|血に染まった}} {{K|停止中の}} バネ仕掛けの{{ninefold|ナインフォールド}}のブーツ"));
+            Assert.That(translated, Does.Contain("{{r|血}}に染まった {{K|停止中の}} バネ仕掛けの{{ninefold|ナインフォールド}}のブーツ"));
             Assert.That(translated, Does.Contain("[{{c|ケムセル}} {{y|("));
             Assert.That(translated, Does.Contain("{{y|<{{G|B}}{{C|D}}{{r|1}}>}}]"));
             Assert.That(translated, Does.Contain("{{y|<{{R|A}}{{r|1}}{{g|2}}{{b|3}}{{c|4}}{{g|6}}>}}"));

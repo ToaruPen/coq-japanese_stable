@@ -287,7 +287,7 @@ public sealed class DescriptionTextTranslatorTests
     [TestCase("Provides 100% reduction in 注射器を適用する際のエネルギー消費.", "注射器を適用する際のエネルギー消費が100%軽減される。")]
     [TestCase("This object has a broadcast power receiver that can pick up electrical charge either from satellites if not too far underground or from a nearby broadcast power transmitter.", "この物体にはブロードキャスト電力受信機があり、地下深すぎない場所では衛星から、または近くのブロードキャスト電力送信機から電荷を受け取れる。")]
     [TestCase("Reflects 5% damage back at your attackers, rounded up.", "攻撃者に受けたダメージの5%（端数切り上げ）を反射する。")]
-    [TestCase("Gigantic: This item has twice the energy capacityとis much heavier than usual.", "巨大: このアイテムはエネルギー容量が2倍で、通常より大幅に重い。")]
+    [TestCase("Gigantic: This item has twice the energy capacity and is much heavier than usual.", "巨大: このアイテムはエネルギー容量が2倍で、通常より大幅に重い。")]
     [TestCase("Fighting a 血まみれの 電気カタツムリ", "血まみれの 電気カタツムリと交戦中")]
     [TestCase("gold で作られた細やかな彫像で、a 徘徊迫撃砲 を表現している。", "金で作られた細やかな彫像で、徘徊迫撃砲を表現している。")]
     [TestCase("jasper で作られた細やかな彫像で、a イノシシ を表現している。", "碧玉で作られた細やかな彫像で、イノシシを表現している。")]

@@ -71,10 +71,7 @@ public static class GameObjectActivatedAbilityDescriptionTranslationPatch
             return;
         }
 
-        if (TrySetStringMemberValue(ability, "Description", translated))
-        {
-            DynamicTextObservability.RecordTransform(Context, Context + ".Description", current!, translated);
-        }
+        _ = TrySetStringMemberValue(ability, "Description", translated);
     }
 
     private static string TranslateDescriptionText(string source)

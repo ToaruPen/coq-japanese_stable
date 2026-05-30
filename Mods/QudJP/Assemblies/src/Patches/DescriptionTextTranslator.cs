@@ -731,6 +731,11 @@ internal static class DescriptionTextTranslator
             return true;
         }
 
+        if (TryTranslateRuntimeObservedDescriptionLine(source, route, out translated))
+        {
+            return true;
+        }
+
         if (WorldModsTextTranslator.TryTranslate(source, route, "Description.WorldMods", out translated))
         {
             return true;
@@ -1277,7 +1282,7 @@ internal static class DescriptionTextTranslator
 
         if (string.Equals(
                 source,
-                "Gigantic: This item has twice the energy capacityとis much heavier than usual.",
+                "Gigantic: This item has twice the energy capacity and is much heavier than usual.",
                 StringComparison.Ordinal))
         {
             translated = "巨大: このアイテムはエネルギー容量が2倍で、通常より大幅に重い。";

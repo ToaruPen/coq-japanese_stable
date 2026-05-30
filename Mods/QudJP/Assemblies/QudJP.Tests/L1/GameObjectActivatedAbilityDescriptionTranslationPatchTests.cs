@@ -16,12 +16,15 @@ public sealed class GameObjectActivatedAbilityDescriptionTranslationPatchTests
         Directory.CreateDirectory(tempDirectory);
         File.WriteAllText(Path.Combine(tempDirectory, "empty.ja.json"), "{\"entries\":[]}");
         Translator.SetDictionaryDirectoryForTests(tempDirectory);
+        DynamicTextObservability.ResetForTests();
+        RuntimeDiagnostics.SetVerboseProbesEnabledForTests(true);
     }
 
     [TearDown]
     public void TearDown()
     {
         Translator.ResetForTests();
+        RuntimeDiagnostics.SetVerboseProbesEnabledForTests(null);
         if (Directory.Exists(tempDirectory))
         {
             Directory.Delete(tempDirectory, recursive: true);
@@ -57,6 +60,23 @@ public sealed class GameObjectActivatedAbilityDescriptionTranslationPatchTests
         Assert.That(
             ability.Description,
             Is.EqualTo("近くのクリーチャーを辱め、DV、命中、自我、意志力に-4、迅速さに-10%のペナルティを与える。\n\n持続時間: 6d6 ラウンド\n射程: 8\nクールダウン: {{G|43}} ラウンド\n\nクールダウンが7短縮（高い意志力による）。"));
+    }
+
+    [Test]
+    public void TranslateActivatedAbilityDescription_RecordsSingleObservabilityHit()
+    {
+        var ability = new DummyActivatedAbility
+        {
+            Description = "Duration: 6d6 round\nRange: 8\nCooldown: {{G|43}} round",
+        };
+
+        GameObjectActivatedAbilityDescriptionTranslationPatch.TranslateActivatedAbilityDescriptionForTests(ability);
+
+        Assert.That(
+            DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                nameof(GameObjectActivatedAbilityDescriptionTranslationPatch),
+                nameof(GameObjectActivatedAbilityDescriptionTranslationPatch) + ".Description"),
+            Is.EqualTo(1));
     }
 
     [Test]
