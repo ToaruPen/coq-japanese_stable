@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Globalization;
 using System.Reflection;
@@ -10,7 +11,10 @@ namespace QudJP.Patches;
 public static class InventoryLineTranslationPatch
 {
     private const string Context = nameof(InventoryLineTranslationPatch);
+    private const int MaxTranslationCacheEntries = 4096;
     private const string WeightUnit = "lbs.";
+    private static readonly ConcurrentDictionary<InventoryTranslationCacheKey, string> TranslationCache = new();
+    private static readonly ConcurrentQueue<InventoryTranslationCacheKey> TranslationCacheOrder = new();
 
     [HarmonyTargetMethod]
     private static MethodBase? TargetMethod()
@@ -134,7 +138,10 @@ public static class InventoryLineTranslationPatch
         }
 #endif
 #if HAS_TMP
-        _ = InventoryLineFontFixer.TryRefreshTextSkinWithFallbackFont(itemTextSkin, translatedDisplayName);
+        _ = InventoryLineFontFixer.TryRefreshTextSkinWithFallbackFontForSetData(
+            instance,
+            itemTextSkin,
+            translatedDisplayName);
 #endif
 #if HAS_TMP && QUDJP_DEV_BUILD
         if (RuntimeDiagnostics.VerboseProbesEnabled)
@@ -167,6 +174,11 @@ public static class InventoryLineTranslationPatch
             return source;
         }
 
+        return GetOrAddTranslationCache(family, source, () => TranslateVisibleTextUncached(source, route, family));
+    }
+
+    private static string TranslateVisibleTextUncached(string source, string route, string family)
+    {
         var sanitizedSource = MessageFrameTranslator.StripAllDirectTranslationMarkers(source);
         var translated = ColorAwareTranslationComposer.TranslatePreservingColors(
             sanitizedSource,
@@ -183,6 +195,12 @@ public static class InventoryLineTranslationPatch
 
     private static string TranslateItemDisplayName(string source, string route)
     {
+        return GetOrAddTranslationCache("InventoryLine.ItemName", source, () =>
+            TranslateItemDisplayNameUncached(source, route));
+    }
+
+    private static string TranslateItemDisplayNameUncached(string source, string route)
+    {
         if (MerchantAdvertisementTextTranslator.TryTranslateBookTitle(source, out var translatedBookTitle))
         {
             translatedBookTitle = MessageFrameTranslator.StripAllDirectTranslationMarkers(translatedBookTitle);
@@ -194,7 +212,7 @@ public static class InventoryLineTranslationPatch
             return translatedBookTitle;
         }
 
-        var translated = TranslateVisibleText(source, route, "InventoryLine.ItemName");
+        var translated = TranslateVisibleTextUncached(source, route, "InventoryLine.ItemName");
         if (string.Equals(translated, source, StringComparison.Ordinal))
         {
             translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
@@ -214,6 +232,45 @@ public static class InventoryLineTranslationPatch
         return TranslateItemDisplayName(
             source,
             ObservabilityHelpers.ComposeContext(Context, "field=text"));
+    }
+
+    internal static void ClearTranslationCachesForTests()
+    {
+        TranslationCache.Clear();
+        while (TranslationCacheOrder.TryDequeue(out var ignored))
+        {
+            _ = ignored;
+        }
+    }
+
+    internal static int GetTranslationCacheCountForTests()
+    {
+        return TranslationCache.Count;
+    }
+
+    private static string GetOrAddTranslationCache(
+        string family,
+        string source,
+        Func<string> translate)
+    {
+        var key = new InventoryTranslationCacheKey(family, source);
+        if (TranslationCache.TryGetValue(key, out var cached))
+        {
+            return cached;
+        }
+
+        var translated = translate();
+        if (TranslationCache.TryAdd(key, translated))
+        {
+            TranslationCacheOrder.Enqueue(key);
+            while (TranslationCache.Count > MaxTranslationCacheEntries
+                && TranslationCacheOrder.TryDequeue(out var oldest))
+            {
+                TranslationCache.TryRemove(oldest, out _);
+            }
+        }
+
+        return translated;
     }
 
     private static string TranslateCategoryWeightText(string source, int amount, int weight, bool showItemCount, string route)
@@ -267,15 +324,7 @@ public static class InventoryLineTranslationPatch
 
     private static object? GetMemberValue(object instance, string memberName)
     {
-        var type = instance.GetType();
-        var property = AccessTools.Property(type, memberName);
-        if (property is not null && property.CanRead)
-        {
-            return property.GetValue(instance);
-        }
-
-        var field = AccessTools.Field(type, memberName);
-        return field?.GetValue(instance);
+        return ReflectionUtils.GetPropertyOrFieldValue(instance, memberName);
     }
 
     private static string? GetStringMemberValue(object instance, string memberName)
@@ -287,6 +336,39 @@ public static class InventoryLineTranslationPatch
     {
         var value = GetMemberValue(instance, memberName);
         return value is null ? 0 : Convert.ToInt32(value, CultureInfo.InvariantCulture);
+    }
+
+    private readonly struct InventoryTranslationCacheKey : IEquatable<InventoryTranslationCacheKey>
+    {
+        internal InventoryTranslationCacheKey(string family, string source)
+        {
+            Family = family;
+            Source = source;
+        }
+
+        internal string Family { get; }
+
+        internal string Source { get; }
+
+        public bool Equals(InventoryTranslationCacheKey other)
+        {
+            return string.Equals(Family, other.Family, StringComparison.Ordinal)
+                && string.Equals(Source, other.Source, StringComparison.Ordinal);
+        }
+
+        public override bool Equals(object? obj)
+        {
+            return obj is InventoryTranslationCacheKey other && Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return (StringComparer.Ordinal.GetHashCode(Family) * 397)
+                    ^ StringComparer.Ordinal.GetHashCode(Source);
+            }
+        }
     }
 
 }

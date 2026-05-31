@@ -21,6 +21,8 @@ public sealed class QudTestRuntimeHarnessTests
         SinkObservation.ResetForTests();
         MessageFrameTranslator.ResetForTests();
         StartReplaceTranslationPatch.ResetForTests();
+        InventoryLineTranslationPatch.ClearTranslationCachesForTests();
+        SelectableTextMenuItemTranslationPatch.ClearDisplayTranslationCacheForTests();
         StartReplaceTranslationPatch.SetDictionaryPathForTests(RepositoryDictionary("templates-variable.ja.json"));
         Translator.SetDictionaryDirectoryForTests(
             Path.GetFullPath(Path.Combine(RepositoryDictionary("templates-variable.ja.json"), "..")));
@@ -34,6 +36,8 @@ public sealed class QudTestRuntimeHarnessTests
         SinkObservation.ResetForTests();
         DynamicTextObservability.ResetForTests();
         ScopedDictionaryLookup.ResetForTests();
+        SelectableTextMenuItemTranslationPatch.ClearDisplayTranslationCacheForTests();
+        InventoryLineTranslationPatch.ClearTranslationCachesForTests();
         Translator.ResetForTests();
         if (Directory.Exists(fixturesDirectory))
         {

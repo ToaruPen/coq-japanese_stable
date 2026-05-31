@@ -24,6 +24,7 @@ public sealed partial class Issue201StatusScreensBatch2Tests
         ColorShapeCaptureObservability.ResetForTests();
         DynamicTextObservability.ResetForTests();
         SinkObservation.ResetForTests();
+        InventoryLineTranslationPatch.ClearTranslationCachesForTests();
     }
 
     [TearDown]
@@ -33,11 +34,44 @@ public sealed partial class Issue201StatusScreensBatch2Tests
         ColorShapeCaptureObservability.ResetForTests();
         DynamicTextObservability.ResetForTests();
         SinkObservation.ResetForTests();
+        InventoryLineTranslationPatch.ClearTranslationCachesForTests();
 
         if (Directory.Exists(tempDirectory))
         {
             Directory.Delete(tempDirectory, recursive: true);
         }
+    }
+
+    [Test]
+    public void TranslateItemDisplayNameForQudTest_CachesRepeatedDisplayName()
+    {
+        WriteDictionaryFile("ui-displayname-atomic.ja.json", ("water flask", "水袋"));
+
+        var first = InventoryLineTranslationPatch.TranslateItemDisplayNameForQudTest("water flask");
+        var second = InventoryLineTranslationPatch.TranslateItemDisplayNameForQudTest("water flask");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(first, Is.EqualTo("水袋"));
+            Assert.That(second, Is.EqualTo(first));
+            Assert.That(InventoryLineTranslationPatch.GetTranslationCacheCountForTests(), Is.GreaterThanOrEqualTo(1));
+        });
+    }
+
+    [Test]
+    public void TranslateItemDisplayNameForQudTest_CachesFallbackDisplayNameAfterVisibleMiss()
+    {
+        WriteDictionaryFile("ui-displayname-atomic.ja.json", ("water flask", "水袋"));
+        WriteDictionaryFile("ui-displayname-adjectives.ja.json", ("[empty]", "[空]"));
+
+        var first = InventoryLineTranslationPatch.TranslateItemDisplayNameForQudTest("water flask [empty]");
+        var second = InventoryLineTranslationPatch.TranslateItemDisplayNameForQudTest("water flask [empty]");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(first, Is.EqualTo("水袋 [空]"));
+            Assert.That(second, Is.EqualTo("水袋 [空]"));
+        });
     }
 
     [Test]
