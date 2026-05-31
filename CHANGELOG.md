@@ -10,6 +10,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+## [0.4.01] - 2026-05-31
+
+### Fixed
+
+- Player.log で確認された ability label、mutation rank-up popup、liquid pour prompt/option、skill status label、generated item description、advanced toolkit の loaded-cell color tag などの未翻訳 UI・説明文を修正しました。
+- mutation popup、active effect、item mod name、popup/log 内の generated display name など、追加で見つかった runtime 生成テキストの未翻訳表示を日本語化しました。
+- color markup 付きの item name や generated display name で、日本語化後も色タグが保たれるようにしました。
+- tutorial Mehmet の POI highlight が正しく日本語化経路に乗るようにしました。
+- inventory line、menu option、bottom context 表示の処理を見直し、inventory/menu の表示更新を軽くしました。
+
+---
+
 ## [0.4.00] - 2026-05-29
 
 ### Fixed
@@ -388,7 +400,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
-[Unreleased]: https://github.com/ToaruPen/coq-japanese_stable/compare/v0.4.00...HEAD
+[Unreleased]: https://github.com/ToaruPen/coq-japanese_stable/compare/v0.4.01...HEAD
+[0.4.01]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.4.01
 [0.4.00]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.4.00
 [0.3.21]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.3.21
 [0.3.20]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.3.20
