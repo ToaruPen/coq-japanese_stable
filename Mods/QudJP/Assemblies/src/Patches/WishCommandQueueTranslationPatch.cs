@@ -32,7 +32,7 @@ public static class WishCommandQueueTranslationPatch
         var reclamationType = AccessTools.TypeByName("XRL.World.Quests.ReclamationSystem");
         var statWishType = AccessTools.TypeByName("XRL.World.StatWishHandler");
         var findASiteType = AccessTools.TypeByName("XRL.World.ZoneBuilders.FindASiteDynamicQuestManager");
-        if (landingPadsType is null || reclamationType is null || statWishType is null || findASiteType is null)
+        if (landingPadsType is null || reclamationType is null || statWishType is null)
         {
             Trace.TraceError("QudJP: {0} target types not found.", Context);
             yield break;
@@ -68,14 +68,23 @@ public static class WishCommandQueueTranslationPatch
             Trace.TraceError("QudJP: {0}.StatWishHandler.ClearStatShifts() not found.", Context);
         }
 
-        var dynamicQuestWhere = AccessTools.Method(findASiteType, "DynamicQuestWhere", Type.EmptyTypes);
-        if (dynamicQuestWhere is not null)
+        if (findASiteType is not null)
         {
-            yield return dynamicQuestWhere;
+            var dynamicQuestWhere = AccessTools.Method(findASiteType, "DynamicQuestWhere", Type.EmptyTypes);
+            if (dynamicQuestWhere is not null)
+            {
+                yield return dynamicQuestWhere;
+            }
+            else
+            {
+                Trace.TraceError("QudJP: {0}.FindASiteDynamicQuestManager.DynamicQuestWhere() not found.", Context);
+            }
         }
         else
         {
-            Trace.TraceError("QudJP: {0}.FindASiteDynamicQuestManager.DynamicQuestWhere() not found.", Context);
+            Trace.TraceError(
+                "QudJP: {0} target type not found: XRL.World.ZoneBuilders.FindASiteDynamicQuestManager.",
+                Context);
         }
     }
 

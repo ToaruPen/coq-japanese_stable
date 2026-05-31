@@ -53,7 +53,12 @@ public static class PopupShowColorPickerTranslationPatch
     {
         try
         {
-            __0 = Translate(__0)!;
+            var translatedTitle = Translate(__0);
+            if (translatedTitle is not null)
+            {
+                __0 = translatedTitle;
+            }
+
             __2 = Translate(__2);
         }
         catch (Exception ex)

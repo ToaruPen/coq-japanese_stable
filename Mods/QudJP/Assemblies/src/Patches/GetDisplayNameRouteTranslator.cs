@@ -3407,12 +3407,6 @@ internal static class GetDisplayNameRouteTranslator
         }
 
         var skill = CharGenProducerTranslationHelpers.TranslateText(match.Groups["skill"].Value);
-        if (string.Equals(skill, match.Groups["skill"].Value, StringComparison.Ordinal))
-        {
-            translated = source;
-            return false;
-        }
-
         translated = "{{"
             + match.Groups["outer"].Value
             + "|"

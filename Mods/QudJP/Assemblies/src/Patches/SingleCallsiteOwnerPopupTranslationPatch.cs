@@ -944,7 +944,7 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
 
         if (OwnerMatches(ownerKey, IZoneLandmarkWishCurrentOwner))
         {
-            if (source.Equals("You are nut currently in a landmark location.", StringComparison.Ordinal))
+            if (source.Equals("You are not currently in a landmark location.", StringComparison.Ordinal))
             {
                 translated = "現在、ランドマーク地点にはいない。";
                 detail = "IZoneLandmarkWishCurrentMissing";

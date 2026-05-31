@@ -709,7 +709,7 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "TinkeringRechargeNoItems")]
     [TestCase(
         "XRL.World.Parts.IZoneLandmark|WishCurrent",
-        "You are nut currently in a landmark location.",
+        "You are not currently in a landmark location.",
         "現在、ランドマーク地点にはいない。",
         "IZoneLandmarkWishCurrentMissing")]
     [TestCase(

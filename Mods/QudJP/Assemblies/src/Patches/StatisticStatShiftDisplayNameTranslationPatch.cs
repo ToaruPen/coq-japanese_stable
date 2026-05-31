@@ -14,7 +14,7 @@ public static class StatisticStatShiftDisplayNameTranslationPatch
     internal const string Family = Context + ".AddShift";
 
     private static readonly Regex PossessiveSourcePattern = new(
-        "^(?<owner>.+)(?:'s|') (?<source>camouflage|co-processor)$",
+        "^(?<owner>.+)'s (?<source>camouflage|co-processor)$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     private static readonly IReadOnlyDictionary<string, string> FixedTranslations =

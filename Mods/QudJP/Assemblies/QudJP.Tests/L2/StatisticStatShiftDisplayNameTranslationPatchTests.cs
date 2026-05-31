@@ -75,6 +75,24 @@ public sealed class StatisticStatShiftDisplayNameTranslationPatchTests
         });
     }
 
+    [Test]
+    public void Prefix_DoesNotTranslateMalformedPossessiveDisplayName()
+    {
+        var source = "owner' camouflage";
+
+        StatisticStatShiftDisplayNameTranslationPatch.Prefix(ref source);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(source, Is.EqualTo("owner' camouflage"));
+            Assert.That(
+                DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                    StatisticStatShiftDisplayNameTranslationPatch.Context,
+                    StatisticStatShiftDisplayNameTranslationPatch.Family),
+                Is.Zero);
+        });
+    }
+
     private static MethodInfo RequireMethod(Type type, string methodName, params Type[] parameterTypes)
     {
         var method = parameterTypes.Length == 0

@@ -215,7 +215,7 @@ public static class PlayerDanceRitualTranslationPatch
         }
 
         translated = RestoreWholeSourceBoundary(
-            "デバッグ: ダンスパーティーのターン tick "
+            "デバッグ: ダンスパーティーのターン "
             + RestoreCapture(match, spans, "tick")
             + " 現在の評価:"
             + RestoreCapture(match, spans, "approval"),
