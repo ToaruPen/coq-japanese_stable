@@ -342,6 +342,24 @@ public sealed class GetDisplayNameRouteTranslatorTests
         Assert.That(translated, Is.EqualTo("衛兵、{{W|水袋}} {{y|[空]}}の崇拝者"));
     }
 
+    [TestCase("guard and friend to {{R|water barons}}", "衛兵、{{R|水の男爵}}の友")]
+    [TestCase("guard and member of {{R|water barons}}", "衛兵、{{R|水の男爵}}の一員")]
+    public void TranslatePreservingColors_TranslatesMarkedUpSocialRoleTitleTarget(
+        string source,
+        string expected)
+    {
+        WriteDictionaryFile(
+            "ui-displayname-atomic.ja.json",
+            ("guard", "衛兵"),
+            ("water barons", "水の男爵"));
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            source,
+            nameof(GetDisplayNamePatch));
+
+        Assert.That(translated, Is.EqualTo(expected));
+    }
+
     [Test]
     public void TranslatePreservingColors_TranslatesMarkedUpBaseAndStateSuffixSequence()
     {

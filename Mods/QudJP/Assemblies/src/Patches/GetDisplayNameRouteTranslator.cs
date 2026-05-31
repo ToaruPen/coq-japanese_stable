@@ -3376,9 +3376,22 @@ internal static class GetDisplayNameRouteTranslator
             suffixGroup.Index,
             route,
             out var worshipperTitleSuffix);
-        var translatedSuffix = translatedSuffixOwnsMarkup
-            ? worshipperTitleSuffix
-            : TranslateTitleSuffix(suffix, route);
+        var translatedSuffix = worshipperTitleSuffix;
+        if (!translatedSuffixOwnsMarkup)
+        {
+            translatedSuffixOwnsMarkup = TryTranslateSocialRoleTitleSuffix(
+                suffix,
+                spans,
+                suffixGroup.Index,
+                route,
+                out translatedSuffix);
+        }
+
+        if (!translatedSuffixOwnsMarkup)
+        {
+            translatedSuffix = TranslateTitleSuffix(suffix, route);
+        }
+
         if (string.Equals(translatedSuffix, suffix, StringComparison.Ordinal))
         {
             return false;
@@ -3501,6 +3514,35 @@ internal static class GetDisplayNameRouteTranslator
         }
 
         return TryTranslateSocialRoleTitleSuffixCore(suffix, route, out translated);
+    }
+
+    private static bool TryTranslateSocialRoleTitleSuffix(
+        string suffix,
+        IReadOnlyList<ColorSpan> spans,
+        int suffixStart,
+        string route,
+        out string translated)
+    {
+        if (!IsSocialRoleTitleSuffix(suffix))
+        {
+            translated = suffix;
+            return false;
+        }
+
+        var suffixSource = RestoreVisibleSliceWithAdjacentBoundary(suffix, spans, suffixStart, suffix.Length);
+        return TryTranslateSocialRoleTitleSuffix(suffixSource, route, out translated);
+    }
+
+    private static bool IsSocialRoleTitleSuffix(string suffix)
+    {
+        var bracketedMatch = BracketedDisplayNameSuffixPattern.Match(suffix);
+        var candidate = bracketedMatch.Success
+            ? bracketedMatch.Groups["base"].Value
+            : suffix;
+
+        return FriendToTitleSuffixPattern.IsMatch(candidate)
+            || MemberOfTitleSuffixPattern.IsMatch(candidate)
+            || PariahToPeopleTitleSuffixPattern.IsMatch(candidate);
     }
 
     private static bool TryTranslateSocialRoleTitleSuffixCore(string suffix, string route, out string translated)

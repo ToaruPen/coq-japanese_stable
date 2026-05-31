@@ -97,6 +97,74 @@ public sealed class WorldModsTextTranslatorTests
     }
 
     [Test]
+    public void TryTranslate_DoesNotUseContextualExactLeaf_WhenContextIsNotSpecified()
+    {
+        WriteDictionaryWithContext(
+            "world-mods.ja.json",
+            ("XRL.World.Parts.ModBiomech.GetShortDescription", "Scoped: Context-only text.", "スコープ付き: 文脈専用。"));
+
+        var ok = WorldModsTextTranslator.TryTranslate(
+            "Scoped: Context-only text.",
+            "DescriptionShortDescriptionPatch",
+            "Description.WorldMods",
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.False);
+            Assert.That(translated, Is.EqualTo("Scoped: Context-only text."));
+        });
+    }
+
+    [TestCase("Biomech: Has biomechanical power transmission systems.", "バイオメカ: 生体機械式の動力伝達機構を備える。")]
+    [TestCase("Fitted with filters: This item protects against breathing in dangerous gases.", "フィルター付き: 有害なガスを吸い込むのを防ぐ。")]
+    [TestCase("Airfoil: This item can be thrown at +4 throwing range.", "エアフォイル: この品は投擲射程が+4される。")]
+    [TestCase("Extradimensional: This item recently materialized in this dimension having inherited some properties from its home dimension, {{O|", "異次元由来: この品は元いた次元からいくつかの特性を持ったまま最近この次元に出現した、{{O|")]
+    [TestCase("Gesticulating: This item grants +", "蠢く: この装備で筋力が+")]
+    public void TryTranslate_RepositoryDictionary_TranslatesPrefixOwnedContextExactDescriptions(
+        string source,
+        string expected)
+    {
+        Translator.ResetForTests();
+        Translator.SetDictionaryDirectoryForTests(
+            Path.Combine(TestProjectPaths.GetRepositoryRoot(), "Mods", "QudJP", "Localization", "Dictionaries"));
+        ScopedDictionaryLookup.ResetForTests();
+
+        var ok = WorldModsTextTranslator.TryTranslate(
+            source,
+            "DescriptionShortDescriptionPatch",
+            "Description.WorldMods",
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(translated, Is.EqualTo(expected));
+        });
+    }
+
+    [Test]
+    public void TryTranslate_RepositoryDictionary_TranslatesShieldRulesContextWithLeadingNewline()
+    {
+        Translator.ResetForTests();
+        Translator.SetDictionaryDirectoryForTests(
+            Path.Combine(TestProjectPaths.GetRepositoryRoot(), "Mods", "QudJP", "Localization", "Dictionaries"));
+        ScopedDictionaryLookup.ResetForTests();
+
+        var ok = WorldModsTextTranslator.TryTranslate(
+            "\n{{rules|Shields only grant their AV when you successfully block an attack.}}",
+            "DescriptionShortDescriptionPatch",
+            "Description.WorldMods",
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(translated, Is.EqualTo("\n{{rules|盾は攻撃をブロックしたときにのみAVを付与する。}}"));
+        });
+    }
+
+    [Test]
     public void TryTranslate_TranslatesImprovedMutationTemplate()
     {
         WriteDictionary(

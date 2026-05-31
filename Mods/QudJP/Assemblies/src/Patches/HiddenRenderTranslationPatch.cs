@@ -18,6 +18,9 @@ public static class HiddenRenderTranslationPatch
     [ThreadStatic]
     private static int activeDepth;
 
+    [ThreadStatic]
+    private static string? queuedDirectPassthroughMessage;
+
     [HarmonyTargetMethods]
     private static IEnumerable<MethodBase> TargetMethods()
     {
@@ -63,6 +66,10 @@ public static class HiddenRenderTranslationPatch
         try
         {
             OwnerTranslationScope.Exit(ref activeDepth);
+            if (!OwnerTranslationScope.IsActive(activeDepth))
+            {
+                queuedDirectPassthroughMessage = null;
+            }
         }
         catch (Exception ex)
         {
@@ -82,8 +89,9 @@ public static class HiddenRenderTranslationPatch
 
         if (MessageFrameTranslator.TryStripDirectTranslationMarker(message, out var markedText))
         {
-            _ = markedText;
-            return false;
+            message = markedText;
+            queuedDirectPassthroughMessage = markedText;
+            return true;
         }
 
         if (!TryTranslateRevealMessage(message, out var translated))
@@ -101,6 +109,13 @@ public static class HiddenRenderTranslationPatch
         _ = color;
         if (!OwnerTranslationScope.IsActive(activeDepth) || string.IsNullOrEmpty(message))
         {
+            return false;
+        }
+
+        if (queuedDirectPassthroughMessage is not null
+            && string.Equals(message, queuedDirectPassthroughMessage, StringComparison.Ordinal))
+        {
+            queuedDirectPassthroughMessage = null;
             return false;
         }
 

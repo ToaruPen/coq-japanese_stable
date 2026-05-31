@@ -22,6 +22,95 @@ internal static class WorldModsTextTranslator
     private const string SmartDescriptionContext = "XRL.World.Parts.ModSmart.GetShortDescription";
     private const string TransmuteOnHitDescriptionContext = "XRL.World.Parts.ModTransmuteOnHit.GetShortDescription";
 
+    private static readonly Dictionary<string, string> ExactDescriptionContexts = new(StringComparer.Ordinal)
+    {
+        ["Projectiles fired with this weapon receive bonus penetration based on the wielder's Strength."] = "XRL.World.Parts.MissileWeapon.GetShortDescription",
+        ["{{rules|Shields only grant their AV when you successfully block an attack.}}"] = "XRL.World.Parts.Shield.GetShortDescription",
+        ["\n{{rules|Shields only grant their AV when you successfully block an attack.}}"] = "XRL.World.Parts.Shield.GetShortDescription",
+        ["Shields only grant their AV when you successfully block an attack."] = MeleeWeaponShortDescriptionContext,
+        ["When powered, discharges a clockwork beetle friend on hit. Drains cell power quickly."] = "XRL.World.Parts.ModBeetlehost.GetShortDescription",
+        ["You are suddenly elsewhere!"] = "XRL.World.Parts.ModDisplacer.GetShortDescription",
+        ["Your blood frenzies last twice as long."] = "XRL.World.Parts.ModImprovedBerserk.GetShortDescription",
+        ["Your chance to block with shields is increased by 25%."] = "XRL.World.Parts.ModImprovedBlock.GetShortDescription",
+        ["Your chance to Bludgeon is doubled."] = "XRL.World.Parts.ModImprovedBludgeon.GetShortDescription",
+        ["Your Hobble cooldown is reduced by 5 rounds."] = "XRL.World.Parts.ModImprovedHobble.GetShortDescription",
+    };
+
+    private static readonly Dictionary<string, string> PrefixDescriptionContexts = new(StringComparer.Ordinal)
+    {
+        ["Airfoil"] = "XRL.World.Parts.ModAirfoil.GetShortDescription",
+        ["Biomech"] = "XRL.World.Parts.ModBiomech.GetShortDescription",
+        ["Camo"] = "XRL.World.Parts.ModCamo.GetShortDescription",
+        ["Cybrid"] = "XRL.World.Parts.ModCybrid.GetShortDescription",
+        ["Defib"] = "XRL.World.Parts.ModDefib.GetShortDescription",
+        ["Desecrated"] = "XRL.World.Parts.ModDesecrated.GetShortDescription",
+        ["Disguise"] = "XRL.World.Parts.ModDisguise.GetDescription",
+        ["Drum-loaded"] = "XRL.World.Parts.ModDrumLoaded.GetShortDescription",
+        ["Electromagnetic shielding"] = "XRL.World.Parts.ModHardened.GetShortDescription",
+        ["Extradimensional"] = "XRL.World.Parts.ModExtradimensional.GetShortDescription",
+        ["Fitted with filters"] = "XRL.World.Parts.ModFilters.GetShortDescription",
+        ["Fitted with suspensors"] = "XRL.World.Parts.ModSuspensor.GetShortDescription",
+        ["Flare-compensating"] = "XRL.World.Parts.ModFlareCompensating.GetShortDescription",
+        ["Flexiweaved"] = "XRL.World.Parts.ModFlexiweaved.GetShortDescription",
+        ["Gearbox"] = "XRL.World.Parts.ModGearbox.GetShortDescription",
+        ["Gesticulating"] = "XRL.World.Parts.ModGesticulating.GetShortDescription",
+        ["Gigantic"] = "XRL.World.Parts.ModGigantic.GetShortDescription",
+        ["HUD"] = "XRL.World.Parts.ModHUD.GetShortDescription",
+        ["Heartstopper"] = HeartstopperDescriptionContext,
+        ["High-capacity"] = "XRL.World.Parts.ModHighCapacity.GetShortDescription",
+        ["Homing"] = "XRL.World.Parts.ModHeatSeeking.GetShortDescription",
+        ["Hypervelocity"] = "XRL.World.Parts.ModHypervelocity.GetShortDescription",
+        ["Illuminated"] = "XRL.World.Parts.ModIlluminated.GetShortDescription",
+        ["Induction"] = "XRL.World.Parts.ModInduction.GetShortDescription",
+        ["Jacked"] = "XRL.World.Parts.ModJacked.GetShortDescription",
+        ["Keen"] = "XRL.World.Parts.ModKeen.GetShortDescription",
+        ["Lacquered"] = "XRL.World.Parts.ModLacquered.GetShortDescription",
+        ["Lanterned"] = "XRL.World.Parts.ModLanterned.GetShortDescription",
+        ["Magnetized"] = "XRL.World.Parts.ModMagnetized.GetShortDescription",
+        ["Massively overloaded"] = "XRL.World.Parts.ModMassivelyOverloaded.GetShortDescription",
+        ["Mercurial"] = "XRL.World.Parts.ModMercurial.GetShortDescription",
+        ["Metallized"] = "XRL.World.Parts.ModMetallized.GetShortDescription",
+        ["Metered"] = "XRL.World.Parts.ModMetered.GetShortDescription",
+        ["Microserrated"] = MicroserratedDescriptionContext,
+        ["Mighty"] = "XRL.World.Parts.ModMighty.GetShortDescription",
+        ["Morphogenetic"] = "XRL.World.Parts.ModMorphogenetic.GetShortDescription",
+        ["Nanochelated"] = "XRL.World.Parts.ModNanochelated.GetShortDescription",
+        ["Nanon"] = NanonDescriptionContext,
+        ["Nav"] = "XRL.World.Parts.ModNav.GetShortDescription",
+        ["Nulling"] = "XRL.World.Parts.ModNulling.GetShortDescription",
+        ["Overbuilt"] = "XRL.World.Parts.ModOverbuilt.GetShortDescription",
+        ["Overloaded"] = "XRL.World.Parts.ModOverloaded.GetShortDescription",
+        ["Phase-Harmonic"] = "XRL.World.Parts.ModPhaseHarmonic.GetShortDescription",
+        ["Phase-conjugate"] = "XRL.World.Parts.ModPhaseConjugate.GetShortDescription",
+        ["Piping"] = "XRL.World.Parts.ModPiping.GetShortDescription",
+        ["Polarized"] = "XRL.World.Parts.ModPolarized.GetShortDescription",
+        ["Psionic"] = "XRL.World.Parts.ModPsionic.GetShortDescription",
+        ["Quantum reverb"] = "XRL.World.Parts.ModQuantumReverb.GetShortDescription",
+        ["Radio-powered"] = "XRL.World.Parts.ModRadioPowered.GetShortDescription",
+        ["Reinforced"] = "XRL.World.Parts.ModReinforced.GetShortDescription",
+        ["Scaled"] = "XRL.World.Parts.ModScaled.GetShortDescription",
+        ["Scoped"] = "XRL.World.Parts.ModScoped.GetShortDescription",
+        ["Serene visage"] = "XRL.World.Parts.ModSereneVisage.GetShortDescription",
+        ["Serrated"] = SerratedDescriptionContext,
+        ["Sharp"] = "XRL.World.Parts.ModSharp.GetShortDescription",
+        ["Sirocco"] = "XRL.World.Parts.ModSirocco.GetShortDescription",
+        ["Six-Fingered"] = "XRL.World.Parts.ModSixFingered.GetShortDescription",
+        ["Slender"] = "XRL.World.Parts.ModSlender.GetShortDescription",
+        ["Smart"] = SmartDescriptionContext,
+        ["Snail-Encrusted"] = "XRL.World.Parts.ModSnailEncrusted.GetShortDescription",
+        ["Spiked"] = "XRL.World.Parts.ModSpiked.GetShortDescription",
+        ["Spring-loaded"] = "XRL.World.Parts.ModSpringLoaded.GetShortDescription",
+        ["Sturdy"] = "XRL.World.Parts.ModSturdy.GetShortDescription",
+        ["Terrifying visage"] = "XRL.World.Parts.ModTerrifyingVisage.GetShortDescription",
+        ["Two-faced"] = "XRL.World.Parts.ModTwoFaced.GetShortDescription",
+        ["Urban camo"] = "XRL.World.Parts.ModUrbanCamo.GetShortDescription",
+        ["Visored"] = "XRL.World.Parts.ModVisored.GetShortDescription",
+        ["Weightless"] = "XRL.World.Parts.ModWeightless.GetShortDescription",
+        ["Willowy"] = "XRL.World.Parts.ModWillowy.GetShortDescription",
+        ["Wired"] = "XRL.World.Parts.ModWired.GetShortDescription",
+        ["Wooly"] = "XRL.World.Parts.ModWooly.GetShortDescription",
+    };
+
     private static readonly Regex JapaneseCharacterPattern = new Regex(
         "[\\p{IsHiragana}\\p{IsKatakana}\\p{IsCJKUnifiedIdeographs}]",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
@@ -200,7 +289,12 @@ internal static class WorldModsTextTranslator
 
     private static bool TryTranslateScopedExact(string source, string route, string family, out string translated)
     {
-        var direct = TranslateWorldModsExactOrLowerAscii(source, includeContextualWhenContextMissing: true);
+        var direct = TranslateWorldModsOwnedExactOrLowerAscii(source);
+        if (direct is null)
+        {
+            direct = TranslateWorldModsExactOrLowerAscii(source);
+        }
+
         if (!string.IsNullOrEmpty(direct) && !string.Equals(direct, source, StringComparison.Ordinal))
         {
             translated = direct!;
@@ -215,7 +309,12 @@ internal static class WorldModsTextTranslator
             return false;
         }
 
-        var strippedTranslation = TranslateWorldModsExactOrLowerAscii(stripped, includeContextualWhenContextMissing: true);
+        var strippedTranslation = TranslateWorldModsOwnedExactOrLowerAscii(stripped);
+        if (strippedTranslation is null)
+        {
+            strippedTranslation = TranslateWorldModsExactOrLowerAscii(stripped);
+        }
+
         if (string.IsNullOrEmpty(strippedTranslation) || string.Equals(strippedTranslation, stripped, StringComparison.Ordinal))
         {
             translated = source;
@@ -1379,6 +1478,30 @@ internal static class WorldModsTextTranslator
         return TryFormatTemplate(source, stripped, spans, route, family, match, template!, buildArguments(match, contentSpans), out translated);
     }
 
+    private static string? TranslateWorldModsOwnedExactOrLowerAscii(string source)
+    {
+        if (!ExactDescriptionContexts.TryGetValue(source, out var context)
+            && !TryGetPrefixDescriptionContext(source, out context))
+        {
+            return null;
+        }
+
+        return TranslateWorldModsExactOrLowerAscii(source, context);
+    }
+
+    private static bool TryGetPrefixDescriptionContext(string source, out string context)
+    {
+        context = string.Empty;
+        var separator = source.IndexOf(':');
+        if (separator <= 0)
+        {
+            return false;
+        }
+
+        var prefix = source.Substring(0, separator);
+        return PrefixDescriptionContexts.TryGetValue(prefix, out context!);
+    }
+
     private static bool TryFormatTemplate(
         string source,
         string stripped,
@@ -1404,8 +1527,7 @@ internal static class WorldModsTextTranslator
 
     private static string? TranslateWorldModsExactOrLowerAscii(
         string source,
-        string? context = null,
-        bool includeContextualWhenContextMissing = false)
+        string? context = null)
     {
         var direct = context is null
             ? ScopedDictionaryLookup.TranslateExactOrLowerAscii(source, WorldModsDictionaryFile)
@@ -1413,15 +1535,6 @@ internal static class WorldModsTextTranslator
         if (!string.IsNullOrEmpty(direct) && !string.Equals(direct, source, StringComparison.Ordinal))
         {
             return direct;
-        }
-
-        if (context is null && includeContextualWhenContextMissing)
-        {
-            var contextual = ScopedDictionaryLookup.TranslateExactOrLowerAsciiForAnyContext(source, WorldModsDictionaryFile);
-            if (!string.IsNullOrEmpty(contextual) && !string.Equals(contextual, source, StringComparison.Ordinal))
-            {
-                return contextual;
-            }
         }
 
         return null;

@@ -117,6 +117,61 @@ public sealed class HiddenRenderTranslationPatchTests
             "A stone crevice is revealed nearby!");
     }
 
+    [Test]
+    public void TryTranslateQueuedMessage_StripsDirectMarker_WhenOwnerScopeIsActive()
+    {
+        var message = MessageFrameTranslator.MarkDirectTranslation("A stone crevice is revealed nearby!");
+
+        HiddenRenderTranslationPatch.Prefix();
+        try
+        {
+            var translated = HiddenRenderTranslationPatch.TryTranslateQueuedMessage(ref message, "white");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(translated, Is.True);
+                Assert.That(message, Is.EqualTo("A stone crevice is revealed nearby!"));
+            });
+        }
+        finally
+        {
+            _ = HiddenRenderTranslationPatch.Finalizer(null);
+        }
+    }
+
+    [Test]
+    public void TryTranslateQueuedMessage_DoesNotReuseDirectMarkerPassthrough_AfterOwnerScopeExit()
+    {
+        var directMessage = MessageFrameTranslator.MarkDirectTranslation("A stone crevice is revealed nearby!");
+
+        HiddenRenderTranslationPatch.Prefix();
+        try
+        {
+            _ = HiddenRenderTranslationPatch.TryTranslateQueuedMessage(ref directMessage, "white");
+        }
+        finally
+        {
+            _ = HiddenRenderTranslationPatch.Finalizer(null);
+        }
+
+        var nextMessage = "A stone crevice is revealed nearby!";
+        HiddenRenderTranslationPatch.Prefix();
+        try
+        {
+            var translated = HiddenRenderTranslationPatch.TryTranslateQueuedMessage(ref nextMessage, "white");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(translated, Is.True);
+                Assert.That(nextMessage, Is.EqualTo(MessageFrameTranslator.MarkDirectTranslation("近くにstone creviceが現れた！")));
+            });
+        }
+        finally
+        {
+            _ = HiddenRenderTranslationPatch.Finalizer(null);
+        }
+    }
+
     [TestCase("")]
     [TestCase("A stone crevice is hidden nearby!")]
     [TestCase("A stone crevice revealed nearby!")]

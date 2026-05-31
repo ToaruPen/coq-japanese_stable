@@ -549,6 +549,144 @@ public sealed class PopupMessageTranslationPatchTests
     }
 
     [Test]
+    public void Prefix_DoesNotReuseExplicitYellowPopupShowHandoffForUncoloredText()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyPopupMessageTarget), nameof(DummyPopupMessageTarget.ShowPopup)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(PopupMessageTranslationPatch), nameof(PopupMessageTranslationPatch.Prefix))));
+
+            var target = new DummyPopupMessageTarget();
+            string? uncoloredMessage = null;
+            string? yellowMessage = null;
+            WithPopupHandoffScope(() =>
+            {
+                PopupTranslatedMessageHandoff.Remember("{{y|same text}}", "{{y|翻訳済み}}");
+                target.ShowPopup("same text");
+                uncoloredMessage = DummyPopupMessageTarget.LastMessage;
+                target.ShowPopup("{{y|same text}}");
+                yellowMessage = DummyPopupMessageTarget.LastMessage;
+            });
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(uncoloredMessage, Is.EqualTo("same text"));
+                Assert.That(yellowMessage, Is.EqualTo("{{y|翻訳済み}}"));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [TestCase("&ysame text", "&y翻訳済み")]
+    [TestCase("^ysame text", "^y翻訳済み")]
+    public void Prefix_DoesNotReuseExplicitShorthandYellowPopupShowHandoffForUncoloredText(
+        string coloredSource,
+        string coloredTranslation)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyPopupMessageTarget), nameof(DummyPopupMessageTarget.ShowPopup)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(PopupMessageTranslationPatch), nameof(PopupMessageTranslationPatch.Prefix))));
+
+            var target = new DummyPopupMessageTarget();
+            string? uncoloredMessage = null;
+            string? coloredMessage = null;
+            WithPopupHandoffScope(() =>
+            {
+                PopupTranslatedMessageHandoff.Remember(coloredSource, coloredTranslation);
+                target.ShowPopup("same text");
+                uncoloredMessage = DummyPopupMessageTarget.LastMessage;
+                target.ShowPopup(coloredSource);
+                coloredMessage = DummyPopupMessageTarget.LastMessage;
+            });
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(uncoloredMessage, Is.EqualTo("same text"));
+                Assert.That(coloredMessage, Is.EqualTo(coloredTranslation));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void Prefix_DoesNotReuseLeadingYellowPopupShowHandoff_WhenNestedMarkupShapeMatches()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyPopupMessageTarget), nameof(DummyPopupMessageTarget.ShowPopup)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(PopupMessageTranslationPatch), nameof(PopupMessageTranslationPatch.Prefix))));
+
+            var target = new DummyPopupMessageTarget();
+            string? uncoloredMessage = null;
+            string? coloredMessage = null;
+            WithPopupHandoffScope(() =>
+            {
+                PopupTranslatedMessageHandoff.Remember("&ysame {{R|text}}", "&y翻訳済み {{R|text}}");
+                target.ShowPopup("same {{R|text}}");
+                uncoloredMessage = DummyPopupMessageTarget.LastMessage;
+                target.ShowPopup("&ysame {{R|text}}");
+                coloredMessage = DummyPopupMessageTarget.LastMessage;
+            });
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(uncoloredMessage, Is.EqualTo("same {{R|text}}"));
+                Assert.That(coloredMessage, Is.EqualTo("&y翻訳済み {{R|text}}"));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void Prefix_AllowsTrailingForegroundYellowResetToMatchUncoloredPopupShowHandoff()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyPopupMessageTarget), nameof(DummyPopupMessageTarget.ShowPopup)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(PopupMessageTranslationPatch), nameof(PopupMessageTranslationPatch.Prefix))));
+
+            var target = new DummyPopupMessageTarget();
+            WithPopupHandoffScope(() =>
+            {
+                PopupTranslatedMessageHandoff.Remember("same text&y", "翻訳済み");
+                target.ShowPopup("same text");
+            });
+
+            Assert.That(DummyPopupMessageTarget.LastMessage, Is.EqualTo("翻訳済み"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void Prefix_DoesNotDropPopupShowHandoff_WhenDifferentMessageArrivesFirst()
     {
         var harmonyId = CreateHarmonyId();

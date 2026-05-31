@@ -1233,8 +1233,13 @@ public static class PopupTranslationPatch
             targetPrefixLength,
             targetGroup.Length - targetPrefixLength,
             spans);
+        var translatedTarget = ColorAwareTranslationComposer.TranslatePreservingColors(
+            target,
+            visible => GetDisplayNameRouteTranslator.TranslatePreservingColors(
+                visible,
+                nameof(PopupTranslationPatch)));
         translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
-            target + "の名前を変更する。",
+            translatedTarget + "の名前を変更する。",
             spans,
             stripped.Length);
         DynamicTextObservability.RecordTransform(route, family + ".RenameItemTitle", source, translated);

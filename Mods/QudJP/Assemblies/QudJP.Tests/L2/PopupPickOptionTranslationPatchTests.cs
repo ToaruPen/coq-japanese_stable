@@ -176,6 +176,7 @@ public sealed class PopupPickOptionTranslationPatchTests
     [Test]
     public void Prefix_TranslatesRenamePopupTitleAndOptions_WhenPatched()
     {
+        WriteDisplayNameDictionary(("chem cell", "ケムセル"));
         WriteQudMenuItemDictionary(
             ("Enter a name.", "QudMenuItem", "名前を入力する。"),
             ("Name it based on its qualities.", "QudMenuItem", "特徴に基づいて名前を付ける。"),
@@ -184,7 +185,7 @@ public sealed class PopupPickOptionTranslationPatchTests
         using var patch = PatchPickOption();
 
         DummyPopupGenericTarget.PickOption(
-            Title: "Rename your カービン.",
+            Title: "Rename your {{c|chem cell}}.",
             Options: new[]
             {
                 "Enter a name.",
@@ -196,7 +197,7 @@ public sealed class PopupPickOptionTranslationPatchTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(DummyPopupGenericTarget.LastPickOptionTitle, Is.EqualTo("カービンの名前を変更する。"));
+            Assert.That(DummyPopupGenericTarget.LastPickOptionTitle, Is.EqualTo("{{c|ケムセル}}の名前を変更する。"));
             Assert.That(
                 DummyPopupGenericTarget.LastPickOptionOptions,
                 Is.EqualTo(new[]

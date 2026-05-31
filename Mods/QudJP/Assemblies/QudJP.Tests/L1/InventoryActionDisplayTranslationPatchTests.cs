@@ -126,6 +126,23 @@ public sealed class InventoryActionDisplayTranslationPatchTests
     }
 
     [Test]
+    public void TranslateActionTable_LeavesEmptyDisplayUnchanged()
+    {
+        var actions = new Dictionary<string, DummyInventoryAction>
+        {
+            ["Empty"] = new()
+            {
+                Display = "",
+                Command = "SomeCommand",
+            },
+        };
+
+        InventoryActionDisplayTranslationPatch.TranslateActionTableForTests(actions);
+
+        Assert.That(actions["Empty"].Display, Is.EqualTo(""));
+    }
+
+    [Test]
     public void TranslateActionTable_StripsDirectMarker_WhenDisplayIsAlreadyTranslated()
     {
         WriteInventoryActionDictionary(("既に翻訳済み", "誤った再翻訳"));
