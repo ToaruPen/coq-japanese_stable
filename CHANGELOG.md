@@ -10,7 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
-## [0.4.01] - 2026-05-31
+## [0.4.10] - 2026-05-31
 
 ### Fixed
 
@@ -400,8 +400,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
-[Unreleased]: https://github.com/ToaruPen/coq-japanese_stable/compare/v0.4.01...HEAD
-[0.4.01]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.4.01
+[Unreleased]: https://github.com/ToaruPen/coq-japanese_stable/compare/v0.4.10...HEAD
+[0.4.10]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.4.10
 [0.4.00]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.4.00
 [0.3.21]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.3.21
 [0.3.20]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.3.20
