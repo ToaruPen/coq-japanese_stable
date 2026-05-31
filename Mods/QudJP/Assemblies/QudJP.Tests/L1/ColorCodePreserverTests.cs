@@ -6,6 +6,41 @@ namespace QudJP.Tests.L1;
 [Category("L1")]
 public sealed class ColorCodePreserverTests
 {
+    [TestCase("{{R|text}}", 0, 4)]
+    [TestCase("{{R|text}}", 8, 2)]
+    [TestCase("&Gtext^k", 0, 2)]
+    [TestCase("&Gtext^k", 6, 2)]
+    [TestCase("<color=#44ff88>text</color>", 0, 15)]
+    [TestCase("<color=#44ff88>text</color>", 19, 8)]
+    public void TryGetMarkupTokenLengthAt_ReadsQudAndTmpMarkupTokens(
+        string source,
+        int index,
+        int expectedLength)
+    {
+        var matched = ColorCodePreserver.TryGetMarkupTokenLengthAt(source, index, out var length);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(matched, Is.True);
+            Assert.That(length, Is.EqualTo(expectedLength));
+        });
+    }
+
+    [TestCase("plain", 0)]
+    [TestCase("&&escaped", 0)]
+    [TestCase("^^escaped", 0)]
+    [TestCase("{{not markup}}", 0)]
+    public void TryGetMarkupTokenLengthAt_IgnoresVisibleTextAndEscapedPairs(string source, int index)
+    {
+        var matched = ColorCodePreserver.TryGetMarkupTokenLengthAt(source, index, out var length);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(matched, Is.False);
+            Assert.That(length, Is.Zero);
+        });
+    }
+
     [Test]
     public void StripRestore_PreservesMarkupFormat()
     {

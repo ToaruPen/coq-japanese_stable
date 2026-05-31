@@ -260,6 +260,58 @@ public static class ColorCodePreserver
         return IsBoundaryToken(token);
     }
 
+    internal static bool TryGetMarkupTokenLengthAt(string source, int index, out int length)
+    {
+        length = 0;
+        if (string.IsNullOrEmpty(source) || index < 0 || index >= source.Length)
+        {
+            return false;
+        }
+
+        var endIndex = source.Length;
+        if (index + 1 < endIndex
+            && source[index] == '{'
+            && source[index + 1] == '{'
+            && TryReadMarkup(
+                source,
+                index,
+                endIndex,
+                out var prefixToken,
+                out _,
+                out _,
+                out _,
+                out _))
+        {
+            length = prefixToken.Length;
+            return true;
+        }
+
+        if (index + 1 < endIndex
+            && source[index] == '}'
+            && source[index + 1] == '}')
+        {
+            length = MarkupTokenLength;
+            return true;
+        }
+
+        if (index + 1 < endIndex
+            && (source[index] == '&' || source[index] == '^')
+            && source[index + 1] != source[index])
+        {
+            length = MarkupTokenLength;
+            return true;
+        }
+
+        if (source[index] == '<'
+            && TryReadTmpColorTag(source, index, endIndex, out _, out var nextIndex))
+        {
+            length = nextIndex - index;
+            return true;
+        }
+
+        return false;
+    }
+
     private static bool IsCaptureClosingToken(string token)
     {
         return string.Equals(token, "}}", StringComparison.Ordinal)

@@ -258,48 +258,7 @@ public static class RandomAltarBaetylTranslationPatch
 
     private static bool TryReadMarkupToken(string source, int index, out int length)
     {
-        length = 0;
-        if (index + 1 < source.Length
-            && source[index] == '{'
-            && source[index + 1] == '{')
-        {
-            var pipeIndex = source.IndexOf('|', index + 2);
-            if (pipeIndex >= 0)
-            {
-                length = pipeIndex - index + 1;
-                return true;
-            }
-        }
-
-        if (index + 1 < source.Length
-            && source[index] == '}'
-            && source[index + 1] == '}')
-        {
-            length = 2;
-            return true;
-        }
-
-        if (index + 1 < source.Length
-            && (source[index] == '&' || source[index] == '^')
-            && source[index + 1] != source[index])
-        {
-            length = 2;
-            return true;
-        }
-
-        if (source[index] == '<')
-        {
-            var closeIndex = source.IndexOf('>', index + 1);
-            if (closeIndex >= 0
-                && (source.IndexOf("<color=", index, StringComparison.OrdinalIgnoreCase) == index
-                    || source.IndexOf("</color", index, StringComparison.OrdinalIgnoreCase) == index))
-            {
-                length = closeIndex - index + 1;
-                return true;
-            }
-        }
-
-        return false;
+        return ColorCodePreserver.TryGetMarkupTokenLengthAt(source, index, out length);
     }
 
     private static string TranslateDemandPhrase(string source)

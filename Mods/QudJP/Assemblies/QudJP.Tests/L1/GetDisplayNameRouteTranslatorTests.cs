@@ -362,6 +362,8 @@ public sealed class GetDisplayNameRouteTranslatorTests
 
     [TestCase("guard and friend to {{R|water barons}}", "衛兵、{{R|水の男爵}}の友")]
     [TestCase("guard and member of {{R|water barons}}", "衛兵、{{R|水の男爵}}の一員")]
+    [TestCase("guard and {{R|friend to water barons}}", "衛兵、{{R|水の男爵の友}}")]
+    [TestCase("guard and {{R|member of water barons}}", "衛兵、{{R|水の男爵の一員}}")]
     public void TranslatePreservingColors_TranslatesMarkedUpSocialRoleTitleTarget(
         string source,
         string expected)
@@ -789,6 +791,31 @@ public sealed class GetDisplayNameRouteTranslatorTests
         {
             Assert.That(translated, Does.Contain("{{y|[{{rules|8}}ドラムの{{B|水}}]}}"));
             Assert.That(translated, Does.Not.Contain("{{B|{{B|水}}}}"));
+        });
+    }
+
+    [Test]
+    public void TranslatePreservingColors_TranslatesCaptureWrappedQuantifiedLiquidInsideNestedLoadedCell()
+    {
+        WriteDictionaryFile(
+            "ui-displayname-atomic.ja.json",
+            ("wrist calculator", "リスト計算機"));
+        WriteDictionaryFile(
+            "ui-liquids.ja.json",
+            ("blood", "血"));
+
+        const string source =
+            "リストファン {{b|\u0004}}0 {{K|\t}}0 {{y|[セル {{y|[{{rules|8}} drams of {{r|blood}}]}} {{y|[auto-collecting]}} {{y|<{{G|B}}{{C|D}}{{g|2}}>}}]}} {{y|<{{B|C}}{{B|C}}{{r|1}}{{b|3}}>}}";
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            source,
+            nameof(GetDisplayNamePatch));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Does.Contain("{{y|[{{rules|8}}ドラムの{{r|血}}]}}"));
+            Assert.That(translated, Does.Not.Contain("drams of"));
+            Assert.That(translated, Does.Not.Contain("blood"));
         });
     }
 
