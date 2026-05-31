@@ -339,29 +339,7 @@ public static class QudTestRouteExecutor
 
     private static string ExecuteBottomContextItem(string source)
     {
-        var context = new QudTestBottomContext(source);
-        QudMenuBottomContextTranslationPatch.NormalizeItemTexts(context);
-        return context.items[0].text;
-    }
-
-    private sealed class QudTestBottomContext
-    {
-        internal readonly List<QudTestBottomContextItem> items;
-
-        internal QudTestBottomContext(string text)
-        {
-            items = [new QudTestBottomContextItem(text)];
-        }
-    }
-
-    private sealed class QudTestBottomContextItem
-    {
-        internal string text;
-
-        internal QudTestBottomContextItem(string text)
-        {
-            this.text = text;
-        }
+        return SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(source);
     }
 }
 

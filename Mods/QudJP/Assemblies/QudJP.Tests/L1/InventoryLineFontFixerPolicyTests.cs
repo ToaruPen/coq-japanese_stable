@@ -18,7 +18,7 @@ public sealed class InventoryLineFontFixerPolicyTests
             "UI",
             "InventoryLineFontFixer.cs");
         var source = File.ReadAllText(sourcePath);
-        var method = ExtractMethodBody(source, "TryRefreshTextSkinWithFallbackFont");
+        var method = ExtractMethodBody(source, "internal static bool TryRefreshTextSkinWithFallbackFont(object? textSkin, string? finalText)");
 
         NUnit.Framework.Assert.That(
             method,
@@ -42,7 +42,7 @@ public sealed class InventoryLineFontFixerPolicyTests
             "UI",
             "InventoryLineFontFixer.cs");
         var source = File.ReadAllText(sourcePath);
-        var method = ExtractMethodBody(source, "TryRefreshTextSkinWithFallbackFont");
+        var method = ExtractMethodBody(source, "internal static bool TryRefreshTextSkinWithFallbackFont(object? textSkin, string? finalText)");
 
         NUnit.Framework.Assert.That(
             method,
@@ -99,7 +99,7 @@ public sealed class InventoryLineFontFixerPolicyTests
             "UI",
             "InventoryLineFontFixer.cs");
         var source = File.ReadAllText(sourcePath);
-        var method = ExtractMethodBody(source, "HasHealthySuccessfulRefreshForCurrentKey");
+        var method = ExtractMethodBody(source, "internal static bool HasHealthySuccessfulRefreshForCurrentKey");
 
         NUnit.Framework.Assert.That(
             method,
@@ -197,6 +197,159 @@ public sealed class InventoryLineFontFixerPolicyTests
             NUnit.Framework.Assert.That(
                 source,
                 NUnit.Framework.Does.Contain("CleanupSuccessfulRefreshCacheIfNeeded();"));
+        });
+    }
+
+    [NUnit.Framework.Test]
+    public void SetDataRefresh_SkipsHealthySuccessfulRefreshKeys()
+    {
+        var sourcePath = Path.Combine(
+            TestProjectPaths.GetRepositoryRoot(),
+            "Mods",
+            "QudJP",
+            "Assemblies",
+            "src",
+            "UI",
+            "InventoryLineFontFixer.cs");
+        var source = File.ReadAllText(sourcePath);
+        var method = ExtractMethodBody(source, "internal static bool TryRefreshTextSkinWithFallbackFontForSetData");
+
+        NUnit.Framework.Assert.That(method, NUnit.Framework.Does.Contain("GetActiveItemLineRefreshKey(inventoryLineInstance)"));
+        NUnit.Framework.Assert.That(method, NUnit.Framework.Does.Contain("HasHealthySuccessfulRefreshForCurrentKey(inventoryLineInstance, preRefreshKey)"));
+        NUnit.Framework.Assert.That(method, NUnit.Framework.Does.Contain("RecordSuccessfulRefreshForCurrentKey("));
+        NUnit.Framework.Assert.That(method, NUnit.Framework.Does.Contain("GetActiveItemLineRefreshKey(inventoryLineInstance)"));
+    }
+
+    [NUnit.Framework.Test]
+    public void SetDataRefresh_EmitsDevTimingForHeavyRefreshAndCacheSkips()
+    {
+        var sourcePath = Path.Combine(
+            TestProjectPaths.GetRepositoryRoot(),
+            "Mods",
+            "QudJP",
+            "Assemblies",
+            "src",
+            "UI",
+            "InventoryLineFontFixer.cs");
+        var source = File.ReadAllText(sourcePath);
+        var setDataMethod = ExtractMethodBody(source, "internal static bool TryRefreshTextSkinWithFallbackFontForSetData");
+        var heavyRefreshMethod = ExtractMethodBody(source, "internal static bool TryRefreshTextSkinWithFallbackFont(object? textSkin, string? finalText)");
+
+        NUnit.Framework.Assert.Multiple(() =>
+        {
+            NUnit.Framework.Assert.That(
+                setDataMethod,
+                NUnit.Framework.Does.Contain("LogRefreshTimingSkip("),
+                "Cache hits should be visible so runtime evidence can separate unavoidable setData volume from avoidable heavy refresh work.");
+            NUnit.Framework.Assert.That(
+                heavyRefreshMethod,
+                NUnit.Framework.Does.Contain("LogRefreshTimingProbe("),
+                "Heavy refresh should emit a bounded dev probe with timing breakdowns.");
+            NUnit.Framework.Assert.That(
+                source,
+                NUnit.Framework.Does.Contain("InventoryLineFontRefreshTiming/v1"));
+            NUnit.Framework.Assert.That(
+                source,
+                NUnit.Framework.Does.Contain("InventoryLineFontRefreshSkip/v1"));
+            NUnit.Framework.Assert.That(
+                source,
+                NUnit.Framework.Does.Contain("force_canvas_ms="));
+            NUnit.Framework.Assert.That(
+                source,
+                NUnit.Framework.Does.Contain("force_mesh_ms="));
+            NUnit.Framework.Assert.That(
+                source,
+                NUnit.Framework.Does.Contain("canvas_update_mode="));
+            NUnit.Framework.Assert.That(
+                source,
+                NUnit.Framework.Does.Contain("#if QUDJP_DEV_BUILD"));
+            NUnit.Framework.Assert.That(
+                source,
+                NUnit.Framework.Does.Contain("RuntimeDiagnostics.VerboseProbesEnabled"));
+        });
+    }
+
+    [NUnit.Framework.Test]
+    public void HeavyRefresh_BatchesForceUpdateCanvasesOncePerUnityFrame()
+    {
+        var sourcePath = Path.Combine(
+            TestProjectPaths.GetRepositoryRoot(),
+            "Mods",
+            "QudJP",
+            "Assemblies",
+            "src",
+            "UI",
+            "InventoryLineFontFixer.cs");
+        var source = File.ReadAllText(sourcePath);
+        var heavyRefreshMethod = ExtractMethodBody(source, "internal static bool TryRefreshTextSkinWithFallbackFont(object? textSkin, string? finalText)");
+        var batchingMethod = ExtractMethodBody(source, "private static bool TryForceUpdateCanvasesOncePerFrame");
+
+        NUnit.Framework.Assert.Multiple(() =>
+        {
+            NUnit.Framework.Assert.That(
+                heavyRefreshMethod,
+                NUnit.Framework.Does.Contain("TryForceUpdateCanvasesOncePerFrame()"),
+                "Inventory row refresh should not call ForceUpdateCanvases directly for every row.");
+            NUnit.Framework.Assert.That(
+                heavyRefreshMethod,
+                NUnit.Framework.Does.Not.Contain("ForceUpdateCanvases();"),
+                "The heavy canvas update must be behind the per-frame gate.");
+            NUnit.Framework.Assert.That(
+                batchingMethod,
+                NUnit.Framework.Does.Contain("Time.frameCount"));
+            NUnit.Framework.Assert.That(
+                batchingMethod,
+                NUnit.Framework.Does.Contain("lastForceUpdateCanvasesFrame"));
+            NUnit.Framework.Assert.That(
+                batchingMethod,
+                NUnit.Framework.Does.Contain("return false;"));
+            NUnit.Framework.Assert.That(
+                batchingMethod,
+                NUnit.Framework.Does.Contain("ForceUpdateCanvases();"));
+            NUnit.Framework.Assert.That(
+                batchingMethod,
+                NUnit.Framework.Does.Contain("return true;"));
+        });
+    }
+
+    [NUnit.Framework.Test]
+    public void HeavyRefresh_TriesMeshBeforeCanvasForceAndRetriesOnlyAfterZeroCharacters()
+    {
+        var sourcePath = Path.Combine(
+            TestProjectPaths.GetRepositoryRoot(),
+            "Mods",
+            "QudJP",
+            "Assemblies",
+            "src",
+            "UI",
+            "InventoryLineFontFixer.cs");
+        var source = File.ReadAllText(sourcePath);
+        var method = ExtractMethodBody(source, "internal static bool TryRefreshTextSkinWithFallbackFont(object? textSkin, string? finalText)");
+
+        var firstMeshIndex = method.IndexOf(
+            "tmp.ForceMeshUpdate(ignoreActiveState: true, forceTextReparsing: true);",
+            System.StringComparison.Ordinal);
+        var canvasRetryIndex = method.IndexOf(
+            "TryForceUpdateCanvasesOncePerFrame()",
+            System.StringComparison.Ordinal);
+        var zeroCharacterBranchIndex = method.IndexOf(
+            "if (!refreshed)",
+            System.StringComparison.Ordinal);
+        var secondMeshIndex = method.IndexOf(
+            "tmp.ForceMeshUpdate(ignoreActiveState: true, forceTextReparsing: true);",
+            firstMeshIndex + 1,
+            System.StringComparison.Ordinal);
+
+        NUnit.Framework.Assert.Multiple(() =>
+        {
+            NUnit.Framework.Assert.That(firstMeshIndex, NUnit.Framework.Is.GreaterThanOrEqualTo(0));
+            NUnit.Framework.Assert.That(canvasRetryIndex, NUnit.Framework.Is.GreaterThan(firstMeshIndex));
+            NUnit.Framework.Assert.That(zeroCharacterBranchIndex, NUnit.Framework.Is.GreaterThan(firstMeshIndex));
+            NUnit.Framework.Assert.That(canvasRetryIndex, NUnit.Framework.Is.GreaterThan(zeroCharacterBranchIndex));
+            NUnit.Framework.Assert.That(secondMeshIndex, NUnit.Framework.Is.GreaterThan(canvasRetryIndex));
+            NUnit.Framework.Assert.That(
+                method,
+                NUnit.Framework.Does.Contain("canvasUpdateMode = \"not_needed\";"));
         });
     }
 

@@ -65,7 +65,6 @@ internal static class SelectableTextMenuItemObservability
             var tmp = component.GetComponentInChildren<TMP_Text>(includeInactive: true);
             if (tmp is not null)
             {
-                tmp.ForceMeshUpdate(ignoreActiveState: true, forceTextReparsing: true);
                 builder.Append(" tmpText='");
                 builder.Append(Escape(Truncate(tmp.text)));
                 builder.Append("' charCount=");
@@ -110,31 +109,7 @@ internal static class SelectableTextMenuItemObservability
 
     private static string? TryGetStringPropertyOrField(object? instance, string memberName)
     {
-        if (instance is null)
-        {
-            return null;
-        }
-
-#pragma warning disable S3011
-        var property = instance.GetType().GetProperty(memberName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-#pragma warning restore S3011
-        if (property is not null && property.PropertyType == typeof(string) && property.GetIndexParameters().Length == 0)
-        {
-#pragma warning disable S3011
-            return property.GetValue(instance) as string;
-#pragma warning restore S3011
-        }
-
-        return Access(instance, memberName) as string;
-    }
-
-    private static object? Access(object instance, string memberName)
-    {
-        var type = instance.GetType();
-#pragma warning disable S3011
-        var field = type.GetField(memberName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-#pragma warning restore S3011
-        return field?.GetValue(instance);
+        return ReflectionUtils.GetPropertyOrFieldValue(instance, memberName) as string;
     }
 
     private static string? TryGetStringByCandidates(object? instance, params string[] memberNames)
