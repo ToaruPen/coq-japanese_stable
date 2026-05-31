@@ -98,6 +98,25 @@ def test_tool_check_allows_repo_local_render_without_dotfiles_root() -> None:
     assert "DOTFILES_ROOT not set" in completed.stdout
 
 
+def test_tool_check_uses_uv_python_by_default(tmp_path: Path) -> None:
+    """tool-check should not require a host-level python3.12 executable by default."""
+    bin_dir = tmp_path / "bin"
+    bin_dir.mkdir()
+    for tool in ("just", "uv", "ast-grep"):
+        _write_executable_stub(bin_dir, tool)
+
+    completed = _run_agent_cycle(
+        "tool-check",
+        override_path=str(bin_dir),
+        without_dotfiles_root=True,
+    )
+
+    assert completed.returncode == 1
+    assert "missing tool: python3.12" not in completed.stderr
+    assert "missing tool: dotnet" in completed.stderr
+    assert str(bin_dir / "uv") in completed.stdout
+
+
 def _write_executable_stub(bin_dir: Path, name: str) -> None:
     stub = bin_dir / name
     stub.write_text("#!/bin/sh\nprintf '%s version\\n' \"$0\"\n", encoding="utf-8")
