@@ -88,6 +88,47 @@ public sealed class ZoneManagerSetActiveZoneTranslationPatchTests
     }
 
     [Test]
+    public void PrefixAndPostfix_DoesNotConsumeNonBannerMessage_WhenColorIsNotBannerSentinel()
+    {
+        WriteDictionary(
+            ("Joppa", "ジョッパ"),
+            ("surface", "地表"));
+        DummyZoneWorldFactory.WorldId = "JoppaWorld";
+        DummyZoneWorldFactory.ZoneId = "JoppaWorld.11.22.1.1.10";
+        DummyZoneWorldFactory.ZoneDisplayNameValue = "Joppa, surface";
+        DummyZoneCalendar.TimeValue = "06:00";
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyZoneManagerSetActiveZoneTarget), nameof(DummyZoneManagerSetActiveZoneTarget.SetActiveZone)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(ZoneManagerSetActiveZoneTranslationPatch), nameof(ZoneManagerSetActiveZoneTranslationPatch.Prefix))),
+                postfix: new HarmonyMethod(RequireMethod(typeof(ZoneManagerSetActiveZoneTranslationPatch), nameof(ZoneManagerSetActiveZoneTranslationPatch.Postfix))));
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyMessageQueue), nameof(DummyMessageQueue.AddPlayerMessage), typeof(string), typeof(string), typeof(bool)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(ZoneManagerSetActiveZoneMessageQueuePatch), nameof(ZoneManagerSetActiveZoneMessageQueuePatch.Prefix), typeof(string).MakeByRefType(), typeof(string), typeof(bool))));
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyMessageQueue), nameof(DummyMessageQueue.AddPlayerMessage), typeof(string), typeof(string), typeof(bool)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(MessageLogPatch), nameof(MessageLogPatch.Prefix), typeof(string).MakeByRefType(), typeof(string), typeof(bool))));
+
+            var manager = new DummyZoneManagerSetActiveZoneTarget { MessageColor = "R" };
+            manager.SetActiveZone();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("Joppa, surface, 06:00"));
+                Assert.That(DummyMessageQueue.LastColor, Is.EqualTo("R"));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void PrefixAndPostfix_MarkAlreadyLocalizedZoneBanner_WhenPatched()
     {
         DummyZoneWorldFactory.WorldId = "JoppaWorld";

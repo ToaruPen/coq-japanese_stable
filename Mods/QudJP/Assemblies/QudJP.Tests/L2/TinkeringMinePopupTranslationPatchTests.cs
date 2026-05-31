@@ -86,6 +86,58 @@ public sealed class TinkeringMinePopupTranslationPatchTests
         Assert.That(DummyPopupShow.LastShowYesNoMessage, Is.EqualTo(source));
     }
 
+    [Test]
+    public void PopupOnly_LeavesEmptyPopupMessageUnchanged_WhenOwnerAbsent()
+    {
+        OwnerPopupRouteTestHarness.WithPatchedPopupOnly(() => DummyPopupShow.ShowYesNo(string.Empty));
+
+        Assert.That(DummyPopupShow.LastShowYesNoMessage, Is.EqualTo(string.Empty));
+    }
+
+    [Test]
+    public void PopupOnly_StripsDirectMarkerWithoutRetranslating_WhenOwnerAbsent()
+    {
+        const string source =
+            "Failing to disarm the {{R|フラッシュバンググレネード mk I mine}} will detonate it. You estimate you have about a {{G|90%}} chance of success. Do you want to make the attempt?";
+
+        OwnerPopupRouteTestHarness.WithPatchedPopupOnly(
+            () => DummyPopupShow.ShowYesNo(MessageFrameTranslator.MarkDirectTranslation(source)));
+
+        Assert.That(DummyPopupShow.LastShowYesNoMessage, Is.EqualTo(source));
+    }
+
+    [Test]
+    public void HandleEvent_LeavesEmptyPopupMessageUnchanged_WhenOwnerPatched()
+    {
+        WithPatchedPopupOwnerIfAvailable(() =>
+        {
+            var target = new DummyTinkeringMinePopupTarget { PopupMessageToShow = string.Empty };
+
+            target.HandleEvent(new DummyInventoryActionEvent());
+
+            Assert.That(DummyPopupShow.LastShowYesNoMessage, Is.EqualTo(string.Empty));
+        });
+    }
+
+    [Test]
+    public void HandleEvent_StripsDirectMarkerWithoutRetranslating_WhenOwnerPatched()
+    {
+        const string source =
+            "Failing to disarm the {{R|フラッシュバンググレネード mk I mine}} will detonate it. You estimate you have about a {{G|90%}} chance of success. Do you want to make the attempt?";
+
+        WithPatchedPopupOwnerIfAvailable(() =>
+        {
+            var target = new DummyTinkeringMinePopupTarget
+            {
+                PopupMessageToShow = MessageFrameTranslator.MarkDirectTranslation(source),
+            };
+
+            target.HandleEvent(new DummyInventoryActionEvent());
+
+            Assert.That(DummyPopupShow.LastShowYesNoMessage, Is.EqualTo(source));
+        });
+    }
+
     private static void WithPatchedPopupOwnerIfAvailable(Action action)
     {
         var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";
@@ -133,11 +185,20 @@ public sealed class TinkeringMinePopupTranslationPatchTests
         var contents = "{\"entries\":["
             + string.Join(
                 ",",
-                entries.Select(entry => $"{{\"key\":\"{entry.key}\",\"text\":\"{entry.text}\"}}"))
+                entries.Select(entry => $"{{\"key\":\"{EscapeJson(entry.key)}\",\"text\":\"{EscapeJson(entry.text)}\"}}"))
             + "]}";
         File.WriteAllText(Path.Combine(tempDirectory, fileName), contents);
         Translator.ResetForTests();
         Translator.SetDictionaryDirectoryForTests(tempDirectory);
+    }
+
+    private static string EscapeJson(string value)
+    {
+        return value
+            .Replace("\\", "\\\\")
+            .Replace("\"", "\\\"")
+            .Replace("\r", "\\r")
+            .Replace("\n", "\\n");
     }
 
     private sealed class DummyTinkeringMinePopupTarget

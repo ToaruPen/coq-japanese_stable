@@ -2104,9 +2104,9 @@ public sealed class MessagePatternTranslatorTests
         UseRepositoryPatternDictionary();
 
         var translated = MessagePatternTranslator.Translate(
-            "You don't penetrate 珪岩の armor with the 地点of the Commanding Woe. [23]");
+            "You don't penetrate 珪岩の armor with the Point of the Commanding Woe. [23]");
 
-        Assert.That(translated, Is.EqualTo("地点of the Commanding Woeでは珪岩の装甲を貫けなかった！ [23]"));
+        Assert.That(translated, Is.EqualTo("Point of the Commanding Woeでは珪岩の装甲を貫けなかった！ [23]"));
     }
 
     [Test]

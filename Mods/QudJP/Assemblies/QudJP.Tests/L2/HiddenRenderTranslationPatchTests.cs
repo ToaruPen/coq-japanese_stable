@@ -202,11 +202,20 @@ public sealed class HiddenRenderTranslationPatchTests
         var contents = "{\"entries\":["
             + string.Join(
                 ",",
-                entries.Select(entry => $"{{\"key\":\"{entry.key}\",\"text\":\"{entry.text}\"}}"))
+                entries.Select(entry => $"{{\"key\":\"{EscapeJson(entry.key)}\",\"text\":\"{EscapeJson(entry.text)}\"}}"))
             + "]}";
         File.WriteAllText(Path.Combine(tempDirectory, fileName), contents);
         Translator.ResetForTests();
         Translator.SetDictionaryDirectoryForTests(tempDirectory);
+    }
+
+    private static string EscapeJson(string value)
+    {
+        return value
+            .Replace("\\", "\\\\")
+            .Replace("\"", "\\\"")
+            .Replace("\r", "\\r")
+            .Replace("\n", "\\n");
     }
 
     private static string CreateHarmonyId()

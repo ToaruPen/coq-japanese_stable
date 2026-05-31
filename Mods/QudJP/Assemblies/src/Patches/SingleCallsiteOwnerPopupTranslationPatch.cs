@@ -1819,10 +1819,7 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
 
     private static string TranslateTinkeringRechargeItemCapture(string source)
     {
-        const string yourPrefix = "your ";
-        var item = source.StartsWith(yourPrefix, StringComparison.Ordinal)
-            ? source.Substring(yourPrefix.Length)
-            : source;
+        var item = StripLeadingYourPhrasePreservingColors(source);
         return TranslatePopupDisplayNameCapture(item);
     }
 
@@ -1909,9 +1906,20 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
 
     private static string StripLeadingFoodOwnerPhrase(string source)
     {
+        return StripLeadingYourPhrasePreservingColors(source);
+    }
+
+    private static string StripLeadingYourPhrasePreservingColors(string source)
+    {
         const string yourPrefix = "your ";
-        return source.StartsWith(yourPrefix, StringComparison.Ordinal)
-            ? source.Substring(yourPrefix.Length)
+        if (source.StartsWith(yourPrefix, StringComparison.Ordinal))
+        {
+            return source.Substring(yourPrefix.Length);
+        }
+
+        var visible = ColorAwareTranslationComposer.GetVisibleText(source);
+        return visible.StartsWith(yourPrefix, StringComparison.Ordinal)
+            ? ColorAwareTranslationComposer.TranslatePreservingColors(source, static value => value.Substring("your ".Length))
             : source;
     }
 

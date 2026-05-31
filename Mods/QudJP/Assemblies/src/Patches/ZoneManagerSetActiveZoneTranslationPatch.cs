@@ -78,7 +78,8 @@ public static class ZoneManagerSetActiveZoneTranslationPatch
     internal static bool TryTranslateQueuedMessage(ref string message, string? color)
     {
         if (activeDepth <= 0
-            || pendingBannerCount <= 0)
+            || pendingBannerCount <= 0
+            || (color is not null && !string.Equals(color, "C", StringComparison.Ordinal)))
         {
             return false;
         }

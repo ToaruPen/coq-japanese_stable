@@ -281,7 +281,7 @@ public sealed class WorldModsTextTranslatorTests
     }
 
     [TestCaseSource(nameof(RepositoryWeaponModDescriptions))]
-    public void TryTranslate_RepositoryDictionary_TranslatesWeaponModDescriptions(string source)
+    public void TryTranslate_RepositoryDictionary_TranslatesWeaponModDescriptions(string source, string expected)
     {
         Translator.ResetForTests();
         Translator.SetDictionaryDirectoryForTests(
@@ -297,7 +297,7 @@ public sealed class WorldModsTextTranslatorTests
         Assert.Multiple(() =>
         {
             Assert.That(ok, Is.True);
-            Assert.That(translated, Is.Not.EqualTo(source));
+            Assert.That(translated, Is.EqualTo(expected));
         });
     }
 
@@ -998,48 +998,48 @@ public sealed class WorldModsTextTranslatorTests
             ("XRL.Liquids", "water", "水"));
     }
 
-    private static IEnumerable<string> RepositoryWeaponModDescriptions()
+    private static IEnumerable<TestCaseData> RepositoryWeaponModDescriptions()
     {
-        yield return "Counterweighted: Adds a bonus to hit.";
-        yield return "Counterweighted: Adds +2 to hit.";
-        yield return "Displacer: When powered, this weapon randomly teleports its target 1-6 tiles away on a successful hit.";
-        yield return "Drum-loaded: This weapon may hold 20% additional ammo.";
-        yield return "Fitted with beamsplitter: This weapon has a 3-way spread with each shot at -1 penetration roll.";
-        yield return "Electrified: When powered, this weapon deals additional electrical damage on hit.";
-        yield return "Electrified: When powered, this weapon deals an additional 2-3 electrical damage on hit.";
-        yield return "Flaming: When powered, this weapon deals additional heat damage on hit.";
-        yield return "Flaming: When powered, this weapon deals an additional 2-3 heat damage on hit.";
-        yield return "Freezing: When powered, this weapon deals additional cold damage on hit.";
-        yield return "Freezing: When powered, this weapon deals an additional 2-3 cold damage on hit.";
-        yield return "Heartstopper: When powered, this weapon has a chance to put opponents into cardiac arrest.";
-        yield return "Heartstopper: When powered, this weapon has 15% chance to put opponents into cardiac arrest.";
-        yield return "Heartstopper: When powered, this weapon has 15% chance to put opponents into cardiac arrest if they fail a difficulty 20 Toughness save.";
-        yield return "Homing: This weapon ignores DV.";
-        yield return "Hypervelocity: When powered, this weapon matches its penetration to its target's armor and penetrates creatures.";
-        yield return "Keen: +2 to penetration rolls";
-        yield return "Liquid-cooled: This weapon's rate of fire is increased, but it requires pure water to function. When fired, there's a one in 7 chance that 1 dram is consumed.";
-        yield return "Liquid-cooled: This weapon's rate of fire is increased by 2, but it requires pure water to function. When fired, there's a one in 7 chance that 1 dram is consumed.";
-        yield return "Masterwork: This weapon scores critical hits 15% of the time instead of 5%.";
-        yield return "Metallized: +1 AV or penetration";
-        yield return "Microserrated: This weapon has a chance to dismember opponents.";
-        yield return "Microserrated: This weapon has 15% chance to dismember opponents.";
-        yield return "Mighty: This weapon has no strength bonus penetration cap.";
-        yield return "Morphogenetic: When powered and used to perform a successful, damaging hit, this weapon attempts to daze all other creatures of the same species as your target on the local map. Compute power on the local lattice increases the strength of this effect.";
-        yield return "Nanon: This weapon has a chance to dismember on penetration.";
-        yield return "Nanon: 15% chance to dismember on penetration";
-        yield return "Nulling: When powered, this weapon astrally burdens its target on hit. Compute power on the local lattice increases the effectiveness of this effect.";
-        yield return "Phase-Harmonic: This weapon can affect both in-phase and out-of-phase objects.";
-        yield return "Psionic: This weapon uses the wielder's Ego modifier for penetration bonus instead of Strength mod and attacks MA instead of AV. It will dissipate from the corporeal realm after some use.";
-        yield return "Quantum reverb: When fired, this weapon creates a hologram of its wielder who continues to fire along the same path.";
-        yield return "Scoped: This weapon has increased accuracy.";
-        yield return "Serrated: This weapon has a chance to dismember opponents.";
-        yield return "Serrated: This weapon has 15% chance to dismember opponents.";
-        yield return "Sharp: +1 to penetration rolls";
-        yield return "Sirocco: Drains 1 Toughness from any organic target this weapon damages for 3-4 turns.";
-        yield return "Smart: When powered and started up and the wielder has a HUD or techscanner equipped, this weapon's tracking scope makes it more accurate and gives a bonus to hit a target aimed at.";
-        yield return "Smart: When powered and started up and the wielder has a HUD or techscanner equipped, this weapon's tracking scope makes it more accurate and gives +2 to hit a target aimed at.";
-        yield return "Small chance to transmute an enemy into a gemstone on hit.";
-        yield return "5% chance to transmute an enemy into a gemstone on hit.";
+        yield return new TestCaseData("Counterweighted: Adds a bonus to hit.", "つり合い調整: 命中にボーナスを与える。");
+        yield return new TestCaseData("Counterweighted: Adds +2 to hit.", "つり合い調整: 命中に+2のボーナスを与える。");
+        yield return new TestCaseData("Displacer: When powered, this weapon randomly teleports its target 1-6 tiles away on a successful hit.", "位相転移: 通電中、この武器は命中時に対象を無作為に1-6マス離れた場所へ転移させる。");
+        yield return new TestCaseData("Drum-loaded: This weapon may hold 20% additional ammo.", "ドラム弾倉: 装弾数が20%増える。");
+        yield return new TestCaseData("Fitted with beamsplitter: This weapon has a 3-way spread with each shot at -1 penetration roll.", "ビームスプリッタ装着: この武器は1射撃ごとに3方向へ拡散し、各射撃の貫通判定が-1される。");
+        yield return new TestCaseData("Electrified: When powered, this weapon deals additional electrical damage on hit.", "帯電: 通電中、この武器は命中時に追加の電撃ダメージを与える。");
+        yield return new TestCaseData("Electrified: When powered, this weapon deals an additional 2-3 electrical damage on hit.", "帯電: 通電中、この武器は命中時に追加で2-3の電撃ダメージを与える。");
+        yield return new TestCaseData("Flaming: When powered, this weapon deals additional heat damage on hit.", "火炎: 通電中、この武器は命中時に追加の熱ダメージを与える。");
+        yield return new TestCaseData("Flaming: When powered, this weapon deals an additional 2-3 heat damage on hit.", "火炎: 通電中、この武器は命中時に追加で2-3の熱ダメージを与える。");
+        yield return new TestCaseData("Freezing: When powered, this weapon deals additional cold damage on hit.", "凍結: 通電中、この武器は命中時に追加の冷気ダメージを与える。");
+        yield return new TestCaseData("Freezing: When powered, this weapon deals an additional 2-3 cold damage on hit.", "凍結: 通電中、この武器は命中時に追加で2-3の冷気ダメージを与える。");
+        yield return new TestCaseData("Heartstopper: When powered, this weapon has a chance to put opponents into cardiac arrest.", "心停止: 通電中、この武器は敵を心停止させる可能性がある。");
+        yield return new TestCaseData("Heartstopper: When powered, this weapon has 15% chance to put opponents into cardiac arrest.", "心停止: 通電中、この武器は15%の確率で敵を心停止させる。");
+        yield return new TestCaseData("Heartstopper: When powered, this weapon has 15% chance to put opponents into cardiac arrest if they fail a difficulty 20 Toughness save.", "心停止: 通電中、この武器は15%の確率で、敵が難易度20の頑健セーヴに失敗した場合に心停止させる。");
+        yield return new TestCaseData("Homing: This weapon ignores DV.", "自動誘導: この武器はDVを無視する。");
+        yield return new TestCaseData("Hypervelocity: When powered, this weapon matches its penetration to its target's armor and penetrates creatures.", "超高速: 通電中、この武器は目標の装甲に合わせて貫通力を調整し、生物を貫く。");
+        yield return new TestCaseData("Keen: +2 to penetration rolls", "鋭利: 貫通判定+2");
+        yield return new TestCaseData("Liquid-cooled: This weapon's rate of fire is increased, but it requires pure water to function. When fired, there's a one in 7 chance that 1 dram is consumed.", "液冷式: この武器の連射数は増えるが、機能するには純粋な水が必要だ。発射時には7分の1の確率で1ドラム消費する。");
+        yield return new TestCaseData("Liquid-cooled: This weapon's rate of fire is increased by 2, but it requires pure water to function. When fired, there's a one in 7 chance that 1 dram is consumed.", "液冷式: この武器の連射数は2増えるが、機能するには純粋な水が必要だ。発射時には7分の1の確率で1ドラム消費する。");
+        yield return new TestCaseData("Masterwork: This weapon scores critical hits 15% of the time instead of 5%.", "傑作: この武器のクリティカル発生率は15%（通常は5%）。");
+        yield return new TestCaseData("Metallized: +1 AV or penetration", "金属化: AVか貫通に+1");
+        yield return new TestCaseData("Microserrated: This weapon has a chance to dismember opponents.", "微鋸歯: この武器は敵の部位を切断することがある。");
+        yield return new TestCaseData("Microserrated: This weapon has 15% chance to dismember opponents.", "微鋸歯: この武器は15%の確率で敵を切断する。");
+        yield return new TestCaseData("Mighty: This weapon has no strength bonus penetration cap.", "剛力: 筋力による貫通ボーナスに上限がない。");
+        yield return new TestCaseData("Morphogenetic: When powered and used to perform a successful, damaging hit, this weapon attempts to daze all other creatures of the same species as your target on the local map. Compute power on the local lattice increases the strength of this effect.", "形態同調: 通電してダメージを与えると、ローカルマップ内の同種個体をすべて朦朧させようとする。局所格子の算術能力が高いほど効果が強くなる。");
+        yield return new TestCaseData("Nanon: This weapon has a chance to dismember on penetration.", "ナノ刃: 貫通時に切断を引き起こすことがある。");
+        yield return new TestCaseData("Nanon: 15% chance to dismember on penetration", "ナノ刃: 貫通時に15%の確率で切断する。");
+        yield return new TestCaseData("Nulling: When powered, this weapon astrally burdens its target on hit. Compute power on the local lattice increases the effectiveness of this effect.", "無効化: 通電中、この武器は命中した対象に霊的負荷を与える。ローカルラティス上の計算力が高いほど効果が増す。");
+        yield return new TestCaseData("Phase-Harmonic: This weapon can affect both in-phase and out-of-phase objects.", "位相調和: この武器は同位相・逆位相の対象の両方に作用する。");
+        yield return new TestCaseData("Psionic: This weapon uses the wielder's Ego modifier for penetration bonus instead of Strength mod and attacks MA instead of AV. It will dissipate from the corporeal realm after some use.", "サイオニック: 貫通ボーナスに筋力でなく自我修正を用い、AVではなくMAを攻撃する。一定回数で現世から消散する。");
+        yield return new TestCaseData("Quantum reverb: When fired, this weapon creates a hologram of its wielder who continues to fire along the same path.", "量子残響: 発射時に射手のホログラムを作り、同じ軌道で射撃を続ける。");
+        yield return new TestCaseData("Scoped: This weapon has increased accuracy.", "スコープ付き: この武器は命中精度が向上する。");
+        yield return new TestCaseData("Serrated: This weapon has a chance to dismember opponents.", "鋸歯: この武器は敵を切断することがある。");
+        yield return new TestCaseData("Serrated: This weapon has 15% chance to dismember opponents.", "鋸歯: この武器は15%の確率で敵を切断する。");
+        yield return new TestCaseData("Sharp: +1 to penetration rolls", "鋭利: 貫通判定+1");
+        yield return new TestCaseData("Sirocco: Drains 1 Toughness from any organic target this weapon damages for 3-4 turns.", "熱風: この武器が与えた有機標的から頑健性を1奪い、3-4ターン続く。");
+        yield return new TestCaseData("Smart: When powered and started up and the wielder has a HUD or techscanner equipped, this weapon's tracking scope makes it more accurate and gives a bonus to hit a target aimed at.", "スマート: 通電して起動し、使用者がHUDかテックスキャナーを装備している場合、この武器の追尾スコープは精度を高め、照準した対象への命中にボーナスを与える。");
+        yield return new TestCaseData("Smart: When powered and started up and the wielder has a HUD or techscanner equipped, this weapon's tracking scope makes it more accurate and gives +2 to hit a target aimed at.", "スマート: 通電して起動し、使用者がHUDかテックスキャナーを装備している場合、この武器の追尾スコープは精度を高め、照準した対象への命中に+2のボーナスを与える。");
+        yield return new TestCaseData("Small chance to transmute an enemy into a gemstone on hit.", "命中時、ごく低確率で敵を宝石に変成させる。");
+        yield return new TestCaseData("5% chance to transmute an enemy into a gemstone on hit.", "命中時、宝石に変成させる確率は5%。");
     }
 
     private void WriteDictionary(string fileName, params (string key, string text)[] entries)

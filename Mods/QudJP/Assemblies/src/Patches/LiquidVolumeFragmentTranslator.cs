@@ -338,13 +338,36 @@ internal static class LiquidVolumeFragmentTranslator
 
     private static string BuildCleanItemsMessage(Match match, IReadOnlyList<ColorSpan> spans)
     {
+        var sourceSuffix = BuildCleanItemsSourceSuffix(match, spans);
         return string.Concat(
             TranslateCleaningItems(match.Groups["items"], spans),
             "から",
             TranslateCleaningTypes(match.Groups["types"].Value),
             "を",
             TranslateLiquid(match.Groups["liquid"], spans),
-            "1ドラムで洗い落とした。");
+            "1ドラムで洗い落とした",
+            sourceSuffix,
+            "。");
+    }
+
+    private static string BuildCleanItemsSourceSuffix(Match match, IReadOnlyList<ColorSpan> spans)
+    {
+        if (!match.Groups["source"].Success)
+        {
+            return string.Empty;
+        }
+
+        var source = match.Groups["source"].Value.Trim();
+        var translatedSource = TryTranslateDirection(source, out var sourceAsDirection)
+            ? sourceAsDirection
+            : TranslateTarget(match.Groups["source"], spans);
+        if (match.Groups["sourceDirection"].Success
+            && TryTranslateDirection(match.Groups["sourceDirection"].Value, out var sourceDirection))
+        {
+            return string.Concat("（", translatedSource, "（", sourceDirection, "）から）");
+        }
+
+        return string.Concat("（", translatedSource, "から）");
     }
 
     private static string TranslateCleaningItems(Group itemsGroup, IReadOnlyList<ColorSpan> spans)

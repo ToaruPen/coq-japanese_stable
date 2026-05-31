@@ -425,6 +425,12 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "FoodConsumptionFrame",
         PopupMethod.Show)]
     [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.HandleFood),
+        "You eat {{R|your raw meat}}.\nYou are now {{|Sated}} and {{|Quenched}}.",
+        "{{R|raw meat}}を食べた。\n現在、{{|満腹}}、{{|潤っている}}だ。",
+        "FoodConsumptionFrame",
+        PopupMethod.Show)]
+    [TestCase(
         nameof(DummySingleCallsiteOwnerPopupTarget.ApplySpaceTimeVortex),
         "Your companion, {{G|Q Girl}},has been sucked into the space-time vortex to the east!",
         "あなたの仲間である{{G|Q Girl}}は東側のspace-time vortexに吸い込まれた！",
@@ -643,6 +649,16 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "XRL.World.Parts.Skill.Tinkering_Tinker1|Recharge",
         "It would take {{C|1}} {{R|A}} bit to fully recharge your {{c|ケムセル}}. You have {{C|51}}. How many do you want to use?",
         "{{c|ケムセル}}を完全に充電するには{{C|1}}個の{{R|A}}ビットが必要だ。所持数は{{C|51}}。いくつ使う？",
+        "TinkeringRechargeAskNumber")]
+    [TestCase(
+        "XRL.World.Parts.Skill.Tinkering_Tinker1|Recharge",
+        "It would take {{C|1}} {{R|A}} bit to fully recharge your chem cell. You have {{C|51}}. How many do you want to use?",
+        "ケムセルを完全に充電するには{{C|1}}個の{{R|A}}ビットが必要だ。所持数は{{C|51}}。いくつ使う？",
+        "TinkeringRechargeAskNumber")]
+    [TestCase(
+        "XRL.World.Parts.Skill.Tinkering_Tinker1|Recharge",
+        "It would take {{C|1}} {{R|A}} bit to fully recharge {{W|your chem cell}}. You have {{C|51}}. How many do you want to use?",
+        "{{W|ケムセル}}を完全に充電するには{{C|1}}個の{{R|A}}ビットが必要だ。所持数は{{C|51}}。いくつ使う？",
         "TinkeringRechargeAskNumber")]
     [TestCase(
         "XRL.World.Parts.Skill.Tinkering_Tinker1|FireEvent",

@@ -1206,6 +1206,25 @@ public sealed class GetDisplayNameRouteTranslatorTests
             Is.EqualTo("{{Y|塩ホッパー}} [空]"));
     }
 
+    [Test]
+    public void TranslatePreservingColors_UsesReadableLocalizedBlueprintMarkup_WhenAnotherXmlFileFails()
+    {
+        LocalizationAssetResolver.SetLocalizationRootForTests(tempDirectory);
+        WriteDictionaryFile("ui-displayname-adjectives.ja.json", ("[empty]", "[空]"));
+        var objectBlueprintsDirectory = Path.Combine(tempDirectory, "ObjectBlueprints");
+        Directory.CreateDirectory(objectBlueprintsDirectory);
+        File.WriteAllText(
+            Path.Combine(objectBlueprintsDirectory, "Broken.jp.xml"),
+            "<objects><object><part DisplayName=\"{{Y|壊れた}}\"");
+        File.WriteAllText(
+            Path.Combine(objectBlueprintsDirectory, "Items.jp.xml"),
+            "<objects><object><part DisplayName=\"{{Y|塩ホッパー}}\" /></object></objects>");
+
+        Assert.That(
+            GetDisplayNameRouteTranslator.TranslatePreservingColors("塩ホッパー [empty]", nameof(GetDisplayNamePatch)),
+            Is.EqualTo("{{Y|塩ホッパー}} [空]"));
+    }
+
     [TestCase("advertisement for {{M|クユラミルの蒸留所, 伝説の樹液商}}", "{{M|クユラミルの蒸留所, 伝説の樹液商}}の広告")]
     [TestCase("advertisement for {{M|Resheph}}", "{{M|レシェフ}}の広告")]
     [TestCase("advertisement for \u0001{{M|レシェフ}}", "{{M|レシェフ}}の広告")]

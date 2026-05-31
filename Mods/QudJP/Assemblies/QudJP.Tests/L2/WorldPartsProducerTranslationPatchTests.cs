@@ -239,7 +239,7 @@ public sealed class WorldPartsProducerTranslationPatchTests
 
         Assert.That(
             message,
-            Is.EqualTo("{{C|high-tech toolkit}}、{{Y|steel}} buckler、とpair of {{Y|steel}} bootsから染みを{{B|真水}}1ドラムで洗い落とした。"));
+            Is.EqualTo("{{C|high-tech toolkit}}、{{Y|steel}} buckler、とpair of {{Y|steel}} bootsから染みを{{B|真水}}1ドラムで洗い落とした（カムシュルウールの 水筒から）。"));
     }
 
     [Test]

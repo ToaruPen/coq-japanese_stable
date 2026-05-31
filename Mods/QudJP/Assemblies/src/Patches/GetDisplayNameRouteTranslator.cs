@@ -27,6 +27,10 @@ internal static class GetDisplayNameRouteTranslator
         "ui-liquids.ja.json",
         "ui-displayname-adjectives.ja.json",
     };
+    private static readonly string[] LiquidColorCodes =
+    {
+        "r", "R", "g", "G", "b", "B", "c", "C", "y", "Y", "w", "W", "K",
+    };
     private static readonly object LocalizedBlueprintDisplayNameMarkupLock = new();
     private static readonly HashSet<string> SpacedDisplayNameModifierKeys =
         new HashSet<string>(StringComparer.OrdinalIgnoreCase)
@@ -1555,10 +1559,9 @@ internal static class GetDisplayNameRouteTranslator
             return defaultOpening;
         }
 
-        var colors = new[] { "r", "R", "g", "G", "b", "B", "c", "C", "y", "Y", "w", "W", "K" };
-        for (var index = 0; index < colors.Length; index++)
+        for (var index = 0; index < LiquidColorCodes.Length; index++)
         {
-            var opening = "{{" + colors[index] + "|";
+            var opening = "{{" + LiquidColorCodes[index] + "|";
             var coloredKey = opening + liquid + "}}";
             var translated = ScopedDictionaryLookup.TranslateExactOrLowerAsciiForContext(
                 coloredKey,
@@ -3623,9 +3626,10 @@ internal static class GetDisplayNameRouteTranslator
             return false;
         }
 
-        translated = source.Substring(0, source.Length - source.TrimStart().Length)
-            + restored
-            + source.Substring(source.TrimEnd().Length);
+        // Keep the caller's padding while replacing only the trimmed display-name body.
+        var leadingWhitespace = source.Substring(0, source.Length - source.TrimStart().Length);
+        var trailingWhitespace = source.Substring(source.TrimEnd().Length);
+        translated = leadingWhitespace + restored + trailingWhitespace;
         DynamicTextObservability.RecordTransform(route, "DisplayName.LocalizedBlueprintMarkup", source, translated);
         return true;
     }
@@ -3685,6 +3689,7 @@ internal static class GetDisplayNameRouteTranslator
             return false;
         }
 
+        var hadFileFailure = false;
         foreach (var path in files)
         {
             try
@@ -3713,12 +3718,11 @@ internal static class GetDisplayNameRouteTranslator
             catch (Exception ex)
             {
                 Trace.TraceWarning("QudJP: failed to read localized blueprint display names from '{0}': {1}", path, ex.Message);
-                result.Clear();
-                return false;
+                hadFileFailure = true;
             }
         }
 
-        return true;
+        return !hadFileFailure || result.Count > 0;
     }
 
     private static string TranslateDisplayNameFragmentPreservingWholeQudWrapper(string source, string route)
