@@ -100,14 +100,22 @@ public static class InventoryActionDisplayTranslationPatch
             return;
         }
 
-        if (!TryTranslateDisplay(display!, out var translated)
-            || string.Equals(translated, display, StringComparison.Ordinal))
+        var original = display!;
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(original, out var unmarked))
+        {
+            SetStringMember(action, "Display", unmarked);
+            DynamicTextObservability.RecordTransform(Context, "InventoryAction.Display", original, unmarked);
+            return;
+        }
+
+        if (!TryTranslateDisplay(original, out var translated)
+            || string.Equals(translated, original, StringComparison.Ordinal))
         {
             return;
         }
 
         SetStringMember(action, "Display", translated);
-        DynamicTextObservability.RecordTransform(Context, "InventoryAction.Display", display!, translated);
+        DynamicTextObservability.RecordTransform(Context, "InventoryAction.Display", original, translated);
     }
 
     private static bool TryTranslateDisplay(string display, out string translated)

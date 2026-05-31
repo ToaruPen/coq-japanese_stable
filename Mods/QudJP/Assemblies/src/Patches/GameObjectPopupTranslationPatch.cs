@@ -54,6 +54,9 @@ public static class GameObjectPopupTranslationPatch
     [ThreadStatic]
     private static int followDistanceOptionsRemaining;
 
+    [ThreadStatic]
+    private static List<int>? followDistanceOptionsStack;
+
     [HarmonyTargetMethods]
     private static IEnumerable<MethodBase> TargetMethods()
     {
@@ -80,6 +83,9 @@ public static class GameObjectPopupTranslationPatch
     {
         try
         {
+            followDistanceOptionsStack ??= new List<int>();
+            followDistanceOptionsStack.Add(followDistanceOptionsRemaining);
+            followDistanceOptionsRemaining = 0;
             activeDepth++;
         }
         catch (Exception ex)
@@ -97,9 +103,18 @@ public static class GameObjectPopupTranslationPatch
                 activeDepth--;
             }
 
+            var stack = followDistanceOptionsStack;
+            if (stack is not null && stack.Count > 0)
+            {
+                var lastIndex = stack.Count - 1;
+                followDistanceOptionsRemaining = stack[lastIndex];
+                stack.RemoveAt(lastIndex);
+            }
+
             if (activeDepth == 0)
             {
                 followDistanceOptionsRemaining = 0;
+                followDistanceOptionsStack = null;
             }
         }
         catch (Exception ex)

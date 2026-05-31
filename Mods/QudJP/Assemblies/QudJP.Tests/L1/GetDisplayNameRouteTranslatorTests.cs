@@ -1225,6 +1225,25 @@ public sealed class GetDisplayNameRouteTranslatorTests
             Is.EqualTo("{{Y|塩ホッパー}} [空]"));
     }
 
+    [Test]
+    public void TranslatePreservingColors_DoesNotRestoreLocalizedBlueprintMarkup_WhenVisibleNameIsAmbiguous()
+    {
+        LocalizationAssetResolver.SetLocalizationRootForTests(tempDirectory);
+        WriteDictionaryFile("ui-displayname-adjectives.ja.json", ("[empty]", "[空]"));
+        var objectBlueprintsDirectory = Path.Combine(tempDirectory, "ObjectBlueprints");
+        Directory.CreateDirectory(objectBlueprintsDirectory);
+        File.WriteAllText(
+            Path.Combine(objectBlueprintsDirectory, "A.jp.xml"),
+            "<objects><object><part DisplayName=\"{{Y|塩ホッパー}}\" /></object></objects>");
+        File.WriteAllText(
+            Path.Combine(objectBlueprintsDirectory, "B.jp.xml"),
+            "<objects><object><part DisplayName=\"{{R|塩ホッパー}}\" /></object></objects>");
+
+        Assert.That(
+            GetDisplayNameRouteTranslator.TranslatePreservingColors("塩ホッパー [empty]", nameof(GetDisplayNamePatch)),
+            Is.EqualTo("塩ホッパー [空]"));
+    }
+
     [TestCase("advertisement for {{M|クユラミルの蒸留所, 伝説の樹液商}}", "{{M|クユラミルの蒸留所, 伝説の樹液商}}の広告")]
     [TestCase("advertisement for {{M|Resheph}}", "{{M|レシェフ}}の広告")]
     [TestCase("advertisement for \u0001{{M|レシェフ}}", "{{M|レシェフ}}の広告")]
@@ -1461,7 +1480,7 @@ public sealed class GetDisplayNameRouteTranslatorTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(translated, Is.EqualTo("水袋 [{{K|空}}]"));
+            Assert.That(translated, Is.EqualTo("水袋 {{y|[{{K|空}}]}}"));
             Assert.That(translated, Does.Not.Contain("[{{K|空]}}"));
         });
     }
@@ -1502,12 +1521,12 @@ public sealed class GetDisplayNameRouteTranslatorTests
                 GetDisplayNameRouteTranslator.TranslatePreservingColors(
                     "snapjaw {{y|[{{B|wading}}]}}",
                     nameof(GetDisplayNamePatch)),
-                Is.EqualTo("スナップジョー [{{B|浅瀬を進んでいる}}]"));
+                Is.EqualTo("スナップジョー {{y|[{{B|浅瀬を進んでいる}}]}}"));
             Assert.That(
                 GetDisplayNameRouteTranslator.TranslatePreservingColors(
                     "banner {{y|[{{g|raised}}]}}",
                     nameof(GetDisplayNamePatch)),
-                Is.EqualTo("旗 [{{g|掲揚中}}]"));
+                Is.EqualTo("旗 {{y|[{{g|掲揚中}}]}}"));
         });
     }
 
@@ -1566,27 +1585,27 @@ public sealed class GetDisplayNameRouteTranslatorTests
                 GetDisplayNameRouteTranslator.TranslatePreservingColors(
                     "mine {{y|[{{R|10 sec}}]}}",
                     nameof(GetDisplayNamePatch)),
-                Is.EqualTo("地雷 [{{R|10秒}}]"));
+                Is.EqualTo("地雷 {{y|[{{R|10秒}}]}}"));
             Assert.That(
                 GetDisplayNameRouteTranslator.TranslatePreservingColors(
                     "ingredient {{y|[{{C|3}} cooking servings]}}",
                     nameof(GetDisplayNamePatch)),
-                Is.EqualTo("食材 [調理3回分]"));
+                Is.EqualTo("食材 {{y|[調理3回分]}}"));
             Assert.That(
                 GetDisplayNameRouteTranslator.TranslatePreservingColors(
                     "rack {{y|[2 cells]}}",
                     nameof(GetDisplayNamePatch)),
-                Is.EqualTo("ラック [セル2個]"));
+                Is.EqualTo("ラック {{y|[セル2個]}}"));
             Assert.That(
                 GetDisplayNameRouteTranslator.TranslatePreservingColors(
                     "deed {{y|[Hindren chapter]}}",
                     nameof(GetDisplayNamePatch)),
-                Is.EqualTo("証書 [ヒンドレン支部]"));
+                Is.EqualTo("証書 {{y|[ヒンドレン支部]}}"));
             Assert.That(
                 GetDisplayNameRouteTranslator.TranslatePreservingColors(
                     "magazine {{y|[lead slug]}}",
                     nameof(GetDisplayNamePatch)),
-                Is.EqualTo("マガジン [鉛スラッグ]"));
+                Is.EqualTo("マガジン {{y|[鉛スラッグ]}}"));
             Assert.That(
                 GetDisplayNameRouteTranslator.TranslatePreservingColors(
                     "snapjaw [{{B|stuck in a web}}]",
@@ -2209,7 +2228,7 @@ public sealed class GetDisplayNameRouteTranslatorTests
         yield return new ModifierPhraseCase("ModMetered", "{{c|metered}}", "{{c|計量式}}");
         yield return new ModifierPhraseCase("RoboticizedMechanical", "{{c|mechanical}}", "{{c|機械化}}");
         yield return new ModifierPhraseCase("ModMicroserrated", "{{Y|mi{{R|c}}roserra{{R|t}}ed}}", "{{Y|{{R|微}}鋸{{R|歯}}}}");
-        yield return new ModifierPhraseCase("ModMighty", "mighty", "剛力");
+        yield return new ModifierPhraseCase("ModMighty", "mighty", "強力な");
         yield return new ModifierPhraseCase("ModMorphogenetic", "{{m|morphogenetic}}", "{{m|形態同調}}");
         yield return new ModifierPhraseCase("ModNanochelated", "{{K|nanochelated}}", "{{K|ナノキレート}}");
         yield return new ModifierPhraseCase("ModNanon", "{{K|nanon}}", "{{K|ナノ刃}}");

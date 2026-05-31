@@ -1623,6 +1623,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
     [TestCase("{{C|Irudad}}'s {{c|Force Bubble}} ability is now allowed.", "{{C|Irudad}}の{{c|力場泡}}能力は許可された。")]
     public void GameObjectPopup_TranslatesChangeCompanionAbilityUseMessages_WhenOwnerPatched(string source, string expected)
     {
+        WriteSkillsAndPowersDictionary();
         AssertGameObjectPopupChangeCompanionAbilityUse(source, expected);
     }
 
@@ -1715,6 +1716,72 @@ public sealed class CombatAndLogMessageQueuePatchTests
     }
 
     [Test]
+    public void GameObjectPopup_LeavesPickOptionEmptyInputUnchanged_WhenOwnerPatched()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupPickOption(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyGameObjectPopupTarget), nameof(DummyGameObjectPopupTarget.ChangeCompanionFollowDistance)),
+                typeof(GameObjectPopupTranslationPatch));
+
+            var target = new DummyGameObjectPopupTarget
+            {
+                PickOptionIntroToSend = string.Empty,
+                PickOptionOptionsToSend = [string.Empty],
+            };
+
+            target.ChangeCompanionFollowDistance();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyPopupGenericTarget.LastPickOptionIntro, Is.EqualTo(string.Empty));
+                Assert.That(DummyPopupGenericTarget.LastPickOptionOptions, Is.EqualTo(new[] { string.Empty }));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void GameObjectPopup_StripsPickOptionDirectMarkerWithoutRetranslating_WhenOwnerPatched()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupPickOption(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyGameObjectPopupTarget), nameof(DummyGameObjectPopupTarget.ChangeCompanionFollowDistance)),
+                typeof(GameObjectPopupTranslationPatch));
+
+            var target = new DummyGameObjectPopupTarget
+            {
+                PickOptionIntroToSend = MessageFrameTranslator.MarkDirectTranslation("既に翻訳済み"),
+                PickOptionOptionsToSend = [MessageFrameTranslator.MarkDirectTranslation("近く")],
+            };
+
+            target.ChangeCompanionFollowDistance();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyPopupGenericTarget.LastPickOptionIntro, Is.EqualTo("既に翻訳済み"));
+                Assert.That(DummyPopupGenericTarget.LastPickOptionOptions, Is.EqualTo(new[] { "近く" }));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void GameObjectPopup_LeavesCloseOptionUnchanged_WhenFollowDistanceIntroWasNotSeen()
     {
         var harmonyId = CreateHarmonyId();
@@ -1740,6 +1807,53 @@ public sealed class CombatAndLogMessageQueuePatchTests
         finally
         {
             harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void GameObjectPopup_RestoresFollowDistanceStateAfterNestedOwnerScope()
+    {
+        GameObjectPopupTranslationPatch.Prefix();
+        try
+        {
+            Assert.That(
+                GameObjectPopupTranslationPatch.TryTranslatePopupMessage(
+                    "Instruct 監視官イラメ to follow at what distance?",
+                    nameof(GameObjectPopupTranslationPatch),
+                    "Popup.PickOption",
+                    out var intro),
+                Is.True);
+            Assert.That(intro, Is.EqualTo("監視官イラメにどの距離で追従させますか？"));
+
+            GameObjectPopupTranslationPatch.Prefix();
+            try
+            {
+                Assert.That(
+                    GameObjectPopupTranslationPatch.TryTranslatePopupMessage(
+                        "close",
+                        nameof(GameObjectPopupTranslationPatch),
+                        "Popup.PickOption",
+                        out var innerOption),
+                    Is.False);
+                Assert.That(innerOption, Is.EqualTo("close"));
+            }
+            finally
+            {
+                _ = GameObjectPopupTranslationPatch.Finalizer(null);
+            }
+
+            Assert.That(
+                GameObjectPopupTranslationPatch.TryTranslatePopupMessage(
+                    "close",
+                    nameof(GameObjectPopupTranslationPatch),
+                    "Popup.PickOption",
+                    out var outerOption),
+                Is.True);
+            Assert.That(outerOption, Is.EqualTo("近く"));
+        }
+        finally
+        {
+            _ = GameObjectPopupTranslationPatch.Finalizer(null);
         }
     }
 
@@ -12089,6 +12203,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
             "{\"entries\":["
             + "{\"key\":\"Aggressive Stance\",\"text\":\"攻勢の構え\"},"
             + "{\"key\":\"Defensive Stance\",\"text\":\"守勢の構え\"},"
+            + "{\"key\":\"Force Bubble\",\"text\":\"力場泡\"},"
             + "{\"key\":\"Freezing Ray\",\"text\":\"凍結線\"},"
             + "{\"key\":\"Mark Target\",\"text\":\"目標をマーク\"}"
             + "]}\n",

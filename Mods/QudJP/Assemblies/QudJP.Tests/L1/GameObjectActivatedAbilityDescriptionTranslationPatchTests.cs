@@ -12,6 +12,7 @@ public sealed class GameObjectActivatedAbilityDescriptionTranslationPatchTests
     [SetUp]
     public void SetUp()
     {
+        Translator.ResetForTests();
         tempDirectory = Path.Combine(Path.GetTempPath(), "qudjp-gameobject-ability-description-l1", Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(tempDirectory);
         File.WriteAllText(Path.Combine(tempDirectory, "empty.ja.json"), "{\"entries\":[]}");

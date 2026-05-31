@@ -236,7 +236,7 @@ public static class InventoryFireEventTranslationPatch
         try
         {
             return GetDisplayNameRouteTranslator.TranslatePreservingColors(
-                StripOwnedItemPrefix(source),
+                source,
                 Context + ".InventoryFailurePopup");
         }
         catch (Exception ex)
@@ -244,14 +244,6 @@ public static class InventoryFireEventTranslationPatch
             Trace.TraceError("QudJP: {0}.TranslateItemCapture failed: {1}", Context, ex);
             return source;
         }
-    }
-
-    private static string StripOwnedItemPrefix(string source)
-    {
-        const string ownedItemPrefix = "your ";
-        return source.StartsWith(ownedItemPrefix, StringComparison.Ordinal)
-            ? source.Substring(ownedItemPrefix.Length)
-            : source;
     }
 
     private static string TranslateInventorySlot(string source)

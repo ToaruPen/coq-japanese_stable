@@ -206,7 +206,7 @@ def _classify_japanese_text(entry: LogEntry) -> TriageResult | None:
     """Classify observations that already include Japanese text."""
     if not _JAPANESE_CHARS.search(entry.text):
         return None
-    if entry.kind == LogEntryKind.NO_PATTERN and _ASCII_LOWERCASE_WORD.search(entry.text):
+    if entry.kind == LogEntryKind.NO_PATTERN:
         return None
     return TriageResult(
         entry=entry,

@@ -125,6 +125,24 @@ public sealed class InventoryActionDisplayTranslationPatchTests
         Assert.That(actions["Unknown"].Display, Is.EqualTo("unknown custom action"));
     }
 
+    [Test]
+    public void TranslateActionTable_StripsDirectMarker_WhenDisplayIsAlreadyTranslated()
+    {
+        WriteInventoryActionDictionary(("既に翻訳済み", "誤った再翻訳"));
+        var actions = new Dictionary<string, DummyInventoryAction>
+        {
+            ["AlreadyTranslated"] = new()
+            {
+                Display = MessageFrameTranslator.MarkDirectTranslation("既に翻訳済み"),
+                Command = "AlreadyTranslated",
+            },
+        };
+
+        InventoryActionDisplayTranslationPatch.TranslateActionTableForTests(actions);
+
+        Assert.That(actions["AlreadyTranslated"].Display, Is.EqualTo("既に翻訳済み"));
+    }
+
     private void WriteInventoryActionDictionary(params (string key, string text)[] entries)
     {
         WriteDictionary("ui-inventory-actions.ja.json", "XRL.World.IInventoryActionsEvent", entries);

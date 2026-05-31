@@ -76,6 +76,12 @@ public static class TinkeringMinePopupTranslationPatch
             return false;
         }
 
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
+        {
+            translated = markedText;
+            return true;
+        }
+
         var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
         var match = DisarmConfirmationPattern.Match(stripped);
         if (!match.Success)

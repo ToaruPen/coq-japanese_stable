@@ -829,7 +829,7 @@ internal static class GetDisplayNameRouteTranslator
             return false;
         }
 
-        translated = translatedBase + " " + RestoreBracketedDisplayNameStateSuffix(translatedState, stateGroup, spans, route);
+        translated = translatedBase + " " + RestoreBracketedDisplayNameStateSuffix(translatedState, stateGroup, spans);
         translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
             translated,
             spans,
@@ -860,7 +860,7 @@ internal static class GetDisplayNameRouteTranslator
             return false;
         }
 
-        translated = RestoreBracketedDisplayNameStateSuffix(translatedState, stateGroup, spans, route);
+        translated = RestoreBracketedDisplayNameStateSuffix(translatedState, stateGroup, spans);
         DynamicTextObservability.RecordTransform(route, "DisplayName.WholeBracketedState", source, translated);
         return true;
     }
@@ -1067,7 +1067,7 @@ internal static class GetDisplayNameRouteTranslator
         translated = RestoreWholeSlice(translatedBase, spans, baseGroup) + " " + stats;
         if (stateGroup.Success)
         {
-            translated += " " + RestoreBracketedDisplayNameStateSuffix(translatedState, stateGroup, spans, route);
+            translated += " " + RestoreBracketedDisplayNameStateSuffix(translatedState, stateGroup, spans);
         }
 
         translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
@@ -1111,7 +1111,7 @@ internal static class GetDisplayNameRouteTranslator
         translated = translatedBase + "（" + translatedClause + "） " + stats;
         if (stateGroup.Success)
         {
-            translated += " " + RestoreBracketedDisplayNameStateSuffix(translatedState, stateGroup, spans, route);
+            translated += " " + RestoreBracketedDisplayNameStateSuffix(translatedState, stateGroup, spans);
         }
 
         translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
@@ -1296,7 +1296,7 @@ internal static class GetDisplayNameRouteTranslator
                     continue;
                 }
 
-                builder.Append(RestoreBracketedDisplayNameStateSuffix(translatedState, suffixMatch.Groups["bracket"], spans, route));
+                builder.Append(RestoreBracketedDisplayNameStateSuffix(translatedState, suffixMatch.Groups["bracket"], spans));
                 changed = true;
                 continue;
             }
@@ -1357,7 +1357,7 @@ internal static class GetDisplayNameRouteTranslator
         translated = translatedBase + " " + stats;
         if (stateGroup.Success)
         {
-            translated += " " + RestoreBracketedDisplayNameStateSuffix(translatedState, stateGroup, spans, route);
+            translated += " " + RestoreBracketedDisplayNameStateSuffix(translatedState, stateGroup, spans);
         }
 
         translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
@@ -2928,8 +2928,7 @@ internal static class GetDisplayNameRouteTranslator
                     + RestoreBracketedDisplayNameStateSuffix(
                         TranslateDisplayNameStatePreservingColors(stateGroup, spans, route),
                         stateGroup,
-                        spans,
-                        route);
+                        spans);
             }
 
             return true;
@@ -3682,6 +3681,7 @@ internal static class GetDisplayNameRouteTranslator
         try
         {
             files = Directory.GetFiles(objectBlueprintRoot, "*.jp.xml");
+            Array.Sort(files, StringComparer.Ordinal);
         }
         catch (Exception ex)
         {
@@ -3690,6 +3690,7 @@ internal static class GetDisplayNameRouteTranslator
         }
 
         var hadFileFailure = false;
+        var ambiguousVisibleNames = new HashSet<string>(StringComparer.Ordinal);
         foreach (var path in files)
         {
             try
@@ -3707,8 +3708,19 @@ internal static class GetDisplayNameRouteTranslator
 
                     var (visible, _) = ColorAwareTranslationComposer.Strip(displayName);
                     if (string.IsNullOrWhiteSpace(visible)
-                        || result.ContainsKey(visible))
+                        || ambiguousVisibleNames.Contains(visible))
                     {
+                        continue;
+                    }
+
+                    if (result.TryGetValue(visible, out var existingDisplayName))
+                    {
+                        if (!string.Equals(existingDisplayName, displayName, StringComparison.Ordinal))
+                        {
+                            result.Remove(visible);
+                            ambiguousVisibleNames.Add(visible);
+                        }
+
                         continue;
                     }
 
@@ -4493,10 +4505,9 @@ internal static class GetDisplayNameRouteTranslator
     private static string RestoreBracketedDisplayNameStateSuffix(
         string translatedState,
         Group stateGroup,
-        IReadOnlyList<ColorSpan> spans,
-        string route)
+        IReadOnlyList<ColorSpan> spans)
     {
-        if (stateGroup.Index <= 0 || !ShouldPreserveBracketedStateBoundaryMarkup(stateGroup, route))
+        if (stateGroup.Index <= 0)
         {
             return "[" + translatedState + "]";
         }
@@ -4506,14 +4517,6 @@ internal static class GetDisplayNameRouteTranslator
             spans,
             stateGroup.Index - 1,
             stateGroup.Length + 2);
-    }
-
-    private static bool ShouldPreserveBracketedStateBoundaryMarkup(Group stateGroup, string route)
-    {
-        return LoadedEnergyCellDisplayNameStatePattern.IsMatch(stateGroup.Value)
-            || string.Equals(route, nameof(InventoryLineTranslationPatch), StringComparison.Ordinal)
-            || string.Equals(route, nameof(InventoryLocalizationPatch), StringComparison.Ordinal)
-            || string.Equals(route, nameof(TradeLineTranslationPatch), StringComparison.Ordinal);
     }
 
     private static string RestoreBracketedDisplayNameSuffix(

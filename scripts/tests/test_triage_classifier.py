@@ -154,8 +154,8 @@ def test_classify_separator_only_as_runtime_noise() -> None:
     assert result.classification == TriageClassification.RUNTIME_NOISE
 
 
-def test_classify_japanese_no_pattern_as_runtime_noise() -> None:
-    """Already-localized no-pattern observations are not actionable route patches."""
+def test_classify_japanese_no_pattern_as_route_patch() -> None:
+    """No-pattern observations stay actionable even when the emitted line contains Japanese."""
     result = classify(
         _mk(
             "HEミサイル x1を分解した。",
@@ -163,7 +163,7 @@ def test_classify_japanese_no_pattern_as_runtime_noise() -> None:
             kind=LogEntryKind.NO_PATTERN,
         ),
     )
-    assert result.classification == TriageClassification.RUNTIME_NOISE
+    assert result.classification == TriageClassification.ROUTE_PATCH
 
 
 def test_classify_dram_quantity() -> None:

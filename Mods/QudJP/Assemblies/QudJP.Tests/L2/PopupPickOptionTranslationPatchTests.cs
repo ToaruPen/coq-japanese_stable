@@ -776,15 +776,19 @@ public sealed class PopupPickOptionTranslationPatchTests
         Assert.Multiple(() =>
         {
             Assert.That(
-                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay("Whip up a {{hotkey|m}}eal."),
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "Whip up a {{hotkey|m}}eal.",
+                    "InventoryActionMenu:ABC123"),
                 Is.EqualTo("手早く食事を作る。"));
             Assert.That(
                 SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
-                    "{{W|[i]}} {{y|Choose {{hotkey|i}}ngredients to cook with.}}"),
+                    "{{W|[i]}} {{y|Choose {{hotkey|i}}ngredients to cook with.}}",
+                    "InventoryActionMenu:ABC123"),
                 Is.EqualTo("{{W|[i]}} {{y|料理に使う材料を選ぶ。}}"));
             Assert.That(
                 SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
-                    "{{W|[r]}} {{K|Cook f{{hotkey|r}}om a recipe.}}"),
+                    "{{W|[r]}} {{K|Cook f{{hotkey|r}}om a recipe.}}",
+                    "InventoryActionMenu:ABC123"),
                 Is.EqualTo("{{W|[r]}} {{K|レシピから料理する。}}"));
         });
     }

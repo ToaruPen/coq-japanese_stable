@@ -110,8 +110,8 @@ internal static class PopupTranslatedMessageHandoff
             return false;
         }
 
-        var scopeId = GetCurrentScopeId();
-        if (scopeId == 0)
+        var scopes = activeScopes;
+        if (scopes is null || scopes.Count == 0)
         {
             return false;
         }
@@ -126,7 +126,7 @@ internal static class PopupTranslatedMessageHandoff
         for (var index = entries.Count - 1; index >= 0; index--)
         {
             var entry = entries[index];
-            if (entry.ScopeId != scopeId
+            if (!scopes.Contains(entry.ScopeId)
                 || !string.Equals(entry.Visible, key.Visible, StringComparison.Ordinal)
                 || !string.Equals(entry.ColorSignature, key.ColorSignature, StringComparison.Ordinal))
             {
