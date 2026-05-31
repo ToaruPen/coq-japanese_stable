@@ -74,6 +74,7 @@ Use this skill to turn runtime untranslated text into the smallest correct QudJP
    - For composite generated patterns, add at least one test where a captured slot is a known translatable term and one where it remains an unknown fallback value. This proves both translator reuse and pass-through behavior for the same route.
    - For generated/composed text, use this test matrix where applicable: fixed frame plus generated noun, generated noun alone, known observed sample, at least one non-observed variant, English fallback for unknown component, empty input, color tags, and `\x01` marker preservation.
    - For generated regex families with localized captures, include mixed-language boundary cases where the captured name is already Japanese and is followed by a Japanese particle. Cover every sibling branch that repeats the same capture contract, not just the observed `の` or English possessive branch.
+   - When narrowing a generated regex slot to known source tokens, include any owner-route intermediate values that can already be localized before reaching the regex sink. Keep an unknown English negative case so the narrowed pattern does not hide future missing-pattern evidence.
    - For generated-name fixes, test at least one non-observed variant or a derivation path from the upstream data source so the test does not simply bless the single runtime sample.
    - For scoped dictionary ownership tests, seed the translation only in the verified owning file and assert the route still uses that owner. If the same English phrase is intentionally present under multiple scoped contexts, write separate tests for each emitted shape and context instead of collapsing them into one generic key. Do not let a global fallback, merged dictionary fallback, or broad non-contextual scoped lookup satisfy the test unless that fallback behavior is the contract under test. Prefer a concrete guard such as a poison fallback value, an owner-absent negative case, or an existing missing-hit/observability counter that proves fallback did not satisfy the lookup accidentally.
    - After adding an owner/generator fix, search the fresh log for the same raw source across UI owner routes, message patterns, journal patterns, description patterns, and final-output probes. Route the shared translation helper through every surface that can expose the same source.
@@ -85,6 +86,12 @@ Use this skill to turn runtime untranslated text into the smallest correct QudJP
    - C# behavior tests: `just test-l1`, `just test-l2`, `just test-l2g`
    - Analyzer-inclusive local gates: `just build`, `just check`, or `just pr-check`
    - Localization checks: `just localization-check`, `just translation-token-check`
+   - When changing message-pattern route counts, verify the CI workflow contract too. Run
+     `just python-test-filter test_ci_message_pattern_route_counts_match_python_contract`
+     or the broader `just python-test` after updating `justfile`,
+     `scripts/tests/test_validate_pattern_routes.py`, and `.github/workflows/ci.yml`;
+     `just localization-check` alone does not prove those duplicated
+     `--expect-count` values are synchronized.
    - Static coverage map check: `just localization-coverage-map-check`
    - Broad local gate: `just check`
    - Sync only when the user wants local game deployment: `just sync-mod`

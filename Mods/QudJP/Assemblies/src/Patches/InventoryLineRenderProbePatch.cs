@@ -46,6 +46,7 @@ public static class InventoryLineRenderProbePatch
         return null;
     }
 
+    [HarmonyPriority(Priority.Last)]
     public static void Postfix(object __instance, object data)
     {
         try
@@ -60,7 +61,7 @@ public static class InventoryLineRenderProbePatch
             }
 #endif
 #if HAS_TMP
-            _ = InventoryLineFontFixer.TryApplyPrimaryFontToItemRow(__instance, data);
+            _ = InventoryLineFontFixer.TryApplyPrimaryFontToItemRowForSetData(__instance, data);
 #endif
 #if HAS_TMP && QUDJP_DEV_BUILD
             if (RuntimeDiagnostics.VerboseProbesEnabled)

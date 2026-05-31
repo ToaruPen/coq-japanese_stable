@@ -13,39 +13,53 @@ public static class GameObjectPopupTranslationPatch
     private const string Context = nameof(GameObjectPopupTranslationPatch);
 
     private static readonly Regex ImportantPluralPattern = new Regex(
-        "^(.+?) are important\\. Are you sure you want to (.+?) them(.*?)\\?$",
+        "^(?<item>.+?) are important\\. Are you sure you want to (?<verb>.+?) them(?<tail>.*?)\\?$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     private static readonly Regex ImportantSingularPattern = new Regex(
-        "^(.+?) (?:is|are) important\\. Are you sure you want to (.+?) (?:it|them)(.*?)\\?$",
+        "^(?<item>.+?) (?:is|are) important\\. Are you sure you want to (?<verb>.+?) (?:it|them)(?<tail>.*?)\\?$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     private static readonly Regex DoesNotWantNamePattern = new Regex(
-        "^(.+?) (?:don't|doesn't) want a new name\\.$",
+        "^(?<owner>.+?) (?:don't|doesn't) want a new name\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     private static readonly Regex StartCallingPattern = new Regex(
-        "^You start calling (.+?) by the name '(.+?)'\\.$",
+        "^You start calling (?<owner>.+?) by the name '(?<name>.+?)'\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     private static readonly Regex AbilityPossessivePattern = new Regex(
-        "^(.+?)'s (.+?) ability (.+)$",
+        "^(?<owner>.+?)'s (?<ability>.+?) ability (?<state>.+)$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex CompanionAbilityPickOptionIntroPattern = new Regex(
+        "^Choose one of (?<owner>.+?)'s abilities to forbid or allow\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex CompanionFollowDistancePickOptionIntroPattern = new Regex(
+        "^Instruct (?<owner>.+?) to follow at what distance\\?$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex CompanionAbilityPickOptionRowPattern = new Regex(
+        "^(?<ability>.+?) (?<state>\\[(?:allowed|forbidden|toggled on|toggled off)\\])$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     private static readonly Regex CannotHearPattern = new Regex(
-        "^(.+?) can't hear you!$",
-        RegexOptions.CultureInvariant | RegexOptions.Compiled);
-
-    private static readonly Regex CompanionFollowDistancePromptPattern = new Regex(
-        "^Instruct (.+?) to follow at what distance\\?$",
+        "^(?<owner>.+?) can't hear you!$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     private static readonly Regex PullDownDestinationOptionPattern = new Regex(
-        "^(Current location|Arrival location|Center)(, .+?)?( \\([A-Z]+\\))?$",
+        "^(?<label>Current location|Arrival location|Center)(?<detail>, .+?)?(?<hotkey> \\([A-Z]+\\))?$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     [ThreadStatic]
     private static int activeDepth;
+
+    [ThreadStatic]
+    private static int followDistanceOptionsRemaining;
+
+    [ThreadStatic]
+    private static List<int>? followDistanceOptionsStack;
 
     [HarmonyTargetMethods]
     private static IEnumerable<MethodBase> TargetMethods()
@@ -74,6 +88,9 @@ public static class GameObjectPopupTranslationPatch
     {
         try
         {
+            followDistanceOptionsStack ??= new List<int>();
+            followDistanceOptionsStack.Add(followDistanceOptionsRemaining);
+            followDistanceOptionsRemaining = 0;
             activeDepth++;
         }
         catch (Exception ex)
@@ -89,6 +106,20 @@ public static class GameObjectPopupTranslationPatch
             if (activeDepth > 0)
             {
                 activeDepth--;
+            }
+
+            var stack = followDistanceOptionsStack;
+            if (stack is not null && stack.Count > 0)
+            {
+                var lastIndex = stack.Count - 1;
+                followDistanceOptionsRemaining = stack[lastIndex];
+                stack.RemoveAt(lastIndex);
+            }
+
+            if (activeDepth == 0)
+            {
+                followDistanceOptionsRemaining = 0;
+                followDistanceOptionsStack = null;
             }
         }
         catch (Exception ex)
@@ -113,38 +144,14 @@ public static class GameObjectPopupTranslationPatch
             return true;
         }
 
-        if (!IsTargetMessage(source))
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        if (!IsTargetMessage(stripped))
         {
             translated = source;
             return false;
         }
 
-        if (!TryTranslateCore(source, out var coreTranslated))
-        {
-            translated = source;
-            return false;
-        }
-
-        DynamicTextObservability.RecordTransform(route, family + "." + Context, source, coreTranslated);
-        translated = coreTranslated;
-        return true;
-    }
-
-    internal static bool TryTranslatePopupProducerText(string source, string route, string family, out string translated)
-    {
-        if (activeDepth <= 0 || string.IsNullOrEmpty(source))
-        {
-            translated = source;
-            return false;
-        }
-
-        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
-        {
-            translated = markedText;
-            return true;
-        }
-
-        if (!TryTranslatePickOptionCore(source, out var coreTranslated))
+        if (!TryTranslateCore(source, stripped, spans, out var coreTranslated))
         {
             translated = source;
             return false;
@@ -172,6 +179,12 @@ public static class GameObjectPopupTranslationPatch
         return value.Contains(" important. Are you sure you want to ")
             || value.EndsWith(" want a new name.", StringComparison.Ordinal)
             || value.StartsWith("You start calling ", StringComparison.Ordinal)
+            || value.StartsWith("Choose one of ", StringComparison.Ordinal)
+            || value.StartsWith("Instruct ", StringComparison.Ordinal)
+            || string.Equals(value, "Select a destination", StringComparison.Ordinal)
+            || PullDownDestinationOptionPattern.IsMatch(value)
+            || IsPendingCompanionFollowDistanceOption(value)
+            || CompanionAbilityPickOptionRowPattern.IsMatch(value)
             || value.Contains(" ability is now toggled ")
             || value.EndsWith(" ability cannot be toggled at this time.", StringComparison.Ordinal)
             || value.Contains(" ability is now forbidden.")
@@ -179,51 +192,138 @@ public static class GameObjectPopupTranslationPatch
             || value.EndsWith(" can't hear you!", StringComparison.Ordinal);
     }
 
-    private static bool TryTranslateCore(string source, out string translated)
+    private static bool TryTranslateCore(
+        string source,
+        string stripped,
+        IReadOnlyList<ColorSpan> spans,
+        out string translated)
     {
-        var importantPlural = ImportantPluralPattern.Match(source);
+        var companionFollowDistanceIntro = CompanionFollowDistancePickOptionIntroPattern.Match(stripped);
+        if (companionFollowDistanceIntro.Success)
+        {
+            followDistanceOptionsRemaining = 3;
+            var owner = RestoreCapture(companionFollowDistanceIntro, spans, "owner");
+            translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+                $"{owner}にどの距離で追従させますか？",
+                spans,
+                stripped.Length,
+                source);
+            return true;
+        }
+
+        if (TryTranslateCompanionFollowDistanceOption(stripped, spans, source, out translated))
+        {
+            return true;
+        }
+
+        if (TryTranslatePullDownDestinationOption(stripped, spans, source, out translated))
+        {
+            return true;
+        }
+
+        var companionAbilityIntro = CompanionAbilityPickOptionIntroPattern.Match(stripped);
+        if (companionAbilityIntro.Success)
+        {
+            var owner = RestoreCapture(companionAbilityIntro, spans, "owner");
+            translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+                $"{owner}の能力を1つ選んで禁止または許可してください。",
+                spans,
+                stripped.Length,
+                source);
+            return true;
+        }
+
+        var companionAbilityRow = CompanionAbilityPickOptionRowPattern.Match(stripped);
+        if (companionAbilityRow.Success)
+        {
+            var ability = TranslateAbilityName(RestoreCapture(companionAbilityRow, spans, "ability"));
+            var state = TranslateCompanionAbilityRowState(RestoreCapture(companionAbilityRow, spans, "state"));
+            translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+                $"{ability} {state}",
+                spans,
+                stripped.Length,
+                source);
+            return true;
+        }
+
+        var importantPlural = ImportantPluralPattern.Match(stripped);
         if (importantPlural.Success)
         {
-            translated = $"{importantPlural.Groups[1].Value}は重要だ。本当にそれらを{importantPlural.Groups[2].Value}{importantPlural.Groups[3].Value}しますか？";
+            var item = RestoreCapture(importantPlural, spans, "item");
+            var verb = RestoreCapture(importantPlural, spans, "verb");
+            var tail = RestoreCapture(importantPlural, spans, "tail", trim: false);
+            translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+                $"{item}は重要だ。本当にそれらを{verb}{tail}しますか？",
+                spans,
+                stripped.Length,
+                source);
             return true;
         }
 
-        var importantSingular = ImportantSingularPattern.Match(source);
+        var importantSingular = ImportantSingularPattern.Match(stripped);
         if (importantSingular.Success)
         {
-            translated = $"{importantSingular.Groups[1].Value}は重要だ。本当に{importantSingular.Groups[2].Value}{importantSingular.Groups[3].Value}しますか？";
+            var item = RestoreCapture(importantSingular, spans, "item");
+            var verb = RestoreCapture(importantSingular, spans, "verb");
+            var tail = RestoreCapture(importantSingular, spans, "tail", trim: false);
+            translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+                $"{item}は重要だ。本当に{verb}{tail}しますか？",
+                spans,
+                stripped.Length,
+                source);
             return true;
         }
 
-        var doesNotWantName = DoesNotWantNamePattern.Match(source);
+        var doesNotWantName = DoesNotWantNamePattern.Match(stripped);
         if (doesNotWantName.Success)
         {
-            translated = $"{doesNotWantName.Groups[1].Value}は新しい名前を望んでいない。";
+            var owner = RestoreCapture(doesNotWantName, spans, "owner");
+            translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+                $"{owner}は新しい名前を望んでいない。",
+                spans,
+                stripped.Length,
+                source);
             return true;
         }
 
-        var startCalling = StartCallingPattern.Match(source);
+        var startCalling = StartCallingPattern.Match(stripped);
         if (startCalling.Success)
         {
-            translated = $"{startCalling.Groups[1].Value}を「{startCalling.Groups[2].Value}」と呼び始めた。";
+            var owner = RestoreCapture(startCalling, spans, "owner");
+            var name = RestoreCapture(startCalling, spans, "name");
+            translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+                $"{owner}を「{name}」と呼び始めた。",
+                spans,
+                stripped.Length,
+                source);
             return true;
         }
 
-        var abilityPossessive = AbilityPossessivePattern.Match(source);
+        var abilityPossessive = AbilityPossessivePattern.Match(stripped);
         if (abilityPossessive.Success
             && TryTranslateAbilityState(
-                abilityPossessive.Groups[1].Value,
-                abilityPossessive.Groups[2].Value,
-                abilityPossessive.Groups[3].Value,
-                out translated))
+                RestoreCapture(abilityPossessive, spans, "owner"),
+                TranslateAbilityName(RestoreCapture(abilityPossessive, spans, "ability")),
+                abilityPossessive.Groups["state"].Value,
+                out var abilityStateTranslation))
         {
+            translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+                abilityStateTranslation,
+                spans,
+                stripped.Length,
+                source);
             return true;
         }
 
-        var cannotHear = CannotHearPattern.Match(source);
+        var cannotHear = CannotHearPattern.Match(stripped);
         if (cannotHear.Success)
         {
-            translated = $"{cannotHear.Groups[1].Value}にはあなたの声が聞こえない！";
+            var owner = RestoreCapture(cannotHear, spans, "owner");
+            translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+                $"{owner}にはあなたの声が聞こえない！",
+                spans,
+                stripped.Length,
+                source);
             return true;
         }
 
@@ -231,50 +331,66 @@ public static class GameObjectPopupTranslationPatch
         return false;
     }
 
-    private static bool TryTranslatePickOptionCore(string source, out string translated)
+    private static bool IsPendingCompanionFollowDistanceOption(string value)
     {
-        var followDistancePrompt = CompanionFollowDistancePromptPattern.Match(source);
-        if (followDistancePrompt.Success)
-        {
-            translated = $"{followDistancePrompt.Groups[1].Value}にどの距離で追従するよう指示しますか？";
-            return true;
-        }
-
-        if (TryTranslatePullDownDestinationOption(source, out translated))
-        {
-            return true;
-        }
-
-        switch (source)
-        {
-            case "Select a destination":
-                translated = "目的地を選択";
-                return true;
-            case "close":
-                translated = "近く";
-                return true;
-            case "medium":
-                translated = "中距離";
-                return true;
-            case "far":
-                translated = "遠く";
-                return true;
-            default:
-                translated = source;
-                return false;
-        }
+        return followDistanceOptionsRemaining > 0
+            && (string.Equals(value, "close", StringComparison.Ordinal)
+                || string.Equals(value, "medium", StringComparison.Ordinal)
+                || string.Equals(value, "far", StringComparison.Ordinal));
     }
 
-    private static bool TryTranslatePullDownDestinationOption(string source, out string translated)
+    private static bool TryTranslateCompanionFollowDistanceOption(
+        string stripped,
+        IReadOnlyList<ColorSpan> spans,
+        string source,
+        out string translated)
     {
-        var match = PullDownDestinationOptionPattern.Match(source);
+        if (!IsPendingCompanionFollowDistanceOption(stripped))
+        {
+            translated = source;
+            return false;
+        }
+
+        followDistanceOptionsRemaining--;
+        translated = stripped switch
+        {
+            "close" => "近く",
+            "medium" => "中間",
+            "far" => "遠く",
+            _ => stripped,
+        };
+        translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+            translated,
+            spans,
+            stripped.Length,
+            source);
+        return true;
+    }
+
+    private static bool TryTranslatePullDownDestinationOption(
+        string stripped,
+        IReadOnlyList<ColorSpan> spans,
+        string source,
+        out string translated)
+    {
+        if (string.Equals(stripped, "Select a destination", StringComparison.Ordinal))
+        {
+            translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+                "目的地を選択",
+                spans,
+                stripped.Length,
+                source);
+            return true;
+        }
+
+        var match = PullDownDestinationOptionPattern.Match(stripped);
         if (!match.Success)
         {
             translated = source;
             return false;
         }
 
-        var prefix = match.Groups[1].Value switch
+        var prefix = match.Groups["label"].Value switch
         {
             "Current location" => "現在地",
             "Arrival location" => "到着地点",
@@ -287,8 +403,43 @@ public static class GameObjectPopupTranslationPatch
             return false;
         }
 
-        translated = prefix + match.Groups[2].Value + match.Groups[3].Value;
+        var detail = match.Groups["detail"].Success ? RestoreCapture(match, spans, "detail", trim: false) : string.Empty;
+        var hotkey = match.Groups["hotkey"].Success ? RestoreCapture(match, spans, "hotkey", trim: false) : string.Empty;
+        translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+            prefix + detail + hotkey,
+            spans,
+            stripped.Length,
+            source);
         return true;
+    }
+
+    private static string RestoreCapture(Match match, IReadOnlyList<ColorSpan> spans, string groupName, bool trim = true)
+    {
+        var group = match.Groups[groupName];
+        var restored = ColorAwareTranslationComposer.MarkupAwareRestoreCapture(group.Value, spans, group);
+        return trim ? restored.Trim() : restored;
+    }
+
+    private static string TranslateAbilityName(string source)
+    {
+        return ActivatedAbilityNameTranslator.TranslatePreservingColors(
+            source,
+            Context,
+            Context + ".CompanionAbilityName");
+    }
+
+    private static string TranslateCompanionAbilityRowState(string source)
+    {
+        return ColorAwareTranslationComposer.TranslatePreservingColors(
+            source,
+            static visible => visible switch
+            {
+                "[allowed]" => "[許可]",
+                "[forbidden]" => "[禁止]",
+                "[toggled on]" => "[オン]",
+                "[toggled off]" => "[オフ]",
+                _ => visible,
+            });
     }
 
     private static bool TryTranslateAbilityState(string owner, string ability, string state, out string translated)

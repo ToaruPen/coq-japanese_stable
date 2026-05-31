@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -22,6 +23,8 @@ internal static class CharacterStatusScreenTextTranslator
         new Regex("^(?<name>.+?) \\((?<level>\\d+)\\)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex StatusSummaryPattern =
         new Regex("^Level: (?<level>\\d+) ¯ HP: (?<hpCurrent>\\d+)\\/(?<hpMax>\\d+) ¯ XP: (?<xpCurrent>\\d+)\\/(?<xpMax>\\d+) ¯ Weight: (?<weight>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex ElementalRayRankSectionPattern =
+        new Regex("^Emits a (?<range>\\d+)-square ray of (?<element>frost|flame) in the direction of your choice\\.\\nDamage: (?<damage>.+)\\nCooldown: (?<cooldown>\\d+) rounds?(?:\\nCooldown reduced by (?<cooldownReduction>\\d+) due to high Willpower\\.)?\\nMelee attacks (?<verb>cool|heat) opponents by (?<temperature>.+) degrees$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     private static readonly string[] CharacterArchetypes =
     {
@@ -207,31 +210,49 @@ internal static class CharacterStatusScreenTextTranslator
             return false;
         }
 
-        var mutationName = GetStableMutationDictionaryName(mutation);
-        if (string.IsNullOrWhiteSpace(mutationName))
+        var mutationNames = GetMutationDictionaryNameCandidates(mutation, source);
+        if (mutationNames.Count == 0)
         {
             return false;
         }
 
-        var description = GetMutationDictionaryValue($"mutation:{mutationName}");
         var level = GetIntMemberValue(mutation, "Level");
         var variant = GetStringMemberValue(mutation, "Variant");
-        var currentRank = level.HasValue
-            ? GetMutationRankDictionaryValue(mutationName!, variant, level.Value)
-            : null;
-        var nextRank = level.HasValue
-            ? GetMutationRankDictionaryValue(mutationName!, variant, level.Value + 1)
-            : null;
 
 #pragma warning disable CA2249
-        if (source.IndexOf("This rank", StringComparison.Ordinal) >= 0
-            || source.IndexOf("Next rank", StringComparison.Ordinal) >= 0)
+        var isRankComparison = source.IndexOf("This rank", StringComparison.Ordinal) >= 0
+            || source.IndexOf("Next rank", StringComparison.Ordinal) >= 0;
 #pragma warning restore CA2249
+
+        for (var index = 0; index < mutationNames.Count; index++)
         {
-            return TryTranslateRankComparisonDetails(source, route, description, currentRank, nextRank, out translated);
+            var mutationName = mutationNames[index];
+            var description = GetMutationDictionaryValue($"mutation:{mutationName}");
+            var currentRank = level.HasValue
+                ? GetMutationRankDictionaryValue(mutationName, variant, level.Value)
+                : null;
+            var nextRank = level.HasValue
+                ? GetMutationRankDictionaryValue(mutationName, variant, level.Value + 1)
+                : null;
+
+            if (isRankComparison)
+            {
+                if (TryTranslateRankComparisonDetails(source, route, description, currentRank, nextRank, out translated))
+                {
+                    return true;
+                }
+
+                continue;
+            }
+
+            if (TryTranslateSimpleDetails(source, route, description, currentRank, out translated))
+            {
+                return true;
+            }
         }
 
-        return TryTranslateSimpleDetails(source, route, description, currentRank, out translated);
+        translated = source;
+        return false;
     }
 
     private static bool TryTranslateExactLookup(string source, string route, out string translated)
@@ -426,6 +447,8 @@ internal static class CharacterStatusScreenTextTranslator
         var hasDescriptionSection = RequiresComparisonDescription(source, hasCurrentRankSection, hasNextRankSection);
         var thisRankLabel = hasCurrentRankSection ? Translator.Translate("This rank") : null;
         var nextRankLabel = hasNextRankSection ? Translator.Translate("Next rank") : null;
+        currentRank = ResolveRuntimeRankSection(source, "This rank", currentRank);
+        nextRank = ResolveRuntimeRankSection(source, "Next rank", nextRank);
         if ((!hasCurrentRankSection && !hasNextRankSection)
             || (hasDescriptionSection && string.IsNullOrEmpty(description))
             || (hasCurrentRankSection
@@ -476,6 +499,101 @@ internal static class CharacterStatusScreenTextTranslator
         return !string.Equals(source, translated, StringComparison.Ordinal);
     }
 
+    private static string? ResolveRuntimeRankSection(string source, string label, string? fallback)
+    {
+        return TryExtractRankSection(source, label, out var rankSection)
+            && TryTranslateRuntimeMutationRankSection(rankSection, out var translatedSection)
+            ? translatedSection
+            : fallback;
+    }
+
+    private static bool TryExtractRankSection(string source, string label, out string section)
+    {
+        section = string.Empty;
+        var labelIndex = source.IndexOf(label, StringComparison.Ordinal);
+        if (labelIndex < 0)
+        {
+            return false;
+        }
+
+        var contentStart = source.IndexOf(":\n", labelIndex, StringComparison.Ordinal);
+        if (contentStart < 0)
+        {
+            return false;
+        }
+
+        contentStart += 2;
+        var contentEnd = source.IndexOf("\n\n", contentStart, StringComparison.Ordinal);
+        if (contentEnd < 0)
+        {
+            contentEnd = source.Length;
+        }
+
+        section = source.Substring(contentStart, contentEnd - contentStart).Trim();
+        return section.Length > 0;
+    }
+
+    private static bool TryTranslateRuntimeMutationRankSection(string section, out string translated)
+    {
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(section);
+        var match = ElementalRayRankSectionPattern.Match(stripped);
+        if (!match.Success)
+        {
+            translated = section;
+            return false;
+        }
+
+        var range = RestoreRuntimeCapture(match, spans, "range");
+        var damage = RestoreRuntimeCapture(match, spans, "damage");
+        var cooldown = RestoreRuntimeCapture(match, spans, "cooldown");
+        var cooldownReduction = match.Groups["cooldownReduction"].Success
+            ? RestoreRuntimeCapture(match, spans, "cooldownReduction")
+            : string.Empty;
+        var temperature = RestoreRuntimeCapture(match, spans, "temperature");
+        var element = match.Groups["element"].Value;
+        var verb = match.Groups["verb"].Value;
+        if ((string.Equals(element, "flame", StringComparison.Ordinal) && !string.Equals(verb, "heat", StringComparison.Ordinal))
+            || (string.Equals(element, "frost", StringComparison.Ordinal) && !string.Equals(verb, "cool", StringComparison.Ordinal)))
+        {
+            translated = section;
+            return false;
+        }
+
+        var rayNoun = string.Equals(element, "flame", StringComparison.Ordinal) ? "炎線" : "冷気線";
+        var temperatureVerb = string.Equals(element, "flame", StringComparison.Ordinal) ? "加熱" : "冷却";
+
+        translated = string.Concat(
+            "選んだ方向に",
+            range,
+            "マスの",
+            rayNoun,
+            "を放つ。\nダメージ: ",
+            damage,
+            "\nクールダウン: ",
+            cooldown,
+            "ラウンド");
+        if (cooldownReduction.Length > 0)
+        {
+            translated += "\n高い意志力によりクールダウンが"
+                + cooldownReduction
+                + "短縮される。";
+        }
+
+        translated += string.Concat(
+            "\n近接攻撃時に敵を",
+            temperature,
+            "度",
+            temperatureVerb,
+            "する。");
+        return true;
+    }
+
+    private static string RestoreRuntimeCapture(Match match, IReadOnlyList<ColorSpan> spans, string groupName)
+    {
+        var group = match.Groups[groupName];
+        return ColorAwareTranslationComposer.MarkupAwareRestoreCapture(group.Value, spans, group).Trim();
+    }
+
     private static bool RequiresComparisonDescription(string source, bool hasCurrentRankSection, bool hasNextRankSection)
     {
         var firstLabelIndex = GetFirstComparisonLabelIndex(source, hasCurrentRankSection, hasNextRankSection);
@@ -523,6 +641,70 @@ internal static class CharacterStatusScreenTextTranslator
             && !string.Equals(translated, key, StringComparison.Ordinal)
             ? translated
             : null;
+    }
+
+    private static List<string> GetMutationDictionaryNameCandidates(object mutation, string source)
+    {
+        var candidates = new List<string>();
+        AddCandidate(candidates, GetStableMutationDictionaryName(mutation));
+        AddCandidate(candidates, InferElementalRayMutationDictionaryName(source));
+        return candidates;
+    }
+
+    private static void AddCandidate(List<string> candidates, string? candidate)
+    {
+        if (string.IsNullOrWhiteSpace(candidate))
+        {
+            return;
+        }
+
+        var trimmed = candidate!.Trim();
+        for (var index = 0; index < candidates.Count; index++)
+        {
+            if (string.Equals(candidates[index], trimmed, StringComparison.Ordinal))
+            {
+                return;
+            }
+        }
+
+        candidates.Add(trimmed);
+    }
+
+    private static string? InferElementalRayMutationDictionaryName(string source)
+    {
+#pragma warning disable CA2249
+        if (source.IndexOf("electrical charge that you can use and discharge", StringComparison.Ordinal) >= 0
+            || source.IndexOf("Maximum charge:", StringComparison.Ordinal) >= 0
+            || source.IndexOf("Accrue base", StringComparison.Ordinal) >= 0)
+        {
+            return "Electrical Generation";
+        }
+
+        if (source.IndexOf("extra set of legs", StringComparison.Ordinal) >= 0
+            || (source.IndexOf("move speed", StringComparison.Ordinal) >= 0
+                && source.IndexOf("carry capacity", StringComparison.Ordinal) >= 0))
+        {
+            return "Multiple Legs";
+        }
+
+        if (source.IndexOf("joints stretch much further", StringComparison.Ordinal) >= 0
+            || source.IndexOf("Agility prerequisites", StringComparison.Ordinal) >= 0)
+        {
+            return "Triple-jointed";
+        }
+
+        if (source.IndexOf("ray of frost", StringComparison.Ordinal) >= 0)
+        {
+            return "Freezing Ray";
+        }
+
+        if (source.IndexOf("ray of flame", StringComparison.Ordinal) >= 0)
+        {
+            return "Flaming Ray";
+        }
+#pragma warning restore CA2249
+
+        return null;
     }
 
     private static string? GetMutationRankDictionaryValue(string mutationName, string? variant, int level)

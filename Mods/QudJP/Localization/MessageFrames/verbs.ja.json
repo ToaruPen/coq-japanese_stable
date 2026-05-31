@@ -2762,6 +2762,11 @@
     },
     {
       "verb": "butcher",
+      "extra": "{0} into some {1}",
+      "text": "{0}を解体して{1}にした"
+    },
+    {
+      "verb": "butcher",
       "extra": "{0} into a {1}",
       "text": "{0}を解体して{1}を得た"
     },
@@ -3048,6 +3053,16 @@
     {
       "verb": "flinch",
       "extra": "away as {0} whizzes past from the {1}",
+      "text": "{t1}から飛んできた{0}をかわした"
+    },
+    {
+      "verb": "flinch",
+      "extra": "away as {0} zips past from the {1}",
+      "text": "{t1}から飛んできた{0}をかわした"
+    },
+    {
+      "verb": "flinch",
+      "extra": "away as {0} flickers past from the {1}",
       "text": "{t1}から飛んできた{0}をかわした"
     },
     {

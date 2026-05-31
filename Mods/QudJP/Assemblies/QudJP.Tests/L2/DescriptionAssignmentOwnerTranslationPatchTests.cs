@@ -187,6 +187,21 @@ public sealed class DescriptionAssignmentOwnerTranslationPatchTests
     }
 
     [Test]
+    public void TranslateBannerDescription_TranslatesUncoloredWarTranceEffect()
+    {
+        var banner = new DummyBannerTarget
+        {
+            Description = "Bestows the war trance effect to {{w|Mechanimists}} who can see this item.",
+        };
+
+        DescriptionAssignmentOwnerTranslationPatch.TranslateBannerDescription(banner, null);
+
+        Assert.That(
+            banner.Description,
+            Is.EqualTo("このアイテムを見ることができる{{w|メカニマス教団}}に戦闘トランス効果を与える。"));
+    }
+
+    [Test]
     public void TranslateRemainingDescriptionAssignments_PreserveUnknownAndStripMarkerPrefixedValues()
     {
         var wingsUnknown = new DummyDescriptionTarget { Description = "Worn around Tail" };

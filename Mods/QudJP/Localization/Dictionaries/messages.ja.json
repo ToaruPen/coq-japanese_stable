@@ -94,13 +94,13 @@
       "route": "message-frame"
     },
     {
-      "pattern": "^You hit \\((x\\d+)\\) for (\\d+) damage with your (.+?)[.!] \\[(.+?)\\]$",
-      "template": "{2}で{1}ダメージを与えた。({0}) [{3}]",
+      "pattern": "^You hit \\((x\\d+)\\) for (\\d+) damage with (?:your |the |a |an )?(.+?)[.!] \\[(.+?)\\]$",
+      "template": "{d2}で{1}ダメージを与えた。({0}) [{3}]",
       "route": "emit-message"
     },
     {
-      "pattern": "^You critically hit \\((x\\d+)\\) for (\\d+) damage with your (.+?)[.!] \\[(.+?)\\]$",
-      "template": "{2}で会心の一撃、{1}ダメージを与えた。({0}) [{3}]",
+      "pattern": "^You critically hit \\((x\\d+)\\) for (\\d+) damage with (?:your |the |a |an )?(.+?)[.!] \\[(.+?)\\]$",
+      "template": "{d2}で会心の一撃、{1}ダメージを与えた。({0}) [{3}]",
       "route": "emit-message"
     },
     {
@@ -209,8 +209,8 @@
       "route": "emit-message"
     },
     {
-      "pattern": "^You miss with your (.+?)[.!] \\[(.+?) vs (.+?)\\]$",
-      "template": "{0}での攻撃は外れた。[{1} vs {2}]",
+      "pattern": "^You miss with (?:your |the |a |an )?(.+?)[.!] \\[(.+?) vs (.+?)\\]$",
+      "template": "{d0}での攻撃は外れた。[{1} vs {2}]",
       "route": "emit-message"
     },
     {
@@ -739,8 +739,8 @@
       "route": "effect-cripple"
     },
     {
-      "pattern": "^You don't penetrate (?:the )?(.+?)(?:'s|s'|の) armor with your (.+?)[.!] \\[(.+?)\\]$",
-      "template": "{1}では{0}の装甲を貫けなかった！ [{2}]",
+      "pattern": "^You don't penetrate (?:the )?(.+?)(?:'s|s'|の) armor with (?:(?:your|the) )?(.+?)[.!] \\[(.+?)\\]$",
+      "template": "{d1}では{0}の装甲を貫けなかった！ [{2}]",
       "route": "emit-message"
     },
     {
@@ -1064,6 +1064,16 @@
       "route": "emit-message"
     },
     {
+      "pattern": "^You stop (moving|resting|digging|gathering|attacking|acting|auto-exploring|exploring|waiting|disassembling|分解中) because you hear (.+?) fighting to the (north|south|east|west|northeast|northwest|southeast|southwest)[.!]?$",
+      "template": "{t2}で{d1}が戦っている音が聞こえたので{t0}をやめた。",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^You stop (moving|resting|digging|gathering|attacking|acting|auto-exploring|exploring|waiting|disassembling|分解中) because you hear (.+?) being injured to the (north|south|east|west|northeast|northwest|southeast|southwest)[.!]?$",
+      "template": "{t2}で{d1}が傷つく音が聞こえたので{t0}をやめた。",
+      "route": "emit-message"
+    },
+    {
       "pattern": "^You stop (moving|resting|digging|gathering|attacking|acting|auto-exploring|exploring|waiting|disassembling) because (.+?)[.!]?$",
       "template": "{1}ので{t0}をやめた。",
       "route": "emit-message"
@@ -1186,6 +1196,11 @@
     {
       "pattern": "^You disassemble (?:the |your )(.+?)\\. You receive tinkering bits <(.+?)>\\.[.!]?$",
       "template": "{0}を分解し、修理ビット<{1}>を受け取った。",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^You disassemble (?:the |your )(.+?)\\.$",
+      "template": "{0}を分解した。",
       "route": "emit-message"
     },
     {
@@ -2271,6 +2286,41 @@
     {
       "pattern": "^Zone build failure:(.+)$",
       "template": "ゾーン構築失敗:{0}",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^Its readout indicates that its startup sequence will take an estimated (\\d+) more rounds?\\.$",
+      "template": "表示には、起動シーケンス完了まであとおよそ{0}ラウンドかかると示されている。",
+      "route": "description"
+    },
+    {
+      "pattern": "^A ribbon of electricity leaps from you and (.+?) on you into the air\\.$",
+      "template": "{{{{W|電光のリボン}}}}があなたとあなたの{t0}から空中へ走った。",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^A ribbon of electricity leaps from (.+?) on your person into the air\\.$",
+      "template": "{{{{W|電光のリボン}}}}が身につけた{t0}から空中へ走った。",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^A ribbon of electricity leaps from you and (.+?) on you to (.+?)\\.$",
+      "template": "{{{{W|電光のリボン}}}}があなたとあなたの{t0}から{t1}へ走った。",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^A ribbon of electricity leaps from (.+?) on your person to (.+?)\\.$",
+      "template": "{{{{W|電光のリボン}}}}が身につけた{t0}から{t1}へ走った。",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^A ribbon of electricity leaps from (.+?) into the air\\.$",
+      "template": "{{{{W|電光のリボン}}}}が{t0}から空中へ走った。",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^A ribbon of electricity leaps from (.+?) to (.+?)\\.$",
+      "template": "{{{{W|電光のリボン}}}}が{t0}から{t1}へ走った。",
       "route": "emit-message"
     },
     {

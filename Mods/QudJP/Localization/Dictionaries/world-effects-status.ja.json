@@ -799,6 +799,11 @@
             "text": "{{r|戦闘トランス}}"
         },
         {
+            "key": "war trance",
+            "context": "XRL.World.Effects.WarTrance.DisplayName",
+            "text": "戦闘トランス"
+        },
+        {
             "key": "{{urban camouflage|urban camouflage}}",
             "context": "XRL.World.Effects.UrbanCamouflaged.Description",
             "text": "{{urban camouflage|都市迷彩}}"

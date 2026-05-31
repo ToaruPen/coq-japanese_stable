@@ -192,6 +192,97 @@ public sealed class WorldPartsProducerTranslationPatchTests
     }
 
     [Test]
+    public void LiquidVolumePatch_TranslatesCleanAllItemsMessage_WhenOwnerPatched()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyLiquidVolumeProducerTarget), nameof(DummyLiquidVolumeProducerTarget.HandleEvent), typeof(DummyInventoryActionEvent)),
+                typeof(LiquidVolumeTranslationPatch));
+
+            var target = new DummyLiquidVolumeProducerTarget
+            {
+                QueuedMessageToSend = "You clean the slime and rust from your {{Y|boots}} and {{Y|bronze dagger}} with a dram of {{C|water}}.",
+            };
+
+            target.HandleEvent(new DummyInventoryActionEvent());
+
+            Assert.That(
+                DummyMessageQueue.LastMessage,
+                Is.EqualTo("{{Y|boots}}と{{Y|bronze dagger}}から粘液と錆を{{C|水}}1ドラムで洗い落とした。"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void LiquidVolumePatch_TranslatesCleanAllItemsMessageLog_WhenOwnerPatched()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            PatchMessageLog(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyLiquidVolumeProducerTarget), nameof(DummyLiquidVolumeProducerTarget.HandleEvent), typeof(DummyInventoryActionEvent)),
+                typeof(LiquidVolumeTranslationPatch));
+
+            var target = new DummyLiquidVolumeProducerTarget
+            {
+                QueuedMessageToSend = "You clean the stains from {{C|high-tech toolkit}}、your {{Y|steel}} buckler、とyour pair of {{Y|steel}} boots with a dram of {{B|fresh water}} from カムシュルウールの 水筒.",
+            };
+
+            target.HandleEvent(new DummyInventoryActionEvent());
+
+            Assert.That(
+                DummyMessageQueue.LastMessage,
+                Is.EqualTo("{{C|high-tech toolkit}}、{{Y|steel}} buckler、とpair of {{Y|steel}} bootsから染みを{{B|真水}}1ドラムで洗い落とした（カムシュルウールの 水筒から）。"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void LiquidVolumePatch_TranslatesCollectMessageFromContainerHere_WhenOwnerPatched()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            PatchMessageLog(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyLiquidVolumeProducerTarget), nameof(DummyLiquidVolumeProducerTarget.HandleEvent), typeof(DummyInventoryActionEvent)),
+                typeof(LiquidVolumeTranslationPatch));
+
+            var target = new DummyLiquidVolumeProducerTarget
+            {
+                QueuedMessageToSend = "You collect 60 dram of fresh water from the 水袋 here in your 水筒と水袋.",
+            };
+
+            target.HandleEvent(new DummyInventoryActionEvent());
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("水袋（ここ）から真水を60ドラム集めた（水筒と水袋に入れた）。"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void LiquidVolumePatch_TranslatesHandleEventOwnerMessages_WhenOwnerPatched()
     {
         var harmonyId = CreateHarmonyId();
@@ -330,6 +421,66 @@ public sealed class WorldPartsProducerTranslationPatchTests
     }
 
     [Test]
+    public void LiquidVolumePatch_TranslatesPourDestinationPickOption_WhenOwnerPatched()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            PatchPickOption(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(
+                    typeof(DummyLiquidVolumeProducerTarget),
+                    nameof(DummyLiquidVolumeProducerTarget.Pour),
+                    typeof(bool).MakeByRefType(),
+                    typeof(DummyGameObject),
+                    typeof(DummyCell),
+                    typeof(bool),
+                    typeof(bool),
+                    typeof(int),
+                    typeof(bool)),
+                typeof(LiquidVolumeTranslationPatch));
+
+            var requestExit = false;
+            var target = new DummyLiquidVolumeProducerTarget
+            {
+                PickOptionIntroToShow = "Where do you want to pour your 水筒?",
+                PickOptionOptionsToShow =
+                [
+                    "Pour it into another container.",
+                    "Pour it nearby.",
+                    "Pour it on yourself.",
+                ],
+            };
+
+            target.Pour(ref requestExit, new DummyGameObject());
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyPopupGenericTarget.LastPickOptionIntro, Is.EqualTo("水筒をどこに注ぎますか？"));
+                Assert.That(
+                    DummyPopupGenericTarget.LastPickOptionOptions,
+                    Is.EqualTo(new[]
+                    {
+                        "別の容器に注ぐ。",
+                        "近くに注ぐ。",
+                        "自分に注ぐ。",
+                    }));
+                Assert.That(LiquidVolumePopupPickOptionHitCount("WherePour"), Is.EqualTo(1));
+                Assert.That(LiquidVolumePopupPickOptionHitCount("PourIntoAnotherContainerOption", "Popup.ProducerMenuItem"), Is.EqualTo(1));
+                Assert.That(LiquidVolumePopupPickOptionHitCount("PourNearbyOption", "Popup.ProducerMenuItem"), Is.EqualTo(1));
+                Assert.That(LiquidVolumePopupPickOptionHitCount("PourOnSelfOption", "Popup.ProducerMenuItem"), Is.EqualTo(1));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void LiquidVolumePatch_DoesNotTranslatePopup_WhenOwnerAbsent()
     {
         var harmonyId = CreateHarmonyId();
@@ -379,6 +530,68 @@ public sealed class WorldPartsProducerTranslationPatchTests
             target.HandleEvent(new DummyInventoryActionEvent());
 
             Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("It's fizzy."));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void LiquidVolumePatch_StripsDirectMarkerOnMessageLog_WhenOwnerPatched()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            PatchMessageLog(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyLiquidVolumeProducerTarget), nameof(DummyLiquidVolumeProducerTarget.HandleEvent), typeof(DummyInventoryActionEvent)),
+                typeof(LiquidVolumeTranslationPatch));
+
+            var target = new DummyLiquidVolumeProducerTarget
+            {
+                QueuedMessageToSend = MessageFrameTranslator.MarkDirectTranslation("It's fizzy."),
+            };
+
+            target.HandleEvent(new DummyInventoryActionEvent());
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("It's fizzy."));
+                Assert.That(LiquidVolumeMessageLogHitCount("Fizzy"), Is.Zero);
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void LiquidVolumePatch_DoesNotTranslateMessageLogTraffic_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            PatchMessageLog(harmony);
+
+            var target = new DummyLiquidVolumeProducerTarget
+            {
+                QueuedMessageToSend = "It's fizzy.",
+            };
+
+            target.HandleEvent(new DummyInventoryActionEvent());
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("It's fizzy."));
+                Assert.That(LiquidVolumeMessageLogHitCount("Fizzy"), Is.Zero);
+            });
         }
         finally
         {
@@ -1967,6 +2180,14 @@ public sealed class WorldPartsProducerTranslationPatchTests
             prefix: new HarmonyMethod(RequireMethod(typeof(PopupAskNumberTranslationPatch), nameof(PopupAskNumberTranslationPatch.Prefix))));
     }
 
+    private static void PatchPickOption(Harmony harmony)
+    {
+        harmony.Patch(
+            original: RequireMethod(typeof(DummyPopupGenericTarget), nameof(DummyPopupGenericTarget.PickOption)),
+            prefix: new HarmonyMethod(RequireMethod(typeof(PopupPickOptionTranslationPatch), nameof(PopupPickOptionTranslationPatch.Prefix))),
+            finalizer: new HarmonyMethod(RequireMethod(typeof(PopupPickOptionTranslationPatch), nameof(PopupPickOptionTranslationPatch.Finalizer))));
+    }
+
     private static void PatchMessageLog(Harmony harmony)
     {
         harmony.Patch(
@@ -2152,6 +2373,20 @@ public sealed class WorldPartsProducerTranslationPatchTests
         return DynamicTextObservability.GetRouteFamilyHitCountForTests(
             "MessageQueue.AddPlayerMessage",
             nameof(LiquidVolumeTranslationPatch) + ".Queued." + detail);
+    }
+
+    private static int LiquidVolumeMessageLogHitCount(string detail)
+    {
+        return DynamicTextObservability.GetRouteFamilyHitCountForTests(
+            nameof(MessageLogPatch),
+            nameof(LiquidVolumeTranslationPatch) + ".MessageLog." + detail);
+    }
+
+    private static int LiquidVolumePopupPickOptionHitCount(string detail, string family = "Popup.ProducerText")
+    {
+        return DynamicTextObservability.GetRouteFamilyHitCountForTests(
+            nameof(PopupPickOptionTranslationPatch),
+            family + ".LiquidVolumeTranslationPatch." + detail);
     }
 
     private void WritePatternDictionary(params (string pattern, string template)[] patterns)

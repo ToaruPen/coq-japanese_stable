@@ -10,6 +10,34 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+## [0.4.10] - 2026-05-31
+
+### Fixed
+
+- Player.log で確認された ability label、mutation rank-up popup、liquid pour prompt/option、skill status label、generated item description、advanced toolkit の loaded-cell color tag などの未翻訳 UI・説明文を修正しました。
+- mutation popup、active effect、item mod name、popup/log 内の generated display name など、追加で見つかった runtime 生成テキストの未翻訳表示を日本語化しました。
+- color markup 付きの item name や generated display name で、日本語化後も色タグが保たれるようにしました。
+- tutorial Mehmet の POI highlight が正しく日本語化経路に乗るようにしました。
+- inventory line、menu option、bottom context 表示の処理を見直し、inventory/menu の表示更新を軽くしました。
+
+---
+
+## [0.4.00] - 2026-05-29
+
+### Fixed
+
+- runtime 生成テキストの翻訳範囲を大きく広げ、ability label、説明文、popup option、message frame、生成 UI fragment に残っていた英語表示を追加で日本語化しました。
+- mutation 選択と rapid advancement popup option、ability bar label、direction prompt、targeting footer、fire-mode prompt、ability manager、trade、tinkering、inventory、main menu などの UI 表示を追加で日本語化しました。
+- inventory action、campfire ingredient row、liquid collect/fill、firefighting、sleeping target wake-up、companion dismissal、auto-collect など、条件で変わる操作ラベルと失敗メッセージを改善しました。
+- active-effect adjective chain、stuck-in effect target、複数形の combat miss、ForceProjector access failure、liquid slip、NPC wild-shot、lost-travel failure、Water Ritual reputation article residue など、Player.log で観測された未翻訳 runtime text を修正しました。
+- Player.log で追加確認された combat log、mutation prompt、inventory action、energy-cell UI、auto-disassembly message、graffiti/readout description、powered-off stat bonus、lost-chance description、liquid-covered effect name、`water-stained` item prefix などの未翻訳表示を修正しました。
+- schemasoft chip、Cyclopean Prism、PitMaterial、Evil Twin、Cherubim/Hexacherubim element text、brackish liquid puddle、water-bond、compound stained、solar pumping station、hydraulic liquid/flywheel、Oboroqoru worshipper title suffix などの生成表示名・説明文を日本語化しました。
+- generated journal location discovery、painted/engraved Sultan challenge tooltip、Jewel-Encrusted short description、stat adjustment description で、英語残りや color markup の崩れが出る経路を修正しました。
+- ray mutation message log、ability bar hotkey suffix、generated liquid color tag、attack-confirmation target name などで、日本語化済みの body-part/source/target と色タグが保たれるようにしました。
+- translated item name、charge cell、recipe name、tinkering bit code などで、日本語化後も color markup が保たれるようにしました。
+
+---
+
 ## [0.3.21] - 2026-05-23
 
 ### Fixed
@@ -372,7 +400,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
-[Unreleased]: https://github.com/ToaruPen/coq-japanese_stable/compare/v0.3.21...HEAD
+[Unreleased]: https://github.com/ToaruPen/coq-japanese_stable/compare/v0.4.10...HEAD
+[0.4.10]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.4.10
+[0.4.00]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.4.00
 [0.3.21]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.3.21
 [0.3.20]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.3.20
 [0.3.01]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.3.01

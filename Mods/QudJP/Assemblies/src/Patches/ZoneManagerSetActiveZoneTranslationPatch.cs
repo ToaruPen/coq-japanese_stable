@@ -79,7 +79,7 @@ public static class ZoneManagerSetActiveZoneTranslationPatch
     {
         if (activeDepth <= 0
             || pendingBannerCount <= 0
-            || !string.Equals(color, "C", StringComparison.Ordinal))
+            || (color is not null && !string.Equals(color, "C", StringComparison.Ordinal)))
         {
             return false;
         }

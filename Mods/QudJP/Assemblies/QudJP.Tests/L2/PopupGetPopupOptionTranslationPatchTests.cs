@@ -75,6 +75,18 @@ public sealed class PopupGetPopupOptionTranslationPatchTests
     }
 
     [Test]
+    public void Postfix_TranslatesDisarmInlineHotkeyPopupOptionText()
+    {
+        WriteDictionary(("[d] disarm", "[d] 解除する"));
+
+        using var patch = PatchGetPopupOption();
+
+        var option = DummyPopupGenericTarget.GetPopupOption(0, new[] { "{{hotkey|d}}isarm" }, new[] { 'd' });
+
+        Assert.That(option.text, Is.EqualTo("{{W|[d]}} {{y|解除する}}"));
+    }
+
+    [Test]
     public void Postfix_LeavesUnknownHotkeyOptionTextUnchanged()
     {
         WriteDictionary(("[n] detonate", "[n] 起爆"));

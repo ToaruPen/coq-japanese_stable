@@ -12,11 +12,18 @@ internal static class InventoryLineFontFixer
 {
 #if HAS_TMP
     private const int MaxDiagnostics = 128;
+#if QUDJP_DEV_BUILD
+    private const int MaxRefreshTimingDiagnostics = 256;
+#endif
     private const int MaxSuccessfulRefreshCacheEntries = 1024;
     private const int CleanupInterval = 128;
     private const long SuccessfulRefreshCacheTtlTicks = 5L * 60L * 10_000_000L;
     private static int diagnosticsCount;
+#if QUDJP_DEV_BUILD
+    private static int refreshTimingDiagnosticsCount;
+#endif
     private static int cleanupCount;
+    private static int lastForceUpdateCanvasesFrame = int.MinValue;
     private static readonly ConcurrentDictionary<int, SuccessfulRefreshEntry> SuccessfulRefreshKeysByLine = new();
 
     internal static bool TryApplyPrimaryFontToItemRow(object? inventoryLineInstance, object? data)
@@ -36,16 +43,65 @@ internal static class InventoryLineFontFixer
         return TryRefreshTextSkinWithFallbackFont(textSkin, displayName);
     }
 
+    internal static bool TryApplyPrimaryFontToItemRowForSetData(object? inventoryLineInstance, object? data)
+    {
+        if (inventoryLineInstance is null || data is null)
+        {
+            return false;
+        }
+
+        if (!TryGetBooleanPropertyOrField(data, "category", out var isCategory) || isCategory)
+        {
+            return false;
+        }
+
+        var displayName = TryGetStringPropertyOrField(data, "displayName");
+        var textSkin = ReflectionUtils.GetPropertyOrFieldValue(inventoryLineInstance, "text");
+        return TryRefreshTextSkinWithFallbackFontForSetData(inventoryLineInstance, textSkin, displayName);
+    }
+
     internal static bool TryRefreshTextSkinWithFallbackFont(object? textSkin, string? finalText)
     {
+#if QUDJP_DEV_BUILD
+        var timingStopwatch = RuntimeDiagnostics.VerboseProbesEnabled
+            ? System.Diagnostics.Stopwatch.StartNew()
+            : null;
+        var forceCanvasMs = 0d;
+        var forceMeshMs = 0d;
+        var canvasUpdateMode = "not_attempted";
+#endif
         if (!TryGetTextMeshPro(textSkin, out var tmp) || tmp is null)
         {
             LogDiagnostics(textSkin, null, finalText, applied: false);
+#if QUDJP_DEV_BUILD
+            LogRefreshTimingProbe(
+                "no_tmp",
+                textSkin,
+                null,
+                finalText,
+                refreshed: false,
+                timingStopwatch,
+                forceCanvasMs,
+                forceMeshMs,
+                canvasUpdateMode);
+#endif
             return false;
         }
 
         if (tmp.gameObject is null || !tmp.gameObject.activeInHierarchy || !tmp.isActiveAndEnabled)
         {
+#if QUDJP_DEV_BUILD
+            LogRefreshTimingProbe(
+                "inactive",
+                textSkin,
+                tmp,
+                finalText,
+                refreshed: false,
+                timingStopwatch,
+                forceCanvasMs,
+                forceMeshMs,
+                canvasUpdateMode);
+#endif
             return false;
         }
 
@@ -87,10 +143,97 @@ internal static class InventoryLineFontFixer
         InvokeIfPresent(tmp, "RecalculateMasking");
         tmp.havePropertiesChanged = true;
         tmp.text = currentText;
-        ForceUpdateCanvases();
+#if QUDJP_DEV_BUILD
+        var forceMeshStopwatch = timingStopwatch is null ? null : System.Diagnostics.Stopwatch.StartNew();
+#endif
         tmp.ForceMeshUpdate(ignoreActiveState: true, forceTextReparsing: true);
+#if QUDJP_DEV_BUILD
+        if (forceMeshStopwatch is not null)
+        {
+            forceMeshStopwatch.Stop();
+            forceMeshMs = forceMeshStopwatch.Elapsed.TotalMilliseconds;
+        }
+#endif
+        var refreshed = tmp.textInfo.characterCount > 0;
+        if (refreshed)
+        {
+#if QUDJP_DEV_BUILD
+            canvasUpdateMode = "not_needed";
+#endif
+        }
+
+        if (!refreshed)
+        {
+#if QUDJP_DEV_BUILD
+            var forceCanvasStopwatch = timingStopwatch is null ? null : System.Diagnostics.Stopwatch.StartNew();
+            var forcedCanvasUpdate = TryForceUpdateCanvasesOncePerFrame();
+            if (forceCanvasStopwatch is not null)
+            {
+                forceCanvasStopwatch.Stop();
+                if (forcedCanvasUpdate)
+                {
+                    forceCanvasMs = forceCanvasStopwatch.Elapsed.TotalMilliseconds;
+                }
+            }
+            canvasUpdateMode = forcedCanvasUpdate ? "performed" : "skipped_same_frame";
+
+            forceMeshStopwatch = timingStopwatch is null ? null : System.Diagnostics.Stopwatch.StartNew();
+#else
+            _ = TryForceUpdateCanvasesOncePerFrame();
+#endif
+            tmp.ForceMeshUpdate(ignoreActiveState: true, forceTextReparsing: true);
+#if QUDJP_DEV_BUILD
+            if (forceMeshStopwatch is not null)
+            {
+                forceMeshStopwatch.Stop();
+                forceMeshMs += forceMeshStopwatch.Elapsed.TotalMilliseconds;
+            }
+#endif
+            refreshed = tmp.textInfo.characterCount > 0;
+        }
         LogDiagnostics(textSkin, tmp, finalText, applied: true);
-        return tmp.textInfo.characterCount > 0;
+#if QUDJP_DEV_BUILD
+        LogRefreshTimingProbe(
+            "applied",
+            textSkin,
+            tmp,
+            finalText,
+            refreshed,
+            timingStopwatch,
+            forceCanvasMs,
+            forceMeshMs,
+            canvasUpdateMode);
+#endif
+        return refreshed;
+    }
+
+    internal static bool TryRefreshTextSkinWithFallbackFontForSetData(
+        object? inventoryLineInstance,
+        object? textSkin,
+        string? finalText)
+    {
+        var preRefreshKey = GetActiveItemLineRefreshKey(inventoryLineInstance);
+        if (HasHealthySuccessfulRefreshForCurrentKey(inventoryLineInstance, preRefreshKey))
+        {
+#if QUDJP_DEV_BUILD
+            LogRefreshTimingSkip(inventoryLineInstance, preRefreshKey, "healthy_success_cache");
+#endif
+            return true;
+        }
+
+        var refreshed = TryRefreshTextSkinWithFallbackFont(textSkin, finalText);
+        if (refreshed)
+        {
+            RecordSuccessfulRefreshForCurrentKey(
+                inventoryLineInstance,
+                GetActiveItemLineRefreshKey(inventoryLineInstance));
+        }
+        else
+        {
+            ForgetSuccessfulRefreshForLine(inventoryLineInstance);
+        }
+
+        return refreshed;
     }
 
     internal static bool IsActiveItemLine(object? inventoryLineInstance)
@@ -485,6 +628,94 @@ internal static class InventoryLineFontFixer
         }
     }
 
+#if QUDJP_DEV_BUILD
+    private static void LogRefreshTimingProbe(
+        string outcome,
+        object? textSkin,
+        TextMeshProUGUI? tmp,
+        string? finalText,
+        bool refreshed,
+        System.Diagnostics.Stopwatch? timingStopwatch,
+        double forceCanvasMs,
+        double forceMeshMs,
+        string canvasUpdateMode)
+    {
+        if (!RuntimeDiagnostics.VerboseProbesEnabled || timingStopwatch is null)
+        {
+            return;
+        }
+
+        var count = Interlocked.Increment(ref refreshTimingDiagnosticsCount);
+        if (count > MaxRefreshTimingDiagnostics)
+        {
+            return;
+        }
+
+        timingStopwatch.Stop();
+        RuntimeDiagnostics.LogVerboseProbe(() => CreateRefreshTimingProbe(
+            outcome,
+            textSkin,
+            tmp,
+            finalText,
+            refreshed,
+            timingStopwatch.Elapsed.TotalMilliseconds,
+            forceCanvasMs,
+            forceMeshMs,
+            canvasUpdateMode));
+    }
+
+    private static void LogRefreshTimingSkip(object? inventoryLineInstance, string? refreshKey, string reason)
+    {
+        if (!RuntimeDiagnostics.VerboseProbesEnabled)
+        {
+            return;
+        }
+
+        var count = Interlocked.Increment(ref refreshTimingDiagnosticsCount);
+        if (count > MaxRefreshTimingDiagnostics)
+        {
+            return;
+        }
+
+        var lineId = inventoryLineInstance is Component component
+            ? component.GetInstanceID().ToString(System.Globalization.CultureInfo.InvariantCulture)
+            : "<non_component>";
+        RuntimeDiagnostics.LogVerboseProbe(() =>
+            "[QudJP] InventoryLineFontRefreshSkip/v1: "
+            + $"reason='{reason}' "
+            + $"line_id='{lineId}' "
+            + $"refresh_key_present={(!string.IsNullOrEmpty(refreshKey)).ToString(System.Globalization.CultureInfo.InvariantCulture)}");
+    }
+
+    private static string CreateRefreshTimingProbe(
+        string outcome,
+        object? textSkin,
+        TextMeshProUGUI? tmp,
+        string? finalText,
+        bool refreshed,
+        double elapsedMs,
+        double forceCanvasMs,
+        double forceMeshMs,
+        string canvasUpdateMode)
+    {
+        var textLength = finalText?.Length ?? 0;
+        var tmpTextLength = tmp?.text?.Length ?? 0;
+        var characterCount = tmp?.textInfo.characterCount;
+        return "[QudJP] InventoryLineFontRefreshTiming/v1: "
+            + $"outcome='{outcome}' "
+            + $"refreshed={refreshed.ToString(System.Globalization.CultureInfo.InvariantCulture)} "
+            + $"elapsed_ms={elapsedMs.ToString("F3", System.Globalization.CultureInfo.InvariantCulture)} "
+            + $"force_canvas_ms={forceCanvasMs.ToString("F3", System.Globalization.CultureInfo.InvariantCulture)} "
+            + $"force_mesh_ms={forceMeshMs.ToString("F3", System.Globalization.CultureInfo.InvariantCulture)} "
+            + $"canvas_update_mode='{canvasUpdateMode}' "
+            + $"text_len={textLength.ToString(System.Globalization.CultureInfo.InvariantCulture)} "
+            + $"tmp_text_len={tmpTextLength.ToString(System.Globalization.CultureInfo.InvariantCulture)} "
+            + $"char_count={(characterCount.HasValue ? characterCount.Value.ToString(System.Globalization.CultureInfo.InvariantCulture) : "<null>")} "
+            + $"textSkin='{textSkin?.GetType().FullName ?? "<null>"}' "
+            + $"tmp='{tmp?.GetType().FullName ?? "<null>"}'";
+    }
+#endif
+
     private static string ReadCanvasCull(TextMeshProUGUI? tmp)
     {
         if (tmp is null)
@@ -502,6 +733,19 @@ internal static class InventoryLineFontFixer
         var cullProperty = canvasRenderer.GetType().GetProperty("cull");
         var cull = cullProperty?.GetValue(canvasRenderer);
         return cull?.ToString() ?? "<null>";
+    }
+
+    private static bool TryForceUpdateCanvasesOncePerFrame()
+    {
+        var currentFrame = Time.frameCount;
+        if (lastForceUpdateCanvasesFrame == currentFrame)
+        {
+            return false;
+        }
+
+        lastForceUpdateCanvasesFrame = currentFrame;
+        ForceUpdateCanvases();
+        return true;
     }
 
     private static void InvokeIfPresent(object target, string methodName)

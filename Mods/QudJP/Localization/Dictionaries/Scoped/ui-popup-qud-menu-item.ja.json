@@ -10,8 +10,18 @@
   },
   "entries": [
     { "key": "Abandon Character", "text": "キャラクターを放棄" },
+    { "key": "Choose a random name from your own culture.", "context": "QudMenuItem", "text": "自分の文化からランダムな名前を選ぶ。" },
+    { "key": "Enter a name.", "context": "QudMenuItem", "text": "名前を入力する。" },
     { "key": "Hold to Accept", "text": "長押しして決定" },
+    { "key": "Name it based on its qualities.", "context": "QudMenuItem", "text": "特徴に基づいて名前を付ける。" },
     { "key": "Quit Without Saving", "text": "セーブせずに終了" },
-    { "key": "Save and Quit", "text": "セーブして終了" }
+    { "key": "Save and Quit", "text": "セーブして終了" },
+    { "key": "Wait 1 Turn", "context": "QudMenuItem", "text": "1ターン待機" },
+    { "key": "Wait N Turns", "context": "QudMenuItem", "text": "Nターン待機" },
+    { "key": "Wait 20 Turns", "context": "QudMenuItem", "text": "20ターン待機" },
+    { "key": "Wait 100 Turns", "context": "QudMenuItem", "text": "100ターン待機" },
+    { "key": "Wait Until Healed", "context": "QudMenuItem", "text": "完全回復まで待機" },
+    { "key": "Wait Until Party Healed", "context": "QudMenuItem", "text": "パーティー全員の回復まで待機" },
+    { "key": "Wait Until Morning", "context": "QudMenuItem", "text": "朝まで待機" }
   ]
 }

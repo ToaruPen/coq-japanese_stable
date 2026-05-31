@@ -121,6 +121,21 @@ internal static class CookingEffectFragmentTranslator
                 RestoreVisible(match.Groups["duration"], spans),
                 "時間のあいだ恐怖を無効化する。")),
         new(
+            "DrinkFreshwaterHealToFull",
+            new Regex(
+                "^Whenever you drink freshwater, there's a (?<chance>\\d+(?:-\\d+)?%) chance you heal to full\\.$",
+                RegexOptions.CultureInvariant | RegexOptions.Compiled),
+            static (match, spans) => string.Concat(
+                "真水を飲むたび、",
+                RestoreVisible(match.Groups["chance"], spans),
+                "の確率で完全回復する。")),
+        new(
+            "IllDurationReduced",
+            new Regex(
+                "^You only get Ill for 1/10th the usual length of time\\.$",
+                RegexOptions.CultureInvariant | RegexOptions.Compiled),
+            static (_, _) => "体調不良の持続時間が通常の1/10になる。"),
+        new(
             "EatYuckwheatElectricalDischarge",
             new Regex(
                 "^Whenever you eat an unfermented yuckwheat stem, you release an electrical discharge per Electrical Generation at level (?<level>\\d+(?:-\\d+)?)\\.$",

@@ -734,6 +734,61 @@ public sealed class MessagePatternTranslatorTests
     }
 
     [Test]
+    public void Translate_DisplayNamePlaceholderTranslatesWeaponCapture()
+    {
+        WriteExactDictionary(("chain pistol", "チェーンピストル"));
+        WritePatternDictionary(
+            ("^You hit \\((x\\d+)\\) for (\\d+) damage with (?:your |the |a |an )?(.+?)[.!] \\[(.+?)\\]$", "{d2}で{1}ダメージを与えた。({0}) [{3}]"));
+
+        var translated = MessagePatternTranslator.Translate("You hit (x1) for 1 damage with the {{Y|chain pistol}}! [18]");
+
+        Assert.That(translated, Is.EqualTo("{{Y|チェーンピストル}}で1ダメージを与えた。(x1) [18]"));
+    }
+
+    [Test]
+    public void Translate_DisplayNamePlaceholderTranslatesPlainDisplayNameCapture()
+    {
+        WriteExactDictionary(("chain pistol", "チェーンピストル"));
+        WritePatternDictionary(("^You equip (.+?)[.!]?$", "{d0}を装備した"));
+
+        var translated = MessagePatternTranslator.Translate("You equip a chain pistol.");
+
+        Assert.That(translated, Is.EqualTo("チェーンピストルを装備した"));
+    }
+
+    [Test]
+    public void Translate_DisplayNamePlaceholderPreservesColorWrappedDisplayNameCapture()
+    {
+        WriteExactDictionary(("chain pistol", "チェーンピストル"));
+        WritePatternDictionary(("^You equip (.+?)[.!]?$", "{d0}を装備した"));
+
+        var translated = MessagePatternTranslator.Translate("You equip {{Y|a chain pistol}}.");
+
+        Assert.That(translated, Is.EqualTo("{{Y|チェーンピストル}}を装備した"));
+    }
+
+    [Test]
+    public void Translate_DisplayNamePlaceholderFallsBackSafelyWhenDisplayNameMissing()
+    {
+        WritePatternDictionary(("^You equip (.+?)[.!]?$", "{d0}を装備した"));
+
+        var translated = MessagePatternTranslator.Translate("You equip a gleaming trinket.");
+
+        Assert.That(translated, Is.EqualTo("gleaming trinketを装備した"));
+    }
+
+    [Test]
+    public void Translate_DisplayNamePlaceholderStripsDirectTranslationMarkerInsideCapture()
+    {
+        WritePatternDictionary(("^You receive (.+?)!$", "{d0}を受け取った"));
+
+        var translated = MessagePatternTranslator.Translate(
+            "You receive " + MessageFrameTranslator.MarkDirectTranslation("奇妙な小物") + "!");
+
+        Assert.That(translated, Is.EqualTo("奇妙な小物を受け取った"));
+    }
+
+    [Test]
     public void Translate_RepositoryDictionary_PreservesNestedColorWrappersForPlayerHitWithRoll()
     {
         UseRepositoryPatternDictionary();
@@ -746,6 +801,32 @@ public sealed class MessagePatternTranslatorTests
     }
 
     [Test]
+    public void Translate_RepositoryDictionary_PreservesNestedColorWrappersForPlayerHitWithTheWeaponAndRoll()
+    {
+        UseRepositoryPatternDictionary();
+
+        var translated = MessagePatternTranslator.Translate(
+            "{{g|You hit {{&W|(x2)}} for 21 damage with the {{g|{{Y|塩気のある}} {{slimy|粘液質の}} Point of the Commanding Woe}}! [19]}}");
+
+        Assert.That(
+            translated,
+            Is.EqualTo("{{g|{{g|{{Y|塩気のある}} {{slimy|粘液質の}} Point of the Commanding Woe}}で21ダメージを与えた。({{&W|x2}}) [19]}}"));
+    }
+
+    [Test]
+    public void Translate_RepositoryDictionary_PreservesNestedColorWrappersForPlayerCriticalHitWithTheWeaponAndRoll()
+    {
+        UseRepositoryPatternDictionary();
+
+        var translated = MessagePatternTranslator.Translate(
+            "{{g|You critically hit {{&W|(x3)}} for 28 damage with the {{Y-R-Y-Y-Y-Y-Y-r-Y sequence|Point of the Commanding Woe}}! [21]}}");
+
+        Assert.That(
+            translated,
+            Is.EqualTo("{{g|{{Y-R-Y-Y-Y-Y-Y-r-Y sequence|Point of the Commanding Woe}}で会心の一撃、28ダメージを与えた。({{&W|x3}}) [21]}}"));
+    }
+
+    [Test]
     public void Translate_RepositoryDictionary_PreservesOuterWrapperForPlayerWeaponMiss()
     {
         UseRepositoryPatternDictionary();
@@ -755,6 +836,18 @@ public sealed class MessagePatternTranslatorTests
         Assert.That(
             translated,
             Is.EqualTo("{{r|{{fiery|燃え盛る}} {{w|青銅の短剣}}での攻撃は外れた。[0 vs 0]}}"));
+    }
+
+    [Test]
+    public void Translate_RepositoryDictionary_PreservesOuterWrapperForPlayerWeaponMissWithTheWeapon()
+    {
+        UseRepositoryPatternDictionary();
+
+        var translated = MessagePatternTranslator.Translate("{{r|You miss with the {{Y-R-Y-Y-Y-Y-Y-r-Y sequence|Point of the Commanding Woe}}! [8 vs 12]}}");
+
+        Assert.That(
+            translated,
+            Is.EqualTo("{{r|{{Y-R-Y-Y-Y-Y-Y-r-Y sequence|Point of the Commanding Woe}}での攻撃は外れた。[8 vs 12]}}"));
     }
 
     [Test]
@@ -1907,6 +2000,27 @@ public sealed class MessagePatternTranslatorTests
     }
 
     [Test]
+    public void Translate_RepositoryDictionary_TranslatesBootSequenceReadoutDescription()
+    {
+        UseRepositoryPatternDictionary();
+
+        var translated = MessagePatternTranslator.Translate(
+            "Its readout indicates that its startup sequence will take an estimated 7 more rounds.");
+
+        Assert.That(translated, Is.EqualTo("表示には、起動シーケンス完了まであとおよそ7ラウンドかかると示されている。"));
+    }
+
+    [Test]
+    public void Translate_RepositoryDictionary_TranslatesDisassembleOnlyAutoActMessage()
+    {
+        UseRepositoryPatternDictionary();
+
+        var translated = MessagePatternTranslator.Translate("You disassemble your HEミサイル x4.");
+
+        Assert.That(translated, Is.EqualTo("HEミサイル x4を分解した。"));
+    }
+
+    [Test]
     public void Translate_RepositoryDictionary_TranslatesCapitalizedDirectionQualifiedCapture()
     {
         UseRepositoryPatternDictionary();
@@ -1961,6 +2075,27 @@ public sealed class MessagePatternTranslatorTests
             Assert.That(
                 MessagePatternTranslator.Translate("The 目なし蟹 is stuck in a アスファルトの水たまり!"),
                 Is.EqualTo("目なし蟹はアスファルトの水たまりにはまっている！"));
+        });
+    }
+
+    [Test]
+    public void Translate_RepositoryDictionary_RestrictsStopActionHearingPatternsToKnownActions()
+    {
+        UseRepositoryPatternDictionary();
+
+        var translated = MessagePatternTranslator.Translate(
+            "You stop moving because you hear タム fighting to the north.");
+        var translatedLocalizedAction = MessagePatternTranslator.Translate(
+            "You stop 分解中 because you hear タム fighting to the north.");
+        var unknownAction = "You stop meditating because you hear タム fighting to the north.";
+        var unknownTranslated = MessagePatternTranslator.Translate(unknownAction);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.EqualTo("北でタムが戦っている音が聞こえたので移動をやめた。"));
+            Assert.That(translatedLocalizedAction, Is.EqualTo("北でタムが戦っている音が聞こえたので分解中をやめた。"));
+            Assert.That(unknownTranslated, Is.EqualTo(unknownAction));
+            Assert.That(MessagePatternTranslator.GetMissingPatternHitCountForTests(unknownAction), Is.EqualTo(1));
         });
     }
 
@@ -2025,6 +2160,17 @@ public sealed class MessagePatternTranslatorTests
             "Your 鉛スラッグ fails to penetrate the フォームクリートの armor!");
 
         Assert.That(translated, Is.EqualTo("あなたの鉛スラッグはフォームクリートの装甲を貫けなかった！"));
+    }
+
+    [Test]
+    public void Translate_RepositoryDictionary_TranslatesPlayerWeaponArmorFailureWithLocalizedPossessive()
+    {
+        UseRepositoryPatternDictionary();
+
+        var translated = MessagePatternTranslator.Translate(
+            "You don't penetrate 珪岩の armor with the Point of the Commanding Woe. [23]");
+
+        Assert.That(translated, Is.EqualTo("Point of the Commanding Woeでは珪岩の装甲を貫けなかった！ [23]"));
     }
 
     [Test]

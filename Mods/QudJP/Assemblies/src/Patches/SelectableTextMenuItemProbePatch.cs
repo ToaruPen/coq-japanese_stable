@@ -34,6 +34,11 @@ public static class SelectableTextMenuItemProbePatch
     {
         try
         {
+            if (!RuntimeDiagnostics.VerboseProbesEnabled)
+            {
+                return;
+            }
+
             if (SelectableTextMenuItemObservability.TryBuildState(__instance, "update-postfix", out var logLine)
                 && !string.IsNullOrEmpty(logLine))
             {

@@ -712,6 +712,24 @@ public sealed class LocalizationCoverageTests
     }
 
     [Test]
+    public void LaserPistolTurretName_DoesNotRegressToEnglishLowLightTurret()
+    {
+        var itemsDocument = XDocument.Load(Path.Combine(localizationRoot, "ObjectBlueprints", "Items.jp.xml"));
+        var turretName = itemsDocument.Root!
+            .Elements("object")
+            .Single(element => string.Equals(element.Attribute("Name")?.Value, "Laser Pistol", StringComparison.Ordinal))
+            .Elements("tag")
+            .Single(element => string.Equals(element.Attribute("Name")?.Value, "TurretName", StringComparison.Ordinal))
+            .Attribute("Value")?.Value ?? string.Empty;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(turretName, Is.EqualTo("低光量レーザータレット"));
+            Assert.That(turretName, Does.Not.Contain("low-light"));
+        });
+    }
+
+    [Test]
     public void CtesiphusPetResponse_DoesNotRegressToEnglishMeow()
     {
         var creaturesDocument = XDocument.Load(Path.Combine(localizationRoot, "ObjectBlueprints", "Creatures.jp.xml"));
@@ -1115,6 +1133,9 @@ public sealed class LocalizationCoverageTests
                 Does.Contain(new DictionaryEntry("{{w|metabolized effect}}", "XRL.World.Effects.BasicTriggeredCookingEffect.GetDescription", "{{w|代謝効果}}")));
             Assert.That(
                 cookingEntries,
+                Does.Contain(new DictionaryEntry("metabolized effect", "XRL.World.Effects.BasicTriggeredCookingEffect.GetDescription", "代謝効果")));
+            Assert.That(
+                cookingEntries,
                 Does.Contain(new DictionaryEntry(
                     "@thisCreature thirst@s at half rate.",
                     "XRL.World.Effects.ProceduralCookingEffectUnit_LessThirst.GetDescription",
@@ -1235,6 +1256,7 @@ public sealed class LocalizationCoverageTests
             new DictionaryEntry("Discharge", "AbilityBar.ButtonText", "放電"),
             new DictionaryEntry("Lase", "AbilityBar.ButtonText", "レーザー照射"),
             new DictionaryEntry("Recoil", "AbilityBar.ButtonText", "帰還"),
+            new DictionaryEntry("Fly", "AbilityBar.ButtonText", "飛行"),
             new DictionaryEntry("Mark", "AbilityBar.ButtonText", "マーク"),
             new DictionaryEntry("Precognition - Start vision", "AbilityBar.ButtonText", "予知 - 予知視開始"),
             new DictionaryEntry("Precognition - End vision", "AbilityBar.ButtonText", "予知 - 予知視終了"),
@@ -1365,6 +1387,22 @@ public sealed class LocalizationCoverageTests
             Assert.That(
                 messagePatterns,
                 Does.Contain("^(.+?) wounds are too deep to bandage[.!]?$"));
+            });
+    }
+
+    [Test]
+    public void LiquidVolumeDictionaries_ContainPickTargetCommandLeaves()
+    {
+        var pickTargetEntries = LoadEntries(Path.Combine(localizationRoot, "Dictionaries", "ui-pick-target.ja.json"));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                pickTargetEntries,
+                Does.Contain(new DictionaryEntry("Pour", "PickTarget.CommandBar", "注ぐ")));
+            Assert.That(
+                pickTargetEntries,
+                Does.Contain(new DictionaryEntry("[Select a direction]", "PickTarget.DirectionPrompt", "[方向を選択]")));
         });
     }
 

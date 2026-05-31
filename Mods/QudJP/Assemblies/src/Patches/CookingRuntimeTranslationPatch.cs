@@ -479,12 +479,14 @@ public static class CookingRuntimeTranslationPatch
 
     private static bool TryTranslateQueuedCore(string source, out string translated)
     {
-        if (TryTranslateProceduralCookingTriggerNotification(source, out translated))
+        var patternSource = StripLeadingPatternControlHeader(source);
+
+        if (TryTranslateProceduralCookingTriggerNotification(patternSource, out translated))
         {
             return true;
         }
 
-        if (source == "Your phase remains stable.")
+        if (patternSource == "Your phase remains stable.")
         {
             translated = "あなたの位相は安定したままだ。";
             return true;
@@ -492,24 +494,48 @@ public static class CookingRuntimeTranslationPatch
 
         return TryTranslatePattern(
             ReflectDamageAtTargetPattern,
-            source,
+            patternSource,
             (match, spans) => Restore(match, spans, "amount") + "ダメージを" + Restore(match, spans, "target") + "へ反射した。",
             out translated)
             || TryTranslatePattern(
                 SubjectReflectDamageAtYouPattern,
-                source,
-                (match, spans) => Restore(match, spans, "subject") + "は" + Restore(match, spans, "amount") + "ダメージをあなたへ反射した。",
+                patternSource,
+                (match, spans) => NormalizeSubject(Restore(match, spans, "subject")) + "は" + Restore(match, spans, "amount") + "ダメージをあなたへ反射した。",
                 out translated)
             || TryTranslatePattern(
                 SubjectReflectDamageAtTargetPattern,
-                source,
-                (match, spans) => Restore(match, spans, "subject") + "は" + Restore(match, spans, "amount") + "ダメージを" + Restore(match, spans, "target") + "へ反射した。",
+                patternSource,
+                (match, spans) => NormalizeSubject(Restore(match, spans, "subject")) + "は" + Restore(match, spans, "amount") + "ダメージを" + Restore(match, spans, "target") + "へ反射した。",
                 out translated)
             || TryTranslatePattern(
                 FateIntervenesPattern,
-                source,
+                patternSource,
                 (match, spans) => "運命が介入し、あなたは" + Restore(match, spans, "target") + "にダメージを与えられなかった。",
                 out translated);
+    }
+
+    private static string StripLeadingPatternControlHeader(string source)
+    {
+        if (string.IsNullOrEmpty(source) || source[0] != '\u0002')
+        {
+            return source;
+        }
+
+        var headerEnd = source.IndexOf('\u0003');
+        if (headerEnd < 0 || headerEnd >= source.Length - 1)
+        {
+            return source;
+        }
+
+        return source.Substring(headerEnd + 1);
+    }
+
+    private static string NormalizeSubject(string subject)
+    {
+        return StringHelpers.StripLeadingEnglishArticle(
+            subject,
+            includeCapitalizedDefiniteArticle: true,
+            includeCapitalizedIndefiniteArticle: true);
     }
 
     private static bool TryTranslateProceduralCookingTriggerNotification(string source, out string translated)

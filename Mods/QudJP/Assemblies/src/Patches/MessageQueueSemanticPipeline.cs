@@ -7,6 +7,7 @@ internal static class MessageQueueSemanticPipeline
 {
     private static readonly QueuedMessageTranslator[] Translators =
     [
+        SapChargeOnHitTranslationPatch.TryTranslateQueuedMessage,
         PhysicsApplyDischargeTranslationPatch.TryTranslateQueuedMessage,
         PhysicsProcessTakeDamageTranslationPatch.TryTranslateQueuedMessage,
         AutoActTranslationPatch.TryTranslateQueuedMessage,

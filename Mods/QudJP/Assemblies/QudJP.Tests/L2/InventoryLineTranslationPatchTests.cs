@@ -24,6 +24,7 @@ public sealed partial class Issue201StatusScreensBatch2Tests
         ColorShapeCaptureObservability.ResetForTests();
         DynamicTextObservability.ResetForTests();
         SinkObservation.ResetForTests();
+        InventoryLineTranslationPatch.ClearTranslationCachesForTests();
     }
 
     [TearDown]
@@ -33,11 +34,51 @@ public sealed partial class Issue201StatusScreensBatch2Tests
         ColorShapeCaptureObservability.ResetForTests();
         DynamicTextObservability.ResetForTests();
         SinkObservation.ResetForTests();
+        InventoryLineTranslationPatch.ClearTranslationCachesForTests();
 
         if (Directory.Exists(tempDirectory))
         {
             Directory.Delete(tempDirectory, recursive: true);
         }
+    }
+
+    [Test]
+    public void TranslateItemDisplayNameForQudTest_CachesRepeatedDisplayName()
+    {
+        WriteDictionaryFile("ui-displayname-atomic.ja.json", ("water flask", "水袋"));
+
+        var initialCacheCount = InventoryLineTranslationPatch.GetTranslationCacheCountForTests();
+        var first = InventoryLineTranslationPatch.TranslateItemDisplayNameForQudTest("water flask");
+        var afterFirstCacheCount = InventoryLineTranslationPatch.GetTranslationCacheCountForTests();
+        var second = InventoryLineTranslationPatch.TranslateItemDisplayNameForQudTest("water flask");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(first, Is.EqualTo("水袋"));
+            Assert.That(second, Is.EqualTo(first));
+            Assert.That(afterFirstCacheCount, Is.EqualTo(initialCacheCount + 1));
+            Assert.That(InventoryLineTranslationPatch.GetTranslationCacheCountForTests(), Is.EqualTo(afterFirstCacheCount));
+        });
+    }
+
+    [Test]
+    public void TranslateItemDisplayNameForQudTest_CachesFallbackDisplayNameAfterVisibleMiss()
+    {
+        WriteDictionaryFile("ui-displayname-atomic.ja.json", ("water flask", "水袋"));
+        WriteDictionaryFile("ui-displayname-adjectives.ja.json", ("[empty]", "[空]"));
+
+        var initialCacheCount = InventoryLineTranslationPatch.GetTranslationCacheCountForTests();
+        var first = InventoryLineTranslationPatch.TranslateItemDisplayNameForQudTest("water flask [empty]");
+        var afterFirstCacheCount = InventoryLineTranslationPatch.GetTranslationCacheCountForTests();
+        var second = InventoryLineTranslationPatch.TranslateItemDisplayNameForQudTest("water flask [empty]");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(first, Is.EqualTo("水袋 [空]"));
+            Assert.That(second, Is.EqualTo("水袋 [空]"));
+            Assert.That(afterFirstCacheCount, Is.EqualTo(initialCacheCount + 1));
+            Assert.That(InventoryLineTranslationPatch.GetTranslationCacheCountForTests(), Is.EqualTo(afterFirstCacheCount));
+        });
     }
 
     [Test]
@@ -160,6 +201,51 @@ public sealed partial class Issue201StatusScreensBatch2Tests
     }
 
     [Test]
+    public void InventoryLinePostfix_PreservesRuntimeToolkitColor_WhenDisplayNameRouteAddsBlueprintColor()
+    {
+        Translator.SetDictionaryDirectoryForTests(GetRepositoryDictionaryDirectory());
+        LocalizationAssetResolver.SetLocalizationRootForTests(GetRepositoryLocalizationRoot());
+
+        const string source = "高級工具セット [ケムセル (残量多) <BD1>]";
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyInventoryLineTarget), nameof(DummyInventoryLineTarget.setData)),
+                postfix: new HarmonyMethod(RequireMethod(typeof(InventoryLineTranslationPatch), nameof(InventoryLineTranslationPatch.Postfix))));
+
+            var itemTarget = new DummyInventoryLineTarget();
+            itemTarget.setData(new DummyInventoryLineDataTarget
+            {
+                category = false,
+                displayName = source,
+                go = new DummyStatusGameObject { DisplayName = source, Weight = 7 },
+            });
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(itemTarget.OriginalExecuted, Is.True);
+                Assert.That(
+                    itemTarget.text.Text,
+                    Is.EqualTo("{{C|高級工具セット}} [{{c|ケムセル}} {{y|({{G|残量多}})}} {{y|<{{G|B}}{{C|D}}{{r|1}}>}}]"));
+                Assert.That(itemTarget.text.Text, Does.Not.StartWith("高級工具セット ["));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(InventoryLineTranslationPatch),
+                        "InventoryLine.ItemName"),
+                    Is.GreaterThan(0));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+            LocalizationAssetResolver.SetLocalizationRootForTests(null);
+        }
+    }
+
+    [Test]
     public void InventoryLinePostfix_TranslatesMerchantAdvertisementTitleAndStripsEmbeddedMarker()
     {
         WriteDictionary(("items", "個"));
@@ -273,7 +359,7 @@ public sealed partial class Issue201StatusScreensBatch2Tests
             Assert.Multiple(() =>
             {
                 Assert.That(itemTarget.OriginalExecuted, Is.True);
-                Assert.That(itemTarget.text.Text, Is.EqualTo("{{c|ケムセル}} {{y|[清水]}}"));
+                Assert.That(itemTarget.text.Text, Is.EqualTo("{{c|ケムセル}} {{y|[{{g|清水}}]}}"));
                 Assert.That(output, Does.Contain("ColorShapeProbe/v1"));
                 Assert.That(output, Does.Contain("producer='InventoryLine.GameObjectDisplayName'"));
                 Assert.That(output, Does.Contain("source_visible='chem cell [fresh water]'"));
@@ -328,6 +414,22 @@ public sealed partial class Issue201StatusScreensBatch2Tests
     {
         return AccessTools.Method(type, methodName)
             ?? throw new InvalidOperationException($"Method not found: {type.FullName}.{methodName}");
+    }
+
+    private static string GetRepositoryDictionaryDirectory()
+    {
+        return Path.Combine(
+            GetRepositoryLocalizationRoot(),
+            "Dictionaries");
+    }
+
+    private static string GetRepositoryLocalizationRoot()
+    {
+        return Path.Combine(
+            QudJP.Tests.L1.TestProjectPaths.GetRepositoryRoot(),
+            "Mods",
+            "QudJP",
+            "Localization");
     }
 
     private void WriteDictionary(params (string key, string text)[] entries)

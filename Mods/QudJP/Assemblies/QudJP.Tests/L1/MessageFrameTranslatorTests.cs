@@ -419,6 +419,48 @@ public sealed class MessageFrameTranslatorTests
     }
 
     [Test]
+    public void TryTranslateXDidYToZ_RepositoryDictionary_FlinchesAwayAsProjectileZipsPastFromDirection()
+    {
+        UseRepositoryDictionary();
+
+        var translated = MessageFrameTranslator.TryTranslateXDidYToZ(
+            "あなた",
+            "flinch",
+            preposition: "away as",
+            objectText: "{{Y|アザミ}}",
+            extra: "zips past from the west",
+            endMark: "!",
+            out var sentence);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.True);
+            Assert.That(sentence, Is.EqualTo("あなたは西から飛んできた{{Y|アザミ}}をかわした！"));
+        });
+    }
+
+    [Test]
+    public void TryTranslateXDidYToZ_RepositoryDictionary_FlinchesAwayAsProjectileFlickersPastFromDirection()
+    {
+        UseRepositoryDictionary();
+
+        var translated = MessageFrameTranslator.TryTranslateXDidYToZ(
+            "あなた",
+            "flinch",
+            preposition: "away as",
+            objectText: "{{G|ネオンの閃光}}",
+            extra: "flickers past from the northwest",
+            endMark: "!",
+            out var sentence);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.True);
+            Assert.That(sentence, Is.EqualTo("あなたは北西から飛んできた{{G|ネオンの閃光}}をかわした！"));
+        });
+    }
+
+    [Test]
     public void TryTranslateXDidYToZ_RepositoryDictionary_ButchersCorpseIntoSingleYield()
     {
         UseRepositoryDictionary();
@@ -1881,6 +1923,18 @@ public sealed class MessageFrameTranslatorTests
                     out var butcherMany),
                 Is.True);
             Assert.That(butcherMany, Is.EqualTo("あなたはイボイノシシの死体を解体して肉3個にした。"));
+
+            Assert.That(
+                MessageFrameTranslator.TryTranslateXDidYToZ(
+                    "あなた",
+                    "butcher",
+                    preposition: null,
+                    objectText: "ノールワームの死体",
+                    extra: "into some {{r|生のワーム肉}}",
+                    endMark: ".",
+                    out var butcherSome),
+                Is.True);
+            Assert.That(butcherSome, Is.EqualTo("あなたはノールワームの死体を解体して{{r|生のワーム肉}}にした。"));
 
             Assert.That(
                 MessageFrameTranslator.TryTranslateWDidXToYWithZ(

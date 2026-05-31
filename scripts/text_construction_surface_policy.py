@@ -1414,6 +1414,15 @@ ISSUE719_FIXED_MESSAGE_FRAME_ROUTE_EVIDENCE: Final[list[str]] = [
     "Mods/QudJP/Assemblies/QudJP.Tests/L2/XDidYTranslationPatchTests.cs",
     "Mods/QudJP/Localization/MessageFrames/verbs.ja.json",
 ]
+ISSUE719_HIDDEN_REVEAL_INTERNAL_OWNER_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 residual review covers Hidden.RevealInternal(bool) "
+        "through HiddenRenderTranslationPatch owner queue/message-log routing."
+    ),
+    "Mods/QudJP/Assemblies/src/Patches/HiddenRenderTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/HiddenRenderTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+]
 ISSUE719_TRANCHE38_RUNNING_REMOVE_EVIDENCE: Final[list[str]] = [
     *ISSUE719_FIXED_MESSAGE_FRAME_ROUTE_EVIDENCE,
     'Running.Remove source frame: DidX("stop", MessageName)',
@@ -6253,7 +6262,7 @@ TEXT_CONSTRUCTION_CLOSURE_OVERLAY: Final[dict[str, ClosureOverlayEntry]] = {
     },
     "XRL.World.Parts/Hidden.cs::Hidden.RevealInternal(bool)": {
         "closure_status": "covered_by_owner_route",
-        "closure_evidence": ISSUE719_FIXED_MESSAGE_FRAME_ROUTE_EVIDENCE,
+        "closure_evidence": ISSUE719_HIDDEN_REVEAL_INTERNAL_OWNER_EVIDENCE,
     },
     "XRL.World.Parts/LavaSludge.cs::LavaSludge.CheckTemperature()": {
         "closure_status": "covered_by_owner_route",
@@ -7066,7 +7075,10 @@ ISSUE719_DESCRIPTION_SHORT_DESCRIPTION_EVIDENCE: Final[list[str]] = [
 
 ISSUE719_PRODUCER_MESSAGE_OWNER_EVIDENCE: Final[dict[str, list[str]]] = {
     "disassembly": [
-        "Issue #719 residual review covers Disassembly.Continue popup/queue text through the existing owner patch.",
+        (
+            "Issue #719 residual review covers Disassembly.Continue and "
+            "Disassembly.End popup/queue text through the existing owner patch."
+        ),
         "Mods/QudJP/Assemblies/src/Patches/DisassemblyStartTranslationPatch.cs",
         "Mods/QudJP/Assemblies/QudJP.Tests/L2/DisassemblyStartTranslationPatchTests.cs",
         "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
@@ -11337,6 +11349,10 @@ ISSUE719_RESIDUAL_CLOSURE_OVERLAY: Final[dict[str, ClosureOverlayEntry]] = {
         "closure_evidence": ISSUE719_DESCRIPTION_SHORT_DESCRIPTION_EVIDENCE,
     },
     "XRL.World.Tinkering/Disassembly.cs::Disassembly.Continue()": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_PRODUCER_MESSAGE_OWNER_EVIDENCE["disassembly"],
+    },
+    "XRL.World.Tinkering/Disassembly.cs::Disassembly.End()": {
         "closure_status": "covered_by_owner_route",
         "closure_evidence": ISSUE719_PRODUCER_MESSAGE_OWNER_EVIDENCE["disassembly"],
     },

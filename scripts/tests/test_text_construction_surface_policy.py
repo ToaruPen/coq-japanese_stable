@@ -8729,7 +8729,6 @@ def test_policy_records_issue719_generic_fixed_message_frame_route_overlays() ->
         "inventory_restocker",
         "forcefield",
         "forcefield_material",
-        "hidden",
         "lava_sludge_temperature",
         "shrine_pray",
         "bubble_level",
@@ -8760,6 +8759,15 @@ def test_policy_records_issue719_generic_fixed_message_frame_route_overlays() ->
             "XDidYTranslationPatchTests.cs",
             "verbs.ja.json",
         )
+
+    assert entries[family_ids["hidden"]]["closure_status"] == "covered_by_owner_route"
+    _assert_evidence_contains(
+        entries,
+        family_ids["hidden"],
+        "HiddenRenderTranslationPatch.cs",
+        "HiddenRenderTranslationPatchTests.cs",
+        "TargetMethodResolutionTests.cs",
+    )
 
     for family_key in (
         "energy_cell_socket_remove",

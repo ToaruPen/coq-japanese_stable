@@ -54,7 +54,7 @@ internal static class ActiveEffectTextTranslator
         RegexOptions.CultureInvariant);
 
     private static readonly Regex MoveSpeedPattern = new(
-        @"^(?<shift>[+-]\d+) move speed\.$",
+        @"^(?<shift>[+-]\d+) [Mm]ove [Ss]peed\.?$",
         RegexOptions.CultureInvariant);
 
     private static readonly Regex StatShiftLinePattern = new(
@@ -657,6 +657,11 @@ internal static class ActiveEffectTextTranslator
         if (runtimeObservedLine is not null)
         {
             return runtimeObservedLine;
+        }
+
+        if (StatusLineTranslationHelpers.TryTranslateGeneratedActiveEffectPart(visible, out var generatedEffectName))
+        {
+            return generatedEffectName;
         }
 
         if (string.Equals(visible, "Moving at full speed.", StringComparison.Ordinal))

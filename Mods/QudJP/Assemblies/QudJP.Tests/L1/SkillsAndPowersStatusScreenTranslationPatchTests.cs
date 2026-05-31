@@ -147,6 +147,28 @@ public sealed class SkillsAndPowersStatusScreenTranslationPatchTests
     }
 
     [Test]
+    public void TryTranslateStructuredLinePreservingColors_TranslatesOrRequirementListsWithoutShiftingColors()
+    {
+        WriteDictionaryFile(
+            "ui-skillsandpowers.ja.json",
+            ("Multiweapon Expertise", "多肢の熟練"),
+            ("Multiweapon Proficiency", "多肢の習熟"));
+
+        var result = SkillsAndPowersStatusScreenTranslationPatch.TryTranslateStructuredLinePreservingColors(
+            "    {{K|:}}{{K|Multiweapon Expertise}} [{{K|150}}sp] {{C|23}} {{G|Agility}} or {{C|23}} {{R|Strength}}, {{R|Multiweapon Proficiency}}",
+            nameof(SkillsAndPowersStatusScreenTranslationPatchTests),
+            recordTransform: false);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.changed, Is.True);
+            Assert.That(
+                result.translated,
+                Is.EqualTo("    {{K|:}}{{K|多肢の熟練}} [{{K|150}}sp] {{C|23}} {{G|AGI}} または {{C|23}} {{R|STR}}, {{R|多肢の習熟}}"));
+        });
+    }
+
+    [Test]
     public void TryTranslateStructuredLinePreservingColors_LeavesUnknownLeafTextUnchanged()
     {
         WriteDictionaryFile("ui-skillsandpowers.ja.json", ("Tinker I", "工匠 I"));

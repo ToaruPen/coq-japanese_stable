@@ -4222,7 +4222,7 @@
     <part Name="TinkerItem" Bits="0004" CanDisassemble="true" CanBuild="true" />
     <part Name="Metal" />
     <part Name="ItemElements" Elements="stars::3" />
-    <tag Name="TurretName" Value="low-light laser turret" />
+    <tag Name="TurretName" Value="低光量レーザータレット" />
     <tag Name="Mods" Value="MissileWeaponMods,FirearmMods,CommonMods,PistolMods,ElectronicsMods,BeamWeaponMods" />
     <tag Name="Tier" Value="4" />
     <part Name="Physics" Weight="4" />

@@ -154,7 +154,9 @@ public static class AsleepOwnerTranslationPatch
 
     private static bool TryTranslateCore(string source, out string translated)
     {
-        if (source == "You are asleep.")
+        var patternSource = StripLeadingPatternControlHeader(source);
+
+        if (patternSource == "You are asleep.")
         {
             translated = "眠っている。";
             return true;
@@ -162,44 +164,60 @@ public static class AsleepOwnerTranslationPatch
 
         return TryTranslatePattern(
             EnterSleepModePattern,
-            source,
+            patternSource,
             (match, spans) => $"あなたは{TranslateSleepTerm(Restore(match, spans, "mode"))}に入った。",
             out translated)
             || TryTranslatePattern(
                 GoIntoSleepModePattern,
-                source,
+                patternSource,
                 (match, spans) => $"{NormalizeSubject(Restore(match, spans, "actor"))}は{TranslateSleepTerm(Restore(match, spans, "mode"))}に入った。",
                 out translated)
             || TryTranslatePattern(
                 FallAsleepPattern,
-                source,
+                patternSource,
                 (match, spans) => $"{NormalizeSubject(Restore(match, spans, "actor"))}は{TranslateSleepTerm(Restore(match, spans, "state"))}に落ちた。",
                 out translated)
             || TryTranslatePattern(
                 PressActivationPanelPattern,
-                source,
+                patternSource,
                 (match, spans) => $"{NormalizeSubject(Restore(match, spans, "actor"))}は{NormalizePanelOwner(Restore(match, spans, "panel"))}起動パネルを押した。",
                 out translated)
             || TryTranslatePattern(
                 ShakeAwakePattern,
-                source,
+                patternSource,
                 (match, spans) => $"{NormalizeSubject(Restore(match, spans, "actor"))}は{Restore(match, spans, "target")}をやさしく揺り起こした。",
                 out translated)
             || TryTranslatePattern(
                 YouPressActivationPanelPattern,
-                source,
+                patternSource,
                 (match, spans) => $"あなたは{Restore(match, spans, "panel")}を押した。",
                 out translated)
             || TryTranslatePattern(
                 YouShakeAwakePattern,
-                source,
+                patternSource,
                 (match, spans) => $"あなたは{Restore(match, spans, "target")}をやさしく揺り起こした。",
                 out translated)
             || TryTranslatePattern(
                 CantWakePattern,
-                source,
+                patternSource,
                 (match, spans) => $"あなたには{Restore(match, spans, "target")}を起こす方法がわからない。",
                 out translated);
+    }
+
+    private static string StripLeadingPatternControlHeader(string source)
+    {
+        if (string.IsNullOrEmpty(source) || source[0] != '\u0002')
+        {
+            return source;
+        }
+
+        var headerEnd = source.IndexOf('\u0003');
+        if (headerEnd < 0 || headerEnd >= source.Length - 1)
+        {
+            return source;
+        }
+
+        return source.Substring(headerEnd + 1);
     }
 
     private static bool TryTranslatePattern(
@@ -239,9 +257,27 @@ public static class AsleepOwnerTranslationPatch
 
     private static string NormalizeSubject(string subject)
     {
-        return string.Equals(subject, "You", StringComparison.Ordinal)
-            ? "あなた"
-            : subject;
+        if (string.Equals(subject, "You", StringComparison.Ordinal))
+        {
+            return "あなた";
+        }
+
+        return StripLeadingSubjectArticle(subject);
+    }
+
+    private static string StripLeadingSubjectArticle(string subject)
+    {
+        var markerEnd = subject.LastIndexOf('\u0003');
+        if (markerEnd >= 0 && markerEnd + 1 < subject.Length)
+        {
+            return subject.Substring(0, markerEnd + 1)
+                + StripLeadingSubjectArticle(subject.Substring(markerEnd + 1));
+        }
+
+        return StringHelpers.StripLeadingEnglishArticle(
+            subject,
+            includeCapitalizedDefiniteArticle: true,
+            includeCapitalizedIndefiniteArticle: true);
     }
 
     private static string TranslateSleepTerm(string term)

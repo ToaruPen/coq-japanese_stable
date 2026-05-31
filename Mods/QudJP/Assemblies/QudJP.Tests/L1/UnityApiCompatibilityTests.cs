@@ -234,6 +234,62 @@ public sealed class UnityApiCompatibilityTests
     }
 
     [NUnit.Framework.Test]
+    public void SelectableTextMenuItemHotPath_UsesCachedAccessors()
+    {
+        var source = ReadPatchSource("SelectableTextMenuItemTranslationPatch.cs");
+
+        NUnit.Framework.Assert.That(
+            source,
+            NUnit.Framework.Does.Contain("ReflectionUtils.GetPropertyOrFieldValue(instance, \"itemText\")"));
+        NUnit.Framework.Assert.That(
+            source,
+            NUnit.Framework.Does.Contain("ReflectionUtils.GetPropertyOrFieldValue(instance, \"item\")"));
+        NUnit.Framework.Assert.That(source, NUnit.Framework.Does.Contain("GetSetTextMethod(item.GetType())"));
+
+        NUnit.Framework.Assert.That(
+            source,
+            NUnit.Framework.Does.Not.Contain("AccessTools.Property(__instance.GetType(), \"itemText\")"),
+            "SelectChanged can fire repeatedly while the context menu is open; itemText lookup should use the shared accessor cache.");
+        NUnit.Framework.Assert.That(
+            source,
+            NUnit.Framework.Does.Not.Contain("AccessTools.Field(__instance.GetType(), \"item\")"),
+            "SelectChanged can fire repeatedly while the context menu is open; item lookup should use the shared accessor cache.");
+        NUnit.Framework.Assert.That(
+            source,
+            NUnit.Framework.Does.Not.Contain("AccessTools.Method(item.GetType(), \"SetText\""),
+            "SelectChanged should cache item skin SetText lookup by runtime type.");
+    }
+
+    [NUnit.Framework.Test]
+    public void SelectableTextMenuItemProbePatch_GatesStateBuildBeforeVerboseLogging()
+    {
+        var source = ReadPatchSource("SelectableTextMenuItemProbePatch.cs");
+        var gateIndex = source.IndexOf("if (!RuntimeDiagnostics.VerboseProbesEnabled)", System.StringComparison.Ordinal);
+        var buildIndex = source.IndexOf("SelectableTextMenuItemObservability.TryBuildState", System.StringComparison.Ordinal);
+
+        NUnit.Framework.Assert.That(gateIndex, NUnit.Framework.Is.GreaterThanOrEqualTo(0));
+        NUnit.Framework.Assert.That(
+            gateIndex,
+            NUnit.Framework.Is.LessThan(buildIndex),
+            "Dev probe state collection does reflection and TMP probing; disabling verbose probes should skip it before any state build.");
+    }
+
+    [NUnit.Framework.Test]
+    public void SelectableTextMenuItemObservability_DoesNotForceTmpMeshOnHotPath()
+    {
+        var source = ReadObservabilitySource("SelectableTextMenuItemObservability.cs");
+
+        NUnit.Framework.Assert.That(
+            source,
+            NUnit.Framework.Does.Not.Contain(".ForceMeshUpdate("),
+            "Dev-only menu item probes should not force TMP mesh regeneration while context-menu selection changes are being measured.");
+        NUnit.Framework.Assert.That(
+            source,
+            NUnit.Framework.Does.Contain("ReflectionUtils.GetPropertyOrFieldValue(instance, memberName) as string"),
+            "Menu item probe data field reads should use the shared reflection accessor cache.");
+    }
+
+    [NUnit.Framework.Test]
     public void TextShellReplacementRenderer_LazilyCollectsVerboseDiagnostics()
     {
         var source = ReadUiSource("TextShellReplacementRenderer.cs");
@@ -282,6 +338,18 @@ public sealed class UnityApiCompatibilityTests
             "Assemblies",
             "src",
             "Patches",
+            fileName));
+    }
+
+    private static string ReadObservabilitySource(string fileName)
+    {
+        return File.ReadAllText(Path.Combine(
+            TestProjectPaths.GetRepositoryRoot(),
+            "Mods",
+            "QudJP",
+            "Assemblies",
+            "src",
+            "Observability",
             fileName));
     }
 }

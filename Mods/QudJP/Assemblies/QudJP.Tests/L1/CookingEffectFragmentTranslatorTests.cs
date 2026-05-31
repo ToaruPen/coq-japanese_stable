@@ -74,6 +74,8 @@ public sealed class CookingEffectFragmentTranslatorTests
     [TestCase("Whenever @thisCreature take@s avoidable damage, there's a 20-25% chance @they teleport to a random space on the map instead.", "@thisCreature が回避可能なダメージを受けると20-25%の確率で代わりにマップ内のランダムな地点へテレポートする。")]
     [TestCase("Whenever you identify an artifact, you gain +6 AV for 50 turns.", "アーティファクトを識別するたび、50ターンのあいだAV+6を得る。")]
     [TestCase("Whenever you drink freshwater, there's a 25% chance you become immune to fear for 6 hours.", "真水を飲むたび、25%の確率で6時間のあいだ恐怖を無効化する。")]
+    [TestCase("Whenever you drink freshwater, there's a 25% chance you heal to full.", "真水を飲むたび、25%の確率で完全回復する。")]
+    [TestCase("You only get Ill for 1/10th the usual length of time.", "体調不良の持続時間が通常の1/10になる。")]
     [TestCase("Whenever you eat an unfermented yuckwheat stem, you release an electrical discharge per Electrical Generation at level 5-6.", "未発酵のヤックウィートの茎を食べるたび、電気生成レベル5～6相当の放電を行う。")]
     [TestCase("Whenever you jump, you beguile a creature as per Beguiling at rank 7-8 for the duration of this effect.", "ジャンプするたび、この効果のあいだ魅了ランク7～8相当で生物を魅了する。")]
     [TestCase("@they gain@s +8 Agility for 50 turns.", "@they は50ターンのあいだ敏捷+8を得る。")]

@@ -97,6 +97,114 @@ public sealed class WorldModsTextTranslatorTests
     }
 
     [Test]
+    public void TryTranslate_DoesNotUseContextualExactLeaf_WhenPrefixOwnerDoesNotMatch()
+    {
+        WriteDictionaryWithContext(
+            "world-mods.ja.json",
+            ("XRL.World.Parts.ModBiomech.GetShortDescription", "Scoped: Context-only text.", "スコープ付き: 文脈専用。"));
+
+        var ok = WorldModsTextTranslator.TryTranslate(
+            "Scoped: Context-only text.",
+            "DescriptionShortDescriptionPatch",
+            "Description.WorldMods",
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.False);
+            Assert.That(translated, Is.EqualTo("Scoped: Context-only text."));
+        });
+    }
+
+    [Test]
+    public void TryTranslate_UsesContextualExactLeaf_WhenPrefixOwnerMatches()
+    {
+        WriteDictionaryWithContext(
+            "world-mods.ja.json",
+            ("XRL.World.Parts.ModScoped.GetShortDescription", "Scoped: Context-only text.", "スコープ付き: 文脈専用。"));
+
+        var ok = WorldModsTextTranslator.TryTranslate(
+            "Scoped: Context-only text.",
+            "DescriptionShortDescriptionPatch",
+            "Description.WorldMods",
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(translated, Is.EqualTo("スコープ付き: 文脈専用。"));
+        });
+    }
+
+    [Test]
+    public void TryTranslate_UsesPrefixOwnerContext_WhenPrefixHasAsciiCaseDifferenceAndTrailingSpace()
+    {
+        WriteDictionaryWithContext(
+            "world-mods.ja.json",
+            ("XRL.World.Parts.ModAirfoil.GetShortDescription", "airfoil : This item can be thrown at +4 throwing range.", "エアフォイル: この品は投擲射程が+4される。"));
+
+        var ok = WorldModsTextTranslator.TryTranslate(
+            "airfoil : This item can be thrown at +4 throwing range.",
+            "DescriptionShortDescriptionPatch",
+            "Description.WorldMods",
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(translated, Is.EqualTo("エアフォイル: この品は投擲射程が+4される。"));
+        });
+    }
+
+    [TestCase("Biomech: Has biomechanical power transmission systems.", "バイオメカ: 生体機械式の動力伝達機構を備える。")]
+    [TestCase("Fitted with filters: This item protects against breathing in dangerous gases.", "フィルター付き: 有害なガスを吸い込むのを防ぐ。")]
+    [TestCase("Airfoil: This item can be thrown at +4 throwing range.", "エアフォイル: この品は投擲射程が+4される。")]
+    [TestCase("Extradimensional: This item recently materialized in this dimension having inherited some properties from its home dimension, {{O|", "異次元由来: この品は元いた次元からいくつかの特性を持ったまま最近この次元に出現した、{{O|")]
+    [TestCase("Gesticulating: This item grants +", "蠢く: この装備で筋力が+")]
+    public void TryTranslate_RepositoryDictionary_TranslatesPrefixOwnedContextExactDescriptions(
+        string source,
+        string expected)
+    {
+        Translator.ResetForTests();
+        Translator.SetDictionaryDirectoryForTests(
+            Path.Combine(TestProjectPaths.GetRepositoryRoot(), "Mods", "QudJP", "Localization", "Dictionaries"));
+        ScopedDictionaryLookup.ResetForTests();
+
+        var ok = WorldModsTextTranslator.TryTranslate(
+            source,
+            "DescriptionShortDescriptionPatch",
+            "Description.WorldMods",
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(translated, Is.EqualTo(expected));
+        });
+    }
+
+    [Test]
+    public void TryTranslate_RepositoryDictionary_TranslatesShieldRulesContextWithLeadingNewline()
+    {
+        Translator.ResetForTests();
+        Translator.SetDictionaryDirectoryForTests(
+            Path.Combine(TestProjectPaths.GetRepositoryRoot(), "Mods", "QudJP", "Localization", "Dictionaries"));
+        ScopedDictionaryLookup.ResetForTests();
+
+        var ok = WorldModsTextTranslator.TryTranslate(
+            "\n{{rules|Shields only grant their AV when you successfully block an attack.}}",
+            "DescriptionShortDescriptionPatch",
+            "Description.WorldMods",
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(translated, Is.EqualTo("\n{{rules|盾は攻撃をブロックしたときにのみAVを付与する。}}"));
+        });
+    }
+
+    [Test]
     public void TryTranslate_TranslatesImprovedMutationTemplate()
     {
         WriteDictionary(
@@ -163,13 +271,13 @@ public sealed class WorldModsTextTranslatorTests
         "ビームスプリッタ装着: この武器は1射撃ごとに3方向へ拡散し、各射撃の貫通判定が-1される。")]
     [TestCase(
         "Electrified: When powered, this weapon deals an additional 2-3 electrical damage on hit.",
-        "電化: 通電中、この武器は命中時に追加で2-3の電撃ダメージを与える。")]
+        "帯電: 通電中、この武器は命中時に追加で2-3の電撃ダメージを与える。")]
     [TestCase(
         "Flaming: When powered, this weapon deals additional heat damage on hit.",
         "火炎: 通電中、この武器は命中時に追加の熱ダメージを与える。")]
     [TestCase(
         "Freezing: When powered, this weapon deals additional cold damage on hit.",
-        "冷却: 通電中、この武器は命中時に追加の冷気ダメージを与える。")]
+        "凍結: 通電中、この武器は命中時に追加の冷気ダメージを与える。")]
     [TestCase(
         "Feathered: This item grants the wearer +250 reputation with birds.",
         "羽飾り: 装着者に鳥類との評判+250を与える。")]
@@ -206,6 +314,30 @@ public sealed class WorldModsTextTranslatorTests
     [TestCase(
         "Offhand Attack Chance: 15%",
         "オフハンド命中率: 15%")]
+    [TestCase(
+        "Microserrated: This weapon has 15% chance to dismember opponents.",
+        "微鋸歯: この武器は15%の確率で敵を切断する。")]
+    [TestCase(
+        "Nanon: 15% chance to dismember on penetration",
+        "ナノ刃: 貫通時に15%の確率で切断する。")]
+    [TestCase(
+        "Serrated: This weapon has 15% chance to dismember opponents.",
+        "鋸歯: この武器は15%の確率で敵を切断する。")]
+    [TestCase(
+        "Liquid-cooled: This weapon's rate of fire is increased, but it requires pure water to function. When fired, there's a one in 7 chance that 1 dram is consumed.",
+        "液冷式: この武器の連射数は増えるが、機能するには純粋な水が必要だ。発射時には7分の1の確率で1ドラム消費する。")]
+    [TestCase(
+        "Heartstopper: When powered, this weapon has 15% chance to put opponents into cardiac arrest.",
+        "心停止: 通電中、この武器は15%の確率で敵を心停止させる。")]
+    [TestCase(
+        "Heartstopper: When powered, this weapon has 15% chance to put opponents into cardiac arrest if they fail a difficulty 20 Toughness save.",
+        "心停止: 通電中、この武器は15%の確率で、敵が難易度20の頑健セーヴに失敗した場合に心停止させる。")]
+    [TestCase(
+        "Smart: When powered and started up and the wielder has a HUD or techscanner equipped, this weapon's tracking scope makes it more accurate and gives a bonus to hit a target aimed at.",
+        "スマート: 通電して起動し、使用者がHUDかテックスキャナーを装備している場合、この武器の追尾スコープは精度を高め、照準した対象への命中にボーナスを与える。")]
+    [TestCase(
+        "Smart: When powered and started up and the wielder has a HUD or techscanner equipped, this weapon's tracking scope makes it more accurate and gives +2 to hit a target aimed at.",
+        "スマート: 通電して起動し、使用者がHUDかテックスキャナーを装備している場合、この武器の追尾スコープは精度を高め、照準した対象への命中に+2のボーナスを与える。")]
     [TestCase(
         "When equipped and powered, provides 10 units of compute power to the local lattice.",
         "装備・通電中、局所格子に10ユニットの演算力を供給する。")]
@@ -253,6 +385,103 @@ public sealed class WorldModsTextTranslatorTests
         {
             Assert.That(ok, Is.True);
             Assert.That(translated, Is.EqualTo(expected));
+        });
+    }
+
+    [TestCaseSource(nameof(RepositoryWeaponModDescriptions))]
+    public void TryTranslate_RepositoryDictionary_TranslatesWeaponModDescriptions(string source, string expected)
+    {
+        Translator.ResetForTests();
+        Translator.SetDictionaryDirectoryForTests(
+            Path.Combine(TestProjectPaths.GetRepositoryRoot(), "Mods", "QudJP", "Localization", "Dictionaries"));
+        ScopedDictionaryLookup.ResetForTests();
+
+        var ok = WorldModsTextTranslator.TryTranslate(
+            source,
+            "TinkeringDetailsLineTranslationPatch",
+            "Description.WorldMods",
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(translated, Is.EqualTo(expected));
+        });
+    }
+
+    [Test]
+    public void TryTranslate_DoesNotUseGlobalFallbackForWorldModTemplate()
+    {
+        WriteDictionary("world-mods.ja.json");
+        WriteDictionary(
+            "ui-default.ja.json",
+            (
+                "Displacer: When powered, this weapon randomly teleports its target {0} tiles away on a successful hit.",
+                "誤った経路: {0}"));
+
+        const string Source = "Displacer: When powered, this weapon randomly teleports its target 1-6 tiles away on a successful hit.";
+        var ok = WorldModsTextTranslator.TryTranslate(
+            Source,
+            "DescriptionShortDescriptionPatch",
+            "Description.WorldMods",
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.False);
+            Assert.That(translated, Is.EqualTo(Source));
+        });
+    }
+
+    [Test]
+    public void TryTranslate_DoesNotUseGlobalFallbackForWorldModExactDescription()
+    {
+        WriteDictionary("world-mods.ja.json");
+        WriteDictionary(
+            "ui-default.ja.json",
+            ("Scoped: This weapon has increased accuracy.", "誤った経路"));
+
+        const string Source = "Scoped: This weapon has increased accuracy.";
+        var ok = WorldModsTextTranslator.TryTranslate(
+            Source,
+            "DescriptionShortDescriptionPatch",
+            "Description.WorldMods",
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.False);
+            Assert.That(translated, Is.EqualTo(Source));
+        });
+    }
+
+    [Test]
+    public void TryTranslate_LiquidCooledUsesLiquidOwnerDictionaryForRequirement()
+    {
+        WriteDictionary(
+            "world-mods.ja.json",
+            (
+                "Liquid-cooled: This weapon's rate of fire is increased, but it requires {0} to function. When fired, there's a one in {1} chance that 1 dram is consumed.",
+                "液冷式: この武器の連射数は増えるが、機能するには{0}が必要だ。発射時には{1}分の1の確率で1ドラム消費する。"));
+        WriteDictionary(
+            "ui-default.ja.json",
+            ("water", "誤った経路"));
+        WriteDictionaryWithContext(
+            "ui-liquids.ja.json",
+            ("XRL.Liquids", "water", "水"));
+
+        var ok = WorldModsTextTranslator.TryTranslate(
+            "Liquid-cooled: This weapon's rate of fire is increased, but it requires pure {{c|water}} to function. When fired, there's a one in 7 chance that 1 dram is consumed.",
+            "DescriptionShortDescriptionPatch",
+            "Description.WorldMods",
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(
+                translated,
+                Is.EqualTo("液冷式: この武器の連射数は増えるが、機能するには純粋な{{c|水}}が必要だ。発射時には7分の1の確率で1ドラム消費する。"));
         });
     }
 
@@ -410,7 +639,7 @@ public sealed class WorldModsTextTranslatorTests
         Assert.Multiple(() =>
         {
             Assert.That(ok, Is.True);
-            Assert.That(translated, Is.EqualTo("{{Y|電化: 通電中、この武器は命中時に追加で2-3の電撃ダメージを与える。}}"));
+            Assert.That(translated, Is.EqualTo("{{Y|帯電: 通電中、この武器は命中時に追加で2-3の電撃ダメージを与える。}}"));
         });
     }
 
@@ -739,6 +968,32 @@ public sealed class WorldModsTextTranslatorTests
     }
 
     [Test]
+    public void TryTranslateActiveEffectsLine_TranslatesLiquidCoveredPrefixChains()
+    {
+        WriteDictionary(
+            "world-mods.ja.json",
+            ("ACTIVE EFFECTS:", "発動中の効果:"));
+        WriteDictionaryWithContext(
+            "ui-displayname-adjectives.ja.json",
+            ("GetDisplayName.Adjective", "bloody", "{{r|血まみれの}}"),
+            ("GetDisplayName.Adjective", "slimy", "{{slimy|粘液質の}}"),
+            ("GetDisplayName.Adjective", "wet", "{{B|濡れた}}"));
+
+        var ok = StatusLineTranslationHelpers.TryTranslateActiveEffectsLine(
+            "ACTIVE EFFECTS: bloody slimy wet",
+            "AbilityBarAfterRenderTranslationPatch",
+            "AbilityBar.ActiveEffects",
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(translated, Is.EqualTo("発動中の効果: {{r|血まみれの}}{{slimy|粘液質の}}{{B|濡れた}}"));
+            Assert.That(Translator.GetMissingKeyHitCountForTests("bloody slimy wet"), Is.EqualTo(0));
+        });
+    }
+
+    [Test]
     public void TryTranslateActiveEffectsLine_TranslatesGeneratedStuckInEffectPart()
     {
         WriteDictionary(
@@ -825,12 +1080,20 @@ public sealed class WorldModsTextTranslatorTests
             ("Counterweighted: Adds {0} to hit.", "つり合い調整: 命中に{0}のボーナスを与える。"),
             ("Displacer: When powered, this weapon randomly teleports its target {0} tiles away on a successful hit.", "位相転移: 通電中、この武器は命中時に対象を無作為に{0}マス離れた場所へ転移させる。"),
             ("Fitted with beamsplitter: This weapon has a {0}-way spread with each shot at -1 penetration roll.", "ビームスプリッタ装着: この武器は1射撃ごとに{0}方向へ拡散し、各射撃の貫通判定が-1される。"),
-            ("Electrified: When powered, this weapon deals additional electrical damage on hit.", "電化: 通電中、この武器は命中時に追加の電撃ダメージを与える。"),
-            ("Electrified: When powered, this weapon deals an additional {0} electrical damage on hit.", "電化: 通電中、この武器は命中時に追加で{0}の電撃ダメージを与える。"),
+            ("Electrified: When powered, this weapon deals additional electrical damage on hit.", "帯電: 通電中、この武器は命中時に追加の電撃ダメージを与える。"),
+            ("Electrified: When powered, this weapon deals an additional {0} electrical damage on hit.", "帯電: 通電中、この武器は命中時に追加で{0}の電撃ダメージを与える。"),
             ("Flaming: When powered, this weapon deals additional heat damage on hit.", "火炎: 通電中、この武器は命中時に追加の熱ダメージを与える。"),
             ("Flaming: When powered, this weapon deals an additional {0} heat damage on hit.", "火炎: 通電中、この武器は命中時に追加で{0}の熱ダメージを与える。"),
-            ("Freezing: When powered, this weapon deals additional cold damage on hit.", "冷却: 通電中、この武器は命中時に追加の冷気ダメージを与える。"),
-            ("Freezing: When powered, this weapon deals an additional {0} cold damage on hit.", "冷却: 通電中、この武器は命中時に追加で{0}の冷気ダメージを与える。"),
+            ("Freezing: When powered, this weapon deals additional cold damage on hit.", "凍結: 通電中、この武器は命中時に追加の冷気ダメージを与える。"),
+            ("Freezing: When powered, this weapon deals an additional {0} cold damage on hit.", "凍結: 通電中、この武器は命中時に追加で{0}の冷気ダメージを与える。"),
+            ("Liquid-cooled: This weapon's rate of fire is increased, but it requires {0} to function. When fired, there's a one in {1} chance that 1 dram is consumed.", "液冷式: この武器の連射数は増えるが、機能するには{0}が必要だ。発射時には{1}分の1の確率で1ドラム消費する。"),
+            ("Heartstopper: When powered, this weapon has {0}% chance to put opponents into cardiac arrest.", "心停止: 通電中、この武器は{0}%の確率で敵を心停止させる。"),
+            ("Heartstopper: When powered, this weapon has {0}% chance to put opponents into cardiac arrest if they fail a difficulty {1} {2} save.", "心停止: 通電中、この武器は{0}%の確率で、敵が難易度{1}の{2}セーヴに失敗した場合に心停止させる。"),
+            ("Smart: When powered and started up and the wielder has a HUD or techscanner equipped, this weapon's tracking scope makes it more accurate and gives a bonus to hit a target aimed at.", "スマート: 通電して起動し、使用者がHUDかテックスキャナーを装備している場合、この武器の追尾スコープは精度を高め、照準した対象への命中にボーナスを与える。"),
+            ("Smart: When powered and started up and the wielder has a HUD or techscanner equipped, this weapon's tracking scope makes it more accurate and gives {0} to hit a target aimed at.", "スマート: 通電して起動し、使用者がHUDかテックスキャナーを装備している場合、この武器の追尾スコープは精度を高め、照準した対象への命中に{0}のボーナスを与える。"),
+            ("Microserrated: This weapon has {0}% chance to dismember opponents.", "微鋸歯: この武器は{0}%の確率で敵を切断する。"),
+            ("Nanon: {0}% chance to dismember on penetration.", "ナノ刃: 貫通時に{0}%の確率で切断する。"),
+            ("Serrated: This weapon has {0}% chance to dismember opponents.", "鋸歯: この武器は{0}%の確率で敵を切断する。"),
             ("Feathered: This item grants the wearer {0} reputation with birds.", "羽飾り: 装着者に鳥類との評判{0}を与える。"),
             ("+{0} reputation with {1}", "{1}との評判{0:+#;-#}"),
             ("Offhand Attack Chance: {0}%", "オフハンド命中率: {0}%"),
@@ -838,6 +1101,53 @@ public sealed class WorldModsTextTranslatorTests
             ("Snail-Encrusted: This item is crawling with tiny snails and grants the wearer {0} reputation with mollusks.", "巻貝まみれ: 小さなカタツムリが這っており、装着者に軟体動物との評判{0}を与える。"),
             ("Issachari tribe", "イッサカリ族"),
             ("Intelligence", "知力"));
+        WriteDictionaryWithContext(
+            "ui-liquids.ja.json",
+            ("XRL.Liquids", "water", "水"));
+    }
+
+    private static IEnumerable<TestCaseData> RepositoryWeaponModDescriptions()
+    {
+        yield return new TestCaseData("Counterweighted: Adds a bonus to hit.", "つり合い調整: 命中にボーナスを与える。");
+        yield return new TestCaseData("Counterweighted: Adds +2 to hit.", "つり合い調整: 命中に+2のボーナスを与える。");
+        yield return new TestCaseData("Displacer: When powered, this weapon randomly teleports its target 1-6 tiles away on a successful hit.", "位相転移: 通電中、この武器は命中時に対象を無作為に1-6マス離れた場所へ転移させる。");
+        yield return new TestCaseData("Drum-loaded: This weapon may hold 20% additional ammo.", "ドラム弾倉: 装弾数が20%増える。");
+        yield return new TestCaseData("Fitted with beamsplitter: This weapon has a 3-way spread with each shot at -1 penetration roll.", "ビームスプリッタ装着: この武器は1射撃ごとに3方向へ拡散し、各射撃の貫通判定が-1される。");
+        yield return new TestCaseData("Electrified: When powered, this weapon deals additional electrical damage on hit.", "帯電: 通電中、この武器は命中時に追加の電撃ダメージを与える。");
+        yield return new TestCaseData("Electrified: When powered, this weapon deals an additional 2-3 electrical damage on hit.", "帯電: 通電中、この武器は命中時に追加で2-3の電撃ダメージを与える。");
+        yield return new TestCaseData("Flaming: When powered, this weapon deals additional heat damage on hit.", "火炎: 通電中、この武器は命中時に追加の熱ダメージを与える。");
+        yield return new TestCaseData("Flaming: When powered, this weapon deals an additional 2-3 heat damage on hit.", "火炎: 通電中、この武器は命中時に追加で2-3の熱ダメージを与える。");
+        yield return new TestCaseData("Freezing: When powered, this weapon deals additional cold damage on hit.", "凍結: 通電中、この武器は命中時に追加の冷気ダメージを与える。");
+        yield return new TestCaseData("Freezing: When powered, this weapon deals an additional 2-3 cold damage on hit.", "凍結: 通電中、この武器は命中時に追加で2-3の冷気ダメージを与える。");
+        yield return new TestCaseData("Heartstopper: When powered, this weapon has a chance to put opponents into cardiac arrest.", "心停止: 通電中、この武器は敵を心停止させる可能性がある。");
+        yield return new TestCaseData("Heartstopper: When powered, this weapon has 15% chance to put opponents into cardiac arrest.", "心停止: 通電中、この武器は15%の確率で敵を心停止させる。");
+        yield return new TestCaseData("Heartstopper: When powered, this weapon has 15% chance to put opponents into cardiac arrest if they fail a difficulty 20 Toughness save.", "心停止: 通電中、この武器は15%の確率で、敵が難易度20の頑健セーヴに失敗した場合に心停止させる。");
+        yield return new TestCaseData("Homing: This weapon ignores DV.", "自動誘導: この武器はDVを無視する。");
+        yield return new TestCaseData("Hypervelocity: When powered, this weapon matches its penetration to its target's armor and penetrates creatures.", "超高速: 通電中、この武器は目標の装甲に合わせて貫通力を調整し、生物を貫く。");
+        yield return new TestCaseData("Keen: +2 to penetration rolls", "鋭利: 貫通判定+2");
+        yield return new TestCaseData("Liquid-cooled: This weapon's rate of fire is increased, but it requires pure water to function. When fired, there's a one in 7 chance that 1 dram is consumed.", "液冷式: この武器の連射数は増えるが、機能するには純粋な水が必要だ。発射時には7分の1の確率で1ドラム消費する。");
+        yield return new TestCaseData("Liquid-cooled: This weapon's rate of fire is increased by 2, but it requires pure water to function. When fired, there's a one in 7 chance that 1 dram is consumed.", "液冷式: この武器の連射数は2増えるが、機能するには純粋な水が必要だ。発射時には7分の1の確率で1ドラム消費する。");
+        yield return new TestCaseData("Masterwork: This weapon scores critical hits 15% of the time instead of 5%.", "傑作: この武器のクリティカル発生率は15%（通常は5%）。");
+        yield return new TestCaseData("Metallized: +1 AV or penetration", "金属化: AVか貫通に+1");
+        yield return new TestCaseData("Microserrated: This weapon has a chance to dismember opponents.", "微鋸歯: この武器は敵の部位を切断することがある。");
+        yield return new TestCaseData("Microserrated: This weapon has 15% chance to dismember opponents.", "微鋸歯: この武器は15%の確率で敵を切断する。");
+        yield return new TestCaseData("Mighty: This weapon has no strength bonus penetration cap.", "剛力: 筋力による貫通ボーナスに上限がない。");
+        yield return new TestCaseData("Morphogenetic: When powered and used to perform a successful, damaging hit, this weapon attempts to daze all other creatures of the same species as your target on the local map. Compute power on the local lattice increases the strength of this effect.", "形態同調: 通電してダメージを与えると、ローカルマップ内の同種個体をすべて朦朧させようとする。局所格子の算術能力が高いほど効果が強くなる。");
+        yield return new TestCaseData("Nanon: This weapon has a chance to dismember on penetration.", "ナノ刃: 貫通時に切断を引き起こすことがある。");
+        yield return new TestCaseData("Nanon: 15% chance to dismember on penetration", "ナノ刃: 貫通時に15%の確率で切断する。");
+        yield return new TestCaseData("Nulling: When powered, this weapon astrally burdens its target on hit. Compute power on the local lattice increases the effectiveness of this effect.", "無効化: 通電中、この武器は命中した対象に霊的負荷を与える。ローカルラティス上の計算力が高いほど効果が増す。");
+        yield return new TestCaseData("Phase-Harmonic: This weapon can affect both in-phase and out-of-phase objects.", "位相調和: この武器は同位相・逆位相の対象の両方に作用する。");
+        yield return new TestCaseData("Psionic: This weapon uses the wielder's Ego modifier for penetration bonus instead of Strength mod and attacks MA instead of AV. It will dissipate from the corporeal realm after some use.", "サイオニック: 貫通ボーナスに筋力でなく自我修正を用い、AVではなくMAを攻撃する。一定回数で現世から消散する。");
+        yield return new TestCaseData("Quantum reverb: When fired, this weapon creates a hologram of its wielder who continues to fire along the same path.", "量子残響: 発射時に射手のホログラムを作り、同じ軌道で射撃を続ける。");
+        yield return new TestCaseData("Scoped: This weapon has increased accuracy.", "スコープ付き: この武器は命中精度が向上する。");
+        yield return new TestCaseData("Serrated: This weapon has a chance to dismember opponents.", "鋸歯: この武器は敵を切断することがある。");
+        yield return new TestCaseData("Serrated: This weapon has 15% chance to dismember opponents.", "鋸歯: この武器は15%の確率で敵を切断する。");
+        yield return new TestCaseData("Sharp: +1 to penetration rolls", "鋭利: 貫通判定+1");
+        yield return new TestCaseData("Sirocco: Drains 1 Toughness from any organic target this weapon damages for 3-4 turns.", "熱風: この武器が与えた有機標的から頑健性を1奪い、3-4ターン続く。");
+        yield return new TestCaseData("Smart: When powered and started up and the wielder has a HUD or techscanner equipped, this weapon's tracking scope makes it more accurate and gives a bonus to hit a target aimed at.", "スマート: 通電して起動し、使用者がHUDかテックスキャナーを装備している場合、この武器の追尾スコープは精度を高め、照準した対象への命中にボーナスを与える。");
+        yield return new TestCaseData("Smart: When powered and started up and the wielder has a HUD or techscanner equipped, this weapon's tracking scope makes it more accurate and gives +2 to hit a target aimed at.", "スマート: 通電して起動し、使用者がHUDかテックスキャナーを装備している場合、この武器の追尾スコープは精度を高め、照準した対象への命中に+2のボーナスを与える。");
+        yield return new TestCaseData("Small chance to transmute an enemy into a gemstone on hit.", "命中時、ごく低確率で敵を宝石に変成させる。");
+        yield return new TestCaseData("5% chance to transmute an enemy into a gemstone on hit.", "命中時、宝石に変成させる確率は5%。");
     }
 
     private void WriteDictionary(string fileName, params (string key, string text)[] entries)

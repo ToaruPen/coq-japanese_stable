@@ -178,7 +178,7 @@ public sealed class PopupRouteHandoffTranslationTests
             Assert.That(
                 DynamicTextObservability.GetRouteFamilyHitCountForTests(
                     nameof(PopupPickOptionTranslationPatch),
-                    "Popup.ProducerText.Exact"),
+                    "Popup.ProducerMenuItem.Exact"),
                 Is.GreaterThan(0));
         });
     }

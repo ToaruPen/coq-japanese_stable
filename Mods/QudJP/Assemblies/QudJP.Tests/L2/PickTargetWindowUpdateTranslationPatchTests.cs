@@ -111,6 +111,28 @@ public sealed class PickTargetWindowUpdateTranslationPatchTests
     }
 
     [Test]
+    public void TranslateCurrentText_TranslatesLiquidPourDirectionPrompt()
+    {
+        WriteDictionary(
+            ("Pour", "注ぐ"),
+            ("[Select a direction]", "[方向を選択]"));
+        DummyPickTargetWindow.currentText = "Pour | [Select a direction]";
+
+        var changed = PickTargetWindowUpdateTranslationPatch.TranslateCurrentTextForTests(typeof(DummyPickTargetWindow));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(changed, Is.True);
+            Assert.That(DummyPickTargetWindow.currentText, Is.EqualTo("注ぐ | [方向を選択]"));
+            Assert.That(
+                DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                    nameof(PickTargetWindowUpdateTranslationPatch),
+                    "PickTarget.CommandBar"),
+                Is.GreaterThan(0));
+        });
+    }
+
+    [Test]
     public void Prefix_DoesNotCallSetTextAgain_WhenProducerRegeneratesSameEnglishCommandBar()
     {
         WriteDictionary(
@@ -176,6 +198,24 @@ public sealed class PickTargetWindowUpdateTranslationPatchTests
                     nameof(PickTargetWindowUpdateTranslationPatch),
                     "PickTarget.CommandBar"),
                 Is.GreaterThan(0));
+        });
+    }
+
+    [Test]
+    public void TranslateCurrentText_DoesNotApplyDefaultSpaceSelectLeafAcrossMarkupWrappedHotkey()
+    {
+        WriteDictionary(("select", "選択"));
+        WriteDefaultDictionary(("space-select", "[Space] 選択"));
+        DummyPickTargetWindow.currentText = "{{W|space}}-select | unlock ({{hotkey|F1}}) {{hotkey|M}} - mark target {{K|1 - Suppressive Fire (not marked)}} {{K|2 - Wounding Fire (not marked)}} [{{W|}}] Menu | Fire Missile Weapon";
+
+        var changed = PickTargetWindowUpdateTranslationPatch.TranslateCurrentTextForTests(typeof(DummyPickTargetWindow));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(changed, Is.True);
+            Assert.That(
+                DummyPickTargetWindow.currentText,
+                Is.EqualTo("{{W|space}}-選択 | ロック解除 ({{hotkey|F1}}) {{hotkey|M}} - 対象をマーク {{K|1 - 制圧射撃 (未マーク)}} {{K|2 - 創傷射撃 (未マーク)}} [{{W|}}] メニュー | 飛び道具を射撃"));
         });
     }
 
@@ -285,6 +325,16 @@ public sealed class PickTargetWindowUpdateTranslationPatchTests
 
     private void WriteDictionary(params (string key, string text)[] entries)
     {
+        WriteDictionaryFile("ui-pick-target.ja.json", entries);
+    }
+
+    private void WriteDefaultDictionary(params (string key, string text)[] entries)
+    {
+        WriteDictionaryFile("ui-default.ja.json", entries);
+    }
+
+    private void WriteDictionaryFile(string fileName, params (string key, string text)[] entries)
+    {
         var builder = new StringBuilder();
         builder.Append("{\"entries\":[");
         for (var index = 0; index < entries.Length; index++)
@@ -302,7 +352,7 @@ public sealed class PickTargetWindowUpdateTranslationPatchTests
         }
 
         builder.AppendLine("]}");
-        File.WriteAllText(Path.Combine(tempDirectory, "ui-pick-target.ja.json"), builder.ToString(), Utf8WithoutBom);
+        File.WriteAllText(Path.Combine(tempDirectory, fileName), builder.ToString(), Utf8WithoutBom);
     }
 
     private static string EscapeJson(string value)

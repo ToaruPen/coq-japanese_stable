@@ -63,6 +63,15 @@ public sealed class CookingRuntimeTranslationPatchTests
         AssertQueuedMessage(source, null, expected);
     }
 
+    [Test]
+    public void CookingQueuedMessage_StripsPatternControlHeader_ForReflectedDamage()
+    {
+        AssertQueuedMessage(
+            "\u0002reflect\u001F9\u001F18\u001F\u0003The 石英のヒヒ reflects 1 damage back at you.",
+            null,
+            "石英のヒヒは1ダメージをあなたへ反射した。");
+    }
+
     [TestCase("You phase out.", "あなたは位相が外れた。")]
     [TestCase("It phases out.", "それは位相が外れた。")]
     [TestCase("They phase out.", "それらは位相が外れた。")]

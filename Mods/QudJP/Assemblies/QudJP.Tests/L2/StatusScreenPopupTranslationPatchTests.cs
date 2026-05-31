@@ -275,6 +275,202 @@ public sealed class StatusScreenPopupTranslationPatchTests
     }
 
     [Test]
+    public void ShowMutationPopup_TranslatesFreezingRayPopup_WhenRuntimeLevelExceedsRankDictionary()
+    {
+        const string source =
+            "You emit a ray of frost from your forefeet.\n\n{{w|This rank}}:\nEmits a 9-square ray of frost in the direction of your choice.\nDamage: {{rules|10d3+2}}\nCooldown: 20 rounds\nCooldown reduced by 15 due to high Willpower.\nMelee attacks cool opponents by {{rules|-10d4}} degrees\n\n{{w|Next rank}}:\nEmits a 9-square ray of frost in the direction of your choice.\nDamage: {{rules|11d3+2}}\nCooldown: 20 rounds\nCooldown reduced by 3 due to high Willpower.\nMelee attacks cool opponents by {{rules|-11d4}} degrees\n\n{{C|* This mutationの base rank is 7.}}\n{{G|+ This mutationの rank is increased by 3 due to being rapidly advanced 1 time.}}\n\n{{C|You do not have enough mutation points to increase that mutationの rank.}}";
+
+        var translated = TranslatePopupMessage(
+            ownerMethod: RequireMethod(
+                typeof(DummyStatusScreenPopupTarget),
+                nameof(DummyStatusScreenPopupTarget.ShowMutationPopup),
+                typeof(DummyGameObject),
+                typeof(DummyCharacterMutation)),
+            source,
+            new DummyCharacterMutation { EntryName = "Freezing Ray", DisplayName = "凍結線", Variant = "Icy Vapor Feet", Level = 10 });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Does.Contain("冷気の光線"));
+            Assert.That(translated, Does.Contain("{{w|現在ランク}}:"));
+            Assert.That(translated, Does.Contain("ダメージ: {{rules|10d3+2}}"));
+            Assert.That(translated, Does.Contain("高い意志力によりクールダウンが15短縮される。"));
+            Assert.That(translated, Does.Contain("{{w|次ランク}}:"));
+            Assert.That(translated, Does.Contain("ダメージ: {{rules|11d3+2}}"));
+            Assert.That(translated, Does.Contain("高い意志力によりクールダウンが3短縮される。"));
+            Assert.That(translated, Does.Contain("{{C|* この変異の基本ランクは7。}}"));
+            Assert.That(translated, Does.Contain("{{G|+ この変異のランクは1回の急速成長により3上昇している。}}"));
+            Assert.That(translated, Does.EndWith("{{C|その変異のランクを上げるための変異ポイントが足りない。}}"));
+            Assert.That(translated, Does.Not.Contain("You emit a ray"));
+            Assert.That(translated, Does.Not.Contain("Cooldown reduced"));
+            Assert.That(translated, Does.Not.Contain("This rank"));
+            Assert.That(translated, Does.Not.Contain("mutationの"));
+        });
+    }
+
+    [Test]
+    public void ShowMutationPopup_TranslatesFreezingRayPopup_WhenCooldownUsesSingularRound()
+    {
+        const string source =
+            "You emit a ray of frost from your forefeet.\n\n{{w|This rank}}:\nEmits a 9-square ray of frost in the direction of your choice.\nDamage: {{rules|10d3+2}}\nCooldown: 20 round\nMelee attacks cool opponents by {{rules|-10d4}} degrees\n\n{{w|Next rank}}:\nEmits a 9-square ray of frost in the direction of your choice.\nDamage: {{rules|11d3+2}}\nCooldown: 20 round\nMelee attacks cool opponents by {{rules|-11d4}} degrees\n\n{{C|* This mutationの base rank is 7.}}\n{{G|+ This mutationの rank is increased by 3 due to being rapidly advanced 1 time.}}\n\n{{C|You do not have enough mutation points to increase that mutationの rank.}}";
+
+        var translated = TranslatePopupMessage(
+            ownerMethod: RequireMethod(
+                typeof(DummyStatusScreenPopupTarget),
+                nameof(DummyStatusScreenPopupTarget.ShowMutationPopup),
+                typeof(DummyGameObject),
+                typeof(DummyCharacterMutation)),
+            source,
+            new DummyCharacterMutation { EntryName = "Freezing Ray", DisplayName = "凍結線", Variant = "Icy Vapor Feet", Level = 10 });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Does.Contain("冷気の光線"));
+            Assert.That(translated, Does.Contain("クールダウン: 20ラウンド"));
+            Assert.That(translated, Does.Contain("{{w|現在ランク}}:"));
+            Assert.That(translated, Does.Contain("{{w|次ランク}}:"));
+            Assert.That(translated, Does.EndWith("{{C|その変異のランクを上げるための変異ポイントが足りない。}}"));
+            Assert.That(translated, Does.Not.Contain("You emit a ray"));
+            Assert.That(translated, Does.Not.Contain("Cooldown: 20 round"));
+        });
+    }
+
+    [Test]
+    public void ShowMutationPopup_TranslatesFreezingRayPopup_WhenMutationEntryNameIsVariantEquipment()
+    {
+        const string source =
+            "You emit a ray of frost from your forefeet.\n\n{{w|This rank}}:\nEmits a 9-square ray of frost in the direction of your choice.\nDamage: {{rules|10d3+2}}\nCooldown: 20 rounds\nMelee attacks cool opponents by {{rules|-10d4}} degrees\n\n{{w|Next rank}}:\nEmits a 9-square ray of frost in the direction of your choice.\nDamage: {{rules|11d3+2}}\nCooldown: 20 rounds\nMelee attacks cool opponents by {{rules|-11d4}} degrees\n\n{{C|* This mutationの base rank is 7.}}\n{{G|+ This mutationの rank is increased by 3 due to being rapidly advanced 1 time.}}\n\nIt will cost {{C|1}} mutation point to increase 凍結線's rank by 1.\nDo you wish to increase this mutationの rank?";
+
+        var translated = TranslatePopupMessage(
+            ownerMethod: RequireMethod(
+                typeof(DummyStatusScreenPopupTarget),
+                nameof(DummyStatusScreenPopupTarget.ShowMutationPopup),
+                typeof(DummyGameObject),
+                typeof(DummyCharacterMutation)),
+            source,
+            new DummyCharacterMutation
+            {
+                EntryName = "Icy Vapor Feet",
+                DisplayName = "凍結線",
+                Variant = "Icy Vapor Feet",
+                Level = 7,
+            });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Does.Contain("冷気の光線"));
+            Assert.That(translated, Does.Contain("{{w|現在ランク}}:"));
+            Assert.That(translated, Does.Contain("{{G|+ この変異のランクは1回の急速成長により3上昇している。}}"));
+            Assert.That(translated, Does.EndWith("凍結線のランクを1上げるには変異ポイントが{{C|1}}ポイント必要だ。\nこの変異のランクを上げますか？"));
+            Assert.That(translated, Does.Not.Contain("You emit a ray"));
+            Assert.That(translated, Does.Not.Contain("This rank"));
+            Assert.That(translated, Does.Not.Contain("mutationの"));
+        });
+    }
+
+    [Test]
+    public void ShowMutationPopup_TranslatesInitialPopupShowSurface_WhenOwnerPatched()
+    {
+        const string source =
+            "You emit a ray of frost from your forefeet.\n\n{{w|This rank}}:\nEmits a 9-square ray of frost in the direction of your choice.\nDamage: {{rules|10d3+2}}\nCooldown: 20 rounds\nMelee attacks cool opponents by {{rules|-10d4}} degrees\n\n{{w|Next rank}}:\nEmits a 9-square ray of frost in the direction of your choice.\nDamage: {{rules|11d3+2}}\nCooldown: 20 rounds\nMelee attacks cool opponents by {{rules|-11d4}} degrees\n\n{{C|You do not have enough mutation points to increase that mutationの rank.}}";
+
+        var message = TranslateMutationShowYesNoPopupMessage(
+            source,
+            new DummyCharacterMutation
+            {
+                EntryName = "Freezing Ray",
+                DisplayName = "凍結線",
+                Variant = "Icy Vapor Feet",
+                Level = 10,
+            });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(message, Does.Contain("冷気の光線"));
+            Assert.That(message, Does.Contain("{{w|現在ランク}}:"));
+            Assert.That(message, Does.Contain("{{w|次ランク}}:"));
+            Assert.That(message, Does.EndWith("{{C|その変異のランクを上げるための変異ポイントが足りない。}}"));
+            Assert.That(message, Does.Not.Contain("You emit a ray"));
+            Assert.That(message, Does.Not.Contain("This rank"));
+        });
+    }
+
+    [Test]
+    public void ShowMutationPopup_DoesNotReuseDetachedOwner_WhenPopupMessageSourceDiffers()
+    {
+        const string tripleJointedSource =
+            "Your joints stretch much further than usual.\n\n{{w|This rank}}:\n+{{rules|2}} Agility\n{{rules|10%}} chance that Sprint and skills with Agility prerequisites don't go on cooldown after use\n\n{{w|Next rank}}:\n+{{rules|2}} Agility\n{{rules|13%}} chance that Sprint and skills with Agility prerequisites don't go on cooldown after use\n\nIt will cost {{C|1}} mutation point to increase 三重関節's rank by 1.\nDo you wish to increase this mutationの rank?";
+        const string multipleLegsSource =
+            "&yYou have an extra set of legs.\n\n&wThis rank&y:\n+&C100&y move speed\n+&C10%&y carry capacity\n\n&wNext rank&y:\n+&C120&y move speed\n+&C11%&y carry capacity\n\n&C* This mutationの base rank is 5.&y\n\nIt will cost &C1&y mutation point to increase 多脚's rank by 1.\nDo you wish to increase this mutationの rank?";
+
+        object? ownerState;
+        StatusScreenMutationPopupTranslationPatch.Prefix(
+            new DummyCharacterMutation { EntryName = "Triple-jointed", DisplayName = "三重関節", Level = 1 },
+            out ownerState);
+        Assert.That(
+            StatusScreenMutationPopupTranslationPatch.TryTranslatePopupMessage(
+                tripleJointedSource,
+                nameof(PopupShowTranslationPatch),
+                "Popup.Show",
+                out _),
+            Is.True);
+        _ = StatusScreenMutationPopupTranslationPatch.Finalizer(null, ownerState);
+
+        var message = multipleLegsSource;
+        string? title = null;
+        string? contextTitle = null;
+        PopupMessageTranslationPatch.Prefix(ref message, null, null, ref title, ref contextTitle, null);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(message, Is.EqualTo(multipleLegsSource));
+            Assert.That(message, Does.Not.Contain("関節が異様に柔らかい"));
+        });
+    }
+
+    [Test]
+    public void ShowMutationPopup_TranslatesElectricalGenerationPopup_WhenEntryNameIsAbilityLabel()
+    {
+        const string source =
+            "You accrue electrical charge that you can use and discharge to deal damage.\n\n{{w|This rank}}:\nMaximum charge: {{C|14000}}\nAccrue base {{C|600}} charge per turn\nCan discharge all held charge for 1d4 damage per 1000 charge\nDischarge can arc to adjacent targets dealing reduced damage, up to 1 target per 1000 charge\nEMP causes involuntary discharge (difficulty 18 Willpower save)\nYou can drink charge from energy cells and capacitors.\nYou gain 100 charge per point of electrical damage taken.\nYou can provide charge to equipped devices that have integrated power systems.\n\n{{w|Next rank}}:\nMaximum charge: {{C|16000}}\nAccrue base {{C|700}} charge per turn\nCan discharge all held charge for 1d4 damage per 1000 charge\nDischarge can arc to adjacent targets dealing reduced damage, up to 1 target per 1000 charge\nEMP causes involuntary discharge (difficulty 18 Willpower save)\nYou can drink charge from energy cells and capacitors.\nYou gain 100 charge per point of electrical damage taken.\nYou can provide charge to equipped devices that have integrated power systems.\n\n{{C|* This mutationの base rank is 3.}}\n{{G|+ This mutationの rank is increased by 3 due to being rapidly advanced 1 time.}}\n\nIt will cost {{C|1}} mutation point to increase 発電's rank by 1.\nDo you wish to increase this mutationの rank?";
+
+        var translated = TranslatePopupMessage(
+            ownerMethod: RequireMethod(
+                typeof(DummyStatusScreenPopupTarget),
+                nameof(DummyStatusScreenPopupTarget.ShowMutationPopup),
+                typeof(DummyGameObject),
+                typeof(DummyCharacterMutation)),
+            source,
+            new DummyCharacterMutation { EntryName = "Power Devices", DisplayName = "発電", Level = 6 });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Does.Contain("電荷を溜め込み、放電してダメージを与えられる。"));
+            Assert.That(translated, Does.Contain("{{w|現在ランク}}:"));
+            Assert.That(translated, Does.Contain("最大チャージ: {{C|14000}}"));
+            Assert.That(translated, Does.Contain("{{w|次ランク}}:"));
+            Assert.That(translated, Does.Contain("最大チャージ: {{C|16000}}"));
+            Assert.That(translated, Does.EndWith("発電のランクを1上げるには変異ポイントが{{C|1}}ポイント必要だ。\nこの変異のランクを上げますか？"));
+            Assert.That(translated, Does.Not.Contain("You accrue electrical charge"));
+            Assert.That(translated, Does.Not.Contain("This rank"));
+        });
+    }
+
+    [Test]
+    public void ShowMutationPopup_DoesNotTranslateInitialPopupMessageSurface_WhenOwnerWasNotSeen()
+    {
+        const string source =
+            "You emit a ray of frost from your forefeet.\n\n{{w|This rank}}:\nEmits a 9-square ray of frost in the direction of your choice.\nDamage: {{rules|10d3+2}}\nCooldown: 20 rounds\nMelee attacks cool opponents by {{rules|-10d4}} degrees";
+
+        var message = source;
+        string? title = null;
+        string? contextTitle = null;
+        PopupMessageTranslationPatch.Prefix(ref message, null, null, ref title, ref contextTitle, null);
+
+        Assert.That(message, Is.EqualTo(source));
+    }
+
+    [Test]
     public void ShowMutationPopup_PreservesRankBoostReasonsBeforeUpgradePrompt_WhenOwnerPatched()
     {
         const string source =
@@ -321,6 +517,28 @@ public sealed class StatusScreenPopupTranslationPatchTests
                 typeof(DummyCharacterMutation)),
             "You have increased Force Wall's base rank to {{C|2}}!\n\n{{G|* This mutation's base rank is 2.}}",
             "力場壁の基本ランクを{{C|2}}に上げた！\n\n{{G|* この変異の基本ランクは2。}}");
+    }
+
+    [Test]
+    public void ShowMutationPopup_TranslatesIncreasedRankAfterPossessiveGrammarPatch_WhenOwnerPatched()
+    {
+        var translated = TranslatePopupMessage(
+            ownerMethod: RequireMethod(
+                typeof(DummyStatusScreenPopupTarget),
+                nameof(DummyStatusScreenPopupTarget.ShowMutationPopup),
+                typeof(DummyGameObject),
+                typeof(DummyCharacterMutation)),
+            "You have increased 三重関節の base rank to {{C|2}}!\n\n{{C|* This mutationの base rank is 2.}}\n{{G|+ This mutationの rank is increased by 3 due to being rapidly advanced 1 time.}}",
+            new DummyCharacterMutation { EntryName = "Triple-jointed", DisplayName = "三重関節", Level = 2 });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Does.StartWith("三重関節の基本ランクを{{C|2}}に上げた！"));
+            Assert.That(translated, Does.Contain("{{C|* この変異の基本ランクは2。}}"));
+            Assert.That(translated, Does.Contain("{{G|+ この変異のランクは1回の急速成長により3上昇している。}}"));
+            Assert.That(translated, Does.Not.Contain("You have increased"));
+            Assert.That(translated, Does.Not.Contain("This mutationの"));
+        });
     }
 
     [TestCase(
@@ -555,6 +773,11 @@ public sealed class StatusScreenPopupTranslationPatchTests
 
     private static string TranslatePopupMessage(MethodInfo ownerMethod, string source)
     {
+        return TranslatePopupMessage(ownerMethod, source, null);
+    }
+
+    private static string TranslatePopupMessage(MethodInfo ownerMethod, string source, DummyCharacterMutation? mutation)
+    {
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
         try
@@ -563,7 +786,7 @@ public sealed class StatusScreenPopupTranslationPatchTests
             PatchOwner(harmony, ownerMethod);
 
             DummyStatusScreenPopupTarget.MessageToSend = source;
-            _ = ownerMethod.Invoke(null, CreateOwnerArguments(ownerMethod));
+            _ = ownerMethod.Invoke(null, CreateOwnerArguments(ownerMethod, mutation));
 
             return DummyPopupShow.LastShowMessage ?? string.Empty;
         }
@@ -632,7 +855,7 @@ public sealed class StatusScreenPopupTranslationPatchTests
         }
     }
 
-    private static object[] CreateOwnerArguments(MethodInfo ownerMethod)
+    private static object[] CreateOwnerArguments(MethodInfo ownerMethod, DummyCharacterMutation? mutation = null)
     {
         return ownerMethod.Name switch
         {
@@ -642,7 +865,7 @@ public sealed class StatusScreenPopupTranslationPatchTests
             nameof(DummyStatusScreenPopupTarget.ShowMutationPopup) => new object[]
             {
                 new DummyGameObject(),
-                new DummyCharacterMutation { EntryName = "Force Wall", DisplayName = "Force Wall", Level = 1 },
+                mutation ?? new DummyCharacterMutation { EntryName = "Force Wall", DisplayName = "Force Wall", Level = 1 },
             },
             _ => Array.Empty<object>(),
         };

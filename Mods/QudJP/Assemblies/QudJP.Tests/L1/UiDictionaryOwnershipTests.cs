@@ -92,6 +92,7 @@ public sealed class UiDictionaryOwnershipTests
         {
             ("drop", "落とす"),
             ("detonate", "起爆する"),
+            ("disarm", "解除する"),
             ("look", "見る"),
             ("examine", "調べる"),
         };
@@ -328,6 +329,7 @@ public sealed class UiDictionaryOwnershipTests
             {
                 ("disciple of the Coiled Lamb", "GetDisplayName.Title", "巻かれた仔羊の弟子"),
                 ("hindren pariah", "GetDisplayName.Title", "ヒンドレンのパリア"),
+                ("psychic thrall", "GetDisplayName.Title", "精神支配された奴隷"),
             };
             foreach (var (key, context, text) in expectedDisplayNameTitles)
             {

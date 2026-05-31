@@ -148,6 +148,24 @@ def test_classify_pure_whitespace_as_runtime_noise() -> None:
     assert result.classification == TriageClassification.RUNTIME_NOISE
 
 
+def test_classify_separator_only_as_runtime_noise() -> None:
+    """Separator-only observations are formatting noise."""
+    result = classify(_mk("-----", route="DescriptionLongDescriptionPatch"))
+    assert result.classification == TriageClassification.RUNTIME_NOISE
+
+
+def test_classify_japanese_no_pattern_as_route_patch() -> None:
+    """No-pattern observations stay actionable even when the emitted line contains Japanese."""
+    result = classify(
+        _mk(
+            "HEミサイル x1を分解した。",
+            route="MessageLogPatch",
+            kind=LogEntryKind.NO_PATTERN,
+        ),
+    )
+    assert result.classification == TriageClassification.ROUTE_PATCH
+
+
 def test_classify_dram_quantity() -> None:
     """Dynamic quantities in item descriptions are logic_required."""
     result = classify(_mk("[31 drams of fresh water]"))

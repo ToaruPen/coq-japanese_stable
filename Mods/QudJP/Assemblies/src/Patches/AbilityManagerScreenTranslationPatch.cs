@@ -56,6 +56,10 @@ public static class AbilityManagerScreenTranslationPatch
         @"(?m)^Area:\s+(?<area>[^\r\n]+)$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex ElementalRayIntroPattern = new(
+        @"\bYou emit a ray of (?<element>frost|flame) from your forefeet\.",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     private static readonly Regex RangeSpacesPattern = new(
         @"\bRange:\s+(?<range>\d+(?:-\d+)?) spaces?\b",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
@@ -431,10 +435,15 @@ public static class AbilityManagerScreenTranslationPatch
 
     private static string TranslateBindingText(string source, string family)
     {
+        return TranslateAbilityDetailText(source, Context, family);
+    }
+
+    internal static string TranslateAbilityDetailText(string source, string route, string family)
+    {
         var translated = TranslateRawFragments(source);
         var detail = SkillsAndPowersStatusScreenTranslationPatch.TryTranslateDetailText(
             translated,
-            ObservabilityHelpers.ComposeContext(Context, family),
+            ObservabilityHelpers.ComposeContext(route, family),
             recordTransform: false);
         if (detail.changed)
         {
@@ -452,7 +461,7 @@ public static class AbilityManagerScreenTranslationPatch
 
         if (!string.Equals(translated, source, StringComparison.Ordinal))
         {
-            DynamicTextObservability.RecordTransform(Context, family, source, translated);
+            DynamicTextObservability.RecordTransform(route, family, source, translated);
         }
 
         return translated;
@@ -480,6 +489,11 @@ public static class AbilityManagerScreenTranslationPatch
         translated = AreaCenteredPattern.Replace(translated, static match => "範囲: 自分を中心に" + match.Groups["area"].Value);
         translated = DurationValuePattern.Replace(translated, static match => "持続時間: " + match.Groups["duration"].Value);
         translated = AreaValuePattern.Replace(translated, static match => "範囲: " + match.Groups["area"].Value);
+        translated = ElementalRayIntroPattern.Replace(
+            translated,
+            static match => string.Equals(match.Groups["element"].Value, "flame", StringComparison.Ordinal)
+                ? "足先から火炎の光線を放つ。"
+                : "足先から冷気の光線を放つ。");
         translated = RangeSpacesPattern.Replace(translated, static match => "射程: " + match.Groups["range"].Value + "マス");
         translated = RangeValuePattern.Replace(translated, static match => "射程: " + TranslateRangeValue(match.Groups["range"].Value));
         translated = PerRoundsPattern.Replace(translated, static match => match.Groups["rounds"].Value + "ラウンドにつき" + match.Groups["amount"].Value);

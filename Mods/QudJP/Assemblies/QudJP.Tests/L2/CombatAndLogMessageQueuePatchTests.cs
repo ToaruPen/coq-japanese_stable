@@ -37,6 +37,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
         DummyPopupShow.Reset();
         DummyPopupGenericTarget.Reset();
         DummyPopupTarget.Reset();
+        DummyPopupGenericTarget.Reset();
     }
 
     [TearDown]
@@ -104,6 +105,40 @@ public sealed class CombatAndLogMessageQueuePatchTests
             target.ApplyDischarge(new DummyCell(), new DummyCell(), 3);
 
             Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("{{electrical|電弧}}がchrome turretからyouへ走った！"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [TestCase(
+        "A {{W|ribbon of electricity}} leaps from you and {{Y|ケムセル}} on you into the air.",
+        "{{W|電光のリボン}}があなたとあなたの{{Y|ケムセル}}から空中へ走った。")]
+    [TestCase(
+        "A {{W|ribbon of electricity}} leaps from {{Y|ケムセル}} on your person to {{C|高級工具セット}}.",
+        "{{W|電光のリボン}}が身につけた{{Y|ケムセル}}から{{C|高級工具セット}}へ走った。")]
+    public void SapChargeOnHitCheckApply_TranslatesRibbonMessages_WhenOwnerPatched(string source, string expected)
+    {
+        WritePatternDictionary(
+            ("^A ribbon of electricity leaps from you and (.+?) on you into the air\\.$", "{{{{W|電光のリボン}}}}があなたとあなたの{0}から空中へ走った。"),
+            ("^A ribbon of electricity leaps from (.+?) on your person to (.+?)\\.$", "{{{{W|電光のリボン}}}}が身につけた{0}から{1}へ走った。"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummySapChargeOnHitTarget), nameof(DummySapChargeOnHitTarget.CheckApply), typeof(DummyGameEvent)),
+                typeof(SapChargeOnHitTranslationPatch));
+
+            var target = new DummySapChargeOnHitTarget { MessageToSend = source };
+
+            target.CheckApply(new DummyGameEvent());
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
         }
         finally
         {
@@ -1549,6 +1584,14 @@ public sealed class CombatAndLogMessageQueuePatchTests
     }
 
     [Test]
+    public void GameObjectPopup_TranslatesConfirmUseImportantAsyncPlural_PreservingItemColor_WhenOwnerPatched()
+    {
+        AssertGameObjectPopupShowYesNoAsync(
+            "{{C|bronze daggers}} are important. Are you sure you want to disassemble them for bits?",
+            "{{C|bronze daggers}}は重要だ。本当にそれらをdisassemble for bitsしますか？");
+    }
+
+    [Test]
     public void GameObjectPopup_TranslatesConfirmUseImportantSingular_WhenOwnerPatched()
     {
         AssertGameObjectPopupShowYesNo(
@@ -1556,27 +1599,270 @@ public sealed class CombatAndLogMessageQueuePatchTests
             "bronze daggerは重要だ。本当にuseしますか？");
     }
 
+    [Test]
+    public void GameObjectPopup_TranslatesConfirmUseImportantSingular_PreservingItemColor_WhenOwnerPatched()
+    {
+        AssertGameObjectPopupShowYesNo(
+            "{{Y|bronze dagger}} is important. Are you sure you want to use it?",
+            "{{Y|bronze dagger}}は重要だ。本当にuseしますか？");
+    }
+
     [TestCase("bronze dagger doesn't want a new name.", "bronze daggerは新しい名前を望んでいない。")]
+    [TestCase("{{Y|bronze dagger}} doesn't want a new name.", "{{Y|bronze dagger}}は新しい名前を望んでいない。")]
     [TestCase("You start calling bronze dagger by the name 'Edge'.", "bronze daggerを「Edge」と呼び始めた。")]
+    [TestCase("{{y|You start calling {{Y|bronze dagger}} by the name '{{G|Edge}}'.}}", "{{y|{{Y|bronze dagger}}を「{{G|Edge}}」と呼び始めた。}}")]
     public void GameObjectPopup_TranslatesHandleRenameMessages_WhenOwnerPatched(string source, string expected)
     {
         AssertGameObjectPopupHandleRename(source, expected, useShowFail: source.EndsWith("new name.", StringComparison.Ordinal));
     }
 
-    [TestCase("Irudad's Force Bubble ability is now toggled on.", "IrudadのForce Bubble能力はオンに切り替わった。")]
-    [TestCase("Irudad's Force Bubble ability is now toggled off.", "IrudadのForce Bubble能力はオフに切り替わった。")]
-    [TestCase("Irudad's Force Bubble ability cannot be toggled at this time.", "IrudadのForce Bubble能力は今は切り替えられない。")]
-    [TestCase("Irudad's Force Bubble ability is now forbidden.", "IrudadのForce Bubble能力は禁止された。")]
-    [TestCase("Irudad's Force Bubble ability is now allowed.", "IrudadのForce Bubble能力は許可された。")]
+    [TestCase("Irudad's Force Bubble ability is now toggled on.", "Irudadの力場泡能力はオンに切り替わった。")]
+    [TestCase("Irudad's Force Bubble ability is now toggled off.", "Irudadの力場泡能力はオフに切り替わった。")]
+    [TestCase("Irudad's Force Bubble ability cannot be toggled at this time.", "Irudadの力場泡能力は今は切り替えられない。")]
+    [TestCase("Irudad's Force Bubble ability is now forbidden.", "Irudadの力場泡能力は禁止された。")]
+    [TestCase("Irudad's Force Bubble ability is now allowed.", "Irudadの力場泡能力は許可された。")]
+    [TestCase("{{C|Irudad}}'s {{c|Force Bubble}} ability is now allowed.", "{{C|Irudad}}の{{c|力場泡}}能力は許可された。")]
     public void GameObjectPopup_TranslatesChangeCompanionAbilityUseMessages_WhenOwnerPatched(string source, string expected)
     {
+        WriteSkillsAndPowersDictionary();
         AssertGameObjectPopupChangeCompanionAbilityUse(source, expected);
+    }
+
+    [Test]
+    public void GameObjectPopup_TranslatesChangeCompanionAbilityUsePickOption_WhenOwnerPatched()
+    {
+        WriteSkillsAndPowersDictionary();
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupPickOption(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyGameObjectPopupTarget), nameof(DummyGameObjectPopupTarget.ChangeCompanionAbilityUse)),
+                typeof(GameObjectPopupTranslationPatch));
+
+            var target = new DummyGameObjectPopupTarget
+            {
+                PickOptionIntroToSend = "{{y|Choose one of 監視官イラメ's abilities to forbid or allow.}}",
+                PickOptionOptionsToSend =
+                [
+                    "{{c|Aggressive Stance}} {{Y|[allowed]}}",
+                    "Defensive Stance {{K|[forbidden]}}",
+                    "Freezing Ray {{g|[toggled on]}}",
+                    "Mark Target {{y|[toggled off]}}",
+                ],
+            };
+
+            target.ChangeCompanionAbilityUse();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(
+                    DummyPopupGenericTarget.LastPickOptionIntro,
+                    Is.EqualTo("{{y|監視官イラメの能力を1つ選んで禁止または許可してください。}}"));
+                Assert.That(
+                    DummyPopupGenericTarget.LastPickOptionOptions,
+                    Is.EqualTo(new[]
+                    {
+                        "{{c|攻勢の構え}} {{Y|[許可]}}",
+                        "守勢の構え {{K|[禁止]}}",
+                        "凍結線 {{g|[オン]}}",
+                        "目標をマーク {{y|[オフ]}}",
+                    }));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void GameObjectPopup_TranslatesChangeCompanionFollowDistancePickOption_WhenOwnerPatched()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupPickOption(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyGameObjectPopupTarget), nameof(DummyGameObjectPopupTarget.ChangeCompanionFollowDistance)),
+                typeof(GameObjectPopupTranslationPatch));
+
+            var target = new DummyGameObjectPopupTarget
+            {
+                PickOptionIntroToSend = "{{y|Instruct 監視官イラメ to follow at what distance?}}",
+                PickOptionOptionsToSend = ["close", "medium", "far"],
+            };
+
+            target.ChangeCompanionFollowDistance();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(
+                    DummyPopupGenericTarget.LastPickOptionIntro,
+                    Is.EqualTo("{{y|監視官イラメにどの距離で追従させますか？}}"));
+                Assert.That(
+                    DummyPopupGenericTarget.LastPickOptionOptions,
+                    Is.EqualTo(new[] { "近く", "中間", "遠く" }));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void GameObjectPopup_LeavesPickOptionEmptyInputUnchanged_WhenOwnerPatched()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupPickOption(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyGameObjectPopupTarget), nameof(DummyGameObjectPopupTarget.ChangeCompanionFollowDistance)),
+                typeof(GameObjectPopupTranslationPatch));
+
+            var target = new DummyGameObjectPopupTarget
+            {
+                PickOptionIntroToSend = string.Empty,
+                PickOptionOptionsToSend = [string.Empty],
+            };
+
+            target.ChangeCompanionFollowDistance();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyPopupGenericTarget.LastPickOptionIntro, Is.EqualTo(string.Empty));
+                Assert.That(DummyPopupGenericTarget.LastPickOptionOptions, Is.EqualTo(new[] { string.Empty }));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void GameObjectPopup_StripsPickOptionDirectMarkerWithoutRetranslating_WhenOwnerPatched()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupPickOption(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyGameObjectPopupTarget), nameof(DummyGameObjectPopupTarget.ChangeCompanionFollowDistance)),
+                typeof(GameObjectPopupTranslationPatch));
+
+            var target = new DummyGameObjectPopupTarget
+            {
+                PickOptionIntroToSend = MessageFrameTranslator.MarkDirectTranslation("既に翻訳済み"),
+                PickOptionOptionsToSend = [MessageFrameTranslator.MarkDirectTranslation("近く")],
+            };
+
+            target.ChangeCompanionFollowDistance();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyPopupGenericTarget.LastPickOptionIntro, Is.EqualTo("既に翻訳済み"));
+                Assert.That(DummyPopupGenericTarget.LastPickOptionOptions, Is.EqualTo(new[] { "近く" }));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void GameObjectPopup_LeavesCloseOptionUnchanged_WhenFollowDistanceIntroWasNotSeen()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupPickOption(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyGameObjectPopupTarget), nameof(DummyGameObjectPopupTarget.ChangeCompanionFollowDistance)),
+                typeof(GameObjectPopupTranslationPatch));
+
+            var target = new DummyGameObjectPopupTarget
+            {
+                PickOptionIntroToSend = "Choose a mode.",
+                PickOptionOptionsToSend = ["close"],
+            };
+
+            target.ChangeCompanionFollowDistance();
+
+            Assert.That(DummyPopupGenericTarget.LastPickOptionOptions, Is.EqualTo(new[] { "close" }));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void GameObjectPopup_RestoresFollowDistanceStateAfterNestedOwnerScope()
+    {
+        GameObjectPopupTranslationPatch.Prefix();
+        try
+        {
+            Assert.That(
+                GameObjectPopupTranslationPatch.TryTranslatePopupMessage(
+                    "Instruct 監視官イラメ to follow at what distance?",
+                    nameof(GameObjectPopupTranslationPatch),
+                    "Popup.PickOption",
+                    out var intro),
+                Is.True);
+            Assert.That(intro, Is.EqualTo("監視官イラメにどの距離で追従させますか？"));
+
+            GameObjectPopupTranslationPatch.Prefix();
+            try
+            {
+                Assert.That(
+                    GameObjectPopupTranslationPatch.TryTranslatePopupMessage(
+                        "close",
+                        nameof(GameObjectPopupTranslationPatch),
+                        "Popup.PickOption",
+                        out var innerOption),
+                    Is.False);
+                Assert.That(innerOption, Is.EqualTo("close"));
+            }
+            finally
+            {
+                _ = GameObjectPopupTranslationPatch.Finalizer(null);
+            }
+
+            Assert.That(
+                GameObjectPopupTranslationPatch.TryTranslatePopupMessage(
+                    "close",
+                    nameof(GameObjectPopupTranslationPatch),
+                    "Popup.PickOption",
+                    out var outerOption),
+                Is.True);
+            Assert.That(outerOption, Is.EqualTo("近く"));
+        }
+        finally
+        {
+            _ = GameObjectPopupTranslationPatch.Finalizer(null);
+        }
     }
 
     [Test]
     public void GameObjectPopup_TranslatesCheckCompanionDirectionMessage_WhenOwnerPatched()
     {
         AssertGameObjectPopupCheckCompanionDirection("Irudad can't hear you!", "Irudadにはあなたの声が聞こえない！");
+        AssertGameObjectPopupCheckCompanionDirection("{{M|Irudad}} can't hear you!", "{{M|Irudad}}にはあなたの声が聞こえない！");
     }
 
     [Test]
@@ -1598,10 +1884,10 @@ public sealed class CombatAndLogMessageQueuePatchTests
             {
                 Assert.That(
                     DummyPopupGenericTarget.LastPickOptionIntro,
-                    Is.EqualTo("Irudadにどの距離で追従するよう指示しますか？"));
+                    Is.EqualTo("Irudadにどの距離で追従させますか？"));
                 Assert.That(
                     DummyPopupGenericTarget.LastPickOptionOptions,
-                    Is.EqualTo(new[] { "近く", "中距離", "遠く" }));
+                    Is.EqualTo(new[] { "近く", "中間", "遠く" }));
             });
         }
         finally
@@ -3805,6 +4091,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
     [TestCase("You cleave through snapjaw's armor.", "snapjawの装甲を切り裂いた。")]
     [TestCase("snapjaw cleaves through your armor.", "snapjawがあなたの装甲を切り裂いた。")]
     [TestCase("snapjaw cleaves through glowfish's armor.", "snapjawがglowfishの装甲を切り裂いた。")]
+    [TestCase("監視官ニーラヒンド cleaves through ゼラチンの角柱の armor.", "監視官ニーラヒンドがゼラチンの角柱の装甲を切り裂いた。")]
     [TestCase("You shook off the stun.", "スタンを振り払った。")]
     [TestCase("You shook off the dazing.", "朦朧を振り払った。")]
     [TestCase("The snapjaw shook off the stun.", "snapjawはスタンを振り払った。")]
@@ -3831,6 +4118,15 @@ public sealed class CombatAndLogMessageQueuePatchTests
         "意志の力で混乱を振り払った。")]
     [TestCase("You lose sight of your mark.", "標的を見失った。")]
     [TestCase("Your tracking of your mark has been disrupted.", "印付けの追跡が乱された。")]
+    [TestCase(
+        "{{&R|The {{mercurial|マーキュリアル}} draws a bead on you. \u0002are\u001F3\u001F7\u001F\u0003You are marked.}}",
+        "{{&R|{{mercurial|マーキュリアル}}があなたに照準を合わせた。あなたはマークされた。}}")]
+    [TestCase(
+        "The snapjaw hunter draws a bead on you. \u0002are\u001F3\u001F7\u001F\u0003You are marked.",
+        "snapjaw hunterがあなたに照準を合わせた。あなたはマークされた。")]
+    [TestCase(
+        "The snapjaw hunter draws a bead on you. You are marked.",
+        "snapjaw hunterがあなたに照準を合わせた。あなたはマークされた。")]
     [TestCase("The snapjaw resists your shield slam.", "snapjawはあなたのシールドスラムに抵抗した。")]
     [TestCase("You resist {{R|the snapjaw's shield slam}}.", "{{R|snapjawのシールドスラム}}に抵抗した。")]
     [TestCase("You rejoinder with {{Y|your dagger}}.", "{{Y|あなたのdagger}}で反撃した。")]
@@ -4004,6 +4300,14 @@ public sealed class CombatAndLogMessageQueuePatchTests
         "You fall {{C|asleep}}!",
         "あなたは{{C|眠り}}に落ちた。")]
     [TestCase(
+        "Apply",
+        "\u0002fall\u001F16\u001F22\u001F\u0003The シュグルイスの渦動ワイト falls {{C|asleep}}.",
+        "シュグルイスの渦動ワイトは{{C|眠り}}に落ちた。")]
+    [TestCase(
+        "Apply",
+        "\u0002fall\u001F21\u001F27\u001F\u0003The {{B|濡れた}}まどろむアーチン falls {{C|asleep}}.",
+        "{{B|濡れた}}まどろむアーチンは{{C|眠り}}に落ちた。")]
+    [TestCase(
         "BeginTakeAction",
         "You are asleep.",
         "眠っている。")]
@@ -4021,6 +4325,35 @@ public sealed class CombatAndLogMessageQueuePatchTests
         string expected)
     {
         AssertAsleepOwnerQueuedMessage(methodKey, source, expected);
+    }
+
+    [Test]
+    public void AsleepOwner_TryTranslateQueuedMessage_StripsPatternControlHeader()
+    {
+        var source = "\u0002fall\u001F21\u001F27\u001F\u0003The {{B|濡れた}}まどろむアーチン falls {{C|asleep}}.";
+        var message = source;
+
+        AsleepOwnerTranslationPatch.Prefix();
+        try
+        {
+            var translated = AsleepOwnerTranslationPatch.TryTranslateQueuedMessage(ref message, null);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(translated, Is.True);
+                Assert.That(
+                    MessageFrameTranslator.TryStripDirectTranslationMarker(message, out var unmarked),
+                    Is.True);
+                Assert.That(unmarked, Is.EqualTo("{{B|濡れた}}まどろむアーチンは{{C|眠り}}に落ちた。"));
+                Assert.That(unmarked.IndexOf('\u0002'), Is.EqualTo(-1));
+                Assert.That(unmarked.IndexOf('\u001F'), Is.EqualTo(-1));
+                Assert.That(unmarked.IndexOf('\u0003'), Is.EqualTo(-1));
+            });
+        }
+        finally
+        {
+            _ = AsleepOwnerTranslationPatch.Finalizer(null);
+        }
     }
 
     [TestCase(
@@ -12343,6 +12676,20 @@ public sealed class CombatAndLogMessageQueuePatchTests
         File.WriteAllText(
             Path.Combine(tempDirectory, "ui-liquids.ja.json"),
             "{\"entries\":[{\"key\":\"water\",\"context\":\"XRL.Liquids\",\"text\":\"水\"},{\"key\":\"fresh water\",\"context\":\"XRL.Liquids\",\"text\":\"真水\"}]}\n",
+            new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
+    }
+
+    private void WriteSkillsAndPowersDictionary()
+    {
+        File.WriteAllText(
+            Path.Combine(tempDirectory, "ui-skillsandpowers.ja.json"),
+            "{\"entries\":["
+            + "{\"key\":\"Aggressive Stance\",\"text\":\"攻勢の構え\"},"
+            + "{\"key\":\"Defensive Stance\",\"text\":\"守勢の構え\"},"
+            + "{\"key\":\"Force Bubble\",\"text\":\"力場泡\"},"
+            + "{\"key\":\"Freezing Ray\",\"text\":\"凍結線\"},"
+            + "{\"key\":\"Mark Target\",\"text\":\"目標をマーク\"}"
+            + "]}\n",
             new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
     }
 

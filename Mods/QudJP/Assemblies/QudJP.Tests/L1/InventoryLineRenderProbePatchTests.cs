@@ -93,7 +93,10 @@ public sealed class InventoryLineRenderProbePatchTests
 
         NUnit.Framework.Assert.That(
             source,
-            NUnit.Framework.Does.Contain("InventoryLineFontFixer.TryRefreshTextSkinWithFallbackFont(itemTextSkin, translatedDisplayName)"));
+            NUnit.Framework.Does.Contain("InventoryLineFontFixer.TryRefreshTextSkinWithFallbackFontForSetData("));
+        NUnit.Framework.Assert.That(source, NUnit.Framework.Does.Contain("instance"));
+        NUnit.Framework.Assert.That(source, NUnit.Framework.Does.Contain("itemTextSkin"));
+        NUnit.Framework.Assert.That(source, NUnit.Framework.Does.Contain("translatedDisplayName"));
     }
 
     [NUnit.Framework.Test]
@@ -127,7 +130,7 @@ public sealed class InventoryLineRenderProbePatchTests
             afterOwnerIndex,
             System.StringComparison.Ordinal);
         var fontRefreshIndex = source.IndexOf(
-            "InventoryLineFontFixer.TryRefreshTextSkinWithFallbackFont(itemTextSkin, translatedDisplayName)",
+            "InventoryLineFontFixer.TryRefreshTextSkinWithFallbackFontForSetData(",
             System.StringComparison.Ordinal);
         var afterRefreshIndex = source.IndexOf(
             "\"translation-after-font-refresh\"",
@@ -136,6 +139,40 @@ public sealed class InventoryLineRenderProbePatchTests
         NUnit.Framework.Assert.That(afterOwnerIndex, NUnit.Framework.Is.GreaterThan(ownerSetIndex));
         NUnit.Framework.Assert.That(fontRefreshIndex, NUnit.Framework.Is.GreaterThan(afterOwnerIndex));
         NUnit.Framework.Assert.That(afterRefreshIndex, NUnit.Framework.Is.GreaterThan(fontRefreshIndex));
+    }
+
+    [NUnit.Framework.Test]
+    public void InventoryLineRenderProbePatch_UsesGatedSetDataFontRefresh()
+    {
+        var sourcePath = Path.Combine(
+            TestProjectPaths.GetRepositoryRoot(),
+            "Mods",
+            "QudJP",
+            "Assemblies",
+            "src",
+            "Patches",
+            "InventoryLineRenderProbePatch.cs");
+        var source = File.ReadAllText(sourcePath);
+
+        NUnit.Framework.Assert.That(
+            source,
+            NUnit.Framework.Does.Contain("InventoryLineFontFixer.TryApplyPrimaryFontToItemRowForSetData(__instance, data)"));
+    }
+
+    [NUnit.Framework.Test]
+    public void InventoryLineRenderProbePatch_RunsAfterTranslationPostfix()
+    {
+        var sourcePath = Path.Combine(
+            TestProjectPaths.GetRepositoryRoot(),
+            "Mods",
+            "QudJP",
+            "Assemblies",
+            "src",
+            "Patches",
+            "InventoryLineRenderProbePatch.cs");
+        var source = File.ReadAllText(sourcePath);
+
+        NUnit.Framework.Assert.That(source, NUnit.Framework.Does.Contain("[HarmonyPriority(Priority.Last)]"));
     }
 
     [NUnit.Framework.Test]
@@ -309,7 +346,10 @@ public sealed class InventoryLineRenderProbePatchTests
 
         NUnit.Framework.Assert.That(
             source,
-            NUnit.Framework.Does.Contain("return tmp.textInfo.characterCount > 0;"));
+            NUnit.Framework.Does.Contain("var refreshed = tmp.textInfo.characterCount > 0;"));
+        NUnit.Framework.Assert.That(
+            source,
+            NUnit.Framework.Does.Contain("return refreshed;"));
     }
 
     [NUnit.Framework.Test]
