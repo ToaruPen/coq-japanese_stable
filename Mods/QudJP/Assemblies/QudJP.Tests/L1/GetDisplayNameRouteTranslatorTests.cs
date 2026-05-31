@@ -45,6 +45,24 @@ public sealed class GetDisplayNameRouteTranslatorTests
     }
 
     [Test]
+    public void TranslateScopedExactPreservingColors_ReturnsEmptyAndLogsWarning_WhenSourceIsNull()
+    {
+        var output = TestTraceHelper.CaptureTrace(() =>
+            Assert.That(GetDisplayNameRouteTranslator.TranslateScopedExactPreservingColors(null), Is.EqualTo(string.Empty)));
+
+        Assert.That(output, Does.Contain("TranslateScopedExactPreservingColors received null source"));
+    }
+
+    [Test]
+    public void TranslateScopedExactPreservingColors_ReturnsEmptyWithoutWarning_WhenSourceIsEmpty()
+    {
+        var output = TestTraceHelper.CaptureTrace(() =>
+            Assert.That(GetDisplayNameRouteTranslator.TranslateScopedExactPreservingColors(string.Empty), Is.EqualTo(string.Empty)));
+
+        Assert.That(output, Is.Empty);
+    }
+
+    [Test]
     public void TranslatePreservingColors_UsesDisplayNameScopedBracketedStateLookups()
     {
         WriteDictionary(("water flask", "水袋"));
@@ -440,7 +458,7 @@ public sealed class GetDisplayNameRouteTranslatorTests
             "{{g|slime}}-stained 両手用{{b|カーバイドの長剣}}",
             nameof(GetDisplayNameProcessPatch));
 
-        Assert.That(translated, Is.EqualTo("{{g|スライム}}でぬめった 両手用{{b|カーバイドの長剣}}"));
+        Assert.That(translated, Is.EqualTo("{{g|スライム}}でぬめった両手用{{b|カーバイドの長剣}}"));
     }
 
     [Test]
@@ -498,7 +516,7 @@ public sealed class GetDisplayNameRouteTranslatorTests
                 GetDisplayNameRouteTranslator.TranslatePreservingColors(
                     "{{g|slime}}-stained {{C|高級工具セット}}",
                     nameof(GetDisplayNameProcessPatch)),
-                Is.EqualTo("{{g|粘液}}に染まった {{C|高級工具セット}}"));
+                Is.EqualTo("{{g|粘液}}に染まった{{C|高級工具セット}}"));
             Assert.That(
                 GetDisplayNameRouteTranslator.TranslatePreservingColors(
                     "{{G|goo}}-and-{{g|slime}}-stained {{Y|鋼鉄}}のブーツ",
@@ -612,7 +630,7 @@ public sealed class GetDisplayNameRouteTranslatorTests
         {
             Assert.That(
                 translated,
-                Is.EqualTo("{{r|血}}に染まった リストファン \u00040 \t0 [セルなし] {{y|<{{B|C}}{{B|C}}{{r|1}}{{b|3}}>}}"));
+                Is.EqualTo("{{r|血}}に染まったリストファン \u00040 \t0 [セルなし] {{y|<{{B|C}}{{B|C}}{{r|1}}{{b|3}}>}}"));
             Assert.That(
                 ColorShapeCaptureObservability.Capture(
                     nameof(InventoryLineTranslationPatch),
@@ -638,7 +656,7 @@ public sealed class GetDisplayNameRouteTranslatorTests
         {
             Assert.That(
                 translated,
-                Is.EqualTo("{{r|血}}に染まった リストファン \u00040 \t0 [セルなし] {{y|<{{B|C}}{{B|C}}{{r|1}}{{b|3}}>}}"));
+                Is.EqualTo("{{r|血}}に染まったリストファン \u00040 \t0 [セルなし] {{y|<{{B|C}}{{B|C}}{{r|1}}{{b|3}}>}}"));
             Assert.That(translated, Does.Not.Contain("{{r|{{r|血に染まっ}}"));
             Assert.That(translated, Does.Not.Contain("}}セ{{b|ル}}なし"));
         });

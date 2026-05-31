@@ -746,6 +746,49 @@ public sealed class MessagePatternTranslatorTests
     }
 
     [Test]
+    public void Translate_DisplayNamePlaceholderTranslatesPlainDisplayNameCapture()
+    {
+        WriteExactDictionary(("chain pistol", "チェーンピストル"));
+        WritePatternDictionary(("^You equip (.+?)[.!]?$", "{d0}を装備した"));
+
+        var translated = MessagePatternTranslator.Translate("You equip a chain pistol.");
+
+        Assert.That(translated, Is.EqualTo("チェーンピストルを装備した"));
+    }
+
+    [Test]
+    public void Translate_DisplayNamePlaceholderPreservesColorWrappedDisplayNameCapture()
+    {
+        WriteExactDictionary(("chain pistol", "チェーンピストル"));
+        WritePatternDictionary(("^You equip (.+?)[.!]?$", "{d0}を装備した"));
+
+        var translated = MessagePatternTranslator.Translate("You equip {{Y|a chain pistol}}.");
+
+        Assert.That(translated, Is.EqualTo("{{Y|チェーンピストル}}を装備した"));
+    }
+
+    [Test]
+    public void Translate_DisplayNamePlaceholderFallsBackSafelyWhenDisplayNameMissing()
+    {
+        WritePatternDictionary(("^You equip (.+?)[.!]?$", "{d0}を装備した"));
+
+        var translated = MessagePatternTranslator.Translate("You equip a gleaming trinket.");
+
+        Assert.That(translated, Is.EqualTo("gleaming trinketを装備した"));
+    }
+
+    [Test]
+    public void Translate_DisplayNamePlaceholderStripsDirectTranslationMarkerInsideCapture()
+    {
+        WritePatternDictionary(("^You receive (.+?)!$", "{d0}を受け取った"));
+
+        var translated = MessagePatternTranslator.Translate(
+            "You receive " + MessageFrameTranslator.MarkDirectTranslation("奇妙な小物") + "!");
+
+        Assert.That(translated, Is.EqualTo("奇妙な小物を受け取った"));
+    }
+
+    [Test]
     public void Translate_RepositoryDictionary_PreservesNestedColorWrappersForPlayerHitWithRoll()
     {
         UseRepositoryPatternDictionary();

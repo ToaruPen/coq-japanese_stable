@@ -97,7 +97,7 @@ public sealed class WorldModsTextTranslatorTests
     }
 
     [Test]
-    public void TryTranslate_DoesNotUseContextualExactLeaf_WhenContextIsNotSpecified()
+    public void TryTranslate_DoesNotUseContextualExactLeaf_WhenPrefixOwnerDoesNotMatch()
     {
         WriteDictionaryWithContext(
             "world-mods.ja.json",
@@ -113,6 +113,46 @@ public sealed class WorldModsTextTranslatorTests
         {
             Assert.That(ok, Is.False);
             Assert.That(translated, Is.EqualTo("Scoped: Context-only text."));
+        });
+    }
+
+    [Test]
+    public void TryTranslate_UsesContextualExactLeaf_WhenPrefixOwnerMatches()
+    {
+        WriteDictionaryWithContext(
+            "world-mods.ja.json",
+            ("XRL.World.Parts.ModScoped.GetShortDescription", "Scoped: Context-only text.", "スコープ付き: 文脈専用。"));
+
+        var ok = WorldModsTextTranslator.TryTranslate(
+            "Scoped: Context-only text.",
+            "DescriptionShortDescriptionPatch",
+            "Description.WorldMods",
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(translated, Is.EqualTo("スコープ付き: 文脈専用。"));
+        });
+    }
+
+    [Test]
+    public void TryTranslate_UsesPrefixOwnerContext_WhenPrefixHasAsciiCaseDifferenceAndTrailingSpace()
+    {
+        WriteDictionaryWithContext(
+            "world-mods.ja.json",
+            ("XRL.World.Parts.ModAirfoil.GetShortDescription", "airfoil : This item can be thrown at +4 throwing range.", "エアフォイル: この品は投擲射程が+4される。"));
+
+        var ok = WorldModsTextTranslator.TryTranslate(
+            "airfoil : This item can be thrown at +4 throwing range.",
+            "DescriptionShortDescriptionPatch",
+            "Description.WorldMods",
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(translated, Is.EqualTo("エアフォイル: この品は投擲射程が+4される。"));
         });
     }
 

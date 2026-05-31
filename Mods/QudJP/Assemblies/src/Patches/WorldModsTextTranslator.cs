@@ -36,7 +36,7 @@ internal static class WorldModsTextTranslator
         ["Your Hobble cooldown is reduced by 5 rounds."] = "XRL.World.Parts.ModImprovedHobble.GetShortDescription",
     };
 
-    private static readonly Dictionary<string, string> PrefixDescriptionContexts = new(StringComparer.Ordinal)
+    private static readonly Dictionary<string, string> PrefixDescriptionContexts = new(StringComparer.OrdinalIgnoreCase)
     {
         ["Airfoil"] = "XRL.World.Parts.ModAirfoil.GetShortDescription",
         ["Biomech"] = "XRL.World.Parts.ModBiomech.GetShortDescription",
@@ -1498,7 +1498,7 @@ internal static class WorldModsTextTranslator
             return false;
         }
 
-        var prefix = source.Substring(0, separator);
+        var prefix = source.Substring(0, separator).TrimEnd();
         return PrefixDescriptionContexts.TryGetValue(prefix, out context!);
     }
 

@@ -44,7 +44,7 @@ public sealed class TinkeringMinePopupTranslationPatchTests
         "{{R|フラッシュバンググレネード mk I mine}}の解除に失敗すると爆発する。成功率は{{R|20%}}未満だと見積もっている。試みますか？")]
     public void HandleEvent_TranslatesDisarmConfirmationPopup_WhenOwnerPatched(string source, string expected)
     {
-        WithPatchedPopupOwnerIfAvailable(() =>
+        WithPatchedPopupOwner(() =>
         {
             var target = new DummyTinkeringMinePopupTarget { PopupMessageToShow = source };
 
@@ -61,7 +61,7 @@ public sealed class TinkeringMinePopupTranslationPatchTests
             "ui-displayname-atomic.ja.json",
             ("flashbang grenade mk I mine", "フラッシュバンググレネード mk I 地雷"));
 
-        WithPatchedPopupOwnerIfAvailable(() =>
+        WithPatchedPopupOwner(() =>
         {
             var target = new DummyTinkeringMinePopupTarget
             {
@@ -109,7 +109,7 @@ public sealed class TinkeringMinePopupTranslationPatchTests
     [Test]
     public void HandleEvent_LeavesEmptyPopupMessageUnchanged_WhenOwnerPatched()
     {
-        WithPatchedPopupOwnerIfAvailable(() =>
+        WithPatchedPopupOwner(() =>
         {
             var target = new DummyTinkeringMinePopupTarget { PopupMessageToShow = string.Empty };
 
@@ -125,7 +125,7 @@ public sealed class TinkeringMinePopupTranslationPatchTests
         const string source =
             "Failing to disarm the {{R|フラッシュバンググレネード mk I mine}} will detonate it. You estimate you have about a {{G|90%}} chance of success. Do you want to make the attempt?";
 
-        WithPatchedPopupOwnerIfAvailable(() =>
+        WithPatchedPopupOwner(() =>
         {
             var target = new DummyTinkeringMinePopupTarget
             {
@@ -138,7 +138,7 @@ public sealed class TinkeringMinePopupTranslationPatchTests
         });
     }
 
-    private static void WithPatchedPopupOwnerIfAvailable(Action action)
+    private static void WithPatchedPopupOwner(Action action)
     {
         var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";
         var harmony = new Harmony(harmonyId);
@@ -146,17 +146,19 @@ public sealed class TinkeringMinePopupTranslationPatchTests
         try
         {
             PatchPopupShowYesNo(harmony);
-            var patchType = typeof(PopupShowSemanticPipeline).Assembly.GetType("QudJP.Patches.TinkeringMinePopupTranslationPatch");
-            var ownerMethod = RequireMethod(typeof(DummyTinkeringMinePopupTarget), nameof(DummyTinkeringMinePopupTarget.HandleEvent));
-            if (patchType is not null)
-            {
-                var prefix = AccessTools.Method(patchType, "Prefix");
-                var finalizer = AccessTools.Method(patchType, "Finalizer", [typeof(Exception)]);
-                harmony.Patch(
-                    original: ownerMethod,
-                    prefix: prefix is null ? null : new HarmonyMethod(prefix),
-                    finalizer: finalizer is null ? null : new HarmonyMethod(finalizer));
-            }
+            var ownerMethod = RequireMethod(
+                typeof(DummyTinkeringMinePopupTarget),
+                nameof(DummyTinkeringMinePopupTarget.HandleEvent),
+                typeof(DummyInventoryActionEvent));
+            harmony.Patch(
+                original: ownerMethod,
+                prefix: new HarmonyMethod(RequireMethod(
+                    typeof(TinkeringMinePopupTranslationPatch),
+                    nameof(TinkeringMinePopupTranslationPatch.Prefix))),
+                finalizer: new HarmonyMethod(RequireMethod(
+                    typeof(TinkeringMinePopupTranslationPatch),
+                    nameof(TinkeringMinePopupTranslationPatch.Finalizer),
+                    typeof(Exception))));
 
             action();
         }
@@ -174,9 +176,15 @@ public sealed class TinkeringMinePopupTranslationPatchTests
             finalizer: new HarmonyMethod(RequireMethod(typeof(PopupShowTranslationPatch), nameof(PopupShowTranslationPatch.Finalizer))));
     }
 
-    private static MethodInfo RequireMethod(Type type, string methodName)
+    private static MethodInfo RequireMethod(Type type, string methodName, params Type[] parameterTypes)
     {
-        return type.GetMethod(methodName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance)
+        if (parameterTypes.Length == 0)
+        {
+            return type.GetMethod(methodName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance)
+                   ?? throw new InvalidOperationException($"Method not found: {type.FullName}.{methodName}");
+        }
+
+        return AccessTools.Method(type, methodName, parameterTypes)
                ?? throw new InvalidOperationException($"Method not found: {type.FullName}.{methodName}");
     }
 

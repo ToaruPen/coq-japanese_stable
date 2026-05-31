@@ -155,19 +155,24 @@ public sealed class DisassemblyStartTranslationPatchTests
     }
 
     [Test]
-    public void TryTranslateQueuedMessage_TranslatesEurekaBuildReceipt_WhenOwnerScopeIsActive()
+    public void DisassemblyContinue_MarksEurekaBuildReceipt_WhenOwnerPatched()
     {
         var message = "You disassemble your {{Y|HEミサイル}} x13. Eureka! You may now build {{Y|HEミサイル}}. You receive tinkering bits <1D1D11>.";
-        DisassemblyStartTranslationPatch.Prefix();
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
         try
         {
-            var translated = DisassemblyStartTranslationPatch.TryTranslateQueuedMessage(ref message, "white");
+            PatchCombatQueue(harmony);
+            PatchOwner(harmony);
+
+            DummyDisassemblyStartTarget.MessageToSend = message;
+            DummyDisassemblyStartTarget.ColorToSend = "white";
+            DummyDisassemblyStartTarget.ContinueQueue();
 
             Assert.Multiple(() =>
             {
-                Assert.That(translated, Is.True);
                 Assert.That(
-                    MessageFrameTranslator.TryStripDirectTranslationMarker(message, out var visible),
+                    MessageFrameTranslator.TryStripDirectTranslationMarker(DummyMessageQueue.LastMessage, out var visible),
                     Is.True);
                 Assert.That(
                     visible,
@@ -176,7 +181,8 @@ public sealed class DisassemblyStartTranslationPatchTests
         }
         finally
         {
-            _ = DisassemblyStartTranslationPatch.Finalizer(null);
+            DummyDisassemblyStartTarget.Reset();
+            harmony.UnpatchAll(harmonyId);
         }
     }
 
@@ -385,12 +391,17 @@ public sealed class DisassemblyStartTranslationPatchTests
 
     private static void PatchQueue(Harmony harmony)
     {
-        harmony.Patch(
-            original: RequireMethod(typeof(DummyMessageQueue), nameof(DummyMessageQueue.AddPlayerMessage), typeof(string), typeof(string), typeof(bool)),
-            prefix: new HarmonyMethod(RequireMethod(typeof(CombatAndLogMessageQueuePatch), nameof(CombatAndLogMessageQueuePatch.Prefix), typeof(string).MakeByRefType(), typeof(string), typeof(bool))));
+        PatchCombatQueue(harmony);
         harmony.Patch(
             original: RequireMethod(typeof(DummyMessageQueue), nameof(DummyMessageQueue.AddPlayerMessage), typeof(string), typeof(string), typeof(bool)),
             prefix: new HarmonyMethod(RequireMethod(typeof(MessageLogPatch), nameof(MessageLogPatch.Prefix), typeof(string).MakeByRefType(), typeof(string), typeof(bool))));
+    }
+
+    private static void PatchCombatQueue(Harmony harmony)
+    {
+        harmony.Patch(
+            original: RequireMethod(typeof(DummyMessageQueue), nameof(DummyMessageQueue.AddPlayerMessage), typeof(string), typeof(string), typeof(bool)),
+            prefix: new HarmonyMethod(RequireMethod(typeof(CombatAndLogMessageQueuePatch), nameof(CombatAndLogMessageQueuePatch.Prefix), typeof(string).MakeByRefType(), typeof(string), typeof(bool))));
     }
 
     private static void PatchOwner(Harmony harmony)

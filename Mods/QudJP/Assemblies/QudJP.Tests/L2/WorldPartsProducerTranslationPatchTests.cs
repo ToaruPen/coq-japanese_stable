@@ -538,6 +538,68 @@ public sealed class WorldPartsProducerTranslationPatchTests
     }
 
     [Test]
+    public void LiquidVolumePatch_StripsDirectMarkerOnMessageLog_WhenOwnerPatched()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            PatchMessageLog(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyLiquidVolumeProducerTarget), nameof(DummyLiquidVolumeProducerTarget.HandleEvent), typeof(DummyInventoryActionEvent)),
+                typeof(LiquidVolumeTranslationPatch));
+
+            var target = new DummyLiquidVolumeProducerTarget
+            {
+                QueuedMessageToSend = MessageFrameTranslator.MarkDirectTranslation("It's fizzy."),
+            };
+
+            target.HandleEvent(new DummyInventoryActionEvent());
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("It's fizzy."));
+                Assert.That(LiquidVolumeMessageLogHitCount("Fizzy"), Is.Zero);
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void LiquidVolumePatch_DoesNotTranslateMessageLogTraffic_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            PatchMessageLog(harmony);
+
+            var target = new DummyLiquidVolumeProducerTarget
+            {
+                QueuedMessageToSend = "It's fizzy.",
+            };
+
+            target.HandleEvent(new DummyInventoryActionEvent());
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("It's fizzy."));
+                Assert.That(LiquidVolumeMessageLogHitCount("Fizzy"), Is.Zero);
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void LiquidVolumePatch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched()
     {
         var harmonyId = CreateHarmonyId();
@@ -2279,6 +2341,13 @@ public sealed class WorldPartsProducerTranslationPatchTests
         return DynamicTextObservability.GetRouteFamilyHitCountForTests(
             "MessageQueue.AddPlayerMessage",
             nameof(LiquidVolumeTranslationPatch) + ".Queued." + detail);
+    }
+
+    private static int LiquidVolumeMessageLogHitCount(string detail)
+    {
+        return DynamicTextObservability.GetRouteFamilyHitCountForTests(
+            nameof(MessageLogPatch),
+            nameof(LiquidVolumeTranslationPatch) + ".MessageLog." + detail);
     }
 
     private static int LiquidVolumePopupPickOptionHitCount(string detail, string family = "Popup.ProducerText")

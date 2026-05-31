@@ -1899,13 +1899,20 @@ internal static class GetDisplayNameRouteTranslator
 
     internal static string TranslateScopedExactPreservingColors(string? source)
     {
-        if (string.IsNullOrEmpty(source))
+        if (source is null)
         {
-            return source ?? string.Empty;
+            Trace.TraceWarning(
+                "QudJP: GetDisplayNameRouteTranslator.TranslateScopedExactPreservingColors received null source; returning empty string.");
+            return string.Empty;
+        }
+
+        if (source.Length == 0)
+        {
+            return string.Empty;
         }
 
         return ColorAwareTranslationComposer.TranslatePreservingColors(
-            source!,
+            source,
             static visible =>
             {
                 var translated = TryTranslateDisplayNameScopedExact(visible);
@@ -5150,11 +5157,7 @@ internal static class GetDisplayNameRouteTranslator
 
         if (SingleStainedModifierPattern.IsMatch(visibleModifier))
         {
-            return source.StartsWith("{{", StringComparison.Ordinal)
-                || source.StartsWith("[{{", StringComparison.Ordinal)
-                || JapaneseCharacterPattern.IsMatch(source)
-                ? " "
-                : string.Empty;
+            return string.Empty;
         }
 
         if (LooksLikeGeneratedProperName(source))

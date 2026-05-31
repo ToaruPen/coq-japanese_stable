@@ -407,28 +407,41 @@ public sealed class PopupMessageTranslationPatchTests
         var markupTransformedSource =
             "{{y|&yYou have an extra set of legs.\n\n&wThis rank&y:\n+&C100&y move speed\n+&C10%&y carry capacity\n\n&wNext rank&y:\n+&C120&y move speed\n+&C11%&y carry capacity\n\n&C* This mutationの base rank is 5.&y\n\n&CYou do not have enough mutation points to increase that mutationの rank.}}";
 
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
         object? ownerState = null;
-        StatusScreenMutationPopupTranslationPatch.Prefix(
-            new DummyCharacterMutation { EntryName = "Multiple Legs", DisplayName = "多脚", Level = 5 },
-            out ownerState);
-        PopupTranslatedMessageHandoff.EnterScope(out var handoffScope);
         try
         {
-            _ = PopupShowSemanticPipeline.TranslateMessage(source, nameof(PopupShowTranslationPatch));
-            PopupInternalMessageHandoffPatch.Prefix(ref markupTransformedSource);
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyPopupMessageTarget), nameof(DummyPopupMessageTarget.ShowPopup)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(PopupInternalMessageHandoffPatch), nameof(PopupInternalMessageHandoffPatch.Prefix))));
+
+            StatusScreenMutationPopupTranslationPatch.Prefix(
+                new DummyCharacterMutation { EntryName = "Multiple Legs", DisplayName = "多脚", Level = 5 },
+                out ownerState);
+            PopupTranslatedMessageHandoff.EnterScope(out var handoffScope);
+            try
+            {
+                _ = PopupShowSemanticPipeline.TranslateMessage(source, nameof(PopupShowTranslationPatch));
+                new DummyPopupMessageTarget().ShowPopup(markupTransformedSource);
+            }
+            finally
+            {
+                PopupTranslatedMessageHandoff.ExitScope(handoffScope);
+            }
         }
         finally
         {
-            PopupTranslatedMessageHandoff.ExitScope(handoffScope);
             _ = StatusScreenMutationPopupTranslationPatch.Finalizer(null, ownerState);
+            harmony.UnpatchAll(harmonyId);
         }
 
         Assert.Multiple(() =>
         {
-            Assert.That(markupTransformedSource, Does.Contain("脚がもう1組ある。"));
-            Assert.That(markupTransformedSource, Does.Contain("{{w|現在ランク}}:"));
-            Assert.That(markupTransformedSource, Does.Contain("{{C|その変異のランクを上げるための変異ポイントが足りない。}}"));
-            Assert.That(markupTransformedSource, Does.Not.Contain("You have an extra set of legs"));
+            Assert.That(DummyPopupMessageTarget.LastMessage, Does.Contain("脚がもう1組ある。"));
+            Assert.That(DummyPopupMessageTarget.LastMessage, Does.Contain("{{w|現在ランク}}:"));
+            Assert.That(DummyPopupMessageTarget.LastMessage, Does.Contain("{{C|その変異のランクを上げるための変異ポイントが足りない。}}"));
+            Assert.That(DummyPopupMessageTarget.LastMessage, Does.Not.Contain("You have an extra set of legs"));
         });
     }
 
