@@ -1210,6 +1210,34 @@ public sealed class PopupPickOptionTranslationPatchTests
     }
 
     [Test]
+    public void SelectableTextMenuItemDisplayTranslation_RecordsInventoryActionOwnerMiss_WhenLabelIsUnknown()
+    {
+        RuntimeDiagnostics.SetVerboseProbesEnabledForTests(true);
+        try
+        {
+            var source = "{{W|[z]}} {{y|unknown action}}";
+
+            var translated = SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                source,
+                "InventoryActionMenu:ABC123");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(translated, Is.EqualTo(source));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(SelectableTextMenuItemTranslationPatch),
+                        "Popup.ProducerMenuItem.InventoryActionOwnerMiss"),
+                    Is.EqualTo(1));
+            });
+        }
+        finally
+        {
+            RuntimeDiagnostics.SetVerboseProbesEnabledForTests(null);
+        }
+    }
+
+    [Test]
     public void Prefix_CoercesNullPickOptionEntriesToEmptyStrings()
     {
         using var patch = PatchPickOption();

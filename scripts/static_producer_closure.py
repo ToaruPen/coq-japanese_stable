@@ -10743,10 +10743,14 @@ def _disassembly_start_families() -> tuple[CoveredOwnerFamily, ...]:
         (
             "DisassemblyStartTranslationPatch",
             "Continue",
+            "End",
             "TryTranslateQueuedMessage",
             "TryTranslatePopupMessage",
             "ReverseEngineerPromptPattern",
             "StartDisassemblingPattern",
+            "TryTranslateDisassembleReceiptMessage",
+            "DisassembleEurekaBuildReceiptPattern",
+            "DisassembleEurekaModReceiptPattern",
         ),
     )
     queue_pipeline = EvidenceFile(
@@ -10766,7 +10770,13 @@ def _disassembly_start_families() -> tuple[CoveredOwnerFamily, ...]:
             "DisassemblyContinue_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
             "DisassemblyContinue_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
             "DisassemblyContinue_LeavesUnsupportedMessagesUnchanged_WhenOwnerPatched",
+            "DisassemblyEnd_TranslatesEurekaBuildReceiptPopup_WhenOwnerPatched",
+            "DisassemblyEnd_TranslatesDisassembleBitsReceiptPopup_WithLocationSuffix_WhenOwnerPatched",
+            "DisassemblyEnd_TranslatesRuntimeEurekaPopup_WithLocationSuffix_WhenOwnerPatched",
+            "DisassemblyEnd_TranslatesRuntimeEurekaPopup_WithDirectionalLocationSuffix_WhenOwnerPatched",
+            "DisassemblyEnd_TranslatesEurekaModReceiptPopup_WhenOwnerPatched",
             "DummyDisassemblyStartTarget",
+            "EndPopup",
         ),
     )
     target_tests = EvidenceFile(
@@ -10774,6 +10784,7 @@ def _disassembly_start_families() -> tuple[CoveredOwnerFamily, ...]:
         (
             "typeof(DisassemblyStartTranslationPatch)",
             "XRL.World.Tinkering.Disassembly|Continue|System.Boolean",
+            "XRL.World.Tinkering.Disassembly|End|System.Void",
         ),
     )
     return (
@@ -10781,6 +10792,11 @@ def _disassembly_start_families() -> tuple[CoveredOwnerFamily, ...]:
             family_id="XRL.World.Tinkering/Disassembly.cs::XRL.World.Tinkering.Disassembly.Continue",
             inventory_statuses=("owner_patch_required",),
             evidence_files=(patch, queue_pipeline, popup_pipeline, tests, target_tests),
+        ),
+        CoveredOwnerFamily(
+            family_id="XRL.World.Tinkering/Disassembly.cs::XRL.World.Tinkering.Disassembly.End",
+            inventory_statuses=("runtime_required", "owner_patch_required"),
+            evidence_files=(patch, popup_pipeline, tests, target_tests),
         ),
     )
 
@@ -11766,7 +11782,9 @@ def _hidden_render_families() -> tuple[CoveredOwnerFamily, ...]:
         (
             "HiddenRenderTranslationPatch",
             "TryTranslateQueuedMessage",
+            "TryTranslateMessageLogMessage",
             "Reveal",
+            "RevealInternal",
             "RevealedPattern",
         ),
     )
@@ -11781,8 +11799,11 @@ def _hidden_render_families() -> tuple[CoveredOwnerFamily, ...]:
             "HiddenRender_DoesNotTranslateTraffic_WhenOwnerAbsent",
             "HiddenRender_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
             "HiddenRender_LeavesUnsupportedMessagesUnchanged_WhenOwnerPatched",
+            "Hidden_TranslatesRevealMessages_WhenOwnerPatched",
+            "HiddenRender_TranslatesRevealMessageLog_WhenOwnerScopeIsActive",
             "DummyHiddenRenderTarget",
             "Reveal",
+            "HiddenRevealInternal",
         ),
     )
     target_tests = EvidenceFile(
@@ -11790,6 +11811,7 @@ def _hidden_render_families() -> tuple[CoveredOwnerFamily, ...]:
         (
             "typeof(HiddenRenderTranslationPatch)",
             "XRL.World.Parts.HiddenRender|Reveal|System.Void",
+            "XRL.World.Parts.Hidden|RevealInternal|System.Void|System.Boolean",
         ),
     )
     return (

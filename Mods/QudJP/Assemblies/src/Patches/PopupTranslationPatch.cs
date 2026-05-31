@@ -1193,7 +1193,7 @@ public static class PopupTranslationPatch
         var translatedLabel = TranslatePopupMenuItemLabel(stripped, popupId, spans, null, 0);
         if (translatedLabel is null)
         {
-            return TryAcceptInventoryActionMenuOwnerMiss(source, popupId, out translated);
+            return TryAcceptInventoryActionMenuOwnerMiss(source, route, family, popupId, out translated);
         }
 
         if (string.Equals(translatedLabel, stripped, StringComparison.Ordinal))
@@ -1273,7 +1273,7 @@ public static class PopupTranslationPatch
             var translatedLabel = TranslatePopupMenuItemLabel(label, popupId, spans, labelGroup);
             if (translatedLabel is null)
             {
-                return TryAcceptInventoryActionMenuOwnerMiss(source, popupId, out translated);
+                return TryAcceptInventoryActionMenuOwnerMiss(source, route, family, popupId, out translated);
             }
 
             if (string.Equals(translatedLabel, label, StringComparison.Ordinal))
@@ -1336,7 +1336,7 @@ public static class PopupTranslationPatch
         var embeddedTranslated = TranslatePopupMenuItemLabel(stripped, popupId, spans, null, 0);
         if (embeddedTranslated is null)
         {
-            return TryAcceptInventoryActionMenuOwnerMiss(source, popupId, out translated);
+            return TryAcceptInventoryActionMenuOwnerMiss(source, route, family, popupId, out translated);
         }
 
         if (string.Equals(embeddedTranslated, stripped, StringComparison.Ordinal))
@@ -1382,8 +1382,7 @@ public static class PopupTranslationPatch
         var translatedLabel = TranslatePopupMenuItemLabel(label, popupId, spans, null, labelStart);
         if (translatedLabel is null)
         {
-            translated = source;
-            return true;
+            return TryAcceptInventoryActionMenuOwnerMiss(source, route, family, popupId, out translated);
         }
 
         if (string.Equals(translatedLabel, label, StringComparison.Ordinal))
@@ -1473,10 +1472,26 @@ public static class PopupTranslationPatch
         return filtered ?? spans;
     }
 
-    private static bool TryAcceptInventoryActionMenuOwnerMiss(string source, string? popupId, out string translated)
+    private static bool TryAcceptInventoryActionMenuOwnerMiss(
+        string source,
+        string route,
+        string family,
+        string? popupId,
+        out string translated)
     {
         translated = source;
-        return IsInventoryActionMenuPopup(popupId);
+        if (!IsInventoryActionMenuPopup(popupId))
+        {
+            return false;
+        }
+
+        DynamicTextObservability.RecordTransform(
+            route,
+            family + ".InventoryActionOwnerMiss",
+            source,
+            translated,
+            logWhenUnchanged: true);
+        return true;
     }
 
     private static string? TranslatePopupMenuItemLabel(

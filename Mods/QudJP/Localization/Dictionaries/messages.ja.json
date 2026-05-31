@@ -1064,12 +1064,12 @@
       "route": "emit-message"
     },
     {
-      "pattern": "^You stop (.+?) because you hear (.+?) fighting to the (north|south|east|west|northeast|northwest|southeast|southwest)[.!]?$",
+      "pattern": "^You stop (moving|resting|digging|gathering|attacking|acting|auto-exploring|exploring|waiting|disassembling) because you hear (.+?) fighting to the (north|south|east|west|northeast|northwest|southeast|southwest)[.!]?$",
       "template": "{t2}で{d1}が戦っている音が聞こえたので{t0}をやめた。",
       "route": "emit-message"
     },
     {
-      "pattern": "^You stop (.+?) because you hear (.+?) being injured to the (north|south|east|west|northeast|northwest|southeast|southwest)[.!]?$",
+      "pattern": "^You stop (moving|resting|digging|gathering|attacking|acting|auto-exploring|exploring|waiting|disassembling) because you hear (.+?) being injured to the (north|south|east|west|northeast|northwest|southeast|southwest)[.!]?$",
       "template": "{t2}で{d1}が傷つく音が聞こえたので{t0}をやめた。",
       "route": "emit-message"
     },

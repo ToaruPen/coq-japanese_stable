@@ -2079,6 +2079,24 @@ public sealed class MessagePatternTranslatorTests
     }
 
     [Test]
+    public void Translate_RepositoryDictionary_RestrictsStopActionHearingPatternsToKnownActions()
+    {
+        UseRepositoryPatternDictionary();
+
+        var translated = MessagePatternTranslator.Translate(
+            "You stop moving because you hear タム fighting to the north.");
+        var unknownAction = "You stop meditating because you hear タム fighting to the north.";
+        var unknownTranslated = MessagePatternTranslator.Translate(unknownAction);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.EqualTo("北でタムが戦っている音が聞こえたので移動をやめた。"));
+            Assert.That(unknownTranslated, Is.EqualTo(unknownAction));
+            Assert.That(MessagePatternTranslator.GetMissingPatternHitCountForTests(unknownAction), Is.EqualTo(1));
+        });
+    }
+
+    [Test]
     public void Translate_RepositoryDictionary_TranslatesGenericReceiveItem()
     {
         UseRepositoryPatternDictionary();
