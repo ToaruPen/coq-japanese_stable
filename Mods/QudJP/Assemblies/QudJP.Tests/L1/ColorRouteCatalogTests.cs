@@ -181,10 +181,6 @@ internal static class ColorRouteCatalog
                 new(
                     1,
                     "Show first checks known owner handoffs; this fallback handles fixed popup text and the controlled PopupShow message-pattern route."),
-            ["Mods/QudJP/Assemblies/src/Patches/QudMenuBottomContextTranslationPatch.cs|PopupTranslationPatch.TranslatePopupMenuItemTextForProducerRoute("] =
-                new(
-                    1,
-                    "Bottom context buttons are fixed menu labels routed through the shared popup menu-item translator."),
             ["Mods/QudJP/Assemblies/src/Patches/TradeUiPopupTranslationPatch.cs|PopupTranslationPatch.TranslatePopupTextForProducerRoute("] =
                 new(
                     1,
@@ -309,7 +305,6 @@ internal static class ColorRouteCatalog
             ["Mods/QudJP/Assemblies/src/Patches/PopupTranslationPatch.cs|MessagePatternTranslator.TranslateIfPatternMatches("] = 1,
             ["Mods/QudJP/Assemblies/src/Patches/QuestLifecyclePopupTranslationPatch.cs|ColorAwareTranslationComposer.TranslatePreservingColors("] = 1,
             ["Mods/QudJP/Assemblies/src/Patches/RepairTranslationPatch.cs|ColorAwareTranslationComposer.TranslatePreservingColors("] = 1,
-            ["Mods/QudJP/Assemblies/src/Patches/QudMenuBottomContextTranslationPatch.cs|PopupTranslationPatch.TranslatePopupMenuItemTextForProducerRoute("] = 1,
             ["Mods/QudJP/Assemblies/src/QudTest/QudTestRouteExecutor.cs|PopupTranslationPatch.TranslatePopupMenuItemTextForProducerRoute("] = 1,
             ["Mods/QudJP/Assemblies/src/QudTest/QudTestRouteExecutor.cs|PopupTranslationPatch.TranslatePopupTextForProducerRoute("] = 2,
             ["Mods/QudJP/Assemblies/src/Patches/SelectableTextMenuItemTranslationPatch.cs|PopupTranslationPatch.TranslatePopupMenuItemTextForProducerRoute("] = 1,

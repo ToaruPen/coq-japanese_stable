@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Diagnostics;
 using System.Reflection;
-using System.Text.RegularExpressions;
 using HarmonyLib;
 
 namespace QudJP.Patches;
@@ -11,10 +10,6 @@ namespace QudJP.Patches;
 public static class QudMenuBottomContextTranslationPatch
 {
     private const string TargetTypeName = "Qud.UI.QudMenuBottomContext";
-    private static readonly Regex NestedHotkeyLabelPattern =
-        new Regex(
-            @"^\{\{(?<labelColor>[A-Za-z]+)\|\{\{(?<hotkeyColor>[A-Za-z]+)\|(?<hotkey>\[[^\]]+\])\}\}\s*(?<label>.*?)\}\}$",
-            RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.Singleline);
 
     [HarmonyTargetMethod]
     private static MethodBase? TargetMethod()
@@ -40,7 +35,6 @@ public static class QudMenuBottomContextTranslationPatch
         try
         {
             LogProbe(__instance, "prefix");
-            NormalizeItemTexts(__instance);
         }
         catch (Exception ex)
         {
@@ -52,6 +46,7 @@ public static class QudMenuBottomContextTranslationPatch
     {
         try
         {
+            ApplyButtonDisplayTranslations(__instance);
             LogProbe(__instance, "postfix");
         }
         catch (Exception ex)
@@ -62,78 +57,33 @@ public static class QudMenuBottomContextTranslationPatch
 
     internal static void NormalizeItemTexts(object? contextInstance)
     {
-        if (contextInstance is null)
-        {
-            return;
-        }
-
-        var itemsMember = AccessTools.Field(contextInstance.GetType(), "items");
-        if (itemsMember?.GetValue(contextInstance) is not IList items)
-        {
-            return;
-        }
-
-        for (var index = 0; index < items.Count; index++)
-        {
-            var item = items[index];
-            if (item is null)
-            {
-                continue;
-            }
-
-            var textField = AccessTools.Field(item.GetType(), "text");
-            if (textField is null || textField.FieldType != typeof(string))
-            {
-                continue;
-            }
-
-            var current = textField.GetValue(item) as string;
-            if (string.IsNullOrEmpty(current))
-            {
-                continue;
-            }
-
-            var normalized = NormalizeNestedHotkeyLabel(current!);
-            var translated = PopupTranslationPatch.TranslatePopupMenuItemTextForProducerRoute(
-                normalized,
-                nameof(QudMenuBottomContextTranslationPatch));
-            var displayText = MessageFrameTranslator.StripAllDirectTranslationMarkers(
-                translated);
-
-            if (string.Equals(displayText, current, StringComparison.Ordinal))
-            {
-                continue;
-            }
-
-            textField.SetValue(item, displayText);
-            items[index] = item;
-        }
+        // QudMenuBottomContext.RefreshButtons runs every frame. Do not mutate
+        // QudMenuItem data here; display translation belongs to
+        // SelectableTextMenuItemTranslationPatch so tutorial/control IDs remain stable.
+        _ = contextInstance;
     }
 
-    private static string NormalizeNestedHotkeyLabel(string source)
+    internal static void ApplyButtonDisplayTranslations(object? contextInstance, string? popupIdOverride = null)
     {
-        var match = NestedHotkeyLabelPattern.Match(source);
-        if (!match.Success)
+        var buttons = ReflectionUtils.GetPropertyOrFieldValue(contextInstance, "buttons") as IEnumerable;
+        if (buttons is null)
         {
-            return source;
+            return;
         }
 
-        var hotkey = match.Groups["hotkey"].Value;
-        var label = match.Groups["label"].Value;
-        if (label.Length == 0)
+        foreach (var button in buttons)
         {
-            return source;
-        }
+            if (button is null)
+            {
+                continue;
+            }
 
-        return "{{"
-            + match.Groups["hotkeyColor"].Value
-            + "|"
-            + hotkey
-            + "}} {{"
-            + match.Groups["labelColor"].Value
-            + "|"
-            + label
-            + "}}";
+            var selected = ReflectionUtils.GetPropertyOrFieldValue(button, "selected") is true;
+            SelectableTextMenuItemTranslationPatch.ApplyDisplayTranslationIfChanged(
+                button,
+                selected,
+                popupIdOverride);
+        }
     }
 
     private static void LogProbe(object? contextInstance, string phase)

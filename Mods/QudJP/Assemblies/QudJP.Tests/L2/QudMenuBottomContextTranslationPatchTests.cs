@@ -34,7 +34,7 @@ public sealed class QudMenuBottomContextTranslationPatchTests
     }
 
     [Test]
-    public void Prefix_TranslatesMenuItemText()
+    public void Prefix_DoesNotMutateMenuItemText()
     {
         WriteDictionary(("Inspect", "調べる"));
 
@@ -43,12 +43,12 @@ public sealed class QudMenuBottomContextTranslationPatchTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(((DummyMenuItem)context.items[0]!).text, Is.EqualTo("調べる"));
+            Assert.That(((DummyMenuItem)context.items[0]!).text, Is.EqualTo("Inspect"));
             Assert.That(
                 DynamicTextObservability.GetRouteFamilyHitCountForTests(
                     nameof(QudMenuBottomContextTranslationPatch),
                     "Popup.ProducerMenuItem.Exact"),
-                Is.GreaterThan(0));
+                Is.Zero);
             Assert.That(
                 SinkObservation.GetHitCountForTests(
                     nameof(PopupTranslationPatch),
@@ -61,48 +61,50 @@ public sealed class QudMenuBottomContextTranslationPatchTests
     }
 
     [Test]
-    public void Prefix_StripsDirectTranslationMarker_FromMenuItemText()
+    public void Prefix_DoesNotStripDirectTranslationMarker_FromMenuItemText()
     {
         var context = new DummyQudMenuBottomContext("調べる");
 
         RunRefreshButtonsWithPatch(context);
 
-        Assert.That(((DummyMenuItem)context.items[0]!).text, Is.EqualTo("調べる"));
+        Assert.That(((DummyMenuItem)context.items[0]!).text, Is.EqualTo("調べる"));
     }
 
     [Test]
-    public void Prefix_TranslatesAndFlattensNestedHotkeyLabel()
+    public void Prefix_DoesNotFlattenNestedHotkeyData()
     {
         WriteScopedMenuActionDictionary(("back", "戻る"));
 
-        var context = new DummyQudMenuBottomContext("{{y|{{W|[Esc]}} Back}}");
+        var source = "{{y|{{W|[Esc]}} Back}}";
+        var context = new DummyQudMenuBottomContext(source);
 
         RunRefreshButtonsWithPatch(context);
 
         Assert.Multiple(() =>
         {
-            Assert.That(((DummyMenuItem)context.items[0]!).text, Is.EqualTo("{{W|[Esc]}} {{y|戻る}}"));
+            Assert.That(((DummyMenuItem)context.items[0]!).text, Is.EqualTo(source));
             Assert.That(
                 DynamicTextObservability.GetRouteFamilyHitCountForTests(
                     nameof(QudMenuBottomContextTranslationPatch),
                     "Popup.ProducerMenuItem.HotkeyLabel"),
-                Is.GreaterThan(0));
+                Is.Zero);
         });
     }
 
     [Test]
-    public void Prefix_FlattensNestedHotkeyLabel_WhenLabelIsUntranslated()
+    public void Prefix_DoesNotFlattenNestedHotkeyLabel_WhenLabelIsUntranslated()
     {
-        var context = new DummyQudMenuBottomContext("{{y|{{W|[Esc]}} Back}}");
+        var source = "{{y|{{W|[Esc]}} Back}}";
+        var context = new DummyQudMenuBottomContext(source);
 
         RunRefreshButtonsWithPatch(context);
 
-        Assert.That(((DummyMenuItem)context.items[0]!).text, Is.EqualTo("{{W|[Esc]}} {{y|Back}}"));
+        Assert.That(((DummyMenuItem)context.items[0]!).text, Is.EqualTo(source));
     }
 
-    [TestCase("{{y|{{W|[~Accept]}} Continue}}", "{{W|[~Accept]}} {{y|続ける}}")]
-    [TestCase("{{y|{{W|[space]}} Continue}}", "{{W|[space]}} {{y|続ける}}")]
-    public void Prefix_PreservesNestedHotkeyTokenAndBrackets(string source, string expected)
+    [TestCase("{{y|{{W|[~Accept]}} Continue}}")]
+    [TestCase("{{y|{{W|[space]}} Continue}}")]
+    public void Prefix_PreservesNestedHotkeyTokenAndBrackets(string source)
     {
         WriteScopedMenuActionDictionary(("continue", "続ける"));
 
@@ -110,7 +112,7 @@ public sealed class QudMenuBottomContextTranslationPatchTests
 
         RunRefreshButtonsWithPatch(context);
 
-        Assert.That(((DummyMenuItem)context.items[0]!).text, Is.EqualTo(expected));
+        Assert.That(((DummyMenuItem)context.items[0]!).text, Is.EqualTo(source));
     }
 
     [Test]
@@ -125,7 +127,7 @@ public sealed class QudMenuBottomContextTranslationPatchTests
     }
 
     [Test]
-    public void Prefix_PreservesPopupMessageButtonColorTags()
+    public void Prefix_DoesNotMutatePopupMessageButtonColorTags()
     {
         WriteDictionary(
             ("{{W|[y]}} {{y|Yes}}", "{{W|[y]}} {{y|はい}}"),
@@ -139,8 +141,8 @@ public sealed class QudMenuBottomContextTranslationPatchTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(((DummyMenuItem)context.items[0]!).text, Is.EqualTo("{{W|[y]}} {{y|はい}}"));
-            Assert.That(((DummyMenuItem)context.items[1]!).text, Is.EqualTo("{{W|[n]}} {{y|いいえ}}"));
+            Assert.That(((DummyMenuItem)context.items[0]!).text, Is.EqualTo("{{y|{{W|[y]}} Yes}}"));
+            Assert.That(((DummyMenuItem)context.items[1]!).text, Is.EqualTo("{{y|{{W|[n]}} No}}"));
         });
     }
 
