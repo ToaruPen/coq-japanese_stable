@@ -357,7 +357,7 @@ public sealed class PopupMessageTranslationPatchTests
     }
 
     [Test]
-    public void UITextSkin_DoesNotConsumeMutationPopupHandoff_WithoutOwnerRoute()
+    public void UITextSkin_DoesNotConsumeMutationPopupHandoff_WithoutOwnerRoute_WhenPatched()
     {
         const string markupTransformedSource =
             "{{y|&yYou have an extra set of legs.\n\n&wThis rank&y:\n+&C80&y move speed\n\n&wNext rank&y:\n+&C100&y move speed\n\n&C* This mutationの base rank is 4.&y\n\nIt will cost &C1&y mutation point to increase 多脚's rank by 1.\nDo you wish to increase this mutationの rank?}}";
@@ -372,11 +372,24 @@ public sealed class PopupMessageTranslationPatchTests
             PopupTranslatedMessageHandoff.ExitScope(handoffScope);
         }
 
-        var translated = UITextSkinTranslationPatch.TranslatePreservingColors(
-            markupTransformedSource,
-            nameof(UITextSkinTranslationPatch));
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
 
-        Assert.That(translated, Is.EqualTo(markupTransformedSource));
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyUITextSkin), nameof(DummyUITextSkin.SetText)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(UITextSkinTranslationPatch), nameof(UITextSkinTranslationPatch.Prefix))));
+
+            var textSkin = new DummyUITextSkin();
+            textSkin.SetText(markupTransformedSource);
+
+            Assert.That(textSkin.LastSetTextArgument, Is.EqualTo(markupTransformedSource));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
     }
 
     [Test]

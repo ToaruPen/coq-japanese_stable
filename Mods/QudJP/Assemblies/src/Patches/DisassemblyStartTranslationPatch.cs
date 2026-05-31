@@ -17,15 +17,19 @@ public static class DisassemblyStartTranslationPatch
     private static readonly Regex StartDisassemblingPattern = new(
         "^You start disassembling (?<item>.+?)\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    // End popups can omit "You disassemble ..."; keep the item prefix optional.
     private static readonly Regex DisassembleEurekaBuildReceiptPattern = new(
         "^(?:You disassemble\\s+(?:(?:the|your)\\s+)?)?(?<item>.+?)\\.\\s+Eureka! You may now build\\s+(?<build>.+?)\\.\\s+You receive tinkering bits <(?<bits>.+?)>\\.*!?$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.Singleline);
+    // Legacy non-Eureka receipts keep item/location text before the bits sentence.
     private static readonly Regex DisassembleBitsReceiptPattern = new(
         "^You disassemble\\s+(?:(?:the|your)\\s+)?(?<item>.+?)\\.\\s+You receive tinkering bits <(?<bits>.+?)>\\.*!?$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.Singleline);
+    // Split build/mod captures so both learned names use display-name translation.
     private static readonly Regex DisassembleEurekaBuildAndModReceiptPattern = new(
         "^(?:You disassemble\\s+(?:(?:the|your)\\s+)?)?(?<item>.+?)\\.\\s+Eureka! You may now build\\s+(?<build>.+?)\\s+and\\s+mod items with the\\s+(?<mods>.+?)\\s+(?:mod|mods)\\.\\s+You receive tinkering bits <(?<bits>.+?)>\\.*!?$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.Singleline);
+    // Game text alternates singular/plural "mod(s)"; both mean the modifier list.
     private static readonly Regex DisassembleEurekaModReceiptPattern = new(
         "^(?:You disassemble\\s+(?:(?:the|your)\\s+)?)?(?<item>.+?)\\.\\s+Eureka! You may now mod items with the\\s+(?<mods>.+?)\\s+(?:mod|mods)\\.\\s+You receive tinkering bits <(?<bits>.+?)>\\.*!?$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.Singleline);

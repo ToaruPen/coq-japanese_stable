@@ -570,7 +570,7 @@ public sealed class PopupPickOptionTranslationPatchTests
                 SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
                     "{{W|[n]}} {{y|clea{{hotkey|n}} all your items [1 dram]}}",
                     "InventoryActionMenu:ABC123"),
-                Is.EqualTo("{{W|[n]}} {{y|手持ちのアイテムをすべて洗う [{{rules|1}}ドラム]}}"));
+                Is.EqualTo("{{W|[n]}} {{y|手持ちのアイテムをすべて洗う [1ドラム]}}"));
             Assert.That(
                 SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
                     "{{W|[W]}} {{y|show internals}}",

@@ -1600,9 +1600,9 @@ public static class PopupTranslationPatch
         var cleanAllItemsMatch = InventoryActionCleanAllItemsPattern.Match(label);
         if (cleanAllItemsMatch.Success)
         {
-            translated = "手持ちのアイテムをすべて洗う [{{rules|"
+            translated = "手持ちのアイテムをすべて洗う ["
                 + cleanAllItemsMatch.Groups["amount"].Value
-                + "}}ドラム]";
+                + "ドラム]";
             return true;
         }
 

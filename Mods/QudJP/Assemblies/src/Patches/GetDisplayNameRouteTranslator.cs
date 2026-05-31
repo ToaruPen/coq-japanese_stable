@@ -489,14 +489,59 @@ internal static class GetDisplayNameRouteTranslator
         }
 
         var inner = source.Substring(pipeIndex + 1, wrapperEnd - pipeIndex - 3);
-        if (!StringHelpers.ContainsOrdinal(inner, "-stained")
-            || !ColorAwareTranslationComposer.HasColorMarkup(inner))
+        if (!StringHelpers.ContainsOrdinal(inner, "-stained"))
         {
             return false;
         }
 
-        translated = TranslatePreservingColors(inner + source.Substring(wrapperEnd), route);
+        var outerOpeningToken = source.Substring(0, pipeIndex + 1);
+        var coloredSource = PreserveUnwrappedStainedModifierColor(inner, outerOpeningToken)
+            + source.Substring(wrapperEnd);
+        translated = RestoreLeadingChainStainedModifierColor(
+            coloredSource,
+            TranslatePreservingColors(coloredSource, route));
+        if (!ColorAwareTranslationComposer.HasColorMarkup(inner))
+        {
+            translated = RestoreLeadingTranslatedStainedModifierOpening(translated, outerOpeningToken);
+        }
+
         return !string.Equals(translated, source, StringComparison.Ordinal);
+    }
+
+    private static string RestoreLeadingTranslatedStainedModifierOpening(string translated, string openingToken)
+    {
+        if (!openingToken.StartsWith("{{", StringComparison.Ordinal)
+            || !openingToken.EndsWith("|", StringComparison.Ordinal))
+        {
+            return translated;
+        }
+
+        const string stainedMarker = "に染まった";
+        var stainedMarkerIndex = translated.IndexOf(stainedMarker, StringComparison.Ordinal);
+        if (stainedMarkerIndex <= 0)
+        {
+            return translated;
+        }
+
+        if (translated.StartsWith("{{", StringComparison.Ordinal))
+        {
+            var wrapperEnd = FindQudMarkupEnd(translated, 0);
+            var pipeIndex = translated.IndexOf('|', 2);
+            if (wrapperEnd == stainedMarkerIndex
+                && pipeIndex > 2
+                && pipeIndex < wrapperEnd - 2)
+            {
+                return openingToken
+                    + translated.Substring(pipeIndex + 1, wrapperEnd - pipeIndex - 3)
+                    + "}}"
+                    + translated.Substring(wrapperEnd);
+            }
+        }
+
+        return openingToken
+            + translated.Substring(0, stainedMarkerIndex)
+            + "}}"
+            + translated.Substring(stainedMarkerIndex);
     }
 
     private static bool TryTranslateParenthesizedColoredChargeStatus(
@@ -2638,17 +2683,21 @@ internal static class GetDisplayNameRouteTranslator
         }
 
         var amountGroup = match.Groups["amount"];
+        var restoredLiquid = ColorAwareTranslationComposer.HasColorMarkup(translatedLiquid)
+            ? translatedLiquid
+            : RestoreVisibleSlice(
+                translatedLiquid,
+                spans,
+                stateGroup.Index + liquidGroup.Index,
+                liquidGroup.Length);
+
         translated = RestoreVisibleSlice(
                 amountGroup.Value,
                 spans,
                 stateGroup.Index + amountGroup.Index,
                 amountGroup.Length)
             + "ドラムの"
-            + RestoreVisibleSlice(
-                translatedLiquid,
-                spans,
-                stateGroup.Index + liquidGroup.Index,
-                liquidGroup.Length);
+            + restoredLiquid;
 
         var liquidStateGroup = match.Groups["state"];
         if (liquidStateGroup.Length > 0)
@@ -3704,7 +3753,9 @@ internal static class GetDisplayNameRouteTranslator
                 return localizedBlueprintDisplayNameMarkup;
             }
 
-            return new Dictionary<string, string>(StringComparer.Ordinal);
+            localizedBlueprintDisplayNameMarkup = loaded;
+            localizedBlueprintDisplayNameMarkupRoot = objectBlueprintRoot;
+            return localizedBlueprintDisplayNameMarkup;
         }
     }
 

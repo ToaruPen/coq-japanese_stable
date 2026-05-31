@@ -138,6 +138,48 @@ public sealed class RandomAltarBaetylTranslationPatchTests
     }
 
     [Test]
+    public void Patch_TranslatesColoredInventoryOffering_WithVisibleYourPrefixAndPluralFallback()
+    {
+        WriteDictionaryFile(
+            "ui-displayname-atomic.ja.json",
+            ("chem cell", "ケムセル"),
+            ("mighty weapon", "強大なる武器"));
+
+        const string source =
+            "PETTY MORTAL! BRING ME 5 chem cells, AND I SHALL REWARD YOU WITH a mighty weapon.\n\nOffer the sparking baetyl {{C|your chem cells}}?";
+        const string expected =
+            "矮小なる凡人よ！ケムセル x5を持ってこい。そうすれば強大なる武器を授けよう。\n\n{{C|ケムセル}}を火花を散らすベテルに捧げますか？";
+
+        AssertOwnerPopup(
+            source,
+            expected,
+            expectedHits: 1,
+            popupMethod: nameof(DummyPopupShow.ShowYesNo));
+    }
+
+    [Test]
+    public void Patch_TranslatesMixedOffering_WithPluralFallbackAndVisibleYourPrefix()
+    {
+        WriteDictionaryFile(
+            "ui-displayname-atomic.ja.json",
+            ("gravity grenade MK II", "重力グレネード MK II"),
+            ("gravity grenade MK II x8", "重力グレネード MK II x8"),
+            ("chem cell", "ケムセル"),
+            ("mighty weapon", "強大なる武器"));
+
+        const string source =
+            "PETTY MORTAL! BRING ME 5 gravity grenades MK II, AND I SHALL REWARD YOU WITH a mighty weapon.\n\nOffer the sparking baetyl 2 out of the {{Y|gravity grenades MK II x8}} nearby and {{C|your chem cells}}?";
+        const string expected =
+            "矮小なる凡人よ！重力グレネード MK II x5を持ってこい。そうすれば強大なる武器を授けよう。\n\n近くの{{Y|重力グレネード MK II x8}}と{{C|ケムセル}}のうち2個を火花を散らすベテルに捧げますか？";
+
+        AssertOwnerPopup(
+            source,
+            expected,
+            expectedHits: 1,
+            popupMethod: nameof(DummyPopupShow.ShowYesNo));
+    }
+
+    [Test]
     public void Patch_DoesNotHandoffDemandPopupTranslationToMessageLog()
     {
         const string source = "PETTY MORTAL! BRING ME 5 重力グレネード MK II, AND I SHALL REWARD YOU WITH 強大なる武器.";

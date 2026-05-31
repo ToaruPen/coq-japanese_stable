@@ -320,6 +320,42 @@ public sealed class DescriptionTextTranslatorTests
     }
 
     [Test]
+    public void TranslateShortDescription_TranslatesEnergyCostReductionScopeThroughDisplayNameRoute()
+    {
+        WriteDictionary("ui-displayname-atomic.ja.json", ("applying tonics energy cost", "トニック適用時のエネルギー消費"));
+
+        var translated = DescriptionTextTranslator.TranslateShortDescription(
+            "Provides 50% reduction in applying tonics energy cost.",
+            "DescriptionTextTranslatorTests");
+
+        Assert.That(translated, Is.EqualTo("トニック適用時のエネルギー消費が50%軽減される。"));
+    }
+
+    [Test]
+    public void TranslateShortDescription_TranslatesFightingTargetThroughDisplayNameRoute()
+    {
+        WriteDictionary("ui-displayname-atomic.ja.json", ("bloody electric snail", "血まみれの電気カタツムリ"));
+
+        var translated = DescriptionTextTranslator.TranslateShortDescription(
+            "Fighting a {{Y|bloody electric snail}}",
+            "DescriptionTextTranslatorTests");
+
+        Assert.That(translated, Is.EqualTo("{{Y|血まみれの電気カタツムリ}}と交戦中"));
+    }
+
+    [Test]
+    public void TranslateShortDescription_TranslatesRuntimeObservedRandomStatueSubjectThroughDisplayNameRoute()
+    {
+        WriteDictionary("ui-displayname-atomic.ja.json", ("snapjaw scavenger", "スナップジョーのあさり屋"));
+
+        var translated = DescriptionTextTranslator.TranslateShortDescription(
+            "gold で作られた細やかな彫像で、a {{Y|snapjaw scavenger}} を表現している。",
+            "DescriptionTextTranslatorTests");
+
+        Assert.That(translated, Is.EqualTo("金で作られた細やかな彫像で、{{Y|スナップジョーのあさり屋}}を表現している。"));
+    }
+
+    [Test]
     public void TranslateLongDescription_PreservesColoredFactionTarget_InDispositionLine()
     {
         var translated = DescriptionTextTranslator.TranslateLongDescription(

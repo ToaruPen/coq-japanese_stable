@@ -223,41 +223,63 @@ public sealed class WorldPartsProducerTranslationPatchTests
     }
 
     [Test]
-    public void LiquidVolumePatch_TranslatesCleanAllItemsMessageLog_WhenOwnerScopeIsActive()
+    public void LiquidVolumePatch_TranslatesCleanAllItemsMessageLog_WhenOwnerPatched()
     {
-        var message = "You clean the stains from {{C|high-tech toolkit}}、your {{Y|steel}} buckler、とyour pair of {{Y|steel}} boots with a dram of {{B|fresh water}} from カムシュルウールの 水筒.";
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
 
-        LiquidVolumeTranslationPatch.Prefix();
         try
         {
-            MessageLogPatch.Prefix(ref message);
+            PatchMessageLog(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyLiquidVolumeProducerTarget), nameof(DummyLiquidVolumeProducerTarget.HandleEvent), typeof(DummyInventoryActionEvent)),
+                typeof(LiquidVolumeTranslationPatch));
+
+            var target = new DummyLiquidVolumeProducerTarget
+            {
+                QueuedMessageToSend = "You clean the stains from {{C|high-tech toolkit}}、your {{Y|steel}} buckler、とyour pair of {{Y|steel}} boots with a dram of {{B|fresh water}} from カムシュルウールの 水筒.",
+            };
+
+            target.HandleEvent(new DummyInventoryActionEvent());
+
+            Assert.That(
+                DummyMessageQueue.LastMessage,
+                Is.EqualTo("{{C|high-tech toolkit}}、{{Y|steel}} buckler、とpair of {{Y|steel}} bootsから染みを{{B|真水}}1ドラムで洗い落とした（カムシュルウールの 水筒から）。"));
         }
         finally
         {
-            _ = LiquidVolumeTranslationPatch.Finalizer(null);
+            harmony.UnpatchAll(harmonyId);
         }
-
-        Assert.That(
-            message,
-            Is.EqualTo("{{C|high-tech toolkit}}、{{Y|steel}} buckler、とpair of {{Y|steel}} bootsから染みを{{B|真水}}1ドラムで洗い落とした（カムシュルウールの 水筒から）。"));
     }
 
     [Test]
-    public void LiquidVolumePatch_TranslatesCollectMessageFromContainerHere_WhenOwnerScopeIsActive()
+    public void LiquidVolumePatch_TranslatesCollectMessageFromContainerHere_WhenOwnerPatched()
     {
-        var message = "You collect 60 dram of fresh water from the 水袋 here in your 水筒と水袋.";
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
 
-        LiquidVolumeTranslationPatch.Prefix();
         try
         {
-            MessageLogPatch.Prefix(ref message);
+            PatchMessageLog(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyLiquidVolumeProducerTarget), nameof(DummyLiquidVolumeProducerTarget.HandleEvent), typeof(DummyInventoryActionEvent)),
+                typeof(LiquidVolumeTranslationPatch));
+
+            var target = new DummyLiquidVolumeProducerTarget
+            {
+                QueuedMessageToSend = "You collect 60 dram of fresh water from the 水袋 here in your 水筒と水袋.",
+            };
+
+            target.HandleEvent(new DummyInventoryActionEvent());
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("水袋（ここ）から真水を60ドラム集めた（水筒と水袋に入れた）。"));
         }
         finally
         {
-            _ = LiquidVolumeTranslationPatch.Finalizer(null);
+            harmony.UnpatchAll(harmonyId);
         }
-
-        Assert.That(message, Is.EqualTo("水袋（ここ）から真水を60ドラム集めた（水筒と水袋に入れた）。"));
     }
 
     [Test]

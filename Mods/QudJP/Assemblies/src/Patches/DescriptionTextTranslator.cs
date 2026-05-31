@@ -1252,7 +1252,7 @@ internal static class DescriptionTextTranslator
         var energyCostReductionMatch = EnergyCostReductionLinePattern.Match(source);
         if (energyCostReductionMatch.Success)
         {
-            translated = energyCostReductionMatch.Groups["scope"].Value
+            translated = TranslateRuntimeObservedDisplayNameCapture(energyCostReductionMatch.Groups["scope"].Value)
                 + "が"
                 + energyCostReductionMatch.Groups["amount"].Value
                 + "%軽減される。";
@@ -1293,7 +1293,7 @@ internal static class DescriptionTextTranslator
         var fightingMatch = FightingLinePattern.Match(source);
         if (fightingMatch.Success)
         {
-            translated = fightingMatch.Groups["target"].Value + "と交戦中";
+            translated = TranslateRuntimeObservedDisplayNameCapture(fightingMatch.Groups["target"].Value) + "と交戦中";
             DynamicTextObservability.RecordTransform(route, "Description.RuntimeObservedLine", source, translated);
             return true;
         }
@@ -1303,7 +1303,7 @@ internal static class DescriptionTextTranslator
         {
             translated = TranslateRuntimeObservedStatueMaterial(randomStatueMatch.Groups["material"].Value)
                 + "で作られた細やかな彫像で、"
-                + randomStatueMatch.Groups["subject"].Value.Trim()
+                + TranslateRuntimeObservedDisplayNameCapture(randomStatueMatch.Groups["subject"].Value.Trim())
                 + "を表現している。"
                 + randomStatueMatch.Groups["rest"].Value;
             DynamicTextObservability.RecordTransform(route, "Description.RuntimeObservedLine", source, translated);
@@ -1416,7 +1416,7 @@ internal static class DescriptionTextTranslator
             var item = source.Substring("This item is a named ".Length);
             item = item.Substring(0, item.Length - 1);
             translated = "このアイテムは名前付きの"
-                + GetDisplayNameRouteTranslator.TranslatePreservingColors(item, nameof(GetDisplayNamePatch))
+                + TranslateRuntimeObservedDisplayNameCapture(item)
                 + "である。";
             DynamicTextObservability.RecordTransform(route, "Description.RuntimeObservedLine", source, translated);
             return true;
@@ -1549,6 +1549,11 @@ internal static class DescriptionTextTranslator
             "jasper" => "碧玉",
             _ => source,
         };
+    }
+
+    private static string TranslateRuntimeObservedDisplayNameCapture(string source)
+    {
+        return GetDisplayNameRouteTranslator.TranslatePreservingColors(source, nameof(GetDisplayNamePatch));
     }
 
     private static bool TryTranslateRuntimeObservedHistoricResidueLine(string source, string route, out string translated)

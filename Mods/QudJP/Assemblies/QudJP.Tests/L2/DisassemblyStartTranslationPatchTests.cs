@@ -194,7 +194,12 @@ public sealed class DisassemblyStartTranslationPatchTests
 
             _ = MessageLogPatch.Prefix(ref message);
 
-            Assert.That(message, Is.EqualTo(source));
+            Assert.Multiple(() =>
+            {
+                Assert.That(message, Is.EqualTo(source));
+                Assert.That(PopupTranslatedMessageHandoff.TryGet(source, out var handedOff), Is.True);
+                Assert.That(handedOff, Is.EqualTo(expected));
+            });
         }
         finally
         {
@@ -216,7 +221,12 @@ public sealed class DisassemblyStartTranslationPatchTests
 
             _ = MessageLogPatch.Prefix(ref message);
 
-            Assert.That(message, Is.EqualTo(source));
+            Assert.Multiple(() =>
+            {
+                Assert.That(message, Is.EqualTo(source));
+                Assert.That(PopupTranslatedMessageHandoff.TryGet(source, out var handedOff), Is.True);
+                Assert.That(handedOff, Is.EqualTo(expected));
+            });
         }
         finally
         {

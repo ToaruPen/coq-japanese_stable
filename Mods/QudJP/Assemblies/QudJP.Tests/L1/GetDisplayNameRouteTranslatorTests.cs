@@ -444,6 +444,19 @@ public sealed class GetDisplayNameRouteTranslatorTests
     }
 
     [Test]
+    public void TranslatePreservingColors_TranslatesOuterWrappedStainedModifierThroughLiquidRoute()
+    {
+        WriteDictionary(("sword", "剣"));
+        WriteDictionaryFile("ui-liquids.ja.json", ("oil", "油"));
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            "{{r|oil-stained}} sword",
+            nameof(GetDisplayNamePatch));
+
+        Assert.That(translated, Is.EqualTo("{{r|油}}に染まった剣"));
+    }
+
+    [Test]
     public void TranslatePreservingColors_TranslatesGeneratedCompoundStainedModifier()
     {
         WriteDictionary(("leather cap", "革の帽子"));
@@ -734,6 +747,30 @@ public sealed class GetDisplayNameRouteTranslatorTests
             Assert.That(translated, Does.Contain("{{y|[{{c|自動収集中}}]}}"));
             Assert.That(translated, Does.Not.Contain("drams of"));
             Assert.That(translated, Does.Not.Contain("auto-collecting"));
+        });
+    }
+
+    [Test]
+    public void TranslatePreservingColors_DoesNotNestSourceLiquidColorAroundColoredQuantifiedLiquidTranslation()
+    {
+        WriteDictionaryFile(
+            "ui-displayname-atomic.ja.json",
+            ("wrist calculator", "リスト計算機"));
+        WriteDictionaryFile(
+            "ui-liquids.ja.json",
+            ("water", "{{B|水}}"));
+
+        const string source =
+            "リストファン {{b|\u0004}}0 {{K|\t}}0 {{y|[セル {{y|[{{rules|8}} drams of {{B|water}}]}} {{y|[auto-collecting]}} {{y|<{{G|B}}{{C|D}}{{g|2}}>}}]}} {{y|<{{B|C}}{{B|C}}{{r|1}}{{b|3}}>}}";
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            source,
+            nameof(GetDisplayNamePatch));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Does.Contain("{{y|[{{rules|8}}ドラムの{{B|水}}]}}"));
+            Assert.That(translated, Does.Not.Contain("{{B|{{B|水}}}}"));
         });
     }
 
@@ -1181,7 +1218,7 @@ public sealed class GetDisplayNameRouteTranslatorTests
     }
 
     [Test]
-    public void TranslatePreservingColors_RetriesLocalizedBlueprintMarkup_AfterObjectBlueprintsDirectoryAppears()
+    public void TranslatePreservingColors_CachesEmptyLocalizedBlueprintMarkup_WhenObjectBlueprintsDirectoryIsMissing()
     {
         LocalizationAssetResolver.SetLocalizationRootForTests(tempDirectory);
         WriteDictionaryFile("ui-displayname-adjectives.ja.json", ("[empty]", "[空]"));
@@ -1198,11 +1235,11 @@ public sealed class GetDisplayNameRouteTranslatorTests
 
         Assert.That(
             GetDisplayNameRouteTranslator.TranslatePreservingColors("塩ホッパー [empty]", nameof(GetDisplayNamePatch)),
-            Is.EqualTo("{{Y|塩ホッパー}} [空]"));
+            Is.EqualTo("塩ホッパー [空]"));
     }
 
     [Test]
-    public void TranslatePreservingColors_RetriesLocalizedBlueprintMarkup_AfterXmlParseFailure()
+    public void TranslatePreservingColors_CachesEmptyLocalizedBlueprintMarkup_WhenXmlParseFails()
     {
         LocalizationAssetResolver.SetLocalizationRootForTests(tempDirectory);
         WriteDictionaryFile("ui-displayname-adjectives.ja.json", ("[empty]", "[空]"));
@@ -1221,7 +1258,7 @@ public sealed class GetDisplayNameRouteTranslatorTests
 
         Assert.That(
             GetDisplayNameRouteTranslator.TranslatePreservingColors("塩ホッパー [empty]", nameof(GetDisplayNamePatch)),
-            Is.EqualTo("{{Y|塩ホッパー}} [空]"));
+            Is.EqualTo("塩ホッパー [空]"));
     }
 
     [Test]
@@ -2162,6 +2199,19 @@ public sealed class GetDisplayNameRouteTranslatorTests
                     nameof(GetDisplayNamePatch)),
                 Is.EqualTo("キャンバスの外套（スナップジョーの変装）"));
         });
+    }
+
+    [Test]
+    public void DisplayNameCaptureTranslator_StripsDirectMarkerBeforeDisplayNameRouteTranslation()
+    {
+        WriteDictionary(("sword", "剣"));
+        WriteDictionaryFile("ui-liquids.ja.json", ("blood", "血"));
+
+        var translated = DisplayNameCaptureTranslator.TranslatePreservingColors(
+            MessageFrameTranslator.DirectTranslationMarker + "{{r|blood}}-stained sword",
+            nameof(GetDisplayNamePatch));
+
+        Assert.That(translated, Is.EqualTo("{{r|血}}に染まった剣"));
     }
 
     private void WriteDictionary(params (string key, string text)[] entries)

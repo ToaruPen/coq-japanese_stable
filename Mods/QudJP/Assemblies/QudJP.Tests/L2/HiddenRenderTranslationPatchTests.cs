@@ -172,6 +172,51 @@ public sealed class HiddenRenderTranslationPatchTests
         }
     }
 
+    [Test]
+    public void TryTranslateMessageLogMessage_RestoresOuterDirectMarkerPassthrough_AfterNestedOwnerScope()
+    {
+        var outerQueuedMessage = MessageFrameTranslator.MarkDirectTranslation("A stone crevice is revealed nearby!");
+
+        HiddenRenderTranslationPatch.Prefix();
+        try
+        {
+            _ = HiddenRenderTranslationPatch.TryTranslateQueuedMessage(ref outerQueuedMessage, "white");
+
+            var innerQueuedMessage = MessageFrameTranslator.MarkDirectTranslation("A cairn is revealed nearby!");
+            HiddenRenderTranslationPatch.Prefix();
+            try
+            {
+                _ = HiddenRenderTranslationPatch.TryTranslateQueuedMessage(ref innerQueuedMessage, "white");
+                var innerLogMessage = innerQueuedMessage;
+
+                var innerTranslated = HiddenRenderTranslationPatch.TryTranslateMessageLogMessage(ref innerLogMessage, "white");
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(innerTranslated, Is.False);
+                    Assert.That(innerLogMessage, Is.EqualTo("A cairn is revealed nearby!"));
+                });
+            }
+            finally
+            {
+                _ = HiddenRenderTranslationPatch.Finalizer(null);
+            }
+
+            var outerLogMessage = outerQueuedMessage;
+            var outerTranslated = HiddenRenderTranslationPatch.TryTranslateMessageLogMessage(ref outerLogMessage, "white");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(outerTranslated, Is.False);
+                Assert.That(outerLogMessage, Is.EqualTo("A stone crevice is revealed nearby!"));
+            });
+        }
+        finally
+        {
+            _ = HiddenRenderTranslationPatch.Finalizer(null);
+        }
+    }
+
     [TestCase("")]
     [TestCase("A stone crevice is hidden nearby!")]
     [TestCase("A stone crevice revealed nearby!")]

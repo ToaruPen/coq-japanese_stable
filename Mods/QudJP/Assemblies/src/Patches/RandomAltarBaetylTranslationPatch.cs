@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
+using System.Text;
 using System.Text.RegularExpressions;
 using HarmonyLib;
 
@@ -186,7 +187,7 @@ public static class RandomAltarBaetylTranslationPatch
             return mixedOffering;
         }
 
-        var translated = TranslateDisplayNameCapture(StripLeadingInventoryPrefix(source));
+        var translated = TranslateDisplayNameCaptureWithPluralFallback(StripLeadingInventoryPrefixPreservingColors(source));
         return isNearby ? "近くの" + translated : translated;
     }
 
@@ -208,18 +209,97 @@ public static class RandomAltarBaetylTranslationPatch
             return false;
         }
 
-        var nearby = TranslateDisplayNameCapture(StripLeadingInventoryPrefix(nearbySource));
-        var inventory = TranslateDisplayNameCapture(StripLeadingInventoryPrefix(inventorySource));
+        var nearby = TranslateDisplayNameCaptureWithPluralFallback(StripLeadingInventoryPrefixPreservingColors(nearbySource));
+        var inventory = TranslateDisplayNameCaptureWithPluralFallback(StripLeadingInventoryPrefixPreservingColors(inventorySource));
         translated = $"近くの{nearby}と{inventory}";
         return true;
     }
 
-    private static string StripLeadingInventoryPrefix(string source)
+    private static string StripLeadingInventoryPrefixPreservingColors(string source)
     {
         var trimmed = source.Trim();
-        return trimmed.StartsWith("your ", StringComparison.Ordinal)
-            ? trimmed.Substring("your ".Length).TrimStart()
-            : trimmed;
+        const string inventoryPrefix = "your ";
+        var visible = ColorAwareTranslationComposer.GetVisibleText(trimmed);
+        if (!visible.StartsWith(inventoryPrefix, StringComparison.Ordinal))
+        {
+            return trimmed;
+        }
+
+        return RemoveVisiblePrefixPreservingTokens(trimmed, inventoryPrefix.Length);
+    }
+
+    private static string RemoveVisiblePrefixPreservingTokens(string source, int visiblePrefixLength)
+    {
+        var result = new StringBuilder(source.Length);
+        var index = 0;
+        var visibleToRemove = visiblePrefixLength;
+        while (index < source.Length)
+        {
+            if (TryReadMarkupToken(source, index, out var tokenLength))
+            {
+                result.Append(source, index, tokenLength);
+                index += tokenLength;
+                continue;
+            }
+
+            if (visibleToRemove > 0)
+            {
+                visibleToRemove--;
+                index++;
+                continue;
+            }
+
+            result.Append(source[index]);
+            index++;
+        }
+
+        return result.ToString();
+    }
+
+    private static bool TryReadMarkupToken(string source, int index, out int length)
+    {
+        length = 0;
+        if (index + 1 < source.Length
+            && source[index] == '{'
+            && source[index + 1] == '{')
+        {
+            var pipeIndex = source.IndexOf('|', index + 2);
+            if (pipeIndex >= 0)
+            {
+                length = pipeIndex - index + 1;
+                return true;
+            }
+        }
+
+        if (index + 1 < source.Length
+            && source[index] == '}'
+            && source[index + 1] == '}')
+        {
+            length = 2;
+            return true;
+        }
+
+        if (index + 1 < source.Length
+            && (source[index] == '&' || source[index] == '^')
+            && source[index + 1] != source[index])
+        {
+            length = 2;
+            return true;
+        }
+
+        if (source[index] == '<')
+        {
+            var closeIndex = source.IndexOf('>', index + 1);
+            if (closeIndex >= 0
+                && (source.IndexOf("<color=", index, StringComparison.OrdinalIgnoreCase) == index
+                    || source.IndexOf("</color", index, StringComparison.OrdinalIgnoreCase) == index))
+            {
+                length = closeIndex - index + 1;
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private static string TranslateDemandPhrase(string source)
@@ -255,13 +335,15 @@ public static class RandomAltarBaetylTranslationPatch
 
     private static string TranslateDisplayNameCaptureWithPluralFallback(string source)
     {
+        var normalizedSource = MessageFrameTranslator.StripAllDirectTranslationMarkers(
+            DisplayNameCaptureTranslator.StripLeadingEnglishArticlePreservingColors(source));
         var translated = TranslateDisplayNameCapture(source);
-        if (!string.Equals(translated, source, StringComparison.Ordinal))
+        if (!string.Equals(translated, normalizedSource, StringComparison.Ordinal))
         {
             return translated;
         }
 
-        return ColorAwareTranslationComposer.TranslatePreservingColors(source, TranslatePluralVisibleDisplayName);
+        return ColorAwareTranslationComposer.TranslatePreservingColors(normalizedSource, TranslatePluralVisibleDisplayName);
     }
 
     private static string TranslatePluralVisibleDisplayName(string visible)

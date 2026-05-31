@@ -21,6 +21,9 @@ public static class HiddenRenderTranslationPatch
     [ThreadStatic]
     private static string? queuedDirectPassthroughMessage;
 
+    [ThreadStatic]
+    private static Stack<string?>? queuedDirectPassthroughStack;
+
     [HarmonyTargetMethods]
     private static IEnumerable<MethodBase> TargetMethods()
     {
@@ -53,6 +56,9 @@ public static class HiddenRenderTranslationPatch
     {
         try
         {
+            queuedDirectPassthroughStack ??= new Stack<string?>();
+            queuedDirectPassthroughStack.Push(queuedDirectPassthroughMessage);
+            queuedDirectPassthroughMessage = null;
             OwnerTranslationScope.Enter(ref activeDepth);
         }
         catch (Exception ex)
@@ -66,9 +72,19 @@ public static class HiddenRenderTranslationPatch
         try
         {
             OwnerTranslationScope.Exit(ref activeDepth);
-            if (!OwnerTranslationScope.IsActive(activeDepth))
+            if (queuedDirectPassthroughStack is { Count: > 0 })
+            {
+                queuedDirectPassthroughMessage = queuedDirectPassthroughStack.Pop();
+            }
+            else if (!OwnerTranslationScope.IsActive(activeDepth))
             {
                 queuedDirectPassthroughMessage = null;
+            }
+
+            if (!OwnerTranslationScope.IsActive(activeDepth)
+                && queuedDirectPassthroughStack is { Count: 0 })
+            {
+                queuedDirectPassthroughStack = null;
             }
         }
         catch (Exception ex)
