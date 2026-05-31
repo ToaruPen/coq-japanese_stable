@@ -81,7 +81,7 @@ Held-out inventory follow-up:
 Fresh commands run after tuning:
 
 ```bash
-python3 /Users/sankenbisha/.codex/skills/.system/skill-creator/scripts/quick_validate.py .codex/skills/qudjp-translation-quality-audit
+python3 ~/.codex/skills/.system/skill-creator/scripts/quick_validate.py .codex/skills/qudjp-translation-quality-audit
 npx secretlint .codex/skills/qudjp-translation-quality-audit docs/superpowers/specs/2026-06-01-qudjp-translation-quality-audit-design.md docs/superpowers/plans/2026-06-01-qudjp-translation-quality-audit.md
 just markdown-report-check
 uv run pytest scripts/tests/test_agent_cycle.py -q

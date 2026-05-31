@@ -5,7 +5,11 @@ ROOT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
 DOTFILES_ROOT=${DOTFILES_ROOT:-}
 ARTIFACT_DIR=${AGENT_LOOP_ARTIFACT_DIR:-"$ROOT_DIR/scripts/_artifacts/agent-loop"}
 PYTHON_BIN=${PYTHON_BIN:-"uv run python"}
-read -r -a PYTHON_CMD <<<"$PYTHON_BIN"
+if [[ -x "$PYTHON_BIN" ]] || command -v "$PYTHON_BIN" >/dev/null 2>&1; then
+  PYTHON_CMD=("$PYTHON_BIN")
+else
+  read -r -a PYTHON_CMD <<<"$PYTHON_BIN"
+fi
 
 usage() {
   cat <<'USAGE'

@@ -117,6 +117,31 @@ def test_tool_check_uses_uv_python_by_default(tmp_path: Path) -> None:
     assert str(bin_dir / "uv") in completed.stdout
 
 
+def test_tool_check_accepts_python_bin_path_with_spaces(tmp_path: Path) -> None:
+    """PYTHON_BIN may be an executable path with spaces instead of a shell command."""
+    bin_dir = tmp_path / "bin"
+    bin_dir.mkdir()
+    for tool in ("just", "ast-grep"):
+        _write_executable_stub(bin_dir, tool)
+
+    python_dir = tmp_path / "python dir"
+    python_dir.mkdir()
+    python_path = python_dir / "python3"
+    _write_executable_stub(python_dir, "python3")
+
+    completed = _run_agent_cycle(
+        "tool-check",
+        python_bin=str(python_path),
+        override_path=str(bin_dir),
+        without_dotfiles_root=True,
+    )
+
+    assert completed.returncode == 1
+    assert "missing tool: dotnet" in completed.stderr
+    assert "missing tool: " not in completed.stderr.replace("missing tool: dotnet", "")
+    assert str(python_path) in completed.stdout
+
+
 def _write_executable_stub(bin_dir: Path, name: str) -> None:
     stub = bin_dir / name
     stub.write_text("#!/bin/sh\nprintf '%s version\\n' \"$0\"\n", encoding="utf-8")

@@ -10,6 +10,8 @@
 
 ---
 
+## Tasks
+
 ### Task 1: Skill Structure And Design Docs
 
 **Files:**
@@ -24,7 +26,7 @@
 Run:
 
 ```bash
-python3 /Users/sankenbisha/.codex/skills/.system/skill-creator/scripts/init_skill.py qudjp-translation-quality-audit --path .codex/skills --resources references --interface display_name='QudJP Translation Quality Audit' --interface short_description='Audit QudJP translations for context, fluency, and consistency.' --interface default_prompt='Use $qudjp-translation-quality-audit to review this QudJP translation for context accuracy, Japanese fluency, and glossary consistency.'
+python3 ~/.codex/skills/.system/skill-creator/scripts/init_skill.py qudjp-translation-quality-audit --path .codex/skills --resources references --interface display_name='QudJP Translation Quality Audit' --interface short_description='Audit QudJP translations for context, fluency, and consistency.' --interface default_prompt='Use $qudjp-translation-quality-audit to review this QudJP translation for context accuracy, Japanese fluency, and glossary consistency.'
 ```
 
 Expected: `.codex/skills/qudjp-translation-quality-audit/` exists with `SKILL.md`, `agents/openai.yaml`, and `references/`.
@@ -108,7 +110,7 @@ Expected: matches in both files.
 Run:
 
 ```bash
-python3 /Users/sankenbisha/.codex/skills/.system/skill-creator/scripts/quick_validate.py .codex/skills/qudjp-translation-quality-audit
+python3 ~/.codex/skills/.system/skill-creator/scripts/quick_validate.py .codex/skills/qudjp-translation-quality-audit
 ```
 
 Expected: validation passes.
@@ -118,7 +120,7 @@ Expected: validation passes.
 Run:
 
 ```bash
-python3 /Users/sankenbisha/.codex/skills/.system/skill-creator/scripts/quick_validate.py .codex/skills/qudjp-translation-quality-audit
+python3 ~/.codex/skills/.system/skill-creator/scripts/quick_validate.py .codex/skills/qudjp-translation-quality-audit
 uv run pytest scripts/tests/test_agent_cycle.py -q
 just python-check
 just tool-check
@@ -143,7 +145,7 @@ Record scenario results, ambiguities, discretion-filled spots, and minimal fixes
 Run:
 
 ```bash
-python3 /Users/sankenbisha/.codex/skills/.system/skill-creator/scripts/quick_validate.py .codex/skills/qudjp-translation-quality-audit
+python3 ~/.codex/skills/.system/skill-creator/scripts/quick_validate.py .codex/skills/qudjp-translation-quality-audit
 uv run pytest scripts/tests/test_agent_cycle.py -q
 just python-check
 just tool-check
