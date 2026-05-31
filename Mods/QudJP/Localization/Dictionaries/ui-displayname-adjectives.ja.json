@@ -172,7 +172,7 @@
     {
       "key": "drum-loaded",
       "context": "GetDisplayName.Adjective",
-      "text": "ドラム装填"
+      "text": "ドラム弾倉"
     },
     {
       "key": "slender",
@@ -602,7 +602,7 @@
     {
       "key": "{{overloaded|massively overloaded}}",
       "context": "GetDisplayName.Adjective",
-      "text": "{{overloaded|超過荷重}}"
+      "text": "{{overloaded|重過負荷}}"
     },
     {
       "key": "{{Y|masterwork}}",
@@ -657,7 +657,7 @@
     {
       "key": "{{overloaded|overloaded}}",
       "context": "GetDisplayName.Adjective",
-      "text": "{{overloaded|過荷重}}"
+      "text": "{{overloaded|過負荷}}"
     },
     {
       "key": "{{K|phase-conjugate}}",
@@ -697,7 +697,7 @@
     {
       "key": "sharp",
       "context": "GetDisplayName.Adjective",
-      "text": "鋭い"
+      "text": "鋭利"
     },
     {
       "key": "{{G|six-fingered}}",
@@ -1382,7 +1382,7 @@
     {
       "key": "massively overloaded",
       "context": "GetDisplayName.Adjective",
-      "text": "{{overloaded|超過荷重}}"
+      "text": "{{overloaded|重過負荷}}"
     },
     {
       "key": "mercurial",
@@ -1427,7 +1427,7 @@
     {
       "key": "overloaded",
       "context": "GetDisplayName.Adjective",
-      "text": "{{overloaded|過荷重}}"
+      "text": "{{overloaded|過負荷}}"
     },
     {
       "key": "phase-harmonic",

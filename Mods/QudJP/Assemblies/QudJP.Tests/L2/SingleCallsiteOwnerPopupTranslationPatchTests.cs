@@ -425,6 +425,12 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "FoodConsumptionFrame",
         PopupMethod.Show)]
     [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.HandleFood),
+        "You eat {{R|your raw meat}}.\nYou are now {{|Sated}} and {{|Quenched}}.",
+        "{{R|raw meat}}を食べた。\n現在、{{|満腹}}、{{|潤っている}}だ。",
+        "FoodConsumptionFrame",
+        PopupMethod.Show)]
+    [TestCase(
         nameof(DummySingleCallsiteOwnerPopupTarget.ApplySpaceTimeVortex),
         "Your companion, {{G|Q Girl}},has been sucked into the space-time vortex to the east!",
         "あなたの仲間である{{G|Q Girl}}は東側のspace-time vortexに吸い込まれた！",
@@ -640,6 +646,21 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "{{Y|ケムセル}}を完全に充電するには{{C|3}}個の{{C|A}}ビットが必要だ。所持数は{{C|1}}。いくつ使う？",
         "TinkeringRechargeAskNumber")]
     [TestCase(
+        "XRL.World.Parts.Skill.Tinkering_Tinker1|Recharge",
+        "It would take {{C|1}} {{R|A}} bit to fully recharge your {{c|ケムセル}}. You have {{C|51}}. How many do you want to use?",
+        "{{c|ケムセル}}を完全に充電するには{{C|1}}個の{{R|A}}ビットが必要だ。所持数は{{C|51}}。いくつ使う？",
+        "TinkeringRechargeAskNumber")]
+    [TestCase(
+        "XRL.World.Parts.Skill.Tinkering_Tinker1|Recharge",
+        "It would take {{C|1}} {{R|A}} bit to fully recharge your chem cell. You have {{C|51}}. How many do you want to use?",
+        "ケムセルを完全に充電するには{{C|1}}個の{{R|A}}ビットが必要だ。所持数は{{C|51}}。いくつ使う？",
+        "TinkeringRechargeAskNumber")]
+    [TestCase(
+        "XRL.World.Parts.Skill.Tinkering_Tinker1|Recharge",
+        "It would take {{C|1}} {{R|A}} bit to fully recharge {{W|your chem cell}}. You have {{C|51}}. How many do you want to use?",
+        "{{W|ケムセル}}を完全に充電するには{{C|1}}個の{{R|A}}ビットが必要だ。所持数は{{C|51}}。いくつ使う？",
+        "TinkeringRechargeAskNumber")]
+    [TestCase(
         "XRL.World.Parts.Skill.Tinkering_Tinker1|FireEvent",
         "You have no items that require charging.",
         "充電が必要なアイテムがない。",
@@ -662,6 +683,28 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         {
             Assert.That(translated, Is.EqualTo(expected));
             Assert.That(HitCount(detail), Is.EqualTo(1));
+        });
+    }
+
+    [Test]
+    public void ProselytizeUnconvinced_StripsArticleBeforeDirectMarkedDisplayName()
+    {
+        var source = "The "
+            + MessageFrameTranslator.MarkDirectTranslation("ウォーターヴァイン農家のメカニマス教徒改宗者")
+            + " is unconvinced by your pleas.";
+
+        Assert.That(
+            SingleCallsiteOwnerPopupTranslationPatch.TryTranslatePopupMessageForOwnerKey(
+                source,
+                "XRL.World.Parts.Skill.Persuasion_Proselytize|Proselytize",
+                nameof(PopupShowTranslationPatch),
+                "SingleCallsiteOwnerPopup",
+                out var translated),
+            Is.True);
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.EqualTo("ウォーターヴァイン農家のメカニマス教徒改宗者はあなたの嘆願に心を動かされない。"));
+            Assert.That(HitCount("ProselytizeUnconvinced"), Is.EqualTo(1));
         });
     }
 

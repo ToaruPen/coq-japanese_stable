@@ -7,7 +7,8 @@ internal static class DisplayNameCaptureTranslator
     public static string TranslatePreservingColors(string source, string context)
     {
         var withoutArticle = StripLeadingEnglishArticlePreservingColors(source);
-        return GetDisplayNameRouteTranslator.TranslatePreservingColors(withoutArticle, context);
+        var withoutDirectMarkers = MessageFrameTranslator.StripAllDirectTranslationMarkers(withoutArticle);
+        return GetDisplayNameRouteTranslator.TranslatePreservingColors(withoutDirectMarkers, context);
     }
 
     public static string StripLeadingEnglishArticlePreservingColors(string source)

@@ -109,16 +109,18 @@ internal sealed class DummyZoneManagerSetActiveZoneTarget
 {
     public int CallCount { get; private set; }
 
+    public string? MessageColor { get; set; } = "C";
+
     public void SetActiveZone()
     {
         CallCount++;
         if (DummyZoneWorldFactory.WorldId == "JoppaWorld")
         {
-            DummyZoneMessageDispatcher.AddPlayerMessage(DummyZoneWorldFactory.ZoneDisplayName(DummyZoneWorldFactory.ZoneId) + ", " + DummyZoneCalendar.GetTime(), 'C');
+            DummyZoneMessageDispatcher.AddPlayerMessage(DummyZoneWorldFactory.ZoneDisplayName(DummyZoneWorldFactory.ZoneId) + ", " + DummyZoneCalendar.GetTime(), MessageColor);
         }
         else
         {
-            DummyZoneMessageDispatcher.AddPlayerMessage(DummyZoneWorldFactory.ZoneDisplayName(DummyZoneWorldFactory.ZoneId), 'C');
+            DummyZoneMessageDispatcher.AddPlayerMessage(DummyZoneWorldFactory.ZoneDisplayName(DummyZoneWorldFactory.ZoneId), MessageColor);
         }
     }
 }

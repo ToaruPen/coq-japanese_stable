@@ -90,6 +90,16 @@ public static class MessageLogPatch
                 return true;
             }
 
+            if (LiquidVolumeTranslationPatch.TryTranslateMessageLogMessage(ref Message, Color))
+            {
+                return true;
+            }
+
+            if (HiddenRenderTranslationPatch.TryTranslateMessageLogMessage(ref Message, Color))
+            {
+                return true;
+            }
+
             if (TryTranslateSubjectDirectionDisappears(stripped, spans, Message, out var disappearsTranslated))
             {
                 Message = disappearsTranslated;

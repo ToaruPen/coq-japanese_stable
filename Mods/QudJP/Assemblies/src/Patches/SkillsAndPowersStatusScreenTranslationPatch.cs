@@ -40,14 +40,19 @@ public static class SkillsAndPowersStatusScreenTranslationPatch
         new Regex("^Starting Cost \\[(?<cost>\\d+) sp\\] \\[(?<rank>\\d+)\\/(?<max>\\d+)\\]$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex RequirementBlockPattern =
         new Regex("^:: (?<cost>\\d+) SP ::\\n:: (?<requirement>\\d+) (?<attribute>Strength|Toughness|Willpower|Agility|Ego|Intelligence) ::\\n?$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private const string AttributeRequirementPattern = "\\d+ (?:Strength|Toughness|Willpower|Agility|Ego|Intelligence)";
     private static readonly Regex SkillLinePattern =
-        new Regex("^(?<indent>\\s*)(?<colon>:?)(?<name>.+?) (?<costBlock>\\[(?<cost>\\d+)sp\\]) (?<requirement>\\d+) (?<attribute>Strength|Toughness|Willpower|Agility|Ego|Intelligence)(?:, (?<prereq>.+))?$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+        new Regex("^(?<indent>\\s*)(?<colon>:?)(?<name>.+?) (?<costBlock>\\[(?<cost>\\d+)sp\\]) (?<requirements>" + AttributeRequirementPattern + "(?: or " + AttributeRequirementPattern + ")*)(?:, (?<prereq>.+))?$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex RequirementAttributePattern =
+        new Regex("\\b(?<attribute>Strength|Toughness|Willpower|Agility|Ego|Intelligence)\\b", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex RequirementPartPattern =
+        new Regex("(?<amount>\\d+) (?<attribute>Strength|Toughness|Willpower|Agility|Ego|Intelligence)", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex PrefixedSkillNamePattern =
         new Regex("^(?<indent>\\s*):(?<name>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex BracketedLeafPattern =
         new Regex("^\\[(?<inner>.+)\\]$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex GeneratedDetailStatLinePattern =
-        new Regex("^(?<label>Duration|Range|Area|Radius|Cooldown|Cooldown Remaining Turns): (?<value>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+        new Regex("^(?<label>Damage|Duration|Range|Area|Radius|Cooldown|Cooldown Remaining Turns): (?<value>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex CooldownAdjustmentPattern =
         new Regex("^Cooldown (?<direction>reduced|increased) by (?<amount>.+?) due to (?<reason>.+)\\.$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex CooldownFloorPattern =
@@ -313,6 +318,14 @@ public static class SkillsAndPowersStatusScreenTranslationPatch
             : source;
     }
 
+    private static string TranslateRequirementList(string source)
+    {
+        var translated = RequirementAttributePattern.Replace(
+            source,
+            static match => TranslateAttributeRequirement(match.Groups["attribute"].Value));
+        return translated.Replace(" or ", " または ");
+    }
+
     private static bool TryTranslateSkillPoints(string source, string route, out string translated)
     {
         var match = SkillPointsPattern.Match(source);
@@ -465,10 +478,10 @@ public static class SkillsAndPowersStatusScreenTranslationPatch
         }
 
         var name = TranslateLeaf(match.Groups["name"].Value);
-        var attribute = TranslateAttributeRequirement(match.Groups["attribute"].Value);
+        var requirements = TranslateRequirementList(match.Groups["requirements"].Value);
         var changed = !string.Equals(name, match.Groups["name"].Value, StringComparison.Ordinal)
-            || !string.Equals(attribute, match.Groups["attribute"].Value, StringComparison.Ordinal);
-        var translatedLine = $"{name} {match.Groups["costBlock"].Value} {match.Groups["requirement"].Value} {attribute}";
+            || !string.Equals(requirements, match.Groups["requirements"].Value, StringComparison.Ordinal);
+        var translatedLine = $"{name} {match.Groups["costBlock"].Value} {requirements}";
         if (match.Groups["prereq"].Success)
         {
             var prereq = TranslateSkillNameListOrLeaf(match.Groups["prereq"].Value);
@@ -656,6 +669,7 @@ public static class SkillsAndPowersStatusScreenTranslationPatch
     {
         return label switch
         {
+            "Damage" => "ダメージ",
             "Duration" => "持続時間",
             "Range" => "射程",
             "Area" => "効果範囲",
@@ -731,13 +745,9 @@ public static class SkillsAndPowersStatusScreenTranslationPatch
             match.Groups["costBlock"].Value,
             spans,
             match.Groups["costBlock"]).Trim();
-        var requirement = ColorAwareTranslationComposer.MarkupAwareRestoreCapture(
-            match.Groups["requirement"].Value,
-            spans,
-            match.Groups["requirement"]).Trim();
-        var attribute = RestoreTranslatedCapture(match, spans, "attribute", TranslateAttributeRequirement);
+        var requirements = TranslateRequirementListPreservingCaptureColors(match.Groups["requirements"].Value, spans, match.Groups["requirements"]);
 
-        var translatedVisible = $"{match.Groups["indent"].Value}{colon}{name} {costBlock} {requirement} {attribute}";
+        var translatedVisible = $"{match.Groups["indent"].Value}{colon}{name} {costBlock} {requirements}";
         if (match.Groups["prereq"].Success)
         {
             var prereq = RestoreTranslatedCapture(match, spans, "prereq", TranslateSkillNameListOrLeaf);
@@ -773,6 +783,33 @@ public static class SkillsAndPowersStatusScreenTranslationPatch
         var group = match.Groups[groupName];
         var translated = translate(group.Value);
         return ColorAwareTranslationComposer.RestoreCaptureWholeBoundaryWrappersPreservingTranslatedOwnership(translated, spans, group).Trim();
+    }
+
+    private static string TranslateRequirementListPreservingCaptureColors(
+        string source,
+        IReadOnlyList<ColorSpan> spans,
+        Group group)
+    {
+        var relativeSpans = ColorCodePreserver.SliceSpans(spans, group.Index, group.Length);
+        var translated = RequirementPartPattern.Replace(
+            source,
+            match =>
+            {
+                var amount = ColorAwareTranslationComposer.MarkupAwareRestoreCapture(
+                    match.Groups["amount"].Value,
+                    relativeSpans,
+                    match.Groups["amount"]).Trim();
+                var attribute = ColorAwareTranslationComposer.RestoreCaptureWholeBoundaryWrappersPreservingTranslatedOwnership(
+                    TranslateAttributeRequirement(match.Groups["attribute"].Value),
+                    relativeSpans,
+                    match.Groups["attribute"]).Trim();
+                return amount + " " + attribute;
+            });
+        translated = translated.Replace(" or ", " または ");
+        return ColorAwareTranslationComposer.RestoreCaptureWholeBoundaryWrappersPreservingTranslatedOwnership(
+            translated,
+            spans,
+            group).Trim();
     }
 
     private static string TranslateSkillNameListOrLeaf(string source)

@@ -33,25 +33,18 @@ internal static class PopupTranslatedMessageHandoff
         activeScopes.Add(scopeId);
     }
 
-    internal static void ExitCurrentScope(bool retainPendingEntries = false)
+    internal static void ExitCurrentScope()
     {
         var scopeId = GetCurrentScopeId();
         if (scopeId != 0)
         {
-            ExitScope(scopeId, retainPendingEntries);
+            ExitScope(scopeId);
         }
     }
 
-    internal static void ExitScope(int scopeId, bool retainPendingEntries = false)
+    internal static void ExitScope(int scopeId)
     {
-        if (retainPendingEntries)
-        {
-            DetachPendingEntriesForScope(scopeId);
-        }
-        else
-        {
-            RemovePendingEntriesForScope(scopeId);
-        }
+        RemovePendingEntriesForScope(scopeId);
 
         var scopes = activeScopes;
         if (scopes is null)
@@ -117,6 +110,12 @@ internal static class PopupTranslatedMessageHandoff
             return false;
         }
 
+        var scopes = activeScopes;
+        if (scopes is null || scopes.Count == 0)
+        {
+            return false;
+        }
+
         var key = CreateKey(source);
         var entries = pendingEntries;
         if (entries is null)
@@ -124,34 +123,40 @@ internal static class PopupTranslatedMessageHandoff
             return false;
         }
 
-        var scopeId = GetCurrentScopeId();
-        if (scopeId == 0)
+        for (var index = entries.Count - 1; index >= 0; index--)
         {
-            Entry? detachedMatch = null;
-            for (var index = entries.Count - 1; index >= 0; index--)
+            var entry = entries[index];
+            if (!scopes.Contains(entry.ScopeId)
+                || !string.Equals(entry.Visible, key.Visible, StringComparison.Ordinal)
+                || !string.Equals(entry.ColorSignature, key.ColorSignature, StringComparison.Ordinal))
             {
-                var entry = entries[index];
-                if (entry.ScopeId != 0
-                    || !string.Equals(entry.Visible, key.Visible, StringComparison.Ordinal)
-                    || !string.Equals(entry.ColorSignature, key.ColorSignature, StringComparison.Ordinal))
-                {
-                    continue;
-                }
-
-                detachedMatch = entry;
-                break;
+                continue;
             }
 
-            RemoveDetachedEntries();
-            if (detachedMatch is null)
-            {
-                return false;
-            }
-
-            translated = detachedMatch.Translated;
+            entries.RemoveAt(index);
+            translated = entry.Translated;
             return true;
         }
 
+        return false;
+    }
+
+    internal static bool TryGetFromCurrentScope(string source, out string translated)
+    {
+        translated = source;
+        if (string.IsNullOrEmpty(source))
+        {
+            return false;
+        }
+
+        var scopeId = GetCurrentScopeId();
+        var entries = pendingEntries;
+        if (scopeId == 0 || entries is null)
+        {
+            return false;
+        }
+
+        var key = CreateKey(source);
         for (var index = entries.Count - 1; index >= 0; index--)
         {
             var entry = entries[index];
@@ -205,52 +210,13 @@ internal static class PopupTranslatedMessageHandoff
         }
     }
 
-    private static void DetachPendingEntriesForScope(int scopeId)
-    {
-        var entries = pendingEntries;
-        if (entries is null)
-        {
-            return;
-        }
-
-        for (var index = 0; index < entries.Count; index++)
-        {
-            if (entries[index].ScopeId == scopeId)
-            {
-                entries[index].Detach();
-            }
-        }
-    }
-
-    private static void RemoveDetachedEntries()
-    {
-        var entries = pendingEntries;
-        if (entries is null)
-        {
-            return;
-        }
-
-        for (var index = entries.Count - 1; index >= 0; index--)
-        {
-            if (entries[index].ScopeId == 0)
-            {
-                entries.RemoveAt(index);
-            }
-        }
-
-        if (entries.Count == 0)
-        {
-            pendingEntries = null;
-        }
-    }
-
     private static Key CreateKey(string source)
     {
         var (visible, spans) = ColorAwareTranslationComposer.Strip(source);
-        return new Key(visible.Trim(), CreateColorSignature(spans));
+        return new Key(visible.Trim(), CreateColorSignature(spans, visible.Length));
     }
 
-    private static string CreateColorSignature(IReadOnlyList<ColorSpan> spans)
+    private static string CreateColorSignature(IReadOnlyList<ColorSpan> spans, int visibleLength)
     {
         if (spans.Count == 0)
         {
@@ -260,7 +226,8 @@ internal static class PopupTranslatedMessageHandoff
         var builder = new StringBuilder();
         for (var index = 0; index < spans.Count; index++)
         {
-            if (!TryGetOpeningColorFamily(spans[index].Token, out var family))
+            if (IsDefaultYellowNoise(spans[index], spans, index, visibleLength)
+                || !TryGetOpeningColorFamily(spans[index].Token, out var family))
             {
                 continue;
             }
@@ -272,6 +239,110 @@ internal static class PopupTranslatedMessageHandoff
         }
 
         return builder.ToString();
+    }
+
+    private static bool IsDefaultYellowNoise(
+        ColorSpan span,
+        IReadOnlyList<ColorSpan> spans,
+        int spanPosition,
+        int visibleLength)
+    {
+        if (string.Equals(span.Token, "&y", StringComparison.Ordinal))
+        {
+            return span.Index == visibleLength
+                || span.Index > 0 && HasNonYellowShorthandBefore(spans, spanPosition)
+                || HasQudYellowAndNonYellowOpeningAtIndex(spans, span.Index)
+                || span.Index == 0 && HasForegroundYellowResetAfterNonYellowShorthand(spans);
+        }
+
+        return string.Equals(span.Token, "{{y|", StringComparison.Ordinal)
+            && HasForegroundYellowAtIndex(spans, span.Index)
+            && HasForegroundYellowResetAfterNonYellowShorthand(spans);
+    }
+
+    private static bool HasQudYellowAndNonYellowOpeningAtIndex(IReadOnlyList<ColorSpan> spans, int index)
+    {
+        return HasForegroundYellowAtIndex(spans, index) && IsNonYellowOpeningAtIndex(spans, index);
+    }
+
+    private static bool HasForegroundYellowAtIndex(IReadOnlyList<ColorSpan> spans, int index)
+    {
+        for (var spanIndex = 0; spanIndex < spans.Count; spanIndex++)
+        {
+            if (spans[spanIndex].Index == index && string.Equals(spans[spanIndex].Token, "&y", StringComparison.Ordinal))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static bool HasNonYellowShorthandBefore(IReadOnlyList<ColorSpan> spans, int spanPosition)
+    {
+        for (var index = spanPosition - 1; index >= 0; index--)
+        {
+            var token = spans[index].Token;
+            if (token.Length == 2 && token[0] == '&' && token[1] != 'y')
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static bool HasForegroundYellowResetAfterNonYellowShorthand(IReadOnlyList<ColorSpan> spans)
+    {
+        var sawNonYellowShorthand = false;
+        for (var spanIndex = 0; spanIndex < spans.Count; spanIndex++)
+        {
+            var span = spans[spanIndex];
+            if (span.Token.Length == 2 && span.Token[0] == '&' && span.Token[1] != 'y')
+            {
+                sawNonYellowShorthand = true;
+                continue;
+            }
+
+            if (sawNonYellowShorthand && string.Equals(span.Token, "&y", StringComparison.Ordinal))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static bool IsNonYellowOpeningAtIndex(IReadOnlyList<ColorSpan> spans, int index)
+    {
+        for (var spanIndex = 0; spanIndex < spans.Count; spanIndex++)
+        {
+            var span = spans[spanIndex];
+            if (span.Index != index)
+            {
+                continue;
+            }
+
+            var token = span.Token;
+            if (string.IsNullOrEmpty(token)
+                || string.Equals(token, "}}", StringComparison.Ordinal)
+                || string.Equals(token, "</color>", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(token, "&y", StringComparison.Ordinal)
+                || string.Equals(token, "^y", StringComparison.Ordinal)
+                || string.Equals(token, "{{y|", StringComparison.Ordinal))
+            {
+                continue;
+            }
+
+            if (token.StartsWith("{{", StringComparison.Ordinal)
+                || token.Length == 2 && (token[0] == '&' || token[0] == '^')
+                || token.StartsWith("<color=", StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private static bool TryGetOpeningColorFamily(string token, out string family)
@@ -294,7 +365,7 @@ internal static class PopupTranslatedMessageHandoff
         if (token.Length == 2 && (token[0] == '&' || token[0] == '^'))
         {
             family = token[1].ToString();
-            return !string.Equals(family, "y", StringComparison.Ordinal);
+            return true;
         }
 
         if (token.StartsWith("<color=", StringComparison.OrdinalIgnoreCase))
@@ -329,17 +400,12 @@ internal static class PopupTranslatedMessageHandoff
             Translated = translated;
         }
 
-        internal int ScopeId { get; private set; }
+        internal int ScopeId { get; }
 
         internal string Visible { get; }
 
         internal string ColorSignature { get; }
 
         internal string Translated { get; }
-
-        internal void Detach()
-        {
-            ScopeId = 0;
-        }
     }
 }

@@ -77,6 +77,42 @@ public sealed class CharacterStatusScreenMutationDetailsPatchTests
         }
     }
 
+    [Test]
+    public void HandleHighlightMutation_TranslatesMutationDetailsBeforeFirstUITextSkinSetText_WhenPatched()
+    {
+        WriteDictionary(
+            ("mutation:Force Wall", "力の壁を生み出し、9マス連続の力場で敵を遮る。\n\n飛び道具は壁を通過させられる。"),
+            ("mutation:Force Wall:rank:1", "9マス分の連続した固定力場を作る。\n持続: 16ラウンド\nクールダウン: 100ラウンド\n力場越しに飛び道具を撃てる。"));
+
+        var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            PatchUITextSkinSetText(harmony);
+            PatchHandleHighlightMutationWithOptionalOwnerScope(harmony);
+
+            var screen = new DummyCharacterStatusMutationScreen();
+            screen.HandleHighlightMutation(new DummyCharacterMutationLineData
+            {
+                mutation = new DummyCharacterMutation
+                {
+                    Name = "ForceWall",
+                    DisplayName = "Force Wall",
+                    Level = 1,
+                },
+            });
+
+            Assert.That(
+                screen.mutationsDetails.LastSetTextArgument,
+                Is.EqualTo("力の壁を生み出し、9マス連続の力場で敵を遮る。\n\n飛び道具は壁を通過させられる。\n\n9マス分の連続した固定力場を作る。\n持続: 16ラウンド\nクールダウン: 100ラウンド\n力場越しに飛び道具を撃てる。"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
     [TestCase("Freezing Ray", "Icy Vapor", "任意の方向へ冷気の光線を放つ。", "選んだ方向に9マスの冷気線を放つ。")]
     [TestCase("Flaming Ray", "Ghostly Flames", "任意の方向へ火炎の光線を放つ。", "選んだ方向に9マスの火炎線を放つ。")]
     [TestCase("Horns", "Horns Antlers", "頭から鋭い角が生えている。", "枝角で敵を突く。")]
@@ -346,6 +382,115 @@ public sealed class CharacterStatusScreenMutationDetailsPatchTests
         });
     }
 
+    [TestCase(
+        "Freezing Ray",
+        "凍結線",
+        "Icy Vapor Feet",
+        "frost",
+        "10d3+2",
+        "-10d4",
+        "11d3+2",
+        "-11d4",
+        "冷気線",
+        "冷却",
+        "任意の方向へ冷気の光線を放つ。近接攻撃でも目標の体温を下げる力を帯びる。")]
+    [TestCase(
+        "Flaming Ray",
+        "火炎線",
+        "Ghostly Flames Feet",
+        "flame",
+        "10d4+2",
+        "20d8",
+        "11d4+2",
+        "22d8",
+        "炎線",
+        "加熱",
+        "任意の方向へ火炎の光線を放つ。近接攻撃でも目標を加熱する力を帯びる。")]
+    public void TryTranslateMutationDetails_TranslatesRuntimeElementalRayNumbers_WhenRankDictionaryDoesNotContainEffectiveNextLevel(
+        string mutationName,
+        string displayName,
+        string variant,
+        string element,
+        string currentDamage,
+        string currentTemperature,
+        string nextDamage,
+        string nextTemperature,
+        string translatedRayNoun,
+        string translatedTemperatureVerb,
+        string description)
+    {
+        WriteDictionary(
+            ($"mutation:{mutationName}", description),
+            ("This rank", "現在ランク"),
+            ("Next rank", "次ランク"));
+
+        var temperatureVerb = element == "flame" ? "heat" : "cool";
+        var source =
+            $"You emit a ray of {element} from your forefeet.\n\n{{{{w|This rank}}}}:\nEmits a 9-square ray of {element} in the direction of your choice.\nDamage: {{{{rules|{currentDamage}}}}}\nCooldown: 20 rounds\nMelee attacks {temperatureVerb} opponents by {{{{rules|{currentTemperature}}}}} degrees\n\n{{{{w|Next rank}}}}:\nEmits a 9-square ray of {element} in the direction of your choice.\nDamage: {{{{rules|{nextDamage}}}}}\nCooldown: 20 rounds\nMelee attacks {temperatureVerb} opponents by {{{{rules|{nextTemperature}}}}} degrees";
+
+        var changed = CharacterStatusScreenTextTranslator.TryTranslateMutationDetails(
+            new DummyCharacterMutation
+            {
+                EntryName = mutationName,
+                DisplayName = displayName,
+                Variant = variant,
+                Level = 10,
+            },
+            source,
+            nameof(CharacterStatusScreenTranslationPatch),
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(changed, Is.True);
+            Assert.That(translated, Does.Contain(description));
+            Assert.That(translated, Does.Contain("{{w|現在ランク}}:"));
+            Assert.That(translated, Does.Contain($"選んだ方向に9マスの{translatedRayNoun}を放つ。"));
+            Assert.That(translated, Does.Contain($"ダメージ: {{{{rules|{currentDamage}}}}}"));
+            Assert.That(translated, Does.Contain($"近接攻撃時に敵を{{{{rules|{currentTemperature}}}}}度{translatedTemperatureVerb}する。"));
+            Assert.That(translated, Does.Contain("{{w|次ランク}}:"));
+            Assert.That(translated, Does.Contain($"ダメージ: {{{{rules|{nextDamage}}}}}"));
+            Assert.That(translated, Does.Contain($"近接攻撃時に敵を{{{{rules|{nextTemperature}}}}}度{translatedTemperatureVerb}する。"));
+            Assert.That(translated, Does.Not.Contain("You emit a ray"));
+            Assert.That(translated, Does.Not.Contain("This rank"));
+        });
+    }
+
+    [Test]
+    public void TryTranslateMutationDetails_InfersElementalRayOwner_WhenMutationEntryNameIsVariantEquipment()
+    {
+        WriteDictionary(
+            ("mutation:Freezing Ray", "任意の方向へ冷気の光線を放つ。近接攻撃でも目標の体温を下げる力を帯びる。"),
+            ("This rank", "現在ランク"),
+            ("Next rank", "次ランク"));
+
+        const string source =
+            "You emit a ray of frost from your forefeet.\n\n{{w|This rank}}:\nEmits a 9-square ray of frost in the direction of your choice.\nDamage: {{rules|10d3+2}}\nCooldown: 20 rounds\nMelee attacks cool opponents by {{rules|-10d4}} degrees\n\n{{w|Next rank}}:\nEmits a 9-square ray of frost in the direction of your choice.\nDamage: {{rules|11d3+2}}\nCooldown: 20 rounds\nMelee attacks cool opponents by {{rules|-11d4}} degrees";
+
+        var changed = CharacterStatusScreenTextTranslator.TryTranslateMutationDetails(
+            new DummyCharacterMutation
+            {
+                EntryName = "Icy Vapor Feet",
+                DisplayName = "凍結線",
+                Variant = "Icy Vapor Feet",
+                Level = 7,
+            },
+            source,
+            nameof(CharacterStatusScreenTranslationPatch),
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(changed, Is.True);
+            Assert.That(translated, Does.Contain("任意の方向へ冷気の光線を放つ。"));
+            Assert.That(translated, Does.Contain("{{w|現在ランク}}:"));
+            Assert.That(translated, Does.Contain("ダメージ: {{rules|10d3+2}}"));
+            Assert.That(translated, Does.Contain("{{w|次ランク}}:"));
+            Assert.That(translated, Does.Not.Contain("You emit a ray"));
+            Assert.That(translated, Does.Not.Contain("This rank"));
+        });
+    }
+
     [Test]
     public void TryTranslateMutationDetails_PassesThroughComparisonFamily_WhenAnyRequiredBlockIsMissing()
     {
@@ -437,6 +582,29 @@ public sealed class CharacterStatusScreenMutationDetailsPatchTests
     {
         return AccessTools.Method(type, methodName)
             ?? throw new InvalidOperationException($"Method not found: {type.FullName}.{methodName}");
+    }
+
+    private static void PatchUITextSkinSetText(Harmony harmony)
+    {
+        harmony.Patch(
+            original: RequireMethod(typeof(DummyUITextSkin), nameof(DummyUITextSkin.SetText)),
+            prefix: new HarmonyMethod(RequireMethod(typeof(UITextSkinTranslationPatch), nameof(UITextSkinTranslationPatch.Prefix))));
+    }
+
+    private static void PatchHandleHighlightMutationWithOptionalOwnerScope(Harmony harmony)
+    {
+        var patchType = typeof(CharacterStatusScreenMutationDetailsPatch);
+        var original = RequireMethod(
+            typeof(DummyCharacterStatusMutationScreen),
+            nameof(DummyCharacterStatusMutationScreen.HandleHighlightMutation));
+        var prefix = AccessTools.Method(patchType, "Prefix");
+        var finalizer = AccessTools.Method(patchType, "Finalizer");
+
+        harmony.Patch(
+            original: original,
+            prefix: prefix is null ? null : new HarmonyMethod(prefix),
+            postfix: new HarmonyMethod(RequireMethod(patchType, nameof(CharacterStatusScreenMutationDetailsPatch.Postfix))),
+            finalizer: finalizer is null ? null : new HarmonyMethod(finalizer));
     }
 
     private void WriteDictionary(params (string key, string text)[] entries)

@@ -21,6 +21,18 @@ public static class PopupTranslationPatch
     private const string InventoryActionMenuPopupIdPrefix = "InventoryActionMenu:";
     private const string InventoryActionContext = "XRL.World.IInventoryActionsEvent";
     private const string InventoryActionDictionaryFile = "ui-inventory-actions.ja.json";
+    private static readonly HashSet<string> CampfireCookingActionLabels = new(StringComparer.Ordinal)
+    {
+        "Whip up a meal.",
+        "Choose ingredients to cook with.",
+        "Cook from a recipe.",
+        "Preserve your fresh foods.",
+        "Preserve your exotic foods.",
+        "Stop bleeding.",
+        "Treat poison.",
+        "Treat illness.",
+        "Treat disease onset.",
+    };
     private static readonly Regex AsciiLetterPattern =
         new Regex("[A-Za-z]", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex HotkeyLabelPattern =
@@ -30,7 +42,13 @@ public static class PopupTranslationPatch
     private static readonly Regex EnergyCellSocketRemoveCellPattern =
         new Regex("^remove cell: (?<cell>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex InventoryActionRechargeCellPattern =
-        new Regex("^Recharge (?<cell>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+        new Regex("^Recharge (?<cell>.+)$", RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.Compiled);
+    private static readonly Regex InventoryActionCleanAllItemsPattern =
+        new Regex("^clean all your items \\[(?<amount>\\d+) drams?\\]$", RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.Compiled);
+    private static readonly Regex RenameItemTitlePattern =
+        new Regex("^Rename (?<target>.+)\\.$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex RandomNameCultureOptionPattern =
+        new Regex("^Choose a random name from (?<culture>.+?) culture\\.$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex PlainHotkeyLabelPattern =
         new Regex("^(?<hotkey>Enter|Esc|Tab|Space|space)\\s+(?<label>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex NumberedConversationChoicePattern =
@@ -398,6 +416,12 @@ public static class PopupTranslationPatch
             return true;
         }
 
+        if (GameObjectPopupTranslationPatch.TryTranslatePopupMessage(source, route, family, out var gameObjectPopupTranslated))
+        {
+            translated = gameObjectPopupTranslated;
+            return true;
+        }
+
         if (QuestLifecyclePopupTranslationPatch.TryTranslatePopupMessage(source, route, family, out var questLifecycleTranslated))
         {
             translated = questLifecycleTranslated;
@@ -572,6 +596,25 @@ public static class PopupTranslationPatch
                 out var hotkeyLabelTranslated))
         {
             translated = hotkeyLabelTranslated;
+            return true;
+        }
+
+        if (TryTranslatePlainPopupMenuItemText(
+                source,
+                stripped,
+                spans,
+                route,
+                family,
+                popupId,
+                out var plainPopupMenuItemTranslated))
+        {
+            translated = plainPopupMenuItemTranslated;
+            return true;
+        }
+
+        if (TryTranslateRenameItemTitle(source, stripped, spans, route, family, out var renameItemTitleTranslated))
+        {
+            translated = renameItemTitleTranslated;
             return true;
         }
 
@@ -1130,6 +1173,79 @@ public static class PopupTranslationPatch
         return false;
     }
 
+    private static bool TryTranslatePlainPopupMenuItemText(
+        string source,
+        string stripped,
+        IReadOnlyList<ColorSpan> spans,
+        string route,
+        string family,
+        string? popupId,
+        out string translated)
+    {
+        translated = source;
+        if (!string.Equals(family, "Popup.ProducerMenuItem", StringComparison.Ordinal)
+            || string.IsNullOrWhiteSpace(stripped)
+            || source.Contains("{{hotkey|"))
+        {
+            return false;
+        }
+
+        var translatedLabel = TranslatePopupMenuItemLabel(stripped, popupId, spans, null, 0);
+        if (translatedLabel is null)
+        {
+            return TryAcceptInventoryActionMenuOwnerMiss(source, route, family, popupId, out translated);
+        }
+
+        if (string.Equals(translatedLabel, stripped, StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+            translatedLabel,
+            spans,
+            stripped.Length);
+        DynamicTextObservability.RecordTransform(route, family + ".PlainMenuItem", source, translated);
+        return true;
+    }
+
+    private static bool TryTranslateRenameItemTitle(
+        string source,
+        string stripped,
+        IReadOnlyList<ColorSpan> spans,
+        string route,
+        string family,
+        out string translated)
+    {
+        translated = source;
+        var match = RenameItemTitlePattern.Match(stripped);
+        if (!match.Success)
+        {
+            return false;
+        }
+
+        var targetGroup = match.Groups["target"];
+        var targetPrefixLength = targetGroup.Value.StartsWith("your ", StringComparison.Ordinal)
+            ? "your ".Length
+            : 0;
+        var target = RestoreNestedVisibleSlice(
+            targetGroup,
+            targetPrefixLength,
+            targetGroup.Length - targetPrefixLength,
+            spans);
+        var translatedTarget = ColorAwareTranslationComposer.TranslatePreservingColors(
+            target,
+            visible => GetDisplayNameRouteTranslator.TranslatePreservingColors(
+                visible,
+                nameof(PopupTranslationPatch)));
+        translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+            translatedTarget + "の名前を変更する。",
+            spans,
+            stripped.Length);
+        DynamicTextObservability.RecordTransform(route, family + ".RenameItemTitle", source, translated);
+        return true;
+    }
+
     private static bool TryTranslatePopupPickOptionHotkeyLabel(
         string source,
         string stripped,
@@ -1157,7 +1273,7 @@ public static class PopupTranslationPatch
             var translatedLabel = TranslatePopupMenuItemLabel(label, popupId, spans, labelGroup);
             if (translatedLabel is null)
             {
-                return TryAcceptInventoryActionMenuOwnerMiss(source, popupId, out translated);
+                return TryAcceptInventoryActionMenuOwnerMiss(source, route, family, popupId, out translated);
             }
 
             if (string.Equals(translatedLabel, label, StringComparison.Ordinal))
@@ -1220,7 +1336,7 @@ public static class PopupTranslationPatch
         var embeddedTranslated = TranslatePopupMenuItemLabel(stripped, popupId, spans, null, 0);
         if (embeddedTranslated is null)
         {
-            return TryAcceptInventoryActionMenuOwnerMiss(source, popupId, out translated);
+            return TryAcceptInventoryActionMenuOwnerMiss(source, route, family, popupId, out translated);
         }
 
         if (string.Equals(embeddedTranslated, stripped, StringComparison.Ordinal))
@@ -1266,8 +1382,7 @@ public static class PopupTranslationPatch
         var translatedLabel = TranslatePopupMenuItemLabel(label, popupId, spans, null, labelStart);
         if (translatedLabel is null)
         {
-            translated = source;
-            return true;
+            return TryAcceptInventoryActionMenuOwnerMiss(source, route, family, popupId, out translated);
         }
 
         if (string.Equals(translatedLabel, label, StringComparison.Ordinal))
@@ -1357,10 +1472,26 @@ public static class PopupTranslationPatch
         return filtered ?? spans;
     }
 
-    private static bool TryAcceptInventoryActionMenuOwnerMiss(string source, string? popupId, out string translated)
+    private static bool TryAcceptInventoryActionMenuOwnerMiss(
+        string source,
+        string route,
+        string family,
+        string? popupId,
+        out string translated)
     {
         translated = source;
-        return IsInventoryActionMenuPopup(popupId);
+        if (!IsInventoryActionMenuPopup(popupId))
+        {
+            return false;
+        }
+
+        DynamicTextObservability.RecordTransform(
+            route,
+            family + ".InventoryActionOwnerMiss",
+            source,
+            translated,
+            logWhenUnchanged: true);
+        return true;
     }
 
     private static string? TranslatePopupMenuItemLabel(
@@ -1398,9 +1529,79 @@ public static class PopupTranslationPatch
             label,
             QudMenuItemContext,
             QudMenuItemDictionaryFile);
-        return qudMenuItemTranslation is not null
-            ? qudMenuItemTranslation
-            : ScopedDictionaryLookup.TranslateExactOrLowerAscii(label, CommonMenuActionDictionaryFile);
+        if (qudMenuItemTranslation is not null)
+        {
+            return qudMenuItemTranslation;
+        }
+
+        if (TryTranslateRandomNameCultureOption(label, spans, labelGroup, labelStart, out var randomCultureTranslated))
+        {
+            return randomCultureTranslated;
+        }
+
+        if (CampfireCookingActionLabels.Contains(label))
+        {
+            var campfireActionTranslation = ScopedDictionaryLookup.TranslateExactOrLowerAsciiForContextOnly(
+                label,
+                InventoryActionContext,
+                InventoryActionDictionaryFile);
+            if (campfireActionTranslation is not null)
+            {
+                return campfireActionTranslation;
+            }
+        }
+
+        return ScopedDictionaryLookup.TranslateExactOrLowerAscii(label, CommonMenuActionDictionaryFile);
+    }
+
+    private static bool TryTranslateRandomNameCultureOption(
+        string label,
+        IReadOnlyList<ColorSpan>? spans,
+        Group? labelGroup,
+        int? labelStart,
+        out string translated)
+    {
+        translated = label;
+        var match = RandomNameCultureOptionPattern.Match(label);
+        if (!match.Success)
+        {
+            return false;
+        }
+
+        var culture = NormalizeCulturePossessive(match.Groups["culture"].Value);
+        if (spans is not null && labelGroup is not null)
+        {
+            culture = RestoreNestedVisibleSlice(labelGroup, match.Groups["culture"], spans);
+            culture = NormalizeCulturePossessive(culture);
+        }
+        else if (spans is not null && labelStart.HasValue)
+        {
+            culture = RestoreNestedVisibleSlice(
+                label,
+                match.Groups["culture"].Index,
+                match.Groups["culture"].Length,
+                labelStart.Value,
+                spans);
+            culture = NormalizeCulturePossessive(culture);
+        }
+
+        translated = culture + "文化からランダムな名前を選ぶ。";
+        return true;
+    }
+
+    private static string NormalizeCulturePossessive(string culture)
+    {
+        if (culture.EndsWith("'s", StringComparison.Ordinal))
+        {
+            return culture.Substring(0, culture.Length - 2) + "の";
+        }
+
+        if (culture.EndsWith("'", StringComparison.Ordinal))
+        {
+            return culture.Substring(0, culture.Length - 1) + "の";
+        }
+
+        return culture;
     }
 
     private static bool TryTranslateInventoryActionMenuLabelPattern(
@@ -1411,6 +1612,15 @@ public static class PopupTranslationPatch
         out string translated)
     {
         translated = label;
+        var cleanAllItemsMatch = InventoryActionCleanAllItemsPattern.Match(label);
+        if (cleanAllItemsMatch.Success)
+        {
+            translated = "手持ちのアイテムをすべて洗う ["
+                + cleanAllItemsMatch.Groups["amount"].Value
+                + "ドラム]";
+            return true;
+        }
+
         var rechargeMatch = InventoryActionRechargeCellPattern.Match(label);
         if (rechargeMatch.Success)
         {

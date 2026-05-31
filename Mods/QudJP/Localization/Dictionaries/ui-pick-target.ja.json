@@ -44,6 +44,11 @@
       "text": "歩く"
     },
     {
+      "key": "Pour",
+      "context": "PickTarget.CommandBar",
+      "text": "注ぐ"
+    },
+    {
       "key": "Dig to where?",
       "context": "PickTarget.Digging.Label",
       "text": "どこまで掘る？"

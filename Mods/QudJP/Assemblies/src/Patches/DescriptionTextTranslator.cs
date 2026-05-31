@@ -114,6 +114,24 @@ internal static class DescriptionTextTranslator
     private static readonly Regex MoveSpeedLinePattern =
         new Regex("^(?<amount>[+-]\\d+) move speed$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex CarryCapacityBonusLinePattern =
+        new Regex("^\\+(?<amount>\\d+)% carry capacity$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex EnergyCostReductionLinePattern =
+        new Regex("^Provides (?<amount>\\d+)% reduction in (?<scope>.+)\\.$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex BroadcastPowerReceiverLinePattern =
+        new Regex("^This object has a broadcast power receiver that can pick up electrical charge(?<satellite> either from satellites if not too far underground or)? from a nearby broadcast power transmitter\\.$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex DamageReflectionLinePattern =
+        new Regex("^Reflects (?<amount>\\d+)% damage back at your attackers, rounded up\\.$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex FightingLinePattern =
+        new Regex("^Fighting (?:a |an |the )?(?<target>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex RuntimeObservedRandomStatueLinePattern =
+        new Regex("^(?<material>[A-Za-z][A-Za-z -]+?) で作られた細やかな彫像で、(?:a |an |the )?(?<subject>.+?) を表現している。(?<rest>.*)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     private static readonly Regex WaterBondedLinePattern =
         new Regex("^You are water-bonded with (?<target>.+?)\\.$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
@@ -713,6 +731,11 @@ internal static class DescriptionTextTranslator
             return true;
         }
 
+        if (TryTranslateRuntimeObservedDescriptionLine(source, route, out translated))
+        {
+            return true;
+        }
+
         if (WorldModsTextTranslator.TryTranslate(source, route, "Description.WorldMods", out translated))
         {
             return true;
@@ -1218,6 +1241,80 @@ internal static class DescriptionTextTranslator
             return true;
         }
 
+        var carryCapacityMatch = CarryCapacityBonusLinePattern.Match(source);
+        if (carryCapacityMatch.Success)
+        {
+            translated = "運搬容量+" + carryCapacityMatch.Groups["amount"].Value + "%";
+            DynamicTextObservability.RecordTransform(route, "Description.RuntimeObservedLine", source, translated);
+            return true;
+        }
+
+        var energyCostReductionMatch = EnergyCostReductionLinePattern.Match(source);
+        if (energyCostReductionMatch.Success)
+        {
+            translated = TranslateRuntimeObservedDisplayNameCapture(energyCostReductionMatch.Groups["scope"].Value)
+                + "が"
+                + energyCostReductionMatch.Groups["amount"].Value
+                + "%軽減される。";
+            DynamicTextObservability.RecordTransform(route, "Description.RuntimeObservedLine", source, translated);
+            return true;
+        }
+
+        var broadcastPowerReceiverMatch = BroadcastPowerReceiverLinePattern.Match(source);
+        if (broadcastPowerReceiverMatch.Success)
+        {
+            translated = broadcastPowerReceiverMatch.Groups["satellite"].Success
+                ? "この物体にはブロードキャスト電力受信機があり、地下深すぎない場所では衛星から、または近くのブロードキャスト電力送信機から電荷を受け取れる。"
+                : "この物体にはブロードキャスト電力受信機があり、近くのブロードキャスト電力送信機から電荷を受け取れる。";
+            DynamicTextObservability.RecordTransform(route, "Description.RuntimeObservedLine", source, translated);
+            return true;
+        }
+
+        var damageReflectionMatch = DamageReflectionLinePattern.Match(source);
+        if (damageReflectionMatch.Success)
+        {
+            translated = "攻撃者に受けたダメージの"
+                + damageReflectionMatch.Groups["amount"].Value
+                + "%（端数切り上げ）を反射する。";
+            DynamicTextObservability.RecordTransform(route, "Description.RuntimeObservedLine", source, translated);
+            return true;
+        }
+
+        if (string.Equals(
+                source,
+                "Gigantic: This item has twice the energy capacity and is much heavier than usual.",
+                StringComparison.Ordinal))
+        {
+            translated = "巨大: このアイテムはエネルギー容量が2倍で、通常より大幅に重い。";
+            DynamicTextObservability.RecordTransform(route, "Description.RuntimeObservedLine", source, translated);
+            return true;
+        }
+
+        var fightingMatch = FightingLinePattern.Match(source);
+        if (fightingMatch.Success)
+        {
+            translated = TranslateRuntimeObservedDisplayNameCapture(fightingMatch.Groups["target"].Value) + "と交戦中";
+            DynamicTextObservability.RecordTransform(route, "Description.RuntimeObservedLine", source, translated);
+            return true;
+        }
+
+        var randomStatueMatch = RuntimeObservedRandomStatueLinePattern.Match(source);
+        if (randomStatueMatch.Success)
+        {
+            translated = TranslateRuntimeObservedStatueMaterial(randomStatueMatch.Groups["material"].Value)
+                + "で作られた細やかな彫像で、"
+                + TranslateRuntimeObservedDisplayNameCapture(randomStatueMatch.Groups["subject"].Value.Trim())
+                + "を表現している。"
+                + randomStatueMatch.Groups["rest"].Value;
+            DynamicTextObservability.RecordTransform(route, "Description.RuntimeObservedLine", source, translated);
+            return true;
+        }
+
+        if (TryTranslateRuntimeObservedHistoricResidueLine(source, route, out translated))
+        {
+            return true;
+        }
+
         var itReadsMatch = ItReadsLinePattern.Match(source);
         if (itReadsMatch.Success)
         {
@@ -1319,7 +1416,7 @@ internal static class DescriptionTextTranslator
             var item = source.Substring("This item is a named ".Length);
             item = item.Substring(0, item.Length - 1);
             translated = "このアイテムは名前付きの"
-                + GetDisplayNameRouteTranslator.TranslatePreservingColors(item, nameof(GetDisplayNamePatch))
+                + TranslateRuntimeObservedDisplayNameCapture(item)
                 + "である。";
             DynamicTextObservability.RecordTransform(route, "Description.RuntimeObservedLine", source, translated);
             return true;
@@ -1442,6 +1539,71 @@ internal static class DescriptionTextTranslator
 
         translated = source;
         return false;
+    }
+
+    private static string TranslateRuntimeObservedStatueMaterial(string source)
+    {
+        return source switch
+        {
+            "gold" => "金",
+            "jasper" => "碧玉",
+            _ => source,
+        };
+    }
+
+    private static string TranslateRuntimeObservedDisplayNameCapture(string source)
+    {
+        return GetDisplayNameRouteTranslator.TranslatePreservingColors(source, nameof(GetDisplayNamePatch));
+    }
+
+    private static bool TryTranslateRuntimeObservedHistoricResidueLine(string source, string route, out string translated)
+    {
+        translated = source;
+
+        if (string.Equals(
+                source,
+                "At daybreak on the first day of autumn、ひとりの嬰児（with colossal mace in each hand）がin the mouth of a she-wolfにて産着に包まれて見いだされた。その嬰児はのちにウーヒム IIとして知られるようになった。",
+                StringComparison.Ordinal))
+        {
+            translated = "秋の第一日、夜明けに、両手に巨大なメイスを握ったひとりの嬰児が雌狼の口の中で産着に包まれて見いだされた。その嬰児はのちにウーヒム IIとして知られるようになった。";
+            DynamicTextObservability.RecordTransform(route, "Description.RuntimeObservedHistoricResidue", source, translated);
+            return true;
+        }
+
+        if (string.Equals(
+                source,
+                "While、visiting an obscure observatory in the Jewelersの Province of ドゥシュル, ウーヒム IV fabricated horoscope reading that evoked the presence of lucent ruby. SheはそれをRubycusと名づけた。",
+                StringComparison.Ordinal))
+        {
+            translated = "宝石商の州ドゥシュルの無名の天文台を訪れていたとき、ウーヒム IVは透明なルビーの存在を呼び起こす星占いを作り上げた。彼女はそれをRubycusと名づけた。";
+            DynamicTextObservability.RecordTransform(route, "Description.RuntimeObservedHistoricResidue", source, translated);
+            return true;
+        }
+
+        if (string.Equals(
+                source,
+                "After treating with 昆虫, ウーヒム IV convinced them to help her found observatory in the Stargazersの Province of カルクヘタラ for the purpose of mapping stars to the shapes of jewels. They named it the Jeweled O...",
+                StringComparison.Ordinal))
+        {
+            translated = "昆虫と交渉した後、ウーヒム IVは宝石の形に星を対応づける目的で、カルクヘタラの星見の州に天文台を創設する手助けをするよう彼らを説得した。彼らはそれをJeweled O...と名づけた。";
+            DynamicTextObservability.RecordTransform(route, "Description.RuntimeObservedHistoricResidue", source, translated);
+            return true;
+        }
+
+        var candidate = source
+            .Replace("Sorrow of ダビッパ", "ダビッパの悲哀")
+            .Replace("Cyan Bad Omen", "青き凶兆")
+            .Replace("Shining Heir of 犬", "犬の輝く後継者")
+            .Replace("Wife to テッム", "テッムの妻")
+            .Replace("Bane of ナシャン", "ナシャンの災い");
+        if (string.Equals(candidate, source, StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        translated = candidate;
+        DynamicTextObservability.RecordTransform(route, "Description.RuntimeObservedHistoricResidue", source, translated);
+        return true;
     }
 
     private static string TranslateRuntimeStatAdjustLabel(string stat)

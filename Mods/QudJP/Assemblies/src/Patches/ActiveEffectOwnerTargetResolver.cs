@@ -89,7 +89,6 @@ internal static class ActiveEffectOwnerTargetResolver
             return true;
         }
 
-        var name = type.Name;
-        return StringHelpers.ContainsOrdinal(name, "Cooking");
+        return StringHelpers.ContainsOrdinal(type.Name, "Cooking");
     }
 }

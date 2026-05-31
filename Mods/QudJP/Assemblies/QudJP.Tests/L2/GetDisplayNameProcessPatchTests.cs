@@ -179,9 +179,8 @@ public sealed class GetDisplayNameProcessPatchTests
     [Test]
     public void Postfix_TranslatesGeneratedTitleSuffixWithLeadingModifier_WhenPatched()
     {
-        WriteDictionary(
-            ("bloody", "{{r|血まみれの}}"),
-            ("village apothecary", "村の薬師"));
+        WriteDictionary(("village apothecary", "村の薬師"));
+        WriteDictionaryFile("ui-displayname-adjectives.ja.json", ("bloody", "{{r|血まみれの}}"));
 
         RunWithDisplayNameProcessPatch(() =>
         {
@@ -586,7 +585,7 @@ public sealed class GetDisplayNameProcessPatchTests
     [Test]
     public void Postfix_TranslatesGeneratedProperNameModifier_WhenPatched()
     {
-        WriteDictionary(("bloody", "{{r|血まみれの}}"));
+        WriteDictionaryFile("ui-displayname-adjectives.ja.json", ("bloody", "{{r|血まみれの}}"));
 
         RunWithDisplayNameProcessPatch(() =>
         {

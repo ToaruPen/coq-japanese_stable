@@ -186,7 +186,7 @@ public static class PopupPickOptionTranslationPatch
             text = originalText;
         }
 
-        return PopupTranslationPatch.TranslatePopupTextForProducerRoute(text, Context);
+        return PopupTranslationPatch.TranslatePopupMenuItemTextForProducerRoute(text, Context);
     }
 
     private static void TranslatePopupMenuItemTextCollection(object? maybeList)

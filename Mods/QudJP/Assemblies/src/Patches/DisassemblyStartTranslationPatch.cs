@@ -17,6 +17,45 @@ public static class DisassemblyStartTranslationPatch
     private static readonly Regex StartDisassemblingPattern = new(
         "^You start disassembling (?<item>.+?)\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    // End popups can omit "You disassemble ..."; keep the item prefix optional.
+    private static readonly Regex DisassembleEurekaBuildReceiptPattern = new(
+        "^(?:You disassemble\\s+(?:(?:the|your)\\s+)?)?(?<item>.+?)\\.\\s+Eureka! You may now build\\s+(?<build>.+?)\\.\\s+You receive tinkering bits <(?<bits>.+?)>\\.*!?$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.Singleline);
+    // Legacy non-Eureka receipts keep item/location text before the bits sentence.
+    private static readonly Regex DisassembleBitsReceiptPattern = new(
+        "^You disassemble\\s+(?:(?:the|your)\\s+)?(?<item>.+?)\\.\\s+You receive tinkering bits <(?<bits>.+?)>\\.*!?$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.Singleline);
+    // Split build/mod captures so both learned names use display-name translation.
+    private static readonly Regex DisassembleEurekaBuildAndModReceiptPattern = new(
+        "^(?:You disassemble\\s+(?:(?:the|your)\\s+)?)?(?<item>.+?)\\.\\s+Eureka! You may now build\\s+(?<build>.+?)\\s+and\\s+mod items with the\\s+(?<mods>.+?)\\s+(?:mod|mods)\\.\\s+You receive tinkering bits <(?<bits>.+?)>\\.*!?$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.Singleline);
+    // Game text alternates singular/plural "mod(s)"; both mean the modifier list.
+    private static readonly Regex DisassembleEurekaModReceiptPattern = new(
+        "^(?:You disassemble\\s+(?:(?:the|your)\\s+)?)?(?<item>.+?)\\.\\s+Eureka! You may now mod items with the\\s+(?<mods>.+?)\\s+(?:mod|mods)\\.\\s+You receive tinkering bits <(?<bits>.+?)>\\.*!?$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.Singleline);
+    private static readonly Regex DisplayNameListSeparators = new(
+        "(, and | and |, )",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex LeadingColoredDisplayNamePrefix = new(
+        "^(?<prefix>(?:\\{\\{[^{}|]+\\|[^{}]*\\}\\}\\s*)+)(?<rest>\\S.+)$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly string[] LocationSuffixes =
+    {
+        " here",
+        " to the north",
+        " to the south",
+        " to the east",
+        " to the west",
+        " to the northeast",
+        " to the northwest",
+        " to the southeast",
+        " to the southwest",
+    };
+    private static readonly string[] LeadingItemPrefixes =
+    {
+        "the ",
+        "your ",
+    };
 
     [ThreadStatic]
     private static int activeDepth;
@@ -32,14 +71,18 @@ public static class DisassemblyStartTranslationPatch
             return targets;
         }
 
-        var method = AccessTools.Method(targetType, "Continue", Type.EmptyTypes);
-        if (method is not null)
+        foreach (var methodName in new[] { "Continue", "End" })
         {
-            targets.Add(method);
-            return targets;
+            var method = AccessTools.Method(targetType, methodName, Type.EmptyTypes);
+            if (method is not null)
+            {
+                targets.Add(method);
+                continue;
+            }
+
+            Trace.TraceError("QudJP: {0}.{1}.{2} target not found.", Context, targetType.FullName, methodName);
         }
 
-        Trace.TraceError("QudJP: {0}.{1}.Continue target not found.", Context, targetType.FullName);
         return targets;
     }
 
@@ -77,7 +120,8 @@ public static class DisassemblyStartTranslationPatch
             return false;
         }
 
-        if (!TryTranslateStartDisassemblingMessage(message, out var translated))
+        if (!TryTranslateStartDisassemblingMessage(message, out var translated)
+            && !TryTranslateDisassembleReceiptMessage(message, out translated))
         {
             return false;
         }
@@ -97,7 +141,8 @@ public static class DisassemblyStartTranslationPatch
             return false;
         }
 
-        if (TryTranslateReverseEngineerPrompt(source, out translated))
+        if (TryTranslateReverseEngineerPrompt(source, out translated)
+            || TryTranslateDisassembleReceiptMessage(source, out translated))
         {
             DynamicTextObservability.RecordTransform("Popup.Show", Context, source, translated);
             return true;
@@ -123,7 +168,7 @@ public static class DisassemblyStartTranslationPatch
             return false;
         }
 
-        translated = $"{RestoreCapture(match, spans, "item")}をリバースエンジニアリングしてみる？";
+        translated = $"{TranslateDisplayNameCapture(NormalizeItemCapture(RestoreCapture(match, spans, "item")))}をリバースエンジニアリングしてみる？";
         return true;
     }
 
@@ -143,8 +188,161 @@ public static class DisassemblyStartTranslationPatch
             return false;
         }
 
-        translated = $"{RestoreCapture(match, spans, "item")}の分解を始めた。";
+        translated = $"{TranslateDisplayNameCapture(NormalizeItemCapture(RestoreCapture(match, spans, "item")))}の分解を始めた。";
         return true;
+    }
+
+    private static bool TryTranslateDisassembleReceiptMessage(string source, out string translated)
+    {
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
+        {
+            translated = markedText;
+            return true;
+        }
+
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        var buildAndModMatch = DisassembleEurekaBuildAndModReceiptPattern.Match(stripped);
+        if (buildAndModMatch.Success)
+        {
+            translated = BuildEurekaReceiptTranslation(
+                buildAndModMatch,
+                spans,
+                RestoreCapture(buildAndModMatch, spans, "build"),
+                RestoreCapture(buildAndModMatch, spans, "mods"));
+            return true;
+        }
+
+        var match = DisassembleEurekaBuildReceiptPattern.Match(stripped);
+        if (match.Success)
+        {
+            translated = BuildEurekaReceiptTranslation(
+                match,
+                spans,
+                RestoreCapture(match, spans, "build"),
+                mods: null);
+            return true;
+        }
+
+        var modMatch = DisassembleEurekaModReceiptPattern.Match(stripped);
+        if (modMatch.Success)
+        {
+            translated = BuildEurekaReceiptTranslation(
+                modMatch,
+                spans,
+                build: null,
+                RestoreCapture(modMatch, spans, "mods"));
+            return true;
+        }
+
+        var bitsOnlyMatch = DisassembleBitsReceiptPattern.Match(stripped);
+        if (bitsOnlyMatch.Success)
+        {
+            var item = TranslateDisplayNameCapture(RestoreDisassemblyItemCapture(bitsOnlyMatch, spans, "item"));
+            var bits = RestoreCapture(bitsOnlyMatch, spans, "bits");
+            translated = $"{item}を分解し、修理ビット<{bits}>を受け取った。";
+            return true;
+        }
+
+        translated = source;
+        return false;
+    }
+
+    private static string BuildEurekaReceiptTranslation(
+        Match match,
+        IReadOnlyList<ColorSpan> spans,
+        string? build,
+        string? mods)
+    {
+        var item = TranslateDisplayNameCapture(RestoreDisassemblyItemCapture(match, spans, "item"));
+        var bits = RestoreCapture(match, spans, "bits");
+        var suffixes = new List<string>();
+        if (!string.IsNullOrWhiteSpace(build))
+        {
+            suffixes.Add($"{TranslateDisplayNameCapture(build!)}を作れるようになった。");
+        }
+
+        if (!string.IsNullOrWhiteSpace(mods))
+        {
+            suffixes.Add($"{TranslateDisplayNameList(mods!)} modでアイテムを改造できるようになった。");
+        }
+
+        return $"{item}を分解し、修理ビット<{bits}>を受け取った。ひらめいた！ {string.Concat(suffixes)}";
+    }
+
+    private static string StripTrailingLocationSuffix(string source)
+    {
+        var trimmed = source.Trim();
+        for (var index = 0; index < LocationSuffixes.Length; index++)
+        {
+            var suffix = LocationSuffixes[index];
+            if (trimmed.EndsWith(suffix, StringComparison.Ordinal))
+            {
+                return trimmed.Substring(0, trimmed.Length - suffix.Length).TrimEnd();
+            }
+        }
+
+        return trimmed;
+    }
+
+    private static string NormalizeItemCapture(string source)
+    {
+        var trimmed = StripTrailingLocationSuffix(source);
+        for (var index = 0; index < LeadingItemPrefixes.Length; index++)
+        {
+            var prefix = LeadingItemPrefixes[index];
+            if (trimmed.StartsWith(prefix, StringComparison.Ordinal))
+            {
+                return trimmed.Substring(prefix.Length).TrimStart();
+            }
+        }
+
+        return trimmed;
+    }
+
+    private static string RestoreDisassemblyItemCapture(
+        Match match,
+        IReadOnlyList<ColorSpan> spans,
+        string groupName)
+    {
+        return NormalizeItemCapture(RestoreCapture(match, spans, groupName));
+    }
+
+    private static string TranslateDisplayNameCapture(string source)
+    {
+        var leadingColoredPrefix = LeadingColoredDisplayNamePrefix.Match(source.Trim());
+        if (leadingColoredPrefix.Success)
+        {
+            return TranslateColoredPrefix(leadingColoredPrefix.Groups["prefix"].Value)
+                + TranslateDisplayNameCapture(leadingColoredPrefix.Groups["rest"].Value);
+        }
+
+        return ColorAwareTranslationComposer.TranslatePreservingColors(
+            source,
+            visible => GetDisplayNameRouteTranslator.TranslatePreservingColors(visible, Context));
+    }
+
+    private static string TranslateColoredPrefix(string source)
+    {
+        return ColorAwareTranslationComposer.TranslatePreservingColors(
+            source,
+            visible => GetDisplayNameRouteTranslator.TranslatePreservingColors(visible, Context));
+    }
+
+    private static string TranslateDisplayNameList(string source)
+    {
+        var segments = DisplayNameListSeparators.Split(source);
+        for (var index = 0; index < segments.Length; index++)
+        {
+            segments[index] = segments[index] switch
+            {
+                ", and " => "、",
+                " and " => "と",
+                ", " => "、",
+                _ => TranslateDisplayNameCapture(segments[index]),
+            };
+        }
+
+        return string.Concat(segments);
     }
 
     private static string RestoreCapture(Match match, IReadOnlyList<ColorSpan> spans, string groupName)

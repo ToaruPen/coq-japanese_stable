@@ -81,6 +81,29 @@ internal static class ScopedDictionaryLookup
             : null;
     }
 
+    internal static string? TranslateExactOrLowerAsciiForAnyContext(string source, params string[] dictionaryFileNames)
+    {
+        if (string.IsNullOrEmpty(source) || dictionaryFileNames.Length == 0)
+        {
+            return null;
+        }
+
+        if (TryGetAnyContextTranslation(source, dictionaryFileNames, out var translated))
+        {
+            return translated;
+        }
+
+        var lowerAscii = StringHelpers.LowerAscii(source);
+        if (string.Equals(lowerAscii, source, StringComparison.Ordinal))
+        {
+            return null;
+        }
+
+        return TryGetAnyContextTranslation(lowerAscii, dictionaryFileNames, out translated)
+            ? translated
+            : null;
+    }
+
     internal static void ResetForTests()
     {
         Cache.Clear();
@@ -110,6 +133,24 @@ internal static class ScopedDictionaryLookup
         for (var index = 0; index < dictionaryFileNames.Count; index++)
         {
             if (LoadDictionary(dictionaryFileNames[index]).TryGetContextValue(source, context, out var loadedTranslation))
+            {
+                translated = loadedTranslation;
+                return true;
+            }
+        }
+
+        translated = source;
+        return false;
+    }
+
+    private static bool TryGetAnyContextTranslation(
+        string source,
+        IReadOnlyList<string> dictionaryFileNames,
+        out string translated)
+    {
+        for (var index = 0; index < dictionaryFileNames.Count; index++)
+        {
+            if (LoadDictionary(dictionaryFileNames[index]).TryGetAnyContextValue(source, out var loadedTranslation))
             {
                 translated = loadedTranslation;
                 return true;
@@ -247,6 +288,40 @@ internal static class ScopedDictionaryLookup
             if (contextualEntries.TryGetValue(BuildContextKey(context.Trim(), source), out var contextualTranslation))
             {
                 translated = contextualTranslation;
+                return true;
+            }
+
+            translated = source;
+            return false;
+        }
+
+        internal bool TryGetAnyContextValue(string source, out string translated)
+        {
+            var suffix = "\u001f" + source;
+            string? candidate = null;
+            foreach (var entry in contextualEntries)
+            {
+                if (!entry.Key.EndsWith(suffix, StringComparison.Ordinal))
+                {
+                    continue;
+                }
+
+                if (candidate is null)
+                {
+                    candidate = entry.Value;
+                    continue;
+                }
+
+                if (!string.Equals(candidate, entry.Value, StringComparison.Ordinal))
+                {
+                    translated = source;
+                    return false;
+                }
+            }
+
+            if (candidate is not null)
+            {
+                translated = candidate;
                 return true;
             }
 

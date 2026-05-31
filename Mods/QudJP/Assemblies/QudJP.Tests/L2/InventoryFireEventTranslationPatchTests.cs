@@ -88,6 +88,18 @@ public sealed class InventoryFireEventTranslationPatchTests
                 target.FireEventShowFail();
                 var cannotEquipOnSlot = DummyPopupShow.LastShowMessage;
 
+                target.PopupMessageToShow = "You cannot equip your {{Y|steel boots}} on your face.";
+                target.FireEventShowFail();
+                var cannotEquipOwnedItemOnSlot = DummyPopupShow.LastShowMessage;
+
+                target.PopupMessageToShow = "You cannot equip your {{Y|steel shield}} on your right arm.";
+                target.FireEventShowFail();
+                var cannotEquipOwnedItemOnRightArm = DummyPopupShow.LastShowMessage;
+
+                target.PopupMessageToShow = "You cannot equip your {{Y|steel shield}} on your {{R|left arm}}.";
+                target.FireEventShowFail();
+                var cannotEquipOwnedItemOnColoredSlot = DummyPopupShow.LastShowMessage;
+
                 target.PopupMessageToShow = "You cannot remove items while stuck!";
                 target.FireEventShowFail();
                 var stuckRemove = DummyPopupShow.LastShowMessage;
@@ -104,11 +116,14 @@ public sealed class InventoryFireEventTranslationPatchTests
                 {
                     Assert.That(stuckEquip, Is.EqualTo("動けない間はアイテムを装備できない！"));
                     Assert.That(cannotEquip, Is.EqualTo("{{Y|steel boots}}を装備できない。"));
-                    Assert.That(cannotEquipOnSlot, Is.EqualTo("{{Y|steel boots}}をleft handに装備できない。"));
+                    Assert.That(cannotEquipOnSlot, Is.EqualTo("{{Y|steel boots}}を左手に装備できない。"));
+                    Assert.That(cannotEquipOwnedItemOnSlot, Is.EqualTo("{{Y|steel boots}}を顔に装備できない。"));
+                    Assert.That(cannotEquipOwnedItemOnRightArm, Is.EqualTo("{{Y|steel shield}}を右腕に装備できない。"));
+                    Assert.That(cannotEquipOwnedItemOnColoredSlot, Is.EqualTo("{{Y|steel shield}}を{{R|左腕}}に装備できない。"));
                     Assert.That(stuckRemove, Is.EqualTo("動けない間はアイテムを外せない！"));
                     Assert.That(cannotBudge, Is.EqualTo("{{Y|rusted chest}}を動かせない。"));
                     Assert.That(wrappedCannotEquip, Is.EqualTo("{{R|{{Y|steel boots}}を装備できない。}}"));
-                    Assert.That(PopupHitCount("InventoryFailurePopup"), Is.EqualTo(6));
+                    Assert.That(PopupHitCount("InventoryFailurePopup"), Is.EqualTo(9));
                 });
             });
     }

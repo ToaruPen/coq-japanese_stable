@@ -525,7 +525,7 @@ public static class CombatSkillMessageTranslationPatch
         }
 
         var owner = source.Substring(0, possessiveIndex + 1);
-        var owned = source.Substring(possessiveIndex + 1);
+        var owned = source.Substring(possessiveIndex + 1).TrimStart();
         return CombatSkillCaptureTranslations.TryGetValue(owned, out var translatedOwned)
             ? owner + translatedOwned
             : source;

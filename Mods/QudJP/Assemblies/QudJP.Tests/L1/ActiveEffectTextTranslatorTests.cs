@@ -148,6 +148,23 @@ public sealed class ActiveEffectTextTranslatorTests
     }
 
     [Test]
+    public void TryTranslateText_TranslatesActiveEffectsWindowMoveSpeedLineWithoutPeriod()
+    {
+        var changed = ActiveEffectTextTranslator.TryTranslateText(
+            "-10 Move Speed",
+            "ActiveEffectTextTranslatorTests",
+            "ActiveEffects.Details.Interdicted",
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(changed, Is.True);
+            Assert.That(translated, Is.EqualTo("移動速度 -10。"));
+            Assert.That(Translator.GetMissingKeyHitCountForTests("-10 Move Speed"), Is.EqualTo(0));
+        });
+    }
+
+    [Test]
     public void TryTranslateText_TranslatesGeneratedAllMentalAttributesLine()
     {
         var changed = ActiveEffectTextTranslator.TryTranslateText(

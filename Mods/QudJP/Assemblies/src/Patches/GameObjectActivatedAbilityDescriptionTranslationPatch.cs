@@ -71,15 +71,13 @@ public static class GameObjectActivatedAbilityDescriptionTranslationPatch
             return;
         }
 
-        if (TrySetStringMemberValue(ability, "Description", translated))
-        {
-            DynamicTextObservability.RecordTransform(Context, Context + ".Description", current!, translated);
-        }
+        _ = TrySetStringMemberValue(ability, "Description", translated);
     }
 
     private static string TranslateDescriptionText(string source)
     {
-        return source
+        return AbilityManagerScreenTranslationPatch
+            .TranslateAbilityDetailText(source, Context, Context + ".Description")
             .Replace("Cooldown:", "クールダウン:")
             .Replace("Range:", "射程:");
     }

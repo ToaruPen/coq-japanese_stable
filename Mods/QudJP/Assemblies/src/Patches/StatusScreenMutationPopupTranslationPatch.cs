@@ -17,7 +17,7 @@ public static class StatusScreenMutationPopupTranslationPatch
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     private static readonly Regex IncreasedRankPattern = new(
-        "^You have increased (?<name>.+?)'s base rank to (?<rank>.+?)!$",
+        "^You have increased (?<name>.+?)(?:'s|の) base rank to (?<rank>.+?)!$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     private static readonly Regex InsufficientPointsPattern = new(

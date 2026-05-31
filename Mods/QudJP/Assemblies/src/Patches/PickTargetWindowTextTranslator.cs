@@ -105,6 +105,25 @@ internal static class PickTargetWindowTextTranslator
             return true;
         }
 
+        var markupWrappedHotkeyMatch = Regex.Match(source, "^(?<hotkey>\\{\\{[^|}]+\\|[^}]+\\}\\})-(?<label>.+)$", RegexOptions.CultureInvariant);
+        if (markupWrappedHotkeyMatch.Success)
+        {
+            var label = markupWrappedHotkeyMatch.Groups["label"].Value;
+            var visibleLabel = ColorAwareTranslationComposer.GetVisibleText(label);
+            if (IsOwnerRouteCommandBarToken(visibleLabel))
+            {
+                translated = source;
+                return true;
+            }
+
+            var translatedLabel = TranslatePickTargetCommandBarToken(visibleLabel);
+            if (translatedLabel is not null)
+            {
+                translated = $"{markupWrappedHotkeyMatch.Groups["hotkey"].Value}-{ColorAwareTranslationComposer.TranslatePreservingColors(label, _ => translatedLabel)}";
+                return true;
+            }
+        }
+
         var direct = TranslatePickTargetCommandBarToken(visible);
         if (direct is not null)
         {
@@ -190,25 +209,6 @@ internal static class PickTargetWindowTextTranslator
             if (translatedLabel is not null)
             {
                 translated = $"{hyphenatedHotkeyMatch.Groups["hotkey"].Value}-{ColorAwareTranslationComposer.TranslatePreservingColors(label, _ => translatedLabel)}";
-                return true;
-            }
-        }
-
-        var markupWrappedHotkeyMatch = Regex.Match(source, "^(?<hotkey>\\{\\{[^|}]+\\|[^}]+\\}\\})-(?<label>.+)$", RegexOptions.CultureInvariant);
-        if (markupWrappedHotkeyMatch.Success)
-        {
-            var label = markupWrappedHotkeyMatch.Groups["label"].Value;
-            var visibleLabel = ColorAwareTranslationComposer.GetVisibleText(label);
-            if (IsOwnerRouteCommandBarToken(visibleLabel))
-            {
-                translated = source;
-                return true;
-            }
-
-            var translatedLabel = TranslatePickTargetCommandBarToken(visibleLabel);
-            if (translatedLabel is not null)
-            {
-                translated = $"{markupWrappedHotkeyMatch.Groups["hotkey"].Value}-{ColorAwareTranslationComposer.TranslatePreservingColors(label, _ => translatedLabel)}";
                 return true;
             }
         }

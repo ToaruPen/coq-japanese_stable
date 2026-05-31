@@ -130,6 +130,94 @@ public sealed class PopupPickOptionTranslationPatchTests
     }
 
     [Test]
+    public void Prefix_TranslatesWaitStyleOptions_WhenPatched()
+    {
+        WriteQudMenuItemDictionary(
+            ("Wait 1 Turn", "QudMenuItem", "1ターン待機"),
+            ("Wait N Turns", "QudMenuItem", "Nターン待機"),
+            ("Wait 20 Turns", "QudMenuItem", "20ターン待機"),
+            ("Wait 100 Turns", "QudMenuItem", "100ターン待機"),
+            ("Wait Until Healed", "QudMenuItem", "完全回復まで待機"),
+            ("Wait Until Party Healed", "QudMenuItem", "パーティー全員の回復まで待機"),
+            ("Wait Until Morning", "QudMenuItem", "朝まで待機"));
+
+        using var patch = PatchPickOption();
+
+        DummyPopupGenericTarget.PickOption(
+            Title: "Select Wait Style",
+            Options: new[]
+            {
+                "Wait 1 Turn",
+                "Wait N Turns",
+                "Wait 20 Turns",
+                "Wait 100 Turns",
+                "Wait Until Healed",
+                "Wait Until Party Healed",
+                "Wait Until Morning",
+            },
+            Buttons: new[] { new DummyPopupMenuItem("{{W|[a]}} {{y|Wait 1 Turn}}") });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                DummyPopupGenericTarget.LastPickOptionOptions,
+                Is.EqualTo(new[]
+                {
+                    "1ターン待機",
+                    "Nターン待機",
+                    "20ターン待機",
+                    "100ターン待機",
+                    "完全回復まで待機",
+                    "パーティー全員の回復まで待機",
+                    "朝まで待機",
+                }));
+            Assert.That(DummyPopupGenericTarget.LastPickOptionButtons, Is.Not.Null);
+            Assert.That(DummyPopupGenericTarget.LastPickOptionButtons![0].text, Is.EqualTo("{{W|[a]}} {{y|1ターン待機}}"));
+        });
+    }
+
+    [Test]
+    public void Prefix_TranslatesRenamePopupTitleAndOptions_WhenPatched()
+    {
+        WriteDisplayNameDictionary(("chem cell", "ケムセル"));
+        WriteQudMenuItemDictionary(
+            ("Enter a name.", "QudMenuItem", "名前を入力する。"),
+            ("Name it based on its qualities.", "QudMenuItem", "特徴に基づいて名前を付ける。"),
+            ("Choose a random name from your own culture.", "QudMenuItem", "自分の文化からランダムな名前を選ぶ。"));
+
+        using var patch = PatchPickOption();
+
+        DummyPopupGenericTarget.PickOption(
+            Title: "Rename your {{c|chem cell}}.",
+            Options: new[]
+            {
+                "Enter a name.",
+                "Name it based on its qualities.",
+                "Choose a random name from your own culture.",
+                "Choose a random name from リヴィッド・クリーバーの culture.",
+            },
+            Buttons: new[] { new DummyPopupMenuItem("{{W|[d]}} {{y|Choose a random name from リヴィッド・クリーバーの culture.}}") });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(DummyPopupGenericTarget.LastPickOptionTitle, Is.EqualTo("{{c|ケムセル}}の名前を変更する。"));
+            Assert.That(
+                DummyPopupGenericTarget.LastPickOptionOptions,
+                Is.EqualTo(new[]
+                {
+                    "名前を入力する。",
+                    "特徴に基づいて名前を付ける。",
+                    "自分の文化からランダムな名前を選ぶ。",
+                    "リヴィッド・クリーバーの文化からランダムな名前を選ぶ。",
+                }));
+            Assert.That(DummyPopupGenericTarget.LastPickOptionButtons, Is.Not.Null);
+            Assert.That(
+                DummyPopupGenericTarget.LastPickOptionButtons![0].text,
+                Is.EqualTo("{{W|[d]}} {{y|リヴィッド・クリーバーの文化からランダムな名前を選ぶ。}}"));
+        });
+    }
+
+    [Test]
     public void Prefix_TranslatesPickOptionOptions()
     {
         WriteDictionary(("Continue", "続ける"), ("Cancel", "キャンセル"));
@@ -242,6 +330,24 @@ public sealed class PopupPickOptionTranslationPatchTests
             Assert.That(target.ControlId, Is.EqualTo("QudTextMenuItem:get"));
             Assert.That(target.item.Text, Is.EqualTo("{{W|{{W|[g]}} {{y|取る}}}}"));
         });
+    }
+
+    [Test]
+    public void SelectableTextMenuItemPostfix_ReappliesWhenVanillaRewritesSameState()
+    {
+        WriteCommonMenuActionDictionary(("get", "取る"));
+        var menuData = new DummySelectableMenuData(
+            text: "{{W|[g]}} {{y|get}}",
+            simpleText: "get",
+            command: "CmdGet",
+            hotkey: "g");
+        var target = new DummySelectableTextMenuItemTarget(menuData);
+
+        SelectableTextMenuItemTranslationPatch.Postfix(target, newState: false);
+        target.item.SetText("{{c|{{W|[g]}} {{y|get}}}}");
+        SelectableTextMenuItemTranslationPatch.Postfix(target, newState: false);
+
+        Assert.That(target.item.Text, Is.EqualTo("{{c|{{W|[g]}} {{y|取る}}}}"));
     }
 
     [Test]
@@ -480,6 +586,11 @@ public sealed class PopupPickOptionTranslationPatchTests
                 Is.EqualTo("{{W|[a]}} {{y|掃除する}}"));
             Assert.That(
                 SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[n]}} {{y|clea{{hotkey|n}} all your items [1 dram]}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[n]}} {{y|手持ちのアイテムをすべて洗う [1ドラム]}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
                     "{{W|[W]}} {{y|show internals}}",
                     "InventoryActionMenu:ABC123"),
                 Is.EqualTo("{{W|[W]}} {{y|内部構造を表示}}"));
@@ -535,12 +646,22 @@ public sealed class PopupPickOptionTranslationPatchTests
                 Is.EqualTo("{{W|[f]}} {{y|追従距離を変更}}"));
             Assert.That(
                 SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[f]}} {{y|direct to change {{hotkey|f}}ollow distance}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[f]}} {{y|追従距離を変更}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
                     "{{W|[s]}} {{y|direct to stay there}}",
                     "InventoryActionMenu:ABC123"),
                 Is.EqualTo("{{W|[s]}} {{y|その場で待機させる}}"));
             Assert.That(
                 SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
                     "{{W|[u]}} {{y|direct ability use}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[u]}} {{y|能力使用設定を変更}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[u]}} {{y|direct ability {{hotkey|u}}se}}",
                     "InventoryActionMenu:ABC123"),
                 Is.EqualTo("{{W|[u]}} {{y|能力使用設定を変更}}"));
             Assert.That(
@@ -773,6 +894,34 @@ public sealed class PopupPickOptionTranslationPatchTests
     }
 
     [Test]
+    public void SelectableTextMenuItemDisplayTranslation_UsesCampfireActionOwnerDictionaryForEmbeddedHotkeyRows()
+    {
+        WriteInventoryActionDictionary(
+            ("Whip up a meal.", "XRL.World.IInventoryActionsEvent", "手早く食事を作る。"),
+            ("Choose ingredients to cook with.", "XRL.World.IInventoryActionsEvent", "料理に使う材料を選ぶ。"),
+            ("Cook from a recipe.", "XRL.World.IInventoryActionsEvent", "レシピから料理する。"));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "Whip up a {{hotkey|m}}eal.",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("手早く食事を作る。"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[i]}} {{y|Choose {{hotkey|i}}ngredients to cook with.}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[i]}} {{y|料理に使う材料を選ぶ。}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[r]}} {{K|Cook f{{hotkey|r}}om a recipe.}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[r]}} {{K|レシピから料理する。}}"));
+        });
+    }
+
+    [Test]
     public void SelectableTextMenuItemDisplayTranslation_DoesNotFallbackToQudMenuItemDictionaryInsideInventoryActionMenu()
     {
         WriteCommonMenuActionDictionary(("get", "拾う"));
@@ -955,12 +1104,22 @@ public sealed class PopupPickOptionTranslationPatchTests
                 Is.EqualTo("{{W|[R]}} {{y|{{c|ケムセル}}を充電する}}"));
             Assert.That(
                 SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[r]}} {{y|{{hotkey|r}}echarge {{c|ケムセル}}}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[r]}} {{y|{{c|ケムセル}}を充電する}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
                     "{{W|[R]}} {{y|{{hotkey|R}}echarge {{c|chem cell}}}}",
                     "InventoryActionMenu:ABC123"),
                 Is.EqualTo("{{W|[R]}} {{y|{{c|ケムセル}}を充電する}}"));
             Assert.That(
                 SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
                     "    {{y|Recharge {{c|chem cell}}}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("    {{y|{{c|ケムセル}}を充電する}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "    {{y|recharge {{c|chem cell}}}}",
                     "InventoryActionMenu:ABC123"),
                 Is.EqualTo("    {{y|{{c|ケムセル}}を充電する}}"));
             Assert.That(
@@ -1048,6 +1207,34 @@ public sealed class PopupPickOptionTranslationPatchTests
                 "InventoryActionMenu:ABC123");
             Assert.That(empty, Is.EqualTo(string.Empty));
         });
+    }
+
+    [Test]
+    public void SelectableTextMenuItemDisplayTranslation_RecordsInventoryActionOwnerMiss_WhenLabelIsUnknown()
+    {
+        RuntimeDiagnostics.SetVerboseProbesEnabledForTests(true);
+        try
+        {
+            var source = "{{W|[z]}} {{y|unknown action}}";
+
+            var translated = SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                source,
+                "InventoryActionMenu:ABC123");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(translated, Is.EqualTo(source));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(SelectableTextMenuItemTranslationPatch),
+                        "Popup.ProducerMenuItem.InventoryActionOwnerMiss"),
+                    Is.EqualTo(1));
+            });
+        }
+        finally
+        {
+            RuntimeDiagnostics.SetVerboseProbesEnabledForTests(null);
+        }
     }
 
     [Test]
@@ -1233,7 +1420,7 @@ public sealed class PopupPickOptionTranslationPatchTests
             Assert.That(
                 DynamicTextObservability.GetRouteFamilyHitCountForTests(
                     nameof(PopupPickOptionTranslationPatch),
-                    "Popup.ProducerText.EmbeddedHotkeyLabel"),
+                    "Popup.ProducerMenuItem.EmbeddedHotkeyLabel"),
                 Is.GreaterThan(0));
             Assert.That(
                 DynamicTextObservability.GetRouteFamilyHitCountForTests(

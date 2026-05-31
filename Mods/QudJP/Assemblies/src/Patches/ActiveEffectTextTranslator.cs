@@ -54,7 +54,7 @@ internal static class ActiveEffectTextTranslator
         RegexOptions.CultureInvariant);
 
     private static readonly Regex MoveSpeedPattern = new(
-        @"^(?<shift>[+-]\d+) move speed\.$",
+        @"^(?<shift>[+-]\d+) [Mm]ove [Ss]peed\.?$",
         RegexOptions.CultureInvariant);
 
     private static readonly Regex StatShiftLinePattern = new(

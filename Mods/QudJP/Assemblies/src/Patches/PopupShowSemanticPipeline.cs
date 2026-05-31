@@ -58,6 +58,7 @@ internal static class PopupShowSemanticPipeline
         ShortBladesShankTranslationPatch.TryTranslatePopupMessage,
         FirefightingTranslationPatch.TryTranslatePopupMessage,
         TinkerItemTranslationPatch.TryTranslatePopupMessage,
+        TinkeringMinePopupTranslationPatch.TryTranslatePopupMessage,
         KeyMappingUiTranslationPatch.TryTranslatePopupMessage,
         PsychicGlimmerTranslationPatch.TryTranslatePopupMessage,
         BodyTranslationPatch.TryTranslatePopupMessage,

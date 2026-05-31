@@ -214,7 +214,7 @@ public static class PopupShowTranslationPatch
                 pendingDirectMarkerWrapperDepth--;
             }
 
-            PopupTranslatedMessageHandoff.ExitCurrentScope(retainPendingEntries: true);
+            PopupTranslatedMessageHandoff.ExitCurrentScope();
         }
         catch (Exception ex)
         {

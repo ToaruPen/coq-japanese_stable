@@ -156,6 +156,32 @@ internal static class LiquidVolumeFragmentTranslator
                 match.Groups["amount"].Value,
                 "ドラム集められる。本当にそうしますか？")),
         new(
+            "WherePour",
+            new Regex(
+                "^Where do you want to pour (?<target>.+?)\\?$",
+                RegexOptions.CultureInvariant | RegexOptions.Compiled),
+            static (match, spans) => string.Concat(
+                StripPossessivePrefixPreservingColors(RestoreVisible(match.Groups["target"], spans)),
+                "をどこに注ぎますか？")),
+        new(
+            "PourIntoAnotherContainerOption",
+            new Regex(
+                "^Pour it into another container\\.$",
+                RegexOptions.CultureInvariant | RegexOptions.Compiled),
+            static (_, _) => "別の容器に注ぐ。"),
+        new(
+            "PourNearbyOption",
+            new Regex(
+                "^Pour it nearby\\.$",
+                RegexOptions.CultureInvariant | RegexOptions.Compiled),
+            static (_, _) => "近くに注ぐ。"),
+        new(
+            "PourOnSelfOption",
+            new Regex(
+                "^Pour it on yourself\\.$",
+                RegexOptions.CultureInvariant | RegexOptions.Compiled),
+            static (_, _) => "自分に注ぐ。"),
+        new(
             "NoAvailableCollectionContainer",
             new Regex(
                 "^You have nowhere available to collect that\\.$",
@@ -193,6 +219,12 @@ internal static class LiquidVolumeFragmentTranslator
                 "^You collect (?<amount>\\d+) drams? of (?<liquid>.+?)(?:(?: from (?<fromOpenDirection>" + OpenDirectionPattern + "))|(?: (?<openDirection>" + OpenDirectionPattern + "))|(?: from (?<source>.+?) (?<sourceDirection>" + OpenDirectionPattern + ")))?(?: in (?<storage>.+?))?\\.$",
                 RegexOptions.CultureInvariant | RegexOptions.Compiled),
             BuildCollectMessage),
+        new(
+            "CleanItemsMessage",
+            new Regex(
+                "^You clean (?<types>.+?) from (?<items>.+?) with a dram of (?<liquid>.+?)(?: from (?<source>.+?)(?: (?<sourceDirection>" + OpenDirectionPattern + "))?)?\\.$",
+                RegexOptions.CultureInvariant | RegexOptions.Compiled),
+            BuildCleanItemsMessage),
         new(
             "PourOutSelf",
             new Regex(
@@ -303,6 +335,135 @@ internal static class LiquidVolumeFragmentTranslator
             storageSuffix,
             "。");
     }
+
+    private static string BuildCleanItemsMessage(Match match, IReadOnlyList<ColorSpan> spans)
+    {
+        var sourceSuffix = BuildCleanItemsSourceSuffix(match, spans);
+        return string.Concat(
+            TranslateCleaningItems(match.Groups["items"], spans),
+            "から",
+            TranslateCleaningTypes(match.Groups["types"].Value),
+            "を",
+            TranslateLiquid(match.Groups["liquid"], spans),
+            "1ドラムで洗い落とした",
+            sourceSuffix,
+            "。");
+    }
+
+    private static string BuildCleanItemsSourceSuffix(Match match, IReadOnlyList<ColorSpan> spans)
+    {
+        if (!match.Groups["source"].Success)
+        {
+            return string.Empty;
+        }
+
+        var source = match.Groups["source"].Value.Trim();
+        var translatedSource = TryTranslateDirection(source, out var sourceAsDirection)
+            ? sourceAsDirection
+            : TranslateTarget(match.Groups["source"], spans);
+        if (match.Groups["sourceDirection"].Success
+            && TryTranslateDirection(match.Groups["sourceDirection"].Value, out var sourceDirection))
+        {
+            return string.Concat("（", translatedSource, "（", sourceDirection, "）から）");
+        }
+
+        return string.Concat("（", translatedSource, "から）");
+    }
+
+    private static string TranslateCleaningItems(Group itemsGroup, IReadOnlyList<ColorSpan> spans)
+    {
+        var items = StripPossessivePrefixPreservingColors(RestoreVisible(itemsGroup, spans));
+        return TranslateEnglishAndListConjunctions(StripRepeatedPossessivePrefixes(items));
+    }
+
+    private static string TranslateCleaningTypes(string source)
+    {
+        var normalized = StringHelpers.StripLeadingEnglishArticle(
+            source.Trim(),
+            includeCapitalizedDefiniteArticle: true);
+        if (string.Equals(normalized, "mess", StringComparison.OrdinalIgnoreCase))
+        {
+            return "汚れ";
+        }
+
+        var parts = Regex.Split(normalized, "\\s*,\\s*|\\s+and\\s+");
+        var builder = new StringBuilder();
+        for (var index = 0; index < parts.Length; index++)
+        {
+            var part = parts[index].Trim();
+            if (part.Length == 0)
+            {
+                continue;
+            }
+
+            if (builder.Length > 0)
+            {
+                builder.Append('と');
+            }
+
+            builder.Append(TranslateCleaningType(part));
+        }
+
+        return builder.Length == 0 ? normalized : builder.ToString();
+    }
+
+    private static string TranslateCleaningType(string source)
+    {
+        var liquid = TranslateLiquidPhrase(source);
+        if (liquid is not null)
+        {
+            return liquid;
+        }
+
+        if (string.Equals(source, "rust", StringComparison.OrdinalIgnoreCase))
+        {
+            return "錆";
+        }
+
+        if (string.Equals(source, "slime", StringComparison.OrdinalIgnoreCase))
+        {
+            return "粘液";
+        }
+
+        if (string.Equals(source, "stain", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(source, "stains", StringComparison.OrdinalIgnoreCase))
+        {
+            return "染み";
+        }
+
+        if (string.Equals(source, "dust", StringComparison.OrdinalIgnoreCase))
+        {
+            return "埃";
+        }
+
+        if (string.Equals(source, "dirt", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(source, "mud", StringComparison.OrdinalIgnoreCase))
+        {
+            return "泥";
+        }
+
+        return string.Equals(source, "soot", StringComparison.OrdinalIgnoreCase)
+            ? "煤"
+            : source;
+    }
+
+    private static string TranslateEnglishAndListConjunctions(string source)
+    {
+        return source
+            .Replace(", and ", "と")
+            .Replace(" and ", "と")
+            .Replace(", ", "、");
+    }
+
+    private static string StripRepeatedPossessivePrefixes(string source)
+    {
+        var result = Regex.Replace(source, ", your ", ", ", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        result = Regex.Replace(result, " and your ", " and ", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        result = Regex.Replace(result, "、your ", "、", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        result = Regex.Replace(result, "、とyour ", "、と", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        return Regex.Replace(result, "とyour ", "と", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+    }
+
 
     private static string BuildCollectLocationPrefix(Match match, IReadOnlyList<ColorSpan> spans)
     {

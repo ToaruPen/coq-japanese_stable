@@ -110,6 +110,12 @@ public sealed class WorldPartsFragmentTranslatorTests
     [TestCase("You collect 3 drams of brackish bloody slime from here.", "ここから塩分混じりの血混じりの粘液を3ドラム集めた。")]
     [TestCase("You collect 4 drams of dilute warm static.", "薄めのウォームスタティックを4ドラム集めた。")]
     [TestCase("2 drams of {{C|water}} pours out all over snapjaw!", "{{C|水}} 2ドラムがsnapjawの全身にかかった！")]
+    [TestCase(
+        "You clean the stains from {{C|high-tech toolkit}} with a dram of {{B|fresh water}} from カムシュルウールの 水筒.",
+        "{{C|high-tech toolkit}}から染みを{{B|真水}}1ドラムで洗い落とした（カムシュルウールの 水筒から）。")]
+    [TestCase(
+        "You clean the slime from your {{Y|boots}} with a dram of {{C|water}} from the canteen to the north.",
+        "{{Y|boots}}から粘液を{{C|水}}1ドラムで洗い落とした（canteen（北側）から）。")]
     public void LiquidVolumeTranslator_TranslatesInventoriedOwnerQueuedFragments(string input, string expected)
     {
         AssertTranslated(

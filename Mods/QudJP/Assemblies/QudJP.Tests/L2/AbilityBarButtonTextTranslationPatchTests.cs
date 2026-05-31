@@ -63,6 +63,7 @@ public sealed class AbilityBarButtonTextTranslationPatchTests
             ("Mark", "マーク"),
             ("Activate", "起動"),
             ("Recoil", "帰還"),
+            ("Fly", "飛行"),
             ("Joppa", "ジョッパ"),
             ("[disabled]", "[無効]"),
             ("on", "オン"),
@@ -97,6 +98,7 @@ public sealed class AbilityBarButtonTextTranslationPatchTests
             var recoil = new DummyAbilityBarButton("Recoil");
             var recoilToJoppa = new DummyAbilityBarButton("Recoil to Joppa");
             var coloredRecoilToJoppa = new DummyAbilityBarButton("&CRecoil to Joppa {{K|[disabled]}}");
+            var flyWithSource = new DummyAbilityBarButton("Fly (ジャイロコプターバックパック) [オフ]");
             var corrosiveGas = new DummyAbilityBarButton("&CRelease Corrosive Gas {{K|[{{g|on}}]}}");
             var englishFallback = new DummyAbilityBarButton("UnregisteredText");
             var empty = new DummyAbilityBarButton(string.Empty);
@@ -120,6 +122,7 @@ public sealed class AbilityBarButtonTextTranslationPatchTests
             target.AbilityButtons.Add(recoil);
             target.AbilityButtons.Add(recoilToJoppa);
             target.AbilityButtons.Add(coloredRecoilToJoppa);
+            target.AbilityButtons.Add(flyWithSource);
             target.AbilityButtons.Add(corrosiveGas);
             target.AbilityButtons.Add(englishFallback);
             target.AbilityButtons.Add(empty);
@@ -148,6 +151,7 @@ public sealed class AbilityBarButtonTextTranslationPatchTests
                 Assert.That(recoil.Text.text, Is.EqualTo("帰還"));
                 Assert.That(recoilToJoppa.Text.text, Is.EqualTo("ジョッパへ帰還"));
                 Assert.That(coloredRecoilToJoppa.Text.text, Is.EqualTo("&Cジョッパへ帰還 {{K|[無効]}}"));
+                Assert.That(flyWithSource.Text.text, Is.EqualTo("飛行(ジャイロコプターバックパック) [オフ]"));
                 Assert.That(corrosiveGas.Text.text, Is.EqualTo("&C腐食性ガス放出 {{K|[{{g|オン}}]}}"));
                 Assert.That(englishFallback.Text.text, Is.EqualTo("UnregisteredText"));
                 Assert.That(empty.Text.text, Is.EqualTo(string.Empty));
@@ -156,7 +160,7 @@ public sealed class AbilityBarButtonTextTranslationPatchTests
                     DynamicTextObservability.GetRouteFamilyHitCountForTests(
                         nameof(AbilityBarButtonTextTranslationPatch),
                         "AbilityBar.ButtonText"),
-                    Is.EqualTo(20));
+                    Is.EqualTo(21));
                 Assert.That(
                     SinkObservation.GetHitCountForTests(
                         nameof(UITextSkinTranslationPatch),

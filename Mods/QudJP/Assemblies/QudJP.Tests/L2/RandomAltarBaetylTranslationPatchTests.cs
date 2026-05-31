@@ -11,11 +11,19 @@ namespace QudJP.Tests.L2;
 [NonParallelizable]
 public sealed class RandomAltarBaetylTranslationPatchTests
 {
+    private string tempDirectory = null!;
+
     [SetUp]
     public void SetUp()
     {
+        tempDirectory = Path.Combine(Path.GetTempPath(), "qudjp-baetyl-l2", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(tempDirectory);
+        File.WriteAllText(Path.Combine(tempDirectory, "empty.ja.json"), "{\"entries\":[]}");
+        Translator.ResetForTests();
+        Translator.SetDictionaryDirectoryForTests(tempDirectory);
         DynamicTextObservability.ResetForTests();
         MessageFrameTranslator.ResetForTests();
+        PopupTranslatedMessageHandoff.ResetForTests();
         DummyPopupShow.Reset();
     }
 
@@ -23,16 +31,25 @@ public sealed class RandomAltarBaetylTranslationPatchTests
     public void TearDown()
     {
         DummyPopupShow.Reset();
+        PopupTranslatedMessageHandoff.ResetForTests();
         MessageFrameTranslator.ResetForTests();
         DynamicTextObservability.ResetForTests();
+        Translator.ResetForTests();
+        if (Directory.Exists(tempDirectory))
+        {
+            Directory.Delete(tempDirectory, recursive: true);
+        }
     }
 
-    [TestCase(
-        "I ACCEPT YOUR OFFERING!\n\nThe sparking baetyl gives you {{Y|a carbide dagger}}!",
-        "捧げ物を受け取った！\n\nsparking baetylは{{Y|a carbide dagger}}を授けた！")]
-    public void Patch_TranslatesRewardPopup_WhenOwnerPatched(string source, string expected)
+    [Test]
+    public void Patch_TranslatesRewardPopup_WhenOwnerPatched()
     {
-        AssertOwnerPopup(source, expected, expectedHits: 1);
+        WriteDictionaryFile("ui-displayname-atomic.ja.json", ("carbide dagger", "カーバイドの短剣"));
+
+        AssertOwnerPopup(
+            "I ACCEPT YOUR OFFERING!\n\nThe sparking baetyl gives you {{Y|a carbide dagger}}!",
+            "捧げ物を受け取った！\n\n火花を散らすベテルは{{Y|カーバイドの短剣}}を授けた！",
+            expectedHits: 1);
     }
 
     [Test]
@@ -50,24 +67,123 @@ public sealed class RandomAltarBaetylTranslationPatchTests
     }
 
     [Test]
-    public void Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched()
+    public void Patch_TranslatesDemandPopup_WhenOwnerPatched()
     {
-        const string source = "I ACCEPT YOUR OFFERING!\n\nThe sparking baetyl gives you a carbide dagger!";
+        WriteDictionaryFile(
+            "ui-displayname-atomic.ja.json",
+            ("gravity grenade MK II", "重力グレネード MK II"),
+            ("mighty weapon", "強大なる武器"));
 
-        AssertOwnerPopup(MessageFrameTranslator.MarkDirectTranslation(source), source, expectedHits: 0);
+        const string source = "PETTY MORTAL! BRING ME 5 gravity grenades MK II, AND I SHALL REWARD YOU WITH a mighty weapon.";
+        const string expected = "矮小なる凡人よ！重力グレネード MK II x5を持ってこい。そうすれば強大なる武器を授けよう。";
+
+        AssertOwnerPopup(source, expected, expectedHits: 1);
     }
 
-    [TestCase("")]
-    [TestCase("I AM SATED, MORTAL. BEGONE.")]
-    [TestCase("PETTY MORTAL! BRING ME {{Y|a copper nugget}}, AND I SHALL REWARD YOU WITH a carbide dagger.")]
-    [TestCase("PETTY MORTAL! BRING ME {{Y|a copper nugget}}, AND I SHALL REWARD YOU WITH a carbide dagger.\n\nOffer the sparking baetyl the {{Y|copper nugget}} nearby?")]
-    public void Patch_DoesNotClaimFixedRuntimeOrEmptyPopup_WhenOwnerPatched(string source)
+    [Test]
+    public void Patch_TranslatesDynamicQuantityDemandPopup_WhenOwnerPatched()
     {
-        AssertOwnerPopup(source, source, expectedHits: 0);
+        WriteDictionaryFile(
+            "ui-displayname-atomic.ja.json",
+            ("gravity grenade MK II", "重力グレネード MK II"),
+            ("mighty weapon", "強大なる武器"));
+
+        const string source = "PETTY MORTAL! BRING ME 7 gravity grenades MK II, AND I SHALL REWARD YOU WITH a mighty weapon.";
+        const string expected = "矮小なる凡人よ！重力グレネード MK II x7を持ってこい。そうすれば強大なる武器を授けよう。";
+
+        AssertOwnerPopup(source, expected, expectedHits: 1);
     }
 
-    private static void AssertOwnerPopup(string source, string expected, int expectedHits)
+    [Test]
+    public void Patch_TranslatesDemandOfferConfirmation_WhenOwnerPatched()
     {
+        WriteDictionaryFile(
+            "ui-displayname-atomic.ja.json",
+            ("gravity grenade MK II", "重力グレネード MK II"),
+            ("mighty weapon", "強大なる武器"),
+            ("gravity grenade MK II x8", "重力グレネード MK II x8"));
+
+        const string source =
+            "PETTY MORTAL! BRING ME 5 gravity grenades MK II, AND I SHALL REWARD YOU WITH a mighty weapon.\n\nOffer the sparking baetyl 5 out of {{Y|gravity grenade MK II x8}} nearby?";
+        const string expected =
+            "矮小なる凡人よ！重力グレネード MK II x5を持ってこい。そうすれば強大なる武器を授けよう。\n\n近くの{{Y|重力グレネード MK II x8}}のうち5個を火花を散らすベテルに捧げますか？";
+
+        AssertOwnerPopup(
+            source,
+            expected,
+            expectedHits: 1,
+            popupMethod: nameof(DummyPopupShow.ShowYesNo));
+    }
+
+    [Test]
+    public void Patch_TranslatesMixedNearbyAndInventoryOfferConfirmation_WhenOwnerPatched()
+    {
+        WriteDictionaryFile(
+            "ui-displayname-atomic.ja.json",
+            ("gravity grenade MK II", "重力グレネード MK II"),
+            ("mighty weapon", "強大なる武器"),
+            ("gravity grenade MK II x8", "重力グレネード MK II x8"),
+            ("chem cell", "ケムセル"));
+
+        const string source =
+            "PETTY MORTAL! BRING ME 5 gravity grenades MK II, AND I SHALL REWARD YOU WITH a mighty weapon.\n\nOffer the sparking baetyl 2 out of the {{Y|gravity grenade MK II x8}} nearby and your {{C|chem cell}}?";
+        const string expected =
+            "矮小なる凡人よ！重力グレネード MK II x5を持ってこい。そうすれば強大なる武器を授けよう。\n\n近くの{{Y|重力グレネード MK II x8}}と{{C|ケムセル}}のうち2個を火花を散らすベテルに捧げますか？";
+
+        AssertOwnerPopup(
+            source,
+            expected,
+            expectedHits: 1,
+            popupMethod: nameof(DummyPopupShow.ShowYesNo));
+    }
+
+    [Test]
+    public void Patch_TranslatesColoredInventoryOffering_WithVisibleYourPrefixAndPluralFallback()
+    {
+        WriteDictionaryFile(
+            "ui-displayname-atomic.ja.json",
+            ("chem cell", "ケムセル"),
+            ("mighty weapon", "強大なる武器"));
+
+        const string source =
+            "PETTY MORTAL! BRING ME 5 chem cells, AND I SHALL REWARD YOU WITH a mighty weapon.\n\nOffer the sparking baetyl {{C|your chem cells}}?";
+        const string expected =
+            "矮小なる凡人よ！ケムセル x5を持ってこい。そうすれば強大なる武器を授けよう。\n\n{{C|ケムセル}}を火花を散らすベテルに捧げますか？";
+
+        AssertOwnerPopup(
+            source,
+            expected,
+            expectedHits: 1,
+            popupMethod: nameof(DummyPopupShow.ShowYesNo));
+    }
+
+    [Test]
+    public void Patch_TranslatesMixedOffering_WithPluralFallbackAndVisibleYourPrefix()
+    {
+        WriteDictionaryFile(
+            "ui-displayname-atomic.ja.json",
+            ("gravity grenade MK II", "重力グレネード MK II"),
+            ("gravity grenade MK II x8", "重力グレネード MK II x8"),
+            ("chem cell", "ケムセル"),
+            ("mighty weapon", "強大なる武器"));
+
+        const string source =
+            "PETTY MORTAL! BRING ME 5 gravity grenades MK II, AND I SHALL REWARD YOU WITH a mighty weapon.\n\nOffer the sparking baetyl 2 out of the {{Y|gravity grenades MK II x8}} nearby and {{C|your chem cells}}?";
+        const string expected =
+            "矮小なる凡人よ！重力グレネード MK II x5を持ってこい。そうすれば強大なる武器を授けよう。\n\n近くの{{Y|重力グレネード MK II x8}}と{{C|ケムセル}}のうち2個を火花を散らすベテルに捧げますか？";
+
+        AssertOwnerPopup(
+            source,
+            expected,
+            expectedHits: 1,
+            popupMethod: nameof(DummyPopupShow.ShowYesNo));
+    }
+
+    [Test]
+    public void Patch_DoesNotHandoffDemandPopupTranslationToMessageLog()
+    {
+        const string source = "PETTY MORTAL! BRING ME 5 重力グレネード MK II, AND I SHALL REWARD YOU WITH 強大なる武器.";
+
         OwnerPopupRouteTestHarness.WithPatchedPopupOwner(
             typeof(RandomAltarBaetylTranslationPatch),
             RequireOwnerMethod(),
@@ -78,9 +194,48 @@ public sealed class RandomAltarBaetylTranslationPatchTests
                     PopupMessageToShow = source,
                 }.BaetylWantsSacrifice();
 
+                var message = source;
+                _ = MessageLogPatch.Prefix(ref message, "&W", Capitalize: false);
+
+                Assert.That(message, Is.EqualTo(source));
+            });
+    }
+
+    [Test]
+    public void Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched()
+    {
+        const string source = "I ACCEPT YOUR OFFERING!\n\nThe sparking baetyl gives you a carbide dagger!";
+
+        AssertOwnerPopup(MessageFrameTranslator.MarkDirectTranslation(source), source, expectedHits: 0);
+    }
+
+    [TestCase("")]
+    [TestCase("I AM SATED, MORTAL. BEGONE.")]
+    public void Patch_DoesNotClaimFixedRuntimeOrEmptyPopup_WhenOwnerPatched(string source)
+    {
+        AssertOwnerPopup(source, source, expectedHits: 0);
+    }
+
+    private static void AssertOwnerPopup(
+        string source,
+        string expected,
+        int expectedHits,
+        string popupMethod = nameof(DummyPopupShow.Show))
+    {
+        OwnerPopupRouteTestHarness.WithPatchedPopupOwner(
+            typeof(RandomAltarBaetylTranslationPatch),
+            RequireOwnerMethod(),
+            () =>
+            {
+                new DummyRandomAltarBaetylProducer
+                {
+                    PopupMessageToShow = source,
+                    PopupMethod = popupMethod,
+                }.BaetylWantsSacrifice();
+
                 Assert.Multiple(() =>
                 {
-                    Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(expected));
+                    Assert.That(LastPopupMessage(popupMethod), Is.EqualTo(expected));
                     Assert.That(HitCount(), Is.EqualTo(expectedHits));
                 });
             });
@@ -100,17 +255,57 @@ public sealed class RandomAltarBaetylTranslationPatchTests
     private static int HitCount()
     {
         return OwnerPopupRouteTestHarness.RouteHitCount(
-            typeof(RandomAltarBaetylTranslationPatch),
-            "RandomAltarBaetylRewardPopup");
+                   typeof(RandomAltarBaetylTranslationPatch),
+                   "RandomAltarBaetylRewardPopup")
+               + OwnerPopupRouteTestHarness.RouteHitCount(
+                   typeof(RandomAltarBaetylTranslationPatch),
+                   "RandomAltarBaetylDemandPopup");
+    }
+
+    private static string? LastPopupMessage(string popupMethod)
+    {
+        return popupMethod switch
+        {
+            nameof(DummyPopupShow.ShowYesNo) => DummyPopupShow.LastShowYesNoMessage,
+            _ => DummyPopupShow.LastShowMessage,
+        };
+    }
+
+    private void WriteDictionaryFile(string fileName, params (string key, string text)[] entries)
+    {
+        var contents = "{\"entries\":["
+            + string.Join(
+                ",",
+                entries.Select(entry => $"{{\"key\":\"{EscapeJson(entry.key)}\",\"text\":\"{EscapeJson(entry.text)}\"}}"))
+            + "]}";
+        File.WriteAllText(Path.Combine(tempDirectory, fileName), contents);
+        Translator.ResetForTests();
+        Translator.SetDictionaryDirectoryForTests(tempDirectory);
+    }
+
+    private static string EscapeJson(string value)
+    {
+        return value
+            .Replace("\\", "\\\\")
+            .Replace("\"", "\\\"")
+            .Replace("\r", "\\r")
+            .Replace("\n", "\\n");
     }
 
     private sealed class DummyRandomAltarBaetylProducer
     {
         public string PopupMessageToShow { get; set; } = string.Empty;
+        public string PopupMethod { get; set; } = nameof(DummyPopupShow.Show);
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         public void BaetylWantsSacrifice()
         {
+            if (string.Equals(PopupMethod, nameof(DummyPopupShow.ShowYesNo), StringComparison.Ordinal))
+            {
+                _ = DummyPopupShow.ShowYesNo(PopupMessageToShow);
+                return;
+            }
+
             DummyPopupShow.Show(PopupMessageToShow);
         }
     }

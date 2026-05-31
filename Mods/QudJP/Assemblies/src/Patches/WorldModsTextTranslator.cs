@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text.RegularExpressions;
+using QudJP.Patches;
 
 namespace QudJP;
 
@@ -13,6 +14,102 @@ internal static class WorldModsTextTranslator
     private const string MasterworkDescriptionContext = "XRL.World.Parts.ModMasterwork.GetShortDescription";
     private const string BeamsplitterDescriptionContext = "XRL.World.Parts.ModBeamsplitter.GetShortDescription";
     private const string JewelEncrustedDescriptionContext = "XRL.World.Parts.ModJewelEncrusted.GetShortDescription";
+    private const string HeartstopperDescriptionContext = "XRL.World.Parts.ModHeartstopper.GetShortDescription";
+    private const string LiquidCooledDescriptionContext = "XRL.World.Parts.ModLiquidCooled.GetShortDescription";
+    private const string MicroserratedDescriptionContext = "XRL.World.Parts.ModMicroserrated.GetShortDescription";
+    private const string NanonDescriptionContext = "XRL.World.Parts.ModNanon.GetShortDescription";
+    private const string SerratedDescriptionContext = "XRL.World.Parts.ModSerrated.GetShortDescription";
+    private const string SmartDescriptionContext = "XRL.World.Parts.ModSmart.GetShortDescription";
+    private const string TransmuteOnHitDescriptionContext = "XRL.World.Parts.ModTransmuteOnHit.GetShortDescription";
+
+    private static readonly Dictionary<string, string> ExactDescriptionContexts = new(StringComparer.Ordinal)
+    {
+        ["Projectiles fired with this weapon receive bonus penetration based on the wielder's Strength."] = "XRL.World.Parts.MissileWeapon.GetShortDescription",
+        ["{{rules|Shields only grant their AV when you successfully block an attack.}}"] = "XRL.World.Parts.Shield.GetShortDescription",
+        ["\n{{rules|Shields only grant their AV when you successfully block an attack.}}"] = "XRL.World.Parts.Shield.GetShortDescription",
+        ["Shields only grant their AV when you successfully block an attack."] = MeleeWeaponShortDescriptionContext,
+        ["When powered, discharges a clockwork beetle friend on hit. Drains cell power quickly."] = "XRL.World.Parts.ModBeetlehost.GetShortDescription",
+        ["You are suddenly elsewhere!"] = "XRL.World.Parts.ModDisplacer.GetShortDescription",
+        ["Your blood frenzies last twice as long."] = "XRL.World.Parts.ModImprovedBerserk.GetShortDescription",
+        ["Your chance to block with shields is increased by 25%."] = "XRL.World.Parts.ModImprovedBlock.GetShortDescription",
+        ["Your chance to Bludgeon is doubled."] = "XRL.World.Parts.ModImprovedBludgeon.GetShortDescription",
+        ["Your Hobble cooldown is reduced by 5 rounds."] = "XRL.World.Parts.ModImprovedHobble.GetShortDescription",
+    };
+
+    private static readonly Dictionary<string, string> PrefixDescriptionContexts = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ["Airfoil"] = "XRL.World.Parts.ModAirfoil.GetShortDescription",
+        ["Biomech"] = "XRL.World.Parts.ModBiomech.GetShortDescription",
+        ["Camo"] = "XRL.World.Parts.ModCamo.GetShortDescription",
+        ["Cybrid"] = "XRL.World.Parts.ModCybrid.GetShortDescription",
+        ["Defib"] = "XRL.World.Parts.ModDefib.GetShortDescription",
+        ["Desecrated"] = "XRL.World.Parts.ModDesecrated.GetShortDescription",
+        ["Disguise"] = "XRL.World.Parts.ModDisguise.GetDescription",
+        ["Drum-loaded"] = "XRL.World.Parts.ModDrumLoaded.GetShortDescription",
+        ["Electromagnetic shielding"] = "XRL.World.Parts.ModHardened.GetShortDescription",
+        ["Extradimensional"] = "XRL.World.Parts.ModExtradimensional.GetShortDescription",
+        ["Fitted with filters"] = "XRL.World.Parts.ModFilters.GetShortDescription",
+        ["Fitted with suspensors"] = "XRL.World.Parts.ModSuspensor.GetShortDescription",
+        ["Flare-compensating"] = "XRL.World.Parts.ModFlareCompensating.GetShortDescription",
+        ["Flexiweaved"] = "XRL.World.Parts.ModFlexiweaved.GetShortDescription",
+        ["Gearbox"] = "XRL.World.Parts.ModGearbox.GetShortDescription",
+        ["Gesticulating"] = "XRL.World.Parts.ModGesticulating.GetShortDescription",
+        ["Gigantic"] = "XRL.World.Parts.ModGigantic.GetShortDescription",
+        ["HUD"] = "XRL.World.Parts.ModHUD.GetShortDescription",
+        ["Heartstopper"] = HeartstopperDescriptionContext,
+        ["High-capacity"] = "XRL.World.Parts.ModHighCapacity.GetShortDescription",
+        ["Homing"] = "XRL.World.Parts.ModHeatSeeking.GetShortDescription",
+        ["Hypervelocity"] = "XRL.World.Parts.ModHypervelocity.GetShortDescription",
+        ["Illuminated"] = "XRL.World.Parts.ModIlluminated.GetShortDescription",
+        ["Induction"] = "XRL.World.Parts.ModInduction.GetShortDescription",
+        ["Jacked"] = "XRL.World.Parts.ModJacked.GetShortDescription",
+        ["Keen"] = "XRL.World.Parts.ModKeen.GetShortDescription",
+        ["Lacquered"] = "XRL.World.Parts.ModLacquered.GetShortDescription",
+        ["Lanterned"] = "XRL.World.Parts.ModLanterned.GetShortDescription",
+        ["Magnetized"] = "XRL.World.Parts.ModMagnetized.GetShortDescription",
+        ["Massively overloaded"] = "XRL.World.Parts.ModMassivelyOverloaded.GetShortDescription",
+        ["Mercurial"] = "XRL.World.Parts.ModMercurial.GetShortDescription",
+        ["Metallized"] = "XRL.World.Parts.ModMetallized.GetShortDescription",
+        ["Metered"] = "XRL.World.Parts.ModMetered.GetShortDescription",
+        ["Microserrated"] = MicroserratedDescriptionContext,
+        ["Mighty"] = "XRL.World.Parts.ModMighty.GetShortDescription",
+        ["Morphogenetic"] = "XRL.World.Parts.ModMorphogenetic.GetShortDescription",
+        ["Nanochelated"] = "XRL.World.Parts.ModNanochelated.GetShortDescription",
+        ["Nanon"] = NanonDescriptionContext,
+        ["Nav"] = "XRL.World.Parts.ModNav.GetShortDescription",
+        ["Nulling"] = "XRL.World.Parts.ModNulling.GetShortDescription",
+        ["Overbuilt"] = "XRL.World.Parts.ModOverbuilt.GetShortDescription",
+        ["Overloaded"] = "XRL.World.Parts.ModOverloaded.GetShortDescription",
+        ["Phase-Harmonic"] = "XRL.World.Parts.ModPhaseHarmonic.GetShortDescription",
+        ["Phase-conjugate"] = "XRL.World.Parts.ModPhaseConjugate.GetShortDescription",
+        ["Piping"] = "XRL.World.Parts.ModPiping.GetShortDescription",
+        ["Polarized"] = "XRL.World.Parts.ModPolarized.GetShortDescription",
+        ["Psionic"] = "XRL.World.Parts.ModPsionic.GetShortDescription",
+        ["Quantum reverb"] = "XRL.World.Parts.ModQuantumReverb.GetShortDescription",
+        ["Radio-powered"] = "XRL.World.Parts.ModRadioPowered.GetShortDescription",
+        ["Reinforced"] = "XRL.World.Parts.ModReinforced.GetShortDescription",
+        ["Scaled"] = "XRL.World.Parts.ModScaled.GetShortDescription",
+        ["Scoped"] = "XRL.World.Parts.ModScoped.GetShortDescription",
+        ["Serene visage"] = "XRL.World.Parts.ModSereneVisage.GetShortDescription",
+        ["Serrated"] = SerratedDescriptionContext,
+        ["Sharp"] = "XRL.World.Parts.ModSharp.GetShortDescription",
+        ["Sirocco"] = "XRL.World.Parts.ModSirocco.GetShortDescription",
+        ["Six-Fingered"] = "XRL.World.Parts.ModSixFingered.GetShortDescription",
+        ["Slender"] = "XRL.World.Parts.ModSlender.GetShortDescription",
+        ["Smart"] = SmartDescriptionContext,
+        ["Snail-Encrusted"] = "XRL.World.Parts.ModSnailEncrusted.GetShortDescription",
+        ["Spiked"] = "XRL.World.Parts.ModSpiked.GetShortDescription",
+        ["Spring-loaded"] = "XRL.World.Parts.ModSpringLoaded.GetShortDescription",
+        ["Sturdy"] = "XRL.World.Parts.ModSturdy.GetShortDescription",
+        ["Terrifying visage"] = "XRL.World.Parts.ModTerrifyingVisage.GetShortDescription",
+        ["Two-faced"] = "XRL.World.Parts.ModTwoFaced.GetShortDescription",
+        ["Urban camo"] = "XRL.World.Parts.ModUrbanCamo.GetShortDescription",
+        ["Visored"] = "XRL.World.Parts.ModVisored.GetShortDescription",
+        ["Weightless"] = "XRL.World.Parts.ModWeightless.GetShortDescription",
+        ["Willowy"] = "XRL.World.Parts.ModWillowy.GetShortDescription",
+        ["Wired"] = "XRL.World.Parts.ModWired.GetShortDescription",
+        ["Wooly"] = "XRL.World.Parts.ModWooly.GetShortDescription",
+    };
 
     private static readonly Regex JapaneseCharacterPattern = new Regex(
         "[\\p{IsHiragana}\\p{IsKatakana}\\p{IsCJKUnifiedIdeographs}]",
@@ -117,11 +214,29 @@ internal static class WorldModsTextTranslator
     private static readonly Regex GlazedPattern = new Regex(
         "^(?<chance>\\d+)% chance to dismember on hit\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex MicroserratedChancePattern = new Regex(
+        "^Microserrated: This weapon has (?<chance>\\d+)% chance to dismember opponents\\.?$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex SerratedChancePattern = new Regex(
+        "^Serrated: This weapon has (?<chance>\\d+)% chance to dismember opponents\\.?$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex NanonChancePattern = new Regex(
+        "^Nanon: (?<chance>\\d+)% chance to dismember on penetration\\.?$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex RefractivePattern = new Regex(
         "^Refractive: This item has (?:a|an) (?<chance>\\d+)% chance to refract light-based attacks\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex LiquidCooledPattern = new Regex(
         "^Liquid-cooled: This weapon's rate of fire is increased by (?<bonus>\\d+), but it requires (?<liquid>.+?) to function\\. When fired, there's a one in (?<chance>\\d+) chance that 1 dram is consumed\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex LiquidCooledStaticPattern = new Regex(
+        "^Liquid-cooled: This weapon's rate of fire is increased, but it requires (?<liquid>.+?) to function\\. When fired, there's a one in (?<chance>\\d+) chance that 1 dram is consumed\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex HeartstopperChancePattern = new Regex(
+        "^Heartstopper: When powered, this weapon has (?<chance>\\d+)% chance to put opponents into cardiac arrest(?: if they fail a difficulty (?<difficulty>\\d+) (?<attribute>.+?) save)?\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex SmartTrackingScopePattern = new Regex(
+        "^Smart: When powered and started up and the wielder has a HUD or techscanner equipped, this weapon's tracking scope makes it more accurate and gives (?<bonus>a bonus|[+-]\\d+) to hit a target aimed at\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex TransmuteSmallPattern = new Regex(
         "^Small chance to transmute an enemy into (?<term>.+) on hit\\.$",
@@ -174,7 +289,12 @@ internal static class WorldModsTextTranslator
 
     private static bool TryTranslateScopedExact(string source, string route, string family, out string translated)
     {
-        var direct = ScopedDictionaryLookup.TranslateExactOrLowerAscii(source, WorldModsDictionaryFile);
+        var direct = TranslateWorldModsOwnedExactOrLowerAscii(source);
+        if (direct is null)
+        {
+            direct = TranslateWorldModsExactOrLowerAscii(source);
+        }
+
         if (!string.IsNullOrEmpty(direct) && !string.Equals(direct, source, StringComparison.Ordinal))
         {
             translated = direct!;
@@ -189,7 +309,12 @@ internal static class WorldModsTextTranslator
             return false;
         }
 
-        var strippedTranslation = ScopedDictionaryLookup.TranslateExactOrLowerAscii(stripped, WorldModsDictionaryFile);
+        var strippedTranslation = TranslateWorldModsOwnedExactOrLowerAscii(stripped);
+        if (strippedTranslation is null)
+        {
+            strippedTranslation = TranslateWorldModsExactOrLowerAscii(stripped);
+        }
+
         if (string.IsNullOrEmpty(strippedTranslation) || string.Equals(strippedTranslation, stripped, StringComparison.Ordinal))
         {
             translated = source;
@@ -514,6 +639,45 @@ internal static class WorldModsTextTranslator
             source,
             route,
             family,
+            MicroserratedChancePattern,
+            "Microserrated: This weapon has {0}% chance to dismember opponents.",
+            (match, spans) => new[] { GetTranslatedCapture(match, spans, "chance") },
+            out translated,
+            MicroserratedDescriptionContext))
+        {
+            return true;
+        }
+
+        if (TryTranslateTemplate(
+            source,
+            route,
+            family,
+            SerratedChancePattern,
+            "Serrated: This weapon has {0}% chance to dismember opponents.",
+            (match, spans) => new[] { GetTranslatedCapture(match, spans, "chance") },
+            out translated,
+            SerratedDescriptionContext))
+        {
+            return true;
+        }
+
+        if (TryTranslateTemplate(
+            source,
+            route,
+            family,
+            NanonChancePattern,
+            "Nanon: {0}% chance to dismember on penetration.",
+            (match, spans) => new[] { GetTranslatedCapture(match, spans, "chance") },
+            out translated,
+            NanonDescriptionContext))
+        {
+            return true;
+        }
+
+        if (TryTranslateTemplate(
+            source,
+            route,
+            family,
             RefractivePattern,
             "Refractive: This item has {0}% chance to refract light-based attacks.",
             (match, spans) => new[] { GetTranslatedCapture(match, spans, "chance") },
@@ -531,10 +695,38 @@ internal static class WorldModsTextTranslator
             (match, spans) => new[]
             {
                 GetTranslatedCapture(match, spans, "bonus"),
-                GetTranslatedCapture(match, spans, "liquid", TranslateLiquidRequirement),
+                GetTranslatedLiquidRequirement(match, spans, "liquid"),
                 GetTranslatedCapture(match, spans, "chance"),
             },
-            out translated))
+            out translated,
+            LiquidCooledDescriptionContext))
+        {
+            return true;
+        }
+
+        if (TryTranslateTemplate(
+            source,
+            route,
+            family,
+            LiquidCooledStaticPattern,
+            "Liquid-cooled: This weapon's rate of fire is increased, but it requires {0} to function. When fired, there's a one in {1} chance that 1 dram is consumed.",
+            (match, spans) => new[]
+            {
+                GetTranslatedLiquidRequirement(match, spans, "liquid"),
+                GetTranslatedCapture(match, spans, "chance"),
+            },
+            out translated,
+            LiquidCooledDescriptionContext))
+        {
+            return true;
+        }
+
+        if (TryTranslateHeartstopperTemplate(source, route, family, out translated))
+        {
+            return true;
+        }
+
+        if (TryTranslateSmartTrackingScopeTemplate(source, route, family, out translated))
         {
             return true;
         }
@@ -546,7 +738,8 @@ internal static class WorldModsTextTranslator
             TransmuteSmallPattern,
             "Small chance to transmute an enemy into {0} on hit.",
             (match, spans) => new[] { GetTranslatedCapture(match, spans, "term") },
-            out translated))
+            out translated,
+            TransmuteOnHitDescriptionContext))
         {
             return true;
         }
@@ -562,7 +755,73 @@ internal static class WorldModsTextTranslator
                 GetTranslatedCapture(match, spans, "chance"),
                 GetTranslatedCapture(match, spans, "term"),
             },
-            out translated);
+            out translated,
+            TransmuteOnHitDescriptionContext);
+    }
+
+    private static bool TryTranslateHeartstopperTemplate(string source, string route, string family, out string translated)
+    {
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        var match = HeartstopperChancePattern.Match(stripped);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        var hasSave = match.Groups["difficulty"].Success;
+        var templateKey = hasSave
+            ? "Heartstopper: When powered, this weapon has {0}% chance to put opponents into cardiac arrest if they fail a difficulty {1} {2} save."
+            : "Heartstopper: When powered, this weapon has {0}% chance to put opponents into cardiac arrest.";
+        var template = TranslateWorldModsExactOrLowerAscii(
+            templateKey,
+            HeartstopperDescriptionContext);
+        if (string.IsNullOrEmpty(template) || string.Equals(template, templateKey, StringComparison.Ordinal))
+        {
+            translated = source;
+            return false;
+        }
+
+        var args = hasSave
+            ? new[]
+            {
+                GetTranslatedCapture(match, spans, "chance"),
+                GetTranslatedCapture(match, spans, "difficulty"),
+                GetTranslatedCapture(match, spans, "attribute"),
+            }
+            : new[] { GetTranslatedCapture(match, spans, "chance") };
+
+        return TryFormatTemplate(source, stripped, spans, route, family, match, template!, args, out translated);
+    }
+
+    private static bool TryTranslateSmartTrackingScopeTemplate(string source, string route, string family, out string translated)
+    {
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        var match = SmartTrackingScopePattern.Match(stripped);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        var hasNumericBonus = !string.Equals(match.Groups["bonus"].Value, "a bonus", StringComparison.Ordinal);
+        var templateKey = hasNumericBonus
+            ? "Smart: When powered and started up and the wielder has a HUD or techscanner equipped, this weapon's tracking scope makes it more accurate and gives {0} to hit a target aimed at."
+            : "Smart: When powered and started up and the wielder has a HUD or techscanner equipped, this weapon's tracking scope makes it more accurate and gives a bonus to hit a target aimed at.";
+        var template = TranslateWorldModsExactOrLowerAscii(
+            templateKey,
+            SmartDescriptionContext);
+        if (string.IsNullOrEmpty(template) || string.Equals(template, templateKey, StringComparison.Ordinal))
+        {
+            translated = source;
+            return false;
+        }
+
+        var args = hasNumericBonus
+            ? new[] { GetTranslatedCapture(match, spans, "bonus") }
+            : Array.Empty<string>();
+
+        return TryFormatTemplate(source, stripped, spans, route, family, match, template!, args, out translated);
     }
 
     private static bool TryTranslateMasterworkTemplate(string source, string route, string family, out string translated)
@@ -1207,8 +1466,8 @@ internal static class WorldModsTextTranslator
         }
 
         var template = templateContext is null
-            ? ScopedDictionaryLookup.TranslateExactOrLowerAscii(templateKey, WorldModsDictionaryFile)
-            : ScopedDictionaryLookup.TranslateExactOrLowerAsciiForContext(templateKey, templateContext, WorldModsDictionaryFile);
+            ? TranslateWorldModsExactOrLowerAscii(templateKey)
+            : TranslateWorldModsExactOrLowerAscii(templateKey, templateContext);
         if (string.IsNullOrEmpty(template) || string.Equals(template, templateKey, StringComparison.Ordinal))
         {
             translated = source;
@@ -1217,6 +1476,30 @@ internal static class WorldModsTextTranslator
 
         var contentSpans = ColorAwareTranslationComposer.WithoutTrueWholeSourceBoundarySpans(spans, stripped.Length);
         return TryFormatTemplate(source, stripped, spans, route, family, match, template!, buildArguments(match, contentSpans), out translated);
+    }
+
+    private static string? TranslateWorldModsOwnedExactOrLowerAscii(string source)
+    {
+        if (!ExactDescriptionContexts.TryGetValue(source, out var context)
+            && !TryGetPrefixDescriptionContext(source, out context))
+        {
+            return null;
+        }
+
+        return TranslateWorldModsExactOrLowerAscii(source, context);
+    }
+
+    private static bool TryGetPrefixDescriptionContext(string source, out string context)
+    {
+        context = string.Empty;
+        var separator = source.IndexOf(':');
+        if (separator <= 0)
+        {
+            return false;
+        }
+
+        var prefix = source.Substring(0, separator).TrimEnd();
+        return PrefixDescriptionContexts.TryGetValue(prefix, out context!);
     }
 
     private static bool TryFormatTemplate(
@@ -1240,6 +1523,21 @@ internal static class WorldModsTextTranslator
 
         DynamicTextObservability.RecordTransform(route, family, source, translated);
         return !string.Equals(source, translated, StringComparison.Ordinal);
+    }
+
+    private static string? TranslateWorldModsExactOrLowerAscii(
+        string source,
+        string? context = null)
+    {
+        var direct = context is null
+            ? ScopedDictionaryLookup.TranslateExactOrLowerAscii(source, WorldModsDictionaryFile)
+            : ScopedDictionaryLookup.TranslateExactOrLowerAsciiForContext(source, context, WorldModsDictionaryFile);
+        if (!string.IsNullOrEmpty(direct) && !string.Equals(direct, source, StringComparison.Ordinal))
+        {
+            return direct;
+        }
+
+        return null;
     }
 
     private static string RestoreRulesOpeningIfNeeded(string source, string translated, bool translatedSuccessfully)
@@ -1277,6 +1575,18 @@ internal static class WorldModsTextTranslator
         return spans.Count > 0
             ? ColorAwareTranslationComposer.RestoreCapture(value, spans, group)
             : value;
+    }
+
+    private static string GetTranslatedLiquidRequirement(
+        Match match,
+        IReadOnlyList<ColorSpan> spans,
+        string groupName)
+    {
+        var group = match.Groups[groupName];
+        var source = spans.Count > 0
+            ? ColorAwareTranslationComposer.RestoreCapture(group.Value, spans, group)
+            : group.Value;
+        return TranslateLiquidRequirement(source);
     }
 
     private static string GetTranslatedWholeCaptureBoundary(
@@ -1494,10 +1804,16 @@ internal static class WorldModsTextTranslator
         if (normalized.StartsWith(purePrefix, StringComparison.Ordinal))
         {
             var liquid = normalized.Substring(purePrefix.Length);
-            return "純粋な" + TranslateTemplateCapture(liquid);
+            return "純粋な" + TranslateLiquidCapture(liquid);
         }
 
-        return TranslateTemplateCapture(normalized);
+        return TranslateLiquidCapture(normalized);
+    }
+
+    private static string TranslateLiquidCapture(string source)
+    {
+        var translated = LiquidVolumeFragmentTranslator.TranslateLiquidPhrasePreservingColors(source);
+        return translated is not null ? translated : source;
     }
 
     private static string TranslateNestedWorldModDescription(string source)

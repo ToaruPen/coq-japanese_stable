@@ -94,13 +94,13 @@
       "route": "message-frame"
     },
     {
-      "pattern": "^You hit \\((x\\d+)\\) for (\\d+) damage with your (.+?)[.!] \\[(.+?)\\]$",
-      "template": "{2}で{1}ダメージを与えた。({0}) [{3}]",
+      "pattern": "^You hit \\((x\\d+)\\) for (\\d+) damage with (?:your |the |a |an )?(.+?)[.!] \\[(.+?)\\]$",
+      "template": "{d2}で{1}ダメージを与えた。({0}) [{3}]",
       "route": "emit-message"
     },
     {
-      "pattern": "^You critically hit \\((x\\d+)\\) for (\\d+) damage with your (.+?)[.!] \\[(.+?)\\]$",
-      "template": "{2}で会心の一撃、{1}ダメージを与えた。({0}) [{3}]",
+      "pattern": "^You critically hit \\((x\\d+)\\) for (\\d+) damage with (?:your |the |a |an )?(.+?)[.!] \\[(.+?)\\]$",
+      "template": "{d2}で会心の一撃、{1}ダメージを与えた。({0}) [{3}]",
       "route": "emit-message"
     },
     {
@@ -209,8 +209,8 @@
       "route": "emit-message"
     },
     {
-      "pattern": "^You miss with your (.+?)[.!] \\[(.+?) vs (.+?)\\]$",
-      "template": "{0}での攻撃は外れた。[{1} vs {2}]",
+      "pattern": "^You miss with (?:your |the |a |an )?(.+?)[.!] \\[(.+?) vs (.+?)\\]$",
+      "template": "{d0}での攻撃は外れた。[{1} vs {2}]",
       "route": "emit-message"
     },
     {
@@ -739,8 +739,8 @@
       "route": "effect-cripple"
     },
     {
-      "pattern": "^You don't penetrate (?:the )?(.+?)(?:'s|s'|の) armor with your (.+?)[.!] \\[(.+?)\\]$",
-      "template": "{1}では{0}の装甲を貫けなかった！ [{2}]",
+      "pattern": "^You don't penetrate (?:the )?(.+?)(?:'s|s'|の) armor with (?:(?:your|the) )?(.+?)[.!] \\[(.+?)\\]$",
+      "template": "{d1}では{0}の装甲を貫けなかった！ [{2}]",
       "route": "emit-message"
     },
     {
@@ -1061,6 +1061,16 @@
     {
       "pattern": "^You stop (moving|resting|digging|gathering|attacking|acting|auto-exploring|exploring|waiting|disassembling) because (?:the |a |an )?(.+?) is in your way[.!]?$",
       "template": "{1}が邪魔なので{t0}をやめた。",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^You stop (moving|resting|digging|gathering|attacking|acting|auto-exploring|exploring|waiting|disassembling|分解中) because you hear (.+?) fighting to the (north|south|east|west|northeast|northwest|southeast|southwest)[.!]?$",
+      "template": "{t2}で{d1}が戦っている音が聞こえたので{t0}をやめた。",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^You stop (moving|resting|digging|gathering|attacking|acting|auto-exploring|exploring|waiting|disassembling|分解中) because you hear (.+?) being injured to the (north|south|east|west|northeast|northwest|southeast|southwest)[.!]?$",
+      "template": "{t2}で{d1}が傷つく音が聞こえたので{t0}をやめた。",
       "route": "emit-message"
     },
     {
