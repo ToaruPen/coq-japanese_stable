@@ -333,6 +333,24 @@ public sealed class PopupPickOptionTranslationPatchTests
     }
 
     [Test]
+    public void SelectableTextMenuItemPostfix_ReappliesWhenVanillaRewritesSameState()
+    {
+        WriteCommonMenuActionDictionary(("get", "取る"));
+        var menuData = new DummySelectableMenuData(
+            text: "{{W|[g]}} {{y|get}}",
+            simpleText: "get",
+            command: "CmdGet",
+            hotkey: "g");
+        var target = new DummySelectableTextMenuItemTarget(menuData);
+
+        SelectableTextMenuItemTranslationPatch.Postfix(target, newState: false);
+        target.item.SetText("{{c|{{W|[g]}} {{y|get}}}}");
+        SelectableTextMenuItemTranslationPatch.Postfix(target, newState: false);
+
+        Assert.That(target.item.Text, Is.EqualTo("{{c|{{W|[g]}} {{y|取る}}}}"));
+    }
+
+    [Test]
     public void BottomContextDisplayTranslation_ReappliesWhenPopupRouteChangesWithoutItemTextChange()
     {
         WriteQudMenuItemDictionary(("remove", "QudMenuItem", "一般の外す"));

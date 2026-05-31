@@ -79,7 +79,7 @@ public static class SelectableTextMenuItemTranslationPatch
         var popupId = popupIdOverride ?? TryGetPopupIdFromParentPopup(instance);
         var key = new AppliedDisplayTranslationKey(itemText, popupId, selected);
         var state = AppliedDisplayTranslationStates.GetOrCreateValue(instance);
-        if (state.HasLastKey && state.LastKey.Equals(key))
+        if (!vanillaTextAlreadyApplied && state.HasLastKey && state.LastKey.Equals(key))
         {
             return;
         }
