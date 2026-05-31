@@ -1666,6 +1666,7 @@ public sealed class TargetMethodResolutionTests
     [TestCase(typeof(DisassemblyStartTranslationPatch), new[]
     {
         "XRL.World.Tinkering.Disassembly|Continue|System.Boolean",
+        "XRL.World.Tinkering.Disassembly|End|System.Void",
     })]
     [TestCase(typeof(DanceRitualOpponentTranslationPatch), new[]
     {
@@ -1801,6 +1802,7 @@ public sealed class TargetMethodResolutionTests
     })]
     [TestCase(typeof(HiddenRenderTranslationPatch), new[]
     {
+        "XRL.World.Parts.Hidden|RevealInternal|System.Void|System.Boolean",
         "XRL.World.Parts.HiddenRender|Reveal|System.Void",
     })]
     [TestCase(typeof(EngraverTranslationPatch), new[]
@@ -2049,6 +2051,7 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.Parts.Skill.Cudgel_Backswing|FireEvent|System.Boolean|XRL.World.Event",
         "XRL.World.Parts.Skill.Cudgel_SmashUp|FireEvent|System.Boolean|XRL.World.Event",
         "XRL.World.Parts.Skill.Discipline_IronMind|FireEvent|System.Boolean|XRL.World.Event",
+        "XRL.World.Parts.Skill.Rifle_DrawABead|SetMark|System.Boolean|XRL.World.GameObject",
         "XRL.World.Parts.Skill.Rifle_DrawABead|ValidateMark|System.Void",
         "XRL.World.Parts.Skill.Shield_Slam|Slam|System.Boolean|XRL.World.GameObject|XRL.World.GameObject|XRL.World.Cell|System.Boolean",
         "XRL.World.Parts.Skill.ShortBlades_Rejoinder|FireEvent|System.Boolean|XRL.World.Event",

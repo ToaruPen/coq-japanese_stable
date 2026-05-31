@@ -555,6 +555,12 @@ public static class PopupTranslationPatch
             return true;
         }
 
+        if (TinkeringMinePopupTranslationPatch.TryTranslatePopupMessage(source, route, family, out var tinkeringMineTranslated))
+        {
+            translated = tinkeringMineTranslated;
+            return true;
+        }
+
         if (PlayerDanceRitualTranslationPatch.TryTranslatePopupMessage(source, route, family, out var playerDanceRitualTranslated))
         {
             translated = playerDanceRitualTranslated;

@@ -180,10 +180,10 @@ public sealed class ItemNamingTranslationPatchTests
                 }));
             Assert.That(DummyPopupGenericTarget.LastAskStringMessage, Is.EqualTo("{{Y|銅の短剣}}の新しい名前を入力する。"));
             Assert.That(ItemNamingHitCount(nameof(PopupPickOptionTranslationPatch), "Interactive.Rename"), Is.EqualTo(1));
-            Assert.That(ItemNamingHitCount(nameof(PopupPickOptionTranslationPatch), "Interactive.EnterName"), Is.EqualTo(1));
-            Assert.That(ItemNamingHitCount(nameof(PopupPickOptionTranslationPatch), "Interactive.Qualities"), Is.EqualTo(1));
-            Assert.That(ItemNamingHitCount(nameof(PopupPickOptionTranslationPatch), "Interactive.OwnCulture"), Is.EqualTo(1));
-            Assert.That(ItemNamingHitCount(nameof(PopupPickOptionTranslationPatch), "Interactive.Culture"), Is.EqualTo(1));
+            Assert.That(ItemNamingMenuItemHitCount(nameof(PopupPickOptionTranslationPatch), "Interactive.EnterName"), Is.EqualTo(1));
+            Assert.That(ItemNamingMenuItemHitCount(nameof(PopupPickOptionTranslationPatch), "Interactive.Qualities"), Is.EqualTo(1));
+            Assert.That(ItemNamingMenuItemHitCount(nameof(PopupPickOptionTranslationPatch), "Interactive.OwnCulture"), Is.EqualTo(1));
+            Assert.That(ItemNamingMenuItemHitCount(nameof(PopupPickOptionTranslationPatch), "Interactive.Culture"), Is.EqualTo(1));
             Assert.That(ItemNamingHitCount(nameof(PopupAskStringTranslationPatch), "Interactive.AskString"), Is.EqualTo(1));
         });
     }
@@ -542,6 +542,13 @@ public sealed class ItemNamingTranslationPatchTests
         return DynamicTextObservability.GetRouteFamilyHitCountForTests(
             route,
             "Popup.ProducerText." + nameof(ItemNamingTranslationPatch) + "." + detail);
+    }
+
+    private static int ItemNamingMenuItemHitCount(string route, string detail)
+    {
+        return DynamicTextObservability.GetRouteFamilyHitCountForTests(
+            route,
+            "Popup.ProducerMenuItem." + nameof(ItemNamingTranslationPatch) + "." + detail);
     }
 
     private static void UseRepositoryVerbDictionary()
