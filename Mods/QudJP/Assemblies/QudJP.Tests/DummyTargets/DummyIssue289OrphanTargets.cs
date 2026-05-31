@@ -160,6 +160,8 @@ internal interface IDummyRectTransform
 
 internal sealed class DummyTutorialManagerInstanceTarget
 {
+    public string LastHighlightCid { get; private set; } = string.Empty;
+
     public string LastHighlightText { get; private set; } = string.Empty;
 
     public string LastCellHighlightText { get; private set; } = string.Empty;
@@ -175,13 +177,13 @@ internal sealed class DummyTutorialManagerInstanceTarget
         float bottomMargin = 0f,
         string style = "horiz")
     {
-        _ = cid;
         _ = directionHint;
         _ = paddingX;
         _ = paddingY;
         _ = bottomMargin;
         _ = style;
 
+        LastHighlightCid = cid;
         LastHighlightText = text is null ? string.Empty : "{{y|" + text + "}}";
         return true;
     }
