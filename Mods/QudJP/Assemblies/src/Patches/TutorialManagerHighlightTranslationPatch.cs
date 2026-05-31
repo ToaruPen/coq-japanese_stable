@@ -9,6 +9,8 @@ namespace QudJP.Patches;
 public static class TutorialManagerHighlightTranslationPatch
 {
     private const string Context = nameof(TutorialManagerHighlightTranslationPatch);
+    private const string MehmetPoiEnglishControlId = "QudTextMenuItem:mehmet [ne]";
+    private const string MehmetPoiLocalizedControlId = "QudTextMenuItem:メフメット [ne]";
 
     [HarmonyTargetMethod]
     private static MethodBase? TargetMethod()
@@ -41,10 +43,11 @@ public static class TutorialManagerHighlightTranslationPatch
         return method;
     }
 
-    public static void Prefix(ref string text)
+    public static void Prefix(ref string __0, ref string text)
     {
         try
         {
+            __0 = TranslateLocalizedTutorialControlId(__0);
             if (TutorialManagerTranslationHelpers.IsControlSentinel(text))
             {
                 return;
@@ -56,5 +59,12 @@ public static class TutorialManagerHighlightTranslationPatch
         {
             Trace.TraceError("QudJP: TutorialManagerHighlightTranslationPatch.Prefix failed: {0}", ex);
         }
+    }
+
+    private static string TranslateLocalizedTutorialControlId(string cid)
+    {
+        return string.Equals(cid, MehmetPoiEnglishControlId, StringComparison.Ordinal)
+            ? MehmetPoiLocalizedControlId
+            : cid;
     }
 }
