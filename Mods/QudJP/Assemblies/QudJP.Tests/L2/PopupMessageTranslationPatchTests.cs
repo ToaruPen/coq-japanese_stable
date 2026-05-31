@@ -269,21 +269,6 @@ public sealed class PopupMessageTranslationPatchTests
         const string markupTransformedSource =
             "&yYou emit a ray of frost from your forefeet.\n\n&wThis rank&y:\nEmits a 9-square ray of frost in the direction of your choice.\nDamage: &C9d3+2&y\nCooldown: 20 rounds\nMelee attacks cool opponents by &C-9d4&y degrees\n\n&wNext rank&y:\nEmits a 9-square ray of frost in the direction of your choice.\nDamage: &C10d3+2&y\nCooldown: 20 rounds\nMelee attacks cool opponents by &C-10d4&y degrees\n\n&C* This mutationの base rank is 6.&y\n&G+ This mutationの rank is increased by 3 due to being rapidly advanced 1 time.&y\n\nIt will cost &C1&y mutation point to increase 凍結線's rank by 1.\nDo you wish to increase this mutationの rank?";
 
-        object? ownerState = null;
-        StatusScreenMutationPopupTranslationPatch.Prefix(
-            new DummyCharacterMutation { EntryName = "Freezing Ray", DisplayName = "凍結線", Level = 9 },
-            out ownerState);
-        PopupTranslatedMessageHandoff.EnterScope(out var handoffScope);
-        try
-        {
-            _ = PopupShowSemanticPipeline.TranslateMessage(source, nameof(PopupShowTranslationPatch));
-        }
-        finally
-        {
-            PopupTranslatedMessageHandoff.ExitScope(handoffScope);
-            _ = StatusScreenMutationPopupTranslationPatch.Finalizer(null, ownerState);
-        }
-
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
 
@@ -292,6 +277,37 @@ public sealed class PopupMessageTranslationPatchTests
             harmony.Patch(
                 original: RequireMethod(typeof(DummyPopupMessageTarget), nameof(DummyPopupMessageTarget.ShowPopup)),
                 prefix: new HarmonyMethod(RequireMethod(typeof(PopupMessageTranslationPatch), nameof(PopupMessageTranslationPatch.Prefix))));
+
+            object? ownerState = null;
+            StatusScreenMutationPopupTranslationPatch.Prefix(
+                new DummyCharacterMutation { EntryName = "Freezing Ray", DisplayName = "凍結線", Level = 9 },
+                out ownerState);
+            PopupTranslatedMessageHandoff.EnterScope(out var handoffScope);
+            try
+            {
+                _ = PopupShowSemanticPipeline.TranslateMessage(source, nameof(PopupShowTranslationPatch));
+                new DummyPopupMessageTarget().ShowPopup(markupTransformedSource);
+                Assert.That(DummyPopupMessageTarget.LastMessage, Does.Contain("冷気の光線を放つ。"));
+            }
+            finally
+            {
+                PopupTranslatedMessageHandoff.ExitScope(handoffScope);
+                _ = StatusScreenMutationPopupTranslationPatch.Finalizer(null, ownerState);
+            }
+
+            StatusScreenMutationPopupTranslationPatch.Prefix(
+                new DummyCharacterMutation { EntryName = "Freezing Ray", DisplayName = "凍結線", Level = 9 },
+                out ownerState);
+            PopupTranslatedMessageHandoff.EnterScope(out handoffScope);
+            try
+            {
+                _ = PopupShowSemanticPipeline.TranslateMessage(source, nameof(PopupShowTranslationPatch));
+            }
+            finally
+            {
+                PopupTranslatedMessageHandoff.ExitScope(handoffScope);
+                _ = StatusScreenMutationPopupTranslationPatch.Finalizer(null, ownerState);
+            }
 
             new DummyPopupMessageTarget().ShowPopup(markupTransformedSource);
 
@@ -309,16 +325,6 @@ public sealed class PopupMessageTranslationPatchTests
     [Test]
     public void Prefix_DoesNotUsePopupShowOwnerHandoff_WhenNewPopupRunsOnUiThreadAfterScopeExit()
     {
-        PopupTranslatedMessageHandoff.EnterScope(out var handoffScope);
-        try
-        {
-            PopupTranslatedMessageHandoff.Remember("{{C|same text}}", "{{C|翻訳済み}}");
-        }
-        finally
-        {
-            PopupTranslatedMessageHandoff.ExitScope(handoffScope);
-        }
-
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
 
@@ -328,12 +334,30 @@ public sealed class PopupMessageTranslationPatchTests
                 original: RequireMethod(typeof(DummyPopupMessageTarget), nameof(DummyPopupMessageTarget.ShowPopup)),
                 prefix: new HarmonyMethod(RequireMethod(typeof(PopupMessageTranslationPatch), nameof(PopupMessageTranslationPatch.Prefix))));
 
+            var target = new DummyPopupMessageTarget();
+            WithPopupHandoffScope(() =>
+            {
+                PopupTranslatedMessageHandoff.Remember("{{C|same text}}", "{{C|翻訳済み}}");
+                target.ShowPopup("{{C|same text}}");
+            });
+            Assert.That(DummyPopupMessageTarget.LastMessage, Is.EqualTo("{{C|翻訳済み}}"));
+
+            PopupTranslatedMessageHandoff.EnterScope(out var handoffScope);
+            try
+            {
+                PopupTranslatedMessageHandoff.Remember("{{C|same text}}", "{{C|翻訳済み}}");
+            }
+            finally
+            {
+                PopupTranslatedMessageHandoff.ExitScope(handoffScope);
+            }
+
             Exception? thrown = null;
             var thread = new System.Threading.Thread(() =>
             {
                 try
                 {
-                    new DummyPopupMessageTarget().ShowPopup("&Csame text&y");
+                    target.ShowPopup("&Csame text&y");
                 }
                 catch (Exception ex)
                 {
@@ -362,16 +386,6 @@ public sealed class PopupMessageTranslationPatchTests
         const string markupTransformedSource =
             "{{y|&yYou have an extra set of legs.\n\n&wThis rank&y:\n+&C80&y move speed\n\n&wNext rank&y:\n+&C100&y move speed\n\n&C* This mutationの base rank is 4.&y\n\nIt will cost &C1&y mutation point to increase 多脚's rank by 1.\nDo you wish to increase this mutationの rank?}}";
 
-        PopupTranslatedMessageHandoff.EnterScope(out var handoffScope);
-        try
-        {
-            PopupTranslatedMessageHandoff.Remember(markupTransformedSource, "{{y|翻訳済み}}");
-        }
-        finally
-        {
-            PopupTranslatedMessageHandoff.ExitScope(handoffScope);
-        }
-
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
 
@@ -380,6 +394,26 @@ public sealed class PopupMessageTranslationPatchTests
             harmony.Patch(
                 original: RequireMethod(typeof(DummyUITextSkin), nameof(DummyUITextSkin.SetText)),
                 prefix: new HarmonyMethod(RequireMethod(typeof(UITextSkinTranslationPatch), nameof(UITextSkinTranslationPatch.Prefix))));
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyPopupMessageTarget), nameof(DummyPopupMessageTarget.ShowPopup)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(PopupMessageTranslationPatch), nameof(PopupMessageTranslationPatch.Prefix))));
+
+            WithPopupHandoffScope(() =>
+            {
+                PopupTranslatedMessageHandoff.Remember(markupTransformedSource, "{{y|翻訳済み}}");
+                new DummyPopupMessageTarget().ShowPopup(markupTransformedSource);
+            });
+            Assert.That(DummyPopupMessageTarget.LastMessage, Is.EqualTo("{{y|翻訳済み}}"));
+
+            PopupTranslatedMessageHandoff.EnterScope(out var handoffScope);
+            try
+            {
+                PopupTranslatedMessageHandoff.Remember(markupTransformedSource, "{{y|翻訳済み}}");
+            }
+            finally
+            {
+                PopupTranslatedMessageHandoff.ExitScope(handoffScope);
+            }
 
             var textSkin = new DummyUITextSkin();
             textSkin.SetText(markupTransformedSource);
@@ -460,21 +494,6 @@ public sealed class PopupMessageTranslationPatchTests
         const string markupTransformedSource =
             "{{y|&yYou have an extra set of legs.\n\n&wThis rank&y:\n+&C80&y move speed\n+&C9%&y carry capacity\n\n&wNext rank&y:\n+&C100&y move speed\n+&C10%&y carry capacity\n\n&C* This mutationの base rank is 4.&y\n\nIt will cost &C1&y mutation point to increase 多脚's rank by 1.\nDo you wish to increase this mutationの rank?}}";
 
-        object? ownerState = null;
-        StatusScreenMutationPopupTranslationPatch.Prefix(
-            new DummyCharacterMutation { EntryName = "Multiple Legs", DisplayName = "多脚", Level = 4 },
-            out ownerState);
-        PopupTranslatedMessageHandoff.EnterScope(out var handoffScope);
-        try
-        {
-            _ = PopupShowSemanticPipeline.TranslateMessage(source, nameof(PopupShowTranslationPatch));
-        }
-        finally
-        {
-            PopupTranslatedMessageHandoff.ExitScope(handoffScope);
-            _ = StatusScreenMutationPopupTranslationPatch.Finalizer(null, ownerState);
-        }
-
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
 
@@ -483,6 +502,41 @@ public sealed class PopupMessageTranslationPatchTests
             harmony.Patch(
                 original: RequireMethod(typeof(DummyPopupMessageTarget), nameof(DummyPopupMessageTarget.ShowPopup)),
                 prefix: new HarmonyMethod(RequireMethod(typeof(PopupMessageTranslationPatch), nameof(PopupMessageTranslationPatch.Prefix))));
+
+            object? ownerState = null;
+            StatusScreenMutationPopupTranslationPatch.Prefix(
+                new DummyCharacterMutation { EntryName = "Multiple Legs", DisplayName = "多脚", Level = 4 },
+                out ownerState);
+            PopupTranslatedMessageHandoff.EnterScope(out var handoffScope);
+            try
+            {
+                _ = PopupShowSemanticPipeline.TranslateMessage(source, nameof(PopupShowTranslationPatch));
+                new DummyPopupMessageTarget().ShowPopup(markupTransformedSource);
+                Assert.Multiple(() =>
+                {
+                    Assert.That(DummyPopupMessageTarget.LastMessage, Does.Contain("脚がもう1組ある。"));
+                    Assert.That(DummyPopupMessageTarget.LastMessage, Does.Contain("{{w|現在ランク}}:"));
+                });
+            }
+            finally
+            {
+                PopupTranslatedMessageHandoff.ExitScope(handoffScope);
+                _ = StatusScreenMutationPopupTranslationPatch.Finalizer(null, ownerState);
+            }
+
+            StatusScreenMutationPopupTranslationPatch.Prefix(
+                new DummyCharacterMutation { EntryName = "Multiple Legs", DisplayName = "多脚", Level = 4 },
+                out ownerState);
+            PopupTranslatedMessageHandoff.EnterScope(out handoffScope);
+            try
+            {
+                _ = PopupShowSemanticPipeline.TranslateMessage(source, nameof(PopupShowTranslationPatch));
+            }
+            finally
+            {
+                PopupTranslatedMessageHandoff.ExitScope(handoffScope);
+                _ = StatusScreenMutationPopupTranslationPatch.Finalizer(null, ownerState);
+            }
 
             new DummyPopupMessageTarget().ShowPopup(markupTransformedSource);
 
@@ -503,16 +557,6 @@ public sealed class PopupMessageTranslationPatchTests
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
 
-        PopupTranslatedMessageHandoff.EnterScope(out var handoffScope);
-        try
-        {
-            PopupTranslatedMessageHandoff.Remember("{{R|same text}}", "{{R|翻訳済み}}");
-        }
-        finally
-        {
-            PopupTranslatedMessageHandoff.ExitScope(handoffScope);
-        }
-
         try
         {
             harmony.Patch(
@@ -520,12 +564,30 @@ public sealed class PopupMessageTranslationPatchTests
                 prefix: new HarmonyMethod(RequireMethod(typeof(PopupMessageTranslationPatch), nameof(PopupMessageTranslationPatch.Prefix))));
 
             var target = new DummyPopupMessageTarget();
+            WithPopupHandoffScope(() =>
+            {
+                PopupTranslatedMessageHandoff.Remember("{{R|same text}}", "{{R|翻訳済み}}");
+                target.ShowPopup("{{R|same text}}");
+            });
+            var inScopeMessage = DummyPopupMessageTarget.LastMessage;
+
+            PopupTranslatedMessageHandoff.EnterScope(out var handoffScope);
+            try
+            {
+                PopupTranslatedMessageHandoff.Remember("{{R|same text}}", "{{R|翻訳済み}}");
+            }
+            finally
+            {
+                PopupTranslatedMessageHandoff.ExitScope(handoffScope);
+            }
+
             target.ShowPopup("{{G|different text}}");
             var firstMessage = DummyPopupMessageTarget.LastMessage;
             target.ShowPopup("{{R|same text}}");
 
             Assert.Multiple(() =>
             {
+                Assert.That(inScopeMessage, Is.EqualTo("{{R|翻訳済み}}"));
                 Assert.That(firstMessage, Is.EqualTo("{{G|different text}}"));
                 Assert.That(DummyPopupMessageTarget.LastMessage, Is.EqualTo("{{R|same text}}"));
             });
@@ -752,17 +814,6 @@ public sealed class PopupMessageTranslationPatchTests
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
 
-        PopupTranslatedMessageHandoff.EnterScope(out var handoffScope);
-        try
-        {
-            PopupTranslatedMessageHandoff.Remember("{{R|same text}}", "{{R|翻訳済み}}");
-            PopupTranslatedMessageHandoff.Remember("{{B|stale text}}", "{{B|残留}}");
-        }
-        finally
-        {
-            PopupTranslatedMessageHandoff.ExitScope(handoffScope);
-        }
-
         try
         {
             harmony.Patch(
@@ -770,12 +821,39 @@ public sealed class PopupMessageTranslationPatchTests
                 prefix: new HarmonyMethod(RequireMethod(typeof(PopupMessageTranslationPatch), nameof(PopupMessageTranslationPatch.Prefix))));
 
             var target = new DummyPopupMessageTarget();
+            WithPopupHandoffScope(() =>
+            {
+                PopupTranslatedMessageHandoff.Remember("{{R|same text}}", "{{R|翻訳済み}}");
+                PopupTranslatedMessageHandoff.Remember("{{B|stale text}}", "{{B|残留}}");
+                target.ShowPopup("{{R|same text}}");
+            });
+            var firstInScopeMessage = DummyPopupMessageTarget.LastMessage;
+            WithPopupHandoffScope(() =>
+            {
+                PopupTranslatedMessageHandoff.Remember("{{B|stale text}}", "{{B|残留}}");
+                target.ShowPopup("{{B|stale text}}");
+            });
+            var secondInScopeMessage = DummyPopupMessageTarget.LastMessage;
+
+            PopupTranslatedMessageHandoff.EnterScope(out var handoffScope);
+            try
+            {
+                PopupTranslatedMessageHandoff.Remember("{{R|same text}}", "{{R|翻訳済み}}");
+                PopupTranslatedMessageHandoff.Remember("{{B|stale text}}", "{{B|残留}}");
+            }
+            finally
+            {
+                PopupTranslatedMessageHandoff.ExitScope(handoffScope);
+            }
+
             target.ShowPopup("{{R|same text}}");
             var matchedMessage = DummyPopupMessageTarget.LastMessage;
             target.ShowPopup("{{B|stale text}}");
 
             Assert.Multiple(() =>
             {
+                Assert.That(firstInScopeMessage, Is.EqualTo("{{R|翻訳済み}}"));
+                Assert.That(secondInScopeMessage, Is.EqualTo("{{B|残留}}"));
                 Assert.That(matchedMessage, Is.EqualTo("{{R|same text}}"));
                 Assert.That(DummyPopupMessageTarget.LastMessage, Is.EqualTo("{{B|stale text}}"));
             });

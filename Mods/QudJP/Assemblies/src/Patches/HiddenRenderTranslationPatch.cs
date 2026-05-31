@@ -56,7 +56,11 @@ public static class HiddenRenderTranslationPatch
     {
         try
         {
-            queuedDirectPassthroughStack ??= new Stack<string?>();
+            if (queuedDirectPassthroughStack is null)
+            {
+                queuedDirectPassthroughStack = new Stack<string?>();
+            }
+
             queuedDirectPassthroughStack.Push(queuedDirectPassthroughMessage);
             queuedDirectPassthroughMessage = null;
             OwnerTranslationScope.Enter(ref activeDepth);
