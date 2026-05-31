@@ -11,10 +11,27 @@ namespace QudJP.Tests.L2;
 [NonParallelizable]
 public sealed class HiddenRenderTranslationPatchTests
 {
+    private string tempDirectory = null!;
+
     [SetUp]
     public void SetUp()
     {
+        tempDirectory = Path.Combine(Path.GetTempPath(), "qudjp-hidden-render-l2", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(tempDirectory);
+        File.WriteAllText(Path.Combine(tempDirectory, "empty.ja.json"), "{\"entries\":[]}");
+        Translator.ResetForTests();
+        Translator.SetDictionaryDirectoryForTests(tempDirectory);
         DummyMessageQueue.Reset();
+    }
+
+    [TearDown]
+    public void TearDown()
+    {
+        Translator.ResetForTests();
+        if (Directory.Exists(tempDirectory))
+        {
+            Directory.Delete(tempDirectory, recursive: true);
+        }
     }
 
     [TestCase(
@@ -23,11 +40,53 @@ public sealed class HiddenRenderTranslationPatchTests
     [TestCase(
         "A {{Y|stone crevice}} is revealed nearby!",
         "近くに{{Y|stone crevice}}が現れた！")]
+    [TestCase(
+        "A {{Y|stone crevice}} is revealed here!",
+        "ここに{{Y|stone crevice}}が現れた！")]
     public void HiddenRender_TranslatesRevealMessages_WhenOwnerPatched(
         string source,
         string expected)
     {
         AssertQueuedMessage(source, expected, expectedColor: "white");
+    }
+
+    [Test]
+    public void Hidden_TranslatesRevealMessages_WhenOwnerPatched()
+    {
+        AssertQueuedMessage(
+            "A {{g|{{Y|塩気のある}}{{slimy|粘液質の}}若いアイボリー}} is revealed to the southeast!",
+            "南東側に{{g|{{Y|塩気のある}}{{slimy|粘液質の}}若いアイボリー}}が現れた！",
+            expectedColor: "white",
+            useHiddenOwner: true);
+    }
+
+    [Test]
+    public void HiddenRender_TranslatesGeneratedRevealSubject_WhenOwnerPatched()
+    {
+        WriteDictionaryFile("ui-displayname-atomic.ja.json", ("stone crevice", "石の割れ目"));
+
+        AssertQueuedMessage(
+            "A {{Y|stone crevice}} is revealed to the north!",
+            "北側に{{Y|石の割れ目}}が現れた！",
+            expectedColor: "white");
+    }
+
+    [Test]
+    public void HiddenRender_TranslatesRevealMessageLog_WhenOwnerScopeIsActive()
+    {
+        var message = "A {{B|ヨンダーブラッシュ}} is revealed to the east!";
+
+        HiddenRenderTranslationPatch.Prefix();
+        try
+        {
+            MessageLogPatch.Prefix(ref message);
+        }
+        finally
+        {
+            _ = HiddenRenderTranslationPatch.Finalizer(null);
+        }
+
+        Assert.That(message, Is.EqualTo("東側に{{B|ヨンダーブラッシュ}}が現れた！"));
     }
 
     [Test]
@@ -69,18 +128,26 @@ public sealed class HiddenRenderTranslationPatchTests
     private static void AssertQueuedMessage(
         string source,
         string expected,
-        string? expectedColor = null)
+        string? expectedColor = null,
+        bool useHiddenOwner = false)
     {
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
         try
         {
             PatchQueue(harmony);
-            PatchOwner(harmony);
+            PatchOwner(harmony, useHiddenOwner);
 
             DummyHiddenRenderTarget.MessageToSend = source;
             DummyHiddenRenderTarget.ColorToSend = expectedColor;
-            DummyHiddenRenderTarget.Reveal();
+            if (useHiddenOwner)
+            {
+                DummyHiddenRenderTarget.HiddenRevealInternal(silent: false);
+            }
+            else
+            {
+                DummyHiddenRenderTarget.Reveal();
+            }
 
             Assert.Multiple(() =>
             {
@@ -105,10 +172,15 @@ public sealed class HiddenRenderTranslationPatchTests
             prefix: new HarmonyMethod(RequireMethod(typeof(MessageLogPatch), nameof(MessageLogPatch.Prefix), typeof(string).MakeByRefType(), typeof(string), typeof(bool))));
     }
 
-    private static void PatchOwner(Harmony harmony)
+    private static void PatchOwner(Harmony harmony, bool useHiddenOwner = false)
     {
         harmony.Patch(
-            original: RequireMethod(typeof(DummyHiddenRenderTarget), nameof(DummyHiddenRenderTarget.Reveal)),
+            original: RequireMethod(
+                typeof(DummyHiddenRenderTarget),
+                useHiddenOwner
+                    ? nameof(DummyHiddenRenderTarget.HiddenRevealInternal)
+                    : nameof(DummyHiddenRenderTarget.Reveal),
+                useHiddenOwner ? new[] { typeof(bool) } : Type.EmptyTypes),
             prefix: new HarmonyMethod(RequireMethod(typeof(HiddenRenderTranslationPatch), nameof(HiddenRenderTranslationPatch.Prefix))),
             finalizer: new HarmonyMethod(RequireMethod(typeof(HiddenRenderTranslationPatch), nameof(HiddenRenderTranslationPatch.Finalizer), typeof(Exception))));
     }
@@ -125,6 +197,18 @@ public sealed class HiddenRenderTranslationPatchTests
             ?? throw new InvalidOperationException($"Method not found: {type.FullName}.{methodName}");
     }
 
+    private void WriteDictionaryFile(string fileName, params (string key, string text)[] entries)
+    {
+        var contents = "{\"entries\":["
+            + string.Join(
+                ",",
+                entries.Select(entry => $"{{\"key\":\"{entry.key}\",\"text\":\"{entry.text}\"}}"))
+            + "]}";
+        File.WriteAllText(Path.Combine(tempDirectory, fileName), contents);
+        Translator.ResetForTests();
+        Translator.SetDictionaryDirectoryForTests(tempDirectory);
+    }
+
     private static string CreateHarmonyId()
     {
         return $"qudjp.tests.{Guid.NewGuid():N}";
@@ -139,6 +223,13 @@ public sealed class HiddenRenderTranslationPatchTests
         [MethodImpl(MethodImplOptions.NoInlining)]
         public static void Reveal()
         {
+            DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public static void HiddenRevealInternal(bool silent = false)
+        {
+            _ = silent;
             DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
         }
 

@@ -640,6 +640,11 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "{{Y|ケムセル}}を完全に充電するには{{C|3}}個の{{C|A}}ビットが必要だ。所持数は{{C|1}}。いくつ使う？",
         "TinkeringRechargeAskNumber")]
     [TestCase(
+        "XRL.World.Parts.Skill.Tinkering_Tinker1|Recharge",
+        "It would take {{C|1}} {{R|A}} bit to fully recharge your {{c|ケムセル}}. You have {{C|51}}. How many do you want to use?",
+        "{{c|ケムセル}}を完全に充電するには{{C|1}}個の{{R|A}}ビットが必要だ。所持数は{{C|51}}。いくつ使う？",
+        "TinkeringRechargeAskNumber")]
+    [TestCase(
         "XRL.World.Parts.Skill.Tinkering_Tinker1|FireEvent",
         "You have no items that require charging.",
         "充電が必要なアイテムがない。",

@@ -4,6 +4,8 @@ internal sealed class DummyUITextSkin
 {
     public string? Text { get; private set; }
 
+    public string? LastSetTextArgument { get; private set; }
+
     public string? text;
 
     public int SetTextCallCount { get; private set; }
@@ -15,6 +17,7 @@ internal sealed class DummyUITextSkin
     public void SetText(string text)
     {
         SetTextCallCount++;
+        LastSetTextArgument = text;
         Text = text;
         this.text = text;
     }

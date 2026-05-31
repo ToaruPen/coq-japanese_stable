@@ -95,12 +95,19 @@ public sealed class TargetMethodResolutionTests
     [TestCase(typeof(InventoryLineTranslationPatch), "setData", "Qud.UI.InventoryLine", "System.Void", new[] { "XRL.UI.Framework.FrameworkDataElement" })]
     [TestCase(typeof(InventoryLineRenderProbePatch), "setData", "Qud.UI.InventoryLine", "System.Void", new[] { "XRL.UI.Framework.FrameworkDataElement" })]
     [TestCase(typeof(InventoryLineActiveTextRefreshPatch), "LateUpdate", "Qud.UI.InventoryLine", "System.Void", new string[0])]
+    [TestCase(typeof(InventoryActionDisplayTranslationPatch), "Send", "XRL.World.OwnerGetInventoryActionsEvent", "System.Void", new[]
+    {
+        "XRL.World.GameObject",
+        "XRL.World.GameObject",
+        "System.Collections.Generic.Dictionary`2[[System.String],[XRL.World.InventoryAction]]",
+    })]
     [TestCase(typeof(EquipmentLineTranslationPatch), "setData", "Qud.UI.EquipmentLine", "System.Void", new[] { "XRL.UI.Framework.FrameworkDataElement" })]
     [TestCase(typeof(JournalLineTranslationPatch), "setData", "Qud.UI.JournalLine", "System.Void", new[] { "XRL.UI.Framework.FrameworkDataElement" })]
     [TestCase(typeof(TinkeringLineTranslationPatch), "setData", "Qud.UI.TinkeringLine", "System.Void", new[] { "XRL.UI.Framework.FrameworkDataElement" })]
     [TestCase(typeof(TinkeringBitsLineTranslationPatch), "setData", "Qud.UI.TinkeringBitsLine", "System.Void", new[] { "XRL.UI.Framework.FrameworkDataElement" })]
     [TestCase(typeof(TinkeringDetailsLineTranslationPatch), "setData", "Qud.UI.TinkeringDetailsLine", "System.Void", new[] { "XRL.UI.Framework.FrameworkDataElement" })]
     [TestCase(typeof(AbilityManagerLineTranslationPatch), "setData", "Qud.UI.AbilityManagerLine", "System.Void", new[] { "XRL.UI.Framework.FrameworkDataElement" })]
+    [TestCase(typeof(SkillsAndPowersLineTranslationPatch), "setData", "Qud.UI.SkillsAndPowersLine", "System.Void", new[] { "XRL.UI.Framework.FrameworkDataElement" })]
     [TestCase(typeof(PickGameObjectLineTranslationPatch), "setData", "Qud.UI.PickGameObjectLine", "System.Void", new[] { "XRL.UI.Framework.FrameworkDataElement" })]
     [TestCase(typeof(FilterBarCategoryButtonTranslationPatch), "SetCategory", "Qud.UI.FilterBarCategoryButton", "System.Void", new[] { "System.String", "System.String" })]
     [TestCase(typeof(CyberneticsTerminalScreenTranslationPatch), "Show", "Qud.UI.CyberneticsTerminalScreen", "System.Void", new string[0])]
@@ -656,6 +663,11 @@ public sealed class TargetMethodResolutionTests
         "System.String|System.String|System.Boolean|XRL.UI.DialogResult",
         "System.String",
     })]
+    [TestCase(typeof(PopupInternalMessageHandoffPatch), new[]
+    {
+        "System.String|System.Collections.Generic.List`1[[Qud.UI.QudMenuItem]]|System.Action`1[[Qud.UI.QudMenuItem]]|System.Collections.Generic.List`1[[Qud.UI.QudMenuItem]]|System.String|System.String|System.Int32|System.String|ConsoleLib.Console.IRenderable|ConsoleLib.Console.IRenderable|System.Boolean|System.Boolean|Genkit.Location2D|System.String|System.Boolean",
+        "System.String|System.Collections.Generic.List`1[[Qud.UI.QudMenuItem]]|System.Collections.Generic.List`1[[Qud.UI.QudMenuItem]]|System.String|System.String|System.Int32|System.String|ConsoleLib.Console.IRenderable|ConsoleLib.Console.IRenderable|System.Boolean|System.Boolean|System.Boolean|System.Threading.CancellationToken|System.Boolean|System.String|System.String|Genkit.Location2D|System.String",
+    })]
     [TestCase(typeof(GameObjectStatPopupTranslationPatch), new[]
     {
         "System.Int32|System.Boolean",
@@ -853,6 +865,10 @@ public sealed class TargetMethodResolutionTests
     {
         "XRL.World.GameObject",
         "XRL.World.BeginTakeActionEvent",
+    })]
+    [TestCase(typeof(TinkeringMinePopupTranslationPatch), new[]
+    {
+        "XRL.World.InventoryActionEvent",
     })]
     [TestCase(typeof(CookingRuntimeTranslationPatch), new[]
     {
@@ -1088,6 +1104,7 @@ public sealed class TargetMethodResolutionTests
     {
         "XRL.World.GameObject|ConfirmUseImportantAsync|System.Threading.Tasks.Task`1[[System.Boolean]]|XRL.World.GameObject|System.String|System.String|System.Int32",
         "XRL.World.GameObject|ConfirmUseImportant|System.Boolean|XRL.World.GameObject|System.String|System.String|System.Int32",
+        "XRL.World.GameObject|HandleInventoryActionEvent|System.Boolean|XRL.World.InventoryActionEvent",
         "XRL.World.GameObject|HandleRename|System.Void|XRL.World.InventoryActionEvent",
         "XRL.World.GameObject|ChangeCompanionAbilityUse|System.Void|XRL.World.GameObject|XRL.World.Parts.ActivatedAbilities",
         "XRL.World.GameObject|CheckCompanionDirection|System.Boolean|XRL.World.GameObject",
@@ -1674,6 +1691,7 @@ public sealed class TargetMethodResolutionTests
     [TestCase(typeof(HiddenRenderTranslationPatch), new[]
     {
         "XRL.World.Parts.HiddenRender|Reveal|System.Void",
+        "XRL.World.Parts.Hidden|RevealInternal|System.Void|System.Boolean",
     })]
     [TestCase(typeof(EngraverTranslationPatch), new[]
     {

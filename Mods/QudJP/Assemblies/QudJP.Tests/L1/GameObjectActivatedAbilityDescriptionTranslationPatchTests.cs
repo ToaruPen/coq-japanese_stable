@@ -63,6 +63,25 @@ public sealed class GameObjectActivatedAbilityDescriptionTranslationPatchTests
     }
 
     [Test]
+    public void TranslateActivatedAbilityDescription_TranslatesRuntimeElementalRayIntro()
+    {
+        var ability = new DummyActivatedAbility
+        {
+            Description =
+                "You emit a ray of frost from your forefeet.\n\n指定方向へ9マスの冷気の光線を放つ。\nDamage: 10d3+2\nCooldown: {{G|17}} round\n\nCooldown reduced by 3 due to high Willpower.",
+        };
+
+        GameObjectActivatedAbilityDescriptionTranslationPatch.TranslateActivatedAbilityDescriptionForTests(ability);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ability.Description, Does.Contain("足先から冷気の光線を放つ。"));
+            Assert.That(ability.Description, Does.Contain("ダメージ: 10d3+2"));
+            Assert.That(ability.Description, Does.Not.Contain("You emit a ray"));
+        });
+    }
+
+    [Test]
     public void TranslateActivatedAbilityDescription_RecordsSingleObservabilityHit()
     {
         var ability = new DummyActivatedAbility

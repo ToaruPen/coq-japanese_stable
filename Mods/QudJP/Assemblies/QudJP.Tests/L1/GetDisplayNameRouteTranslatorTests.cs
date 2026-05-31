@@ -18,12 +18,14 @@ public sealed class GetDisplayNameRouteTranslatorTests
 
         Translator.ResetForTests();
         Translator.SetDictionaryDirectoryForTests(tempDirectory);
+        LocalizationAssetResolver.SetLocalizationRootForTests(null);
     }
 
     [TearDown]
     public void TearDown()
     {
         Translator.ResetForTests();
+        LocalizationAssetResolver.SetLocalizationRootForTests(null);
         if (Directory.Exists(tempDirectory))
         {
             Directory.Delete(tempDirectory, recursive: true);
@@ -455,6 +457,31 @@ public sealed class GetDisplayNameRouteTranslatorTests
     }
 
     [Test]
+    public void TranslatePreservingColors_TranslatesProductionColoredLiquidStainsBeforeLocalizedBase()
+    {
+        UseProductionDictionaries();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                GetDisplayNameRouteTranslator.TranslatePreservingColors(
+                    "{{g|slime}}-stained {{C|高級工具セット}}",
+                    nameof(GetDisplayNameProcessPatch)),
+                Is.EqualTo("{{g|粘液}}に染まった {{C|高級工具セット}}"));
+            Assert.That(
+                GetDisplayNameRouteTranslator.TranslatePreservingColors(
+                    "{{G|goo}}-and-{{g|slime}}-stained {{Y|鋼鉄}}のブーツ",
+                    nameof(GetDisplayNameProcessPatch)),
+                Is.EqualTo("{{G|粘液}}と{{g|粘液}}で汚れた{{Y|鋼鉄}}のブーツ"));
+            Assert.That(
+                GetDisplayNameRouteTranslator.TranslatePreservingColors(
+                    "slender {{g|slime}}-and-{{w|sludge}}-stained {{B|積層カーバイドの長剣}}",
+                    nameof(GetDisplayNameProcessPatch)),
+                Is.EqualTo("細身な {{g|粘液}}と{{w|汚泥}}で汚れた{{B|積層カーバイドの長剣}}"));
+        });
+    }
+
+    [Test]
     public void TranslatePreservingColors_PreservesCompactWeaponStatSymbolTags_WhenTranslatingName()
     {
         WriteDictionary(
@@ -537,6 +564,53 @@ public sealed class GetDisplayNameRouteTranslatorTests
             nameof(GetDisplayNamePatch));
 
         Assert.That(translated, Is.EqualTo(expected));
+    }
+
+    [Test]
+    public void TranslatePreservingColors_DoesNotShiftColoredStainedModifierAcrossLocalizedAngleCodeBase()
+    {
+        UseProductionDictionaries();
+
+        const string source = "{{r|blood}}-stained リストファン \u00040 \t0 [no cell] <CC13>";
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            source,
+            nameof(InventoryLineTranslationPatch));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                translated,
+                Is.EqualTo("{{r|血}}に染まった リストファン \u00040 \t0 [セルなし] {{y|<{{B|C}}{{B|C}}{{r|1}}{{b|3}}>}}"));
+            Assert.That(
+                ColorShapeCaptureObservability.Capture(
+                    nameof(InventoryLineTranslationPatch),
+                    nameof(TranslatePreservingColors_DoesNotShiftColoredStainedModifierAcrossLocalizedAngleCodeBase),
+                    source,
+                    translated).MarkupSemanticStatus,
+                Is.EqualTo("clean"));
+        });
+    }
+
+    [Test]
+    public void TranslatePreservingColors_DoesNotRemapLocalizedStainedAngleCodeBaseColorOntoStateSuffix()
+    {
+        UseProductionDictionaries();
+
+        const string source = "{{r|{{r|blood}}-stained リストファン \u00040 \t0 [no cell]}} <CC13>";
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            source,
+            nameof(InventoryLineTranslationPatch));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                translated,
+                Is.EqualTo("{{r|血}}に染まった リストファン \u00040 \t0 [セルなし] {{y|<{{B|C}}{{B|C}}{{r|1}}{{b|3}}>}}"));
+            Assert.That(translated, Does.Not.Contain("{{r|{{r|血に染まっ}}"));
+            Assert.That(translated, Does.Not.Contain("}}セ{{b|ル}}なし"));
+        });
     }
 
     [Test]
@@ -1040,6 +1114,18 @@ public sealed class GetDisplayNameRouteTranslatorTests
     }
 
     [Test]
+    public void TranslatePreservingColors_DoesNotTranslateProperNameHeadFromGlobalDictionary()
+    {
+        WriteDictionary(("Point", "地点"));
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            "Point of the Commanding Woe",
+            nameof(GetDisplayNamePatch));
+
+        Assert.That(translated, Is.EqualTo("Point of the Commanding Woe"));
+    }
+
+    [Test]
     public void TranslatePreservingColors_TranslatesObservedAtomicDisplayName()
     {
         WriteDictionaryFile(
@@ -1074,6 +1160,50 @@ public sealed class GetDisplayNameRouteTranslatorTests
             Assert.That(translated, Is.EqualTo("トンボのキチン質の天幕"));
             Assert.That(Translator.GetMissingKeyHitCountForTests("dragonfly chitin tent"), Is.EqualTo(0));
         });
+    }
+
+    [Test]
+    public void TranslatePreservingColors_RetriesLocalizedBlueprintMarkup_AfterObjectBlueprintsDirectoryAppears()
+    {
+        LocalizationAssetResolver.SetLocalizationRootForTests(tempDirectory);
+        WriteDictionaryFile("ui-displayname-adjectives.ja.json", ("[empty]", "[空]"));
+
+        Assert.That(
+            GetDisplayNameRouteTranslator.TranslatePreservingColors("塩ホッパー [empty]", nameof(GetDisplayNamePatch)),
+            Is.EqualTo("塩ホッパー [空]"));
+
+        var objectBlueprintsDirectory = Path.Combine(tempDirectory, "ObjectBlueprints");
+        Directory.CreateDirectory(objectBlueprintsDirectory);
+        File.WriteAllText(
+            Path.Combine(objectBlueprintsDirectory, "Items.jp.xml"),
+            "<objects><object><part DisplayName=\"{{Y|塩ホッパー}}\" /></object></objects>");
+
+        Assert.That(
+            GetDisplayNameRouteTranslator.TranslatePreservingColors("塩ホッパー [empty]", nameof(GetDisplayNamePatch)),
+            Is.EqualTo("{{Y|塩ホッパー}} [空]"));
+    }
+
+    [Test]
+    public void TranslatePreservingColors_RetriesLocalizedBlueprintMarkup_AfterXmlParseFailure()
+    {
+        LocalizationAssetResolver.SetLocalizationRootForTests(tempDirectory);
+        WriteDictionaryFile("ui-displayname-adjectives.ja.json", ("[empty]", "[空]"));
+        var objectBlueprintsDirectory = Path.Combine(tempDirectory, "ObjectBlueprints");
+        Directory.CreateDirectory(objectBlueprintsDirectory);
+        var filePath = Path.Combine(objectBlueprintsDirectory, "Items.jp.xml");
+        File.WriteAllText(filePath, "<objects><object><part DisplayName=\"{{Y|塩ホッパー}}\"");
+
+        Assert.That(
+            GetDisplayNameRouteTranslator.TranslatePreservingColors("塩ホッパー [empty]", nameof(GetDisplayNamePatch)),
+            Is.EqualTo("塩ホッパー [空]"));
+
+        File.WriteAllText(
+            filePath,
+            "<objects><object><part DisplayName=\"{{Y|塩ホッパー}}\" /></object></objects>");
+
+        Assert.That(
+            GetDisplayNameRouteTranslator.TranslatePreservingColors("塩ホッパー [empty]", nameof(GetDisplayNamePatch)),
+            Is.EqualTo("{{Y|塩ホッパー}} [空]"));
     }
 
     [TestCase("advertisement for {{M|クユラミルの蒸留所, 伝説の樹液商}}", "{{M|クユラミルの蒸留所, 伝説の樹液商}}の広告")]
@@ -1595,18 +1725,6 @@ public sealed class GetDisplayNameRouteTranslatorTests
     }
 
     [Test]
-    public void TranslatePreservingColors_TranslatesReshephRuntimeTitle()
-    {
-        UseProductionDictionaries();
-
-        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
-            "Ghost-in-Cerulean",
-            nameof(GetDisplayNamePatch));
-
-        Assert.That(translated, Is.EqualTo("瑠璃の幽鬼"));
-    }
-
-    [Test]
     public void TranslatePreservingColors_TranslatesImplantedMarkupAdjective()
     {
         WriteDictionaryFile(
@@ -2040,7 +2158,7 @@ public sealed class GetDisplayNameRouteTranslatorTests
         yield return new ModifierPhraseCase("ModDefib", "{{love|defib}}", "{{love|除細動}}");
         yield return new ModifierPhraseCase("ModDesecrated", "{{K|desecrated}}", "{{K|冒涜された}}");
         yield return new ModifierPhraseCase("ModDisplacer", "{{displacer|displacer}}", "{{displacer|位相転移}}");
-        yield return new ModifierPhraseCase("ModDrumLoaded", "drum-loaded", "ドラム装填");
+        yield return new ModifierPhraseCase("ModDrumLoaded", "drum-loaded", "ドラム弾倉");
         yield return new ModifierPhraseCase("ModElectrified", "{{electrical|electrified}}", "{{electrical|帯電}}");
         yield return new ModifierPhraseCase("ModEngraved", "{{engraved|engraved}}", "{{engraved|彫り刻まれた}}");
         yield return new ModifierPhraseCase("ModExtradimensional", "{{extradimensional|extradimensional}}", "{{extradimensional|異次元}}");
@@ -2065,14 +2183,14 @@ public sealed class GetDisplayNameRouteTranslatorTests
         yield return new ModifierPhraseCase("ModLegendary", "{{Y|lege{{W|n}}dary}}", "{{Y|伝説{{W|的}}}}");
         yield return new ModifierPhraseCase("ModLiquidCooled", "{{K|liquid-cooled}}", "{{K|液冷式}}");
         yield return new ModifierPhraseCase("ModMagnetized", "magnetized", "磁化した");
-        yield return new ModifierPhraseCase("ModMassivelyOverloaded", "{{overloaded|massively overloaded}}", "{{overloaded|超過荷重}}");
+        yield return new ModifierPhraseCase("ModMassivelyOverloaded", "{{overloaded|massively overloaded}}", "{{overloaded|重過負荷}}");
         yield return new ModifierPhraseCase("ModMasterwork", "{{Y|masterwork}}", "{{Y|傑作}}");
         yield return new ModifierPhraseCase("ModMercurial", "{{Y|mercurial}}", "{{Y|水銀の}}");
         yield return new ModifierPhraseCase("ModMetallized", "{{c|metallized}}", "{{c|金属化}}");
         yield return new ModifierPhraseCase("ModMetered", "{{c|metered}}", "{{c|計量式}}");
         yield return new ModifierPhraseCase("RoboticizedMechanical", "{{c|mechanical}}", "{{c|機械化}}");
         yield return new ModifierPhraseCase("ModMicroserrated", "{{Y|mi{{R|c}}roserra{{R|t}}ed}}", "{{Y|{{R|微}}鋸{{R|歯}}}}");
-        yield return new ModifierPhraseCase("ModMighty", "mighty", "強力な");
+        yield return new ModifierPhraseCase("ModMighty", "mighty", "剛力");
         yield return new ModifierPhraseCase("ModMorphogenetic", "{{m|morphogenetic}}", "{{m|形態同調}}");
         yield return new ModifierPhraseCase("ModNanochelated", "{{K|nanochelated}}", "{{K|ナノキレート}}");
         yield return new ModifierPhraseCase("ModNanon", "{{K|nanon}}", "{{K|ナノ刃}}");
@@ -2080,7 +2198,7 @@ public sealed class GetDisplayNameRouteTranslatorTests
         yield return new ModifierPhraseCase("ModNulling", "{{K|nulling}}", "{{K|無効化}}");
         yield return new ModifierPhraseCase("ModOrthopedic", "orthopedic", "整形");
         yield return new ModifierPhraseCase("ModOverbuilt", "overbuilt", "過剰設計の");
-        yield return new ModifierPhraseCase("ModOverloaded", "{{overloaded|overloaded}}", "{{overloaded|過荷重}}");
+        yield return new ModifierPhraseCase("ModOverloaded", "{{overloaded|overloaded}}", "{{overloaded|過負荷}}");
         yield return new ModifierPhraseCase("ModPadded", "padded", "パッド入り");
         yield return new ModifierPhraseCase("ModPainted", "{{painted|painted}}", "{{painted|彩色された}}");
         yield return new ModifierPhraseCase("ModPhaseConjugate", "{{K|phase-conjugate}}", "{{K|位相共役}}");
@@ -2096,7 +2214,7 @@ public sealed class GetDisplayNameRouteTranslatorTests
         yield return new ModifierPhraseCase("ModScaled", "{{scaled|scaled}}", "{{scaled|鱗状の}}");
         yield return new ModifierPhraseCase("ModScoped", "scoped", "スコープ付き");
         yield return new ModifierPhraseCase("ModSerrated", "{{Y|serra{{R|t}}ed}}", "{{Y|鋸歯{{R|状}}の}}");
-        yield return new ModifierPhraseCase("ModSharp", "sharp", "鋭い");
+        yield return new ModifierPhraseCase("ModSharp", "sharp", "鋭利");
         yield return new ModifierPhraseCase("ModSixFingered", "{{G|six-fingered}}", "{{G|六指の}}");
         yield return new ModifierPhraseCase("ModSlender", "slender", "細身な");
         yield return new ModifierPhraseCase("ModSmart", "{{c|smart}}", "{{c|スマートな}}");

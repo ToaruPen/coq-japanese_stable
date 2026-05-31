@@ -220,6 +220,12 @@ internal static class LiquidVolumeFragmentTranslator
                 RegexOptions.CultureInvariant | RegexOptions.Compiled),
             BuildCollectMessage),
         new(
+            "CleanItemsMessage",
+            new Regex(
+                "^You clean (?<types>.+?) from (?<items>.+?) with a dram of (?<liquid>.+?)(?: from (?<source>.+?)(?: (?<sourceDirection>" + OpenDirectionPattern + "))?)?\\.$",
+                RegexOptions.CultureInvariant | RegexOptions.Compiled),
+            BuildCleanItemsMessage),
+        new(
             "PourOutSelf",
             new Regex(
                 "^(?<amount>\\d+) drams? of (?<liquid>.+?) pours out all over you!$",
@@ -329,6 +335,112 @@ internal static class LiquidVolumeFragmentTranslator
             storageSuffix,
             "。");
     }
+
+    private static string BuildCleanItemsMessage(Match match, IReadOnlyList<ColorSpan> spans)
+    {
+        return string.Concat(
+            TranslateCleaningItems(match.Groups["items"], spans),
+            "から",
+            TranslateCleaningTypes(match.Groups["types"].Value),
+            "を",
+            TranslateLiquid(match.Groups["liquid"], spans),
+            "1ドラムで洗い落とした。");
+    }
+
+    private static string TranslateCleaningItems(Group itemsGroup, IReadOnlyList<ColorSpan> spans)
+    {
+        var items = StripPossessivePrefixPreservingColors(RestoreVisible(itemsGroup, spans));
+        return TranslateEnglishAndListConjunctions(StripRepeatedPossessivePrefixes(items));
+    }
+
+    private static string TranslateCleaningTypes(string source)
+    {
+        var normalized = StringHelpers.StripLeadingEnglishArticle(
+            source.Trim(),
+            includeCapitalizedDefiniteArticle: true);
+        if (string.Equals(normalized, "mess", StringComparison.OrdinalIgnoreCase))
+        {
+            return "汚れ";
+        }
+
+        var parts = Regex.Split(normalized, "\\s*,\\s*|\\s+and\\s+");
+        var builder = new StringBuilder();
+        for (var index = 0; index < parts.Length; index++)
+        {
+            var part = parts[index].Trim();
+            if (part.Length == 0)
+            {
+                continue;
+            }
+
+            if (builder.Length > 0)
+            {
+                builder.Append('と');
+            }
+
+            builder.Append(TranslateCleaningType(part));
+        }
+
+        return builder.Length == 0 ? normalized : builder.ToString();
+    }
+
+    private static string TranslateCleaningType(string source)
+    {
+        var liquid = TranslateLiquidPhrase(source);
+        if (liquid is not null)
+        {
+            return liquid;
+        }
+
+        if (string.Equals(source, "rust", StringComparison.OrdinalIgnoreCase))
+        {
+            return "錆";
+        }
+
+        if (string.Equals(source, "slime", StringComparison.OrdinalIgnoreCase))
+        {
+            return "粘液";
+        }
+
+        if (string.Equals(source, "stain", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(source, "stains", StringComparison.OrdinalIgnoreCase))
+        {
+            return "染み";
+        }
+
+        if (string.Equals(source, "dust", StringComparison.OrdinalIgnoreCase))
+        {
+            return "埃";
+        }
+
+        if (string.Equals(source, "dirt", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(source, "mud", StringComparison.OrdinalIgnoreCase))
+        {
+            return "泥";
+        }
+
+        return string.Equals(source, "soot", StringComparison.OrdinalIgnoreCase)
+            ? "煤"
+            : source;
+    }
+
+    private static string TranslateEnglishAndListConjunctions(string source)
+    {
+        return source
+            .Replace(", and ", "と")
+            .Replace(" and ", "と")
+            .Replace(", ", "、");
+    }
+
+    private static string StripRepeatedPossessivePrefixes(string source)
+    {
+        var result = Regex.Replace(source, ", your ", ", ", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        result = Regex.Replace(result, " and your ", " and ", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        result = Regex.Replace(result, "、your ", "、", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        result = Regex.Replace(result, "、とyour ", "、と", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        return Regex.Replace(result, "とyour ", "と", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+    }
+
 
     private static string BuildCollectLocationPrefix(Match match, IReadOnlyList<ColorSpan> spans)
     {

@@ -2022,7 +2022,7 @@
         },
         {
           "path": "Dictionaries/ui-displayname-atomic.ja.json",
-          "entry_index": 27,
+          "entry_index": 26,
           "text": "真鍮"
         },
         {
@@ -4294,7 +4294,7 @@
         },
         {
           "path": "Dictionaries/world-mods.ja.json",
-          "entry_index": 41,
+          "entry_index": 43,
           "text": "{{Y|伝{{W|説}}的}}"
         }
       ]
@@ -7981,12 +7981,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/world-mods.ja.json",
-          "entry_index": 198,
+          "entry_index": 206,
           "text": "命中率: 高い"
         },
         {
           "path": "Dictionaries/world-mods.ja.json",
-          "entry_index": 206,
+          "entry_index": 214,
           "text": "命中率: 高い"
         }
       ]
@@ -8003,12 +8003,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/world-mods.ja.json",
-          "entry_index": 200,
+          "entry_index": 208,
           "text": "命中率: 低い"
         },
         {
           "path": "Dictionaries/world-mods.ja.json",
-          "entry_index": 208,
+          "entry_index": 216,
           "text": "命中率: 低い"
         }
       ]
@@ -8025,12 +8025,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/world-mods.ja.json",
-          "entry_index": 199,
+          "entry_index": 207,
           "text": "命中率: 普通"
         },
         {
           "path": "Dictionaries/world-mods.ja.json",
-          "entry_index": 207,
+          "entry_index": 215,
           "text": "命中率: 普通"
         }
       ]
@@ -8047,12 +8047,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/world-mods.ja.json",
-          "entry_index": 197,
+          "entry_index": 205,
           "text": "命中率: 非常に高い"
         },
         {
           "path": "Dictionaries/world-mods.ja.json",
-          "entry_index": 205,
+          "entry_index": 213,
           "text": "命中率: 非常に高い"
         }
       ]
@@ -8069,12 +8069,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/world-mods.ja.json",
-          "entry_index": 201,
+          "entry_index": 209,
           "text": "命中率: 非常に低い"
         },
         {
           "path": "Dictionaries/world-mods.ja.json",
-          "entry_index": 209,
+          "entry_index": 217,
           "text": "命中率: 非常に低い"
         }
       ]
@@ -8091,12 +8091,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/world-mods.ja.json",
-          "entry_index": 195,
+          "entry_index": 203,
           "text": "武器カテゴリ: 弓 && ライフル"
         },
         {
           "path": "Dictionaries/world-mods.ja.json",
-          "entry_index": 203,
+          "entry_index": 211,
           "text": "武器カテゴリ: 弓 && ライフル"
         }
       ]
@@ -8113,12 +8113,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/world-mods.ja.json",
-          "entry_index": 196,
+          "entry_index": 204,
           "text": "武器カテゴリ: 重火器"
         },
         {
           "path": "Dictionaries/world-mods.ja.json",
-          "entry_index": 204,
+          "entry_index": 212,
           "text": "武器カテゴリ: 重火器"
         }
       ]
@@ -8135,12 +8135,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/world-mods.ja.json",
-          "entry_index": 194,
+          "entry_index": 202,
           "text": "武器カテゴリ: ピストル"
         },
         {
           "path": "Dictionaries/world-mods.ja.json",
-          "entry_index": 202,
+          "entry_index": 210,
           "text": "武器カテゴリ: ピストル"
         }
       ]
@@ -8162,7 +8162,7 @@
         },
         {
           "path": "Dictionaries/world-mods.ja.json",
-          "entry_index": 67,
+          "entry_index": 71,
           "text": "効果なし"
         }
       ]
@@ -8179,12 +8179,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/world-mods.ja.json",
-          "entry_index": 119,
+          "entry_index": 126,
           "text": "{{rules|{1}との評判{0:+#;-#}}}"
         },
         {
           "path": "Dictionaries/world-mods.ja.json",
-          "entry_index": 122,
+          "entry_index": 129,
           "text": "{{rules|{1}との評判{0:+#;-#}}}"
         }
       ]
@@ -8201,12 +8201,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/world-mods.ja.json",
-          "entry_index": 47,
+          "entry_index": 49,
           "text": "}}"
         },
         {
           "path": "Dictionaries/world-mods.ja.json",
-          "entry_index": 84,
+          "entry_index": 88,
           "text": "}}"
         }
       ]

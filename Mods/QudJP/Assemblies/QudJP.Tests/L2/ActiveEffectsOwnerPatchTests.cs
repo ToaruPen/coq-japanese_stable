@@ -234,8 +234,7 @@ public sealed class ActiveEffectsOwnerPatchTests
     [Test]
     public void EffectOwnerTargetResolver_IncludesBaseAndNonCookingOverrideDetailsMethods()
     {
-        WriteDictionary(
-            ("base details", "基本詳細"));
+        WriteDictionary(("base details", "基本詳細"));
         WriteScopedDictionary(
             "ui-liquid-adjectives.ja.json",
             ("salty", "XRL.Liquids.Adjective", "塩気のある"));
@@ -513,6 +512,50 @@ public sealed class ActiveEffectsOwnerPatchTests
             {
                 Assert.That(DummyBookUI.LastTitle, Is.EqualTo("&W発動中の効果&Y - Player"));
                 Assert.That(DummyBookUI.LastText, Is.EqualTo("{{W|代謝中}}\n\n主手に長剣を装備しているあいだDV+2。"));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void GameObjectShowActiveEffectsPatch_TranslatesMoveSpeedDetailWithoutPeriod_WhenPatched()
+    {
+        WriteDictionary(
+            ("Active Effects - {0}", "発動中の効果 - {0}"),
+            ("{{Y|interdicted}}", "{{Y|封鎖されている}}"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyEffect), nameof(DummyEffect.GetDescription)),
+                postfix: new HarmonyMethod(RequireMethod(typeof(EffectDescriptionPatch), nameof(EffectDescriptionPatch.Postfix))));
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyEffect), nameof(DummyEffect.GetDetails)),
+                postfix: new HarmonyMethod(RequireMethod(typeof(EffectDetailsPatch), nameof(EffectDetailsPatch.Postfix))));
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyGameObjectActiveEffectsTarget), nameof(DummyGameObjectActiveEffectsTarget.ShowActiveEffects)),
+                transpiler: new HarmonyMethod(RequireMethod(typeof(GameObjectShowActiveEffectsPatch), nameof(GameObjectShowActiveEffectsPatch.Transpiler))));
+
+            var target = new DummyGameObjectActiveEffectsTarget
+            {
+                TitleSuffix = "Player",
+                Effect = new DummyEffect
+                {
+                    DescriptionText = "{{Y|interdicted}}",
+                    DetailsText = "-10 Move Speed",
+                },
+            };
+            target.ShowActiveEffects();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyBookUI.LastTitle, Is.EqualTo("&W発動中の効果&Y - Player"));
+                Assert.That(DummyBookUI.LastText, Is.EqualTo("{{Y|封鎖されている}}\n\n移動速度 -10。"));
             });
         }
         finally

@@ -734,6 +734,18 @@ public sealed class MessagePatternTranslatorTests
     }
 
     [Test]
+    public void Translate_DisplayNamePlaceholderTranslatesWeaponCapture()
+    {
+        WriteExactDictionary(("chain pistol", "チェーンピストル"));
+        WritePatternDictionary(
+            ("^You hit \\((x\\d+)\\) for (\\d+) damage with (?:your |the |a |an )?(.+?)[.!] \\[(.+?)\\]$", "{d2}で{1}ダメージを与えた。({0}) [{3}]"));
+
+        var translated = MessagePatternTranslator.Translate("You hit (x1) for 1 damage with the {{Y|chain pistol}}! [18]");
+
+        Assert.That(translated, Is.EqualTo("{{Y|チェーンピストル}}で1ダメージを与えた。(x1) [18]"));
+    }
+
+    [Test]
     public void Translate_RepositoryDictionary_PreservesNestedColorWrappersForPlayerHitWithRoll()
     {
         UseRepositoryPatternDictionary();
@@ -746,6 +758,32 @@ public sealed class MessagePatternTranslatorTests
     }
 
     [Test]
+    public void Translate_RepositoryDictionary_PreservesNestedColorWrappersForPlayerHitWithTheWeaponAndRoll()
+    {
+        UseRepositoryPatternDictionary();
+
+        var translated = MessagePatternTranslator.Translate(
+            "{{g|You hit {{&W|(x2)}} for 21 damage with the {{g|{{Y|塩気のある}} {{slimy|粘液質の}} Point of the Commanding Woe}}! [19]}}");
+
+        Assert.That(
+            translated,
+            Is.EqualTo("{{g|{{g|{{Y|塩気のある}} {{slimy|粘液質の}} Point of the Commanding Woe}}で21ダメージを与えた。({{&W|x2}}) [19]}}"));
+    }
+
+    [Test]
+    public void Translate_RepositoryDictionary_PreservesNestedColorWrappersForPlayerCriticalHitWithTheWeaponAndRoll()
+    {
+        UseRepositoryPatternDictionary();
+
+        var translated = MessagePatternTranslator.Translate(
+            "{{g|You critically hit {{&W|(x3)}} for 28 damage with the {{Y-R-Y-Y-Y-Y-Y-r-Y sequence|Point of the Commanding Woe}}! [21]}}");
+
+        Assert.That(
+            translated,
+            Is.EqualTo("{{g|{{Y-R-Y-Y-Y-Y-Y-r-Y sequence|Point of the Commanding Woe}}で会心の一撃、28ダメージを与えた。({{&W|x3}}) [21]}}"));
+    }
+
+    [Test]
     public void Translate_RepositoryDictionary_PreservesOuterWrapperForPlayerWeaponMiss()
     {
         UseRepositoryPatternDictionary();
@@ -755,6 +793,18 @@ public sealed class MessagePatternTranslatorTests
         Assert.That(
             translated,
             Is.EqualTo("{{r|{{fiery|燃え盛る}} {{w|青銅の短剣}}での攻撃は外れた。[0 vs 0]}}"));
+    }
+
+    [Test]
+    public void Translate_RepositoryDictionary_PreservesOuterWrapperForPlayerWeaponMissWithTheWeapon()
+    {
+        UseRepositoryPatternDictionary();
+
+        var translated = MessagePatternTranslator.Translate("{{r|You miss with the {{Y-R-Y-Y-Y-Y-Y-r-Y sequence|Point of the Commanding Woe}}! [8 vs 12]}}");
+
+        Assert.That(
+            translated,
+            Is.EqualTo("{{r|{{Y-R-Y-Y-Y-Y-Y-r-Y sequence|Point of the Commanding Woe}}での攻撃は外れた。[8 vs 12]}}"));
     }
 
     [Test]
@@ -2046,6 +2096,17 @@ public sealed class MessagePatternTranslatorTests
             "Your 鉛スラッグ fails to penetrate the フォームクリートの armor!");
 
         Assert.That(translated, Is.EqualTo("あなたの鉛スラッグはフォームクリートの装甲を貫けなかった！"));
+    }
+
+    [Test]
+    public void Translate_RepositoryDictionary_TranslatesPlayerWeaponArmorFailureWithLocalizedPossessive()
+    {
+        UseRepositoryPatternDictionary();
+
+        var translated = MessagePatternTranslator.Translate(
+            "You don't penetrate 珪岩の armor with the 地点of the Commanding Woe. [23]");
+
+        Assert.That(translated, Is.EqualTo("地点of the Commanding Woeでは珪岩の装甲を貫けなかった！ [23]"));
     }
 
     [Test]

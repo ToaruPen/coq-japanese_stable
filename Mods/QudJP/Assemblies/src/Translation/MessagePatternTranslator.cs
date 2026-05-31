@@ -525,7 +525,7 @@ internal static class MessagePatternTranslator
             return ApplyTemplateWithColorAwareCaptures(template, match, source, spans);
         }
 
-        if (template.Contains("{t"))
+        if (HasParsedPlaceholderTemplate(template))
         {
             return ApplyTemplateWithTranslatedCaptures(template, match);
         }
@@ -633,7 +633,8 @@ internal static class MessagePatternTranslator
             var token = template.Substring(index + 1, closeIndex - index - 1);
             var translateCapture = token.Length > 1 && token[0] == 't';
             var translateAdverbCapture = token.Length > 1 && token[0] == 'a';
-            if (translateCapture || translateAdverbCapture)
+            var translateDisplayNameCapture = token.Length > 1 && token[0] == 'd';
+            if (translateCapture || translateAdverbCapture || translateDisplayNameCapture)
             {
                 token = token.Substring(1);
             }
@@ -653,6 +654,10 @@ internal static class MessagePatternTranslator
             if (translateAdverbCapture)
             {
                 value = TranslateAdverbTemplateCapture(value);
+            }
+            else if (translateDisplayNameCapture)
+            {
+                value = TranslateDisplayNameTemplateCapture(value);
             }
             else if (translateCapture)
             {
@@ -786,6 +791,10 @@ internal static class MessagePatternTranslator
             {
                 value = TranslateAdverbTemplateCapture(value);
             }
+            else if (part.TranslateDisplayNameCapture)
+            {
+                value = TranslateDisplayNameTemplateCapture(value);
+            }
             else if (part.TranslateCapture)
             {
                 value = TranslateTemplateCapture(value);
@@ -887,7 +896,8 @@ internal static class MessagePatternTranslator
             var token = template.Substring(index + 1, closeIndex - index - 1);
             var translateCapture = token.Length > 1 && token[0] == 't';
             var translateAdverbCapture = token.Length > 1 && token[0] == 'a';
-            if (translateCapture || translateAdverbCapture)
+            var translateDisplayNameCapture = token.Length > 1 && token[0] == 'd';
+            if (translateCapture || translateAdverbCapture || translateDisplayNameCapture)
             {
                 token = token.Substring(1);
             }
@@ -902,7 +912,11 @@ internal static class MessagePatternTranslator
                 throw new FormatException($"QudJP: placeholder '{{{token}}}' exceeds capture count in message pattern template '{template}'.");
             }
 
-            parts.Add(TemplatePart.CreateCapture(captureIndex, translateCapture, translateAdverbCapture));
+            parts.Add(TemplatePart.CreateCapture(
+                captureIndex,
+                translateCapture,
+                translateAdverbCapture,
+                translateDisplayNameCapture));
             index = closeIndex;
         }
 
@@ -1097,6 +1111,25 @@ internal static class MessagePatternTranslator
         }
 
         return source;
+    }
+
+    private static bool HasParsedPlaceholderTemplate(string template)
+    {
+        return template.Contains("{t")
+            || template.Contains("{a")
+            || template.Contains("{d");
+    }
+
+    private static string TranslateDisplayNameTemplateCapture(string source)
+    {
+        try
+        {
+            return DisplayNameCaptureTranslator.TranslatePreservingColors(source, nameof(MessagePatternTranslator));
+        }
+        catch (DirectoryNotFoundException)
+        {
+            return source;
+        }
     }
 
     private static bool TryTranslateDirectionQualifiedCapture(string source, out string translated)
@@ -1387,12 +1420,18 @@ internal static class MessagePatternTranslator
 
     private readonly struct TemplatePart
     {
-        private TemplatePart(string literal, int captureIndex, bool translateCapture, bool translateAdverbCapture)
+        private TemplatePart(
+            string literal,
+            int captureIndex,
+            bool translateCapture,
+            bool translateAdverbCapture,
+            bool translateDisplayNameCapture)
         {
             Literal = literal;
             CaptureIndex = captureIndex;
             TranslateCapture = translateCapture;
             TranslateAdverbCapture = translateAdverbCapture;
+            TranslateDisplayNameCapture = translateDisplayNameCapture;
         }
 
         internal string Literal { get; }
@@ -1403,16 +1442,32 @@ internal static class MessagePatternTranslator
 
         internal bool TranslateAdverbCapture { get; }
 
+        internal bool TranslateDisplayNameCapture { get; }
+
         internal bool IsCapture => CaptureIndex >= 0;
 
         internal static TemplatePart CreateLiteral(string literal)
         {
-            return new TemplatePart(literal, captureIndex: -1, translateCapture: false, translateAdverbCapture: false);
+            return new TemplatePart(
+                literal,
+                captureIndex: -1,
+                translateCapture: false,
+                translateAdverbCapture: false,
+                translateDisplayNameCapture: false);
         }
 
-        internal static TemplatePart CreateCapture(int captureIndex, bool translateCapture, bool translateAdverbCapture)
+        internal static TemplatePart CreateCapture(
+            int captureIndex,
+            bool translateCapture,
+            bool translateAdverbCapture,
+            bool translateDisplayNameCapture)
         {
-            return new TemplatePart(string.Empty, captureIndex, translateCapture, translateAdverbCapture);
+            return new TemplatePart(
+                string.Empty,
+                captureIndex,
+                translateCapture,
+                translateAdverbCapture,
+                translateDisplayNameCapture);
         }
     }
 }

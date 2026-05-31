@@ -13185,7 +13185,7 @@ COVERED_OWNER_FAMILIES: Final = (
             EvidenceFile(
                 "Mods/QudJP/Localization/Dictionaries/messages.ja.json",
                 (
-                    "^You miss with your (.+?)[.!] ",
+                    "^You miss with (?:your |the |a |an )?(.+?)[.!] ",
                     "^(?:The |the |[Aa]n? )?(.+) misses you[.!]?$",
                     "^Your mental attack does not affect (.+?)\\\\.$",
                     "^You fail to deal damage with your attack! ",

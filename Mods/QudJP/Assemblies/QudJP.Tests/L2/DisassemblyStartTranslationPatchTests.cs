@@ -21,6 +21,7 @@ public sealed class DisassemblyStartTranslationPatchTests
         File.WriteAllText(Path.Combine(tempDirectory, "empty.ja.json"), "{\"entries\":[]}");
         Translator.ResetForTests();
         Translator.SetDictionaryDirectoryForTests(tempDirectory);
+        PopupTranslatedMessageHandoff.ResetForTests();
         DummyMessageQueue.Reset();
         DummyPopupShow.Reset();
     }
@@ -29,6 +30,7 @@ public sealed class DisassemblyStartTranslationPatchTests
     public void TearDown()
     {
         Translator.ResetForTests();
+        PopupTranslatedMessageHandoff.ResetForTests();
         if (Directory.Exists(tempDirectory))
         {
             Directory.Delete(tempDirectory, recursive: true);
@@ -44,11 +46,41 @@ public sealed class DisassemblyStartTranslationPatchTests
     }
 
     [Test]
+    public void DisassemblyContinue_TranslatesReverseEngineeringPromptItemCapture_WhenOwnerPatched()
+    {
+        WriteDictionaryFile("ui-displayname-atomic.ja.json", ("strange artifact", "奇妙な遺物"));
+
+        AssertPopupMessage(
+            "Do you want to try to reverse engineer {{Y|strange artifact}}?",
+            "{{Y|奇妙な遺物}}をリバースエンジニアリングしてみる？");
+    }
+
+    [Test]
     public void DisassemblyContinue_TranslatesStartDisassemblingMessage_WhenOwnerPatched()
     {
         AssertQueuedMessage(
             "You start disassembling {{Y|strange artifact}}.",
             "{{Y|strange artifact}}の分解を始めた。",
+            expectedColor: "white");
+    }
+
+    [Test]
+    public void DisassemblyContinue_TranslatesStartDisassemblingMessageItemCapture_WhenOwnerPatched()
+    {
+        WriteDictionaryFile("ui-displayname-atomic.ja.json", ("strange artifact", "奇妙な遺物"));
+
+        AssertQueuedMessage(
+            "You start disassembling {{Y|strange artifact}}.",
+            "{{Y|奇妙な遺物}}の分解を始めた。",
+            expectedColor: "white");
+    }
+
+    [Test]
+    public void DisassemblyContinue_TranslatesStartDisassemblingMessage_WithPossessiveItem_WhenOwnerPatched()
+    {
+        AssertQueuedMessage(
+            "You start disassembling your HEミサイル x29.",
+            "HEミサイル x29の分解を始めた。",
             expectedColor: "white");
     }
 
@@ -67,6 +99,59 @@ public sealed class DisassemblyStartTranslationPatchTests
         AssertPopupShowMessage(
             "You disassemble {{c|ケムセル}}. {{G|Eureka! You may now build {{c|ケムセル}}.}} You receive tinkering bits <{{|B{{r|1}}}}>.",
             "{{c|ケムセル}}を分解し、修理ビット<{{|B{{r|1}}}}>を受け取った。ひらめいた！ {{c|ケムセル}}を作れるようになった。");
+    }
+
+    [Test]
+    public void DisassemblyEnd_TranslatesDisassembleBitsReceiptPopup_WithLocationSuffix_WhenOwnerPatched()
+    {
+        AssertPopupShowMessage(
+            "You disassemble the ひび割れたレンズ here. You receive tinkering bits <{{|{{G|B}}}}>.",
+            "ひび割れたレンズを分解し、修理ビット<{{|{{G|B}}}}>を受け取った。");
+    }
+
+    [Test]
+    public void DisassemblyEnd_TranslatesRuntimeEurekaPopup_WithLocationSuffix_WhenOwnerPatched()
+    {
+        AssertPopupShowMessage(
+            "You disassemble the {{Y|イサッカリライフル}} here. {{G|Eureka! You may now build {{Y|イサッカリライフル}}.}} You receive tinkering bits <{{|{{R|A}}{{C|D}}{{g|2}}}}>.",
+            "{{Y|イサッカリライフル}}を分解し、修理ビット<{{|{{R|A}}{{C|D}}{{g|2}}}}>を受け取った。ひらめいた！ {{Y|イサッカリライフル}}を作れるようになった。");
+    }
+
+    [Test]
+    public void DisassemblyEnd_TranslatesRuntimeEurekaPopup_WithDirectionalLocationSuffix_WhenOwnerPatched()
+    {
+        AssertPopupShowMessage(
+            "You disassemble the {{electrical|帯電}} {{psionic|サイオニック}} {{K|フラーレンの短剣}} to the east. {{G|Eureka! You may now mod items with the 帯電 mod.}} You receive tinkering bits <{{|{{G|B}}{{G|B}}}}>.",
+            "{{electrical|帯電}} {{psionic|サイオニック}} {{K|フラーレンの短剣}}を分解し、修理ビット<{{|{{G|B}}{{G|B}}}}>を受け取った。ひらめいた！ 帯電 modでアイテムを改造できるようになった。");
+    }
+
+    [Test]
+    public void DisassemblyEnd_TranslatesEurekaModReceiptPopup_WhenOwnerPatched()
+    {
+        WriteDictionaryFile("ui-displayname-adjectives.ja.json", ("liquid-cooled", "液冷式"));
+
+        AssertPopupShowMessage(
+            "You disassemble the {{B|liquid-cooled}} チェーンガン. {{G|Eureka! You may now mod items with the {{B|liquid-cooled}} mod.}} You receive tinkering bits <{{|B{{c|4}}}}>.",
+            "{{B|液冷式}} チェーンガンを分解し、修理ビット<{{|B{{c|4}}}}>を受け取った。ひらめいた！ {{B|液冷式}} modでアイテムを改造できるようになった。");
+    }
+
+    [Test]
+    public void DisassemblyEnd_TranslatesEurekaModReceiptPopup_WithColoredModAndColoredBaseItem_WhenOwnerPatched()
+    {
+        WriteDictionaryFile("ui-displayname-adjectives.ja.json", ("liquid-cooled", "液冷式"));
+        WriteDictionaryFile("ui-displayname-atomic.ja.json", ("chain gun", "チェーンガン"));
+
+        AssertPopupShowMessage(
+            "You disassemble the {{B|liquid-cooled}} {{Y|chain gun}}. {{G|Eureka! You may now mod items with the {{B|liquid-cooled}} mod.}} You receive tinkering bits <{{|B{{c|4}}}}>.",
+            "{{B|液冷式}} {{Y|チェーンガン}}を分解し、修理ビット<{{|B{{c|4}}}}>を受け取った。ひらめいた！ {{B|液冷式}} modでアイテムを改造できるようになった。");
+    }
+
+    [Test]
+    public void DisassemblyEnd_TranslatesPartiallyLocalizedEurekaModReceiptPopup_WhenOwnerPatched()
+    {
+        AssertPopupShowMessage(
+            "{{B|液冷式}} チェーンガン. {{G|Eureka! You may now mod items with the {{B|液冷式}} mod.}} You receive tinkering bits <{{|B{{c|4}}}}>.",
+            "{{B|液冷式}} チェーンガンを分解し、修理ビット<{{|B{{c|4}}}}>を受け取った。ひらめいた！ {{B|液冷式}} modでアイテムを改造できるようになった。");
     }
 
     [Test]
@@ -92,6 +177,50 @@ public sealed class DisassemblyStartTranslationPatchTests
         finally
         {
             _ = DisassemblyStartTranslationPatch.Finalizer(null);
+        }
+    }
+
+    [Test]
+    public void MessageLog_DoesNotConsumePopupHandoff_ForLegacyPopupLog()
+    {
+        const string source = "You disassemble the {{Y|イサッカリライフル}} here. {{G|Eureka! You may now build {{Y|イサッカリライフル}}.}} You receive tinkering bits <{{|{{R|A}}{{C|D}}{{g|2}}}}>.";
+        const string expected = "{{Y|イサッカリライフル}}を分解し、修理ビット<{{|{{R|A}}{{C|D}}{{g|2}}}}>を受け取った。ひらめいた！ {{Y|イサッカリライフル}}を作れるようになった。";
+
+        PopupTranslatedMessageHandoff.EnterScope();
+        try
+        {
+            PopupTranslatedMessageHandoff.Remember(source, expected);
+            var message = source;
+
+            _ = MessageLogPatch.Prefix(ref message);
+
+            Assert.That(message, Is.EqualTo(source));
+        }
+        finally
+        {
+            PopupTranslatedMessageHandoff.ExitCurrentScope();
+        }
+    }
+
+    [Test]
+    public void MessageLog_DoesNotConsumePopupHandoff_ForDisassembleBitsReceipt()
+    {
+        const string source = "You disassemble the ひび割れたレンズ here. You receive tinkering bits <{{|{{G|B}}}}>.";
+        const string expected = "ひび割れたレンズを分解し、修理ビット<{{|{{G|B}}}}>を受け取った。";
+
+        PopupTranslatedMessageHandoff.EnterScope();
+        try
+        {
+            PopupTranslatedMessageHandoff.Remember(source, expected);
+            var message = source;
+
+            _ = MessageLogPatch.Prefix(ref message);
+
+            Assert.That(message, Is.EqualTo(source));
+        }
+        finally
+        {
+            PopupTranslatedMessageHandoff.ExitCurrentScope();
         }
     }
 
@@ -285,6 +414,18 @@ public sealed class DisassemblyStartTranslationPatchTests
     private static string CreateHarmonyId()
     {
         return $"qudjp.tests.{Guid.NewGuid():N}";
+    }
+
+    private void WriteDictionaryFile(string fileName, params (string key, string text)[] entries)
+    {
+        var contents = "{\"entries\":["
+            + string.Join(
+                ",",
+                entries.Select(entry => $"{{\"key\":\"{entry.key}\",\"text\":\"{entry.text}\"}}"))
+            + "]}";
+        File.WriteAllText(Path.Combine(tempDirectory, fileName), contents);
+        Translator.ResetForTests();
+        Translator.SetDictionaryDirectoryForTests(tempDirectory);
     }
 
     private static class DummyDisassemblyStartTarget

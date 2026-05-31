@@ -7,8 +7,6 @@ namespace QudJP.Patches;
 internal static class PopupTranslatedMessageHandoff
 {
     private const int MaxPendingEntries = 8;
-    private static readonly object DetachedEntriesLock = new();
-    private static readonly List<Entry> DetachedEntries = new();
 
     [ThreadStatic]
     private static List<Entry>? pendingEntries;
@@ -35,25 +33,18 @@ internal static class PopupTranslatedMessageHandoff
         activeScopes.Add(scopeId);
     }
 
-    internal static void ExitCurrentScope(bool retainPendingEntries = false)
+    internal static void ExitCurrentScope()
     {
         var scopeId = GetCurrentScopeId();
         if (scopeId != 0)
         {
-            ExitScope(scopeId, retainPendingEntries);
+            ExitScope(scopeId);
         }
     }
 
-    internal static void ExitScope(int scopeId, bool retainPendingEntries = false)
+    internal static void ExitScope(int scopeId)
     {
-        if (retainPendingEntries)
-        {
-            DetachPendingEntriesForScope(scopeId);
-        }
-        else
-        {
-            RemovePendingEntriesForScope(scopeId);
-        }
+        RemovePendingEntriesForScope(scopeId);
 
         var scopes = activeScopes;
         if (scopes is null)
@@ -119,20 +110,14 @@ internal static class PopupTranslatedMessageHandoff
             return false;
         }
 
-        var key = CreateKey(source);
-        var entries = pendingEntries;
         var scopeId = GetCurrentScopeId();
         if (scopeId == 0)
         {
-            if (entries is not null && TryConsumeDetachedEntry(entries, key, out translated))
-            {
-                ClearDetachedEntriesForAnyThread();
-                return true;
-            }
-
-            return TryConsumeDetachedEntryFromAnyThread(key, out translated);
+            return false;
         }
 
+        var key = CreateKey(source);
+        var entries = pendingEntries;
         if (entries is null)
         {
             return false;
@@ -156,15 +141,45 @@ internal static class PopupTranslatedMessageHandoff
         return false;
     }
 
+    internal static bool TryGetFromCurrentScope(string source, out string translated)
+    {
+        translated = source;
+        if (string.IsNullOrEmpty(source))
+        {
+            return false;
+        }
+
+        var scopeId = GetCurrentScopeId();
+        var entries = pendingEntries;
+        if (scopeId == 0 || entries is null)
+        {
+            return false;
+        }
+
+        var key = CreateKey(source);
+        for (var index = entries.Count - 1; index >= 0; index--)
+        {
+            var entry = entries[index];
+            if (entry.ScopeId != scopeId
+                || !string.Equals(entry.Visible, key.Visible, StringComparison.Ordinal)
+                || !string.Equals(entry.ColorSignature, key.ColorSignature, StringComparison.Ordinal))
+            {
+                continue;
+            }
+
+            entries.RemoveAt(index);
+            translated = entry.Translated;
+            return true;
+        }
+
+        return false;
+    }
+
     internal static void ResetForTests()
     {
         pendingEntries = null;
         activeScopes = null;
         nextScopeId = 0;
-        lock (DetachedEntriesLock)
-        {
-            DetachedEntries.Clear();
-        }
     }
 
     private static int GetCurrentScopeId()
@@ -184,118 +199,6 @@ internal static class PopupTranslatedMessageHandoff
         for (var index = entries.Count - 1; index >= 0; index--)
         {
             if (entries[index].ScopeId == scopeId)
-            {
-                entries.RemoveAt(index);
-            }
-        }
-
-        if (entries.Count == 0)
-        {
-            pendingEntries = null;
-        }
-    }
-
-    private static void DetachPendingEntriesForScope(int scopeId)
-    {
-        var entries = pendingEntries;
-        if (entries is null)
-        {
-            return;
-        }
-
-        for (var index = 0; index < entries.Count; index++)
-        {
-            if (entries[index].ScopeId == scopeId)
-            {
-                entries[index].Detach();
-                AddDetachedEntryForAnyThread(entries[index]);
-            }
-        }
-    }
-
-    private static bool TryConsumeDetachedEntry(List<Entry> entries, Key key, out string translated)
-    {
-        translated = string.Empty;
-        Entry? detachedMatch = null;
-        for (var index = entries.Count - 1; index >= 0; index--)
-        {
-            var entry = entries[index];
-            if (entry.ScopeId != 0
-                || !string.Equals(entry.Visible, key.Visible, StringComparison.Ordinal)
-                || !string.Equals(entry.ColorSignature, key.ColorSignature, StringComparison.Ordinal))
-            {
-                continue;
-            }
-
-            detachedMatch = entry;
-            break;
-        }
-
-        RemoveDetachedEntries(entries);
-        if (detachedMatch is null)
-        {
-            return false;
-        }
-
-        translated = detachedMatch.Translated;
-        return true;
-    }
-
-    private static bool TryConsumeDetachedEntryFromAnyThread(Key key, out string translated)
-    {
-        translated = string.Empty;
-        lock (DetachedEntriesLock)
-        {
-            Entry? detachedMatch = null;
-            for (var index = DetachedEntries.Count - 1; index >= 0; index--)
-            {
-                var entry = DetachedEntries[index];
-                if (!string.Equals(entry.Visible, key.Visible, StringComparison.Ordinal)
-                    || !string.Equals(entry.ColorSignature, key.ColorSignature, StringComparison.Ordinal))
-                {
-                    continue;
-                }
-
-                detachedMatch = entry;
-                break;
-            }
-
-            DetachedEntries.Clear();
-            if (detachedMatch is null)
-            {
-                return false;
-            }
-
-            translated = detachedMatch.Translated;
-            return true;
-        }
-    }
-
-    private static void AddDetachedEntryForAnyThread(Entry entry)
-    {
-        lock (DetachedEntriesLock)
-        {
-            DetachedEntries.Add(new Entry(0, entry.Visible, entry.ColorSignature, entry.Translated));
-            if (DetachedEntries.Count > MaxPendingEntries)
-            {
-                DetachedEntries.RemoveAt(0);
-            }
-        }
-    }
-
-    private static void ClearDetachedEntriesForAnyThread()
-    {
-        lock (DetachedEntriesLock)
-        {
-            DetachedEntries.Clear();
-        }
-    }
-
-    private static void RemoveDetachedEntries(List<Entry> entries)
-    {
-        for (var index = entries.Count - 1; index >= 0; index--)
-        {
-            if (entries[index].ScopeId == 0)
             {
                 entries.RemoveAt(index);
             }
@@ -392,17 +295,12 @@ internal static class PopupTranslatedMessageHandoff
             Translated = translated;
         }
 
-        internal int ScopeId { get; private set; }
+        internal int ScopeId { get; }
 
         internal string Visible { get; }
 
         internal string ColorSignature { get; }
 
         internal string Translated { get; }
-
-        internal void Detach()
-        {
-            ScopeId = 0;
-        }
     }
 }

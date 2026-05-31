@@ -192,6 +192,75 @@ public sealed class WorldPartsProducerTranslationPatchTests
     }
 
     [Test]
+    public void LiquidVolumePatch_TranslatesCleanAllItemsMessage_WhenOwnerPatched()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyLiquidVolumeProducerTarget), nameof(DummyLiquidVolumeProducerTarget.HandleEvent), typeof(DummyInventoryActionEvent)),
+                typeof(LiquidVolumeTranslationPatch));
+
+            var target = new DummyLiquidVolumeProducerTarget
+            {
+                QueuedMessageToSend = "You clean the slime and rust from your {{Y|boots}} and {{Y|bronze dagger}} with a dram of {{C|water}}.",
+            };
+
+            target.HandleEvent(new DummyInventoryActionEvent());
+
+            Assert.That(
+                DummyMessageQueue.LastMessage,
+                Is.EqualTo("{{Y|boots}}と{{Y|bronze dagger}}から粘液と錆を{{C|水}}1ドラムで洗い落とした。"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void LiquidVolumePatch_TranslatesCleanAllItemsMessageLog_WhenOwnerScopeIsActive()
+    {
+        var message = "You clean the stains from {{C|high-tech toolkit}}、your {{Y|steel}} buckler、とyour pair of {{Y|steel}} boots with a dram of {{B|fresh water}} from カムシュルウールの 水筒.";
+
+        LiquidVolumeTranslationPatch.Prefix();
+        try
+        {
+            MessageLogPatch.Prefix(ref message);
+        }
+        finally
+        {
+            _ = LiquidVolumeTranslationPatch.Finalizer(null);
+        }
+
+        Assert.That(
+            message,
+            Is.EqualTo("{{C|high-tech toolkit}}、{{Y|steel}} buckler、とpair of {{Y|steel}} bootsから染みを{{B|真水}}1ドラムで洗い落とした。"));
+    }
+
+    [Test]
+    public void LiquidVolumePatch_TranslatesCollectMessageFromContainerHere_WhenOwnerScopeIsActive()
+    {
+        var message = "You collect 60 dram of fresh water from the 水袋 here in your 水筒と水袋.";
+
+        LiquidVolumeTranslationPatch.Prefix();
+        try
+        {
+            MessageLogPatch.Prefix(ref message);
+        }
+        finally
+        {
+            _ = LiquidVolumeTranslationPatch.Finalizer(null);
+        }
+
+        Assert.That(message, Is.EqualTo("水袋（ここ）から真水を60ドラム集めた（水筒と水袋に入れた）。"));
+    }
+
+    [Test]
     public void LiquidVolumePatch_TranslatesHandleEventOwnerMessages_WhenOwnerPatched()
     {
         var harmonyId = CreateHarmonyId();

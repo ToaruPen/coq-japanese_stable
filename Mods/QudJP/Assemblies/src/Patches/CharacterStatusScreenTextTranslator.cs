@@ -24,7 +24,7 @@ internal static class CharacterStatusScreenTextTranslator
     private static readonly Regex StatusSummaryPattern =
         new Regex("^Level: (?<level>\\d+) ¯ HP: (?<hpCurrent>\\d+)\\/(?<hpMax>\\d+) ¯ XP: (?<xpCurrent>\\d+)\\/(?<xpMax>\\d+) ¯ Weight: (?<weight>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex ElementalRayRankSectionPattern =
-        new Regex("^Emits a (?<range>\\d+)-square ray of (?<element>frost|flame) in the direction of your choice\\.\\nDamage: (?<damage>.+)\\nCooldown: (?<cooldown>\\d+) rounds(?:\\nCooldown reduced by (?<cooldownReduction>\\d+) due to high Willpower\\.)?\\nMelee attacks (?<verb>cool|heat) opponents by (?<temperature>.+) degrees$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+        new Regex("^Emits a (?<range>\\d+)-square ray of (?<element>frost|flame) in the direction of your choice\\.\\nDamage: (?<damage>.+)\\nCooldown: (?<cooldown>\\d+) rounds?(?:\\nCooldown reduced by (?<cooldownReduction>\\d+) due to high Willpower\\.)?\\nMelee attacks (?<verb>cool|heat) opponents by (?<temperature>.+) degrees$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     private static readonly string[] CharacterArchetypes =
     {
@@ -210,31 +210,49 @@ internal static class CharacterStatusScreenTextTranslator
             return false;
         }
 
-        var mutationName = GetStableMutationDictionaryName(mutation);
-        if (string.IsNullOrWhiteSpace(mutationName))
+        var mutationNames = GetMutationDictionaryNameCandidates(mutation, source);
+        if (mutationNames.Count == 0)
         {
             return false;
         }
 
-        var description = GetMutationDictionaryValue($"mutation:{mutationName}");
         var level = GetIntMemberValue(mutation, "Level");
         var variant = GetStringMemberValue(mutation, "Variant");
-        var currentRank = level.HasValue
-            ? GetMutationRankDictionaryValue(mutationName!, variant, level.Value)
-            : null;
-        var nextRank = level.HasValue
-            ? GetMutationRankDictionaryValue(mutationName!, variant, level.Value + 1)
-            : null;
 
 #pragma warning disable CA2249
-        if (source.IndexOf("This rank", StringComparison.Ordinal) >= 0
-            || source.IndexOf("Next rank", StringComparison.Ordinal) >= 0)
+        var isRankComparison = source.IndexOf("This rank", StringComparison.Ordinal) >= 0
+            || source.IndexOf("Next rank", StringComparison.Ordinal) >= 0;
 #pragma warning restore CA2249
+
+        for (var index = 0; index < mutationNames.Count; index++)
         {
-            return TryTranslateRankComparisonDetails(source, route, description, currentRank, nextRank, out translated);
+            var mutationName = mutationNames[index];
+            var description = GetMutationDictionaryValue($"mutation:{mutationName}");
+            var currentRank = level.HasValue
+                ? GetMutationRankDictionaryValue(mutationName, variant, level.Value)
+                : null;
+            var nextRank = level.HasValue
+                ? GetMutationRankDictionaryValue(mutationName, variant, level.Value + 1)
+                : null;
+
+            if (isRankComparison)
+            {
+                if (TryTranslateRankComparisonDetails(source, route, description, currentRank, nextRank, out translated))
+                {
+                    return true;
+                }
+
+                continue;
+            }
+
+            if (TryTranslateSimpleDetails(source, route, description, currentRank, out translated))
+            {
+                return true;
+            }
         }
 
-        return TryTranslateSimpleDetails(source, route, description, currentRank, out translated);
+        translated = source;
+        return false;
     }
 
     private static bool TryTranslateExactLookup(string source, string route, out string translated)
@@ -623,6 +641,70 @@ internal static class CharacterStatusScreenTextTranslator
             && !string.Equals(translated, key, StringComparison.Ordinal)
             ? translated
             : null;
+    }
+
+    private static List<string> GetMutationDictionaryNameCandidates(object mutation, string source)
+    {
+        var candidates = new List<string>();
+        AddCandidate(candidates, GetStableMutationDictionaryName(mutation));
+        AddCandidate(candidates, InferElementalRayMutationDictionaryName(source));
+        return candidates;
+    }
+
+    private static void AddCandidate(List<string> candidates, string? candidate)
+    {
+        if (string.IsNullOrWhiteSpace(candidate))
+        {
+            return;
+        }
+
+        var trimmed = candidate!.Trim();
+        for (var index = 0; index < candidates.Count; index++)
+        {
+            if (string.Equals(candidates[index], trimmed, StringComparison.Ordinal))
+            {
+                return;
+            }
+        }
+
+        candidates.Add(trimmed);
+    }
+
+    private static string? InferElementalRayMutationDictionaryName(string source)
+    {
+#pragma warning disable CA2249
+        if (source.IndexOf("electrical charge that you can use and discharge", StringComparison.Ordinal) >= 0
+            || source.IndexOf("Maximum charge:", StringComparison.Ordinal) >= 0
+            || source.IndexOf("Accrue base", StringComparison.Ordinal) >= 0)
+        {
+            return "Electrical Generation";
+        }
+
+        if (source.IndexOf("extra set of legs", StringComparison.Ordinal) >= 0
+            || (source.IndexOf("move speed", StringComparison.Ordinal) >= 0
+                && source.IndexOf("carry capacity", StringComparison.Ordinal) >= 0))
+        {
+            return "Multiple Legs";
+        }
+
+        if (source.IndexOf("joints stretch much further", StringComparison.Ordinal) >= 0
+            || source.IndexOf("Agility prerequisites", StringComparison.Ordinal) >= 0)
+        {
+            return "Triple-jointed";
+        }
+
+        if (source.IndexOf("ray of frost", StringComparison.Ordinal) >= 0)
+        {
+            return "Freezing Ray";
+        }
+
+        if (source.IndexOf("ray of flame", StringComparison.Ordinal) >= 0)
+        {
+            return "Flaming Ray";
+        }
+#pragma warning restore CA2249
+
+        return null;
     }
 
     private static string? GetMutationRankDictionaryValue(string mutationName, string? variant, int level)

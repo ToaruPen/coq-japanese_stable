@@ -154,6 +154,22 @@ public sealed class AutoActTranslationPatchTests
     }
 
     [Test]
+    public void InterruptWithReason_TranslatesHeardFightingActorDisplayName_WithRepositoryPattern()
+    {
+        AssertInterruptWithReasonMessage(
+            "{{y|You stop waiting because you hear a snapjaw fighting to the east.}}",
+            "{{y|東でスナップジョーが戦っている音が聞こえたので待機をやめた。}}");
+    }
+
+    [Test]
+    public void InterruptWithReason_LeavesUnknownHeardInjuredActorVisible_WithRepositoryPattern()
+    {
+        AssertInterruptWithReasonMessage(
+            "{{y|You stop waiting because you hear unknown shimmer being injured to the west.}}",
+            "{{y|西でunknown shimmerが傷つく音が聞こえたので待機をやめた。}}");
+    }
+
+    [Test]
     public void InterruptWithObject_TranslatesWaitingSpotMessage_WithRepositoryPattern()
     {
         AssertInterruptWithObjectMessage(

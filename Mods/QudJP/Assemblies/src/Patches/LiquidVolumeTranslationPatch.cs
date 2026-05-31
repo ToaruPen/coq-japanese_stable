@@ -135,6 +135,34 @@ public static class LiquidVolumeTranslationPatch
         return true;
     }
 
+    internal static bool TryTranslateMessageLogMessage(ref string message, string? color)
+    {
+        _ = color;
+
+        if (!OwnerTranslationScope.IsActive(activeDepth) || string.IsNullOrEmpty(message))
+        {
+            return false;
+        }
+
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(message, out var markedText))
+        {
+            message = markedText;
+            return true;
+        }
+
+        if (!LiquidVolumeFragmentTranslator.TryTranslateQueuedMessage(
+                message,
+                nameof(MessageLogPatch),
+                Context + ".MessageLog",
+                out var translated))
+        {
+            return false;
+        }
+
+        message = translated;
+        return true;
+    }
+
     internal static bool TryTranslatePickItemTitle(ref string? title)
     {
         if (!OwnerTranslationScope.IsActive(activeDepth) || string.IsNullOrEmpty(title))

@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Xml.Linq;
 using QudJP;
 
 namespace QudJP.Patches;
@@ -25,6 +27,7 @@ internal static class GetDisplayNameRouteTranslator
         "ui-liquids.ja.json",
         "ui-displayname-adjectives.ja.json",
     };
+    private static readonly object LocalizedBlueprintDisplayNameMarkupLock = new();
     private static readonly HashSet<string> SpacedDisplayNameModifierKeys =
         new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
@@ -212,6 +215,8 @@ internal static class GetDisplayNameRouteTranslator
         new Regex("[A-Za-z]{2,}", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private const string GeneratedCanvasTentComponentContext = "GetDisplayName.GeneratedCanvasTent.Component";
     private const string GeneratedRandomStatueComponentContext = "GetDisplayName.GeneratedRandomStatue.Component";
+    private static Dictionary<string, string>? localizedBlueprintDisplayNameMarkup;
+    private static string? localizedBlueprintDisplayNameMarkupRoot;
 
     internal static bool IsAlreadyLocalizedDisplayNameText(string source)
     {
@@ -257,6 +262,11 @@ internal static class GetDisplayNameRouteTranslator
         if (TryTranslateCyclopeanPrismDisplayName(source!, route, out var cyclopeanPrismTranslation))
         {
             return cyclopeanPrismTranslation;
+        }
+
+        if (TryTranslateRedundantStainedWholeWrapperWithSuffix(source!, route, out var redundantStainedWrapperTranslation))
+        {
+            return redundantStainedWrapperTranslation;
         }
 
         if (TryTranslateSourceWithClausePrefixPreservingSuffix(source!, route, out var sourceWithClauseTranslation))
@@ -361,13 +371,13 @@ internal static class GetDisplayNameRouteTranslator
         if ((source![0] == '{' || source[0] == '[')
             && TryTranslateLeadingModifierChain(source, route, out var modifierChainTranslation))
         {
-            return modifierChainTranslation;
+            return RestoreLeadingChainStainedModifierColor(source, modifierChainTranslation);
         }
 
         if (StringHelpers.ContainsOrdinal(source, "{{")
             && TryTranslateLeadingModifierChain(source, route, out var visibleModifierChainTranslation))
         {
-            return visibleModifierChainTranslation;
+            return RestoreLeadingChainStainedModifierColor(source, visibleModifierChainTranslation);
         }
 
         if (TryTranslateLeadingMarkupWrappedModifier(source!, route, out var markupLeadingTranslation))
@@ -449,6 +459,40 @@ internal static class GetDisplayNameRouteTranslator
         }
 
         return source!;
+    }
+
+    private static bool TryTranslateRedundantStainedWholeWrapperWithSuffix(
+        string source,
+        string route,
+        out string translated)
+    {
+        translated = source;
+        if (!source.StartsWith("{{", StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        var wrapperEnd = FindQudMarkupEnd(source, 0);
+        if (wrapperEnd <= 0 || wrapperEnd >= source.Length || source[wrapperEnd] != ' ')
+        {
+            return false;
+        }
+
+        var pipeIndex = source.IndexOf('|', 2);
+        if (pipeIndex <= 2 || pipeIndex >= wrapperEnd - 2)
+        {
+            return false;
+        }
+
+        var inner = source.Substring(pipeIndex + 1, wrapperEnd - pipeIndex - 3);
+        if (!StringHelpers.ContainsOrdinal(inner, "-stained")
+            || !ColorAwareTranslationComposer.HasColorMarkup(inner))
+        {
+            return false;
+        }
+
+        translated = TranslatePreservingColors(inner + source.Substring(wrapperEnd), route);
+        return !string.Equals(translated, source, StringComparison.Ordinal);
     }
 
     private static bool TryTranslateParenthesizedColoredChargeStatus(
@@ -1406,9 +1450,12 @@ internal static class GetDisplayNameRouteTranslator
         var baseGroup = match.Groups["base"];
         var baseSource = baseGroup.Value;
         var innerSpans = ColorAwareTranslationComposer.WithoutTrueWholeSourceBoundarySpans(spans, source.Length);
-        var translatedBase = TranslateDisplayNameFragmentPreservingColors(
-            RestoreVisibleSlice(baseGroup, innerSpans),
-            route);
+        var translatedBase = TranslatePreservingColors(RestoreAngleCodeBaseSlice(baseGroup, innerSpans), route);
+        translatedBase = RestoreLeadingSingleStainedModifierColorFromSource(
+            baseSource,
+            spans,
+            baseGroup.Index,
+            translatedBase);
         var angle = NormalizeTransparentAngleCodeWrapper(RestoreVisibleSlice(match.Groups["angle"], innerSpans));
 
         if (string.Equals(translatedBase, baseSource, StringComparison.Ordinal)
@@ -1426,6 +1473,239 @@ internal static class GetDisplayNameRouteTranslator
 
         DynamicTextObservability.RecordTransform(route, "DisplayName.AngleCodeSuffix", source, translated);
         return true;
+    }
+
+    private static string RestoreLeadingSingleStainedModifierColorFromSource(
+        string baseSource,
+        IReadOnlyList<ColorSpan> spans,
+        int baseStartIndex,
+        string translatedBase)
+    {
+        if (ColorAwareTranslationComposer.HasColorMarkup(translatedBase)
+            || !TryReadLeadingModifierToken(baseSource, 0, out var modifier, out _)
+            || !SingleStainedModifierPattern.IsMatch(modifier))
+        {
+            return RestoreLocalizedBloodStainedColor(translatedBase);
+        }
+
+        var openingToken = FindQudOpeningTokenAt(spans, baseStartIndex);
+        if (openingToken is null)
+        {
+            openingToken = FindColoredLiquidOpeningForSingleStainedModifier(modifier);
+        }
+        if (openingToken is null)
+        {
+            return translatedBase;
+        }
+
+        const string stainedMarker = "に染まった";
+        var stainedMarkerIndex = translatedBase.IndexOf(stainedMarker, StringComparison.Ordinal);
+        if (stainedMarkerIndex <= 0)
+        {
+            return translatedBase;
+        }
+
+        return openingToken
+            + translatedBase.Substring(0, stainedMarkerIndex)
+            + "}}"
+            + translatedBase.Substring(stainedMarkerIndex);
+    }
+
+    private static string RestoreLocalizedBloodStainedColor(string translatedBase)
+    {
+        const string bloodStainedPrefix = "血に染まった";
+        return translatedBase.StartsWith(bloodStainedPrefix, StringComparison.Ordinal)
+            ? "{{r|血}}" + translatedBase.Substring("血".Length)
+            : translatedBase;
+    }
+
+    private static string? FindQudOpeningTokenAt(IReadOnlyList<ColorSpan> spans, int index)
+    {
+        for (var spanIndex = 0; spanIndex < spans.Count; spanIndex++)
+        {
+            var span = spans[spanIndex];
+            if (span.Index == index
+                && span.Token.StartsWith("{{", StringComparison.Ordinal)
+                && span.Token.EndsWith("|", StringComparison.Ordinal))
+            {
+                return span.Token;
+            }
+        }
+
+        return null;
+    }
+
+    private static string? FindColoredLiquidOpeningForSingleStainedModifier(string modifier)
+    {
+        var match = SingleStainedModifierPattern.Match(modifier);
+        if (!match.Success)
+        {
+            return null;
+        }
+
+        var liquid = match.Groups["liquid"].Value;
+        if (!LooksLikeAsciiPhrase(liquid))
+        {
+            return null;
+        }
+
+        var defaultOpening = GetDefaultLiquidColorOpening(liquid);
+        if (defaultOpening is not null)
+        {
+            return defaultOpening;
+        }
+
+        var colors = new[] { "r", "R", "g", "G", "b", "B", "c", "C", "y", "Y", "w", "W", "K" };
+        for (var index = 0; index < colors.Length; index++)
+        {
+            var opening = "{{" + colors[index] + "|";
+            var coloredKey = opening + liquid + "}}";
+            var translated = ScopedDictionaryLookup.TranslateExactOrLowerAsciiForContext(
+                coloredKey,
+                "XRL.Liquids",
+                LiquidPhraseDictionaryFiles);
+            if (translated is not null
+                && !string.IsNullOrWhiteSpace(translated)
+                && ColorAwareTranslationComposer.HasColorMarkup(translated))
+            {
+                return opening;
+            }
+        }
+
+        return null;
+    }
+
+    private static string? GetDefaultLiquidColorOpening(string liquid)
+    {
+        return liquid switch
+        {
+            "blood" => "{{r|",
+            "slime" => "{{g|",
+            "goo" => "{{G|",
+            "sludge" => "{{w|",
+            "oil" => "{{K|",
+            "water" => "{{B|",
+            "acid" => "{{G|",
+            "lava" => "{{R|",
+            _ => null,
+        };
+    }
+
+    private static string RestoreAngleCodeBaseSlice(Group group, IReadOnlyList<ColorSpan> spans)
+    {
+        var sliceSpans = ColorCodePreserver.SliceSpans(spans, group.Index, group.Length);
+        RemoveUnmatchedTrailingSliceClosers(sliceSpans);
+        if (TryColorizeLeadingPlainStainedModifierFromWholeBaseWrapper(group.Value, sliceSpans, out var colorizedStainedBase))
+        {
+            return colorizedStainedBase;
+        }
+
+        var wholeRestored = ColorAwareTranslationComposer.Restore(group.Value, sliceSpans);
+        if (TryUnwrapWholeQudWrapperContainingStainedModifier(wholeRestored, out var inner))
+        {
+            return inner;
+        }
+
+        var contentSpans = ColorAwareTranslationComposer.WithoutTrueWholeSourceBoundarySpans(sliceSpans, group.Length);
+        var restored = ColorAwareTranslationComposer.Restore(group.Value, contentSpans);
+        return restored;
+    }
+
+    private static bool TryColorizeLeadingPlainStainedModifierFromWholeBaseWrapper(
+        string visibleBase,
+        IReadOnlyList<ColorSpan> spans,
+        out string restored)
+    {
+        restored = visibleBase;
+        if (!TryReadLeadingModifierToken(visibleBase, 0, out var modifier, out _)
+            || ColorAwareTranslationComposer.HasColorMarkup(modifier)
+            || !StringHelpers.ContainsOrdinal(modifier, "-stained"))
+        {
+            return false;
+        }
+
+        for (var index = 0; index < spans.Count; index++)
+        {
+            var opening = spans[index];
+            if (opening.Index != 0
+                || !opening.Token.StartsWith("{{", StringComparison.Ordinal)
+                || !opening.Token.EndsWith("|", StringComparison.Ordinal))
+            {
+                continue;
+            }
+
+            var coloredModifier = ColorizePlainStainedModifier(modifier, opening.Token);
+            if (string.Equals(coloredModifier, modifier, StringComparison.Ordinal))
+            {
+                return false;
+            }
+
+            restored = coloredModifier + visibleBase.Substring(modifier.Length);
+            return true;
+        }
+
+        return false;
+    }
+    private static bool TryUnwrapWholeQudWrapperContainingStainedModifier(string source, out string inner)
+    {
+        inner = source;
+        if (!source.StartsWith("{{", StringComparison.Ordinal)
+            || !source.EndsWith("}}", StringComparison.Ordinal)
+            || FindQudMarkupEnd(source, 0) != source.Length)
+        {
+            return false;
+        }
+
+        var pipeIndex = source.IndexOf('|', 2);
+        if (pipeIndex <= 2 || pipeIndex >= source.Length - 2)
+        {
+            return false;
+        }
+
+        var candidate = source.Substring(pipeIndex + 1, source.Length - pipeIndex - 3);
+        if (!StringHelpers.ContainsOrdinal(candidate, "-stained"))
+        {
+            return false;
+        }
+
+        inner = PreserveUnwrappedStainedModifierColor(candidate, source.Substring(0, pipeIndex + 1));
+        return true;
+    }
+
+    private static string PreserveUnwrappedStainedModifierColor(string source, string openingToken)
+    {
+        if (!TryReadLeadingModifierToken(source, 0, out var modifier, out _)
+            || ColorAwareTranslationComposer.HasColorMarkup(modifier)
+            || !StringHelpers.ContainsOrdinal(modifier, "-stained"))
+        {
+            return source;
+        }
+
+        var coloredModifier = ColorizePlainStainedModifier(modifier, openingToken);
+        return string.Equals(coloredModifier, modifier, StringComparison.Ordinal)
+            ? source
+            : coloredModifier + source.Substring(modifier.Length);
+    }
+
+    private static string ColorizePlainStainedModifier(string modifier, string openingToken)
+    {
+        if (!openingToken.StartsWith("{{", StringComparison.Ordinal)
+            || !openingToken.EndsWith("|", StringComparison.Ordinal))
+        {
+            return modifier;
+        }
+
+        var compound = CompoundStainedModifierPattern.Match(modifier);
+        if (compound.Success)
+        {
+            return openingToken + compound.Groups["left"].Value + "}}-and-"
+                + openingToken + compound.Groups["right"].Value + "}}-stained";
+        }
+
+        var single = SingleStainedModifierPattern.Match(modifier);
+        return single.Success
+            ? openingToken + single.Groups["liquid"].Value + "}}-stained"
+            : modifier;
     }
 
     private static bool TryTranslateLeadingMarkupWrappedModifier(string source, string route, out string translated)
@@ -1546,6 +1826,82 @@ internal static class GetDisplayNameRouteTranslator
 
         DynamicTextObservability.RecordTransform(route, "DisplayName.LeadingModifierChain", source, translated);
         return true;
+    }
+
+    private static string RestoreLeadingChainStainedModifierColor(string source, string translated)
+    {
+        if (ColorAwareTranslationComposer.HasColorMarkup(translated)
+            || !TryGetLeadingStainedModifierOpening(source, out var openingToken))
+        {
+            return translated;
+        }
+
+        const string stainedMarker = "に染まった";
+        var markerIndex = translated.IndexOf(stainedMarker, StringComparison.Ordinal);
+        if (markerIndex <= 0)
+        {
+            return translated;
+        }
+
+        return openingToken
+            + translated.Substring(0, markerIndex)
+            + "}}"
+            + translated.Substring(markerIndex);
+    }
+
+    internal static string TranslateScopedExactPreservingColors(string? source)
+    {
+        if (string.IsNullOrEmpty(source))
+        {
+            return source ?? string.Empty;
+        }
+
+        return ColorAwareTranslationComposer.TranslatePreservingColors(
+            source!,
+            static visible =>
+            {
+                var translated = TryTranslateDisplayNameScopedExact(visible);
+                return translated is null ? visible : translated;
+            });
+    }
+
+    private static bool TryGetLeadingStainedModifierOpening(string source, out string openingToken)
+    {
+        openingToken = string.Empty;
+        var candidate = source;
+        if (source.StartsWith("{{", StringComparison.Ordinal)
+            && FindQudMarkupEnd(source, 0) > 0)
+        {
+            var pipeIndex = source.IndexOf('|', 2);
+            if (pipeIndex > 2)
+            {
+                candidate = source.Substring(pipeIndex + 1);
+                if (candidate.EndsWith("}}", StringComparison.Ordinal))
+                {
+                    candidate = candidate.Substring(0, candidate.Length - 2);
+                }
+            }
+        }
+
+        if (!TryReadLeadingModifierToken(candidate, 0, out var modifier, out _)
+            || !StringHelpers.ContainsOrdinal(modifier, "-stained"))
+        {
+            return false;
+        }
+
+        if (modifier.StartsWith("{{", StringComparison.Ordinal))
+        {
+            var pipeIndex = modifier.IndexOf('|', 2);
+            if (pipeIndex > 2)
+            {
+                openingToken = modifier.Substring(0, pipeIndex + 1);
+                return true;
+            }
+        }
+
+        var coloredLiquidOpening = FindColoredLiquidOpeningForSingleStainedModifier(modifier);
+        openingToken = coloredLiquidOpening ?? string.Empty;
+        return openingToken.Length > 0;
     }
 
     private static bool IsDisplayNameArticleModifier(string modifier)
@@ -2777,7 +3133,10 @@ internal static class GetDisplayNameRouteTranslator
             return false;
         }
 
-        var translatedModifier = TranslateDisplayNameExactOrLowerAscii(modifier, DisplayNameAdjectiveContext);
+        var translatedModifier = ScopedDictionaryLookup.TranslateExactOrLowerAsciiForContext(
+            modifier,
+            DisplayNameAdjectiveContext,
+            DisplayNameDictionaryFiles);
         if (translatedModifier is null)
         {
             return false;
@@ -3222,6 +3581,11 @@ internal static class GetDisplayNameRouteTranslator
             return trimmedTranslated;
         }
 
+        if (TryRestoreLocalizedBlueprintDisplayNameMarkup(source, route, out var blueprintMarkup))
+        {
+            return blueprintMarkup;
+        }
+
         if (IsStableDisplayNameFragment(source, route))
         {
             return source;
@@ -3239,6 +3603,122 @@ internal static class GetDisplayNameRouteTranslator
         }
 
         return source;
+    }
+
+    private static bool TryRestoreLocalizedBlueprintDisplayNameMarkup(string source, string route, out string translated)
+    {
+        translated = source;
+        if (string.IsNullOrWhiteSpace(source)
+            || !JapaneseCharacterPattern.IsMatch(source)
+            || ColorAwareTranslationComposer.HasColorMarkup(source))
+        {
+            return false;
+        }
+
+        var trimmed = source.Trim();
+        var map = GetLocalizedBlueprintDisplayNameMarkup();
+        if (!map.TryGetValue(trimmed, out var restored)
+            || string.Equals(restored, trimmed, StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        translated = source.Substring(0, source.Length - source.TrimStart().Length)
+            + restored
+            + source.Substring(source.TrimEnd().Length);
+        DynamicTextObservability.RecordTransform(route, "DisplayName.LocalizedBlueprintMarkup", source, translated);
+        return true;
+    }
+
+    private static Dictionary<string, string> GetLocalizedBlueprintDisplayNameMarkup()
+    {
+        string objectBlueprintRoot;
+        try
+        {
+            objectBlueprintRoot = LocalizationAssetResolver.GetLocalizationPath("ObjectBlueprints");
+        }
+        catch (Exception ex)
+        {
+            Trace.TraceWarning("QudJP: failed to resolve ObjectBlueprints localization path: {0}", ex.Message);
+            return new Dictionary<string, string>(StringComparer.Ordinal);
+        }
+
+        objectBlueprintRoot = Path.GetFullPath(objectBlueprintRoot);
+        lock (LocalizedBlueprintDisplayNameMarkupLock)
+        {
+            if (localizedBlueprintDisplayNameMarkup is not null
+                && string.Equals(localizedBlueprintDisplayNameMarkupRoot, objectBlueprintRoot, StringComparison.Ordinal))
+            {
+                return localizedBlueprintDisplayNameMarkup;
+            }
+
+            if (TryLoadLocalizedBlueprintDisplayNameMarkup(objectBlueprintRoot, out var loaded))
+            {
+                localizedBlueprintDisplayNameMarkup = loaded;
+                localizedBlueprintDisplayNameMarkupRoot = objectBlueprintRoot;
+                return localizedBlueprintDisplayNameMarkup;
+            }
+
+            return new Dictionary<string, string>(StringComparer.Ordinal);
+        }
+    }
+
+    private static bool TryLoadLocalizedBlueprintDisplayNameMarkup(
+        string objectBlueprintRoot,
+        out Dictionary<string, string> result)
+    {
+        result = new Dictionary<string, string>(StringComparer.Ordinal);
+        if (!Directory.Exists(objectBlueprintRoot))
+        {
+            Trace.TraceWarning("QudJP: ObjectBlueprints localization directory does not exist: {0}", objectBlueprintRoot);
+            return false;
+        }
+
+        string[] files;
+        try
+        {
+            files = Directory.GetFiles(objectBlueprintRoot, "*.jp.xml");
+        }
+        catch (Exception ex)
+        {
+            Trace.TraceWarning("QudJP: failed to list ObjectBlueprints localization files in '{0}': {1}", objectBlueprintRoot, ex.Message);
+            return false;
+        }
+
+        foreach (var path in files)
+        {
+            try
+            {
+                var document = XDocument.Load(path, LoadOptions.None);
+                foreach (var element in document.Descendants("part"))
+                {
+                    var displayName = element.Attribute("DisplayName")?.Value;
+                    if (displayName is null
+                        || string.IsNullOrWhiteSpace(displayName)
+                        || !ColorAwareTranslationComposer.HasColorMarkup(displayName))
+                    {
+                        continue;
+                    }
+
+                    var (visible, _) = ColorAwareTranslationComposer.Strip(displayName);
+                    if (string.IsNullOrWhiteSpace(visible)
+                        || result.ContainsKey(visible))
+                    {
+                        continue;
+                    }
+
+                    result.Add(visible, displayName);
+                }
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceWarning("QudJP: failed to read localized blueprint display names from '{0}': {1}", path, ex.Message);
+                result.Clear();
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private static string TranslateDisplayNameFragmentPreservingWholeQudWrapper(string source, string route)
@@ -4561,6 +5041,22 @@ internal static class GetDisplayNameRouteTranslator
 
     private static string GetModifierRestSeparator(string modifier, string source)
     {
+        var visibleModifier = ColorAwareTranslationComposer.GetVisibleText(modifier);
+        if (CompoundStainedModifierPattern.IsMatch(visibleModifier)
+            || StringHelpers.ContainsOrdinal(visibleModifier, "-and-"))
+        {
+            return string.Empty;
+        }
+
+        if (SingleStainedModifierPattern.IsMatch(visibleModifier))
+        {
+            return source.StartsWith("{{", StringComparison.Ordinal)
+                || source.StartsWith("[{{", StringComparison.Ordinal)
+                || JapaneseCharacterPattern.IsMatch(source)
+                ? " "
+                : string.Empty;
+        }
+
         if (LooksLikeGeneratedProperName(source))
         {
             return string.Empty;

@@ -211,6 +211,45 @@ public sealed class ZoneManagerSetActiveZoneTranslationPatchTests
     }
 
     [Test]
+    public void PrefixAndPostfix_TranslatesNoColorCalendarZoneBannerUsingRepositoryDictionary_WhenPatched()
+    {
+        UseRepositoryDictionaries();
+        DummyZoneWorldFactory.WorldId = "JoppaWorld";
+        DummyZoneWorldFactory.ZoneId = "JoppaWorld.11.22.1.1.10";
+        DummyZoneWorldFactory.ZoneDisplayNameValue = "地下洞窟, 地下9層";
+        DummyZoneCalendar.TimeValue = "Waning Salt Sun";
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyZoneManagerSetActiveZoneTarget), nameof(DummyZoneManagerSetActiveZoneTarget.SetActiveZone)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(ZoneManagerSetActiveZoneTranslationPatch), nameof(ZoneManagerSetActiveZoneTranslationPatch.Prefix))),
+                postfix: new HarmonyMethod(RequireMethod(typeof(ZoneManagerSetActiveZoneTranslationPatch), nameof(ZoneManagerSetActiveZoneTranslationPatch.Postfix))));
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyMessageQueue), nameof(DummyMessageQueue.AddPlayerMessage), typeof(string), typeof(string), typeof(bool)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(ZoneManagerSetActiveZoneMessageQueuePatch), nameof(ZoneManagerSetActiveZoneMessageQueuePatch.Prefix), typeof(string).MakeByRefType(), typeof(string), typeof(bool))));
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyMessageQueue), nameof(DummyMessageQueue.AddPlayerMessage), typeof(string), typeof(string), typeof(bool)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(MessageLogPatch), nameof(MessageLogPatch.Prefix), typeof(string).MakeByRefType(), typeof(string), typeof(bool))));
+
+            var manager = new DummyZoneManagerSetActiveZoneTarget { MessageColor = null };
+            manager.SetActiveZone();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("地下洞窟, 地下9層, 欠けゆく塩の太陽"));
+                Assert.That(DummyMessageQueue.LastColor, Is.Null);
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void Prefix_PreservesZoneBannerMessage_WhenOwnerAbsent()
     {
         UseRepositoryDictionaries();

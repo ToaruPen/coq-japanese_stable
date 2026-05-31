@@ -458,6 +458,11 @@ public sealed class PopupPickOptionTranslationPatchTests
                 Is.EqualTo("{{W|[a]}} {{y|掃除する}}"));
             Assert.That(
                 SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[n]}} {{y|clea{{hotkey|n}} all your items [1 dram]}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[n]}} {{y|手持ちのアイテムをすべて洗う [{{rules|1}}ドラム]}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
                     "{{W|[W]}} {{y|show internals}}",
                     "InventoryActionMenu:ABC123"),
                 Is.EqualTo("{{W|[W]}} {{y|内部構造を表示}}"));
@@ -513,12 +518,22 @@ public sealed class PopupPickOptionTranslationPatchTests
                 Is.EqualTo("{{W|[f]}} {{y|追従距離を変更}}"));
             Assert.That(
                 SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[f]}} {{y|direct to change {{hotkey|f}}ollow distance}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[f]}} {{y|追従距離を変更}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
                     "{{W|[s]}} {{y|direct to stay there}}",
                     "InventoryActionMenu:ABC123"),
                 Is.EqualTo("{{W|[s]}} {{y|その場で待機させる}}"));
             Assert.That(
                 SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
                     "{{W|[u]}} {{y|direct ability use}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[u]}} {{y|能力使用設定を変更}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[u]}} {{y|direct ability {{hotkey|u}}se}}",
                     "InventoryActionMenu:ABC123"),
                 Is.EqualTo("{{W|[u]}} {{y|能力使用設定を変更}}"));
             Assert.That(
@@ -751,6 +766,30 @@ public sealed class PopupPickOptionTranslationPatchTests
     }
 
     [Test]
+    public void SelectableTextMenuItemDisplayTranslation_UsesCampfireActionOwnerDictionaryForEmbeddedHotkeyRows()
+    {
+        WriteInventoryActionDictionary(
+            ("Whip up a meal.", "XRL.World.IInventoryActionsEvent", "手早く食事を作る。"),
+            ("Choose ingredients to cook with.", "XRL.World.IInventoryActionsEvent", "料理に使う材料を選ぶ。"),
+            ("Cook from a recipe.", "XRL.World.IInventoryActionsEvent", "レシピから料理する。"));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay("Whip up a {{hotkey|m}}eal."),
+                Is.EqualTo("手早く食事を作る。"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[i]}} {{y|Choose {{hotkey|i}}ngredients to cook with.}}"),
+                Is.EqualTo("{{W|[i]}} {{y|料理に使う材料を選ぶ。}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[r]}} {{K|Cook f{{hotkey|r}}om a recipe.}}"),
+                Is.EqualTo("{{W|[r]}} {{K|レシピから料理する。}}"));
+        });
+    }
+
+    [Test]
     public void SelectableTextMenuItemDisplayTranslation_DoesNotFallbackToQudMenuItemDictionaryInsideInventoryActionMenu()
     {
         WriteCommonMenuActionDictionary(("get", "拾う"));
@@ -933,12 +972,22 @@ public sealed class PopupPickOptionTranslationPatchTests
                 Is.EqualTo("{{W|[R]}} {{y|{{c|ケムセル}}を充電する}}"));
             Assert.That(
                 SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[r]}} {{y|{{hotkey|r}}echarge {{c|ケムセル}}}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[r]}} {{y|{{c|ケムセル}}を充電する}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
                     "{{W|[R]}} {{y|{{hotkey|R}}echarge {{c|chem cell}}}}",
                     "InventoryActionMenu:ABC123"),
                 Is.EqualTo("{{W|[R]}} {{y|{{c|ケムセル}}を充電する}}"));
             Assert.That(
                 SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
                     "    {{y|Recharge {{c|chem cell}}}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("    {{y|{{c|ケムセル}}を充電する}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "    {{y|recharge {{c|chem cell}}}}",
                     "InventoryActionMenu:ABC123"),
                 Is.EqualTo("    {{y|{{c|ケムセル}}を充電する}}"));
             Assert.That(

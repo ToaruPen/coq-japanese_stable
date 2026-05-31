@@ -21,6 +21,18 @@ public static class PopupTranslationPatch
     private const string InventoryActionMenuPopupIdPrefix = "InventoryActionMenu:";
     private const string InventoryActionContext = "XRL.World.IInventoryActionsEvent";
     private const string InventoryActionDictionaryFile = "ui-inventory-actions.ja.json";
+    private static readonly HashSet<string> CampfireCookingActionLabels = new(StringComparer.Ordinal)
+    {
+        "Whip up a meal.",
+        "Choose ingredients to cook with.",
+        "Cook from a recipe.",
+        "Preserve your fresh foods.",
+        "Preserve your exotic foods.",
+        "Stop bleeding.",
+        "Treat poison.",
+        "Treat illness.",
+        "Treat disease onset.",
+    };
     private static readonly Regex AsciiLetterPattern =
         new Regex("[A-Za-z]", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex HotkeyLabelPattern =
@@ -30,7 +42,9 @@ public static class PopupTranslationPatch
     private static readonly Regex EnergyCellSocketRemoveCellPattern =
         new Regex("^remove cell: (?<cell>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex InventoryActionRechargeCellPattern =
-        new Regex("^Recharge (?<cell>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+        new Regex("^Recharge (?<cell>.+)$", RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.Compiled);
+    private static readonly Regex InventoryActionCleanAllItemsPattern =
+        new Regex("^clean all your items \\[(?<amount>\\d+) drams?\\]$", RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.Compiled);
     private static readonly Regex RenameItemTitlePattern =
         new Regex("^Rename (?<target>.+)\\.$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex RandomNameCultureOptionPattern =
@@ -399,6 +413,12 @@ public static class PopupTranslationPatch
         if (TradeUiVendorPopupTranslationPatch.TryTranslatePopupMessage(source, route, family, out var tradeUiVendorTranslated))
         {
             translated = tradeUiVendorTranslated;
+            return true;
+        }
+
+        if (GameObjectPopupTranslationPatch.TryTranslatePopupMessage(source, route, family, out var gameObjectPopupTranslated))
+        {
+            translated = gameObjectPopupTranslated;
             return true;
         }
 
@@ -1499,6 +1519,18 @@ public static class PopupTranslationPatch
             return randomCultureTranslated;
         }
 
+        if (CampfireCookingActionLabels.Contains(label))
+        {
+            var campfireActionTranslation = ScopedDictionaryLookup.TranslateExactOrLowerAsciiForContextOnly(
+                label,
+                InventoryActionContext,
+                InventoryActionDictionaryFile);
+            if (campfireActionTranslation is not null)
+            {
+                return campfireActionTranslation;
+            }
+        }
+
         return ScopedDictionaryLookup.TranslateExactOrLowerAscii(label, CommonMenuActionDictionaryFile);
     }
 
@@ -1560,6 +1592,15 @@ public static class PopupTranslationPatch
         out string translated)
     {
         translated = label;
+        var cleanAllItemsMatch = InventoryActionCleanAllItemsPattern.Match(label);
+        if (cleanAllItemsMatch.Success)
+        {
+            translated = "手持ちのアイテムをすべて洗う [{{rules|"
+                + cleanAllItemsMatch.Groups["amount"].Value
+                + "}}ドラム]";
+            return true;
+        }
+
         var rechargeMatch = InventoryActionRechargeCellPattern.Match(label);
         if (rechargeMatch.Success)
         {

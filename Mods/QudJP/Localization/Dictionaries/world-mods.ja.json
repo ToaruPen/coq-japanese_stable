@@ -160,6 +160,16 @@
     },
     {
       "context": "XRL.World.Parts.ModHeartstopper.GetShortDescription",
+      "key": "Heartstopper: When powered, this weapon has {0}% chance to put opponents into cardiac arrest.",
+      "text": "心停止: 通電中、この武器は{0}%の確率で敵を心停止させる。"
+    },
+    {
+      "context": "XRL.World.Parts.ModHeartstopper.GetShortDescription",
+      "key": "Heartstopper: When powered, this weapon has {0}% chance to put opponents into cardiac arrest if they fail a difficulty {1} {2} save.",
+      "text": "心停止: 通電中、この武器は{0}%の確率で、敵が難易度{1}の{2}セーヴに失敗した場合に心停止させる。"
+    },
+    {
+      "context": "XRL.World.Parts.ModHeartstopper.GetShortDescription",
       "key": "Heartstopper: When powered, this weapon has ",
       "text": "心停止: 通電中、この武器は"
     },
@@ -176,7 +186,7 @@
     {
       "context": "XRL.World.Parts.ModHypervelocity.GetShortDescription",
       "key": "Hypervelocity: When powered, this weapon matches its penetration to its target's armor and penetrates creatures.",
-      "text": "超速: 通電中、この武器は目標の装甲に合わせて貫通力を調整し、生物を貫く。"
+      "text": "超高速: 通電中、この武器は目標の装甲に合わせて貫通力を調整し、生物を貫く。"
     },
     {
       "context": "XRL.World.Parts.ModIlluminated.GetShortDescription",
@@ -291,12 +301,17 @@
     {
       "context": "XRL.World.Parts.ModMicroserrated.GetShortDescription",
       "key": "Microserrated: This weapon has a chance to dismember opponents.",
-      "text": "微細な鋸刃: この武器は敵の部位を切断することがある。"
+      "text": "微鋸歯: この武器は敵の部位を切断することがある。"
+    },
+    {
+      "context": "XRL.World.Parts.ModMicroserrated.GetShortDescription",
+      "key": "Microserrated: This weapon has {0}% chance to dismember opponents.",
+      "text": "微鋸歯: この武器は{0}%の確率で敵を切断する。"
     },
     {
       "context": "XRL.World.Parts.ModMicroserrated.GetShortDescription",
       "key": "Microserrated: This weapon has ",
-      "text": "微細な鋸刃: この武器は"
+      "text": "微鋸歯: この武器は"
     },
     {
       "context": "XRL.World.Parts.ModMighty.GetShortDescription",
@@ -317,6 +332,11 @@
       "context": "XRL.World.Parts.ModNanon.GetShortDescription",
       "key": "Nanon: This weapon has a chance to dismember on penetration.",
       "text": "ナノ刃: 貫通時に切断を引き起こすことがある。"
+    },
+    {
+      "context": "XRL.World.Parts.ModNanon.GetShortDescription",
+      "key": "Nanon: {0}% chance to dismember on penetration.",
+      "text": "ナノ刃: 貫通時に{0}%の確率で切断する。"
     },
     {
       "context": "XRL.World.Parts.ModNanon.GetShortDescription",
@@ -450,13 +470,18 @@
     },
     {
       "context": "XRL.World.Parts.ModSerrated.GetShortDescription",
+      "key": "Serrated: This weapon has {0}% chance to dismember opponents.",
+      "text": "鋸歯: この武器は{0}%の確率で敵を切断する。"
+    },
+    {
+      "context": "XRL.World.Parts.ModSerrated.GetShortDescription",
       "key": "Serrated: This weapon has ",
       "text": "鋸歯: この武器は"
     },
     {
       "context": "XRL.World.Parts.ModSharp.GetShortDescription",
       "key": "Sharp: +1 to penetration rolls",
-      "text": "鋭角: 貫通判定+1"
+      "text": "鋭利: 貫通判定+1"
     },
     {
       "context": "XRL.World.Parts.ModSirocco.GetShortDescription",
@@ -487,6 +512,16 @@
       "context": "XRL.World.Parts.ModSmart.GetShortDescription",
       "key": "Smart: When powered and started up and the wielder has a HUD or techscanner equipped, this weapon's tracking scope makes it more accurate and gives ",
       "text": "スマート: 通電して起動し、装着者がHUDかテックスキャナーを備えていると、追尾スコープが命中精度を高め、"
+    },
+    {
+      "context": "XRL.World.Parts.ModSmart.GetShortDescription",
+      "key": "Smart: When powered and started up and the wielder has a HUD or techscanner equipped, this weapon's tracking scope makes it more accurate and gives a bonus to hit a target aimed at.",
+      "text": "スマート: 通電して起動し、使用者がHUDかテックスキャナーを装備している場合、この武器の追尾スコープは精度を高め、照準した対象への命中にボーナスを与える。"
+    },
+    {
+      "context": "XRL.World.Parts.ModSmart.GetShortDescription",
+      "key": "Smart: When powered and started up and the wielder has a HUD or techscanner equipped, this weapon's tracking scope makes it more accurate and gives {0} to hit a target aimed at.",
+      "text": "スマート: 通電して起動し、使用者がHUDかテックスキャナーを装備している場合、この武器の追尾スコープは精度を高め、照準した対象への命中に{0}のボーナスを与える。"
     },
     {
       "context": "XRL.World.Parts.ModSmart.GetShortDescription",
@@ -864,6 +899,11 @@
       "text": "液冷式: この武器の連射数は{0}増えるが、機能するには{1}が必要だ。発射時には{2}分の1の確率で1ドラム消費する。"
     },
     {
+      "context": "XRL.World.Parts.ModLiquidCooled.GetShortDescription",
+      "key": "Liquid-cooled: This weapon's rate of fire is increased, but it requires {0} to function. When fired, there's a one in {1} chance that 1 dram is consumed.",
+      "text": "液冷式: この武器の連射数は増えるが、機能するには{0}が必要だ。発射時には{1}分の1の確率で1ドラム消費する。"
+    },
+    {
       "context": "XRL.World.Parts.ModMagnetized.GetShortDescription",
       "key": "Magnetized: This item floats around you.",
       "text": "磁化: この品はあなたの周囲に浮遊する。"
@@ -1123,11 +1163,11 @@
     },
     {
       "key": "Freezing: When powered, this weapon deals additional cold damage on hit.",
-      "text": "冷却: 通電中、この武器は命中時に追加の冷気ダメージを与える。"
+      "text": "凍結: 通電中、この武器は命中時に追加の冷気ダメージを与える。"
     },
     {
       "key": "Freezing: When powered, this weapon deals an additional {0} cold damage on hit.",
-      "text": "冷却: 通電中、この武器は命中時に追加で{0}の冷気ダメージを与える。"
+      "text": "凍結: 通電中、この武器は命中時に追加で{0}の冷気ダメージを与える。"
     },
     {
       "key": "Scaled: This item grants the wearer {0} reputation with unshelled reptiles.",

@@ -379,6 +379,10 @@ internal sealed class DummyGameObjectPopupTarget
 
     public bool UseShowFail { get; set; }
 
+    public string PickOptionIntroToSend { get; set; } = string.Empty;
+
+    public IReadOnlyList<string>? PickOptionOptionsToSend { get; set; }
+
     public Task<bool> ConfirmUseImportantAsync()
     {
         _ = DummyPopupShow.ShowYesNoAsync(PopupMessageToSend).GetAwaiter().GetResult();
@@ -404,7 +408,22 @@ internal sealed class DummyGameObjectPopupTarget
 
     public void ChangeCompanionAbilityUse()
     {
+        if (!string.IsNullOrEmpty(PickOptionIntroToSend) || PickOptionOptionsToSend is not null)
+        {
+            _ = DummyPopupGenericTarget.PickOption(
+                Intro: PickOptionIntroToSend,
+                Options: PickOptionOptionsToSend);
+            return;
+        }
+
         DummyPopupShow.Show(PopupMessageToSend);
+    }
+
+    public void ChangeCompanionFollowDistance()
+    {
+        _ = DummyPopupGenericTarget.PickOption(
+            Intro: PickOptionIntroToSend,
+            Options: PickOptionOptionsToSend);
     }
 
     public bool CheckCompanionDirection()

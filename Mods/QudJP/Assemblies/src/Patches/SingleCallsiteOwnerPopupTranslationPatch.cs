@@ -1270,8 +1270,8 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         if (match.Success && OwnerMatches(ownerKey, TinkeringTinker1RechargeOwner))
         {
             translated = match.Groups["partial"].Success
-                ? $"{TranslatePopupDisplayNameCapture(match.Groups["item"].Value)}を部分的に充電した。"
-                : $"{TranslatePopupDisplayNameCapture(match.Groups["item"].Value)}を充電した。";
+                ? $"{TranslateTinkeringRechargeItemCapture(match.Groups["item"].Value)}を部分的に充電した。"
+                : $"{TranslateTinkeringRechargeItemCapture(match.Groups["item"].Value)}を充電した。";
             detail = "TinkeringRechargeSuccess";
             return true;
         }
@@ -1279,7 +1279,7 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         match = TinkeringRechargeCannotPattern.Match(source);
         if (match.Success && OwnerMatches(ownerKey, TinkeringTinker1RechargeOwner))
         {
-            translated = $"{TranslatePopupDisplayNameCapture(match.Groups["item"].Value)}はその方法では充電できない。";
+            translated = $"{TranslateTinkeringRechargeItemCapture(match.Groups["item"].Value)}はその方法では充電できない。";
             detail = "TinkeringRechargeCannot";
             return true;
         }
@@ -1295,7 +1295,7 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         match = TinkeringRechargeAskNumberPattern.Match(source);
         if (match.Success && OwnerMatches(ownerKey, TinkeringTinker1RechargeOwner))
         {
-            translated = $"{TranslatePopupDisplayNameCapture(match.Groups["item"].Value)}を完全に充電するには{match.Groups["needed"].Value}個の{match.Groups["bits"].Value}ビットが必要だ。所持数は{match.Groups["owned"].Value}。いくつ使う？";
+            translated = $"{TranslateTinkeringRechargeItemCapture(match.Groups["item"].Value)}を完全に充電するには{match.Groups["needed"].Value}個の{match.Groups["bits"].Value}ビットが必要だ。所持数は{match.Groups["owned"].Value}。いくつ使う？";
             detail = "TinkeringRechargeAskNumber";
             return true;
         }
@@ -1815,6 +1815,15 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
     private static string TranslatePopupDisplayNameCapture(string source)
     {
         return DisplayNameCaptureTranslator.TranslatePreservingColors(source, Context);
+    }
+
+    private static string TranslateTinkeringRechargeItemCapture(string source)
+    {
+        const string yourPrefix = "your ";
+        var item = source.StartsWith(yourPrefix, StringComparison.Ordinal)
+            ? source.Substring(yourPrefix.Length)
+            : source;
+        return TranslatePopupDisplayNameCapture(item);
     }
 
     private static string TranslateAcquisitionAction(string source)

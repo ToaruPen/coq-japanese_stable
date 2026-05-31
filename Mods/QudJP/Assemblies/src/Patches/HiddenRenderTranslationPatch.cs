@@ -22,22 +22,28 @@ public static class HiddenRenderTranslationPatch
     private static IEnumerable<MethodBase> TargetMethods()
     {
         var targets = new List<MethodBase>();
-        var targetType = AccessTools.TypeByName("XRL.World.Parts.HiddenRender");
+        AddTarget(targets, "XRL.World.Parts.HiddenRender", "Reveal", Type.EmptyTypes);
+        AddTarget(targets, "XRL.World.Parts.Hidden", "RevealInternal", new[] { typeof(bool) });
+        return targets;
+    }
+
+    private static void AddTarget(List<MethodBase> targets, string typeName, string methodName, Type[] parameterTypes)
+    {
+        var targetType = AccessTools.TypeByName(typeName);
         if (targetType is null)
         {
-            Trace.TraceError("QudJP: {0} target type not found.", Context);
-            return targets;
+            Trace.TraceError("QudJP: {0} target type not found: {1}.", Context, typeName);
+            return;
         }
 
-        var method = AccessTools.Method(targetType, "Reveal", Type.EmptyTypes);
+        var method = AccessTools.Method(targetType, methodName, parameterTypes);
         if (method is not null)
         {
             targets.Add(method);
-            return targets;
+            return;
         }
 
-        Trace.TraceError("QudJP: {0}.{1}.Reveal target not found.", Context, targetType.FullName);
-        return targets;
+        Trace.TraceError("QudJP: {0}.{1}.{2} target not found.", Context, targetType.FullName, methodName);
     }
 
     public static void Prefix()
@@ -76,8 +82,8 @@ public static class HiddenRenderTranslationPatch
 
         if (MessageFrameTranslator.TryStripDirectTranslationMarker(message, out var markedText))
         {
-            message = markedText;
-            return true;
+            _ = markedText;
+            return false;
         }
 
         if (!TryTranslateRevealMessage(message, out var translated))
@@ -87,6 +93,30 @@ public static class HiddenRenderTranslationPatch
 
         DynamicTextObservability.RecordTransform("MessageQueue.AddPlayerMessage", Context, message, translated);
         message = MessageFrameTranslator.MarkDirectTranslation(translated);
+        return true;
+    }
+
+    internal static bool TryTranslateMessageLogMessage(ref string message, string? color)
+    {
+        _ = color;
+        if (!OwnerTranslationScope.IsActive(activeDepth) || string.IsNullOrEmpty(message))
+        {
+            return false;
+        }
+
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(message, out var markedText))
+        {
+            message = markedText;
+            return true;
+        }
+
+        if (!TryTranslateRevealMessage(message, out var translated))
+        {
+            return false;
+        }
+
+        DynamicTextObservability.RecordTransform(nameof(MessageLogPatch), Context + ".MessageLog", message, translated);
+        message = translated;
         return true;
     }
 
@@ -100,8 +130,15 @@ public static class HiddenRenderTranslationPatch
             return false;
         }
 
-        translated = $"{TranslateDirection(match, spans)}に{RestoreCapture(match, spans, "subject")}が現れた！";
+        translated = $"{TranslateDirection(match, spans)}に{TranslateSubject(match, spans)}が現れた！";
         return true;
+    }
+
+    private static string TranslateSubject(Match match, IReadOnlyList<ColorSpan> spans)
+    {
+        return DisplayNameCaptureTranslator.TranslatePreservingColors(
+            RestoreCapture(match, spans, "subject"),
+            Context);
     }
 
     private static string TranslateDirection(Match match, IReadOnlyList<ColorSpan> spans)
@@ -109,6 +146,7 @@ public static class HiddenRenderTranslationPatch
         var group = match.Groups["direction"];
         var translated = group.Value switch
         {
+            "here" => "ここ",
             "nearby" => "近く",
             "to the north" => "北側",
             "to the south" => "南側",
