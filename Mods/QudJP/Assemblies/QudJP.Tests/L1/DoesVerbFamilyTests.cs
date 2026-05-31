@@ -880,9 +880,10 @@ public sealed class DoesVerbFamilyTests
 
     // --- Space-Time Vortex Family ---
 
-    [TestCase("Two space-time vortices come into contact and both explode!", "2つのspace-time vorticesが接触し、両方とも爆発した！")]
+    [TestCase("Two space-time vortices come into contact and both explode!", "2つの時空の渦が接触し、両方とも爆発した！")]
+    [TestCase("The vortex comes into contact with the other vortex and both explode!", "渦はもう一つの渦に接触し、両方とも爆発した！")]
     // Color-wrapped
-    [TestCase("{{R|Two space-time vortices come into contact and both explode!}}", "{{R|2つのspace-time vorticesが接触し、両方とも爆発した！}}")]
+    [TestCase("{{R|Two space-time vortices come into contact and both explode!}}", "{{R|2つの時空の渦が接触し、両方とも爆発した！}}")]
     public void Translate_SpaceTimeVortexFamily(string input, string expected)
     {
         AssertTranslated(input, expected);
@@ -1016,10 +1017,10 @@ public sealed class DoesVerbFamilyTests
 
     // --- Infiltrate Family ---
 
-    [TestCase("You infiltrate the メカ!", "メカに潜入した！")]
-    [TestCase("The 熊 infiltrates the メカ!", "熊はメカに潜入した！")]
+    [TestCase("You infiltrate the メカ!", "メカに入り込んだ！")]
+    [TestCase("The 熊 infiltrates the メカ!", "熊はメカに入り込んだ！")]
     // Color-wrapped
-    [TestCase("{{g|You infiltrate the メカ!}}", "{{g|メカに潜入した！}}")]
+    [TestCase("{{g|You infiltrate the メカ!}}", "{{g|メカに入り込んだ！}}")]
     public void Translate_InfiltrateFamily(string input, string expected)
     {
         AssertTranslated(input, expected);

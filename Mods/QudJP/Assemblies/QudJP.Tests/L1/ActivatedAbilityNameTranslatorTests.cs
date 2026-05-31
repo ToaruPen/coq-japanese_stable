@@ -93,6 +93,34 @@ public sealed class ActivatedAbilityNameTranslatorTests
         });
     }
 
+    [Test]
+    public void TryTranslateVisibleName_TranslatesCyberneticsRecoilerDestination()
+    {
+        var translated = ActivatedAbilityNameTranslator.TryTranslateVisibleName(
+            "Recoil to {{Y|Joppa}}",
+            out var result);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.True);
+            Assert.That(result, Is.EqualTo("{{Y|ジョッパ}}へ帰還"));
+        });
+    }
+
+    [Test]
+    public void TryTranslateVisibleName_RecoilDestinationFallsBackWhenZoneRemainsAscii()
+    {
+        var translated = ActivatedAbilityNameTranslator.TryTranslateVisibleName(
+            "Recoil to odd nowhere",
+            out var result);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.False);
+            Assert.That(result, Is.EqualTo("Recoil to odd nowhere"));
+        });
+    }
+
     [TestCase("")]
     [TestCase("Deactivate ")]
     [TestCase("Deactivate {{Y|odd gizmo}}")]

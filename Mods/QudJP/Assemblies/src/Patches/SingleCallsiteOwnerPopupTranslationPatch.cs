@@ -15,6 +15,7 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
     private const string CharacterInitOwner = "XRL.CharacterBuilds.Qud.QudSpecificCharacterInitModule|handleBootEvent";
     private const string ContainerAttemptOpenOwner = "XRL.World.Parts.Container|AttemptOpen";
     private const string DecoyHologramOwner = "XRL.World.Parts.DecoyHologramEmitter|CreateHolograms";
+    private const string ElevatorSwitchOwner = "XRL.World.Parts.ElevatorSwitch|FireEvent";
     private const string BaetylRewardWishOwner = "XRL.World.Parts.RandomAltarBaetyl|HandleBaetylRewardWish";
     private const string AxeDismemberOwner = "XRL.World.Parts.Skill.Axe_Dismember|CastForceSuccess";
     private const string AxeDismemberCastOwner = "XRL.World.Parts.Skill.Axe_Dismember|Cast";
@@ -34,6 +35,8 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
     private const string TinkeringTinker1RechargeOwner = "XRL.World.Parts.Skill.Tinkering_Tinker1|Recharge";
     private const string GameUniqueOwner = "XRL.World.Parts.GameUnique|OnCreated";
     private const string GenocideCurioOwner = "XRL.World.Parts.GenocideCurio|HandleEvent";
+    private const string IGrenadeOwner = "XRL.World.Parts.IGrenade|HandleEvent";
+    private const string IZoneLandmarkWishCurrentOwner = "XRL.World.Parts.IZoneLandmark|WishCurrent";
     private const string GritGateMainframeOwner = "XRL.World.Parts.GritGateMainframeTerminal|HandleEvent";
     private const string HindrenMysteryCriticalNpcOwner = "XRL.World.Parts.HindrenMysteryCriticalNPC|HandleEvent";
     private const string IModificationWishModifyOwner = "XRL.World.Parts.IModification|WishModify";
@@ -70,6 +73,8 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
     private const string MutationsWishMutationOwner = "XRL.World.Parts.Mutations|WishMutation";
     private const string NephalPropertiesHandleEventOwner = "XRL.World.Parts.NephalProperties|HandleEvent";
     private const string PopulationManagerWishGenerateOwner = "XRL.PopulationManager|WishGenerate";
+    private const string PopulationManagerWishFindBlueprintOwner = "XRL.PopulationManager|WishFindBlueprint";
+    private const string PopulationManagerRollOneFromOwner = "XRL.PopulationManager|RollOneFrom";
     private const string GameObjectFactoryBlueprintXmlOwner = "XRL.World.GameObjectFactory|HandleBlueprintXML";
     private const string XrlGameLoadGameOwner = "XRL.XRLGame|LoadGame";
     private const string ThinWorldTransitOwner = "XRL.World.Parts.ThinWorld|TransitToThinWorld";
@@ -378,12 +383,32 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         "^No table by the name '(?<table>.+?)' could be resolved\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex PopulationManagerRollOneErrorPattern = new(
+        "^Error generating population:(?<population>.+?)\\n\\n, please report this error to support@freeholdgames\\.com$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex PopulationManagerBlueprintMissingObjectBlueprintsPattern = new(
+        "^The blueprint '(?<blueprint>.+?)' was not found in any object blueprints\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex PopulationManagerBlueprintMissingPopulationTablesPattern = new(
+        "^The blueprint '(?<blueprint>.+?)' was not found in any population tables\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex PopulationManagerBlueprintFoundPopulationTablesPattern = new(
+        "^The blueprint '(?<blueprint>.+?)' has the approximate probability of generating at least once from the following tables;\\n(?<tables>[\\s\\S]+)$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     private static readonly Regex GameObjectFactoryMissingBlueprintPattern = new(
         "^No blueprint named \"(?<blueprint>.+?)\" found\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     private static readonly Regex XrlGameMissingSavePattern = new(
         "^No saved game exists\\. \\((?<path>.+?)\\)$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex IZoneLandmarkWishCurrentLocationPattern = new(
+        "^You are (?<location>.+?)\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     private static readonly Regex PlayerMuralReshephDisguiseDonePattern = new(
@@ -470,6 +495,11 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
             "XRL.World.Parts.DecoyHologramEmitter",
             "CreateHolograms",
             [gameObjectType]);
+        AddTarget(
+            targets,
+            "XRL.World.Parts.ElevatorSwitch",
+            "FireEvent",
+            [eventType]);
         AddTarget(
             targets,
             "XRL.World.Parts.RandomAltarBaetyl",
@@ -565,6 +595,16 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
             "XRL.World.Parts.GenocideCurio",
             "HandleEvent",
             [inventoryActionEventType]);
+        AddTarget(
+            targets,
+            "XRL.World.Parts.IGrenade",
+            "HandleEvent",
+            [inventoryActionEventType]);
+        AddTarget(
+            targets,
+            "XRL.World.Parts.IZoneLandmark",
+            "WishCurrent",
+            Type.EmptyTypes);
         AddTarget(
             targets,
             "XRL.World.Parts.SpiralBorerCurio",
@@ -762,6 +802,16 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
             [typeof(string)]);
         AddTarget(
             targets,
+            "XRL.PopulationManager",
+            "WishFindBlueprint",
+            [typeof(string)]);
+        AddTarget(
+            targets,
+            "XRL.PopulationManager",
+            "RollOneFrom",
+            [typeof(string), typeof(Dictionary<string, string>), typeof(string)]);
+        AddTarget(
+            targets,
             "XRL.World.GameObjectFactory",
             "HandleBlueprintXML",
             [typeof(string)]);
@@ -884,12 +934,59 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
             return true;
         }
 
+        if (OwnerMatches(ownerKey, IGrenadeOwner)
+            && source.Equals("You cannot do that on the world map.", StringComparison.Ordinal))
+        {
+            translated = "ワールドマップではそれはできない。";
+            detail = "IGrenadeWorldMap";
+            return true;
+        }
+
+        if (OwnerMatches(ownerKey, IZoneLandmarkWishCurrentOwner))
+        {
+            if (source.Equals("You are nut currently in a landmark location.", StringComparison.Ordinal))
+            {
+                translated = "現在、ランドマーク地点にはいない。";
+                detail = "IZoneLandmarkWishCurrentMissing";
+                return true;
+            }
+
+            var landmarkMatch = IZoneLandmarkWishCurrentLocationPattern.Match(source);
+            if (landmarkMatch.Success)
+            {
+                translated = "現在地: " + TranslateLandmarkLocation(landmarkMatch.Groups["location"].Value) + "。";
+                detail = "IZoneLandmarkWishCurrentLocation";
+                return true;
+            }
+        }
+
         var match = BiomeNotFoundPattern.Match(source);
         if (match.Success && OwnerMatches(ownerKey, BiomeSurfaceDistributionOwner))
         {
             translated = $"'{match.Groups["name"].Value}'という名前のバイオームは見つからない。";
             detail = "BiomeNotFound";
             return true;
+        }
+
+        if (OwnerMatches(ownerKey, ElevatorSwitchOwner))
+        {
+            if (source.Equals(
+                    "The chrome platform begins to hum as it ascends into the darkness.",
+                    StringComparison.Ordinal))
+            {
+                translated = "クロームの昇降台が唸り始め、暗闇の中へ上昇していく。";
+                detail = "ElevatorSwitchPlatformAscends";
+                return true;
+            }
+
+            if (source.Equals(
+                    "The chrome platform begins to hum as it descends into the darkness.",
+                    StringComparison.Ordinal))
+            {
+                translated = "クロームの昇降台が唸り始め、暗闇の中へ下降していく。";
+                detail = "ElevatorSwitchPlatformDescends";
+                return true;
+            }
         }
 
         match = CharacterInitUnknownBlueprintPattern.Match(source);
@@ -1564,7 +1661,7 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
             && OwnerMatches(ownerKey, SpaceTimeVortexOwner)
             && TryTranslateDirectionPhrase(match.Groups["direction"].Value, out var direction))
         {
-            var vortex = StringHelpers.StripLeadingEnglishArticle(match.Groups["vortex"].Value, includeCapitalizedDefiniteArticle: true);
+            var vortex = TranslatePopupDisplayNameCapture(match.Groups["vortex"].Value);
             translated = $"あなたの仲間である{match.Groups["companion"].Value}は{direction}の{vortex}に吸い込まれた！";
             detail = "SpaceTimeVortexCompanionSucked";
             return true;
@@ -1702,6 +1799,20 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
             return true;
         }
 
+        match = PopulationManagerRollOneErrorPattern.Match(source);
+        if (match.Success && OwnerMatches(ownerKey, PopulationManagerRollOneFromOwner))
+        {
+            translated = $"population '{match.Groups["population"].Value}' の生成中にエラーが発生した。\n\nsupport@freeholdgames.com に報告してください。";
+            detail = "PopulationManagerRollOneError";
+            return true;
+        }
+
+        if (OwnerMatches(ownerKey, PopulationManagerWishFindBlueprintOwner)
+            && TryTranslatePopulationBlueprintFindReport(source, out translated, out detail))
+        {
+            return true;
+        }
+
         match = GameObjectFactoryMissingBlueprintPattern.Match(source);
         if (match.Success && OwnerMatches(ownerKey, GameObjectFactoryBlueprintXmlOwner))
         {
@@ -1748,6 +1859,85 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         {
             translated = $"ヘロドディクスが言う。「&W終わりました、モロク！ {match.Groups["name"].Value}・レシェフを讃えよ、この館を駆ける者たちよ！&Y」";
             detail = "PlayerMuralReshephDisguiseDone";
+            return true;
+        }
+
+        translated = source;
+        detail = string.Empty;
+        return false;
+    }
+
+    private static string TranslateLandmarkLocation(string source)
+    {
+        var location = source.StartsWith("in ", StringComparison.Ordinal)
+            ? source.Substring(3)
+            : source;
+        return GetDisplayNameRouteTranslator.TranslatePreservingColors(location, nameof(SingleCallsiteOwnerPopupTranslationPatch));
+    }
+
+    private static bool TryTranslatePopulationBlueprintFindReport(string source, out string translated, out string detail)
+    {
+        if (TryTranslatePopulationBlueprintFindReportLine(source, out translated, out detail))
+        {
+            return true;
+        }
+
+        var lines = source.Split('\n');
+        var translatedLines = new List<string>(lines.Length);
+        var changed = false;
+
+        foreach (var line in lines)
+        {
+            if (TryTranslatePopulationBlueprintFindReportLine(line, out var translatedLine, out _))
+            {
+                translatedLines.Add(translatedLine);
+                changed = true;
+                continue;
+            }
+
+            translatedLines.Add(line);
+        }
+
+        if (!changed)
+        {
+            translated = source;
+            detail = string.Empty;
+            return false;
+        }
+
+        translated = string.Join("\n", translatedLines);
+        detail = translatedLines.Count > 1
+            ? "PopulationManagerBlueprintFindReport"
+            : "PopulationManagerBlueprintMissingPopulationTables";
+        return true;
+    }
+
+    private static bool TryTranslatePopulationBlueprintFindReportLine(
+        string source,
+        out string translated,
+        out string detail)
+    {
+        var match = PopulationManagerBlueprintMissingObjectBlueprintsPattern.Match(source);
+        if (match.Success)
+        {
+            translated = $"ブループリント'{match.Groups["blueprint"].Value}'は object blueprint に見つからない。";
+            detail = "PopulationManagerBlueprintMissingObjectBlueprints";
+            return true;
+        }
+
+        match = PopulationManagerBlueprintMissingPopulationTablesPattern.Match(source);
+        if (match.Success)
+        {
+            translated = $"ブループリント'{match.Groups["blueprint"].Value}'はどの population table にも見つからない。";
+            detail = "PopulationManagerBlueprintMissingPopulationTables";
+            return true;
+        }
+
+        match = PopulationManagerBlueprintFoundPopulationTablesPattern.Match(source);
+        if (match.Success)
+        {
+            translated = $"ブループリント'{match.Groups["blueprint"].Value}'が以下の table から少なくとも1回生成される概算確率:\n{match.Groups["tables"].Value}";
+            detail = "PopulationManagerBlueprintFoundPopulationTables";
             return true;
         }
 

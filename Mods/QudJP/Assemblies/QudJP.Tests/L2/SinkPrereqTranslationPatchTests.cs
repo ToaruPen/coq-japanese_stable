@@ -73,6 +73,31 @@ public sealed class SinkPrereqTranslationPatchTests
     }
 
     [Test]
+    public void LeftSideCategoryOwnerPatch_TranslatesRenderedCategoryText()
+    {
+        WriteDictionary(("Keybinds", "キーバインド"));
+        Translator.SetDictionaryDirectoryForTests(tempDir);
+
+        harmony.Patch(
+            original: RequireMethod(typeof(DummyLeftSideCategory), "setData"),
+            postfix: new HarmonyMethod(RequireMethod(
+                typeof(LeftSideCategoryTranslationPatch), "Postfix")));
+
+        var instance = new DummyLeftSideCategory();
+        instance.setData(new DummyFrameworkDataElement { Description = "Keybinds" });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(instance.text.text, Is.EqualTo("{{C|キーバインド}}"));
+            Assert.That(
+                DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                    nameof(LeftSideCategoryTranslationPatch),
+                    "LeftSideCategory.Text"),
+                Is.EqualTo(1));
+        });
+    }
+
+    [Test]
     public void SetDataPatch_ObservationOnly_LeavesFrameworkHeaderTextUnchanged()
     {
         WriteDictionary(("Choose your genotype", "遺伝子型を選択"));

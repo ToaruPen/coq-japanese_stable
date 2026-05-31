@@ -235,10 +235,17 @@ internal static class DoesVerbRouteTranslator
             || trimmed.StartsWith("an ", StringComparison.Ordinal))
         {
             var separator = trimmed.IndexOf(' ');
-            return trimmed.Substring(separator + 1);
+            return TranslateSubjectLeaf(trimmed.Substring(separator + 1));
         }
 
-        return trimmed;
+        return TranslateSubjectLeaf(trimmed);
+    }
+
+    private static string TranslateSubjectLeaf(string subject)
+    {
+        return StringHelpers.TryGetTranslationExactOrLowerAscii(subject, out var translated)
+            ? translated
+            : subject;
     }
 
     private static bool TryTranslateVisibleMessage(

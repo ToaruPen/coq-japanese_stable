@@ -17,7 +17,6 @@ public static class SinkPrereqSetDataTranslationPatch
 
     private static readonly string[] TargetTypeNames =
     {
-        "Qud.UI.LeftSideCategory",
         "XRL.UI.Framework.CategoryIconScroller",
         "XRL.UI.Framework.CategoryMenuController",
         "XRL.UI.Framework.FrameworkHeader",

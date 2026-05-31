@@ -37,6 +37,17 @@ public static class BasePronounProviderCustomizePopupTranslationPatch
         }
 
         AddStateMachineTarget(targets, targetType, "CustomizeProcess", new[] { typeof(string) });
+
+        var genderType = AccessTools.TypeByName("XRL.World.Gender");
+        if (genderType is null)
+        {
+            Trace.TraceError("QudJP: {0} Gender target type not found.", Context);
+        }
+        else
+        {
+            AddStateMachineTarget(targets, genderType, "CustomizeProcess", new[] { typeof(string) });
+        }
+
         return targets;
     }
 

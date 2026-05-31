@@ -489,6 +489,218 @@ public sealed class XDidYTranslationPatchTests
     }
 
     [Test]
+    public void Prefix_TranslatesHeatSelfOnFreezeWarmFrame()
+    {
+        WriteDictionary(tier2: new[] { ("vibrate", "to warm {0}", "{0}を温めようと振動した") });
+
+        RunWithXDidYToZPatch(() =>
+        {
+            DummyXDidYTarget.XDidYToZ(
+                Actor: null,
+                Verb: "vibrate",
+                Preposition: "to warm",
+                Object: "自身",
+                EndMark: "!",
+                SubjectOverride: "熊",
+                AlwaysVisible: true);
+        });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(DummyXDidYTarget.OriginalExecuted, Is.False);
+            Assert.That(lastMessage, Is.EqualTo("\u0001熊は自身を温めようと振動した！"));
+        });
+    }
+
+    [Test]
+    public void Prefix_TranslatesNephalPropertiesAbsorbChordsFrame()
+    {
+        WriteDictionary(tier2: new[] { ("absorb", "a chord of {0} light", "{0}の光の和音を吸収した") });
+
+        RunWithXDidYToZPatch(() =>
+        {
+            DummyXDidYTarget.XDidYToZ(
+                Actor: null,
+                Verb: "absorb",
+                Preposition: "a chord of",
+                Object: "{{G|Saad Amus}}",
+                Extra: "light",
+                SubjectOverride: "{{R|Agolgot}}",
+                AlwaysVisible: true);
+        });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(DummyXDidYTarget.OriginalExecuted, Is.False);
+            Assert.That(lastMessage, Is.EqualTo("\u0001{{R|Agolgot}}は{{G|Saad Amus}}の光の和音を吸収した。"));
+        });
+    }
+
+    [Test]
+    public void Prefix_TranslatesBarathrumShuttleShipLaunchInterfaceFrame()
+    {
+        WriteDictionary(tier2: new[] { ("start", "interfacing with {0}", "{t0}とのインターフェースを開始した") });
+        WriteUiDictionary(("Sheva starship control", "シェバ宇宙船制御装置"));
+
+        RunWithXDidYToZPatch(() =>
+        {
+            DummyXDidYTarget.XDidYToZ(
+                Actor: null,
+                Verb: "start",
+                Preposition: "interfacing with",
+                Object: "{{Y|Sheva starship control}}",
+                SubjectOverride: "{{C|Barathrumite shuttle}}",
+                AlwaysVisible: true,
+                UsePopup: true);
+        });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(DummyXDidYTarget.OriginalExecuted, Is.False);
+            Assert.That(lastMessage, Is.EqualTo("\u0001{{C|Barathrumite shuttle}}は{{Y|シェバ宇宙船制御装置}}とのインターフェースを開始した。"));
+            Assert.That(lastUsePopup, Is.True);
+        });
+    }
+
+    [Test]
+    public void Prefix_TranslatesPetFrondzieTauntFrames()
+    {
+        WriteDictionary(
+            tier2: new[] { ("are", "enraged by the mockery", "嘲りに激怒した") },
+            tier3: new[]
+            {
+                (
+                    "yell",
+                    "an? (?:terrible|ghastly|corny|shameful|rude|painful|monstrous|horrid|puerile|childish|boring|ridiculous) (?:pun|joke|double entendre|jape|goof|tall tale) about (.+?)",
+                    "{subject}は{t0}についてひどい冗談を叫んだ{endmark}"),
+            });
+        WriteUiDictionary(("the Spindle", "スピンドル"));
+
+        RunWithXDidYPatch(() =>
+        {
+            DummyXDidYTarget.XDidY(
+                Actor: null,
+                Verb: "yell",
+                Extra: "a terrible pun about {{Y|the Spindle}}",
+                SubjectOverride: "{{G|Frondzie}}",
+                AlwaysVisible: true);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyXDidYTarget.OriginalExecuted, Is.False);
+                Assert.That(lastMessage, Is.EqualTo("\u0001{{G|Frondzie}}は{{Y|スピンドル}}についてひどい冗談を叫んだ"));
+            });
+
+            DummyXDidYTarget.Reset();
+            DummyXDidYTarget.XDidY(
+                Actor: null,
+                Verb: "are",
+                Extra: "enraged by the mockery",
+                EndMark: "!",
+                SubjectOverride: "スナップジョー",
+                AlwaysVisible: true);
+        });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(DummyXDidYTarget.OriginalExecuted, Is.False);
+            Assert.That(lastMessage, Is.EqualTo("\u0001スナップジョーは嘲りに激怒した！"));
+        });
+    }
+
+    [Test]
+    public void Prefix_TranslatesPetEbenshabatRecipeTeachingFrame()
+    {
+        WriteDictionary(tier3: new[] { ("teach", "{0} {1}", "{subject}は{0}に{1}を教えた{endmark}") });
+
+        RunWithXDidYToZPatch(() =>
+        {
+            DummyXDidYTarget.XDidYToZ(
+                Actor: null,
+                Verb: "teach",
+                Object: "あなた",
+                Extra: "{{y|ワタワイン粥}}",
+                EndMark: "!",
+                SubjectOverride: "{{G|Eben Shabbat}}",
+                AlwaysVisible: true);
+        });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(DummyXDidYTarget.OriginalExecuted, Is.False);
+            Assert.That(lastMessage, Is.EqualTo("\u0001{{G|Eben Shabbat}}はあなたに{{y|ワタワイン粥}}を教えた！"));
+        });
+    }
+
+    [Test]
+    public void Prefix_TranslatesSpaceTimeVortexPeriodicFrames()
+    {
+        WriteDictionary(
+            tier1: new[] { ("destabilize", "不安定化した") },
+            tier3: new[]
+            {
+                ("climb", "through {0} {1}", "{subject}は{t1}の{t0}を通って這い出てきた{endmark}"),
+                ("fall", "through {0} {1}", "{subject}は{t1}の{t0}を通って落ちてきた{endmark}"),
+            });
+        WriteUiDictionary(("space-time vortex", "時空の渦"));
+
+        RunWithXDidYToZPatch(() =>
+        {
+            DummyXDidYTarget.XDidYToZ(
+                Actor: null,
+                Verb: "climb",
+                Preposition: "through",
+                Object: "space-time vortex",
+                Extra: "to the north",
+                EndMark: "!",
+                SubjectOverride: "スナップジョー",
+                IndefiniteSubject: true,
+                AlwaysVisible: true);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyXDidYTarget.OriginalExecuted, Is.False);
+                Assert.That(lastMessage, Is.EqualTo("\u0001スナップジョーは北側の時空の渦を通って這い出てきた！"));
+            });
+
+            DummyXDidYTarget.Reset();
+            DummyXDidYTarget.XDidYToZ(
+                Actor: null,
+                Verb: "fall",
+                Preposition: "through",
+                Object: "space-time vortex",
+                Extra: "to the south",
+                EndMark: "!",
+                SubjectOverride: "奇妙な箱",
+                IndefiniteSubject: true,
+                AlwaysVisible: true);
+        });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(DummyXDidYTarget.OriginalExecuted, Is.False);
+            Assert.That(lastMessage, Is.EqualTo("\u0001奇妙な箱は南側の時空の渦を通って落ちてきた！"));
+        });
+
+        DummyXDidYTarget.Reset();
+        RunWithXDidYPatch(() =>
+        {
+            DummyXDidYTarget.XDidY(
+                Actor: null,
+                Verb: "destabilize",
+                EndMark: "!",
+                SubjectOverride: "時空の渦",
+                AlwaysVisible: true);
+        });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(DummyXDidYTarget.OriginalExecuted, Is.False);
+            Assert.That(lastMessage, Is.EqualTo("\u0001時空の渦は不安定化した！"));
+        });
+    }
+
+    [Test]
     public void Prefix_TranslatesXDidYToZFlinchOutOfWayOfProjectile()
     {
         WriteDictionary(tier3: new[] { ("flinch", "out of the way of {0}", "{0}をかわした") });
@@ -604,6 +816,113 @@ public sealed class XDidYTranslationPatchTests
             {
                 Assert.That(DummyXDidYTarget.OriginalExecuted, Is.False);
                 Assert.That(lastMessage, Is.EqualTo("\u0001あなたは塩水の水たまりの中をかき分けて進んだ。"));
+            });
+        });
+    }
+
+    [Test]
+    public void Prefix_RepositoryFrames_TranslateLiquidVolumeContactFrames()
+    {
+        UseRepositoryMessageFrames();
+
+        RunWithXDidYToZPatch(() =>
+        {
+            DummyXDidYTarget.XDidYToZ(
+                Actor: null,
+                Verb: "swim",
+                Preposition: "through",
+                Object: "{{B|深い池}}",
+                SubjectOverride: "あなた",
+                AlwaysVisible: true);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyXDidYTarget.OriginalExecuted, Is.False);
+                Assert.That(lastMessage, Is.EqualTo("\u0001あなたは{{B|深い池}}の中を泳いだ。"));
+            });
+        });
+    }
+
+    [Test]
+    public void Prefix_RepositoryFrames_TranslateLiquidVolumeCleaningFrames()
+    {
+        UseRepositoryDictionaries();
+        UseRepositoryMessageFrames();
+
+        RunWithXDidYPatch(() =>
+        {
+            DummyXDidYTarget.XDidY(
+                Actor: null,
+                Verb: "clean",
+                Extra: "the mess from itself",
+                SubjectOverride: "あなた",
+                AlwaysVisible: true);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyXDidYTarget.OriginalExecuted, Is.False);
+                Assert.That(lastMessage, Is.EqualTo("\u0001あなたはそれ自身の汚れを落とした。"));
+            });
+
+            DummyXDidYTarget.Reset();
+            DummyXDidYTarget.XDidY(
+                Actor: null,
+                Verb: "clean",
+                Extra: "the mess from your 鉄の剣 with a dram of {{B|fresh water}} from canteen to the north",
+                EndMark: "!",
+                SubjectOverride: "あなた",
+                AlwaysVisible: true);
+        });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(DummyXDidYTarget.OriginalExecuted, Is.False);
+            Assert.That(lastMessage, Is.EqualTo("\u0001あなたは水筒（北側）から{{B|真水}} 1ドラムを使ってあなたの鉄の剣の汚れを落とした！"));
+        });
+    }
+
+    [Test]
+    public void Prefix_RepositoryFrames_TranslateCampfireExtinguishFrame()
+    {
+        UseRepositoryMessageFrames();
+
+        RunWithXDidYToZPatch(() =>
+        {
+            DummyXDidYTarget.XDidYToZ(
+                Actor: null,
+                Verb: "extinguish",
+                Object: "キャンプファイヤー",
+                SubjectOverride: "あなた",
+                AlwaysVisible: true);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyXDidYTarget.OriginalExecuted, Is.False);
+                Assert.That(lastMessage, Is.EqualTo("\u0001あなたはキャンプファイヤーを消した。"));
+            });
+        });
+    }
+
+    [Test]
+    public void Prefix_RepositoryFrames_TranslateMagazineAmmoLoaderTransferFrame()
+    {
+        UseRepositoryMessageFrames();
+        UseRepositoryDictionaries();
+
+        RunWithXDidYToZPatch(() =>
+        {
+            DummyXDidYTarget.XDidYToZ(
+                Actor: null,
+                Verb: "transfer",
+                Preposition: "3 lead slugs to",
+                Object: "{{Y|turret}}",
+                SubjectOverride: "あなた",
+                AlwaysVisible: true);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyXDidYTarget.OriginalExecuted, Is.False);
+                Assert.That(lastMessage, Is.EqualTo("\u0001あなたは3 lead slugsを{{Y|タレット}}に移した。"));
             });
         });
     }
@@ -889,6 +1208,31 @@ public sealed class XDidYTranslationPatchTests
         File.WriteAllText(Path.Combine(tempDirectory, "ui-test.ja.json"), builder.ToString(), Utf8WithoutBom);
         Translator.ResetForTests();
         Translator.SetDictionaryDirectoryForTests(tempDirectory);
+    }
+
+    private static void UseRepositoryDictionaries()
+    {
+        Translator.ResetForTests();
+        Translator.SetDictionaryDirectoryForTests(
+            Path.Combine(
+                QudJP.Tests.L1.TestProjectPaths.GetRepositoryRoot(),
+                "Mods",
+                "QudJP",
+                "Localization",
+                "Dictionaries"));
+    }
+
+    private static void UseRepositoryMessageFrames()
+    {
+        MessageFrameTranslator.ResetForTests();
+        MessageFrameTranslator.SetDictionaryPathForTests(
+            Path.Combine(
+                QudJP.Tests.L1.TestProjectPaths.GetRepositoryRoot(),
+                "Mods",
+                "QudJP",
+                "Localization",
+                "MessageFrames",
+                "verbs.ja.json"));
     }
 
     private static void RunWithXDidYPatch(Action action)

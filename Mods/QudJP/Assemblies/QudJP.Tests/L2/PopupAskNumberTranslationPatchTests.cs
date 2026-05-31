@@ -170,6 +170,22 @@ public sealed class PopupAskNumberTranslationPatchTests
     }
 
     [Test]
+    public void Prefix_TranslatesMagazineAmmoLoaderSupplyPrompt()
+    {
+        WriteDictionary((
+            "Supply {0} with how many {1}? (max={2})",
+            "{0}へ{1}をいくつ補給しますか？ (最大={2})"));
+
+        using var patch = PatchMethod(nameof(DummyPopupGenericTarget.AskNumber));
+
+        DummyPopupGenericTarget.AskNumber("Supply {{Y|turret}} with how many lead slugs? (max=7)");
+
+        Assert.That(
+            DummyPopupGenericTarget.LastAskNumberMessage,
+            Is.EqualTo("{{Y|turret}}へlead slugsをいくつ補給しますか？ (最大=7)"));
+    }
+
+    [Test]
     public void Prefix_UsesTradeScreenOwnerTemplate_ForTradeSomePromptBeforeGenericPopupRoute()
     {
         WriteDictionary(

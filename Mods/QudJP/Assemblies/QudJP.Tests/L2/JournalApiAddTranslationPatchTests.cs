@@ -84,6 +84,44 @@ public sealed class JournalApiAddTranslationPatchTests
     }
 
     [Test]
+    public void AddAccomplishment_TranslatesGameObjectDieDeathJournalText_WhenPatched()
+    {
+        WriteExactDictionary(
+            ("5th", "第5"),
+            ("Ut yara Ux", "ウト・ヤラ・ウクス"));
+        WritePatternDictionary(("^On the (.+?) of (.+?)$", "{t1}の{t0}日"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyJournalApi), nameof(DummyJournalApi.AddAccomplishment)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(JournalAccomplishmentAddTranslationPatch), nameof(JournalAccomplishmentAddTranslationPatch.Prefix))),
+                postfix: new HarmonyMethod(RequireMethod(typeof(JournalAccomplishmentAddTranslationPatch), nameof(JournalAccomplishmentAddTranslationPatch.Postfix))));
+
+            GameObjectDieTranslationPatch.Prefix();
+            try
+            {
+                DummyJournalApi.AddAccomplishment(
+                    "On the 5th of Ut yara Ux, 蒸発した。",
+                    category: "general");
+            }
+            finally
+            {
+                _ = GameObjectDieTranslationPatch.Finalizer(null);
+            }
+
+            var entry = DummyJournalApi.Accomplishments.Single();
+            Assert.That(entry.Text, Is.EqualTo("\u0001ウト・ヤラ・ウクスの第5日、蒸発した。"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void AddAccomplishment_TranslatesWakingDreamGospel_WhenPatched()
     {
         WriteExactDictionary(("You woke from a peaceful dream.", "安らかな夢から目覚めた。"));

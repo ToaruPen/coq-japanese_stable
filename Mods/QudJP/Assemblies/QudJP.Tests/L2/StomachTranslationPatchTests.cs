@@ -42,6 +42,18 @@ public sealed class StomachTranslationPatchTests
         "&YThe moisture is sucked out of your throat.",
         "&Y喉から水分が吸い出された。",
         "StomachMoistureThroat")]
+    [TestCase(
+        "You drank way too much!",
+        "飲みすぎた！",
+        "StomachOverdrink")]
+    [TestCase(
+        "{{W|You drank way too much!}}",
+        "{{W|飲みすぎた！}}",
+        "StomachOverdrink")]
+    [TestCase(
+        "You drank way too much! You vomit!",
+        "飲みすぎた！ 吐いた！",
+        "StomachOverdrinkVomiting")]
     public void AddWater_TranslatesDehydrationQueueMessages_WhenOwnerPatched(
         string source,
         string expected,
@@ -130,7 +142,6 @@ public sealed class StomachTranslationPatchTests
     }
 
     [TestCase("")]
-    [TestCase("You drank way too much!")]
     [TestCase("Ugh, you feel sick.")]
     public void AddWater_DoesNotClaimFixedRuntimeOrEmptyQueueMessages_WhenOwnerPatched(string source)
     {

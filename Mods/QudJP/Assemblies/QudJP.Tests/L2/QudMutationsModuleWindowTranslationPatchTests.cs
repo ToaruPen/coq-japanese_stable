@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 using HarmonyLib;
 using QudJP.Patches;
@@ -24,6 +25,8 @@ public sealed class QudMutationsModuleWindowTranslationPatchTests
         LocalizationAssetResolver.SetLocalizationRootForTests(tempRoot);
         Translator.SetDictionaryDirectoryForTests(dictionariesDirectory);
         ChargenStructuredTextTranslator.ResetForTests();
+        DynamicTextObservability.ResetForTests();
+        DummyPopupMessageTarget.Reset();
     }
 
     [TearDown]
@@ -31,6 +34,8 @@ public sealed class QudMutationsModuleWindowTranslationPatchTests
     {
         ChargenStructuredTextTranslator.ResetForTests();
         Translator.ResetForTests();
+        DynamicTextObservability.ResetForTests();
+        DummyPopupMessageTarget.Reset();
         LocalizationAssetResolver.SetLocalizationRootForTests(null);
 
         if (Directory.Exists(tempRoot))
@@ -158,10 +163,128 @@ public sealed class QudMutationsModuleWindowTranslationPatchTests
         });
     }
 
+    [Test]
+    public void PopupPrefix_TranslatesVariantPickerTitle_WhenSelectVariantOwnerPatched()
+    {
+        var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            PatchPickOption(harmony);
+            var ownerOriginal = ResolveStateMachineMoveNext(RequireMethod(
+                typeof(DummyQudMutationsModuleWindow),
+                nameof(DummyQudMutationsModuleWindow.SelectVariant)))
+                ?? throw new InvalidOperationException("Dummy SelectVariant state machine not found.");
+            harmony.Patch(
+                original: ownerOriginal,
+                prefix: new HarmonyMethod(RequireMethod(
+                    typeof(QudMutationsModuleWindowVariantPopupTranslationPatch),
+                    nameof(QudMutationsModuleWindowVariantPopupTranslationPatch.Prefix))),
+                finalizer: new HarmonyMethod(RequireMethod(
+                    typeof(QudMutationsModuleWindowVariantPopupTranslationPatch),
+                    nameof(QudMutationsModuleWindowVariantPopupTranslationPatch.Finalizer),
+                    typeof(Exception))));
+
+            DummyQudMutationsModuleWindow.StaticPopupTitleToShow = "Choose variant";
+            DummyQudMutationsModuleWindow.SelectVariant().GetAwaiter().GetResult();
+
+            Assert.That(DummyPopupGenericTarget.LastPickOptionTitle, Is.EqualTo("変種を選択"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+            DummyPopupGenericTarget.Reset();
+            DummyQudMutationsModuleWindow.StaticPopupTitleToShow = "Choose variant";
+        }
+    }
+
+    [Test]
+    public void PopupPrefix_TranslatesShowPointsTitle_WhenHandleMenuOptionOwnerPatched()
+    {
+        var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            PatchPopupMessage(harmony);
+            harmony.Patch(
+                original: RequireMethod(
+                    typeof(DummyQudMutationsModuleWindow),
+                    nameof(DummyQudMutationsModuleWindow.HandleMenuOption)),
+                prefix: new HarmonyMethod(RequireMethod(
+                    typeof(QudMutationsModuleWindowHandleMenuOptionPopupTranslationPatch),
+                    nameof(QudMutationsModuleWindowHandleMenuOptionPopupTranslationPatch.Prefix))),
+                finalizer: new HarmonyMethod(RequireMethod(
+                    typeof(QudMutationsModuleWindowHandleMenuOptionPopupTranslationPatch),
+                    nameof(QudMutationsModuleWindowHandleMenuOptionPopupTranslationPatch.Finalizer),
+                    typeof(Exception))));
+
+            DummyQudMutationsModuleWindow.StaticSummaryPopupMessageToShow = "Mutation summary";
+            DummyQudMutationsModuleWindow.StaticPointsRemainingToShow = 3;
+            new DummyQudMutationsModuleWindow().HandleMenuOption("ShowPoints");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyPopupMessageTarget.LastMessage, Is.EqualTo("Mutation summary"));
+                Assert.That(DummyPopupMessageTarget.LastTitle, Is.EqualTo("変異ポイント残り: 3"));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(PopupMessageTranslationPatch),
+                        "Popup.ProducerText."
+                        + nameof(QudMutationsModuleWindowHandleMenuOptionPopupTranslationPatch)
+                        + ".PointsRemainingTitle"),
+                    Is.EqualTo(1));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+            DummyPopupMessageTarget.Reset();
+            DummyQudMutationsModuleWindow.StaticSummaryPopupMessageToShow = "Mutation summary";
+            DummyQudMutationsModuleWindow.StaticPointsRemainingToShow = 2;
+        }
+    }
+
     private static MethodInfo RequireMethod(Type type, string methodName)
     {
         return AccessTools.Method(type, methodName)
             ?? throw new InvalidOperationException($"Method not found: {type.FullName}.{methodName}");
+    }
+
+    private static MethodInfo RequireMethod(Type type, string methodName, params Type[] parameterTypes)
+    {
+        return AccessTools.Method(type, methodName, parameterTypes)
+            ?? throw new InvalidOperationException($"Method not found: {type.FullName}.{methodName}");
+    }
+
+    private static void PatchPickOption(Harmony harmony)
+    {
+        harmony.Patch(
+            original: RequireMethod(typeof(DummyPopupGenericTarget), nameof(DummyPopupGenericTarget.PickOption)),
+            prefix: new HarmonyMethod(RequireMethod(
+                typeof(PopupPickOptionTranslationPatch),
+                nameof(PopupPickOptionTranslationPatch.Prefix))),
+            finalizer: new HarmonyMethod(RequireMethod(
+                typeof(PopupPickOptionTranslationPatch),
+                nameof(PopupPickOptionTranslationPatch.Finalizer))));
+    }
+
+    private static void PatchPopupMessage(Harmony harmony)
+    {
+        harmony.Patch(
+            original: RequireMethod(typeof(DummyPopupMessageTarget), nameof(DummyPopupMessageTarget.ShowPopup)),
+            prefix: new HarmonyMethod(RequireMethod(
+                typeof(PopupMessageTranslationPatch),
+                nameof(PopupMessageTranslationPatch.Prefix))));
+    }
+
+    private static MethodInfo? ResolveStateMachineMoveNext(MethodInfo sourceMethod)
+    {
+        var stateMachine = sourceMethod.GetCustomAttribute<AsyncStateMachineAttribute>();
+        return stateMachine?.StateMachineType is null
+            ? null
+            : AccessTools.Method(stateMachine.StateMachineType, "MoveNext");
     }
 
     private void WriteDictionary(params (string key, string text)[] entries)

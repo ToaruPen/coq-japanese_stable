@@ -355,6 +355,40 @@ public sealed class PopupTranslationPatchTests
     }
 
     [Test]
+    public void TranslatePopupTextForProducerRoute_TranslatesVehicleInfiltrationConfirmation()
+    {
+        UseRepositoryVerbDictionary();
+        var source = DoesVerbRouteTranslator.MarkDoesFragment(
+            "The メカ are",
+            "are",
+            "The メカ".Length,
+            null)
+            + " occupied.\n\n"
+            + "Attempting to enter is a hostile action and will function as an attack with "
+            + "10% infiltration chance per penetration.\n\n"
+            + "Are you sure you want to proceed?";
+
+        var translated = PopupTranslationPatch.TranslatePopupTextForProducerRoute(
+            source,
+            nameof(PopupShowTranslationPatch));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                translated,
+                Is.EqualTo("メカは占有されている。\n\n中に入ろうとすると敵対行動となり、貫通1回ごとに10%の侵入確率を持つ攻撃として扱われる。\n\n続行しますか？"));
+            Assert.That(translated.IndexOf('\u0002'), Is.EqualTo(-1));
+            Assert.That(translated.IndexOf('\u001f'), Is.EqualTo(-1));
+            Assert.That(translated.IndexOf('\u0003'), Is.EqualTo(-1));
+            Assert.That(
+                DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                    nameof(PopupShowTranslationPatch),
+                    "Popup.ProducerText.DoesVerb"),
+                Is.EqualTo(1));
+        });
+    }
+
+    [Test]
     public void TranslatePopupTextForProducerRoute_StripsMarkedDoesVerbControlHeader_WhenNoVerbTranslationMatches()
     {
         UseRepositoryVerbDictionary();

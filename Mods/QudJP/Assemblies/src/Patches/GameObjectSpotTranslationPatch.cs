@@ -84,4 +84,27 @@ public static class GameObjectSpotTranslationPatch
             && !string.IsNullOrEmpty(message)
             && MessageLogProducerTranslationHelpers.TryPreparePatternMessage(ref message, Context, "Spot");
     }
+
+    internal static bool TryTranslatePopupMessage(string source, string route, string family, out string translated)
+    {
+        _ = route;
+        _ = family;
+        translated = source;
+
+        if (activeDepth <= 0 || string.IsNullOrEmpty(source))
+        {
+            return false;
+        }
+
+        var message = source;
+        if (!MessageLogProducerTranslationHelpers.TryPreparePatternMessage(ref message, Context, "Spot"))
+        {
+            return false;
+        }
+
+        translated = MessageFrameTranslator.TryStripDirectTranslationMarker(message, out var stripped)
+            ? stripped
+            : message;
+        return true;
+    }
 }

@@ -16,6 +16,7 @@ public sealed class ProselytizationSifrahTranslationPatchTests
         RuntimeDiagnostics.SetVerboseProbesEnabledForTests(true);
         DynamicTextObservability.ResetForTests();
         MessageFrameTranslator.ResetForTests();
+        Translator.SetDictionaryDirectoryForTests(RepositoryDictionaryDirectory());
         MessageFrameTranslator.SetDictionaryPathForTests(RepositoryMessageFramePath());
         SinkObservation.ResetForTests();
         DummyPopupShow.Reset();
@@ -27,6 +28,7 @@ public sealed class ProselytizationSifrahTranslationPatchTests
         RuntimeDiagnostics.SetVerboseProbesEnabledForTests(null);
         DynamicTextObservability.ResetForTests();
         MessageFrameTranslator.ResetForTests();
+        Translator.ResetForTests();
         SinkObservation.ResetForTests();
     }
 
@@ -196,5 +198,15 @@ public sealed class ProselytizationSifrahTranslationPatchTests
             "Localization",
             "MessageFrames",
             "verbs.ja.json");
+    }
+
+    private static string RepositoryDictionaryDirectory()
+    {
+        return Path.Combine(
+            TestProjectPaths.GetRepositoryRoot(),
+            "Mods",
+            "QudJP",
+            "Localization",
+            "Dictionaries");
     }
 }

@@ -79,6 +79,7 @@ public static class HackingSifrahResultTranslationPatch
             "HackingResultCriticalFailure");
         AddTargetsForType(targets, "XRL.World.Parts.CyberneticsTerminal2",
             "HackingResultExceptionalSuccess",
+            "HackingResultPartialSuccess",
             "HackingResultFailure",
             "HackingResultCriticalFailure");
         return targets;
@@ -177,6 +178,11 @@ public static class HackingSifrahResultTranslationPatch
                 source,
                 m => $"{m.Groups[1].Value}のハックが進んでいる気がする。",
                 out translated)
+            || TryTranslateExact(
+                source,
+                "The hack fails, but you manage to cover your tracks before any security measures kick in.",
+                "ハックは失敗したが、セキュリティ対策が作動する前に痕跡を隠すことができた。",
+                out translated)
             || TryTranslateMatch(
                 HackingFailurePattern,
                 source,
@@ -210,6 +216,18 @@ public static class HackingSifrahResultTranslationPatch
         }
 
         translated = translate(match);
+        return true;
+    }
+
+    private static bool TryTranslateExact(string source, string expected, string replacement, out string translated)
+    {
+        if (source != expected)
+        {
+            translated = source;
+            return false;
+        }
+
+        translated = replacement;
         return true;
     }
 

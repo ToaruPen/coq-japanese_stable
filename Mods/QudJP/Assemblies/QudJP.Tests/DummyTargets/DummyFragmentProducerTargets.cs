@@ -1,6 +1,7 @@
 using System;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace QudJP.Tests.DummyTargets;
 
@@ -257,6 +258,14 @@ internal sealed class DummyDesalinationPelletProducerTarget
     {
         _ = e;
         DummyPopupShow.Show(PopupMessageToShow);
+        return true;
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public bool HandleFailureEvent(DummyInventoryActionEvent e)
+    {
+        _ = e;
+        DummyPopupShow.ShowFail(PopupMessageToShow);
         return true;
     }
 }
@@ -585,6 +594,14 @@ internal sealed class DummyPlayerDanceRitualProducerTarget
         _ = nameof(FailStep);
         _ = reason;
         DummyMessageQueue.AddPlayerMessage(QueuedMessageToSend, null, Capitalize: false);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public bool FireEvent(string eventId)
+    {
+        _ = eventId;
+        DummyMessageQueue.AddPlayerMessage(QueuedMessageToSend, null, Capitalize: false);
+        return true;
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
@@ -1169,6 +1186,57 @@ internal sealed class DummyItemNamingProducerTarget
         DummyPopupShow.Show(PopupMessageToShow);
         return true;
     }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public bool NameItem(
+        DummyGameObject obj,
+        DummyGameObject owner,
+        DummyGameObject? kill = null,
+        DummyGameObject? influencedBy = null,
+        string? zoneId = null,
+        string opportunityType = "General",
+        bool canBestow = true)
+    {
+        _ = obj;
+        _ = owner;
+        _ = kill;
+        _ = influencedBy;
+        _ = zoneId;
+        _ = opportunityType;
+        _ = canBestow;
+        _ = DummyPopupGenericTarget.PickOption(
+            Intro: "Rename {{Y|銅の短剣}}.",
+            Options: new[]
+            {
+                "Enter a name.",
+                "Name it based on its qualities.",
+                "Choose a random name from your own culture.",
+                "Choose a random name from {{C|Barathrumites' culture}}.",
+            });
+        _ = DummyPopupGenericTarget.AskString("Enter a new name for {{Y|銅の短剣}}.");
+        _ = DummyPopupGenericTarget.ShowColorPicker(
+            "",
+            0,
+            "You select the name '{{C|暁}}' for {{Y|銅の短剣}}. Choose a color for it.",
+            60,
+            RespectOptionNewlines: false,
+            AllowEscape: false,
+            DefaultSelected: null,
+            SpacingText: "",
+            includeNone: true,
+            includePatterns: true,
+            allowBackground: false,
+            previewContent: "{{C|暁}}");
+        return true;
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public bool HandleItemNamingWish(Match match)
+    {
+        _ = match;
+        DummyPopupShow.Show(PopupMessageToShow);
+        return true;
+    }
 }
 
 internal static class DummyMutationsApiTarget
@@ -1201,6 +1269,68 @@ internal static class DummyMutationsApiTarget
             DummyPopupShow.ShowYesNo(ConfirmMessageToShow);
         }
 
+        return true;
+    }
+}
+
+internal static class DummyTinkeringHelpersTarget
+{
+    public static void CheckMakersMark()
+    {
+        _ = DummyPopupGenericTarget.PickOption(
+            Title: "Select your maker's mark.",
+            Options: new[] { "none", "{{C|star}}" });
+        _ = DummyPopupGenericTarget.ShowColorPicker(
+            "Choose a color for your maker's mark.",
+            0,
+            null,
+            60,
+            RespectOptionNewlines: false,
+            AllowEscape: false,
+            DefaultSelected: "R",
+            SpacingText: "",
+            includeNone: false,
+            includePatterns: false,
+            allowBackground: false,
+            previewContent: "{{C|star}}");
+    }
+}
+
+internal sealed class DummyEquipmentScreenBodypartEquipTarget
+{
+    public string PopupMessageToShow { get; set; } = string.Empty;
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public void ShowBodypartEquipUI(DummyGameObject gameObject, DummyBodyPart bodyPart)
+    {
+        _ = gameObject;
+        _ = bodyPart;
+        DummyPopupShow.Show(PopupMessageToShow);
+    }
+}
+
+internal sealed class DummyModDisguiseBeingAppliedTarget
+{
+    public string PopupMessageToShow { get; set; } = string.Empty;
+
+    public IReadOnlyList<string> PickerOptions { get; set; } = Array.Empty<string>();
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public bool BeingAppliedBy(DummyGameObject obj, DummyGameObject who)
+    {
+        _ = obj;
+        _ = who;
+        if (!string.IsNullOrEmpty(PopupMessageToShow))
+        {
+            DummyPopupShow.Show(PopupMessageToShow);
+            return false;
+        }
+
+        _ = DummyPopupGenericTarget.PickOption(
+            Title: "Choose a disguise to make.",
+            Options: PickerOptions,
+            Hotkeys: new[] { 'a', 'b' },
+            AllowEscape: true);
         return true;
     }
 }

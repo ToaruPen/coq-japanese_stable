@@ -215,7 +215,6 @@ public sealed class ConversationRewardPopupTranslationPatchTests
     }
 
     [TestCase("The conversation ends.")]
-    [TestCase("You do not have any unshared secrets about the life of Resheph.")]
     public void Patch_LeavesUnsupportedPopupUnchanged_WhenOwnerPatched(string source)
     {
         RunWithOwnerAndPopupPatches(nameof(DummyConversationRewardProducer.ReceiveItemHandleEvent), () =>
@@ -234,6 +233,26 @@ public sealed class ConversationRewardPopupTranslationPatchTests
                 Assert.That(HitCount("ReshephSecretInsight"), Is.Zero);
                 Assert.That(HitCount("ConversationXp"), Is.Zero);
             });
+        });
+    }
+
+    [Test]
+    public void Patch_TranslatesRepositoryDictionaryFallback_WhenGiveReshephSecretOwnerPatched()
+    {
+        Translator.SetDictionaryDirectoryForTests(GetRepositoryDictionaryDirectory());
+
+        RunWithOwnerAndPopupPatches(nameof(DummyConversationRewardProducer.GiveReshephSecretHandleEvent), () =>
+        {
+            var target = new DummyConversationRewardProducer
+            {
+                PopupMessageToShow = "You do not have any unshared secrets about the life of Resheph.",
+            };
+
+            target.GiveReshephSecretHandleEvent();
+
+            Assert.That(
+                DummyPopupShow.LastShowMessage,
+                Is.EqualTo("レシェフの生涯に関する未共有の秘密はない。"));
         });
     }
 
@@ -315,4 +334,12 @@ public sealed class ConversationRewardPopupTranslationPatchTests
                 "MessageFrames",
                 "verbs.ja.json"));
     }
+
+    private static string GetRepositoryDictionaryDirectory() =>
+        Path.Combine(
+            TestProjectPaths.GetRepositoryRoot(),
+            "Mods",
+            "QudJP",
+            "Localization",
+            "Dictionaries");
 }

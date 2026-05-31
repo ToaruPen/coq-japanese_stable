@@ -30,6 +30,9 @@ internal static class ActivatedAbilityNameTranslator
     private static readonly Regex LayMineTargetPattern =
         new Regex("^Lay Mine \\[(?<target>.+)\\]$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex RecoilToZonePattern =
+        new Regex("^Recoil to (?<zone>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     private static readonly Regex TinkerTurretRemainingPattern =
         new Regex("^Tinker Turret\\s+\\[(?<count>\\d+) remaining\\]$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
@@ -155,6 +158,15 @@ internal static class ActivatedAbilityNameTranslator
             return true;
         }
 
+        var recoilToZoneMatch = RecoilToZonePattern.Match(source);
+        if (recoilToZoneMatch.Success
+            && TryTranslateBaseAbilityName("Recoil", out var recoil)
+            && TryTranslateRecoilZone(recoilToZoneMatch.Groups["zone"].Value, out var recoilZone))
+        {
+            translated = recoilZone + "へ" + recoil;
+            return true;
+        }
+
         var tinkerTurretMatch = TinkerTurretRemainingPattern.Match(source);
         if (tinkerTurretMatch.Success)
         {
@@ -263,6 +275,18 @@ internal static class ActivatedAbilityNameTranslator
         }
 
         return false;
+    }
+
+    private static bool TryTranslateRecoilZone(string zone, out string translated)
+    {
+        if (GetDisplayNameRouteTranslator.IsAlreadyLocalizedDisplayNameStateText(zone))
+        {
+            translated = zone;
+            return true;
+        }
+
+        translated = TranslateDisplayNameTarget(zone, ".RecoilZone");
+        return !ContainsAsciiLetter(ColorAwareTranslationComposer.GetVisibleText(translated));
     }
 
     private static string TranslateFabricateName(string target)

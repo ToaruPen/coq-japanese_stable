@@ -4,6 +4,8 @@ using HarmonyLib;
 using QudJP.Patches;
 using QudJP.Tests.DummyTargets;
 
+#pragma warning disable S4144 // Helper aliases intentionally share implementation to keep test cases readable.
+
 namespace QudJP.Tests.L2;
 
 [TestFixture]
@@ -49,6 +51,11 @@ public sealed class WishCommandQueueTranslationPatchTests
         "Clearing player body stat shifts...",
         "プレイヤー身体の能力値補正を消去中...",
         "ClearStatShifts")]
+    [TestCase(
+        nameof(DummyWishCommandProducerTarget.DynamicQuestWhere),
+        "quest in JoppaWorld.10.22.1.1.10 secret id is secret-site-1 for quest Find the Ruin",
+        "クエスト Find the Ruin の場所は JoppaWorld.10.22.1.1.10、秘密IDは secret-site-1。",
+        "FindASiteDynamicQuestWhere")]
     public void WishCommandQueue_TranslatesOwnerMessages_WhenOwnerPatched(
         string methodName,
         string source,
@@ -161,6 +168,7 @@ public sealed class WishCommandQueueTranslationPatchTests
             nameof(DummyWishCommandProducerTarget.SlynthQuestWish) => DummyWishCommandProducerTarget.SlynthQuestWish("missing"),
             nameof(DummyWishCommandProducerTarget.WishTimer) => DummyWishCommandProducerTarget.WishTimer(),
             nameof(DummyWishCommandProducerTarget.ClearStatShifts) => new DummyWishCommandProducerTarget().ClearStatShifts(),
+            nameof(DummyWishCommandProducerTarget.DynamicQuestWhere) => DummyWishCommandProducerTarget.DynamicQuestWhere(),
             _ => throw new ArgumentOutOfRangeException(nameof(methodName), methodName, "Unknown owner method."),
         };
     }
@@ -269,6 +277,13 @@ public sealed class WishCommandQueueTranslationPatchTests
         public bool ClearStatShifts()
         {
             _ = GetHashCode();
+            DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+            return true;
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public static bool DynamicQuestWhere()
+        {
             DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
             return true;
         }

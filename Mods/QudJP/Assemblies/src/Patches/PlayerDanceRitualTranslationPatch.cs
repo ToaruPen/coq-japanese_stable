@@ -28,6 +28,11 @@ public static class PlayerDanceRitualTranslationPatch
     private static readonly Regex SuccessDancePattern =
         new Regex("^The dance ended in success! \\[(?<reason>.*?)\\]$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex DebugTurnTickPattern =
+        new Regex(
+            "^Debug: Dance party turn tick (?<tick>.+?) Current Approval:(?<approval>.+)$",
+            RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     [ThreadStatic]
     private static int activeDepth;
 
@@ -41,14 +46,26 @@ public static class PlayerDanceRitualTranslationPatch
             yield break;
         }
 
-        foreach (var (methodName, parameterTypes) in new[]
-                 {
-                     ("ExecuteMove", new[] { typeof(string), typeof(string) }),
-                     ("PassStep", new[] { typeof(string) }),
-                     ("FailStep", new[] { typeof(string) }),
-                     ("FailDance", new[] { typeof(string) }),
-                     ("SuccessDance", new[] { typeof(string) }),
-                 })
+        var eventType = AccessTools.TypeByName("XRL.World.Event");
+        if (eventType is null)
+        {
+            Trace.TraceError("QudJP: {0} failed to resolve XRL.World.Event.", Context);
+        }
+
+        var targetSpecs = new List<(string MethodName, Type[] ParameterTypes)>
+        {
+            ("ExecuteMove", new[] { typeof(string), typeof(string) }),
+            ("PassStep", new[] { typeof(string) }),
+            ("FailStep", new[] { typeof(string) }),
+            ("FailDance", new[] { typeof(string) }),
+            ("SuccessDance", new[] { typeof(string) }),
+        };
+        if (eventType is not null)
+        {
+            targetSpecs.Insert(0, ("FireEvent", new[] { eventType }));
+        }
+
+        foreach (var (methodName, parameterTypes) in targetSpecs)
         {
             var method = AccessTools.Method(ritualType, methodName, parameterTypes);
             if (method is not null)
@@ -131,7 +148,8 @@ public static class PlayerDanceRitualTranslationPatch
         var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
         if (TryTranslateExecuteMove(source, stripped, spans, route, family, out translated)
             || TryTranslateStep(PassStepPattern, "そのステップを正しく実行した！", source, stripped, spans, route, family, "PassStep", out translated)
-            || TryTranslateStep(FailStepPattern, "そのステップを誤って実行した！", source, stripped, spans, route, family, "FailStep", out translated))
+            || TryTranslateStep(FailStepPattern, "そのステップを誤って実行した！", source, stripped, spans, route, family, "FailStep", out translated)
+            || TryTranslateDebugTurnTick(source, stripped, spans, route, family, out translated))
         {
             return true;
         }
@@ -178,6 +196,33 @@ public static class PlayerDanceRitualTranslationPatch
         var direction = RestoreCapture(match, spans, "direction");
         translated = RestoreWholeSourceBoundary(actor + "は" + direction + "へ一歩進んだ。", source, stripped, spans);
         Record(route, family, "ExecuteMove", source, translated);
+        return true;
+    }
+
+    private static bool TryTranslateDebugTurnTick(
+        string source,
+        string stripped,
+        IReadOnlyList<ColorSpan> spans,
+        string route,
+        string family,
+        out string translated)
+    {
+        var match = DebugTurnTickPattern.Match(stripped);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        translated = RestoreWholeSourceBoundary(
+            "デバッグ: ダンスパーティーのターン tick "
+            + RestoreCapture(match, spans, "tick")
+            + " 現在の評価:"
+            + RestoreCapture(match, spans, "approval"),
+            source,
+            stripped,
+            spans);
+        Record(route, family, "FireEvent.DebugTurnTick", source, translated);
         return true;
     }
 

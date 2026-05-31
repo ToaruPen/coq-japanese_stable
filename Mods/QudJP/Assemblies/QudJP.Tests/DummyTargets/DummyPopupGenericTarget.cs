@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace QudJP.Tests.DummyTargets;
@@ -18,6 +19,10 @@ internal static class DummyPopupGenericTarget
 
     public static string LastAskNumberMessage { get; private set; } = string.Empty;
 
+    public static string LastShowColorPickerTitle { get; private set; } = string.Empty;
+
+    public static string LastShowColorPickerIntro { get; private set; } = string.Empty;
+
     public static string LastShowSpaceMessage { get; private set; } = string.Empty;
 
     public static string LastShowSpaceTitle { get; private set; } = string.Empty;
@@ -31,10 +36,13 @@ internal static class DummyPopupGenericTarget
         LastPickOptionButtons = null;
         LastAskStringMessage = string.Empty;
         LastAskNumberMessage = string.Empty;
+        LastShowColorPickerTitle = string.Empty;
+        LastShowColorPickerIntro = string.Empty;
         LastShowSpaceMessage = string.Empty;
         LastShowSpaceTitle = string.Empty;
     }
 
+    [MethodImpl(MethodImplOptions.NoInlining)]
     public static int PickOption(
         string Title = "",
         string? Intro = null,
@@ -137,6 +145,36 @@ internal static class DummyPopupGenericTarget
 
         LastAskStringMessage = Message;
         return Task.FromResult(Default);
+    }
+
+    public static string ShowColorPicker(
+        string Title,
+        int Spacing = 0,
+        string? Intro = null,
+        int MaxWidth = 60,
+        bool RespectOptionNewlines = false,
+        bool AllowEscape = false,
+        string? DefaultSelected = null,
+        string SpacingText = "",
+        bool includeNone = true,
+        bool includePatterns = false,
+        bool allowBackground = false,
+        string? previewContent = null)
+    {
+        _ = Spacing;
+        _ = MaxWidth;
+        _ = RespectOptionNewlines;
+        _ = AllowEscape;
+        _ = DefaultSelected;
+        _ = SpacingText;
+        _ = includeNone;
+        _ = includePatterns;
+        _ = allowBackground;
+        _ = previewContent;
+
+        LastShowColorPickerTitle = Title;
+        LastShowColorPickerIntro = Intro ?? string.Empty;
+        return DefaultSelected ?? string.Empty;
     }
 
     public static DummyPopupMenuItem GetPopupOption(

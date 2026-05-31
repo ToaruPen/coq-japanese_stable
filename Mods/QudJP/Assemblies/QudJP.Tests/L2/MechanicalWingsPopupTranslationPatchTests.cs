@@ -23,6 +23,8 @@ public sealed class MechanicalWingsPopupTranslationPatchTests
     private const string LongFallSource =
         "It looks like a long way down the {{Y|shaft}} you're above. Are you sure you want to stop flying?";
     private const string LongFallTranslated = "あなたがいる{{Y|shaft}}の下はかなり深そうだ。飛行をやめてもよいですか？";
+    private const string WingsWillNotMoveSource = "Your {{Y|wings}} will not move!";
+    private const string WingsWillNotMoveTranslated = "あなたの{{Y|wings}}は動かない！";
 
     [SetUp]
     public void SetUp()
@@ -150,6 +152,47 @@ public sealed class MechanicalWingsPopupTranslationPatchTests
             {
                 Assert.That(DummyPopupShow.LastShowYesNoMessage, Is.EqualTo(LongFallSource));
                 Assert.That(GetLongFallHitCount(), Is.Zero);
+            });
+        });
+    }
+
+    [Test]
+    public void Patch_TranslatesMutationWingsLongFallWarning_WhenCommandOwnerPatched()
+    {
+        RunWithOwnerAndPopupPatches([nameof(DummyMechanicalWingsProducer.HandleCommand)], () =>
+        {
+            var target = new DummyMechanicalWingsProducer
+            {
+                PopupMessageToShow = LongFallSource,
+                UseYesNo = true,
+            };
+
+            target.HandleCommand();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyPopupShow.LastShowYesNoMessage, Is.EqualTo(LongFallTranslated));
+                Assert.That(GetLongFallHitCount(), Is.EqualTo(1));
+            });
+        });
+    }
+
+    [Test]
+    public void Patch_TranslatesMutationWingsWillNotMove_WhenCommandOwnerPatched()
+    {
+        RunWithOwnerAndPopupPatches([nameof(DummyMechanicalWingsProducer.HandleCommand)], () =>
+        {
+            var target = new DummyMechanicalWingsProducer
+            {
+                PopupMessageToShow = WingsWillNotMoveSource,
+            };
+
+            target.HandleCommand();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(WingsWillNotMoveTranslated));
+                Assert.That(GetWingsWillNotMoveHitCount(), Is.EqualTo(1));
             });
         });
     }
@@ -369,10 +412,18 @@ public sealed class MechanicalWingsPopupTranslationPatchTests
             "Popup.Show.MechanicalWingsLongFallWarning");
     }
 
+    private static int GetWingsWillNotMoveHitCount()
+    {
+        return DynamicTextObservability.GetRouteFamilyHitCountForTests(
+            nameof(PopupShowTranslationPatch),
+            "Popup.Show.WingsWillNotMove");
+    }
+
     private sealed class DummyMechanicalWingsProducer
     {
         public string PopupMessageToShow = string.Empty;
         public Action? BeforePopup;
+        public bool UseYesNo;
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         public bool TryStartup()
@@ -393,6 +444,21 @@ public sealed class MechanicalWingsPopupTranslationPatchTests
         public bool FireEvent()
         {
             DummyPopupShow.ShowYesNo(PopupMessageToShow);
+            return true;
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public bool HandleCommand()
+        {
+            if (UseYesNo)
+            {
+                DummyPopupShow.ShowYesNo(PopupMessageToShow);
+            }
+            else
+            {
+                DummyPopupShow.ShowFail(PopupMessageToShow);
+            }
+
             return true;
         }
     }

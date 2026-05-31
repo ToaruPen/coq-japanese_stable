@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Text.RegularExpressions;
 using HarmonyLib;
 using QudJP.Patches;
 using QudJP.Tests.DummyTargets;
@@ -19,6 +20,7 @@ public sealed class ItemNamingTranslationPatchTests
         MessageFrameTranslator.ResetForTests();
         UseRepositoryVerbDictionary();
         DummyPopupShow.Reset();
+        DummyPopupGenericTarget.Reset();
     }
 
     [TearDown]
@@ -28,6 +30,7 @@ public sealed class ItemNamingTranslationPatchTests
         SinkObservation.ResetForTests();
         MessagePatternTranslator.ResetForTests();
         MessageFrameTranslator.ResetForTests();
+        Translator.ResetForTests();
     }
 
     [Test]
@@ -48,6 +51,39 @@ public sealed class ItemNamingTranslationPatchTests
                 Is.EqualTo("あなたは{{Y|銅の短剣}}に名付けたい衝動に駆られた。そうしますか？"));
             Assert.That(ItemNamingHitCount("Opportunity"), Is.EqualTo(1));
         });
+    }
+
+    [Test]
+    public void TryTranslatePopupMessage_TranslatesMarkedCheckBestowals_WhenOwnerActive()
+    {
+        var doesFragment = DoesVerbRouteTranslator.MarkDoesFragment(
+            "The 銅の短剣 seems",
+            "seem",
+            "The 銅の短剣".Length,
+            null);
+        var source = doesFragment + " to have taken on new qualities.";
+
+        try
+        {
+            ItemNamingTranslationPatch.Prefix();
+
+            var ok = ItemNamingTranslationPatch.TryTranslatePopupMessage(
+                source,
+                nameof(PopupShowTranslationPatch),
+                "Popup.ProducerText",
+                out var translated);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(ok, Is.True);
+                Assert.That(translated, Is.EqualTo("銅の短剣は新たな特質を帯びたようだ"));
+                Assert.That(ItemNamingHitCount("CheckBestowals.DoesVerb"), Is.EqualTo(1));
+            });
+        }
+        finally
+        {
+            _ = ItemNamingTranslationPatch.Finalizer(null);
+        }
     }
 
     [Test]
@@ -110,19 +146,87 @@ public sealed class ItemNamingTranslationPatchTests
     [Test]
     public void Patch_DoesNotClaimColorPickerPrompt_WhenOwnerPatched()
     {
-        const string source = "You select the name '{{C|暁}}' for {{Y|銅の短剣}}. Choose a color for it.";
-        var target = new DummyItemNamingProducerTarget
-        {
-            PopupMessageToShow = source,
-        };
+        var target = new DummyItemNamingProducerTarget();
 
         WithPatchedOwner(
-            () => InvokeNameItem(target));
+            () => InvokeInteractiveNameItem(target));
 
         Assert.Multiple(() =>
         {
-            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(source));
-            Assert.That(ItemNamingHitCount("NameItem"), Is.Zero);
+            Assert.That(DummyPopupGenericTarget.LastShowColorPickerIntro, Is.EqualTo("{{Y|銅の短剣}}の名前として「{{C|暁}}」を選択した。色を選ぶ。"));
+            Assert.That(ItemNamingHitCount(nameof(PopupShowColorPickerTranslationPatch), "Interactive.ColorPicker"), Is.EqualTo(1));
+        });
+    }
+
+    [Test]
+    public void Patch_TranslatesInteractiveNameItemPromptAndOptions_WhenOwnerPatched()
+    {
+        var target = new DummyItemNamingProducerTarget();
+
+        WithPatchedOwner(
+            () => InvokeInteractiveNameItem(target));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(DummyPopupGenericTarget.LastPickOptionIntro, Is.EqualTo("{{Y|銅の短剣}}の名前を変更する。"));
+            Assert.That(
+                DummyPopupGenericTarget.LastPickOptionOptions,
+                Is.EqualTo(new[]
+                {
+                    "名前を入力する。",
+                    "特質に基づいて名前を付ける。",
+                    "自分の文化からランダムな名前を選ぶ。",
+                    "{{C|Barathrumites' culture}}からランダムな名前を選ぶ。",
+                }));
+            Assert.That(DummyPopupGenericTarget.LastAskStringMessage, Is.EqualTo("{{Y|銅の短剣}}の新しい名前を入力する。"));
+            Assert.That(ItemNamingHitCount(nameof(PopupPickOptionTranslationPatch), "Interactive.Rename"), Is.EqualTo(1));
+            Assert.That(ItemNamingHitCount(nameof(PopupPickOptionTranslationPatch), "Interactive.EnterName"), Is.EqualTo(1));
+            Assert.That(ItemNamingHitCount(nameof(PopupPickOptionTranslationPatch), "Interactive.Qualities"), Is.EqualTo(1));
+            Assert.That(ItemNamingHitCount(nameof(PopupPickOptionTranslationPatch), "Interactive.OwnCulture"), Is.EqualTo(1));
+            Assert.That(ItemNamingHitCount(nameof(PopupPickOptionTranslationPatch), "Interactive.Culture"), Is.EqualTo(1));
+            Assert.That(ItemNamingHitCount(nameof(PopupAskStringTranslationPatch), "Interactive.AskString"), Is.EqualTo(1));
+        });
+    }
+
+    [Test]
+    public void Patch_TranslatesItemNamingWishDebugPopup_WhenOwnerPatched()
+    {
+        var target = new DummyItemNamingProducerTarget
+        {
+            PopupMessageToShow =
+                "[Debug: Created {{Y|snapjaw}} as kill.]\n" +
+                "[Debug: Created {{C|mechanimist}} as InfluencedBy.]\n",
+        };
+
+        WithPatchedOwner(
+            () => InvokeHandleItemNamingWish(target));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                DummyPopupShow.LastShowMessage,
+                Is.EqualTo(
+                    "[Debug: {{Y|snapjaw}} を kill として作成した。]\n" +
+                    "[Debug: {{C|mechanimist}} を InfluencedBy として作成した。]\n"));
+            Assert.That(ItemNamingHitCount("WishDebugCreated"), Is.EqualTo(1));
+        });
+    }
+
+    [Test]
+    public void Patch_TranslatesItemNamingWishFailurePopup_WhenOwnerPatched()
+    {
+        var target = new DummyItemNamingProducerTarget
+        {
+            PopupMessageToShow = "[Debug: Naming failed.]",
+        };
+
+        WithPatchedOwner(
+            () => InvokeHandleItemNamingWish(target));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("[Debug: 命名に失敗した。]"));
+            Assert.That(ItemNamingHitCount("WishDebugFailed"), Is.EqualTo(1));
         });
     }
 
@@ -226,6 +330,7 @@ public sealed class ItemNamingTranslationPatchTests
         try
         {
             PatchPopupShow(harmony);
+            PatchPopupGenericRoutes(harmony);
             ItemNamingTranslationPatch.Prefix();
             action();
         }
@@ -244,6 +349,7 @@ public sealed class ItemNamingTranslationPatchTests
         try
         {
             PatchPopupShow(harmony);
+            PatchPopupGenericRoutes(harmony);
             action();
         }
         finally
@@ -260,6 +366,20 @@ public sealed class ItemNamingTranslationPatchTests
         harmony.Patch(
             original: RequireMethod(typeof(DummyPopupShow), nameof(DummyPopupShow.ShowYesNo)),
             prefix: new HarmonyMethod(RequireMethod(typeof(PopupShowTranslationPatch), nameof(PopupShowTranslationPatch.Prefix))));
+    }
+
+    private static void PatchPopupGenericRoutes(Harmony harmony)
+    {
+        harmony.Patch(
+            original: RequireMethod(typeof(DummyPopupGenericTarget), nameof(DummyPopupGenericTarget.PickOption)),
+            prefix: new HarmonyMethod(RequireMethod(typeof(PopupPickOptionTranslationPatch), nameof(PopupPickOptionTranslationPatch.Prefix))),
+            finalizer: new HarmonyMethod(RequireMethod(typeof(PopupPickOptionTranslationPatch), nameof(PopupPickOptionTranslationPatch.Finalizer))));
+        harmony.Patch(
+            original: RequireMethod(typeof(DummyPopupGenericTarget), nameof(DummyPopupGenericTarget.AskString)),
+            prefix: new HarmonyMethod(RequireMethod(typeof(PopupAskStringTranslationPatch), nameof(PopupAskStringTranslationPatch.Prefix))));
+        harmony.Patch(
+            original: RequireMethod(typeof(DummyPopupGenericTarget), nameof(DummyPopupGenericTarget.ShowColorPicker)),
+            prefix: new HarmonyMethod(RequireMethod(typeof(PopupShowColorPickerTranslationPatch), nameof(PopupShowColorPickerTranslationPatch.Prefix))));
     }
 
     private static MethodInfo RequireOwnerMethod(string methodName)
@@ -319,7 +439,29 @@ public sealed class ItemNamingTranslationPatchTests
                 typeof(bool));
         }
 
+        if (string.Equals(methodName, nameof(DummyItemNamingProducerTarget.HandleItemNamingWish), StringComparison.Ordinal))
+        {
+            return RequireMethod(
+                typeof(DummyItemNamingProducerTarget),
+                methodName,
+                typeof(Match));
+        }
+
         throw new InvalidOperationException($"Unhandled item naming owner method: {methodName}");
+    }
+
+    private static MethodInfo RequireInteractiveOwnerMethod()
+    {
+        return RequireMethod(
+            typeof(DummyItemNamingProducerTarget),
+            nameof(DummyItemNamingProducerTarget.NameItem),
+            typeof(DummyGameObject),
+            typeof(DummyGameObject),
+            typeof(DummyGameObject),
+            typeof(DummyGameObject),
+            typeof(string),
+            typeof(string),
+            typeof(bool));
     }
 
     private static void InvokeOpportunity(DummyItemNamingProducerTarget target)
@@ -364,17 +506,55 @@ public sealed class ItemNamingTranslationPatchTests
             });
     }
 
+    private static void InvokeInteractiveNameItem(DummyItemNamingProducerTarget target)
+    {
+        _ = RequireInteractiveOwnerMethod().Invoke(
+            target,
+            new object?[]
+            {
+                new DummyGameObject(),
+                new DummyGameObject(),
+                null,
+                null,
+                null,
+                "General",
+                true,
+            });
+    }
+
+    private static void InvokeHandleItemNamingWish(DummyItemNamingProducerTarget target)
+    {
+        _ = RequireOwnerMethod(nameof(DummyItemNamingProducerTarget.HandleItemNamingWish)).Invoke(
+            target,
+            new object?[]
+            {
+                Regex.Match("itemnaming", "^itemnaming$"),
+            });
+    }
+
     private static int ItemNamingHitCount(string detail)
     {
+        return ItemNamingHitCount(nameof(PopupShowTranslationPatch), detail);
+    }
+
+    private static int ItemNamingHitCount(string route, string detail)
+    {
         return DynamicTextObservability.GetRouteFamilyHitCountForTests(
-            nameof(PopupShowTranslationPatch),
+            route,
             "Popup.ProducerText." + nameof(ItemNamingTranslationPatch) + "." + detail);
     }
 
     private static void UseRepositoryVerbDictionary()
     {
+        var repositoryRoot = QudJP.Tests.L1.TestProjectPaths.GetRepositoryRoot();
+        Translator.SetDictionaryDirectoryForTests(Path.Combine(
+            repositoryRoot,
+            "Mods",
+            "QudJP",
+            "Localization",
+            "Dictionaries"));
         var repositoryDictionaryPath = Path.Combine(
-            QudJP.Tests.L1.TestProjectPaths.GetRepositoryRoot(),
+            repositoryRoot,
             "Mods",
             "QudJP",
             "Localization",

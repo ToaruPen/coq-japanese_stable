@@ -1,0 +1,1 @@
+- Added Japanese coverage for mutation display-name owner routes and the metamorphed effect label.

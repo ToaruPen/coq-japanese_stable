@@ -94,6 +94,20 @@ public static class StomachTranslationPatch
     private static bool TryTranslate(string source, out string translated, out string detail)
     {
         var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        if (string.Equals(stripped, "You drank way too much!", StringComparison.Ordinal))
+        {
+            translated = ColorAwareTranslationComposer.RestoreRelative("飲みすぎた！", spans, stripped.Length);
+            detail = "StomachOverdrink";
+            return true;
+        }
+
+        if (string.Equals(stripped, "You drank way too much! You vomit!", StringComparison.Ordinal))
+        {
+            translated = ColorAwareTranslationComposer.RestoreRelative("飲みすぎた！ 吐いた！", spans, stripped.Length);
+            detail = "StomachOverdrinkVomiting";
+            return true;
+        }
+
         if (string.Equals(stripped, "The moisture is sucked out of your body.", StringComparison.Ordinal))
         {
             translated = ColorAwareTranslationComposer.RestoreRelative("体から水分が吸い出された。", spans, stripped.Length);

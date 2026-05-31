@@ -36,6 +36,14 @@ public static class GameObjectPopupTranslationPatch
         "^(.+?) can't hear you!$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex CompanionFollowDistancePromptPattern = new Regex(
+        "^Instruct (.+?) to follow at what distance\\?$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex PullDownDestinationOptionPattern = new Regex(
+        "^(Current location|Arrival location|Center)(, .+?)?( \\([A-Z]+\\))?$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     [ThreadStatic]
     private static int activeDepth;
 
@@ -54,9 +62,11 @@ public static class GameObjectPopupTranslationPatch
 
         AddTarget(targets, gameObjectType, "ConfirmUseImportantAsync", gameObjectType, typeof(string), typeof(string), typeof(int));
         AddTarget(targets, gameObjectType, "ConfirmUseImportant", gameObjectType, typeof(string), typeof(string), typeof(int));
+        AddTarget(targets, gameObjectType, "HandleInventoryActionEvent", inventoryActionEventType);
         AddTarget(targets, gameObjectType, "HandleRename", inventoryActionEventType);
         AddTarget(targets, gameObjectType, "ChangeCompanionAbilityUse", gameObjectType, activatedAbilitiesType);
         AddTarget(targets, gameObjectType, "CheckCompanionDirection", gameObjectType);
+        AddTarget(targets, gameObjectType, "PullDown", typeof(bool));
         return targets;
     }
 
@@ -110,6 +120,31 @@ public static class GameObjectPopupTranslationPatch
         }
 
         if (!TryTranslateCore(source, out var coreTranslated))
+        {
+            translated = source;
+            return false;
+        }
+
+        DynamicTextObservability.RecordTransform(route, family + "." + Context, source, coreTranslated);
+        translated = coreTranslated;
+        return true;
+    }
+
+    internal static bool TryTranslatePopupProducerText(string source, string route, string family, out string translated)
+    {
+        if (activeDepth <= 0 || string.IsNullOrEmpty(source))
+        {
+            translated = source;
+            return false;
+        }
+
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
+        {
+            translated = markedText;
+            return true;
+        }
+
+        if (!TryTranslatePickOptionCore(source, out var coreTranslated))
         {
             translated = source;
             return false;
@@ -194,6 +229,66 @@ public static class GameObjectPopupTranslationPatch
 
         translated = source;
         return false;
+    }
+
+    private static bool TryTranslatePickOptionCore(string source, out string translated)
+    {
+        var followDistancePrompt = CompanionFollowDistancePromptPattern.Match(source);
+        if (followDistancePrompt.Success)
+        {
+            translated = $"{followDistancePrompt.Groups[1].Value}にどの距離で追従するよう指示しますか？";
+            return true;
+        }
+
+        if (TryTranslatePullDownDestinationOption(source, out translated))
+        {
+            return true;
+        }
+
+        switch (source)
+        {
+            case "Select a destination":
+                translated = "目的地を選択";
+                return true;
+            case "close":
+                translated = "近く";
+                return true;
+            case "medium":
+                translated = "中距離";
+                return true;
+            case "far":
+                translated = "遠く";
+                return true;
+            default:
+                translated = source;
+                return false;
+        }
+    }
+
+    private static bool TryTranslatePullDownDestinationOption(string source, out string translated)
+    {
+        var match = PullDownDestinationOptionPattern.Match(source);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        var prefix = match.Groups[1].Value switch
+        {
+            "Current location" => "現在地",
+            "Arrival location" => "到着地点",
+            "Center" => "中央",
+            _ => string.Empty,
+        };
+        if (string.IsNullOrEmpty(prefix))
+        {
+            translated = source;
+            return false;
+        }
+
+        translated = prefix + match.Groups[2].Value + match.Groups[3].Value;
+        return true;
     }
 
     private static bool TryTranslateAbilityState(string owner, string ability, string state, out string translated)

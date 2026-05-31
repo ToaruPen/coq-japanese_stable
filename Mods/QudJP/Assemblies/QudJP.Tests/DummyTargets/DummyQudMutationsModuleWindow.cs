@@ -1,7 +1,15 @@
+#pragma warning disable S2325 // Dummy target instance methods mirror game instance methods for Harmony tests.
+
 namespace QudJP.Tests.DummyTargets;
 
 internal sealed class DummyQudMutationsModuleWindow
 {
+    public static string StaticPopupTitleToShow { get; set; } = "Choose variant";
+
+    public static string StaticSummaryPopupMessageToShow { get; set; } = "Mutation summary";
+
+    public static int StaticPointsRemainingToShow { get; set; } = 2;
+
     public DummyMutationCategoryMenusScroller prefabComponent = new();
 
     public List<DummyMutationCategoryMenuData> categoryMenus =
@@ -30,6 +38,22 @@ internal sealed class DummyQudMutationsModuleWindow
         }
 
         prefabComponent.BeforeShow(null, categoryMenus);
+    }
+
+    public static async Task SelectVariant()
+    {
+        await Task.Yield();
+        _ = DummyPopupGenericTarget.PickOption(Title: StaticPopupTitleToShow);
+    }
+
+    public void HandleMenuOption(string menuOptionId)
+    {
+        if (menuOptionId == "ShowPoints")
+        {
+            new DummyPopupMessageTarget().ShowPopup(
+                StaticSummaryPopupMessageToShow,
+                title: "Points Remaining: " + StaticPointsRemainingToShow);
+        }
     }
 
     private static string FormatNodeDescription(DummyMutationMenuOption menuOption, string entryId)

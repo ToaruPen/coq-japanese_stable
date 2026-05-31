@@ -53,6 +53,18 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "BiomeNotFound",
         PopupMethod.Show)]
     [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.FireElevatorSwitchEvent),
+        "The chrome platform begins to hum as it ascends into the darkness.",
+        "クロームの昇降台が唸り始め、暗闇の中へ上昇していく。",
+        "ElevatorSwitchPlatformAscends",
+        PopupMethod.Show)]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.FireElevatorSwitchEvent),
+        "The chrome platform begins to hum as it descends into the darkness.",
+        "クロームの昇降台が唸り始め、暗闇の中へ下降していく。",
+        "ElevatorSwitchPlatformDescends",
+        PopupMethod.Show)]
+    [TestCase(
         nameof(DummySingleCallsiteOwnerPopupTarget.HandleBootEvent),
         "Error creating player body. Unknown blueprint \"OddBody\"",
         "プレイヤーの体を作成できない。不明なブループリント「OddBody」。",
@@ -75,6 +87,12 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "Generated {{Y|folded carbide axe}} as reward for {{C|oil}}",
         "{{C|oil}}の報酬として{{Y|folded carbide axe}}を生成した。",
         "BaetylRewardWish",
+        PopupMethod.Show)]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.HandleIGrenade),
+        "You cannot do that on the world map.",
+        "ワールドマップではそれはできない。",
+        "IGrenadeWorldMap",
         PopupMethod.Show)]
     [TestCase(
         nameof(DummySingleCallsiteOwnerPopupTarget.CastForceSuccess),
@@ -421,7 +439,7 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
     [TestCase(
         nameof(DummySingleCallsiteOwnerPopupTarget.ApplySpaceTimeVortex),
         "Your companion, {{G|Q Girl}},has been sucked into the space-time vortex to the east!",
-        "あなたの仲間である{{G|Q Girl}}は東側のspace-time vortexに吸い込まれた！",
+        "あなたの仲間である{{G|Q Girl}}は東側の時空の渦に吸い込まれた！",
         "SpaceTimeVortexCompanionSucked",
         PopupMethod.Show)]
     [TestCase(
@@ -533,6 +551,30 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "PopulationManagerMissingTable",
         PopupMethod.Show)]
     [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.WishFindBlueprintPopulation),
+        "The blueprint 'Chrome Idol' was not found in any population tables.",
+        "ブループリント'Chrome Idol'はどの population table にも見つからない。",
+        "PopulationManagerBlueprintMissingPopulationTables",
+        PopupMethod.Show)]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.WishFindBlueprintPopulation),
+        "The blueprint 'Chrome Idol' has the approximate probability of generating at least once from the following tables;\nJoppaVillagers: 1.00000%",
+        "ブループリント'Chrome Idol'が以下の table から少なくとも1回生成される概算確率:\nJoppaVillagers: 1.00000%",
+        "PopulationManagerBlueprintFoundPopulationTables",
+        PopupMethod.Show)]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.WishFindBlueprintPopulation),
+        "The blueprint 'OddThing' was not found in any object blueprints.\nThe blueprint 'OddThing' was not found in any population tables.",
+        "ブループリント'OddThing'は object blueprint に見つからない。\nブループリント'OddThing'はどの population table にも見つからない。",
+        "PopulationManagerBlueprintFindReport",
+        PopupMethod.Show)]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerPopupTarget.RollOneFromPopulation),
+        "Error generating population:JoppaVillagers\n\n, please report this error to support@freeholdgames.com",
+        "population 'JoppaVillagers' の生成中にエラーが発生した。\n\nsupport@freeholdgames.com に報告してください。",
+        "PopulationManagerRollOneError",
+        PopupMethod.Show)]
+    [TestCase(
         nameof(DummySingleCallsiteOwnerPopupTarget.TransitToThinWorld),
         "The colossal lid slams shut. Darkness engulfs you.",
         "巨大な蓋が閉じた。闇があなたを飲み込んだ。",
@@ -638,6 +680,16 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "You have no items that require charging.",
         "充電が必要なアイテムがない。",
         "TinkeringRechargeNoItems")]
+    [TestCase(
+        "XRL.World.Parts.IZoneLandmark|WishCurrent",
+        "You are nut currently in a landmark location.",
+        "現在、ランドマーク地点にはいない。",
+        "IZoneLandmarkWishCurrentMissing")]
+    [TestCase(
+        "XRL.World.Parts.IZoneLandmark|WishCurrent",
+        "You are in {{Y|the six day stilt}}.",
+        "現在地: {{Y|六日のスティルト}}。",
+        "IZoneLandmarkWishCurrentLocation")]
     public void Patch_TranslatesIssue747SkillOwnerPopups_ByOwnerKey(
         string ownerKey,
         string source,
@@ -903,6 +955,14 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
         "No table by the name 'JoppaVillagers' could be resolved.",
         "PopulationManagerMissingTable",
         PopupMethod.Show)]
+    [TestCase(
+        "The blueprint 'Chrome Idol' was not found in any population tables.",
+        "PopulationManagerBlueprintMissingPopulationTables",
+        PopupMethod.Show)]
+    [TestCase(
+        "The blueprint 'Chrome Idol' has the approximate probability of generating at least once from the following tables;\nJoppaVillagers: 1.00000%",
+        "PopulationManagerBlueprintFoundPopulationTables",
+        PopupMethod.Show)]
     public void Patch_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent(
         string source,
         string detail,
@@ -1069,6 +1129,15 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
     [TestCase(
         "No table by the name 'JoppaVillagers' could be resolved.",
         "PopulationManagerMissingTable")]
+    [TestCase(
+        "The blueprint 'Chrome Idol' was not found in any population tables.",
+        "PopulationManagerBlueprintMissingPopulationTables")]
+    [TestCase(
+        "The blueprint 'Chrome Idol' has the approximate probability of generating at least once from the following tables;\nJoppaVillagers: 1.00000%",
+        "PopulationManagerBlueprintFoundPopulationTables")]
+    [TestCase(
+        "Error generating population:JoppaVillagers\n\n, please report this error to support@freeholdgames.com",
+        "PopulationManagerRollOneError")]
     public void Patch_DoesNotTranslatePopupUnderWrongSingleCallsiteOwner(
         string source,
         string detail)
@@ -1312,6 +1381,8 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
                 "XRL.World.Quests.AscensionSystem|BarathrumStartConversation",
             nameof(DummySingleCallsiteOwnerPopupTarget.DisplaySurfaceDistribution) =>
                 "XRL.World.Biomes.BiomeManager|DisplaySurfaceDistribution",
+            nameof(DummySingleCallsiteOwnerPopupTarget.FireElevatorSwitchEvent) =>
+                "XRL.World.Parts.ElevatorSwitch|FireEvent",
             nameof(DummySingleCallsiteOwnerPopupTarget.HandleBootEvent) =>
                 "XRL.CharacterBuilds.Qud.QudSpecificCharacterInitModule|handleBootEvent",
             nameof(DummySingleCallsiteOwnerPopupTarget.CreateHolograms) =>
@@ -1342,6 +1413,8 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
                 "XRL.World.Parts.GameUnique|OnCreated",
             nameof(DummySingleCallsiteOwnerPopupTarget.HandleGenocideCurio) =>
                 "XRL.World.Parts.GenocideCurio|HandleEvent",
+            nameof(DummySingleCallsiteOwnerPopupTarget.HandleIGrenade) =>
+                "XRL.World.Parts.IGrenade|HandleEvent",
             nameof(DummySingleCallsiteOwnerPopupTarget.HandleSpiralBorerCurio) =>
                 "XRL.World.Parts.SpiralBorerCurio|HandleEvent",
             nameof(DummySingleCallsiteOwnerPopupTarget.HandleGritGateMainframeTerminal) =>
@@ -1420,6 +1493,10 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
                 "XRL.XRLGame|LoadGame",
             nameof(DummySingleCallsiteOwnerPopupTarget.WishGeneratePopulation) =>
                 "XRL.PopulationManager|WishGenerate",
+            nameof(DummySingleCallsiteOwnerPopupTarget.WishFindBlueprintPopulation) =>
+                "XRL.PopulationManager|WishFindBlueprint",
+            nameof(DummySingleCallsiteOwnerPopupTarget.RollOneFromPopulation) =>
+                "XRL.PopulationManager|RollOneFrom",
             nameof(DummySingleCallsiteOwnerPopupTarget.TransitToThinWorld) =>
                 "XRL.World.Parts.ThinWorld|TransitToThinWorld",
             nameof(DummySingleCallsiteOwnerPopupTarget.HandlePlayerMuralEndTurn) =>

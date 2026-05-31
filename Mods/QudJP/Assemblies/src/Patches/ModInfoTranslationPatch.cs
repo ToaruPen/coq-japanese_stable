@@ -24,12 +24,13 @@ public static class ModInfoTranslationPatch
         }
 
         foreach (var methodName in new[]
-                 {
-                     "ConfirmDependencies",
-                     "ConfirmUpdate",
-                     "DownloadUpdate",
-                     "AppendDependencyConfirmation",
-                 })
+	                 {
+	                     "ConfirmDependencies",
+	                     "ConfirmUpdate",
+	                     "ConfirmFailure",
+	                     "DownloadUpdate",
+	                     "AppendDependencyConfirmation",
+	                 })
         {
             var method = AccessTools.Method(targetType, methodName);
             if (method is null)

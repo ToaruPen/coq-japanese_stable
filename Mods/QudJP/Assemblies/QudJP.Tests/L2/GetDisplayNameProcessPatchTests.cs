@@ -991,6 +991,22 @@ public sealed class GetDisplayNameProcessPatchTests
         });
     }
 
+    [Test]
+    public void Postfix_TranslatesMinerGeneratedRoleSuffix_WhenPatched()
+    {
+        WriteDictionaryFile(
+            "ui-displayname-atomic.ja.json",
+            ("defoliant grenade", "落葉剤グレネード"));
+
+        RunWithDisplayNameProcessPatch(() =>
+        {
+            var processor = new DummyDisplayNameProcessor();
+            var result = processor.ProcessFor("defoliant grenade mk I miner mk I");
+
+            Assert.That(result, Is.EqualTo("落葉剤グレネード mk I 採掘機 mk I"));
+        });
+    }
+
     private static string CreateHarmonyId()
     {
         return $"qudjp.tests.{Guid.NewGuid():N}";

@@ -81,9 +81,22 @@ internal sealed class DummyTradeUiVendorPopupProducerTarget
 
     public bool UseConfirmationPopup { get; set; }
 
+    public string? LastVendorActionSelection { get; private set; }
+
     public void ShowTradeScreen()
     {
         ShowConfiguredPopup();
+    }
+
+    public void ShowVendorActions()
+    {
+        var options = new List<string> { "Look", "Add to trade", "Identify", "Repair", "Recharge", "Read" };
+        var index = DummyPopupGenericTarget.PickOption(
+            Title: "select an action",
+            Options: options.ToArray(),
+            Hotkeys: new[] { 'l', 't', 'i', 'r', 'c', 'b' },
+            AllowEscape: true);
+        LastVendorActionSelection = index >= 0 ? options[index] : null;
     }
 
     public void TryRemove()

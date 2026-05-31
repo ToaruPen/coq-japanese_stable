@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using HarmonyLib;
 
 namespace QudJP.Patches;
@@ -11,6 +12,9 @@ public static class PopupAskNumberTranslationPatch
 {
     private const string Context = nameof(PopupAskNumberTranslationPatch);
     private const string TargetTypeName = "XRL.UI.Popup";
+    private static readonly Regex MagazineAmmoLoaderSupplyPattern = new(
+        "^Supply (?<host>.+?) with how many (?<ammo>.+?)\\? \\(max=(?<max>\\d+)\\)$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     [HarmonyTargetMethods]
     private static IEnumerable<MethodBase> TargetMethods()
@@ -72,6 +76,12 @@ public static class PopupAskNumberTranslationPatch
                 return;
             }
 
+            if (TryTranslateMagazineAmmoLoaderSupplyPrompt(message, out var magazineSupplyTranslated))
+            {
+                __args[0] = magazineSupplyTranslated;
+                return;
+            }
+
             if (TradeScreenUiTranslationPatch.TryTranslateTradeSomePrompt(message, out var tradeSomeTranslated))
             {
                 __args[0] = tradeSomeTranslated;
@@ -94,6 +104,30 @@ public static class PopupAskNumberTranslationPatch
         {
             Trace.TraceError("QudJP: {0}.Prefix failed: {1}", Context, ex);
         }
+    }
+
+    private static bool TryTranslateMagazineAmmoLoaderSupplyPrompt(string source, out string translated)
+    {
+        var match = MagazineAmmoLoaderSupplyPattern.Match(source);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        translated = string.Concat(
+            match.Groups["host"].Value,
+            "へ",
+            match.Groups["ammo"].Value,
+            "をいくつ補給しますか？ (最大=",
+            match.Groups["max"].Value,
+            ")");
+        DynamicTextObservability.RecordTransform(
+            Context,
+            "Popup.AskNumber.MagazineAmmoLoaderSupply",
+            source,
+            translated);
+        return true;
     }
 
     private static void AddTarget(List<MethodBase> targets, MethodInfo? method, string methodName)

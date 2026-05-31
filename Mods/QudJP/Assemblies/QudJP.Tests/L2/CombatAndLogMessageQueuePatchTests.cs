@@ -35,6 +35,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
         WriteLiquidDictionaries();
         DummyMessageQueue.Reset();
         DummyPopupShow.Reset();
+        DummyPopupGenericTarget.Reset();
         DummyPopupTarget.Reset();
     }
 
@@ -1579,6 +1580,72 @@ public sealed class CombatAndLogMessageQueuePatchTests
     }
 
     [Test]
+    public void GameObjectPopup_TranslatesCompanionFollowDistancePickOption_WhenOwnerPatched()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupPickOption(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyGameObjectPopupTarget), nameof(DummyGameObjectPopupTarget.HandleInventoryActionEvent)),
+                typeof(GameObjectPopupTranslationPatch));
+
+            new DummyGameObjectPopupTarget().HandleInventoryActionEvent();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(
+                    DummyPopupGenericTarget.LastPickOptionIntro,
+                    Is.EqualTo("Irudadにどの距離で追従するよう指示しますか？"));
+                Assert.That(
+                    DummyPopupGenericTarget.LastPickOptionOptions,
+                    Is.EqualTo(new[] { "近く", "中距離", "遠く" }));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void GameObjectPopup_TranslatesPullDownDestinationPickOption_WhenOwnerPatched()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupPickOption(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyGameObjectPopupTarget), nameof(DummyGameObjectPopupTarget.PullDown), typeof(bool)),
+                typeof(GameObjectPopupTranslationPatch));
+
+            new DummyGameObjectPopupTarget().PullDown(allowAlternate: true);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyPopupGenericTarget.LastPickOptionTitle, Is.EqualTo("目的地を選択"));
+                Assert.That(
+                    DummyPopupGenericTarget.LastPickOptionOptions,
+                    Is.EqualTo(new[]
+                    {
+                        "現在地 (C)",
+                        "到着地点, Rust Wells (NW)",
+                        "中央 (C)",
+                        "Rust Wells (N)",
+                    }));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void GameObjectPopup_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent()
     {
         var harmonyId = CreateHarmonyId();
@@ -1590,6 +1657,74 @@ public sealed class CombatAndLogMessageQueuePatchTests
             DummyPopupShow.Show("You start calling bronze dagger by the name 'Edge'.");
 
             Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("You start calling bronze dagger by the name 'Edge'."));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void GameObjectPopup_DoesNotTranslateCompanionFollowDistancePickOption_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupPickOption(harmony);
+
+            DummyPopupGenericTarget.PickOption(
+                Intro: "Instruct Irudad to follow at what distance?",
+                Options: new[] { "close", "medium", "far" });
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(
+                    DummyPopupGenericTarget.LastPickOptionIntro,
+                    Is.EqualTo("Instruct Irudad to follow at what distance?"));
+                Assert.That(
+                    DummyPopupGenericTarget.LastPickOptionOptions,
+                    Is.EqualTo(new[] { "close", "medium", "far" }));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void GameObjectPopup_DoesNotTranslatePullDownDestinationPickOption_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupPickOption(harmony);
+
+            DummyPopupGenericTarget.PickOption(
+                Title: "Select a destination",
+                Options: new[]
+                {
+                    "Current location (C)",
+                    "Arrival location, Rust Wells (NW)",
+                    "Center (C)",
+                    "Rust Wells (N)",
+                });
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyPopupGenericTarget.LastPickOptionTitle, Is.EqualTo("Select a destination"));
+                Assert.That(
+                    DummyPopupGenericTarget.LastPickOptionOptions,
+                    Is.EqualTo(new[]
+                    {
+                        "Current location (C)",
+                        "Arrival location, Rust Wells (NW)",
+                        "Center (C)",
+                        "Rust Wells (N)",
+                    }));
+            });
         }
         finally
         {
@@ -1691,6 +1826,10 @@ public sealed class CombatAndLogMessageQueuePatchTests
         nameof(DummyHackingSifrahResultTarget.HackingResultPartialSuccess),
         "You feel like you're making progress on hacking power switch.",
         "power switchのハックが進んでいる気がする。")]
+    [TestCase(
+        nameof(DummyHackingSifrahResultTarget.HackingResultPartialSuccess),
+        "The hack fails, but you manage to cover your tracks before any security measures kick in.",
+        "ハックは失敗したが、セキュリティ対策が作動する前に痕跡を隠すことができた。")]
     [TestCase(
         nameof(DummyHackingSifrahResultTarget.HackingResultFailure),
         "You cannot seem to work out how to hack bronze door.",
@@ -2373,6 +2512,42 @@ public sealed class CombatAndLogMessageQueuePatchTests
     }
 
     [TestCase(
+        nameof(DummyLiquidWarmStaticTarget.WishWarmEffect),
+        "{{rules|Confused}} applied to {{G|Argyve}}.",
+        "{{rules|Confused}}が{{G|Argyve}}に適用された。")]
+    [TestCase(
+        nameof(DummyLiquidWarmStaticTarget.WishWarmEffectSpec),
+        "{{rules|Glotrot}} applied to rusted short sword.",
+        "{{rules|Glotrot}}がrusted short swordに適用された。")]
+    [TestCase(
+        nameof(DummyLiquidWarmStaticTarget.WishWarmEffectSpec),
+        "No valid targets for {{rules|Phase-Conjugate}}.",
+        "{{rules|Phase-Conjugate}}の有効な対象がありません。")]
+    public void LiquidWarmStatic_TranslatesWishWarmEffectMessages_WhenOwnerPatched(
+        string methodName,
+        string source,
+        string expected)
+    {
+        AssertLiquidWarmStaticQueuedMessage(methodName, source, expected);
+    }
+
+    [TestCase(
+        nameof(DummyLiquidWarmStaticTarget.GlitchLiquidComponents),
+        "{{Y|warm static}} starts to glitch.",
+        "{{Y|warm static}}がグリッチし始めた。")]
+    [TestCase(
+        nameof(DummyLiquidWarmStaticTarget.GlitchLiquidComponents),
+        "The liquid mixture inside {{Y|the canteen}} starts to glitch.",
+        "{{Y|the canteen}}の中の混合液がグリッチし始めた。")]
+    public void LiquidWarmStatic_TranslatesGlitchLiquidComponentMessages_WhenOwnerPatched(
+        string methodName,
+        string source,
+        string expected)
+    {
+        AssertLiquidWarmStaticQueuedMessage(methodName, source, expected);
+    }
+
+    [TestCase(
         nameof(DummyLiquidWarmStaticTarget.GlitchSkills),
         "{{G|glowfish}}'s knowledge of {{rules|Long Blade}} distorts into knowledge of {{rules|Cudgel}}.",
         "{{G|glowfish}}の{{rules|Long Blade}}の知識が{{rules|Cudgel}}の知識へ歪んだ。")]
@@ -2475,7 +2650,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
     [Test]
     public void LiquidWarmStatic_LeavesEmptyMessagesUnchanged_WhenOwnerPatched()
     {
-        AssertLiquidWarmStaticQueuedMessage(nameof(DummyLiquidWarmStaticTarget.GlitchSkills), string.Empty, string.Empty);
+        AssertLiquidWarmStaticQueuedMessage(nameof(DummyLiquidWarmStaticTarget.WishWarmEffect), string.Empty, string.Empty);
         AssertLiquidWarmStaticPopupMessage(nameof(DummyLiquidWarmStaticTarget.GlitchMutations), string.Empty, string.Empty);
     }
 
@@ -2484,7 +2659,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
     {
         const string queued = "{{W|This warm static message is unsupported.}}";
         const string popup = "An unknown warm static event happens.";
-        AssertLiquidWarmStaticQueuedMessage(nameof(DummyLiquidWarmStaticTarget.GlitchSkills), queued, queued);
+        AssertLiquidWarmStaticQueuedMessage(nameof(DummyLiquidWarmStaticTarget.WishWarmEffect), queued, queued);
         AssertLiquidWarmStaticPopupMessage(nameof(DummyLiquidWarmStaticTarget.GlitchMutations), popup, popup);
     }
 
@@ -4642,6 +4817,70 @@ public sealed class CombatAndLogMessageQueuePatchTests
     }
 
     [Test]
+    public void FungalSporeInfectionChooseLimbForInfection_TranslatesNoInfectableBodyPartsPopup_WhenOwnerPatched()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShow(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(
+                    typeof(DummyFungalSporeInfectionTarget),
+                    nameof(DummyFungalSporeInfectionTarget.ChooseLimbForInfection),
+                    typeof(string),
+                    typeof(IReadOnlyList<string>)),
+                typeof(FungalSporeInfectionTranslationPatch));
+
+            _ = DummyFungalSporeInfectionTarget.ChooseLimbForInfection("glowcrust", Array.Empty<string>());
+
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("感染させられる体の部位がない。"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void FungalSporeInfectionChooseLimbForInfection_TranslatesPickOptionTitleAndBodyParts_WhenOwnerPatched()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupPickOption(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(
+                    typeof(DummyFungalSporeInfectionTarget),
+                    nameof(DummyFungalSporeInfectionTarget.ChooseLimbForInfection),
+                    typeof(string),
+                    typeof(IReadOnlyList<string>)),
+                typeof(FungalSporeInfectionTranslationPatch));
+
+            _ = DummyFungalSporeInfectionTarget.ChooseLimbForInfection(
+                "{{G|glowcrust}}",
+                new[] { "left arm", "right hand", "unknown feeler" });
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(
+                    DummyPopupGenericTarget.LastPickOptionTitle,
+                    Is.EqualTo("{{G|glowcrust}}で感染させる部位を選ぶ。"));
+                Assert.That(
+                    DummyPopupGenericTarget.LastPickOptionOptions,
+                    Is.EqualTo(new[] { "左腕", "右手", "unknown feeler" }));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void FungalSporeInfectionFireEvent_TranslatesSkinItchesQueuedMessage_WhenOwnerPatched()
     {
         AssertFungalSporeInfectionQueuedMessage("Your skin itches.", "肌がむずむずする。");
@@ -6410,7 +6649,82 @@ public sealed class CombatAndLogMessageQueuePatchTests
 
             target.Die();
 
-            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("あなたの仲間であるIrudadはdies。"));
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("仲間のIrudadは死亡した。"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void GameObjectDestroy_TranslatesCompanionDeathQueuedMessage_WhenPatched()
+    {
+        WritePatternDictionary(
+            ("^Your companion, (.+?), (.+?)\\.$", "あなたの仲間である{0}は{1}。"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(
+                    typeof(DummyGameObjectDestroyTarget),
+                    nameof(DummyGameObjectDestroyTarget.Destroy),
+                    typeof(string),
+                    typeof(bool),
+                    typeof(bool),
+                    typeof(string)),
+                typeof(GameObjectDestroyTranslationPatch));
+
+            var target = new DummyGameObjectDestroyTarget
+            {
+                MessageToSend = "Your companion, Irudad, died.",
+            };
+
+            target.Destroy();
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("仲間のIrudadは死亡した。"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void GameObjectDestroy_TranslatesCompanionDeathPopupMessage_WhenPatched()
+    {
+        WritePatternDictionary(
+            ("^Your companion, (.+?), (.+?)\\.$", "あなたの仲間である{0}は{1}。"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShow(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(
+                    typeof(DummyGameObjectDestroyTarget),
+                    nameof(DummyGameObjectDestroyTarget.Destroy),
+                    typeof(string),
+                    typeof(bool),
+                    typeof(bool),
+                    typeof(string)),
+                typeof(GameObjectDestroyTranslationPatch));
+
+            var target = new DummyGameObjectDestroyTarget
+            {
+                UsePopup = true,
+                PopupMessageToSend = "Your companion, Irudad, died.",
+            };
+
+            target.Destroy();
+
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("仲間のIrudadは死亡した。"));
         }
         finally
         {
@@ -6520,6 +6834,57 @@ public sealed class CombatAndLogMessageQueuePatchTests
     }
 
     [Test]
+    public void GameObjectSpot_TranslatesSpotPopup_WhenPatched()
+    {
+        DynamicTextObservability.ResetForTests();
+        WritePatternDictionary(
+            ("^You see (?:the |a |an )?(.+?) to the (.+?) and stop (.+?)\\.$", "{1}の{0}を見つけ、{2}をやめた。"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShow(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(
+                    typeof(DummyGameObjectSpotTarget),
+                    nameof(DummyGameObjectSpotTarget.ArePerceptibleHostilesNearby),
+                    typeof(bool),
+                    typeof(bool),
+                    typeof(string),
+                    typeof(object),
+                    typeof(string),
+                    typeof(int),
+                    typeof(int),
+                    typeof(bool),
+                    typeof(bool)),
+                typeof(GameObjectSpotTranslationPatch));
+
+            var target = new DummyGameObjectSpotTarget
+            {
+                MessageToSend = "You see a snapjaw to the north and stop auto-exploring.",
+            };
+
+            target.ArePerceptibleHostilesNearby(popSpot: true);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("northのsnapjawを見つけ、auto-exploringをやめた。"));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(GameObjectSpotTranslationPatch),
+                        "Spot"),
+                    Is.EqualTo(1));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void GameObjectEmitMessage_TranslatesVariableReplaceOutput_WhenPatched()
     {
         WritePatternDictionary(
@@ -6616,6 +6981,92 @@ public sealed class CombatAndLogMessageQueuePatchTests
             DummyMessagingEmitMessageTarget.EmitMessage(new DummyGameObject(), "unused", 'W', false, false, false);
 
             Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("baboonsに包囲されている。"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void MessagingEmitMessage_TranslatesVehicleInfiltrationDoesFragment_WhenPatched()
+    {
+        UseRepositoryPatternDictionary();
+        UseRepositoryMessageFrames();
+
+        var fragment = DoesVerbRouteTranslator.MarkDoesFragment(
+            "You infiltrate",
+            "infiltrate",
+            "You".Length,
+            null);
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(
+                    typeof(DummyMessagingEmitMessageTarget),
+                    nameof(DummyMessagingEmitMessageTarget.EmitMessage),
+                    typeof(DummyGameObject),
+                    typeof(string),
+                    typeof(char),
+                    typeof(bool),
+                    typeof(bool),
+                    typeof(bool),
+                    typeof(DummyGameObject),
+                    typeof(DummyGameObject)),
+                typeof(GameObjectEmitMessageTranslationPatch));
+
+            DummyMessagingEmitMessageTarget.MessageToSend = fragment + " the メカ!";
+            DummyMessagingEmitMessageTarget.EmitMessage(new DummyGameObject(), "unused", ' ', false, false, false);
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("メカに入り込んだ！"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void MessagingEmitMessage_TranslatesCampfireExtinguishedByDoesFragment_WhenPatched()
+    {
+        UseRepositoryPatternDictionary();
+        UseRepositoryMessageFrames();
+
+        var fragment = DoesVerbRouteTranslator.MarkDoesFragment(
+            "The キャンプファイヤー are",
+            "are",
+            "The キャンプファイヤー".Length,
+            null);
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(
+                    typeof(DummyMessagingEmitMessageTarget),
+                    nameof(DummyMessagingEmitMessageTarget.EmitMessage),
+                    typeof(DummyGameObject),
+                    typeof(string),
+                    typeof(char),
+                    typeof(bool),
+                    typeof(bool),
+                    typeof(bool),
+                    typeof(DummyGameObject),
+                    typeof(DummyGameObject)),
+                typeof(GameObjectEmitMessageTranslationPatch));
+
+            DummyMessagingEmitMessageTarget.MessageToSend = fragment + " extinguished by the 水.";
+            DummyMessagingEmitMessageTarget.EmitMessage(new DummyGameObject(), "unused", ' ', false, false, false);
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("キャンプファイヤーは水によって消し止められた"));
         }
         finally
         {
@@ -8261,6 +8712,14 @@ public sealed class CombatAndLogMessageQueuePatchTests
         }
     }
 
+    private static void PatchPopupPickOption(Harmony harmony)
+    {
+        harmony.Patch(
+            original: RequireMethod(typeof(DummyPopupGenericTarget), nameof(DummyPopupGenericTarget.PickOption)),
+            prefix: new HarmonyMethod(RequireMethod(typeof(PopupPickOptionTranslationPatch), nameof(PopupPickOptionTranslationPatch.Prefix))),
+            finalizer: new HarmonyMethod(RequireMethod(typeof(PopupPickOptionTranslationPatch), nameof(PopupPickOptionTranslationPatch.Finalizer))));
+    }
+
     private static void AssertRealityStabilizedInterdictPopup(string methodName, string message, string expected)
     {
         var harmonyId = CreateHarmonyId();
@@ -8575,7 +9034,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
             PatchQueue(harmony);
             PatchOwner(
                 harmony,
-                RequireMethod(typeof(DummyLiquidWarmStaticTarget), methodName, typeof(bool)),
+                LiquidWarmStaticDummyMethod(methodName),
                 typeof(LiquidWarmStaticTranslationPatch));
 
             var target = new DummyLiquidWarmStaticTarget
@@ -8583,7 +9042,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
                 MessageToSend = message,
             };
 
-            RequireMethod(typeof(DummyLiquidWarmStaticTarget), methodName, typeof(bool)).Invoke(target, new object[] { false });
+            InvokeLiquidWarmStaticDummyMethod(target, methodName);
 
             Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
         }
@@ -8618,6 +9077,38 @@ public sealed class CombatAndLogMessageQueuePatchTests
         {
             harmony.UnpatchAll(harmonyId);
         }
+    }
+
+    private static MethodInfo LiquidWarmStaticDummyMethod(string methodName)
+    {
+        if (methodName == nameof(DummyLiquidWarmStaticTarget.WishWarmEffect))
+        {
+            return RequireMethod(typeof(DummyLiquidWarmStaticTarget), methodName);
+        }
+
+        if (methodName == nameof(DummyLiquidWarmStaticTarget.WishWarmEffectSpec))
+        {
+            return RequireMethod(typeof(DummyLiquidWarmStaticTarget), methodName, typeof(string));
+        }
+
+        return RequireMethod(typeof(DummyLiquidWarmStaticTarget), methodName, typeof(bool));
+    }
+
+    private static void InvokeLiquidWarmStaticDummyMethod(DummyLiquidWarmStaticTarget target, string methodName)
+    {
+        if (methodName == nameof(DummyLiquidWarmStaticTarget.WishWarmEffect))
+        {
+            LiquidWarmStaticDummyMethod(methodName).Invoke(target, null);
+            return;
+        }
+
+        if (methodName == nameof(DummyLiquidWarmStaticTarget.WishWarmEffectSpec))
+        {
+            LiquidWarmStaticDummyMethod(methodName).Invoke(target, new object[] { "Confused" });
+            return;
+        }
+
+        LiquidWarmStaticDummyMethod(methodName).Invoke(target, new object[] { false });
     }
 
     private static void AssertKeybindsScreenConflictYesNoAsync(string methodName, string message, string expected)

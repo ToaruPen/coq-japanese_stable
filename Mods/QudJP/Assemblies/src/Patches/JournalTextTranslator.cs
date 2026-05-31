@@ -23,6 +23,10 @@ internal static class JournalTextTranslator
         "\\bleader of the (?<faction>[^{}\\r\\n、。をにがはと.]+)",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex GameObjectDieDeathAccomplishmentPattern = new(
+        "^On the (?<day>.+?) of (?<month>.+?), (?<reason>.+)$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     internal static bool TryTranslateAccomplishmentTextForStorage(
         string source,
         string? category,
@@ -111,6 +115,12 @@ internal static class JournalTextTranslator
             return true;
         }
 
+        if (TryTranslateGameObjectDieDeathAccomplishment(source, route, out var deathAccomplishment))
+        {
+            translated = MessageFrameTranslator.MarkDirectTranslation(deathAccomplishment);
+            return true;
+        }
+
         if (!TryTranslateDisplayText(source, route, out var translatedText))
         {
             return false;
@@ -161,6 +171,39 @@ internal static class JournalTextTranslator
 
         translated = JournalPatternTranslator.Translate(current, route);
         return changed || !string.Equals(current, translated, StringComparison.Ordinal);
+    }
+
+    private static bool TryTranslateGameObjectDieDeathAccomplishment(
+        string source,
+        string route,
+        out string translated)
+    {
+        translated = source;
+        if (!GameObjectDieTranslationPatch.IsActive)
+        {
+            return false;
+        }
+
+        var match = GameObjectDieDeathAccomplishmentPattern.Match(source);
+        if (!match.Success)
+        {
+            return false;
+        }
+
+        var dateSource = "On the " + match.Groups["day"].Value + " of " + match.Groups["month"].Value;
+        var translatedDate = JournalPatternTranslator.Translate(dateSource, route);
+        if (string.Equals(dateSource, translatedDate, StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        translated = translatedDate + "、" + match.Groups["reason"].Value;
+        DynamicTextObservability.RecordTransform(
+            route,
+            "Journal.GameObjectDieDeathAccomplishment",
+            source,
+            translated);
+        return true;
     }
 
     private static bool TryTranslateExactPreservingColors(string source, string route, string family, out string translated)

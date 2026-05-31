@@ -94,6 +94,10 @@ internal static class GetDisplayNameRouteTranslator
         new Regex(
             "^(?<base>.+?)\\s+mk\\s+(?<tier>[IVXLC]+)(?:\\s+<(?<code>[^>]+)>)?$",
             RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex MinerGeneratedRoleDisplayNameSuffixPattern =
+        new Regex(
+            "^(?<base>.+?)\\s+(?<role>miner|bomber)\\s+mk\\s+(?<tier>[IVXLC]+)$",
+            RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex AngleCodeDisplayNameSuffixPattern =
         new Regex("^(?<base>.+?)\\s+(?<angle><(?<code>[^>]+)>)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex WithClauseDisplayNamePattern =
@@ -169,6 +173,10 @@ internal static class GetDisplayNameRouteTranslator
     private static readonly Regex CyberneticsSchemasoftWrappedDisplayNamePattern =
         new Regex(
             "^\\{\\{(?<outer>[^|}]+)\\|Schemasoft \\[\\{\\{(?<inner>[^|}]+)\\|(?<category>.+?), (?<tier>Low Tier|Mid Tier|High Tier)\\}\\}\\]\\}\\}$",
+            RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex CyberneticsSkillsoftWrappedDisplayNamePattern =
+        new Regex(
+            "^\\{\\{(?<outer>[^|}]+)\\|(?<kind>Skillsoft(?: Plus)?) \\[\\{\\{(?<inner>[^|}]+)\\|(?<skill>.+)\\}\\}\\]\\}\\}$",
             RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Dictionary<string, string> CyclopeanPrismDisplayNames =
         new Dictionary<string, string>(StringComparer.Ordinal)
@@ -258,6 +266,11 @@ internal static class GetDisplayNameRouteTranslator
         if (TryTranslateCyberneticsSchemasoftWrappedDisplayName(source!, route, out var schemasoftTranslation))
         {
             return schemasoftTranslation;
+        }
+
+        if (TryTranslateCyberneticsSkillsoftWrappedDisplayName(source!, route, out var skillsoftTranslation))
+        {
+            return skillsoftTranslation;
         }
 
         if (TryTranslateGeneratedEnglishPrefixDisplayName(source!, route, out var prefixTranslation))
@@ -532,6 +545,11 @@ internal static class GetDisplayNameRouteTranslator
             return true;
         }
 
+        if (TryTranslateMinerGeneratedRoleDisplayNameSuffix(source, route, out translated))
+        {
+            return true;
+        }
+
         if (TryTranslateMkTierDisplayNameSuffix(source, route, out translated))
         {
             return true;
@@ -553,6 +571,11 @@ internal static class GetDisplayNameRouteTranslator
         }
 
         if (TryTranslateCyberneticsSchemasoftDisplayName(source, route, out translated))
+        {
+            return true;
+        }
+
+        if (TryTranslateCyberneticsSkillsoftWrappedDisplayName(source, route, out translated))
         {
             return true;
         }
@@ -1203,6 +1226,40 @@ internal static class GetDisplayNameRouteTranslator
         if (!string.Equals(translated, source, StringComparison.Ordinal))
         {
             DynamicTextObservability.RecordTransform(route, "DisplayName.QuantitySuffix", source, translated);
+            return true;
+        }
+
+        return IsStableDisplayNameFragment(baseSource, route);
+    }
+
+    private static bool TryTranslateMinerGeneratedRoleDisplayNameSuffix(string source, string route, out string translated)
+    {
+        var match = MinerGeneratedRoleDisplayNameSuffixPattern.Match(source);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        var baseSource = match.Groups["base"].Value;
+        var translatedBase = TranslateDisplayNameFragment(baseSource, route);
+        if (string.Equals(translatedBase, baseSource, StringComparison.Ordinal)
+            && !IsStableDisplayNameFragment(baseSource, route))
+        {
+            translated = source;
+            return false;
+        }
+
+        var translatedRole = match.Groups["role"].Value switch
+        {
+            "miner" => "採掘機",
+            "bomber" => "爆撃機",
+            _ => match.Groups["role"].Value,
+        };
+        translated = translatedBase + " " + translatedRole + " mk " + match.Groups["tier"].Value;
+        if (!string.Equals(translated, source, StringComparison.Ordinal))
+        {
+            DynamicTextObservability.RecordTransform(route, "DisplayName.MinerGeneratedRoleSuffix", source, translated);
             return true;
         }
 
@@ -2582,6 +2639,48 @@ internal static class GetDisplayNameRouteTranslator
             source,
             translated);
         return true;
+    }
+
+    private static bool TryTranslateCyberneticsSkillsoftWrappedDisplayName(string source, string route, out string translated)
+    {
+        var match = CyberneticsSkillsoftWrappedDisplayNamePattern.Match(source);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        var skill = CharGenProducerTranslationHelpers.TranslateText(match.Groups["skill"].Value);
+        if (string.Equals(skill, match.Groups["skill"].Value, StringComparison.Ordinal))
+        {
+            translated = source;
+            return false;
+        }
+
+        translated = "{{"
+            + match.Groups["outer"].Value
+            + "|"
+            + TranslateSkillsoftKind(match.Groups["kind"].Value)
+            + " [{{"
+            + match.Groups["inner"].Value
+            + "|"
+            + skill
+            + "}}]}}";
+        DynamicTextObservability.RecordTransform(
+            route,
+            "DisplayName.CyberneticsSkillsoft",
+            source,
+            translated);
+        return true;
+    }
+
+    private static string TranslateSkillsoftKind(string source)
+    {
+        return source switch
+        {
+            "Skillsoft Plus" => "スキルソフト・プラス",
+            _ => "スキルソフト",
+        };
     }
 
     private static bool TryTranslateSchemasoftCategory(string source, out string translated)

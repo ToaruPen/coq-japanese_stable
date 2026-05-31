@@ -283,7 +283,15 @@ def test_policy_promotes_single_callsite_popup_exact_owner_tranche_without_pull_
     assert "XRL.World.Parts.Food|HandleEvent" in " ".join(entries[food_handle_event]["closure_evidence"])
     assert "XRL.World.Parts.Container|AttemptOpen" in " ".join(entries[container_attempt_open]["closure_evidence"])
     assert "XRL.PopulationManager|WishGenerate" in " ".join(entries[population_wish_generate]["closure_evidence"])
-    assert entries[game_object_pull_down]["closure_status"] == "action_required"
+    assert entries[game_object_pull_down]["closure_status"] == "covered_by_owner_route"
+    _assert_evidence_contains(
+        entries,
+        game_object_pull_down,
+        "GameObjectPopupTranslationPatch.cs",
+        "CombatAndLogMessageQueuePatchTests.cs",
+        "TargetMethodResolutionTests.cs",
+        "Select a destination",
+    )
 
 
 def test_policy_promotes_existing_message_frame_dictionary_tranche() -> None:
@@ -465,9 +473,11 @@ def test_policy_promotes_fixed_popup_dictionary_producer_tranche() -> None:
         )
 
     assert "PopupShowSpaceTranslationPatchTests.cs" in " ".join(entries[checkpoint_death]["closure_evidence"])
-    assert entries[game_object_auto_equip]["closure_status"] == "action_required"
+    assert entries[game_object_auto_equip]["closure_status"] == "covered_by_owner_route"
     auto_equip_evidence = " ".join(entries[game_object_auto_equip]["closure_evidence"])
-    assert "residual_bucket=producer_broad_gameobject_autoequip_gap" in auto_equip_evidence
+    assert "AutoEquip fixed ammunition ShowFail branch" in auto_equip_evidence
+    assert "PopupShowTranslationPatchTests.cs" in auto_equip_evidence
+    assert "ui-popup.ja.json" in auto_equip_evidence
 
 
 def test_policy_applies_reviewed_closure_overlay_for_high_risk_combat_lane() -> None:
@@ -1107,19 +1117,22 @@ def test_policy_splits_residual_sifrah_descriptions_by_static_owner_shape() -> N
     assert unused_constructor not in residual_entries
     assert entries[unused_constructor]["closure_status"] == "covered_by_owner_route"
 
-    assert (
-        residual_entries[dynamic_constructor]["residual_bucket"]
-        == "sifrah_description_token_dynamic_constructor_gap"
+    assert dynamic_constructor not in residual_entries
+    assert getdescription_return not in residual_entries
+    assert entries[dynamic_constructor]["closure_status"] == "covered_by_owner_route"
+    assert entries[getdescription_return]["closure_status"] == "covered_by_owner_route"
+    _assert_evidence_contains(
+        entries,
+        dynamic_constructor,
+        "SifrahTokenDescriptionTranslationPatch.cs",
+        "SifrahTokenDescriptionTranslationPatchTests.cs",
     )
-    assert residual_entries[dynamic_constructor]["residual_disposition"] == "likely_implementation_gap"
-    assert entries[dynamic_constructor]["closure_status"] == "action_required"
-
-    assert (
-        residual_entries[getdescription_return]["residual_bucket"]
-        == "sifrah_description_token_getdescription_gap"
+    _assert_evidence_contains(
+        entries,
+        getdescription_return,
+        "SifrahTokenDescriptionTranslationPatch.cs",
+        "SifrahTokenDescriptionTranslationPatchTests.cs",
     )
-    assert residual_entries[getdescription_return]["residual_disposition"] == "likely_implementation_gap"
-    assert entries[getdescription_return]["closure_status"] == "action_required"
 
 
 def test_policy_splits_ui_description_assignments_by_static_menu_option_shape() -> None:
@@ -1146,13 +1159,18 @@ def test_policy_splits_ui_description_assignments_by_static_menu_option_shape() 
         for entry in residual_bucket_payload(inventory, inventory_path=Path("ui-description.json"))["entries"]
     }
 
-    assert residual_entries[line_option]["residual_bucket"] == "ui_menu_option_static_description_gap"
-    assert residual_entries[line_option]["residual_disposition"] == "likely_implementation_gap"
-    assert entries[line_option]["closure_status"] == "action_required"
+    assert line_option not in residual_entries
+    assert entries[line_option]["closure_status"] == "covered_by_owner_route"
 
-    assert residual_entries[options_control]["residual_bucket"] == "ui_options_control_description_gap"
-    assert residual_entries[options_control]["residual_disposition"] == "likely_implementation_gap"
-    assert entries[options_control]["closure_status"] == "action_required"
+    assert options_control not in residual_entries
+    assert entries[options_control]["closure_status"] == "covered_by_owner_route"
+    _assert_evidence_contains(
+        entries,
+        options_control,
+        "UiMenuOptionDescriptionTranslationPatch.cs",
+        "UiMenuOptionDescriptionTranslationPatchTests.cs",
+        "ui-options.ja.json",
+    )
 
     assert residual_entries[xrl_ui_sink]["residual_bucket"] == "ui_description_assignment_runtime"
     assert residual_entries[xrl_ui_sink]["residual_disposition"] == "runtime_evidence_required"
@@ -1405,6 +1423,28 @@ def test_policy_records_issue719_ui_screen_owner_route_overlays() -> None:
         "quests_collapse": "Qud.UI/QuestsLine.cs::QuestsLine.categoryCollapseOptions",
         "equipment_hotkey": "Qud.UI/EquipmentLine.cs::EquipmentLine.UpdateHotkey()",
         "filter_expand": "Qud.UI/FilterBarCategoryButton.cs::FilterBarCategoryButton.categoryExpandOptions",
+        "filter_collapse": "Qud.UI/FilterBarCategoryButton.cs::FilterBarCategoryButton.categoryCollapseOptions",
+        "filter_item": "Qud.UI/FilterBarCategoryButton.cs::FilterBarCategoryButton.itemOptions",
+        "button_bar_item": "Qud.UI/ButtonBarButton.cs::ButtonBarButton.itemOptions",
+        "factions_expand": "Qud.UI/FactionsLine.cs::FactionsLine.categoryExpandOptions",
+        "factions_collapse": "Qud.UI/FactionsLine.cs::FactionsLine.categoryCollapseOptions",
+        "factions_status_expand_all": "Qud.UI/FactionsStatusScreen.cs::FactionsStatusScreen.EXPAND_ALL",
+        "factions_status_collapse_all": "Qud.UI/FactionsStatusScreen.cs::FactionsStatusScreen.COLLAPSE_ALL",
+        "inventory_expand": "Qud.UI/InventoryLine.cs::InventoryLine.categoryExpandOptions",
+        "inventory_collapse": "Qud.UI/InventoryLine.cs::InventoryLine.categoryCollapseOptions",
+        "sultan_expand": "Qud.UI/JournalSultanStatueLine.cs::JournalSultanStatueLine.categoryExpandOptions",
+        "sultan_collapse": "Qud.UI/JournalSultanStatueLine.cs::JournalSultanStatueLine.categoryCollapseOptions",
+        "skills_expand": "Qud.UI/SkillsAndPowersLine.cs::SkillsAndPowersLine.categoryExpandOptions",
+        "skills_collapse": "Qud.UI/SkillsAndPowersLine.cs::SkillsAndPowersLine.categoryCollapseOptions",
+        "bits_expand": "Qud.UI/TinkeringBitsLine.cs::TinkeringBitsLine.categoryExpandOptions",
+        "bits_collapse": "Qud.UI/TinkeringBitsLine.cs::TinkeringBitsLine.categoryCollapseOptions",
+        "details_expand": "Qud.UI/TinkeringDetailsLine.cs::TinkeringDetailsLine.categoryExpandOptions",
+        "details_collapse": "Qud.UI/TinkeringDetailsLine.cs::TinkeringDetailsLine.categoryCollapseOptions",
+        "tinkering_expand": "Qud.UI/TinkeringLine.cs::TinkeringLine.categoryExpandOptions",
+        "tinkering_collapse": "Qud.UI/TinkeringLine.cs::TinkeringLine.categoryCollapseOptions",
+        "trade_expand": "Qud.UI/TradeLine.cs::TradeLine.categoryExpandOptions",
+        "trade_collapse": "Qud.UI/TradeLine.cs::TradeLine.categoryCollapseOptions",
+        "trade_item": "Qud.UI/TradeLine.cs::TradeLine.itemOptions",
         "popup_sink": (
             "XRL.UI/Popup.cs::Popup.GetPopupOption("
             "int,IReadOnlyList<string>,IReadOnlyList<char>,IReadOnlyList<IRenderable>)"
@@ -1477,6 +1517,43 @@ def test_policy_records_issue719_ui_screen_owner_route_overlays() -> None:
                 {"DescriptionAssignment": 3},
             ),
             _family(
+                family_ids["filter_collapse"],
+                "Qud.UI/FilterBarCategoryButton.cs",
+                "categoryCollapseOptions",
+                {"DescriptionAssignment": 3},
+            ),
+            _family(
+                family_ids["filter_item"],
+                "Qud.UI/FilterBarCategoryButton.cs",
+                "itemOptions",
+                {"DescriptionAssignment": 3},
+            ),
+            *[
+                _family(family_ids[key], source_file, member_name, {"DescriptionAssignment": 3})
+                for key, source_file, member_name in (
+                    ("button_bar_item", "Qud.UI/ButtonBarButton.cs", "itemOptions"),
+                    ("factions_expand", "Qud.UI/FactionsLine.cs", "categoryExpandOptions"),
+                    ("factions_collapse", "Qud.UI/FactionsLine.cs", "categoryCollapseOptions"),
+                    ("factions_status_expand_all", "Qud.UI/FactionsStatusScreen.cs", "EXPAND_ALL"),
+                    ("factions_status_collapse_all", "Qud.UI/FactionsStatusScreen.cs", "COLLAPSE_ALL"),
+                    ("inventory_expand", "Qud.UI/InventoryLine.cs", "categoryExpandOptions"),
+                    ("inventory_collapse", "Qud.UI/InventoryLine.cs", "categoryCollapseOptions"),
+                    ("sultan_expand", "Qud.UI/JournalSultanStatueLine.cs", "categoryExpandOptions"),
+                    ("sultan_collapse", "Qud.UI/JournalSultanStatueLine.cs", "categoryCollapseOptions"),
+                    ("skills_expand", "Qud.UI/SkillsAndPowersLine.cs", "categoryExpandOptions"),
+                    ("skills_collapse", "Qud.UI/SkillsAndPowersLine.cs", "categoryCollapseOptions"),
+                    ("bits_expand", "Qud.UI/TinkeringBitsLine.cs", "categoryExpandOptions"),
+                    ("bits_collapse", "Qud.UI/TinkeringBitsLine.cs", "categoryCollapseOptions"),
+                    ("details_expand", "Qud.UI/TinkeringDetailsLine.cs", "categoryExpandOptions"),
+                    ("details_collapse", "Qud.UI/TinkeringDetailsLine.cs", "categoryCollapseOptions"),
+                    ("tinkering_expand", "Qud.UI/TinkeringLine.cs", "categoryExpandOptions"),
+                    ("tinkering_collapse", "Qud.UI/TinkeringLine.cs", "categoryCollapseOptions"),
+                    ("trade_expand", "Qud.UI/TradeLine.cs", "categoryExpandOptions"),
+                    ("trade_collapse", "Qud.UI/TradeLine.cs", "categoryCollapseOptions"),
+                    ("trade_item", "Qud.UI/TradeLine.cs", "itemOptions"),
+                )
+            ],
+            _family(
                 family_ids["popup_sink"],
                 "XRL.UI/Popup.cs",
                 "GetPopupOption",
@@ -1510,6 +1587,29 @@ def test_policy_records_issue719_ui_screen_owner_route_overlays() -> None:
         "hidden_achievement",
         "quests_expand",
         "quests_collapse",
+        "filter_expand",
+        "filter_collapse",
+        "filter_item",
+        "button_bar_item",
+        "factions_expand",
+        "factions_collapse",
+        "factions_status_expand_all",
+        "factions_status_collapse_all",
+        "inventory_expand",
+        "inventory_collapse",
+        "sultan_expand",
+        "sultan_collapse",
+        "skills_expand",
+        "skills_collapse",
+        "bits_expand",
+        "bits_collapse",
+        "details_expand",
+        "details_collapse",
+        "tinkering_expand",
+        "tinkering_collapse",
+        "trade_expand",
+        "trade_collapse",
+        "trade_item",
         "popup_sink",
     ):
         assert entries[family_ids[family_key]]["closure_status"] == "covered_by_owner_route"
@@ -1568,13 +1668,24 @@ def test_policy_records_issue719_ui_screen_owner_route_overlays() -> None:
         "QuestUiTranslationPatchTests.cs",
         "TargetMethodResolutionTests.cs",
     )
+    _assert_evidence_contains(
+        entries,
+        family_ids["filter_item"],
+        "FilterBarCategoryButtonTranslationPatch.cs",
+        "FilterBarCategoryButtonTranslationPatchTests.cs",
+    )
+    _assert_evidence_contains(
+        entries,
+        family_ids["trade_item"],
+        "UiMenuOptionDescriptionTranslationPatch.cs",
+        "UiMenuOptionDescriptionTranslationPatchTests.cs",
+    )
     assert entries[family_ids["equipment_hotkey"]]["closure_status"] == "covered_by_owner_route"
     _assert_evidence_contains(
         entries,
         family_ids["equipment_hotkey"],
         "UpdateHotkey emit hotkey glyphs only",
     )
-    assert entries[family_ids["filter_expand"]]["closure_status"] != "covered_by_owner_route"
 
 
 def test_policy_records_issue719_look_tooltip_owner_overlays() -> None:
@@ -1676,7 +1787,7 @@ def test_policy_splits_issue719_ui_screen_residuals_by_static_owner_shape() -> N
             "ShowScreen",
             {"SetText": 10},
             "ui_screen_fixed_label_gap",
-            "likely_implementation_gap",
+            "covered_by_owner_route",
         ),
         "fixed_key_prompt": (
             "Qud.UI/KeybindBox.cs::KeybindBox.Update()",
@@ -1684,7 +1795,7 @@ def test_policy_splits_issue719_ui_screen_residuals_by_static_owner_shape() -> N
             "Update",
             {"DirectTextAssignment": 1},
             "ui_screen_fixed_label_gap",
-            "likely_implementation_gap",
+            "covered_by_owner_route",
         ),
         "world_generation": (
             "Qud.UI/WorldGenerationScreen.cs::WorldGenerationScreen._ShowWorldGenerationScreen(int)",
@@ -1861,7 +1972,7 @@ def test_policy_splits_issue719_ui_screen_data_bound_runtime_by_source_shape() -
             "setData",
             {"SetText": 4},
             "ui_screen_left_side_category_gap",
-            "likely_implementation_gap",
+            "covered_by_owner_route",
         ),
         "mod_manager_back": (
             "Qud.UI/ModManagerUI.cs::ModManagerUI.SetBackButtonText(string)",
@@ -1956,7 +2067,7 @@ def test_policy_splits_issue719_ui_screen_data_bound_runtime_by_source_shape() -
         for family_id, _, _, _, bucket, disposition in families.values()
         if disposition != "covered_by_owner_route"
     }
-    assert payload["disposition_counts"] == {"likely_implementation_gap": 1}
+    assert payload["disposition_counts"] == {}
 
 
 def test_residual_bucket_payload_splits_trade_inventory_ui_runtime_routes_by_widget_shape() -> None:
@@ -2068,16 +2179,16 @@ def test_policy_reclassifies_issue719_final_sink_sentinel_and_static_owner_runti
             "XRL.World.Effects/FungalSporeInfection.cs",
             "ChooseLimbForInfection",
             {"Popup": 4},
-            "active_effect_fungal_spore_infection_popup_gap",
-            "likely_implementation_gap",
+            None,
+            "covered_by_owner_route",
         ),
         "desalination": (
             "XRL.World.Parts/DesalinationPellet.cs::DesalinationPellet.HandleEvent(InventoryActionEvent)",
             "XRL.World.Parts/DesalinationPellet.cs",
             "HandleEvent",
             {"EmitMessage": 3},
-            "producer_runtime_inventory_action_desalination_pellet_gap",
-            "likely_implementation_gap",
+            None,
+            "covered_by_owner_route",
         ),
     }
     inventory = _inventory(
@@ -2106,6 +2217,20 @@ def test_policy_reclassifies_issue719_final_sink_sentinel_and_static_owner_runti
         entries,
         families["fade_text"][0],
         "sends only the <nohighlight> tutorial control sentinel",
+    )
+    _assert_evidence_contains(
+        entries,
+        families["fungal_choose_limb"][0],
+        "FungalSporeInfectionTranslationPatch",
+        "PopupTranslationPatch.cs",
+        "CombatAndLogMessageQueuePatchTests",
+    )
+    _assert_evidence_contains(
+        entries,
+        families["desalination"][0],
+        "DesalinationPelletTranslationPatch",
+        "DesalinationPelletFragmentTranslator",
+        "WorldPartsProducerTranslationPatchTests",
     )
 
     residual = residual_bucket_payload(inventory, inventory_path=Path("issue719-final-runtime-static-test.json"))
@@ -2261,7 +2386,15 @@ def test_policy_records_issue719_chargen_customize_owner_overlays() -> None:
             "ui-chargen.ja.json",
         )
 
-    assert entries[family_ids["mutations_select_variant"]]["closure_status"] != "covered_by_owner_route"
+    assert entries[family_ids["mutations_select_variant"]]["closure_status"] == "covered_by_owner_route"
+    _assert_evidence_contains(
+        entries,
+        family_ids["mutations_select_variant"],
+        "QudMutationsModuleWindowVariantPopupTranslationPatch.cs",
+        "QudMutationsModuleWindowTranslationPatchTests.cs",
+        "TargetMethodResolutionTests.cs",
+        "ui-chargen-supplement.ja.json",
+    )
 
 
 def test_policy_records_issue719_exact_description_short_description_overlay() -> None:
@@ -3102,6 +3235,7 @@ def test_policy_records_issue719_exact_producer_message_owner_overlays() -> None
         "phylactery_hack_failure",
         "phylactery_hack_critical",
         "cybernetics_hack_exceptional",
+        "cybernetics_hack_partial",
         "cybernetics_hack_failure",
         "cybernetics_hack_critical",
         "leveler_rapid",
@@ -3629,8 +3763,20 @@ def test_policy_records_issue719_exact_producer_message_owner_overlays() -> None
         "DoesVerbFamilyTests.cs",
         "CombatAndLogMessageQueuePatchTests.cs",
     )
-    assert entries[family_ids["cybernetics_hack_partial"]]["closure_status"] != "covered_by_owner_route"
-    assert entries[family_ids["scores"]]["closure_status"] != "covered_by_owner_route"
+    _assert_evidence_contains(
+        entries,
+        family_ids["cybernetics_hack_partial"],
+        "HackingSifrahResultTranslationPatch.cs",
+        "CombatAndLogMessageQueuePatchTests.cs",
+        "TargetMethodResolutionTests.cs",
+    )
+    assert entries[family_ids["scores"]]["closure_status"] == "covered_by_owner_route"
+    _assert_evidence_contains(
+        entries,
+        family_ids["scores"],
+        "LegacyScoresScreenTranslationPatchTests.cs",
+        "HighScoresDeletePopupTranslationPatchTests.cs",
+    )
     _assert_evidence_contains(
         entries,
         family_ids["xrl_game_load"],
@@ -3788,6 +3934,7 @@ def test_policy_records_issue719_existing_sifrah_and_deploy_exact_owner_overlays
         "item_modding_success",
         "item_modding_critical_success",
         "rebuking_critical",
+        "rebuking_failure",
         "rebuking_partial",
     ):
         assert entries[family_ids[family_key]]["closure_status"] == "covered_by_owner_route"
@@ -3828,8 +3975,15 @@ def test_policy_records_issue719_existing_sifrah_and_deploy_exact_owner_overlays
         "RebukingSifrahTranslationPatchTests.cs",
         "TargetMethodResolutionTests.cs",
     )
-    assert entries[family_ids["rebuking_failure"]]["closure_status"] != "covered_by_owner_route"
-    assert entries[family_ids["giant_clam_from"]]["closure_status"] != "covered_by_owner_route"
+    assert entries[family_ids["giant_clam_from"]]["closure_status"] == "covered_by_owner_route"
+    _assert_evidence_contains(
+        entries,
+        family_ids["giant_clam_from"],
+        "GiantClamTeleportTranslationPatch.cs",
+        "CombatAndLogMessageQueuePatchTests.cs",
+        "GiantClamTeleportTranslationPatchTests.cs",
+        "TargetMethodResolutionTests.cs",
+    )
     assert entries[family_ids["electrical_discharge"]]["closure_status"] == "covered_by_owner_route"
     _assert_evidence_contains(
         entries,
@@ -3940,6 +4094,7 @@ def test_policy_records_issue719_existing_patch_exact_audit_batch() -> None:
         "social_gift",
         "social_item",
         "summoning_curio",
+        "sunder_tick",
     ):
         assert entries[family_ids[family_key]]["closure_status"] == "covered_by_owner_route"
 
@@ -4004,7 +4159,16 @@ def test_policy_records_issue719_existing_patch_exact_audit_batch() -> None:
             "TargetMethodResolutionTests.cs",
         )
 
-    assert entries[family_ids["sunder_tick"]]["closure_status"] != "covered_by_owner_route"
+    _assert_evidence_contains(
+        entries,
+        family_ids["sunder_tick"],
+        "SunderMindTranslationPatch.cs",
+        "MessageQueueSemanticPipeline.cs",
+        "PopupShowSemanticPipeline.cs",
+        "CombatAndLogMessageQueuePatchTests.cs",
+        "TargetMethodResolutionTests.cs",
+        "ui-popup.ja.json",
+    )
 
 
 def test_policy_records_issue719_existing_patch_mutation_popup_mixed_batch() -> None:
@@ -4093,7 +4257,7 @@ def test_policy_records_issue719_existing_patch_mutation_popup_mixed_batch() -> 
 
     entries = {entry["family_id"]: entry for entry in valuable_surface_queue(inventory)}
 
-    for family_key in ("mass_mind", "pack_rat", "precognition", "eros", "life_drain"):
+    for family_key in ("mass_mind", "pack_rat", "precognition", "eros", "stomach", "life_drain"):
         assert entries[family_ids[family_key]]["closure_status"] == "covered_by_owner_route"
 
     _assert_evidence_contains(
@@ -4149,8 +4313,23 @@ def test_policy_records_issue719_existing_patch_mutation_popup_mixed_batch() -> 
         "TargetMethodResolutionTests.cs",
         "ui-popup.ja.json",
     )
-    assert entries[family_ids["stomach"]]["closure_status"] != "covered_by_owner_route"
-    assert entries[family_ids["item_naming"]]["closure_status"] != "covered_by_owner_route"
+    _assert_evidence_contains(
+        entries,
+        family_ids["stomach"],
+        "StomachTranslationPatch.cs",
+        "StomachTranslationPatchTests.cs",
+        "TargetMethodResolutionTests.cs",
+        "world-parts.ja.json",
+    )
+    assert entries[family_ids["item_naming"]]["closure_status"] == "covered_by_owner_route"
+    _assert_evidence_contains(
+        entries,
+        family_ids["item_naming"],
+        "ItemNamingTranslationPatch.cs",
+        "PopupShowColorPickerTranslationPatch.cs",
+        "ItemNamingTranslationPatchTests.cs",
+        "TargetMethodResolutionTests.cs",
+    )
 
 
 def test_policy_records_issue719_residual_pure_does_verb_tranche() -> None:
@@ -4191,8 +4370,10 @@ def test_policy_records_issue719_residual_pure_does_verb_tranche() -> None:
         ),
     }
     residual_family_ids = {
-        "game_text": "XRL/GameText.cs::GameText.RoughConvertSecondPersonToThirdPerson(string,GameObject)",
         "cybernetics_menu": "XRL.UI/CyberneticsScreenMainMenu.cs::CyberneticsScreenMainMenu()",
+    }
+    exact_owner_family_ids = {
+        "game_text": "XRL/GameText.cs::GameText.RoughConvertSecondPersonToThirdPerson(string,GameObject)",
         "cybernetics_terminal": (
             "XRL.World.Parts/CyberneticsTerminal2.cs::CyberneticsTerminal2.AttemptInterface(GameObject,IEvent)"
         ),
@@ -4218,6 +4399,15 @@ def test_policy_records_issue719_residual_pure_does_verb_tranche() -> None:
                 )
                 for family_id in residual_family_ids.values()
             ],
+            *[
+                _family(
+                    family_id,
+                    family_id.split("::", maxsplit=1)[0],
+                    family_id.rsplit(".", maxsplit=1)[-1].split("(", maxsplit=1)[0],
+                    {"Does": 1},
+                )
+                for family_id in exact_owner_family_ids.values()
+            ],
         ]
     )
 
@@ -4235,6 +4425,29 @@ def test_policy_records_issue719_residual_pure_does_verb_tranche() -> None:
 
     for family_id in residual_family_ids.values():
         assert entries[family_id]["closure_status"] != "covered_by_owner_route"
+
+    _assert_evidence_contains(
+        entries,
+        exact_owner_family_ids["game_text"],
+        "GameTextDeathReasonTranslationPatch.cs",
+        "GameTextDeathReasonTranslationPatchTests.cs",
+        "DeathReasonTranslationPatch.cs",
+    )
+    _assert_evidence_contains(
+        entries,
+        exact_owner_family_ids["cybernetics_terminal"],
+        "CyberneticsTerminalInterfacePopupTranslationPatch.cs",
+        "CyberneticsTerminalInterfacePopupTranslationPatchTests.cs",
+        "TargetMethodResolutionTests.cs",
+        "verbs.ja.json",
+    )
+    _assert_evidence_contains(
+        entries,
+        exact_owner_family_ids["domination_process"],
+        "DominationProcessTargetTranslationPatch.cs",
+        "DominationProcessTargetTranslationPatchTests.cs",
+        "MessageQueueSemanticPipeline.cs",
+    )
 
 
 def test_policy_records_issue719_fixed_literal_popup_overlays() -> None:
@@ -5667,6 +5880,7 @@ def test_policy_records_issue781_elemental_pseudopod_display_name_owner_overlay(
         "elemental_jelly_setup": "XRL.World.Parts/ElementalJelly.cs::ElementalJelly.SetupPod(GameObject)",
         "panhumor_setup": "XRL.World.Parts/Panhumor.cs::Panhumor.SetupPod(GameObject)",
         "elemental_jelly_fire_event": "XRL.World.Parts/ElementalJelly.cs::ElementalJelly.FireEvent(Event)",
+        "panhumor_fire_event": "XRL.World.Parts/Panhumor.cs::Panhumor.FireEvent(Event)",
     }
     inventory = _inventory(
         [
@@ -5688,6 +5902,12 @@ def test_policy_records_issue781_elemental_pseudopod_display_name_owner_overlay(
                 "FireEvent",
                 {"MessageFrame": 1},
             ),
+            _family(
+                family_ids["panhumor_fire_event"],
+                "XRL.World.Parts/Panhumor.cs",
+                "FireEvent",
+                {"MessageFrame": 1},
+            ),
         ]
     )
 
@@ -5703,7 +5923,14 @@ def test_policy_records_issue781_elemental_pseudopod_display_name_owner_overlay(
             "ElementalPseudopodDisplayNameTranslationPatchTests.cs",
             "TargetMethodResolutionTests.cs",
         )
-    assert entries[family_ids["elemental_jelly_fire_event"]]["closure_status"] != "covered_by_owner_route"
+    for family_id in (family_ids["elemental_jelly_fire_event"], family_ids["panhumor_fire_event"]):
+        assert entries[family_id]["closure_status"] == "covered_by_owner_route"
+        _assert_evidence_contains(
+            entries,
+            family_id,
+            'DidX("explode"',
+            "MessageFrames/verbs.ja.json",
+        )
 
 
 def test_policy_records_issue781_gas_generation_description_owner_overlay() -> None:
@@ -8585,7 +8812,13 @@ def test_policy_records_issue719_generic_fixed_message_frame_route_overlays() ->
             "verbs.ja.json",
         )
 
-    assert entries[family_ids["heat_self_on_freeze"]]["closure_status"] != "covered_by_owner_route"
+    assert entries[family_ids["heat_self_on_freeze"]]["closure_status"] == "covered_by_owner_route"
+    _assert_evidence_contains(
+        entries,
+        family_ids["heat_self_on_freeze"],
+        "XDidYTranslationPatchTests.cs",
+        "verbs.ja.json",
+    )
     assert entries[family_ids["fan"]]["closure_status"] == "covered_by_owner_route"
     _assert_evidence_contains(
         entries,
@@ -8995,7 +9228,16 @@ def test_policy_records_issue719_fixed_emit_message_and_does_popup_overlays() ->
         "verbs.ja.json",
     )
 
-    assert entries[family_ids["cybernetics_terminal"]]["closure_status"] != "covered_by_owner_route"
+    assert entries[family_ids["cybernetics_terminal"]]["closure_status"] == "covered_by_owner_route"
+    _assert_evidence_contains(
+        entries,
+        family_ids["cybernetics_terminal"],
+        "CyberneticsTerminalInterfacePopupTranslationPatch.cs",
+        "PopupShowSemanticPipeline.cs",
+        "CyberneticsTerminalInterfacePopupTranslationPatchTests.cs",
+        "TargetMethodResolutionTests.cs",
+        "verbs.ja.json",
+    )
 
 
 def test_policy_records_issue719_fixed_active_effect_message_overlays() -> None:
@@ -10255,9 +10497,30 @@ def test_policy_records_issue719_fixed_popup_dictionary_route_overlays() -> None
         "ui-keybinds.ja.json",
     )
 
-    assert entries[family_ids["recoil"]]["closure_status"] != "covered_by_owner_route"
-    assert entries[family_ids["cybernetics_teleporter"]]["closure_status"] != "covered_by_owner_route"
-    assert entries[family_ids["igrenade"]]["closure_status"] != "covered_by_owner_route"
+    assert entries[family_ids["recoil"]]["closure_status"] == "covered_by_owner_route"
+    _assert_evidence_contains(
+        entries,
+        family_ids["recoil"],
+        "PopupPickOptionTranslationPatch.cs",
+        "PopupShowTranslationPatchTests.cs",
+        "ui-popup.ja.json",
+    )
+    assert entries[family_ids["cybernetics_teleporter"]]["closure_status"] == "covered_by_owner_route"
+    _assert_evidence_contains(
+        entries,
+        family_ids["cybernetics_teleporter"],
+        "CyberneticsOnboardRecoilerPopupTranslationPatch.cs",
+        "CyberneticsOnboardRecoilerPopupTranslationPatchTests.cs",
+        "TargetMethodResolutionTests.cs",
+    )
+    assert entries[family_ids["igrenade"]]["closure_status"] == "covered_by_owner_route"
+    _assert_evidence_contains(
+        entries,
+        family_ids["igrenade"],
+        "SingleCallsiteOwnerPopupTranslationPatch.cs",
+        "SingleCallsiteOwnerPopupTranslationPatchTests.cs",
+        "TargetMethodResolutionTests.cs",
+    )
     assert entries[family_ids["mechanical_wings"]]["closure_status"] == "covered_by_owner_route"
     _assert_evidence_contains(
         entries,
@@ -10266,7 +10529,14 @@ def test_policy_records_issue719_fixed_popup_dictionary_route_overlays() -> None
         "MechanicalWingsPopupTranslationPatchTests.cs",
         "TargetMethodResolutionTests.cs",
     )
-    assert entries[family_ids["object_finder"]]["closure_status"] != "covered_by_owner_route"
+    assert entries[family_ids["object_finder"]]["closure_status"] == "covered_by_owner_route"
+    _assert_evidence_contains(
+        entries,
+        family_ids["object_finder"],
+        "ObjectFinderConfigFiltersTranslationPatch.cs",
+        "ObjectFinderConfigFiltersTranslationPatchTests.cs",
+        "TargetMethodResolutionTests.cs",
+    )
 
 
 def test_policy_records_issue719_baetyl_offering_fixed_popup_dictionary_route_overlays() -> None:
@@ -10402,6 +10672,7 @@ def test_policy_records_issue719_basic_cooking_effect_apply_overlays() -> None:
         "xp",
         "regeneration",
         "random_stat",
+        "fungal_limb",
     ):
         assert entries[family_ids[family_key]]["closure_status"] == "covered_by_owner_route"
 
@@ -10412,7 +10683,14 @@ def test_policy_records_issue719_basic_cooking_effect_apply_overlays() -> None:
         "CookingRuntimeTranslationPatchTests.cs",
         "TargetMethodResolutionTests.cs",
     )
-    assert entries[family_ids["fungal_limb"]]["closure_status"] != "covered_by_owner_route"
+    _assert_evidence_contains(
+        entries,
+        family_ids["fungal_limb"],
+        "FungalSporeInfectionTranslationPatch.cs",
+        "PopupTranslationPatch.cs",
+        "CombatAndLogMessageQueuePatchTests.cs",
+        "TargetMethodResolutionTests.cs",
+    )
 
 
 def test_policy_records_issue719_tonic_fixed_popup_overlays() -> None:
@@ -10692,8 +10970,8 @@ def test_policy_records_issue719_sifrah_token_description_overlay() -> None:
         )
 
 
-def test_policy_records_issue719_sifrah_token_no_arg_description_overlay_without_dynamic_overclaim() -> None:
-    """No-arg Sifrah token description constructors close without claiming dynamic overloads."""
+def test_policy_records_issue719_sifrah_token_description_overlays() -> None:
+    """Sifrah token description constructors close through exact token description coverage."""
     covered_families = {
         "psionic": (
             "XRL.World/PsionicSifrahTokenApplyAncientLore.cs::"
@@ -10751,7 +11029,15 @@ def test_policy_records_issue719_sifrah_token_no_arg_description_overlay_without
             "SifrahTokenDescriptionTranslationPatchTests.cs",
             "TargetMethodResolutionTests.cs",
         )
-    assert entries[dynamic_overload]["closure_status"] != "covered_by_owner_route"
+    assert entries[dynamic_overload]["closure_status"] == "covered_by_owner_route"
+    _assert_evidence_contains(
+        entries,
+        dynamic_overload,
+        "SifrahTokenDescriptionTranslationPatch.cs",
+        "SifrahTokenDescriptionTranslatorTests.cs",
+        "SifrahTokenDescriptionTranslationPatchTests.cs",
+        "TargetMethodResolutionTests.cs",
+    )
 
 
 def test_policy_records_issue719_preset_cooking_recipe_description_overlay() -> None:
@@ -11319,7 +11605,7 @@ def test_followup_issue_payload_groups_residual_buckets_into_consolidated_issue(
 
 
 def test_residual_bucket_payload_splits_tutorial_popup_routes_by_step_shape() -> None:
-    """JoppaTutorial popup rows are static implementation gaps grouped by tutorial owner shape."""
+    """JoppaTutorial popup guard shapes are covered by popup/tutorial owner routes."""
     families = {
         "lateupdate": (
             "JoppaTutorial/FightSnapjaw.cs::FightSnapjaw.LateUpdate()",
@@ -11335,11 +11621,53 @@ def test_residual_bucket_payload_splits_tutorial_popup_routes_by_step_shape() ->
             {"Popup": 31},
             "tutorial_command_guard_popup_gap",
         ),
+        "snapjaw_command_guard": (
+            "JoppaTutorial/FightSnapjaw.cs::FightSnapjaw.AllowCommand(string)",
+            "JoppaTutorial/FightSnapjaw.cs",
+            "AllowCommand",
+            {"Popup": 21},
+            "tutorial_command_guard_popup_gap",
+        ),
+        "bear_target_pick": (
+            "JoppaTutorial/FightBear.cs::FightBear.AllowTargetPick(GameObject,Type,List<Cell>)",
+            "JoppaTutorial/FightBear.cs",
+            "AllowTargetPick",
+            {"Popup": 3},
+            "tutorial_command_guard_popup_gap",
+        ),
+        "battle_remains_inventory": (
+            "JoppaTutorial/BattleRemains.cs::BattleRemains.AllowInventoryInteract(GameObject)",
+            "JoppaTutorial/BattleRemains.cs",
+            "AllowInventoryInteract",
+            {"Popup": 1},
+            "tutorial_command_guard_popup_gap",
+        ),
         "cell_guard": (
             "JoppaTutorial/ExploreWorldMap.cs::ExploreWorldMap.BeforePlayerEnterCell(Cell)",
             "JoppaTutorial/ExploreWorldMap.cs",
             "BeforePlayerEnterCell",
             {"Popup": 3},
+            "tutorial_cell_guard_popup_gap",
+        ),
+        "bear_cell_guard": (
+            "JoppaTutorial/FightBear.cs::FightBear.BeforePlayerEnterCell(Cell)",
+            "JoppaTutorial/FightBear.cs",
+            "BeforePlayerEnterCell",
+            {"Popup": 2},
+            "tutorial_cell_guard_popup_gap",
+        ),
+        "snapjaw_cell_guard": (
+            "JoppaTutorial/FightSnapjaw.cs::FightSnapjaw.BeforePlayerEnterCell(Cell)",
+            "JoppaTutorial/FightSnapjaw.cs",
+            "BeforePlayerEnterCell",
+            {"Popup": 1},
+            "tutorial_cell_guard_popup_gap",
+        ),
+        "chest_cell_guard": (
+            "JoppaTutorial/MoveToChest.cs::MoveToChest.BeforePlayerEnterCell(Cell)",
+            "JoppaTutorial/MoveToChest.cs",
+            "BeforePlayerEnterCell",
+            {"Popup": 1},
             "tutorial_cell_guard_popup_gap",
         ),
         "seen": (
@@ -11349,11 +11677,25 @@ def test_residual_bucket_payload_splits_tutorial_popup_routes_by_step_shape() ->
             {"TutorialManagerPopup": 2},
             "tutorial_seen_popup_gap",
         ),
+        "snapjaw_seen": (
+            "JoppaTutorial/FightSnapjaw.cs::FightSnapjaw.SnapjawSeen(Location2D)",
+            "JoppaTutorial/FightSnapjaw.cs",
+            "SnapjawSeen",
+            {"TutorialManagerPopup": 2},
+            "tutorial_seen_popup_gap",
+        ),
         "trigger": (
             "JoppaTutorial/MakeCamp.cs::MakeCamp.OnTrigger(string)",
             "JoppaTutorial/MakeCamp.cs",
             "OnTrigger",
             {"TutorialManagerPopup": 2},
+            "tutorial_trigger_popup_gap",
+        ),
+        "chest_trigger": (
+            "JoppaTutorial/MoveToChest.cs::MoveToChest.OnTrigger(string)",
+            "JoppaTutorial/MoveToChest.cs",
+            "OnTrigger",
+            {"TutorialManagerPopup": 3},
             "tutorial_trigger_popup_gap",
         ),
     }
@@ -11365,21 +11707,19 @@ def test_residual_bucket_payload_splits_tutorial_popup_routes_by_step_shape() ->
     )
 
     entries = {entry["family_id"]: entry for entry in valuable_surface_queue(inventory)}
+    assert entries[families["lateupdate"][0]]["closure_status"] == "covered_by_owner_route"
+    lateupdate_evidence = " ".join(entries[families["lateupdate"][0]]["closure_evidence"])
+    assert "TutorialManagerTranslationPatch" in lateupdate_evidence
     for family_id, _, _, _, _ in families.values():
-        assert entries[family_id]["closure_status"] == "action_required"
+        assert entries[family_id]["closure_status"] == "covered_by_owner_route"
+    assert "PopupShowTranslationPatch" in " ".join(entries[families["command_guard"][0]]["closure_evidence"])
+    assert "TutorialManagerCellPopupTranslationPatch" in " ".join(entries[families["seen"][0]]["closure_evidence"])
 
     residual = residual_bucket_payload(
         inventory,
         inventory_path=Path("issue719-tutorial-popup-static-shapes-test.json"),
     )
-    assert residual["disposition_counts"] == {"likely_implementation_gap": 5}
-    assert {
-        entry["family_id"]: entry["residual_bucket"]
-        for entry in residual["entries"]
-    } == {
-        family_id: bucket
-        for family_id, _, _, _, bucket in families.values()
-    }
+    assert residual["entries"] == []
 
 
 def test_followup_issue_payload_routes_edge_residual_buckets_without_keyerror() -> None:
@@ -11492,7 +11832,6 @@ def test_followup_bucket_mapping_covers_all_residual_bucket_emitters() -> None:
         "producer_broad_gameobject_inventory_companion_gap",
         "producer_broad_gameobject_pulldown_gap",
         "producer_broad_gameobject_regenera_runtime",
-        "producer_broad_gameobject_replace_cell_gap",
         "producer_broad_missile_trajectory_message_runtime",
         "producer_runtime_api_equipment_action_menu_gap",
         "producer_runtime_api_journal_wish_gospel_runtime",
@@ -11525,7 +11864,6 @@ def test_followup_bucket_mapping_covers_all_residual_bucket_emitters() -> None:
         "producer_runtime_cybernetics_low_level_hack_popup_gap",
         "producer_runtime_cybernetics_recoiler_popup_gap",
         "producer_runtime_cybernetics_route_split",
-        "producer_runtime_cybernetics_terminal_interface_gap",
         "producer_message_family_audit",
         "producer_runtime_evidence_required",
         "producer_runtime_gameplay_route_split",
@@ -11594,7 +11932,6 @@ def test_followup_bucket_mapping_covers_all_residual_bucket_emitters() -> None:
             "producer_runtime_world_part_heat_self_frame_gap",
             "producer_runtime_world_part_biome_distribution_queue_popup_gap",
             "producer_runtime_world_part_elevator_switch_queue_popup_gap",
-            "producer_runtime_world_part_giant_clam_dimension_queue_popup_gap",
             "producer_runtime_world_part_liquid_cleaning_frame_gap",
             "producer_runtime_world_part_liquid_contact_frame_gap",
             "producer_runtime_world_part_mixed_route_split",
@@ -11786,13 +12123,9 @@ def test_residual_bucket_payload_splits_remaining_generated_display_name_routes(
     payload = residual_bucket_payload(inventory, inventory_path=Path("inventory.json"))
 
     assert payload["bucket_counts"] == {
-        "generated_display_name_cooking_preset_recipe_gap": 1,
         "generated_display_name_core_invalid_object_gap": 1,
-        "generated_display_name_mutation_base_display_gap": 1,
-        "generated_display_name_ui_object_finder_sorter_gap": 1,
-        "generated_display_name_world_part_fixed_leaf_gap": 1,
     }
-    assert payload["disposition_counts"] == {"likely_implementation_gap": 5}
+    assert payload["disposition_counts"] == {"likely_implementation_gap": 1}
 
 
 def test_residual_bucket_payload_splits_ui_generated_display_names_by_owner_shape() -> None:
@@ -11844,20 +12177,28 @@ def test_residual_bucket_payload_splits_ui_generated_display_names_by_owner_shap
     entries = {entry["family_id"]: entry for entry in valuable_surface_queue(inventory)}
     payload = residual_bucket_payload(inventory, inventory_path=Path("issue719-ui-display-name-test.json"))
 
-    assert {entry["closure_status"] for entry in entries.values()} == {"action_required"}
+    for key in ("autogot_items", "nearby_items", "id_sorter", "value_sorter"):
+        family_id = families[key][0]
+        assert entries[family_id]["closure_status"] == "covered_by_owner_route"
+        _assert_evidence_contains(
+            entries,
+            family_id,
+            "ObjectFinderDisplayNameTranslationPatch.cs",
+            "ObjectFinderDisplayNameTranslationPatchTests.cs",
+        )
+    assert entries[families["cybernetics_install"][0]]["closure_status"] == "covered_by_owner_route"
+    _assert_evidence_contains(
+        entries,
+        families["cybernetics_install"][0],
+        "CyberneticsTerminalTextTranslator.cs",
+        "CyberneticsTerminalTextTranslationPatchTests.cs",
+    )
     assert {
         entry["family_id"]: (entry["residual_bucket"], entry["residual_disposition"])
         for entry in payload["entries"]
-    } == {
-        family_id: (bucket, "likely_implementation_gap")
-        for family_id, _, _, _, bucket in families.values()
-    }
-    assert payload["bucket_counts"] == {
-        "generated_display_name_ui_object_finder_context_gap": 2,
-        "generated_display_name_ui_object_finder_sorter_gap": 2,
-        "generated_display_name_ui_cybernetics_install_gap": 1,
-    }
-    assert payload["disposition_counts"] == {"likely_implementation_gap": 5}
+    } == {}
+    assert payload["bucket_counts"] == {}
+    assert payload["disposition_counts"] == {}
 
 
 def test_residual_bucket_payload_splits_mutation_generated_display_names_by_owner_shape() -> None:
@@ -11918,15 +12259,30 @@ def test_residual_bucket_payload_splits_mutation_generated_display_names_by_owne
     entries = {entry["family_id"]: entry for entry in valuable_surface_queue(inventory)}
     payload = residual_bucket_payload(inventory, inventory_path=Path("issue719-mutation-display-name-test.json"))
 
-    assert {entry["closure_status"] for entry in entries.values()} == {"action_required"}
+    covered_families = {
+        families["base_display"][0],
+        families["entry_display"][0],
+        families["light_manipulation"][0],
+        families["metamorphed"][0],
+        families["photosynthetic_skin"][0],
+        families["temporal_fugue"][0],
+    }
+    for family_id in covered_families:
+        assert entries[family_id]["closure_status"] == "covered_by_owner_route"
+    assert {
+        entry["closure_status"]
+        for family_id, entry in entries.items()
+        if family_id not in covered_families
+    } == set()
     assert {
         entry["family_id"]: (entry["residual_bucket"], entry["residual_disposition"])
         for entry in payload["entries"]
     } == {
         family_id: (bucket, "likely_implementation_gap")
         for family_id, _, _, _, bucket in families.values()
+        if family_id not in covered_families
     }
-    assert payload["disposition_counts"] == {"likely_implementation_gap": 6}
+    assert payload["disposition_counts"] == {}
 
 
 def test_residual_bucket_payload_splits_core_generated_display_names_by_owner_shape() -> None:
@@ -11938,7 +12294,7 @@ def test_residual_bucket_payload_splits_core_generated_display_names_by_owner_sh
             "GameObject",
             "Poss",
             "generated_display_name_core_possessive_gap",
-            "likely_implementation_gap",
+            "covered_by_owner_route",
         ),
         "possessive_lower": (
             "XRL.World/GameObject.cs::GameObject.poss(GameObject,bool,bool?)",
@@ -11946,7 +12302,7 @@ def test_residual_bucket_payload_splits_core_generated_display_names_by_owner_sh
             "GameObject",
             "poss",
             "generated_display_name_core_possessive_gap",
-            "likely_implementation_gap",
+            "covered_by_owner_route",
         ),
         "running_behavior": (
             "XRL.World/GetRunningBehaviorEvent.cs::"
@@ -11965,7 +12321,7 @@ def test_residual_bucket_payload_splits_core_generated_display_names_by_owner_sh
             "GameObjectFactory",
             "CreateObject",
             "generated_display_name_core_invalid_object_gap",
-            "likely_implementation_gap",
+            "covered_by_owner_route",
         ),
         "factory_simple": (
             "XRL.World/GameObjectFactory.cs::GameObjectFactory.CreateObject(string,Action<GameObject>)",
@@ -11973,7 +12329,7 @@ def test_residual_bucket_payload_splits_core_generated_display_names_by_owner_sh
             "GameObjectFactory",
             "CreateObject",
             "generated_display_name_core_invalid_object_gap",
-            "likely_implementation_gap",
+            "covered_by_owner_route",
         ),
         "cached_object": (
             "XRL.World/ZoneManager.cs::ZoneManager.GetCachedObjects(string)",
@@ -11981,7 +12337,7 @@ def test_residual_bucket_payload_splits_core_generated_display_names_by_owner_sh
             "ZoneManager",
             "GetCachedObjects",
             "generated_display_name_core_invalid_object_gap",
-            "likely_implementation_gap",
+            "covered_by_owner_route",
         ),
         "faction": (
             "XRL.World/Faction.cs::Faction.DisplayName",
@@ -12023,6 +12379,18 @@ def test_residual_bucket_payload_splits_core_generated_display_names_by_owner_sh
             expected_status = "action_required" if disposition == "likely_implementation_gap" else "runtime_required"
         assert entries[family_id]["closure_status"] == expected_status
     assert "event bridge" in " ".join(entries[families["running_behavior"][0]]["closure_evidence"])
+    _assert_evidence_contains(
+        entries,
+        families["factory_full"][0],
+        "CoreInvalidObjectDisplayNameTranslationPatch.cs",
+        "CoreInvalidObjectDisplayNameTranslationPatchTests.cs",
+    )
+    _assert_evidence_contains(
+        entries,
+        families["cached_object"][0],
+        "CoreInvalidObjectDisplayNameTranslationPatch.cs",
+        "CoreInvalidObjectDisplayNameTranslationPatchTests.cs",
+    )
 
     residual = residual_bucket_payload(
         inventory,
@@ -12038,8 +12406,8 @@ def test_residual_bucket_payload_splits_core_generated_display_names_by_owner_sh
     }
 
 
-def test_residual_bucket_payload_splits_cooking_preset_display_names_as_static_owner_gap() -> None:
-    """Preset cooking recipes override GetDisplayName with fixed display-name leaves."""
+def test_residual_bucket_payload_promotes_cooking_preset_display_names_to_owner_route() -> None:
+    """Preset cooking recipe display-name overrides are covered at the owner route."""
     families = {
         "apple_matz": (
             "XRL.World.Skills.Cooking/AppleMatz.cs::AppleMatz.GetDisplayName()",
@@ -12101,44 +12469,81 @@ def test_residual_bucket_payload_splits_cooking_preset_display_names_as_static_o
 
     entries = {entry["family_id"]: entry for entry in valuable_surface_queue(inventory)}
     for family_id, _, _ in families.values():
-        assert entries[family_id]["closure_status"] == "action_required"
+        assert entries[family_id]["closure_status"] == "covered_by_owner_route"
+        _assert_evidence_contains(
+            entries,
+            family_id,
+            "CookingRecipeDisplayNameTranslationPatch.cs",
+            "CookingRecipeDisplayNameTranslationPatchTests.cs",
+            "TargetMethodResolutionTests.cs",
+            "ui-popup-campfire-preset-meals.ja.json",
+        )
 
     residual = residual_bucket_payload(
         inventory,
         inventory_path=Path("issue719-cooking-preset-display-name-test.json"),
     )
-    assert {
-        entry["family_id"]: (entry["residual_bucket"], entry["residual_disposition"])
-        for entry in residual["entries"]
-    } == {
-        family_id: ("generated_display_name_cooking_preset_recipe_gap", "likely_implementation_gap")
-        for family_id, _, _ in families.values()
-    }
+    assert residual["total_entries"] == 0
 
 
 def test_residual_bucket_payload_splits_world_part_generated_display_names_by_owner_shape() -> None:
     """World-part display-name residuals separate fixed labels from generated object routes."""
     families = {
-        "fixed_leaf": (
+        "bey_lah_terrain": (
+            "XRL.World.Parts/BeyLahTerrain.cs::BeyLahTerrain.FireEvent(Event)",
+            "XRL.World.Parts/BeyLahTerrain.cs",
+            "FireEvent",
+            "generated_display_name_world_part_fixed_leaf_gap",
+            "covered_by_owner_route",
+        ),
+        "hydropon_terrain": (
+            "XRL.World.Parts/HydroponTerrain.cs::HydroponTerrain.FireEvent(Event)",
+            "XRL.World.Parts/HydroponTerrain.cs",
+            "FireEvent",
+            "generated_display_name_world_part_fixed_leaf_gap",
+            "covered_by_owner_route",
+        ),
+        "molting_basilisk": (
             "XRL.World.Parts/MoltingBasilisk.cs::MoltingBasilisk.SyncState()",
             "XRL.World.Parts/MoltingBasilisk.cs",
             "SyncState",
             "generated_display_name_world_part_fixed_leaf_gap",
-            "likely_implementation_gap",
+            "covered_by_owner_route",
         ),
-        "stat_shift": (
+        "miner_fixed_leaf": (
+            "XRL.World.Parts/Miner.cs::Miner.SetupMinerConfiguration()",
+            "XRL.World.Parts/Miner.cs",
+            "SetupMinerConfiguration",
+            "generated_display_name_world_part_fixed_leaf_gap",
+            "covered_by_owner_route",
+        ),
+        "rocket_skates": (
+            "XRL.World.Parts/RocketSkates.cs::RocketSkates.HandleEvent(GetRunningBehaviorEvent)",
+            "XRL.World.Parts/RocketSkates.cs",
+            "HandleEvent",
+            "generated_display_name_world_part_fixed_leaf_gap",
+            "covered_by_owner_route",
+        ),
+        "yurtmat_stat_shift": (
             "XRL.World.Parts/Yurtmat.cs::Yurtmat.CheckCamouflage()",
             "XRL.World.Parts/Yurtmat.cs",
             "CheckCamouflage",
             "generated_display_name_stat_shift_gap",
-            "likely_implementation_gap",
+            "covered_by_owner_route",
+        ),
+        "co_processor_stat_shift": (
+            "XRL.World.Parts/ModCoProcessor.cs::ModCoProcessor.ApplyBonus(GameObject)",
+            "XRL.World.Parts/ModCoProcessor.cs",
+            "ApplyBonus",
+            "generated_display_name_stat_shift_gap",
+            "covered_by_owner_route",
         ),
         "cybernetics_skillsoft": (
             "XRL.World.Parts/CyberneticsSingleSkillsoft.cs::CyberneticsSingleSkillsoft.InitChip(bool)",
             "XRL.World.Parts/CyberneticsSingleSkillsoft.cs",
             "InitChip",
             "generated_display_name_world_part_cybernetics_skillsoft_gap",
-            "likely_implementation_gap",
+            "covered_by_owner_route",
         ),
         "cybernetics_recoiler": (
             "XRL.World.Parts/CyberneticsOnboardRecoilerImprinting.cs::"
@@ -12146,14 +12551,14 @@ def test_residual_bucket_payload_splits_world_part_generated_display_names_by_ow
             "XRL.World.Parts/CyberneticsOnboardRecoilerImprinting.cs",
             "UpdateName",
             "generated_display_name_world_part_cybernetics_recoiler_gap",
-            "likely_implementation_gap",
+            "covered_by_owner_route",
         ),
         "generated_object": (
             "XRL.World.Parts/RandomStatue.cs::RandomStatue.SetCreature(GameObject)",
             "XRL.World.Parts/RandomStatue.cs",
             "SetCreature",
             "generated_display_name_world_part_statue_gap",
-            "likely_implementation_gap",
+            "covered_by_owner_route",
         ),
         "item_mod": (
             "XRL.World.Parts/PhaseSticky.cs::PhaseSticky.HandleEvent(RealityStabilizeEvent)",
@@ -12180,6 +12585,21 @@ def test_residual_bucket_payload_splits_world_part_generated_display_names_by_ow
             else "runtime_required"
         )
         assert entries[family_id]["closure_status"] == expected_status
+    _assert_evidence_contains(
+        entries,
+        families["miner_fixed_leaf"][0],
+        "GetDisplayNameRouteTranslator.cs",
+        "GetDisplayNameRouteTranslatorTests.cs",
+        "GetDisplayNameProcessPatchTests.cs",
+        "Miner.SetupMinerConfiguration",
+    )
+    _assert_evidence_contains(
+        entries,
+        families["cybernetics_recoiler"][0],
+        "ActivatedAbilityNameTranslator.cs",
+        "ActivatedAbilityNameTranslatorTests.cs",
+        "Recoil to",
+    )
 
     residual = residual_bucket_payload(
         inventory,
@@ -12234,20 +12654,26 @@ def test_residual_bucket_payload_splits_cybernetics_generated_display_names_by_o
         inventory_path=Path("issue719-cybernetics-display-name-test.json"),
     )
 
-    assert {
-        entry["family_id"]: (entry["residual_bucket"], entry["residual_disposition"])
-        for entry in residual["entries"]
-    } == {
-        family_id: (bucket, "likely_implementation_gap")
-        for family_id, _, _, _, bucket in families.values()
-    }
-    assert residual["bucket_counts"] == {
-        "generated_display_name_world_part_cybernetics_recoiler_gap": 1,
-        "generated_display_name_world_part_cybernetics_skillsoft_gap": 2,
-    }
-    assert residual["disposition_counts"] == {"likely_implementation_gap": 3}
-    for family_id, _, _, _, _ in families.values():
-        assert entries[family_id]["closure_status"] == "action_required"
+    assert residual["entries"] == []
+    for key in ("recoiler", "single_skillsoft", "tree_skillsoft"):
+        family_id = families[key][0]
+        assert entries[family_id]["closure_status"] == "covered_by_owner_route"
+    _assert_evidence_contains(
+        entries,
+        families["recoiler"][0],
+        "ActivatedAbilityNameTranslator.cs",
+        "ActivatedAbilityNameTranslatorTests.cs",
+        "Recoil to",
+    )
+    for key in ("single_skillsoft", "tree_skillsoft"):
+        family_id = families[key][0]
+        _assert_evidence_contains(
+            entries,
+            family_id,
+            "GetDisplayNameRouteTranslator.cs",
+            "GetDisplayNameRouteTranslatorTests.cs",
+            "Skillsoft",
+        )
 
 
 def test_residual_bucket_payload_splits_world_part_generated_object_display_names_by_owner_shape() -> None:
@@ -12259,7 +12685,7 @@ def test_residual_bucket_payload_splits_world_part_generated_object_display_name
             "HandleEvent",
             {"DisplayNameAssignment": 12},
             "generated_display_name_world_part_figurine_gap",
-            "likely_implementation_gap",
+            "covered_by_owner_route",
         ),
         "pet_phylactery": (
             "XRL.World.Parts/PetPhylactery.cs::PetPhylactery.HandleEvent(AfterObjectCreatedEvent)",
@@ -12267,7 +12693,7 @@ def test_residual_bucket_payload_splits_world_part_generated_object_display_name
             "HandleEvent",
             {"DisplayNameAssignment": 4},
             "generated_display_name_world_part_pet_phylactery_gap",
-            "likely_implementation_gap",
+            "covered_by_owner_route",
         ),
         "wish_asterisk": (
             "XRL.World.Parts/PointedAsteriskBuilder.cs::PointedAsteriskBuilder.AsteriskWish()",
@@ -12275,7 +12701,7 @@ def test_residual_bucket_payload_splits_world_part_generated_object_display_name
             "AsteriskWish",
             {"DisplayNameAssignment": 4},
             "generated_display_name_world_part_wish_debug_gap",
-            "likely_implementation_gap",
+            "covered_by_owner_route",
         ),
         "statue": (
             "XRL.World.Parts/RandomStatue.cs::RandomStatue.SetCreature(GameObject)",
@@ -12283,7 +12709,7 @@ def test_residual_bucket_payload_splits_world_part_generated_object_display_name
             "SetCreature",
             {"DisplayNameAssignment": 4},
             "generated_display_name_world_part_statue_gap",
-            "likely_implementation_gap",
+            "covered_by_owner_route",
         ),
         "hologram": (
             "XRL.World.Parts/ModQuantumReverb.cs::ModQuantumReverb.CreateHologramOf(GameObject)",
@@ -12291,7 +12717,7 @@ def test_residual_bucket_payload_splits_world_part_generated_object_display_name
             "CreateHologramOf",
             {"DisplayNameAssignment": 3},
             "generated_display_name_world_part_hologram_gap",
-            "likely_implementation_gap",
+            "covered_by_owner_route",
         ),
         "tomb_cultist": (
             "XRL.World.Parts/TombCultistTemplate.cs::TombCultistTemplate.Apply(GameObject,HistoricEntitySnapshot)",
@@ -12299,7 +12725,7 @@ def test_residual_bucket_payload_splits_world_part_generated_object_display_name
             "Apply",
             {"DisplayNameAssignment": 3},
             "generated_display_name_world_part_tomb_cultist_gap",
-            "likely_implementation_gap",
+            "covered_by_owner_route",
         ),
     }
     inventory = _inventory(
@@ -12313,14 +12739,38 @@ def test_residual_bucket_payload_splits_world_part_generated_object_display_name
     payload = residual_bucket_payload(inventory, inventory_path=Path("issue719-world-part-generated-object-test.json"))
 
     for family_id, _, _, _, _, disposition in families.values():
-        expected_status = "action_required" if disposition == "likely_implementation_gap" else "runtime_required"
+        if disposition == "covered_by_owner_route":
+            expected_status = "covered_by_owner_route"
+        else:
+            expected_status = "action_required" if disposition == "likely_implementation_gap" else "runtime_required"
         assert entries[family_id]["closure_status"] == expected_status
+    for key in ("pet_phylactery", "statue", "hologram", "tomb_cultist"):
+        _assert_evidence_contains(
+            entries,
+            families[key][0],
+            "WorldPartGeneratedDisplayNameTranslationPatches.cs",
+            "WorldPartGeneratedDisplayNameTranslationPatchTests.cs",
+        )
+    _assert_evidence_contains(
+        entries,
+        families["figurine"][0],
+        "ObjectBlueprints/Items.jp.xml",
+        "LocalizationCoverageTests.cs",
+    )
+    _assert_evidence_contains(
+        entries,
+        families["wish_asterisk"][0],
+        "ui-displayname-atomic.ja.json",
+        "LocalizationCoverageTests.cs",
+        "The 10-Pointed Asterisk of the Ensemble",
+    )
     assert {
         entry["family_id"]: (entry["residual_bucket"], entry["residual_disposition"])
         for entry in payload["entries"]
     } == {
         family_id: (bucket, disposition)
         for family_id, _, _, _, bucket, disposition in families.values()
+        if disposition != "covered_by_owner_route"
     }
 
 
@@ -12332,21 +12782,21 @@ def test_residual_bucket_payload_splits_generated_display_name_child_routes_by_o
             "XRL.World.Parts/PlayerMuralController.cs",
             "blankMural",
             "generated_display_name_mural_blank_slate_gap",
-            "likely_implementation_gap",
+            "covered_by_owner_route",
         ),
         "sultan_entity": (
             "XRL.World.ZoneBuilders/VillageCoda.cs::VillageCoda.GenerateSultanEntity(GameObject)",
             "XRL.World.ZoneBuilders/VillageCoda.cs",
             "GenerateSultanEntity",
             "generated_display_name_sultan_entity_gap",
-            "likely_implementation_gap",
+            "covered_by_owner_route",
         ),
         "village_faction": (
             "XRL.World.ZoneBuilders/VillageBase.cs::VillageBase.CreateVillageFaction(HistoricEntitySnapshot)",
             "XRL.World.ZoneBuilders/VillageBase.cs",
             "CreateVillageFaction",
             "generated_display_name_village_faction_gap",
-            "likely_implementation_gap",
+            "covered_by_owner_route",
         ),
         "signature_dish": (
             "XRL.World.ZoneBuilders/VillageBase.cs::VillageBase.generateSignatureDish(string)",
@@ -12360,14 +12810,14 @@ def test_residual_bucket_payload_splits_generated_display_name_child_routes_by_o
             "XRL.World.ZoneBuilders/VillageBase.cs",
             "generateSignatureItems",
             "generated_display_name_village_signature_item_gap",
-            "likely_implementation_gap",
+            "covered_by_owner_route",
         ),
         "dynamic_quest_reward": (
             "XRL.World/VillageDynamicQuestContext.cs::VillageDynamicQuestContext.getQuestReward()",
             "XRL.World/VillageDynamicQuestContext.cs",
             "getQuestReward",
             "generated_display_name_village_dynamic_quest_reward_gap",
-            "likely_implementation_gap",
+            "covered_by_owner_route",
         ),
     }
     inventory = _inventory(
@@ -12391,15 +12841,34 @@ def test_residual_bucket_payload_splits_generated_display_name_child_routes_by_o
         "generateSignatureDish",
         "CookingRecipe.GetDisplayName",
     )
-    assert "CreateVillageFaction as a static implementation gap" in " ".join(
+    assert "generated display-name owner patch covers direct producer assignments" in " ".join(
         entries[families["village_faction"][0]]["closure_evidence"]
+    )
+    _assert_evidence_contains(
+        entries,
+        families["dynamic_quest_reward"][0],
+        "GeneratedDisplayNameOwnerTranslationPatch.cs",
+        "GeneratedDisplayNameOwnerTranslationPatchTests.cs",
+    )
+    _assert_evidence_contains(
+        entries,
+        families["mural"][0],
+        "ui-displayname-atomic.ja.json",
+        "GetDisplayNameRouteTranslatorTests.cs",
+    )
+    _assert_evidence_contains(
+        entries,
+        families["sultan_entity"][0],
+        "GetDisplayNameRouteTranslator.cs",
+        "GetDisplayNameRouteTranslatorTests.cs",
+        "VillageCoda.cs",
     )
     assert payload["bucket_counts"] == {
         bucket: 1
         for _, _, _, bucket, disposition in families.values()
         if disposition != "covered_by_owner_route"
     }
-    assert payload["disposition_counts"] == {"likely_implementation_gap": 5}
+    assert payload["disposition_counts"] == {}
     assert {
         entry["family_id"]: (entry["residual_bucket"], entry["residual_disposition"])
         for entry in payload["entries"]
@@ -12451,8 +12920,8 @@ def test_residual_bucket_payload_promotes_village_signature_dishes_to_cooking_di
         )
 
 
-def test_policy_records_village_signature_items_as_static_generated_name_gap() -> None:
-    """Village signature-item generated display names have static owners but need implementation."""
+def test_policy_promotes_village_signature_items_to_owner_route() -> None:
+    """Village signature-item generated display names are closed by the owner patch."""
     families = {
         "base": (
             "XRL.World.ZoneBuilders/VillageBase.cs::VillageBase.generateSignatureItems()",
@@ -12480,23 +12949,22 @@ def test_policy_records_village_signature_items_as_static_generated_name_gap() -
         inventory_path=Path("issue719-village-signature-item-test.json"),
     )
 
-    assert residual["bucket_counts"] == {"generated_display_name_village_signature_item_gap": 2}
-    assert residual["disposition_counts"] == {"likely_implementation_gap": 2}
-    residual_entries = {entry["family_id"]: entry for entry in residual["entries"]}
+    assert residual["bucket_counts"] == {}
+    assert residual["disposition_counts"] == {}
+    assert residual["entries"] == []
     for family_id, _, _, _ in families.values():
-        assert entries[family_id]["closure_status"] == "action_required"
-        assert residual_entries[family_id]["residual_bucket"] == "generated_display_name_village_signature_item_gap"
+        assert entries[family_id]["closure_status"] == "covered_by_owner_route"
         _assert_evidence_contains(
             entries,
             family_id,
-            "generateSignatureItems",
-            "signatureHistoricObjectName",
-            "decompiled owner sources",
+            "VillageSignatureItemTranslationPatch.cs",
+            "VillageSignatureItemTranslationPatchTests.cs",
+            "TargetMethodResolutionTests.cs",
         )
 
 
-def test_residual_bucket_payload_promotes_village_coda_generated_names_to_owner_gap() -> None:
-    """VillageCoda generated display names have static owners and need implementation work."""
+def test_residual_bucket_payload_promotes_village_coda_generated_names_to_display_routes() -> None:
+    """VillageCoda generated display names are covered by existing display-name routes."""
     families = {
         "sultan": (
             "XRL.World.ZoneBuilders/VillageCoda.cs::VillageCoda.GenerateSultanEntity(GameObject)",
@@ -12528,9 +12996,15 @@ def test_residual_bucket_payload_promotes_village_coda_generated_names_to_owner_
     )
 
     for family_id, _, _ in families.values():
-        assert entries[family_id]["closure_status"] == "action_required"
-    assert payload["bucket_counts"] == {"generated_display_name_sultan_entity_gap": 3}
-    assert payload["disposition_counts"] == {"likely_implementation_gap": 3}
+        assert entries[family_id]["closure_status"] == "covered_by_owner_route"
+        _assert_evidence_contains(
+            entries,
+            family_id,
+            "GetDisplayNameRouteTranslator.cs",
+            "GetDisplayNameRouteTranslatorTests.cs",
+            "VillageCoda.cs",
+        )
+    assert payload["total_entries"] == 0
 
 
 def test_residual_bucket_payload_splits_mural_generated_display_names_by_owner_shape() -> None:
@@ -12583,21 +13057,28 @@ def test_residual_bucket_payload_splits_mural_generated_display_names_by_owner_s
         inventory_path=Path("issue719-mural-display-name-runtime-test.json"),
     )
 
-    assert {entry["closure_status"] for entry in entries.values()} == {"action_required"}
+    for family_id, _, _, _ in families.values():
+        assert entries[family_id]["closure_status"] == "covered_by_owner_route"
+    for key in ("player_blank", "sultan_blank"):
+        _assert_evidence_contains(
+            entries,
+            families[key][0],
+            "ui-displayname-atomic.ja.json",
+            "GetDisplayNameRouteTranslatorTests.cs",
+        )
+    for key in ("player_event", "historic_event", "ruined_historic"):
+        _assert_evidence_contains(
+            entries,
+            families[key][0],
+            "GeneratedDisplayNameOwnerTranslationPatch.cs",
+            "GeneratedDisplayNameOwnerTranslationPatchTests.cs",
+        )
     assert {
         entry["family_id"]: (entry["residual_bucket"], entry["residual_disposition"])
         for entry in payload["entries"]
-    } == {
-        family_id: (bucket, "likely_implementation_gap")
-        for family_id, _, _, bucket in families.values()
-    }
-    assert payload["bucket_counts"] == {
-        "generated_display_name_mural_blank_slate_gap": 2,
-        "generated_display_name_mural_player_event_gap": 1,
-        "generated_display_name_mural_historic_event_gap": 1,
-        "generated_display_name_mural_ruined_historic_gap": 1,
-    }
-    assert payload["disposition_counts"] == {"likely_implementation_gap": 5}
+    } == {}
+    assert payload["bucket_counts"] == {}
+    assert payload["disposition_counts"] == {}
 
 
 def test_residual_bucket_payload_splits_producer_runtime_routes_by_owner_shape() -> None:
@@ -12640,14 +13121,8 @@ def test_residual_bucket_payload_splits_producer_runtime_routes_by_owner_shape()
 
     payload = residual_bucket_payload(inventory, inventory_path=Path("inventory.json"))
 
-    assert payload["bucket_counts"] == {
-        "producer_runtime_api_save_error_gap": 1,
-        "producer_runtime_conversation_endgame_confirm_gap": 1,
-        "producer_runtime_mutation_sunder_mind_gap": 1,
-        "producer_runtime_ui_options_legacy_popup_gap": 1,
-        "producer_runtime_world_part_popup_route_split": 1,
-    }
-    assert payload["disposition_counts"] == {"likely_implementation_gap": 4, "runtime_evidence_required": 1}
+    assert payload["bucket_counts"] == {}
+    assert payload["disposition_counts"] == {}
 
 
 def test_residual_bucket_payload_splits_api_runtime_routes_by_owner_shape() -> None:
@@ -12661,7 +13136,7 @@ def test_residual_bucket_payload_splits_api_runtime_routes_by_owner_shape() -> N
             "ShowInventoryActionMenu",
             {"Popup": 12},
             "producer_runtime_api_equipment_action_menu_gap",
-            "likely_implementation_gap",
+            "covered_by_owner_route",
         ),
         "save_error": (
             "Qud.API/SavesAPI.cs::SavesAPI.FatalSaveError(Exception,string)",
@@ -12669,7 +13144,7 @@ def test_residual_bucket_payload_splits_api_runtime_routes_by_owner_shape() -> N
             "FatalSaveError",
             {"Popup": 9},
             "producer_runtime_api_save_error_gap",
-            "likely_implementation_gap",
+            "covered_by_owner_route",
         ),
         "journal_wish": (
             "Qud.API/JournalAPI.cs::JournalAPI.WishGospelAccomplishments()",
@@ -12756,13 +13231,33 @@ def test_residual_bucket_payload_splits_ui_status_popup_routes_by_owner_shape() 
     entries = {entry["family_id"]: entry for entry in valuable_surface_queue(inventory)}
     payload = residual_bucket_payload(inventory, inventory_path=Path("issue719-ui-status-popup-test.json"))
 
-    assert {entry["closure_status"] for entry in entries.values()} == {"action_required"}
+    covered_family_ids = {family_id for family_id, _, _, _, _, _ in families.values()}
+    for family_id in covered_family_ids:
+        assert entries[family_id]["closure_status"] == "covered_by_owner_route"
+        if family_id == families["ability"][0]:
+            _assert_evidence_contains(
+                entries,
+                family_id,
+                "AbilityManagerPopupTranslationPatch.cs",
+                "AbilityManagerScreenTranslationPatchTests.cs",
+                "TargetMethodResolutionTests.cs",
+                "ui-popup.ja.json",
+            )
+        else:
+            _assert_evidence_contains(
+                entries,
+                family_id,
+                "PopupPickOptionTranslationPatch.cs",
+                "PopupPickOptionTranslationPatchTests.cs",
+                "ui-popup.ja.json",
+            )
     assert {
         entry["family_id"]: (entry["residual_bucket"], entry["residual_disposition"])
         for entry in payload["entries"]
     } == {
         family_id: (bucket, "likely_implementation_gap")
         for family_id, _, _, _, _, bucket in families.values()
+        if family_id not in covered_family_ids
     }
 
 
@@ -12814,15 +13309,29 @@ def test_residual_bucket_payload_splits_conversation_producer_runtime_routes_by_
         inventory_path=Path("issue719-conversation-producer-runtime-test.json"),
     )
 
-    assert {entry["closure_status"] for entry in entries.values()} == {"action_required"}
+    covered_family_ids = {
+        families["api_reward"][0],
+        families["endgame"][0],
+        families["give_artifact"][0],
+        families["resheph_secret"][0],
+        families["water_ritual"][0],
+    }
+    assert {
+        entry["family_id"]: entry["closure_status"]
+        for entry in entries.values()
+    } == {
+        family_id: "covered_by_owner_route" if family_id in covered_family_ids else "action_required"
+        for family_id, _, _, _ in families.values()
+    }
     assert {
         entry["family_id"]: (entry["residual_bucket"], entry["residual_disposition"])
         for entry in payload["entries"]
     } == {
         family_id: (bucket, "likely_implementation_gap")
         for family_id, _, _, bucket in families.values()
+        if family_id not in covered_family_ids
     }
-    assert payload["disposition_counts"] == {"likely_implementation_gap": 5}
+    assert payload["disposition_counts"] == {}
 
 
 def test_residual_bucket_payload_splits_mutation_producer_runtime_routes_by_owner_shape() -> None:
@@ -12883,15 +13392,54 @@ def test_residual_bucket_payload_splits_mutation_producer_runtime_routes_by_owne
     entries = {entry["family_id"]: entry for entry in valuable_surface_queue(inventory)}
     payload = residual_bucket_payload(inventory, inventory_path=Path("issue719-mutation-producer-test.json"))
 
-    assert {entry["closure_status"] for entry in entries.values()} == {"action_required"}
+    covered_keys = {"sunder_mind", "domination", "temporal_fugue", "carapace", "base_variant", "wings"}
+    for key, (family_id, _, _, _, _) in families.items():
+        expected_status = "covered_by_owner_route" if key in covered_keys else "action_required"
+        assert entries[family_id]["closure_status"] == expected_status
+        if key == "base_variant":
+            _assert_evidence_contains(
+                entries,
+                family_id,
+                "BaseMutationSelectVariantPopupTranslationPatch.cs",
+                "BaseMutationSelectVariantPopupTranslationPatchTests.cs",
+                "TargetMethodResolutionTests.cs",
+            )
+        if key == "carapace":
+            _assert_evidence_contains(
+                entries,
+                family_id,
+                "CarapaceTranslationPatch.cs",
+                "CombatAndLogMessageQueuePatchTests.cs",
+                "TargetMethodResolutionTests.cs",
+            )
+        if key == "domination":
+            _assert_evidence_contains(
+                entries,
+                family_id,
+                "DominationProcessTargetTranslationPatch.cs",
+                "MessageQueueSemanticPipeline.cs",
+                "DominationProcessTargetTranslationPatchTests.cs",
+                "TargetMethodResolutionTests.cs",
+            )
+        if key == "temporal_fugue":
+            _assert_evidence_contains(
+                entries,
+                family_id,
+                "verbs.ja.json",
+                "ui-popup.ja.json",
+                "DoesVerbFamilyTests.cs",
+                "PopupShowTranslationPatchTests.cs",
+                "MessageFrameTranslatorTests.cs",
+            )
     assert {
         entry["family_id"]: (entry["residual_bucket"], entry["residual_disposition"])
         for entry in payload["entries"]
     } == {
         family_id: (bucket, "likely_implementation_gap")
-        for family_id, _, _, _, bucket in families.values()
+        for key, (family_id, _, _, _, bucket) in families.items()
+        if key not in covered_keys
     }
-    assert payload["disposition_counts"] == {"likely_implementation_gap": 6}
+    assert payload["disposition_counts"] == {}
 
 
 def test_residual_bucket_payload_splits_core_system_runtime_routes_by_owner_shape() -> None:
@@ -12903,7 +13451,7 @@ def test_residual_bucket_payload_splits_core_system_runtime_routes_by_owner_shap
             "Show",
             {"Popup": 1},
             "producer_runtime_core_scores_legacy_screen_gap",
-            "likely_implementation_gap",
+            "covered_by_owner_route",
         ),
         "game_text": (
             "XRL/GameText.cs::GameText.RoughConvertSecondPersonToThirdPerson(string,GameObject)",
@@ -12911,7 +13459,7 @@ def test_residual_bucket_payload_splits_core_system_runtime_routes_by_owner_shap
             "RoughConvertSecondPersonToThirdPerson",
             {"Does": 1},
             "producer_runtime_core_game_text_third_person_death_gap",
-            "likely_implementation_gap",
+            "covered_by_owner_route",
         ),
         "mod_config": (
             "XRL.Core/XRLCore.cs::XRLCore.RestoreModsLoadedAsync(List<string>)",
@@ -12919,7 +13467,7 @@ def test_residual_bucket_payload_splits_core_system_runtime_routes_by_owner_shap
             "RestoreModsLoadedAsync",
             {"Popup": 1},
             "producer_runtime_core_mod_config_popup_gap",
-            "likely_implementation_gap",
+            "covered_by_owner_route",
         ),
         "population_wish": (
             "XRL/PopulationManager.cs::PopulationManager.WishFindBlueprint(string)",
@@ -12927,7 +13475,7 @@ def test_residual_bucket_payload_splits_core_system_runtime_routes_by_owner_shap
             "WishFindBlueprint",
             {"Popup": 1},
             "producer_runtime_core_population_wish_find_blueprint_gap",
-            "likely_implementation_gap",
+            "covered_by_owner_route",
         ),
         "mod_failure": (
             "XRL/ModInfo.cs::ModInfo.ConfirmFailure()",
@@ -12935,7 +13483,7 @@ def test_residual_bucket_payload_splits_core_system_runtime_routes_by_owner_shap
             "ConfirmFailure",
             {"Popup": 1},
             "producer_runtime_core_mod_failure_popup_gap",
-            "likely_implementation_gap",
+            "covered_by_owner_route",
         ),
         "coda": (
             "XRL/CodaSystem.cs::CodaSystem.EndGamePrompt()",
@@ -12943,7 +13491,7 @@ def test_residual_bucket_payload_splits_core_system_runtime_routes_by_owner_shap
             "EndGamePrompt",
             {"Popup": 1},
             "producer_runtime_core_coda_endgame_popup_gap",
-            "likely_implementation_gap",
+            "covered_by_owner_route",
         ),
         "sound": (
             "SoundManager.cs::SoundManager._PlaySound(string,float,float,SoundRequest.SoundEffectType)",
@@ -12976,9 +13524,22 @@ def test_residual_bucket_payload_splits_core_system_runtime_routes_by_owner_shap
         else:
             expected_status = "action_required" if disposition == "likely_implementation_gap" else "runtime_required"
         assert entries[family_id]["closure_status"] == expected_status
-    assert "GameText.RoughConvertSecondPersonToThirdPerson review" in " ".join(
-        entries[families["game_text"][0]]["closure_evidence"]
-    )
+    game_text_evidence = " ".join(entries[families["game_text"][0]]["closure_evidence"])
+    assert "GameText.RoughConvertSecondPersonToThirdPerson closure" in game_text_evidence
+    assert "GameTextDeathReasonTranslationPatch" in game_text_evidence
+    coda_evidence = " ".join(entries[families["coda"][0]]["closure_evidence"])
+    assert "CodaSystem.EndGamePrompt" in coda_evidence
+    assert "PopupAskStringTranslationPatch" in coda_evidence
+    assert "DeathReasonTranslationPatch" in coda_evidence
+    population_evidence = " ".join(entries[families["population_wish"][0]]["closure_evidence"])
+    assert "PopulationManager.WishFindBlueprint" in population_evidence
+    assert "SingleCallsiteOwnerPopupTranslationPatch" in population_evidence
+    mod_failure_evidence = " ".join(entries[families["mod_failure"][0]]["closure_evidence"])
+    assert "ModInfo.ConfirmFailure" in mod_failure_evidence
+    assert "ModInfoTranslationPatch" in mod_failure_evidence
+    mod_config_evidence = " ".join(entries[families["mod_config"][0]]["closure_evidence"])
+    assert "XRLCore.RestoreModsLoadedAsync" in mod_config_evidence
+    assert "XrlCoreRestoreModsLoadedTranslationPatch" in mod_config_evidence
 
     payload = residual_bucket_payload(
         inventory,
@@ -12994,8 +13555,8 @@ def test_residual_bucket_payload_splits_core_system_runtime_routes_by_owner_shap
     }
 
 
-def test_policy_records_scores_show_as_static_legacy_screen_gap() -> None:
-    """Legacy Scores.Show has a static owner but still needs screen/detail translation work."""
+def test_policy_records_scores_show_as_covered_legacy_screen_owner_route() -> None:
+    """Legacy Scores.Show is covered by exact screen and delete-popup owner routes."""
     family_id = "XRL.Core/Scores.cs::Scores.Show()"
     inventory = _inventory(
         [
@@ -13014,16 +13575,15 @@ def test_policy_records_scores_show_as_static_legacy_screen_gap() -> None:
         inventory_path=Path("issue719-scores-show-test.json"),
     )
 
-    assert entries[family_id]["closure_status"] == "action_required"
+    assert entries[family_id]["closure_status"] == "covered_by_owner_route"
     evidence = " ".join(entries[family_id]["closure_evidence"])
     assert "legacy high-score screen" in evidence
+    assert "LegacyScoresScreenTranslationPatchTests.cs" in evidence
     assert "HighScoresDeletePopupTranslationPatchTests.cs" in evidence
     assert {
         entry["family_id"]: (entry["residual_bucket"], entry["residual_disposition"])
         for entry in payload["entries"]
-    } == {
-        family_id: ("producer_runtime_core_scores_legacy_screen_gap", "likely_implementation_gap")
-    }
+    } == {}
 
 
 def test_policy_promotes_sound_manager_debug_queue_rows_as_passthrough() -> None:
@@ -13096,15 +13656,29 @@ def test_policy_records_population_manager_popup_rows_as_static_owner_gaps() -> 
         inventory_path=Path("issue719-population-manager-popup-test.json"),
     )
 
-    assert {entry["closure_status"] for entry in entries.values()} == {"action_required"}
+    covered_family_ids = {families["wish_blueprint"][0], families["roll_one"][0]}
+    for family_id in covered_family_ids:
+        assert entries[family_id]["closure_status"] == "covered_by_owner_route"
+        _assert_evidence_contains(
+            entries,
+            family_id,
+            "SingleCallsiteOwnerPopupTranslationPatch.cs",
+            "SingleCallsiteOwnerPopupTranslationPatchTests.cs",
+            "TargetMethodResolutionTests.cs",
+        )
+    for family_id in set(entries) - covered_family_ids:
+        assert entries[family_id]["closure_status"] == "action_required"
     assert {
         entry["family_id"]: (entry["residual_bucket"], entry["residual_disposition"])
         for entry in payload["entries"]
     } == {
         family_id: (bucket, "likely_implementation_gap")
         for family_id, _, _, _, bucket in families.values()
+        if family_id not in covered_family_ids
     }
     for family_id in entries:
+        if family_id in covered_family_ids:
+            continue
         _assert_evidence_contains(
             entries,
             family_id,
@@ -13175,12 +13749,8 @@ def test_residual_bucket_payload_splits_ui_producer_runtime_routes_by_popup_owne
 
     payload = residual_bucket_payload(inventory, inventory_path=Path("issue719-ui-producer-runtime-test.json"))
 
-    assert payload["bucket_counts"] == {
-        bucket: 1
-        for _, _, _, _, bucket in families.values()
-        if bucket is not None
-    }
-    assert payload["disposition_counts"] == {"likely_implementation_gap": 6}
+    assert payload["bucket_counts"] == {}
+    assert payload["disposition_counts"] == {}
 
 
 def test_residual_bucket_payload_splits_ui_options_popup_runtime_routes_by_owner_shape() -> None:
@@ -13218,15 +13788,46 @@ def test_residual_bucket_payload_splits_ui_options_popup_runtime_routes_by_owner
         inventory_path=Path("issue719-ui-options-popup-runtime-test.json"),
     )
 
-    assert {entry["closure_status"] for entry in entries.values()} == {"action_required"}
+    covered_family_ids = {
+        families["legacy_options"][0],
+        families["command_binding"][0],
+        families["modern_help"][0],
+    }
+    for family_id in covered_family_ids:
+        assert entries[family_id]["closure_status"] == "covered_by_owner_route"
+        if "OptionsScreen" in family_id:
+            _assert_evidence_contains(
+                entries,
+                family_id,
+                "OptionsLocalizationPatch.cs",
+                "OptionsLocalizationPatchTests.cs",
+            )
+        elif "CommandBindingManager" in family_id:
+            _assert_evidence_contains(
+                entries,
+                family_id,
+                "PopupPickOptionTranslationPatch.cs",
+                "PopupPickOptionTranslationPatchTests.cs",
+                "ui-popup.ja.json",
+            )
+        else:
+            _assert_evidence_contains(
+                entries,
+                family_id,
+                "LegacyOptionsUiTranslationPatch.cs",
+                "LegacyOptionsUiTranslationPatchTests.cs",
+            )
+    for family_id in set(entries) - covered_family_ids:
+        assert entries[family_id]["closure_status"] == "action_required"
     assert {
         entry["family_id"]: (entry["residual_bucket"], entry["residual_disposition"])
         for entry in payload["entries"]
     } == {
         family_id: (bucket, "likely_implementation_gap")
         for family_id, _, _, bucket in families.values()
+        if family_id not in covered_family_ids
     }
-    assert payload["disposition_counts"] == {"likely_implementation_gap": 3}
+    assert payload["disposition_counts"] == {}
 
 
 def test_residual_bucket_payload_splits_ui_inventory_trade_popup_runtime_routes_by_owner_shape() -> None:
@@ -13270,15 +13871,53 @@ def test_residual_bucket_payload_splits_ui_inventory_trade_popup_runtime_routes_
         inventory_path=Path("issue719-ui-inventory-trade-popup-runtime-test.json"),
     )
 
-    assert {entry["closure_status"] for entry in entries.values()} == {"action_required"}
+    assert entries[families["equipment_slot"][0]]["closure_status"] == "covered_by_owner_route"
+    _assert_evidence_contains(
+        entries,
+        families["equipment_slot"][0],
+        "EquipmentScreenBodypartEquipPopupTranslationPatch.cs",
+        "EquipmentScreenBodypartEquipPopupTranslationPatchTests.cs",
+        "TargetMethodResolutionTests.cs",
+    )
+    assert entries[families["trade_vendor_actions"][0]]["closure_status"] == "covered_by_owner_route"
+    _assert_evidence_contains(
+        entries,
+        families["trade_vendor_actions"][0],
+        "TradeUiVendorPopupTranslationPatch.cs",
+        "TradeUiPopupTranslationPatchTests.cs",
+        "TargetMethodResolutionTests.cs",
+    )
+    assert entries[families["object_finder_filters"][0]]["closure_status"] == "covered_by_owner_route"
+    _assert_evidence_contains(
+        entries,
+        families["object_finder_filters"][0],
+        "ObjectFinderConfigFiltersTranslationPatch.cs",
+        "ObjectFinderConfigFiltersTranslationPatchTests.cs",
+        "TargetMethodResolutionTests.cs",
+    )
+    assert {
+        entries[family_id]["closure_status"]
+        for family_id in set(entries)
+        - {
+            families["equipment_slot"][0],
+            families["trade_vendor_actions"][0],
+            families["object_finder_filters"][0],
+        }
+    } == set()
     assert {
         entry["family_id"]: (entry["residual_bucket"], entry["residual_disposition"])
         for entry in payload["entries"]
     } == {
         family_id: (bucket, "likely_implementation_gap")
         for family_id, _, _, _, _, bucket in families.values()
+        if family_id
+        not in {
+            families["equipment_slot"][0],
+            families["trade_vendor_actions"][0],
+            families["object_finder_filters"][0],
+        }
     }
-    assert payload["disposition_counts"] == {"likely_implementation_gap": 3}
+    assert payload["disposition_counts"] == {}
 
 
 def test_residual_bucket_payload_splits_chargen_popup_runtime_routes_by_owner_shape() -> None:
@@ -13357,15 +13996,79 @@ def test_residual_bucket_payload_splits_chargen_popup_runtime_routes_by_owner_sh
     entries = {entry["family_id"]: entry for entry in valuable_surface_queue(inventory)}
     payload = residual_bucket_payload(inventory, inventory_path=Path("issue719-chargen-popup-runtime-test.json"))
 
-    assert {entry["closure_status"] for entry in entries.values()} == {"action_required"}
+    covered_family_ids = {
+        families["build_library_manage"][0],
+        families["build_library_add"][0],
+        families["build_library_import"][0],
+        families["build_summary"][0],
+        families["gender_customize"][0],
+        families["validation"][0],
+        families["mutation_menu"][0],
+        families["mutation_variant"][0],
+    }
+    for family_id in covered_family_ids:
+        assert entries[family_id]["closure_status"] == "covered_by_owner_route"
+        if family_id == families["gender_customize"][0]:
+            _assert_evidence_contains(
+                entries,
+                family_id,
+                "BasePronounProviderCustomizePopupTranslationPatch.cs",
+                "PopupAskStringTranslationPatch.cs",
+                "PopupAskStringTranslationPatchTests.cs",
+                "TargetMethodResolutionTests.cs",
+                "ui-popup.ja.json",
+            )
+        elif family_id == families["validation"][0]:
+            _assert_evidence_contains(
+                entries,
+                family_id,
+                "EmbarkBuilderValidationPopupTranslationPatch.cs",
+                "EmbarkBuilderValidationPopupTranslationPatchTests.cs",
+                "TargetMethodResolutionTests.cs",
+            )
+        elif family_id == families["mutation_variant"][0]:
+            _assert_evidence_contains(
+                entries,
+                family_id,
+                "QudMutationsModuleWindowVariantPopupTranslationPatch.cs",
+                "QudMutationsModuleWindowTranslationPatchTests.cs",
+                "TargetMethodResolutionTests.cs",
+                "ui-chargen-supplement.ja.json",
+            )
+        elif "QudBuildLibraryModuleWindow" in family_id:
+            _assert_evidence_contains(
+                entries,
+                family_id,
+                "PopupMessageTranslationPatch.cs",
+                "PopupAskStringTranslationPatch.cs",
+                "ui-chargen.ja.json",
+            )
+        elif "QudBuildSummaryModuleWindow" in family_id:
+            _assert_evidence_contains(
+                entries,
+                family_id,
+                "PopupMessageTranslationPatch.cs",
+                "ui-chargen.ja.json",
+            )
+        else:
+            _assert_evidence_contains(
+                entries,
+                family_id,
+                "QudMutationsModuleWindowHandleMenuOptionPopupTranslationPatch.cs",
+                "QudMutationsModuleWindowTranslationPatchTests.cs",
+                "TargetMethodResolutionTests.cs",
+            )
+    for family_id in set(entries) - covered_family_ids:
+        assert entries[family_id]["closure_status"] == "action_required"
     assert {
         entry["family_id"]: (entry["residual_bucket"], entry["residual_disposition"])
         for entry in payload["entries"]
     } == {
         family_id: (bucket, "likely_implementation_gap")
         for family_id, _, _, _, bucket in families.values()
+        if family_id not in covered_family_ids
     }
-    assert payload["disposition_counts"] == {"likely_implementation_gap": 8}
+    assert payload["disposition_counts"] == {}
 
 
 def test_residual_bucket_payload_splits_gameplay_producer_runtime_routes() -> None:
@@ -13413,15 +14116,8 @@ def test_residual_bucket_payload_splits_gameplay_producer_runtime_routes() -> No
 
     payload = residual_bucket_payload(inventory, inventory_path=Path("inventory.json"))
 
-    assert payload["bucket_counts"] == {
-        "producer_runtime_capability_firefighting_gap": 1,
-        "producer_runtime_cybernetics_low_level_hack_popup_gap": 1,
-        "producer_runtime_inventory_action_crayons_popup_gap": 1,
-        "producer_runtime_liquid_wish_warm_effect_gap": 1,
-        "producer_runtime_quest_find_site_wish_debug_gap": 1,
-        "producer_runtime_world_part_popup_route_split": 1,
-    }
-    assert payload["disposition_counts"] == {"likely_implementation_gap": 5, "runtime_evidence_required": 1}
+    assert payload["bucket_counts"] == {}
+    assert payload["disposition_counts"] == {}
 
 
 def test_residual_bucket_payload_splits_liquid_runtime_routes_by_owner_shape() -> None:
@@ -13465,18 +14161,18 @@ def test_residual_bucket_payload_splits_liquid_runtime_routes_by_owner_shape() -
     assert {
         entry["family_id"]: (entry["residual_bucket"], entry["residual_disposition"])
         for entry in payload["entries"]
-    } == {
-        family_id: (bucket, "likely_implementation_gap")
-        for family_id, _, _, bucket in families.values()
-    }
-    assert payload["bucket_counts"] == {
-        "producer_runtime_liquid_glitch_components_gap": 1,
-        "producer_runtime_liquid_wish_warm_effect_gap": 2,
-    }
-    assert payload["disposition_counts"] == {"likely_implementation_gap": 3}
-    for family_id, _, _, bucket in families.values():
-        assert entries[family_id]["closure_status"] == "action_required"
-        _assert_evidence_contains(entries, family_id, "fixed player-visible text", bucket)
+    } == {}
+    assert payload["bucket_counts"] == {}
+    assert payload["disposition_counts"] == {}
+    for key in ("wish", "wish_spec", "glitch_components"):
+        family_id = families[key][0]
+        assert entries[family_id]["closure_status"] == "covered_by_owner_route"
+        _assert_evidence_contains(
+            entries,
+            family_id,
+            "LiquidWarmStaticTranslationPatch.cs",
+            "CombatAndLogMessageQueuePatchTests.cs",
+        )
 
 
 def test_residual_bucket_payload_splits_quest_runtime_routes_by_owner_shape() -> None:
@@ -13520,19 +14216,28 @@ def test_residual_bucket_payload_splits_quest_runtime_routes_by_owner_shape() ->
 
     assert entries[families["reclamation"][0]]["closure_status"] == "covered_by_owner_route"
     _assert_evidence_contains(entries, families["reclamation"][0], "MessageLeaving", "Quests.jp.xml")
+    assert entries[families["dynamic_where"][0]]["closure_status"] == "covered_by_owner_route"
+    _assert_evidence_contains(
+        entries,
+        families["dynamic_where"][0],
+        "WishCommandQueueTranslationPatch.cs",
+        "WishCommandQueueTranslationPatchTests.cs",
+        "TargetMethodResolutionTests.cs",
+    )
+    assert entries[families["reward_choice"][0]]["closure_status"] == "covered_by_owner_route"
+    _assert_evidence_contains(
+        entries,
+        families["reward_choice"][0],
+        "DynamicQuestRewardElement_ChoiceFromPopulation.award",
+        "PopupPickOptionTranslationPatchTests.cs",
+        "ui-popup.ja.json",
+    )
     assert {
         entry["family_id"]: (entry["residual_bucket"], entry["residual_disposition"])
         for entry in payload["entries"]
-    } == {
-        family_id: (bucket, "likely_implementation_gap")
-        for family_id, _, _, _, bucket in families.values()
-        if bucket is not None
-    }
-    assert payload["bucket_counts"] == {
-        "producer_runtime_quest_find_site_wish_debug_gap": 1,
-        "producer_runtime_quest_reward_choice_gap": 1,
-    }
-    assert payload["disposition_counts"] == {"likely_implementation_gap": 2}
+    } == {}
+    assert payload["bucket_counts"] == {}
+    assert payload["disposition_counts"] == {}
 
 
 def test_residual_bucket_payload_splits_capability_runtime_routes_by_owner_shape() -> None:
@@ -13570,8 +14275,30 @@ def test_residual_bucket_payload_splits_capability_runtime_routes_by_owner_shape
     )
 
     entries = {entry["family_id"]: entry for entry in valuable_surface_queue(inventory)}
-    for family_id, _, _, _, _ in families.values():
-        assert entries[family_id]["closure_status"] == "action_required"
+    assert entries[families["firefighting"][0]]["closure_status"] == "covered_by_owner_route"
+    _assert_evidence_contains(
+        entries,
+        families["firefighting"][0],
+        "FirefightingTranslationPatchTests.cs",
+        "MessageFrameTranslatorTests.cs",
+    )
+    assert entries[families["item_naming"][0]]["closure_status"] == "covered_by_owner_route"
+    _assert_evidence_contains(
+        entries,
+        families["item_naming"][0],
+        "ItemNamingTranslationPatch.cs",
+        "PopupShowColorPickerTranslationPatch.cs",
+        "ItemNamingTranslationPatchTests.cs",
+        "TargetMethodResolutionTests.cs",
+    )
+    assert entries[families["item_naming_wish"][0]]["closure_status"] == "covered_by_owner_route"
+    _assert_evidence_contains(
+        entries,
+        families["item_naming_wish"][0],
+        "ItemNaming.HandleItemNamingWish",
+        "ItemNamingTranslationPatchTests.cs",
+        "TargetMethodResolutionTests.cs",
+    )
 
     residual = residual_bucket_payload(inventory, inventory_path=Path("issue719-capability-test.json"))
     assert {
@@ -13580,6 +14307,12 @@ def test_residual_bucket_payload_splits_capability_runtime_routes_by_owner_shape
     } == {
         family_id: (bucket, "likely_implementation_gap")
         for family_id, _, _, _, bucket in families.values()
+        if family_id
+        not in {
+            families["firefighting"][0],
+            families["item_naming"][0],
+            families["item_naming_wish"][0],
+        }
     }
 
 
@@ -13658,15 +14391,28 @@ def test_residual_bucket_payload_splits_cybernetics_runtime_routes_by_owner_shap
     entries = {entry["family_id"]: entry for entry in valuable_surface_queue(inventory)}
     payload = residual_bucket_payload(inventory, inventory_path=Path("issue719-cybernetics-runtime-test.json"))
 
-    assert {entry["closure_status"] for entry in entries.values()} == {"action_required"}
+    covered_keys = {
+        "butcher",
+        "force_lathe_activation",
+        "low_level_hack",
+        "holographic_visage",
+        "cathedra",
+        "recoiler",
+        "force_lathe_replace",
+        "terminal_interface",
+    }
+    for key, (family_id, _, _, _, _) in families.items():
+        expected_status = "covered_by_owner_route" if key in covered_keys else "action_required"
+        assert entries[family_id]["closure_status"] == expected_status
     assert {
         entry["family_id"]: (entry["residual_bucket"], entry["residual_disposition"])
         for entry in payload["entries"]
     } == {
         family_id: (bucket, "likely_implementation_gap")
-        for family_id, _, _, _, bucket in families.values()
+        for key, (family_id, _, _, _, bucket) in families.items()
+        if key not in covered_keys
     }
-    assert payload["disposition_counts"] == {"likely_implementation_gap": 8}
+    assert payload["disposition_counts"] == {}
 
 
 def test_residual_bucket_payload_splits_inventory_action_runtime_routes_by_surface_shape() -> None:
@@ -13708,14 +14454,19 @@ def test_residual_bucket_payload_splits_inventory_action_runtime_routes_by_surfa
         ]
     )
 
+    entries = {entry["family_id"]: entry for entry in valuable_surface_queue(inventory)}
     payload = residual_bucket_payload(inventory, inventory_path=Path("issue719-inventory-action-runtime-test.json"))
 
-    assert payload["bucket_counts"] == {
-        bucket: 1
-        for _, _, _, _, bucket in families.values()
-        if bucket != "producer_runtime_inventory_action_message_frame_popup_route_split"
-    }
-    assert payload["disposition_counts"] == {"likely_implementation_gap": 3}
+    assert entries[families["does_popup"][0]]["closure_status"] == "covered_by_owner_route"
+    _assert_evidence_contains(
+        entries,
+        families["does_popup"][0],
+        "ExaminerTranslationPatch.cs",
+        "ExaminerTranslationPatchTests.cs",
+        "TargetMethodResolutionTests.cs",
+    )
+    assert payload["bucket_counts"] == {}
+    assert payload["disposition_counts"] == {}
 
 
 def test_residual_bucket_payload_splits_inventory_action_does_popup_runtime_routes_by_owner_shape() -> None:
@@ -13759,15 +14510,47 @@ def test_residual_bucket_payload_splits_inventory_action_does_popup_runtime_rout
         inventory_path=Path("issue719-inventory-action-does-popup-runtime-test.json"),
     )
 
-    assert {entry["closure_status"] for entry in entries.values()} == {"action_required"}
+    covered_family_ids = {
+        families["examiner"][0],
+        families["tinker_item"][0],
+        families["fixit_spray"][0],
+        families["magnetized_applicator"][0],
+    }
+    for family_id, _, _, _ in families.values():
+        if family_id in covered_family_ids:
+            assert entries[family_id]["closure_status"] == "covered_by_owner_route"
+            _assert_evidence_contains(
+                entries,
+                family_id,
+                (
+                    "ExaminerTranslationPatch.cs"
+                    if family_id == families["examiner"][0]
+                    else "TinkerItemTranslationPatch.cs"
+                    if family_id == families["tinker_item"][0]
+                    else "SingleCallsiteOwnerPopupTranslationPatch.cs"
+                ),
+                (
+                    "ExaminerTranslationPatchTests.cs"
+                    if family_id == families["examiner"][0]
+                    else "TinkerItemTranslationPatchTests.cs"
+                    if family_id == families["tinker_item"][0]
+                    else "SingleCallsiteOwnerPopupTranslationPatchTests.cs"
+                ),
+                "TargetMethodResolutionTests.cs"
+                if family_id in {families["examiner"][0], families["tinker_item"][0]}
+                else "DoesVerbFamilyTests.cs",
+            )
+        else:
+            assert entries[family_id]["closure_status"] == "action_required"
     assert {
         entry["family_id"]: (entry["residual_bucket"], entry["residual_disposition"])
         for entry in payload["entries"]
     } == {
         family_id: (bucket, "likely_implementation_gap")
         for family_id, _, _, bucket in families.values()
+        if family_id not in covered_family_ids and bucket != "producer_runtime_inventory_action_crayons_popup_gap"
     }
-    assert payload["disposition_counts"] == {"likely_implementation_gap": 4}
+    assert payload["disposition_counts"] == {}
 
 
 def test_residual_bucket_payload_splits_inventory_action_popup_runtime_routes_by_owner_shape() -> None:
@@ -13811,19 +14594,36 @@ def test_residual_bucket_payload_splits_inventory_action_popup_runtime_routes_by
         ]
     )
 
+    entries = {entry["family_id"]: entry for entry in valuable_surface_queue(inventory)}
     payload = residual_bucket_payload(
         inventory,
         inventory_path=Path("issue719-inventory-action-popup-runtime-test.json"),
     )
 
+    assert entries[families["inventory"][0]]["closure_status"] == "covered_by_owner_route"
+    _assert_evidence_contains(
+        entries,
+        families["inventory"][0],
+        "PopupAskNumberTranslationPatch.cs",
+        "PopupAskNumberTranslationPatchTests.cs",
+        "ui-popup.ja.json",
+    )
     assert {
         entry["family_id"]: (entry["residual_bucket"], entry["residual_disposition"])
         for entry in payload["entries"]
     } == {
         family_id: (bucket, "likely_implementation_gap")
         for family_id, _, _, bucket in families.values()
+        if family_id
+        not in {
+            "XRL.World.Parts/Crayons.cs::Crayons.HandleEvent(InventoryActionEvent)",
+            "XRL.World.Parts/Description.cs::Description.HandleEvent(InventoryActionEvent)",
+            "XRL.World.Parts/Inventory.cs::Inventory.HandleEvent(InventoryActionEvent)",
+            "XRL.World.Parts/IGrenade.cs::IGrenade.HandleEvent(InventoryActionEvent)",
+            "XRL.World.Parts/Vehicle.cs::Vehicle.HandleEvent(InventoryActionEvent)",
+        }
     }
-    assert payload["disposition_counts"] == {"likely_implementation_gap": 5}
+    assert payload["disposition_counts"] == {}
 
 
 def test_residual_bucket_payload_splits_world_part_runtime_routes_by_surface_shape() -> None:
@@ -13857,15 +14657,27 @@ def test_residual_bucket_payload_splits_world_part_runtime_routes_by_surface_sha
         ]
     )
 
+    entries = {entry["family_id"]: entry for entry in valuable_surface_queue(inventory)}
     payload = residual_bucket_payload(inventory, inventory_path=Path("inventory.json"))
 
-    assert payload["bucket_counts"] == {
-        "producer_runtime_world_part_harvestable_attempt_gap": 1,
-        "producer_runtime_world_part_golem_mound_popup_gap": 1,
-        "producer_runtime_world_part_pseudopod_death_frame_gap": 1,
-        "producer_runtime_world_part_dance_opponent_debug_queue_gap": 1,
-    }
-    assert payload["disposition_counts"] == {"likely_implementation_gap": 4}
+    assert entries[
+        "XRL.World.Parts/DanceRitualOpponent.cs::"
+        "DanceRitualOpponent.HandleEvent(BeforeAITakingActionEvent)"
+    ]["closure_status"] == "covered_by_owner_route"
+    assert entries[
+        "XRL.World.Parts/GolemQuestMound.cs::"
+        "GolemQuestMound.DisplayOptions(GameObject)"
+    ]["closure_status"] == "covered_by_owner_route"
+    _assert_evidence_contains(
+        entries,
+        "XRL.World.Parts/GolemQuestMound.cs::"
+        "GolemQuestMound.DisplayOptions(GameObject)",
+        "GolemQuestMoundDisplayOptionsTranslationPatch.cs",
+        "GolemQuestMoundDisplayOptionsTranslationPatchTests.cs",
+        "TargetMethodResolutionTests.cs",
+    )
+    assert payload["bucket_counts"] == {}
+    assert payload["disposition_counts"] == {}
 
 
 def test_residual_bucket_payload_splits_world_part_does_emit_message_frame_by_owner_shape() -> None:
@@ -13895,17 +14707,24 @@ def test_residual_bucket_payload_splits_world_part_does_emit_message_frame_by_ow
     )
 
     entries = {entry["family_id"]: entry for entry in valuable_surface_queue(inventory)}
-    for family_id, _, _, _, _ in families.values():
-        assert entries[family_id]["closure_status"] == "action_required"
+    assert entries[families["harvestable"][0]]["closure_status"] == "covered_by_owner_route"
+    _assert_evidence_contains(
+        entries,
+        families["harvestable"][0],
+        "XDidYTranslationPatchTests.cs",
+        "MessagePatternTranslatorTests.cs",
+    )
+    assert entries[families["campfire"][0]]["closure_status"] == "covered_by_owner_route"
+    _assert_evidence_contains(
+        entries,
+        families["campfire"][0],
+        "XDidYTranslationPatchTests.cs",
+        "CombatAndLogMessageQueuePatchTests.cs",
+        "MessageFrames/verbs.ja.json",
+    )
 
     residual = residual_bucket_payload(inventory, inventory_path=Path("issue719-world-part-does-emit-frame-test.json"))
-    assert {
-        entry["family_id"]: (entry["residual_bucket"], entry["residual_disposition"])
-        for entry in residual["entries"]
-    } == {
-        family_id: (bucket, "likely_implementation_gap")
-        for family_id, _, _, _, bucket in families.values()
-    }
+    assert residual["entries"] == []
 
 
 def test_residual_bucket_payload_splits_world_part_queue_runtime_by_owner_shape() -> None:
@@ -13947,15 +14766,49 @@ def test_residual_bucket_payload_splits_world_part_queue_runtime_by_owner_shape(
     entries = {entry["family_id"]: entry for entry in valuable_surface_queue(inventory)}
     payload = residual_bucket_payload(inventory, inventory_path=Path("issue719-world-part-queue-test.json"))
 
-    assert {entry["closure_status"] for entry in entries.values()} == {"action_required"}
+    covered_family_ids = {
+        families["dance_opponent_turn"][0],
+        families["player_dance"][0],
+        families["dance_register"][0],
+        families["interior_damage"][0],
+    }
+    for family_id in covered_family_ids:
+        assert entries[family_id]["closure_status"] == "covered_by_owner_route"
+        if "DanceRitualOpponent" in family_id:
+            _assert_evidence_contains(
+                entries,
+                family_id,
+                "DanceRitualOpponentTranslationPatch.cs",
+                "MessageQueueSemanticPipeline.cs",
+            )
+        if "PlayerDanceRitual" in family_id:
+            _assert_evidence_contains(
+                entries,
+                family_id,
+                "PlayerDanceRitualTranslationPatch.cs",
+                "MessageQueueSemanticPipeline.cs",
+            )
+        if "Interior.cs" in family_id:
+            _assert_evidence_contains(
+                entries,
+                family_id,
+                "PhysicsProcessTakeDamageTranslationPatch.cs",
+                "CombatAndLogMessageQueuePatchTests.cs",
+            )
+    assert {
+        entry["closure_status"]
+        for family_id, entry in entries.items()
+        if family_id not in covered_family_ids
+    } == set()
     assert {
         entry["family_id"]: (entry["residual_bucket"], entry["residual_disposition"])
         for entry in payload["entries"]
     } == {
         family_id: (bucket, "likely_implementation_gap")
         for family_id, _, _, bucket in families.values()
+        if family_id not in covered_family_ids
     }
-    assert payload["disposition_counts"] == {"likely_implementation_gap": 4}
+    assert payload["disposition_counts"] == {}
 
 
 def test_residual_bucket_payload_splits_world_part_message_frame_runtime_by_owner_shape() -> None:
@@ -14031,8 +14884,46 @@ def test_residual_bucket_payload_splits_world_part_message_frame_runtime_by_owne
     )
 
     entries = {entry["family_id"]: entry for entry in valuable_surface_queue(inventory)}
+    covered_family_ids = {
+        families["elemental_jelly"][0],
+        families["panhumor"][0],
+        families["heat_self"][0],
+        families["nephal_absorb"][0],
+        families["pet_frondzie"][0],
+        families["pet_recipe"][0],
+        families["shuttle"][0],
+        families["vortex_periodic"][0],
+        families["liquid_cleaning"][0],
+        families["liquid_contact"][0],
+    }
+    for family_id in covered_family_ids:
+        assert entries[family_id]["closure_status"] == "covered_by_owner_route"
+        if family_id in {
+            families["heat_self"][0],
+            families["nephal_absorb"][0],
+            families["shuttle"][0],
+            families["pet_frondzie"][0],
+            families["pet_recipe"][0],
+            families["vortex_periodic"][0],
+            families["liquid_cleaning"][0],
+            families["liquid_contact"][0],
+        }:
+            _assert_evidence_contains(
+                entries,
+                family_id,
+                "XDidYTranslationPatchTests.cs",
+                "MessageFrames/verbs.ja.json",
+            )
+        else:
+            _assert_evidence_contains(
+                entries,
+                family_id,
+                'DidX("explode"',
+                "MessageFrames/verbs.ja.json",
+            )
     for family_id, _, _, _ in families.values():
-        assert entries[family_id]["closure_status"] == "action_required"
+        if family_id not in covered_family_ids:
+            assert entries[family_id]["closure_status"] == "action_required"
 
     payload = residual_bucket_payload(
         inventory,
@@ -14044,6 +14935,7 @@ def test_residual_bucket_payload_splits_world_part_message_frame_runtime_by_owne
     } == {
         family_id: (bucket, "likely_implementation_gap")
         for family_id, _, _, bucket in families.values()
+        if family_id not in covered_family_ids
     }
 
 
@@ -14056,42 +14948,42 @@ def test_residual_bucket_payload_splits_world_part_popup_runtime_routes_by_owner
             "XRL.World.Tinkering/TinkeringHelpers.cs",
             "CheckMakersMark",
             "producer_runtime_world_part_tinkering_popup_gap",
-            "likely_implementation_gap",
+            "covered_by_owner_route",
         ),
         "shrine": (
             "XRL.World.Parts/Shrine.cs::Shrine.DesecrateShrine(GameObject,bool)",
             "XRL.World.Parts/Shrine.cs",
             "DesecrateShrine",
             "producer_runtime_world_part_shrine_popup_gap",
-            "likely_implementation_gap",
+            "covered_by_owner_route",
         ),
         "disguise": (
             "XRL.World.Parts/ModDisguise.cs::ModDisguise.BeingAppliedBy(GameObject,GameObject)",
             "XRL.World.Parts/ModDisguise.cs",
             "BeingAppliedBy",
             "producer_runtime_world_part_disguise_popup_gap",
-            "likely_implementation_gap",
+            "covered_by_owner_route",
         ),
         "ship_ark": (
             "XRL.World.Parts/ArkCore.cs::ArkCore.TryOpen(GameObject)",
             "XRL.World.Parts/ArkCore.cs",
             "TryOpen",
             "producer_runtime_world_part_ship_ark_popup_gap",
-            "likely_implementation_gap",
+            "covered_by_owner_route",
         ),
         "grip_recoil": (
             "XRL.World.Parts/GripChange.cs::GripChange.TryChooseGrip(GameObject)",
             "XRL.World.Parts/GripChange.cs",
             "TryChooseGrip",
             "producer_runtime_world_part_grip_recoil_popup_gap",
-            "likely_implementation_gap",
+            "covered_by_owner_route",
         ),
         "golem": (
             "XRL.World.Parts/GolemQuestMound.cs::GolemQuestMound.DisplayOptions(GameObject)",
             "XRL.World.Parts/GolemQuestMound.cs",
             "DisplayOptions",
             "producer_runtime_world_part_golem_mound_popup_gap",
-            "likely_implementation_gap",
+            "covered_by_owner_route",
         ),
         "movement": (
             "XRL.World.Parts/Physics.cs::Physics.ProcessTargetedMove"
@@ -14106,7 +14998,7 @@ def test_residual_bucket_payload_splits_world_part_popup_runtime_routes_by_owner
             "XRL.World.Parts/IZoneLandmark.cs",
             "WishCurrent",
             "producer_runtime_world_part_wish_debug_popup_gap",
-            "likely_implementation_gap",
+            "covered_by_owner_route",
         ),
     }
     inventory = _inventory(
@@ -14126,6 +15018,47 @@ def test_residual_bucket_payload_splits_world_part_popup_runtime_routes_by_owner
             else "runtime_required"
         )
         assert entries[family_id]["closure_status"] == expected_status
+        if family_id == families["shrine"][0]:
+            _assert_evidence_contains(
+                entries,
+                family_id,
+                "PopupTranslationPatchTests.cs",
+                "PopupPickOptionTranslationPatchTests.cs",
+                "ui-popup.ja.json",
+            )
+        if family_id == families["tinkering"][0]:
+            _assert_evidence_contains(
+                entries,
+                family_id,
+                "TinkeringHelpersMakersMarkTranslationPatch.cs",
+                "PopupShowColorPickerTranslationPatch.cs",
+                "TinkeringHelpersMakersMarkTranslationPatchTests.cs",
+                "TargetMethodResolutionTests.cs",
+            )
+        if family_id == families["wish_debug"][0]:
+            _assert_evidence_contains(
+                entries,
+                family_id,
+                "SingleCallsiteOwnerPopupTranslationPatch.cs",
+                "SingleCallsiteOwnerPopupTranslationPatchTests.cs",
+                "TargetMethodResolutionTests.cs",
+            )
+        if family_id == families["disguise"][0]:
+            _assert_evidence_contains(
+                entries,
+                family_id,
+                "ModDisguiseBeingAppliedPopupTranslationPatch.cs",
+                "ModDisguiseBeingAppliedPopupTranslationPatchTests.cs",
+                "TargetMethodResolutionTests.cs",
+            )
+        if family_id == families["golem"][0]:
+            _assert_evidence_contains(
+                entries,
+                family_id,
+                "GolemQuestMoundDisplayOptionsTranslationPatch.cs",
+                "GolemQuestMoundDisplayOptionsTranslationPatchTests.cs",
+                "TargetMethodResolutionTests.cs",
+            )
 
     payload = residual_bucket_payload(
         inventory,
@@ -14244,7 +15177,17 @@ def test_residual_bucket_payload_splits_world_part_mixed_runtime_routes_by_exact
     assert payload["bucket_counts"] == {
         bucket: 1
         for key, (_, _, _, _, bucket) in families.items()
-        if key not in {"queue_does", "does_only"}
+        if key not in {
+            "queue_popup",
+            "queue_does",
+            "does_only",
+            "does_popup",
+            "does_emit",
+            "does_message_frame",
+            "popup_message_frame",
+            "emit_popup",
+            "emit_frame_popup",
+        }
     }
 
 
@@ -14337,13 +15280,9 @@ def test_residual_bucket_payload_splits_world_part_does_emit_runtime_by_owner_sh
         inventory_path=Path("issue719-world-part-does-emit-test.json"),
     )
 
-    assert {
-        entry["family_id"]: (entry["residual_bucket"], entry["residual_disposition"])
-        for entry in payload["entries"]
-    } == {
-        family_id: (bucket, "likely_implementation_gap")
-        for family_id, _, _, _, bucket in families.values()
-    }
+    entries = {entry["family_id"]: entry for entry in valuable_surface_queue(inventory)}
+    assert {entry["closure_status"] for entry in entries.values()} == {"covered_by_owner_route"}
+    assert payload["entries"] == []
 
 
 def test_residual_bucket_payload_splits_world_part_queue_popup_runtime_by_owner_shape() -> None:
@@ -14387,19 +15326,47 @@ def test_residual_bucket_payload_splits_world_part_queue_popup_runtime_by_owner_
         inventory_path=Path("issue719-world-part-queue-popup-test.json"),
     )
 
-    assert {entry["closure_status"] for entry in entries.values()} == {"action_required"}
+    assert entries[families["stomach"][0]]["closure_status"] == "covered_by_owner_route"
+    covered_family_ids = {
+        families["stomach"][0],
+        families["elevator"][0],
+        families["biome"][0],
+        families["giant_clam"][0],
+    }
+    _assert_evidence_contains(
+        entries,
+        families["elevator"][0],
+        "SingleCallsiteOwnerQueueTranslationPatch.cs",
+        "SingleCallsiteOwnerPopupTranslationPatch.cs",
+        "SingleCallsiteOwnerPopupTranslationPatchTests.cs",
+        "TargetMethodResolutionTests.cs",
+    )
+    _assert_evidence_contains(
+        entries,
+        families["biome"][0],
+        "SingleCallsiteOwnerPopupTranslationPatch.cs",
+        "SingleCallsiteOwnerQueueTranslationPatch.cs",
+        "SingleCallsiteOwnerQueueTranslationPatchTests.cs",
+        "TargetMethodResolutionTests.cs",
+    )
+    assert {
+        entry["closure_status"]
+        for family_id, entry in entries.items()
+        if family_id not in covered_family_ids
+    } == set()
     assert {
         entry["family_id"]: (entry["residual_bucket"], entry["residual_disposition"])
         for entry in payload["entries"]
     } == {
         family_id: (bucket, "likely_implementation_gap")
         for family_id, _, _, bucket in families.values()
+        if family_id not in covered_family_ids
     }
-    assert payload["disposition_counts"] == {"likely_implementation_gap": 4}
+    assert payload["disposition_counts"] == {}
 
 
-def test_residual_bucket_payload_does_not_overclaim_remaining_description_candidates() -> None:
-    """Unreviewed description-return rows without narrow evidence must not stay overlay candidates."""
+def test_residual_bucket_payload_records_autoact_description_owner_route_closure() -> None:
+    """AutoAct action-description labels are closed by the exact owner-return patch."""
     inventory = _inventory(
         [
             _family(
@@ -14425,20 +15392,20 @@ def test_residual_bucket_payload_does_not_overclaim_remaining_description_candid
 
     payload = residual_bucket_payload(inventory, inventory_path=Path("inventory.json"))
 
-    assert payload["bucket_counts"] == {
-        "action_description_autoact_gap": 1,
-    }
-    assert payload["disposition_counts"] == {"likely_implementation_gap": 1}
+    assert payload["entries"] == []
+    assert payload["bucket_counts"] == {}
+    assert payload["disposition_counts"] == {}
 
     entries = {entry["family_id"]: entry for entry in valuable_surface_queue(inventory)}
     autoact_id = "XRL.World.Capabilities/AutoAct.cs::AutoAct.GetDescription(string,OngoingAction)"
-    assert entries[autoact_id]["closure_status"] == "action_required"
+    assert entries[autoact_id]["closure_status"] == "covered_by_owner_route"
     _assert_evidence_contains(
         entries,
         autoact_id,
-        "AutoAct/hostile-spot static review",
-        "GameObject.GenerateSpotMessage",
         "AutoAct.GetDescription",
+        "ActionEffectDescriptionReturnTranslationPatch",
+        "ActionEffectDescriptionReturnTranslationPatchTests",
+        "TargetMethodResolutionTests",
     )
 
 
@@ -14729,8 +15696,6 @@ def test_policy_records_issue719_residual_popup_frame_split_tranche() -> None:
             "ExamineFailure",
             {"Popup": 1, "MessageFrame": 1},
         ),
-    }
-    implementation_gap_families = {
         "magazine_ammo_loader": (
             "XRL.World.Parts/MagazineAmmoLoader.cs::MagazineAmmoLoader.FireEvent(Event)",
             "XRL.World.Parts/MagazineAmmoLoader.cs",
@@ -14738,6 +15703,7 @@ def test_policy_records_issue719_residual_popup_frame_split_tranche() -> None:
             {"Popup": 1, "MessageFrame": 1},
         ),
     }
+    implementation_gap_families = {}
     runtime_families = {
         "brain": (
             "XRL.World.Parts/Brain.cs::Brain.HandleEvent(InventoryActionEvent)",
@@ -14762,10 +15728,15 @@ def test_policy_records_issue719_residual_popup_frame_split_tranche() -> None:
     for family_id, _, _, _ in covered_families.values():
         assert entries[family_id]["closure_status"] == "covered_by_owner_route"
         evidence = " ".join(entries[family_id]["closure_evidence"])
-        assert "PopupShowTranslationPatchTests.cs" in evidence
-        assert "SingleCallsiteOwnerPopupTranslationPatchTests.cs" in evidence
-        assert "MessageFrameTranslatorTests.cs" in evidence
-        assert "verbs.ja.json" in evidence
+        if family_id == covered_families["magazine_ammo_loader"][0]:
+            assert "PopupAskNumberTranslationPatchTests.cs" in evidence
+            assert "XDidYTranslationPatchTests.cs" in evidence
+            assert "verbs.ja.json" in evidence
+        else:
+            assert "PopupShowTranslationPatchTests.cs" in evidence
+            assert "SingleCallsiteOwnerPopupTranslationPatchTests.cs" in evidence
+            assert "MessageFrameTranslatorTests.cs" in evidence
+            assert "verbs.ja.json" in evidence
 
     for family_id, _, _, _ in implementation_gap_families.values():
         assert entries[family_id]["closure_status"] == "action_required"
@@ -14871,16 +15842,47 @@ def test_policy_records_issue719_residual_does_message_frame_split_tranche() -> 
         assert "MessageFrameTranslatorTests.cs" in evidence
         assert "verbs.ja.json" in evidence
 
-    implementation_gap_family_ids = {
+    implementation_gap_family_ids = set()
+    covered_family_ids = {
         runtime_families["defibrillator"][0],
         runtime_families["force_lathe"][0],
         runtime_families["temporal_fugue"][0],
     }
     for family_id, _, _, _ in runtime_families.values():
+        if family_id in covered_family_ids:
+            assert entries[family_id]["closure_status"] == "covered_by_owner_route"
+            if "AutomatedExternalDefibrillator" in family_id:
+                _assert_evidence_contains(
+                    entries,
+                    family_id,
+                    "AutomatedExternalDefibrillatorTranslationPatch.cs",
+                    "AutomatedExternalDefibrillatorTranslationPatchTests.cs",
+                    "TargetMethodResolutionTests.cs",
+                    "verbs.ja.json",
+                )
+            if "CyberneticsPrecisionForceLathe" in family_id:
+                _assert_evidence_contains(
+                    entries,
+                    family_id,
+                    "CyberneticsPrecisionForceLatheTranslationPatch.cs",
+                    "CyberneticsPrecisionForceLatheTranslationPatchTests.cs",
+                    "TargetMethodResolutionTests.cs",
+                    "verbs.ja.json",
+                )
+            if "TemporalFugue" in family_id:
+                _assert_evidence_contains(
+                    entries,
+                    family_id,
+                    "ui-popup.ja.json",
+                    "PopupShowTranslationPatchTests.cs",
+                    "MessageFrameTranslatorTests.cs",
+                    "verbs.ja.json",
+                )
+            continue
         if family_id in implementation_gap_family_ids:
             assert entries[family_id]["closure_status"] == "action_required"
             evidence = " ".join(entries[family_id]["closure_evidence"])
-            assert "static owner shape" in evidence or "AutomatedExternalDefibrillator review" in evidence
+            assert "static owner shape" in evidence
             continue
         assert entries[family_id]["closure_status"] == "runtime_required"
         evidence = " ".join(entries[family_id]["closure_evidence"])
@@ -14890,14 +15892,18 @@ def test_policy_records_issue719_residual_does_message_frame_split_tranche() -> 
     residual = residual_bucket_payload(inventory, inventory_path=Path("issue719-does-frame-test.json"))
     _assert_producer_runtime_residuals(
         residual,
-        {family_id for family_id, _, _, _ in runtime_families.values()} - implementation_gap_family_ids,
+        {
+            family_id
+            for family_id, _, _, _ in runtime_families.values()
+            if family_id not in implementation_gap_family_ids | covered_family_ids
+        },
     )
     assert {
         entry["family_id"]: entry["residual_disposition"]
         for entry in residual["entries"]
         if entry["family_id"] in implementation_gap_family_ids
     } == dict.fromkeys(implementation_gap_family_ids, "likely_implementation_gap")
-    assert "producer_runtime_world_part_defibrillator_gap" in {
+    assert "producer_runtime_world_part_defibrillator_gap" not in {
         entry["residual_bucket"] for entry in residual["entries"]
     }
 
@@ -14958,19 +15964,37 @@ def test_policy_records_issue719_residual_pure_popup_top_split_tranche() -> None
     assert "PopupShowTranslationPatchTests.cs" in covered_evidence
     assert "ui-popup.ja.json" in covered_evidence
 
-    implementation_gap_family_ids = {
-        runtime_families[key][0]
-        for key in ("options", "scores", "item_naming", "crayons", "description", "inventory", "trade")
+    implementation_gap_family_ids: set[str] = set()
+    covered_family_ids = {
+        runtime_families["options"][0],
+        runtime_families["scores"][0],
+        runtime_families["item_naming"][0],
+        runtime_families["crayons"][0],
+        runtime_families["description"][0],
+        runtime_families["inventory"][0],
+        runtime_families["trade"][0],
     }
     for family_id, _, _, _ in runtime_families.values():
-        expected_status = "action_required" if family_id in implementation_gap_family_ids else "runtime_required"
+        if family_id in covered_family_ids:
+            expected_status = "covered_by_owner_route"
+        else:
+            expected_status = "action_required" if family_id in implementation_gap_family_ids else "runtime_required"
         assert entries[family_id]["closure_status"] == expected_status
         evidence = " ".join(entries[family_id]["closure_evidence"])
-        if family_id in implementation_gap_family_ids:
+        if family_id in covered_family_ids:
+            assert (
+                "LegacyScoresScreenTranslationPatchTests.cs" in evidence
+                or "LegacyOptionsUiTranslationPatchTests.cs" in evidence
+                or "CrayonsPopupTranslationPatchTests.cs" in evidence
+                or "ItemNamingTranslationPatchTests.cs" in evidence
+                or "DescriptionLookPopupTranslationPatchTests.cs" in evidence
+                or "PopupAskNumberTranslationPatchTests.cs" in evidence
+                or "TradeUiPopupTranslationPatchTests.cs" in evidence
+            )
+        elif family_id in implementation_gap_family_ids:
             assert (
                 "fixed player-visible text and route-local generated captures" in evidence
                 or "residual_disposition=likely_implementation_gap" in evidence
-                or "legacy high-score screen" in evidence
             )
         else:
             assert "runtime-required" in evidence
@@ -14979,7 +16003,9 @@ def test_policy_records_issue719_residual_pure_popup_top_split_tranche() -> None
     residual = residual_bucket_payload(inventory, inventory_path=Path("issue719-pure-popup-top-test.json"))
     _assert_producer_runtime_residuals(
         residual,
-        {family_id for family_id, _, _, _ in runtime_families.values()} - implementation_gap_family_ids,
+        {family_id for family_id, _, _, _ in runtime_families.values()}
+        - implementation_gap_family_ids
+        - covered_family_ids,
     )
     assert {
         entry["family_id"]: entry["residual_disposition"]
@@ -14988,7 +16014,7 @@ def test_policy_records_issue719_residual_pure_popup_top_split_tranche() -> None
     } == dict.fromkeys(implementation_gap_family_ids, "likely_implementation_gap")
 
 
-def test_policy_records_issue719_residual_ui_popup_runtime_tranche() -> None:
+def test_policy_records_issue719_residual_ui_popup_runtime_tranche() -> None:  # noqa: C901, PLR0912
     """UI screen and picker pure-Popup families require runtime route evidence."""
     runtime_families = {
         "object_finder": (
@@ -15119,32 +16145,169 @@ def test_policy_records_issue719_residual_ui_popup_runtime_tranche() -> None:
     entries = {entry["family_id"]: entry for entry in valuable_surface_queue(inventory)}
 
     assert sum(entry["text_construction_count"] for entry in entries.values()) == 114
-    implementation_gap_keys = {
-        "equipment_api",
-        "object_finder",
-        "equipment_screen",
-        "inventory_status",
-        "factions_status",
-        "ability_manager",
-        "build_library_options",
-        "build_library_add",
-            "build_library_select",
-            "command_binding",
-            "embark_builder",
-            "build_summary",
-            "mod_manager_cancel",
-            "mutation_menu",
-            "mutation_variant",
-            "framework_search",
-            "options_screen",
-            "gender_customize",
-        }
+    implementation_gap_keys = set()
     implementation_gap_family_ids = {runtime_families[key][0] for key in implementation_gap_keys}
+    covered_family_ids = {
+        runtime_families["ability_manager"][0],
+        runtime_families["framework_search"][0],
+        runtime_families["mod_manager_cancel"][0],
+        runtime_families["mutation_menu"][0],
+        runtime_families["mutation_variant"][0],
+        runtime_families["options_screen"][0],
+        runtime_families["build_library_options"][0],
+        runtime_families["build_library_add"][0],
+        runtime_families["build_library_select"][0],
+        runtime_families["build_summary"][0],
+        runtime_families["gender_customize"][0],
+        runtime_families["embark_builder"][0],
+        runtime_families["inventory_status"][0],
+        runtime_families["factions_status"][0],
+        runtime_families["command_binding"][0],
+        runtime_families["equipment_screen"][0],
+        runtime_families["object_finder"][0],
+        runtime_families["equipment_api"][0],
+    }
     runtime_family_ids = (
-        {family_id for family_id, _, _, _ in runtime_families.values()} - implementation_gap_family_ids
+        {family_id for family_id, _, _, _ in runtime_families.values()}
+        - implementation_gap_family_ids
+        - covered_family_ids
     )
-    assert sum(entries[family_id]["text_construction_count"] for family_id in implementation_gap_family_ids) == 114
+    assert sum(entries[family_id]["text_construction_count"] for family_id in implementation_gap_family_ids) == 0
     assert sum(entries[family_id]["text_construction_count"] for family_id in runtime_family_ids) == 0
+    for family_id in covered_family_ids:
+        assert entries[family_id]["closure_status"] == "covered_by_owner_route"
+        if (
+            "QudMutationsModuleWindow" not in family_id
+                and "OptionsScreen" not in family_id
+                and "QudBuildLibraryModuleWindow" not in family_id
+                and "QudBuildSummaryModuleWindow" not in family_id
+                and "EmbarkBuilder" not in family_id
+                and "EquipmentScreen.cs::EquipmentScreen.ShowBodypartEquipUI" not in family_id
+                and "ObjectFinder.cs::ObjectFinder.ConfigFilters" not in family_id
+                and "EquipmentAPI.cs::EquipmentAPI.ShowInventoryActionMenu" not in family_id
+            ):
+            _assert_evidence_contains(
+                entries,
+                family_id,
+                "ui-popup.ja.json",
+            )
+        if "FrameworkSearchInput" in family_id:
+            _assert_evidence_contains(
+                entries,
+                family_id,
+                "PopupAskStringTranslationPatch.cs",
+                "PopupAskStringTranslationPatchTests.cs",
+            )
+        if "ModManagerUI" in family_id:
+            _assert_evidence_contains(
+                entries,
+                family_id,
+                "PopupMessageTranslationPatch.cs",
+                "PopupMessageTranslationPatchTests.cs",
+            )
+        if "AbilityManagerScreen" in family_id:
+            _assert_evidence_contains(
+                entries,
+                family_id,
+                "AbilityManagerPopupTranslationPatch.cs",
+                "AbilityManagerScreenTranslationPatchTests.cs",
+                "TargetMethodResolutionTests.cs",
+            )
+        if "EquipmentAPI.cs::EquipmentAPI.ShowInventoryActionMenu" in family_id:
+            _assert_evidence_contains(
+                entries,
+                family_id,
+                "InventoryActionMenu:",
+                "PopupPickOptionTranslationPatchTests.cs",
+                "UiDictionaryOwnershipTests.cs",
+                "ui-inventory-actions.ja.json",
+            )
+        if "QudMutationsModuleWindow.cs::QudMutationsModuleWindow.SelectVariant" in family_id:
+            _assert_evidence_contains(
+                entries,
+                family_id,
+                "QudMutationsModuleWindowVariantPopupTranslationPatch.cs",
+                "QudMutationsModuleWindowTranslationPatchTests.cs",
+                "TargetMethodResolutionTests.cs",
+                "ui-chargen-supplement.ja.json",
+            )
+        if "QudMutationsModuleWindow.cs::QudMutationsModuleWindow.HandleMenuOption" in family_id:
+            _assert_evidence_contains(
+                entries,
+                family_id,
+                "QudMutationsModuleWindowHandleMenuOptionPopupTranslationPatch.cs",
+                "QudMutationsModuleWindowTranslationPatchTests.cs",
+                "TargetMethodResolutionTests.cs",
+            )
+        if "OptionsScreen" in family_id:
+            _assert_evidence_contains(
+                entries,
+                family_id,
+                "OptionsLocalizationPatch.cs",
+                "OptionsLocalizationPatchTests.cs",
+            )
+        if "QudBuildLibraryModuleWindow" in family_id:
+            _assert_evidence_contains(
+                entries,
+                family_id,
+                "PopupMessageTranslationPatch.cs",
+                "PopupAskStringTranslationPatch.cs",
+                "PopupTranslationPatch.cs",
+                "ui-chargen.ja.json",
+            )
+        if "QudBuildSummaryModuleWindow" in family_id:
+            _assert_evidence_contains(
+                entries,
+                family_id,
+                "PopupMessageTranslationPatch.cs",
+                "PopupMessageTranslationPatchTests.cs",
+                "ui-chargen.ja.json",
+            )
+        if "Gender.cs::Gender.CustomizeProcess" in family_id:
+            _assert_evidence_contains(
+                entries,
+                family_id,
+                "BasePronounProviderCustomizePopupTranslationPatch.cs",
+                "PopupAskStringTranslationPatch.cs",
+                "PopupAskStringTranslationPatchTests.cs",
+                "ui-popup.ja.json",
+            )
+        if "EmbarkBuilder.cs::EmbarkBuilder.checkStateAsync" in family_id:
+            _assert_evidence_contains(
+                entries,
+                family_id,
+                "EmbarkBuilderValidationPopupTranslationPatch.cs",
+                "EmbarkBuilderValidationPopupTranslationPatchTests.cs",
+                "TargetMethodResolutionTests.cs",
+            )
+        if (
+            "FactionsStatusScreen" in family_id
+            or "InventoryAndEquipmentStatusScreen" in family_id
+            or "CommandBindingManager" in family_id
+        ):
+            _assert_evidence_contains(
+                entries,
+                family_id,
+                "PopupPickOptionTranslationPatch.cs",
+                "PopupPickOptionTranslationPatchTests.cs",
+                "ui-popup.ja.json",
+            )
+        if "EquipmentScreen.cs::EquipmentScreen.ShowBodypartEquipUI" in family_id:
+            _assert_evidence_contains(
+                entries,
+                family_id,
+                "EquipmentScreenBodypartEquipPopupTranslationPatch.cs",
+                "EquipmentScreenBodypartEquipPopupTranslationPatchTests.cs",
+                "TargetMethodResolutionTests.cs",
+            )
+        if "ObjectFinder.cs::ObjectFinder.ConfigFilters" in family_id:
+            _assert_evidence_contains(
+                entries,
+                family_id,
+                "ObjectFinderConfigFiltersTranslationPatch.cs",
+                "ObjectFinderConfigFiltersTranslationPatchTests.cs",
+                "TargetMethodResolutionTests.cs",
+            )
     for family_id in runtime_family_ids:
         assert entries[family_id]["closure_status"] == "runtime_required"
         evidence = " ".join(entries[family_id]["closure_evidence"])
@@ -15162,7 +16325,7 @@ def test_policy_records_issue719_residual_ui_popup_runtime_tranche() -> None:
     } == dict.fromkeys(implementation_gap_family_ids, "likely_implementation_gap")
 
 
-def test_policy_records_issue719_residual_pure_popup_remainder_runtime_tranche() -> None:  # noqa: PLR0912
+def test_policy_records_issue719_residual_pure_popup_remainder_runtime_tranche() -> None:  # noqa: C901, PLR0912, PLR0915
     """Remaining pure-Popup producer families are runtime-required until owner tests split them."""
     runtime_families = {
         "tinkering_mark": (
@@ -15368,45 +16531,41 @@ def test_policy_records_issue719_residual_pure_popup_remainder_runtime_tranche()
 
     entries = {entry["family_id"]: entry for entry in valuable_surface_queue(inventory)}
 
-    implementation_gap_family_ids = {
-        runtime_families[key][0]
-        for key in (
-            "tinkering_mark",
-            "shrine",
-            "restore_mods",
-            "wish_blueprint",
-            "mod_info",
-            "coda",
-            "disguise",
-            "starship",
-            "reward_population",
-            "grip",
-            "ark",
-            "recoil",
-            "cybernetics_terminal",
-            "resheph_secret",
-            "save_error",
-            "give_artifact",
-            "conversation_endgame",
-            "item_naming_wish",
-            "cathedra",
-            "water_ritual_secret",
-            "onboard_recoiler",
-            "base_mutation",
-            "vehicle",
-            "grenade",
-            "conversation_choose",
-            "wings",
-            "roll_one",
-            "landmark_wish",
-            "extradimensional",
-        )
-    }
+    implementation_gap_family_ids: set[str] = set()
     covered_family_ids = {
+        runtime_families["restore_mods"][0],
         runtime_families["journal_wish"][0],
         runtime_families["physics"][0],
         runtime_families["reclamation"][0],
         runtime_families["extension"][0],
+        runtime_families["grip"][0],
+        runtime_families["recoil"][0],
+        runtime_families["grenade"][0],
+        runtime_families["cathedra"][0],
+        runtime_families["wings"][0],
+        runtime_families["extradimensional"][0],
+        runtime_families["starship"][0],
+        runtime_families["ark"][0],
+        runtime_families["shrine"][0],
+        runtime_families["onboard_recoiler"][0],
+        runtime_families["cybernetics_terminal"][0],
+        runtime_families["roll_one"][0],
+        runtime_families["conversation_choose"][0],
+        runtime_families["coda"][0],
+        runtime_families["conversation_endgame"][0],
+        runtime_families["give_artifact"][0],
+        runtime_families["resheph_secret"][0],
+        runtime_families["water_ritual_secret"][0],
+        runtime_families["base_mutation"][0],
+        runtime_families["reward_population"][0],
+        runtime_families["vehicle"][0],
+        runtime_families["tinkering_mark"][0],
+        runtime_families["landmark_wish"][0],
+        runtime_families["save_error"][0],
+        runtime_families["item_naming_wish"][0],
+        runtime_families["disguise"][0],
+        runtime_families["wish_blueprint"][0],
+        runtime_families["mod_info"][0],
     }
     assert sum(entry["text_construction_count"] for entry in entries.values()) == 209
     for family_id, _, _, _ in runtime_families.values():
@@ -15436,6 +16595,94 @@ def test_policy_records_issue719_residual_pure_popup_remainder_runtime_tranche()
                 assert "JournalAccomplishment" in evidence
             elif family_id == runtime_families["extension"][0]:
                 assert "ShowSuccess forwards caller-owned Message to Popup.Show" in evidence
+            elif family_id == runtime_families["grenade"][0]:
+                assert "IGrenade closure" in evidence
+                assert "SingleCallsiteOwnerPopupTranslationPatch" in evidence
+            elif family_id == runtime_families["cathedra"][0]:
+                assert "CyberneticsCathedra.HandleEvent(CommandEvent)" in evidence
+                assert "MechanicalWingsPopupTranslationPatch" in evidence
+            elif family_id == runtime_families["wings"][0]:
+                assert "Wings.HandleEvent(CommandEvent)" in evidence
+                assert "MechanicalWingsPopupTranslationPatch" in evidence
+            elif family_id in {
+                runtime_families["grip"][0],
+                runtime_families["recoil"][0],
+                runtime_families["extradimensional"][0],
+            }:
+                assert "world-part popup closure" in evidence
+                assert "PopupPickOptionTranslationPatch" in evidence
+            elif family_id in {
+                runtime_families["starship"][0],
+                runtime_families["ark"][0],
+            }:
+                assert "ship/ark popup review" in evidence
+            elif family_id == runtime_families["shrine"][0]:
+                assert "Shrine.DesecrateShrine" in evidence
+                assert "PopupTranslationPatchTests.cs" in evidence
+                assert "PopupPickOptionTranslationPatchTests.cs" in evidence
+            elif family_id == runtime_families["cybernetics_terminal"][0]:
+                assert "CyberneticsTerminal2.AskLowLevelHack" in evidence
+                assert "CyberneticsLowLevelHackPopupTranslationPatch" in evidence
+            elif family_id == runtime_families["onboard_recoiler"][0]:
+                assert "CyberneticsOnboardRecoilerTeleporter.ActuateTeleport" in evidence
+                assert "CyberneticsOnboardRecoilerPopupTranslationPatch" in evidence
+            elif family_id == runtime_families["roll_one"][0]:
+                assert "PopulationManager.RollOneFrom" in evidence
+                assert "SingleCallsiteOwnerPopupTranslationPatch" in evidence
+            elif family_id == runtime_families["conversation_choose"][0]:
+                assert "ConversationsAPI.chooseOneItem" in evidence
+                assert "PopupPickOptionTranslationPatch" in evidence
+                assert "ui-popup.ja.json" in evidence
+            elif family_id == runtime_families["coda"][0]:
+                assert "CodaSystem.EndGamePrompt" in evidence
+                assert "PopupAskStringTranslationPatch" in evidence
+                assert "DeathReasonTranslationPatch" in evidence
+            elif family_id == runtime_families["conversation_endgame"][0]:
+                assert "EndGame.HandleEvent" in evidence
+                assert "PopupAskStringTranslationPatch" in evidence
+            elif family_id == runtime_families["give_artifact"][0]:
+                assert "GiveArtifact.HandleEvent" in evidence
+                assert "PopupPickOptionTranslationPatch" in evidence
+            elif family_id == runtime_families["resheph_secret"][0]:
+                assert "GiveReshephSecret.HandleEvent" in evidence
+                assert "ConversationRewardPopupTranslationPatch" in evidence
+            elif family_id == runtime_families["water_ritual_secret"][0]:
+                assert "WaterRitualSellSecret.Share" in evidence
+                assert "WaterRitualPopupTranslationPatch" in evidence
+            elif family_id == runtime_families["base_mutation"][0]:
+                assert "BaseMutation.SelectVariant" in evidence
+                assert "BaseMutationSelectVariantPopupTranslationPatch" in evidence
+            elif family_id == runtime_families["reward_population"][0]:
+                assert "DynamicQuestRewardElement_ChoiceFromPopulation.award" in evidence
+                assert "PopupPickOptionTranslationPatch" in evidence
+                assert "ui-popup.ja.json" in evidence
+            elif family_id == runtime_families["vehicle"][0]:
+                assert "Vehicle.HandleEvent(InventoryActionEvent)" in evidence
+                assert "VehicleFollowerPopupTranslationPatch" in evidence
+            elif family_id == runtime_families["tinkering_mark"][0]:
+                assert "TinkeringHelpers.CheckMakersMark" in evidence
+                assert "TinkeringHelpersMakersMarkTranslationPatch" in evidence
+            elif family_id == runtime_families["landmark_wish"][0]:
+                assert "IZoneLandmark.WishCurrent" in evidence
+                assert "SingleCallsiteOwnerPopupTranslationPatch" in evidence
+            elif family_id == runtime_families["save_error"][0]:
+                assert "SavesAPI.FatalSaveError" in evidence
+                assert "SavesApiFatalSaveErrorTranslationPatch" in evidence
+            elif family_id == runtime_families["item_naming_wish"][0]:
+                assert "ItemNaming.HandleItemNamingWish" in evidence
+                assert "ItemNamingTranslationPatch" in evidence
+            elif family_id == runtime_families["disguise"][0]:
+                assert "ModDisguise.BeingAppliedBy" in evidence
+                assert "ModDisguiseBeingAppliedPopupTranslationPatch" in evidence
+            elif family_id == runtime_families["wish_blueprint"][0]:
+                assert "PopulationManager.WishFindBlueprint" in evidence
+                assert "SingleCallsiteOwnerPopupTranslationPatch" in evidence
+            elif family_id == runtime_families["mod_info"][0]:
+                assert "ModInfo.ConfirmFailure" in evidence
+                assert "ModInfoTranslationPatch" in evidence
+            elif family_id == runtime_families["restore_mods"][0]:
+                assert "XRLCore.RestoreModsLoadedAsync" in evidence
+                assert "XrlCoreRestoreModsLoadedTranslationPatch" in evidence
             else:
                 assert "MessageLeaving" in evidence
                 assert "Quests.jp.xml" in evidence
@@ -15643,10 +16890,12 @@ def test_policy_records_issue719_residual_frame_does_runtime_tranche() -> None:
     assert sum(entry["text_construction_count"] for entry in entries.values()) == 169
     covered_keys = {
         "earthquake",
+        "domination",
         "temperature",
         "cybernetics_menu",
         "loot_on_step",
         "neutron_warning",
+        "cybernetics_interface",
         "hunter_summoner",
         "swoop",
         "shrine",
@@ -15656,24 +16905,21 @@ def test_policy_records_issue719_residual_frame_does_runtime_tranche() -> None:
         "award_xp",
         "webs",
         "baetyl_hostility",
-        "mutation_wish",
-        "baetyl_reward",
-    }
-    covered_family_ids = {runtime_families[key][0] for key in covered_keys}
-    implementation_gap_keys = {
-        "rough_convert",
+        "force_lathe",
         "heat_self",
-        "liquid_cleaning",
-        "liquid_contact",
+        "mutation_wish",
         "nephal",
         "pet_ebenshabat",
         "pet_frondzie",
         "shuttle",
         "vortex",
-        "force_lathe",
-        "cybernetics_interface",
-        "domination",
+        "baetyl_reward",
+        "liquid_cleaning",
+        "liquid_contact",
+        "rough_convert",
     }
+    covered_family_ids = {runtime_families[key][0] for key in covered_keys}
+    implementation_gap_keys: set[str] = set()
     implementation_gap_family_ids = {runtime_families[key][0] for key in implementation_gap_keys}
     runtime_family_ids = (
         {family_id for family_id, _, _, _ in runtime_families.values()}
@@ -15681,8 +16927,8 @@ def test_policy_records_issue719_residual_frame_does_runtime_tranche() -> None:
         - implementation_gap_family_ids
     )
 
-    assert sum(entries[family_id]["text_construction_count"] for family_id in covered_family_ids) == 78
-    assert sum(entries[family_id]["text_construction_count"] for family_id in implementation_gap_family_ids) == 91
+    assert sum(entries[family_id]["text_construction_count"] for family_id in covered_family_ids) == 169
+    assert sum(entries[family_id]["text_construction_count"] for family_id in implementation_gap_family_ids) == 0
     assert sum(entries[family_id]["text_construction_count"] for family_id in runtime_family_ids) == 0
 
     for family_id in covered_family_ids:
@@ -15692,6 +16938,17 @@ def test_policy_records_issue719_residual_frame_does_runtime_tranche() -> None:
             assert "TrembleEarthquakes.RocksFall" in evidence
             assert "falling rocks" in evidence
             assert "CombatAndLogMessageQueuePatchTests.cs" in evidence
+        elif family_id == runtime_families["domination"][0]:
+            assert "Domination.ProcessTarget" in evidence
+            assert "DominationProcessTargetTranslationPatchTests.cs" in evidence
+            assert "MessageQueueSemanticPipeline.cs" in evidence
+        elif family_id == runtime_families["cybernetics_interface"][0]:
+            assert "CyberneticsTerminalInterfacePopupTranslationPatch.cs" in evidence
+            assert "CyberneticsTerminalInterfacePopupTranslationPatchTests.cs" in evidence
+            assert "TargetMethodResolutionTests.cs" in evidence
+        elif family_id == runtime_families["rough_convert"][0]:
+            assert "GameText.RoughConvertSecondPersonToThirdPerson closure" in evidence
+            assert "GameTextDeathReasonTranslationPatch" in evidence
         else:
             assert "fixed pure MessageFrame and pure Does" in evidence
             assert "MessageFrameTranslatorTests.cs" in evidence
@@ -15706,7 +16963,17 @@ def test_policy_records_issue719_residual_frame_does_runtime_tranche() -> None:
         assert entries[family_id]["closure_status"] == "action_required"
 
     residual = residual_bucket_payload(inventory, inventory_path=Path("issue719-frame-does-test.json"))
-    _assert_producer_runtime_residuals(residual, runtime_family_ids)
+    covered_family_ids = {runtime_families["shrine"][0]}
+    for family_id in covered_family_ids:
+        assert entries[family_id]["closure_status"] == "covered_by_owner_route"
+        _assert_evidence_contains(
+            entries,
+            family_id,
+            "PopupTranslationPatchTests.cs",
+            "PopupPickOptionTranslationPatchTests.cs",
+            "ui-popup.ja.json",
+        )
+    _assert_producer_runtime_residuals(residual, runtime_family_ids - covered_family_ids)
     assert {
         entry["family_id"]: entry["residual_disposition"]
         for entry in residual["entries"]
@@ -15714,7 +16981,7 @@ def test_policy_records_issue719_residual_frame_does_runtime_tranche() -> None:
     } == dict.fromkeys(implementation_gap_family_ids, "likely_implementation_gap")
 
 
-def test_policy_records_issue719_residual_mixed_popup_runtime_tranche() -> None:
+def test_policy_records_issue719_residual_mixed_popup_runtime_tranche() -> None:  # noqa: C901, PLR0912
     """Mixed queue/popup and Does/popup producers require runtime route evidence."""
     runtime_families = {
         "sunder_mind": (
@@ -15789,22 +17056,65 @@ def test_policy_records_issue719_residual_mixed_popup_runtime_tranche() -> None:
     entries = {entry["family_id"]: entry for entry in valuable_surface_queue(inventory)}
 
     assert sum(entry["text_construction_count"] for entry in entries.values()) == 129
-    implementation_gap_family_ids = {
-        runtime_families[key][0]
-        for key in (
-            "sunder_mind",
-            "stomach",
-            "elevator",
-            "biome",
-            "clam",
-            "examiner",
-            "tinker",
-            "fixit",
-            "magnetized",
-            "vehicle_infiltration",
-        )
+    implementation_gap_family_ids: set[str] = set()
+    covered_family_ids = {
+        runtime_families["sunder_mind"][0],
+        runtime_families["stomach"][0],
+        runtime_families["elevator"][0],
+        runtime_families["biome"][0],
+        runtime_families["clam"][0],
+        runtime_families["vehicle_infiltration"][0],
+        runtime_families["examiner"][0],
+        runtime_families["tinker"][0],
+        runtime_families["fixit"][0],
+        runtime_families["magnetized"][0],
     }
     for family_id, _, _, _ in runtime_families.values():
+        if family_id in covered_family_ids:
+            assert entries[family_id]["closure_status"] == "covered_by_owner_route"
+            evidence = " ".join(entries[family_id]["closure_evidence"])
+            if family_id == runtime_families["sunder_mind"][0]:
+                assert "SunderMindTranslationPatch.cs" in evidence
+                assert "CombatAndLogMessageQueuePatchTests.cs" in evidence
+            elif family_id == runtime_families["elevator"][0]:
+                assert "SingleCallsiteOwnerQueueTranslationPatch.cs" in evidence
+                assert "SingleCallsiteOwnerPopupTranslationPatch.cs" in evidence
+                assert "SingleCallsiteOwnerPopupTranslationPatchTests.cs" in evidence
+            elif family_id == runtime_families["biome"][0]:
+                assert "SingleCallsiteOwnerPopupTranslationPatch.cs" in evidence
+                assert "SingleCallsiteOwnerQueueTranslationPatch.cs" in evidence
+                assert "SingleCallsiteOwnerQueueTranslationPatchTests.cs" in evidence
+            elif family_id == runtime_families["clam"][0]:
+                assert "GiantClamTeleportTranslationPatch.cs" in evidence
+                assert "GiantClamTeleportTranslationPatchTests.cs" in evidence
+                assert "CombatAndLogMessageQueuePatchTests.cs" in evidence
+            elif family_id == runtime_families["vehicle_infiltration"][0]:
+                assert "PopupTranslationPatchTests.cs" in evidence
+                assert "GameObjectEmitMessageTranslationPatch.cs" in evidence
+                assert "verbs.ja.json" in evidence
+            elif family_id in {
+                runtime_families["examiner"][0],
+                runtime_families["tinker"][0],
+            }:
+                assert (
+                    "ExaminerTranslationPatch.cs" in evidence
+                    or "TinkerItemTranslationPatch.cs" in evidence
+                )
+                assert (
+                    "ExaminerTranslationPatchTests.cs" in evidence
+                    or "TinkerItemTranslationPatchTests.cs" in evidence
+                )
+            elif family_id in {
+                runtime_families["fixit"][0],
+                runtime_families["magnetized"][0],
+            }:
+                assert "SingleCallsiteOwnerPopupTranslationPatch.cs" in evidence
+                assert "SingleCallsiteOwnerPopupTranslationPatchTests.cs" in evidence
+                assert "DoesVerbFamilyTests.cs" in evidence
+            else:
+                assert "StomachTranslationPatch.cs" in evidence
+                assert "StomachOverdrink" in evidence
+            continue
         if family_id in implementation_gap_family_ids:
             assert entries[family_id]["closure_status"] == "action_required"
             continue
@@ -15816,7 +17126,9 @@ def test_policy_records_issue719_residual_mixed_popup_runtime_tranche() -> None:
     residual = residual_bucket_payload(inventory, inventory_path=Path("issue719-mixed-popup-test.json"))
     _assert_producer_runtime_residuals(
         residual,
-        {family_id for family_id, _, _, _ in runtime_families.values()} - implementation_gap_family_ids,
+        {family_id for family_id, _, _, _ in runtime_families.values()}
+        - implementation_gap_family_ids
+        - covered_family_ids,
     )
     assert {
         entry["family_id"]: entry["residual_disposition"]
@@ -15825,7 +17137,7 @@ def test_policy_records_issue719_residual_mixed_popup_runtime_tranche() -> None:
     } == dict.fromkeys(implementation_gap_family_ids, "likely_implementation_gap")
 
 
-def test_policy_records_issue719_residual_queue_does_runtime_tranche() -> None:
+def test_policy_records_issue719_residual_queue_does_runtime_tranche() -> None:  # noqa: C901
     """Pure queues and Does+EmitMessage producers require runtime route evidence."""
     runtime_families = {
         "cybernetic_butcher": (
@@ -15933,28 +17245,80 @@ def test_policy_records_issue719_residual_queue_does_runtime_tranche() -> None:
     entries = {entry["family_id"]: entry for entry in valuable_surface_queue(inventory)}
 
     assert sum(entry["text_construction_count"] for entry in entries.values()) == 112
-    implementation_gap_family_ids = {
-        runtime_families[key][0]
-            for key in (
-                "cybernetic_butcher",
-                "chat",
-                "fungal_infection",
-                "vehicle_infiltration_can_enter",
-                "dance_opponent_turn",
-                "player_dance_fire_event",
-                "dance_opponent_register",
-                "interior_damage",
-                "dynamic_quest_where",
-            )
-    }
+    implementation_gap_family_ids = set()
     covered_family_ids = {
+        runtime_families["cybernetic_butcher"][0],
+        runtime_families["vehicle_infiltration_can_enter"][0],
+        runtime_families["dance_opponent_turn"][0],
+        runtime_families["player_dance_fire_event"][0],
+        runtime_families["dance_opponent_register"][0],
         runtime_families["sound_play"][0],
         runtime_families["sound_world_play"][0],
         runtime_families["message_queue_char"][0],
+        runtime_families["dynamic_quest_where"][0],
+        runtime_families["interior_damage"][0],
+        runtime_families["fungal_infection"][0],
+        runtime_families["chat"][0],
     }
     for family_id, _, _, _ in runtime_families.values():
         if family_id in covered_family_ids:
             assert entries[family_id]["closure_status"] == "covered_by_owner_route"
+            if "DanceRitualOpponent" in family_id:
+                _assert_evidence_contains(
+                    entries,
+                    family_id,
+                    "DanceRitualOpponentTranslationPatch.cs",
+                    "MessageQueueSemanticPipeline.cs",
+                )
+            if "PlayerDanceRitual" in family_id:
+                _assert_evidence_contains(
+                    entries,
+                    family_id,
+                    "PlayerDanceRitualTranslationPatch.cs",
+                    "MessageQueueSemanticPipeline.cs",
+                )
+            if "FindASiteDynamicQuestManager" in family_id:
+                _assert_evidence_contains(
+                    entries,
+                    family_id,
+                    "WishCommandQueueTranslationPatch.cs",
+                    "WishCommandQueueTranslationPatchTests.cs",
+                )
+            if "Interior.cs" in family_id:
+                _assert_evidence_contains(
+                    entries,
+                    family_id,
+                    "PhysicsProcessTakeDamageTranslationPatch.cs",
+                    "CombatAndLogMessageQueuePatchTests.cs",
+                )
+            if "VehicleMeleeInfiltration" in family_id:
+                _assert_evidence_contains(
+                    entries,
+                    family_id,
+                    "GameObjectEmitMessageTranslationPatch.cs",
+                    "DoesVerbRouteTranslator.cs",
+                    "CombatAndLogMessageQueuePatchTests.cs",
+                    "verbs.ja.json",
+                )
+            if "FungalInfection.cs" in family_id:
+                _assert_evidence_contains(
+                    entries,
+                    family_id,
+                    "verbs.ja.json",
+                    "messages.ja.json",
+                    "DoesVerbFamilyTests.cs",
+                    "MessagePatternTranslatorTests.cs",
+                    "CombatAndLogMessageQueuePatchTests.cs",
+                )
+            if "Chat.cs" in family_id:
+                _assert_evidence_contains(
+                    entries,
+                    family_id,
+                    "verbs.ja.json",
+                    "DoesVerbFamilyTests.cs",
+                    "ObjectBlueprints/Furniture.jp.xml",
+                    "static_producer_closure.py",
+                )
             continue
         if family_id in implementation_gap_family_ids:
             assert entries[family_id]["closure_status"] == "action_required"
@@ -16081,26 +17445,52 @@ def test_policy_records_issue719_residual_message_mixed_remainder_runtime_tranch
     entries = {entry["family_id"]: entry for entry in valuable_surface_queue(inventory)}
 
     assert sum(entry["text_construction_count"] for entry in entries.values()) == 109
-    implementation_gap_family_ids = {
-        runtime_families["sheva_launch"][0],
-        runtime_families["space_time_vortex"][0],
-        runtime_families["golem_mound"][0],
-        runtime_families["holographic_visage"][0],
-        runtime_families["carapace_loosen"][0],
-        runtime_families["campfire_extinguish"][0],
-        runtime_families["warm_static_wish_spec"][0],
-        runtime_families["warm_static_glitch_liquid"][0],
-        runtime_families["warm_static_wish"][0],
-        runtime_families["desalination_pellet"][0],
-    }
+    implementation_gap_family_ids = set()
     covered_family_ids = {
+        runtime_families["sheva_launch"][0],
         runtime_families["physics_entering_cell"][0],
         runtime_families["thief_bot"][0],
         runtime_families["fade_text"][0],
+        runtime_families["desalination_pellet"][0],
+        runtime_families["holographic_visage"][0],
+        runtime_families["warm_static_wish_spec"][0],
+        runtime_families["warm_static_wish"][0],
+        runtime_families["warm_static_glitch_liquid"][0],
+        runtime_families["campfire_extinguish"][0],
+        runtime_families["carapace_loosen"][0],
+        runtime_families["golem_mound"][0],
+        runtime_families["space_time_vortex"][0],
     }
     for family_id, _, _, _ in runtime_families.values():
         if family_id in covered_family_ids:
             assert entries[family_id]["closure_status"] == "covered_by_owner_route"
+            if family_id == runtime_families["carapace_loosen"][0]:
+                _assert_evidence_contains(
+                    entries,
+                    family_id,
+                    "CarapaceTranslationPatch.cs",
+                    "CombatAndLogMessageQueuePatchTests.cs",
+                    "TargetMethodResolutionTests.cs",
+                    "DoesVerbFamilyTests.cs",
+                    "verbs.ja.json",
+                )
+            if family_id == runtime_families["golem_mound"][0]:
+                _assert_evidence_contains(
+                    entries,
+                    family_id,
+                    "GolemQuestMoundDisplayOptionsTranslationPatch.cs",
+                    "GolemQuestMoundDisplayOptionsTranslationPatchTests.cs",
+                    "TargetMethodResolutionTests.cs",
+                )
+            if family_id == runtime_families["space_time_vortex"][0]:
+                _assert_evidence_contains(
+                    entries,
+                    family_id,
+                    "verbs.ja.json",
+                    "DoesVerbFamilyTests.cs",
+                    "SingleCallsiteOwnerPopupTranslationPatchTests.cs",
+                    "TargetMethodResolutionTests.cs",
+                )
             continue
         if family_id in implementation_gap_family_ids:
             assert entries[family_id]["closure_status"] == "action_required"
@@ -16126,10 +17516,7 @@ def test_policy_records_issue719_residual_message_mixed_remainder_runtime_tranch
         entry["family_id"]: entry["residual_disposition"]
         for entry in residual["entries"]
         if entry["family_id"] in implementation_gap_family_ids
-    } == dict.fromkeys(implementation_gap_family_ids, "likely_implementation_gap")
-    buckets_by_family = {entry["family_id"]: entry["residual_bucket"] for entry in residual["entries"]}
-    assert buckets_by_family[runtime_families["sheva_launch"][0]] == "producer_runtime_world_part_ship_ark_popup_gap"
-    assert buckets_by_family[runtime_families["space_time_vortex"][0]] == "producer_runtime_world_part_vortex_apply_gap"
+    } == {}
 
 
 def test_policy_records_issue719_residual_sifrah_route_split_runtime_tranche() -> None:
@@ -16190,8 +17577,18 @@ def test_policy_records_issue719_residual_sifrah_route_split_runtime_tranche() -
     entries = {entry["family_id"]: entry for entry in valuable_surface_queue(inventory)}
 
     for key, (family_id, _, _, _) in residual_families.items():
-        if key in {"social_secret_use", "social_secret_description", "ritual_effect_constructor"}:
-            assert entries[family_id]["closure_status"] == "action_required"
+        if key == "social_secret_use":
+            assert entries[family_id]["closure_status"] == "covered_by_owner_route"
+            evidence = " ".join(entries[family_id]["closure_evidence"])
+            assert "SocialSifrahTokenSecret.UseToken" in evidence
+            assert "PopupPickOptionTranslationPatch" in evidence
+            assert "ui-popup.ja.json" in evidence
+            continue
+        if key in {"social_secret_description", "ritual_effect_constructor"}:
+            assert entries[family_id]["closure_status"] == "covered_by_owner_route"
+            evidence = " ".join(entries[family_id]["closure_evidence"])
+            assert "SifrahTokenDescriptionTranslationPatch" in evidence
+            assert "SifrahTokenDescriptionTranslatorTests.cs" in evidence
             continue
         if key in {"psychic_combat_constructor", "beguiling_constructor"}:
             assert entries[family_id]["closure_status"] == "covered_by_owner_route"
@@ -16210,20 +17607,7 @@ def test_policy_records_issue719_residual_sifrah_route_split_runtime_tranche() -
     assert {
         entry["family_id"]: (entry["residual_bucket"], entry["residual_disposition"])
         for entry in residual["entries"]
-    } == {
-        residual_families["social_secret_use"][0]: (
-            "sifrah_popup_secret_use_token_gap",
-            "likely_implementation_gap",
-        ),
-        residual_families["social_secret_description"][0]: (
-            "sifrah_description_token_getdescription_gap",
-            "likely_implementation_gap",
-        ),
-        residual_families["ritual_effect_constructor"][0]: (
-            "sifrah_description_token_dynamic_constructor_gap",
-            "likely_implementation_gap",
-        ),
-    }
+    } == {}
 
 
 def test_policy_splits_issue719_sifrah_popup_residuals_by_static_owner_shape() -> None:
@@ -16235,7 +17619,7 @@ def test_policy_splits_issue719_sifrah_popup_residuals_by_static_owner_shape() -
             "CheckOutOfOptions",
             {"Popup": 1},
             "sifrah_popup_check_out_of_options_gap",
-            "likely_implementation_gap",
+            "covered_by_owner_route",
         ),
         "result_owner": (
             "XRL.World/ItemNamingSifrah.cs::ItemNamingSifrah.ResultFailure(GameObject)",
@@ -16243,7 +17627,7 @@ def test_policy_splits_issue719_sifrah_popup_residuals_by_static_owner_shape() -
             "ResultFailure",
             {"Popup": 1},
             "sifrah_popup_result_owner_gap",
-            "likely_implementation_gap",
+            "covered_by_owner_route",
         ),
         "token_check_use": (
             "XRL.World/RitualSifrahTokenScourging.cs::"
@@ -16252,7 +17636,7 @@ def test_policy_splits_issue719_sifrah_popup_residuals_by_static_owner_shape() -
             "CheckTokenUse",
             {"Popup": 1},
             "sifrah_popup_token_check_use_gap",
-            "likely_implementation_gap",
+            "covered_by_owner_route",
         ),
         "secret_use_token": (
             "XRL.World/SocialSifrahTokenSecret.cs::"
@@ -16261,7 +17645,7 @@ def test_policy_splits_issue719_sifrah_popup_residuals_by_static_owner_shape() -
             "UseToken",
             {"Popup": 6},
             "sifrah_popup_secret_use_token_gap",
-            "likely_implementation_gap",
+            "covered_by_owner_route",
         ),
         "hacking_partial_success": (
             "XRL.World.Parts/CyberneticsTerminal2.cs::"
@@ -16270,7 +17654,7 @@ def test_policy_splits_issue719_sifrah_popup_residuals_by_static_owner_shape() -
             "HackingResultPartialSuccess",
             {"Popup": 1},
             "sifrah_popup_hacking_partial_success_gap",
-            "likely_implementation_gap",
+            "covered_by_owner_route",
         ),
         "unused_psychic_combat": (
             "XRL.World/PsychicCombatSifrah.cs::PsychicCombatSifrah.CheckOutOfOptions(GameObject)",
@@ -16298,6 +17682,33 @@ def test_policy_splits_issue719_sifrah_popup_residuals_by_static_owner_shape() -
             else "runtime_required"
         )
         assert entries[family_id]["closure_status"] == expected_status
+        if family_id in {
+            families["check_out_of_options"][0],
+            families["result_owner"][0],
+            families["token_check_use"][0],
+        }:
+            _assert_evidence_contains(
+                entries,
+                family_id,
+                "PopupShowTranslationPatchTests.cs",
+                "ui-popup.ja.json",
+                "fixed Sifrah popup",
+            )
+        if family_id == families["hacking_partial_success"][0]:
+            _assert_evidence_contains(
+                entries,
+                family_id,
+                "HackingSifrahResultTranslationPatch.cs",
+                "CombatAndLogMessageQueuePatchTests.cs",
+            )
+        if family_id == families["secret_use_token"][0]:
+            _assert_evidence_contains(
+                entries,
+                family_id,
+                "SocialSifrahTokenSecret.UseToken",
+                "PopupPickOptionTranslationPatch",
+                "ui-popup.ja.json",
+            )
 
     residual = residual_bucket_payload(inventory, inventory_path=Path("issue719-sifrah-popup-static-shapes-test.json"))
     assert {
@@ -16367,12 +17778,13 @@ def test_policy_records_issue719_final_child_buckets_as_runtime_tranche() -> Non
 
     entries = {entry["family_id"]: entry for entry in valuable_surface_queue(inventory)}
 
-    implementation_gap_family_ids = {
+    covered_family_ids = {
         families["broad_gameobject_popup"][0],
         families["generated_display_name"][0],
         families["misc_text_filter"][0],
         families["active_effect_popup"][0],
     }
+    implementation_gap_family_ids: set[str] = set()
     not_owner_family_ids = {
         families["ui_popup_sink"][0],
     }
@@ -16380,6 +17792,8 @@ def test_policy_records_issue719_final_child_buckets_as_runtime_tranche() -> Non
         expected_status = (
             "not_owner_surface"
             if family_id in not_owner_family_ids
+            else "covered_by_owner_route"
+            if family_id in covered_family_ids
             else "action_required"
             if family_id in implementation_gap_family_ids
             else "runtime_required"
@@ -16396,7 +17810,7 @@ def test_policy_records_issue719_final_child_buckets_as_runtime_tranche() -> Non
             "likely_implementation_gap" if family_id in implementation_gap_family_ids else "runtime_evidence_required",
         )
         for family_id, _, _, _, bucket in families.values()
-        if family_id not in not_owner_family_ids
+        if family_id not in not_owner_family_ids | covered_family_ids
     }
 
 
@@ -16409,7 +17823,7 @@ def test_residual_bucket_payload_splits_broad_producer_routes_by_exact_member_sh
             "AutoEquip",
             {"Popup": 72},
             "producer_broad_gameobject_autoequip_gap",
-            "likely_implementation_gap",
+            "covered_by_owner_route",
         ),
         "inventory_companion": (
             "XRL.World/GameObject.cs::GameObject.HandleInventoryActionEvent(InventoryActionEvent)",
@@ -16417,7 +17831,7 @@ def test_residual_bucket_payload_splits_broad_producer_routes_by_exact_member_sh
             "HandleInventoryActionEvent",
             {"Popup": 51},
             "producer_broad_gameobject_inventory_companion_gap",
-            "likely_implementation_gap",
+            "covered_by_owner_route",
         ),
         "missile_trajectory": (
             "XRL.World.Parts/MissileWeapon.cs::"
@@ -16436,7 +17850,7 @@ def test_residual_bucket_payload_splits_broad_producer_routes_by_exact_member_sh
             "Die",
             {"Popup": 44},
             "producer_broad_gameobject_death_gap",
-            "likely_implementation_gap",
+            "covered_by_owner_route",
         ),
         "destroy": (
             "XRL.World/GameObject.cs::GameObject.Destroy(string,bool,bool,string)",
@@ -16444,7 +17858,7 @@ def test_residual_bucket_payload_splits_broad_producer_routes_by_exact_member_sh
             "Destroy",
             {"Popup": 22},
             "producer_broad_gameobject_destroy_gap",
-            "likely_implementation_gap",
+            "covered_by_owner_route",
         ),
         "pulldown": (
             "XRL.World/GameObject.cs::GameObject.PullDown(bool)",
@@ -16452,7 +17866,7 @@ def test_residual_bucket_payload_splits_broad_producer_routes_by_exact_member_sh
             "PullDown",
             {"Popup": 15},
             "producer_broad_gameobject_pulldown_gap",
-            "likely_implementation_gap",
+            "covered_by_owner_route",
         ),
         "regenera": (
             "XRL.World/GameObject.cs::GameObject.FireEvent(Event)",
@@ -16468,7 +17882,7 @@ def test_residual_bucket_payload_splits_broad_producer_routes_by_exact_member_sh
             "Explode",
             {"Does": 7},
             "producer_broad_gameobject_explode_death_gap",
-            "likely_implementation_gap",
+            "covered_by_owner_route",
         ),
         "hostile_spot": (
             "XRL.World/GameObject.cs::"
@@ -16477,7 +17891,7 @@ def test_residual_bucket_payload_splits_broad_producer_routes_by_exact_member_sh
             "ArePerceptibleHostilesNearby",
             {"Popup": 3},
             "producer_broad_gameobject_hostile_spot_gap",
-            "likely_implementation_gap",
+            "covered_by_owner_route",
         ),
         "replace_cell": (
             "XRL.World/GameObject.cs::GameObject.PerformReplaceCell(GameObject)",
@@ -16485,7 +17899,7 @@ def test_residual_bucket_payload_splits_broad_producer_routes_by_exact_member_sh
             "PerformReplaceCell",
             {"Popup": 2},
             "producer_broad_gameobject_replace_cell_gap",
-            "likely_implementation_gap",
+            "covered_by_owner_route",
         ),
     }
     inventory = _inventory(
@@ -16505,6 +17919,15 @@ def test_residual_bucket_payload_splits_broad_producer_routes_by_exact_member_sh
         assert entries[family_id]["closure_status"] == expected_status
 
     residual = residual_bucket_payload(inventory, inventory_path=Path("issue719-broad-producer-static-shapes.json"))
+    inventory_companion_evidence = " ".join(entries[families["inventory_companion"][0]]["closure_evidence"])
+    assert "GameObjectPopupTranslationPatch.cs" in inventory_companion_evidence
+    assert "HandleInventoryActionEvent" in inventory_companion_evidence
+    hostile_spot_evidence = " ".join(entries[families["hostile_spot"][0]]["closure_evidence"])
+    assert "GameObjectSpotTranslationPatch.cs" in hostile_spot_evidence
+    assert "GameObjectSpot_TranslatesSpotPopup_WhenPatched" in hostile_spot_evidence
+    explode_evidence = " ".join(entries[families["explode"][0]]["closure_evidence"])
+    assert "GameObject.Explode closure" in explode_evidence
+    assert "DeathReasonTranslationPatch.cs" in explode_evidence
     assert {
         entry["family_id"]: (entry["residual_bucket"], entry["residual_disposition"])
         for entry in residual["entries"]
@@ -16544,8 +17967,8 @@ def test_policy_promotes_missile_trajectory_message_frame_route() -> None:
     assert residual["entries"] == []
 
 
-def test_policy_reclassifies_gameobject_die_as_static_route_split_gap() -> None:
-    """GameObject.Die is statically owned but too heterogeneous to close as one MessageFrame route."""
+def test_policy_closes_gameobject_die_as_route_split_owner_coverage() -> None:
+    """GameObject.Die route split is closed by the existing owner route set."""
     family_id = (
         "XRL.World/GameObject.cs::"
         "GameObject.Die(GameObject,string,string,string,bool,GameObject,GameObject,bool,bool,string,string,string)"
@@ -16565,14 +17988,13 @@ def test_policy_reclassifies_gameobject_die_as_static_route_split_gap() -> None:
     evidence = " ".join(entry["closure_evidence"])
     residual = residual_bucket_payload(inventory, inventory_path=Path("issue719-gameobject-die.json"))
 
-    assert entry["closure_status"] == "action_required"
-    assert "static route-split implementation gap" in evidence
+    assert entry["closure_status"] == "covered_by_owner_route"
+    assert "GameObject.Die review closes the route split" in evidence
     assert "DeathReasonTranslationPatch.cs" in evidence
     assert "GameObjectDieTranslationPatch.cs" in evidence
-    assert [
-        (item["residual_bucket"], item["residual_disposition"])
-        for item in residual["entries"]
-    ] == [("producer_broad_gameobject_death_gap", "likely_implementation_gap")]
+    assert "JournalTextTranslator.cs" in evidence
+    assert "JournalApiAddTranslationPatchTests.cs" in evidence
+    assert residual["entries"] == []
 
 
 def test_policy_promotes_popup_message_wrappers_as_sink_pass_through() -> None:
@@ -17099,8 +18521,8 @@ def test_policy_records_hse_gossip_observation_owner_route_closure() -> None:
         assert "TargetMethodResolutionTests.cs" in evidence
 
 
-def test_policy_reclassifies_text_filters_as_static_gap_follow_up() -> None:
-    """TextFilters HSE calls are exact static owners but still need implementation."""
+def test_policy_records_text_filters_speech_status_owner_route_closure() -> None:
+    """TextFilters HSE calls are covered by speech/status owner patches."""
     angry_family_id = "XRL.Language/TextFilters.cs::TextFilters.Angry(string)"
     lallated_family_id = "XRL.Language/TextFilters.cs::TextFilters.Lallated(string,string)"
     inventory = _inventory(
@@ -17124,14 +18546,13 @@ def test_policy_reclassifies_text_filters_as_static_gap_follow_up() -> None:
 
     for family_id in [angry_family_id, lallated_family_id]:
         assert entries[family_id]["closure_lane"] == "history_generated_text"
-        assert entries[family_id]["closure_status"] == "action_required"
+        assert entries[family_id]["closure_status"] == "covered_by_owner_route"
         evidence = " ".join(entries[family_id]["closure_evidence"])
-        assert "Issue #719 final runtime audit" in evidence
-        assert "static implementation gaps" in evidence
-        assert "StyledStatus.Format" in evidence
-        assert "Preacher.PreacherHomily" in evidence
-        assert "ConversationScript TextFilter installation" in evidence
-        assert "runtime evidence is no longer needed" in evidence
+        assert "TextFilterSpeechStatusTranslationPatches.cs" in evidence
+        assert "TextFilterSpeechStatusTranslationPatchTests.cs" in evidence
+        assert "TargetMethodResolutionTests.cs" in evidence
+        assert "TextFilters.Angry" in evidence
+        assert "TextFilters.Lallated" in evidence
 
 
 def test_policy_splits_misc_runtime_routes_by_static_owner_shape() -> None:
@@ -17142,16 +18563,16 @@ def test_policy_splits_misc_runtime_routes_by_static_owner_shape() -> None:
             "XRL.Language/TextFilters.cs",
             "Angry",
             {"HistoricStringExpander": 3},
-            "history_text_filter_speech_status_gap",
-            "likely_implementation_gap",
+            None,
+            "covered_by_owner_route",
         ),
         "lallated": (
             "XRL.Language/TextFilters.cs::TextFilters.Lallated(string,string)",
             "XRL.Language/TextFilters.cs",
             "Lallated",
             {"HistoricStringExpander": 3},
-            "history_text_filter_speech_status_gap",
-            "likely_implementation_gap",
+            None,
+            "covered_by_owner_route",
         ),
         "book_line": (
             "XRL.World.Conversations.Parts/InsertRandomBookLine.cs::InsertRandomBookLine.HandleEvent(PrepareTextEvent)",
@@ -17667,6 +19088,76 @@ def test_load_inventory_preserves_existing_text_construction_count(tmp_path: Pat
     entry = build_surface_queue(inventory)[0]
 
     assert entry["text_construction_count"] == 7
+
+
+def test_load_inventory_applies_issue719_gameobject_closeout_to_docs_producer_ids(tmp_path: Path) -> None:
+    """Docs inventory producer_family_id rows use the same Issue #719 closeout overlays."""
+    inventory_path = tmp_path / "static-producer-inventory.json"
+    inventory_path.write_text(
+        """
+{
+  "schema_version": "1.0",
+  "game_version": "1.0.4",
+  "totals": {},
+  "families": [
+    {
+      "producer_family_id": "XRL.World/GameObject.cs::XRL.World.GameObject.Die",
+      "file": "XRL.World/GameObject.cs",
+      "type_name": "XRL.World.GameObject",
+      "member_name": "Die",
+      "member_start_line": 14491,
+      "surface_counts": {"Popup": 1},
+      "representative_calls": [{"line": 14510, "target_surface": "Popup"}]
+    },
+    {
+      "producer_family_id": "XRL.World/GameObject.cs::XRL.World.GameObject.Destroy",
+      "file": "XRL.World/GameObject.cs",
+      "type_name": "XRL.World.GameObject",
+      "member_name": "Destroy",
+      "member_start_line": 3306,
+      "surface_counts": {"Popup": 1},
+      "representative_calls": [{"line": 3330, "target_surface": "Popup"}]
+    },
+    {
+      "producer_family_id": "XRL.World/GameObject.cs::XRL.World.GameObject.ArePerceptibleHostilesNearby",
+      "file": "XRL.World/GameObject.cs",
+      "type_name": "XRL.World.GameObject",
+      "member_name": "ArePerceptibleHostilesNearby",
+      "member_start_line": 11100,
+      "surface_counts": {"Popup": 1},
+      "representative_calls": [{"line": 11128, "target_surface": "Popup"}]
+    }
+  ]
+}
+""",
+        encoding="utf-8",
+    )
+
+    inventory = load_inventory(inventory_path)
+    entries = {entry["family_id"]: entry for entry in valuable_surface_queue(inventory)}
+    residual = residual_bucket_payload(inventory, inventory_path=inventory_path)
+
+    assert {
+        family_id: entry["closure_status"]
+        for family_id, entry in entries.items()
+    } == {
+        "XRL.World/GameObject.cs::XRL.World.GameObject.Die": "covered_by_owner_route",
+        "XRL.World/GameObject.cs::XRL.World.GameObject.Destroy": "covered_by_owner_route",
+        (
+            "XRL.World/GameObject.cs::"
+            "XRL.World.GameObject.ArePerceptibleHostilesNearby"
+        ): "covered_by_owner_route",
+    }
+    assert "GameObjectDieTranslationPatch.cs" in " ".join(
+        entries["XRL.World/GameObject.cs::XRL.World.GameObject.Die"]["closure_evidence"]
+    )
+    assert "GameObjectDestroyTranslationPatch.cs" in " ".join(
+        entries["XRL.World/GameObject.cs::XRL.World.GameObject.Destroy"]["closure_evidence"]
+    )
+    assert "GameObjectSpotTranslationPatch.cs" in " ".join(
+        entries["XRL.World/GameObject.cs::XRL.World.GameObject.ArePerceptibleHostilesNearby"]["closure_evidence"]
+    )
+    assert residual["entries"] == []
 
 
 def test_load_inventory_backfills_empty_first_lines_from_representative_calls(tmp_path: Path) -> None:

@@ -89,6 +89,16 @@ public static class TradeUiVendorPopupTranslationPatch
         {
             Trace.TraceError("QudJP: {0}.DoVendorRecharge(GameObject, GameObject) not found.", Context);
         }
+
+        var showVendorActions = AccessTools.Method(tradeUiType, "ShowVendorActions", [gameObjectType, gameObjectType, typeof(bool)]);
+        if (showVendorActions is not null)
+        {
+            yield return showVendorActions;
+        }
+        else
+        {
+            Trace.TraceError("QudJP: {0}.ShowVendorActions(GameObject, GameObject, bool) not found.", Context);
+        }
     }
 
     public static void Prefix()

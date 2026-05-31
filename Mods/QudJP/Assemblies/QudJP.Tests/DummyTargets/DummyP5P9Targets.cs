@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Threading;
 
@@ -27,6 +28,16 @@ internal sealed class DummyGameObjectDie
     }
 }
 
+internal static class DummyGameTextTarget
+{
+    public static string? RoughConvertSecondPersonToThirdPerson(string? text, object? who)
+    {
+        _ = text;
+        _ = who;
+        return "snapjaw was vaporized.";
+    }
+}
+
 internal static class DummyPopupShow
 {
     public static string? LastShowMessage;
@@ -38,6 +49,7 @@ internal static class DummyPopupShow
     public static string? LastShowYesNoCancelAsyncMessage;
     public static string? LastShowSpaceMessage;
 
+    [MethodImpl(MethodImplOptions.NoInlining)]
     public static void Show(
         string Message,
         string? Title = null,
@@ -50,6 +62,7 @@ internal static class DummyPopupShow
         LastShowMessage = Message;
     }
 
+    [MethodImpl(MethodImplOptions.NoInlining)]
     public static Task ShowAsync(
         string Message,
         bool CopyScrap = true,
@@ -62,6 +75,7 @@ internal static class DummyPopupShow
         return Task.CompletedTask;
     }
 
+    [MethodImpl(MethodImplOptions.NoInlining)]
     public static Task ShowKeybindAsync(string Message, CancellationToken cancelToken)
     {
         _ = cancelToken;
@@ -69,6 +83,7 @@ internal static class DummyPopupShow
         return Task.CompletedTask;
     }
 
+    [MethodImpl(MethodImplOptions.NoInlining)]
     public static int ShowYesNo(
         string Message,
         string? Sound = null,
@@ -79,6 +94,7 @@ internal static class DummyPopupShow
         return 0;
     }
 
+    [MethodImpl(MethodImplOptions.NoInlining)]
     public static int ShowYesNoCancel(
         string Message,
         string? Sound = null,
@@ -89,18 +105,21 @@ internal static class DummyPopupShow
         return defaultResult;
     }
 
+    [MethodImpl(MethodImplOptions.NoInlining)]
     public static Task<int> ShowYesNoAsync(string Message)
     {
         LastShowYesNoAsyncMessage = Message;
         return Task.FromResult(0);
     }
 
+    [MethodImpl(MethodImplOptions.NoInlining)]
     public static Task<int> ShowYesNoCancelAsync(string Message)
     {
         LastShowYesNoCancelAsyncMessage = Message;
         return Task.FromResult(0);
     }
 
+    [MethodImpl(MethodImplOptions.NoInlining)]
     public static void ShowFail(
         string Message,
         bool CopyScrap = true,
@@ -110,6 +129,7 @@ internal static class DummyPopupShow
         Show(Message, CopyScrap: CopyScrap, Capitalize: Capitalize, DimBackground: DimBackground);
     }
 
+    [MethodImpl(MethodImplOptions.NoInlining)]
     public static void ShowSpace(
         string Message,
         string? Title = null,

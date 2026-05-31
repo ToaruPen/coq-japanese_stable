@@ -675,6 +675,26 @@ public sealed class MessageFrameTranslatorTests
     }
 
     [Test]
+    public void TryTranslateXDidY_Tier3_TranslatedPlaceholderPreservesColorWrapper()
+    {
+        WriteExactDictionary(("the Spindle", "スピンドル"));
+        WriteDictionary(tier3: new[] { ("yell", "a terrible pun about (.+?)", "{subject}は{t0}についてひどい冗談を叫んだ{endmark}") });
+
+        var ok = MessageFrameTranslator.TryTranslateXDidY(
+            "{{G|Frondzie}}",
+            "yell",
+            "a terrible pun about {{Y|the Spindle}}",
+            null,
+            out var sentence);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(sentence, Is.EqualTo("{{G|Frondzie}}は{{Y|スピンドル}}についてひどい冗談を叫んだ"));
+        });
+    }
+
+    [Test]
     public void TryTranslateXDidY_Tier3_DischargeElectricalCharge()
     {
         WriteDictionary(tier3: new[] { ("discharge", "{0} units of electrical charge", "{0}ユニットの電荷を放電した") });
@@ -1564,6 +1584,14 @@ public sealed class MessageFrameTranslatorTests
             extra: null,
             endMark: "!",
             out var passThroughSentence);
+        var forceLatheReplacement = MessageFrameTranslator.TryTranslateXDidYToZ(
+            "{{Y|折りたたみ弓}}",
+            "shimmer",
+            preposition: "into existence in",
+            objectText: "あなたの",
+            extra: "grasp",
+            endMark: ".",
+            out var forceLatheReplacementSentence);
 
         Assert.Multiple(() =>
         {
@@ -1573,6 +1601,8 @@ public sealed class MessageFrameTranslatorTests
             Assert.That(placeSentence, Is.EqualTo("技師はタレットを置いた。"));
             Assert.That(passThrough, Is.True);
             Assert.That(passThroughSentence, Is.EqualTo("円盤はドアを通り抜けた！"));
+            Assert.That(forceLatheReplacement, Is.True);
+            Assert.That(forceLatheReplacementSentence, Is.EqualTo("{{Y|折りたたみ弓}}はあなたの手の中にきらめきながら現れた。"));
         });
     }
 

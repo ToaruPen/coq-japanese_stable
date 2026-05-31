@@ -89,6 +89,18 @@ internal static class CyberneticsTerminalTextTranslator
         " \\[will replace (?<item>[^\\]]+)\\]",
         RegexOptions.Compiled | RegexOptions.CultureInvariant);
 
+    private static readonly Regex LicensePointOptionPattern = new Regex(
+        "^(?<item>.+?)(?<separator>\\s+)(?<suffix>\\{\\{[^|}]+\\|\\[\\d+ license point(?:s)?\\]\\}\\})$",
+        RegexOptions.Compiled | RegexOptions.CultureInvariant);
+
+    private static readonly Regex BracketedStateOptionPattern = new Regex(
+        "^(?<item>.+?)(?<separator>\\s+)(?<state>\\[(?:already installed|cannot be uninstalled|destroyed on uninstall)\\])$",
+        RegexOptions.Compiled | RegexOptions.CultureInvariant);
+
+    private static readonly Regex WillReplaceOptionPattern = new Regex(
+        "^(?<item>.+?)(?<suffix> \\[will replace (?<replacement>[^\\]]+)\\])$",
+        RegexOptions.Compiled | RegexOptions.CultureInvariant);
+
     private static readonly Regex InstallingLinePattern = new Regex(
         "Installing (?<item>.+?)(?<suffix>\\.+\\n)",
         RegexOptions.Compiled | RegexOptions.CultureInvariant);
@@ -204,6 +216,7 @@ internal static class CyberneticsTerminalTextTranslator
         }
 
         var translated = ApplyWholeMatchTemplates(source);
+        translated = ApplyDisplayNameOptionTemplates(translated);
         translated = ApplyRegexTemplates(translated);
         translated = ApplyExactReplacements(translated);
         return translated;
@@ -215,7 +228,7 @@ internal static class CyberneticsTerminalTextTranslator
                 source,
                 MainMenuTextPattern,
                 "Welcome, Aristocrat, to a becoming nook. {0} one step closer to the Grand Unification. Please choose from the following options.",
-                static match => new object[] { match.Groups["subject"].Value },
+                static match => new object[] { TranslateMainMenuSubject(match.Groups["subject"].Value) },
                 out var translated))
         {
             return translated;
@@ -252,6 +265,110 @@ internal static class CyberneticsTerminalTextTranslator
         }
 
         return source;
+    }
+
+    private static string TranslateMainMenuSubject(string source)
+    {
+        return source switch
+        {
+            "you are" or "You are" => "あなた",
+            _ => source,
+        };
+    }
+
+    private static string ApplyDisplayNameOptionTemplates(string source)
+    {
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out _))
+        {
+            return source;
+        }
+
+        if (TryTranslateLicensePointOption(source, out var translated))
+        {
+            return translated;
+        }
+
+        if (TryTranslateBracketedStateOption(source, out translated))
+        {
+            return translated;
+        }
+
+        if (TryTranslateWillReplaceOption(source, out translated))
+        {
+            return translated;
+        }
+
+        return source;
+    }
+
+    private static bool TryTranslateLicensePointOption(string source, out string translated)
+    {
+        translated = source;
+        var match = LicensePointOptionPattern.Match(source);
+        if (!match.Success)
+        {
+            return false;
+        }
+
+        var item = TranslateDisplayNameSegment(match.Groups["item"].Value);
+        var suffix = ApplyRegexTemplates(match.Groups["suffix"].Value);
+        if (string.Equals(item, match.Groups["item"].Value, StringComparison.Ordinal)
+            && string.Equals(suffix, match.Groups["suffix"].Value, StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        translated = string.Concat(item, match.Groups["separator"].Value, suffix);
+        return true;
+    }
+
+    private static bool TryTranslateBracketedStateOption(string source, out string translated)
+    {
+        translated = source;
+        var match = BracketedStateOptionPattern.Match(source);
+        if (!match.Success)
+        {
+            return false;
+        }
+
+        var item = TranslateDisplayNameSegment(match.Groups["item"].Value);
+        var state = ApplyExactReplacements(match.Groups["state"].Value);
+        if (string.Equals(item, match.Groups["item"].Value, StringComparison.Ordinal)
+            && string.Equals(state, match.Groups["state"].Value, StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        translated = string.Concat(item, match.Groups["separator"].Value, state);
+        return true;
+    }
+
+    private static bool TryTranslateWillReplaceOption(string source, out string translated)
+    {
+        translated = source;
+        var match = WillReplaceOptionPattern.Match(source);
+        if (!match.Success || !TryGetTemplate(" [will replace {0}]", out var template))
+        {
+            return false;
+        }
+
+        var item = TranslateDisplayNameSegment(match.Groups["item"].Value);
+        var replacement = TranslateDisplayNameSegment(match.Groups["replacement"].Value);
+        var suffix = string.Format(CultureInfo.InvariantCulture, template, replacement);
+        if (string.Equals(item, match.Groups["item"].Value, StringComparison.Ordinal)
+            && string.Equals(replacement, match.Groups["replacement"].Value, StringComparison.Ordinal)
+            && string.Equals(suffix, match.Groups["suffix"].Value, StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        translated = string.Concat(item, suffix);
+        return true;
+    }
+
+    private static string TranslateDisplayNameSegment(string source)
+    {
+        return GetDisplayNameRouteTranslator.TranslatePreservingColors(source, Context);
     }
 
     private static bool TryTranslateCyberneticsSlot(string source, out string translated)

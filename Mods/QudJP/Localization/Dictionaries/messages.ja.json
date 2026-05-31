@@ -1700,7 +1700,12 @@
     },
     {
       "pattern": "^Two (.+?) come into contact and both explode!$",
-      "template": "2つの{0}が接触し、両方とも爆発した！",
+      "template": "2つの{t0}が接触し、両方とも爆発した！",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^(?:The |the |[Aa]n? )?(.+?) comes? into contact with (?:the |a |an )?(.+?) and both explode!$",
+      "template": "{t0}は{t1}に接触し、両方とも爆発した！",
       "route": "emit-message"
     },
     {
@@ -1845,7 +1850,7 @@
     },
     {
       "pattern": "^You (?:infiltrates?|infiltrate) (?:the |a |an )?(.+?)!$",
-      "template": "{0}に潜入した！",
+      "template": "{t0}に入り込んだ！",
       "route": "emit-message"
     },
     {

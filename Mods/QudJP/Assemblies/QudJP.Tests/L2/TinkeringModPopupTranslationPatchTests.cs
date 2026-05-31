@@ -28,6 +28,7 @@ public sealed class TinkeringModPopupTranslationPatchTests
         TinkeringModPopupTranslationPatch.ResetForTests();
         DynamicTextObservability.ResetForTests();
         MessageFrameTranslator.ResetForTests();
+        Translator.ResetForTests();
     }
 
     [TestCase(
@@ -245,8 +246,15 @@ public sealed class TinkeringModPopupTranslationPatchTests
 
     private static void UseRepositoryVerbDictionary()
     {
+        var repositoryRoot = QudJP.Tests.L1.TestProjectPaths.GetRepositoryRoot();
+        Translator.SetDictionaryDirectoryForTests(Path.Combine(
+            repositoryRoot,
+            "Mods",
+            "QudJP",
+            "Localization",
+            "Dictionaries"));
         var repositoryDictionaryPath = Path.Combine(
-            QudJP.Tests.L1.TestProjectPaths.GetRepositoryRoot(),
+            repositoryRoot,
             "Mods",
             "QudJP",
             "Localization",

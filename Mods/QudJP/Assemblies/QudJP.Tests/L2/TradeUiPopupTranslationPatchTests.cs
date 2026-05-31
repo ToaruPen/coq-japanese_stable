@@ -37,6 +37,7 @@ public sealed class TradeUiPopupTranslationPatchTests
         DummyTradeUiPopupTarget.Reset();
         DummyPopupShow.Reset();
         DummyPopupTarget.Reset();
+        DummyPopupGenericTarget.Reset();
     }
 
     [TearDown]
@@ -48,6 +49,7 @@ public sealed class TradeUiPopupTranslationPatchTests
         MessageFrameTranslator.ResetForTests();
         DynamicTextObservability.ResetForTests();
         DummyTradeUiPopupTarget.Reset();
+        DummyPopupGenericTarget.Reset();
 
         if (Directory.Exists(tempDirectory))
         {
@@ -432,6 +434,27 @@ public sealed class TradeUiPopupTranslationPatchTests
             Assert.That(TradeUiPopupHitCount("TradeUiPopup.RepairTooComplex"), Is.EqualTo(1));
             Assert.That(TradeUiPopupHitCount("TradeUiPopup.RepairNeed"), Is.EqualTo(1));
             Assert.That(TradeUiPopupHitCount("TradeUiPopup.RepairQuestion"), Is.EqualTo(1));
+        });
+    }
+
+    [Test]
+    public void VendorOwnerPatch_TranslatesShowVendorActionsPopup_WithoutChangingSelectedCommand()
+    {
+        using var ownerPatch = PatchVendorOwner(nameof(DummyTradeUiVendorPopupProducerTarget.ShowVendorActions));
+        using var pickOptionPatch = PatchPickOption();
+        var target = new DummyTradeUiVendorPopupProducerTarget();
+
+        target.ShowVendorActions();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(DummyPopupGenericTarget.LastPickOptionTitle, Is.EqualTo("操作を選択"));
+            Assert.That(
+                DummyPopupGenericTarget.LastPickOptionOptions,
+                Is.EqualTo(new[] { "見る", "取引に追加", "識別", "修理", "充電", "読む" }));
+            Assert.That(target.LastVendorActionSelection, Is.EqualTo("Look"));
+            Assert.That(TradeUiPopupHitCount("TradeUiPopup.ShowVendorActions.Title"), Is.EqualTo(1));
+            Assert.That(TradeUiPopupHitCount("TradeUiPopup.ShowVendorActions.Option"), Is.EqualTo(6));
         });
     }
 
@@ -934,6 +957,17 @@ public sealed class TradeUiPopupTranslationPatchTests
             original: RequireMethod(typeof(DummyTradeUiVendorPopupProducerTarget), methodName),
             prefix: new HarmonyMethod(RequireMethod(typeof(TradeUiVendorPopupTranslationPatch), nameof(TradeUiVendorPopupTranslationPatch.Prefix))),
             finalizer: new HarmonyMethod(RequireMethod(typeof(TradeUiVendorPopupTranslationPatch), nameof(TradeUiVendorPopupTranslationPatch.Finalizer))));
+        return new HarmonyPatchScope(harmony, harmonyId);
+    }
+
+    private static IDisposable PatchPickOption()
+    {
+        var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";
+        var harmony = new Harmony(harmonyId);
+        harmony.Patch(
+            original: RequireMethod(typeof(DummyPopupGenericTarget), nameof(DummyPopupGenericTarget.PickOption)),
+            prefix: new HarmonyMethod(RequireMethod(typeof(PopupPickOptionTranslationPatch), nameof(PopupPickOptionTranslationPatch.Prefix))),
+            finalizer: new HarmonyMethod(RequireMethod(typeof(PopupPickOptionTranslationPatch), nameof(PopupPickOptionTranslationPatch.Finalizer))));
         return new HarmonyPatchScope(harmony, harmonyId);
     }
 

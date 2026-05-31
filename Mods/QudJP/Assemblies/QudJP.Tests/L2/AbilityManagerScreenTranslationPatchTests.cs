@@ -828,6 +828,32 @@ public sealed class AbilityManagerScreenTranslationPatchTests
     }
 
     [Test]
+    public void PopupPrefix_TranslatesNoActivatedAbilitiesMessage_WhenShowScreenOwnerPatched()
+    {
+        AssertOwnerPopupMessage(
+            patchOriginal: RequireMethod(
+                typeof(DummyAbilityManagerScreenTarget),
+                nameof(DummyAbilityManagerScreenTarget.showScreen),
+                typeof(object)),
+            callOwner: () =>
+            {
+                DummyAbilityManagerScreenTarget.StaticPopupMessageToShow = "You have no activated abilities.";
+                DummyAbilityManagerScreenTarget.showScreen(new object()).GetAwaiter().GetResult();
+                return DummyPopupShow.LastShowAsyncMessage;
+            },
+            expected: "発動できるアビリティがない。",
+            patchPopupOriginal: RequireMethod(
+                typeof(DummyPopupShow),
+                nameof(DummyPopupShow.ShowAsync),
+                typeof(string),
+                typeof(bool),
+                typeof(bool),
+                typeof(bool),
+                typeof(bool),
+                typeof(bool)));
+    }
+
+    [Test]
     public void PopupPrefix_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent()
     {
         var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";

@@ -182,7 +182,7 @@ public static class PopupShowTranslationPatch
         return targets;
     }
 
-    public static void Prefix(ref string __0, MethodBase __originalMethod)
+    public static void Prefix(ref string __0, MethodBase? __originalMethod)
     {
         try
         {
@@ -264,9 +264,10 @@ public static class PopupShowTranslationPatch
         return false;
     }
 
-    private static bool IsDirectMarkedPopupWrapperCall(string source, MethodBase originalMethod)
+    private static bool IsDirectMarkedPopupWrapperCall(string source, MethodBase? originalMethod)
     {
         return MessageFrameTranslator.TryStripDirectTranslationMarker(source, out _)
+            && originalMethod is not null
             && string.Equals(originalMethod.Name, "ShowFail", StringComparison.Ordinal);
     }
 }

@@ -143,6 +143,13 @@ internal sealed class DummyAbilityManagerScreenTarget
         return true;
     }
 
+    public static async Task showScreen(object gameObject)
+    {
+        _ = gameObject;
+        await Task.Yield();
+        await DummyPopupShow.ShowAsync(StaticPopupMessageToShow).ConfigureAwait(false);
+    }
+
     public static void ResetMenuOptions()
     {
         TOGGLE_SORT = new DummyAbilityManagerMenuOption

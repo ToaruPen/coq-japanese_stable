@@ -792,6 +792,28 @@ public sealed class LocalizationCoverageTests
     }
 
     [Test]
+    public void RandomFigurineBlueprints_UseLocalizedCreaturePlaceholderFrame()
+    {
+        var itemsDocument = XDocument.Load(Path.Combine(localizationRoot, "ObjectBlueprints", "Items.jp.xml"));
+        var figurineDisplayNames = itemsDocument.Root!
+            .Elements("object")
+            .Where(static element => (element.Attribute("Name")?.Value ?? string.Empty).Contains("Figurine", StringComparison.Ordinal))
+            .Select(element => element.Elements("part")
+                .FirstOrDefault(part => string.Equals(part.Attribute("Name")?.Value, "Render", StringComparison.Ordinal))
+                ?.Attribute("DisplayName")?.Value)
+            .Where(static value => value is not null && value.Contains("*creature*", StringComparison.Ordinal))
+            .Select(static value => value!)
+            .ToArray();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(figurineDisplayNames, Is.Not.Empty);
+            Assert.That(figurineDisplayNames, Has.All.Contains("のフィギュリン"));
+            Assert.That(figurineDisplayNames, Has.None.Contains("figurine"));
+        });
+    }
+
+    [Test]
     public void TreatAsSolidMessages_AreLocalizedInObjectBlueprintOverlays()
     {
         var objectBlueprintRoot = Path.Combine(localizationRoot, "ObjectBlueprints");
@@ -1368,6 +1390,19 @@ public sealed class LocalizationCoverageTests
                     $"MultiHorns.Mutate runtime SetDisplayName leaf should be available to status display sinks: {expectedEntry.Key}.");
             }
         });
+    }
+
+    [Test]
+    public void DisplayNameAtomicDictionary_ContainsPointedAsteriskWishDebugLeaf()
+    {
+        var entries = LoadEntries(Path.Combine(localizationRoot, "Dictionaries", "ui-displayname-atomic.ja.json"));
+
+        Assert.That(
+            entries,
+            Does.Contain(new DictionaryEntry(
+                "The 10-Pointed Asterisk of the Ensemble",
+                string.Empty,
+                "アンサンブルの10角アスタリスク")));
     }
 
     [Test]

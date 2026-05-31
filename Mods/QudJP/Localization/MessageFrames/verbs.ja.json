@@ -255,6 +255,10 @@
       "text": "噴出した"
     },
     {
+      "verb": "extinguish",
+      "text": "消した"
+    },
+    {
       "verb": "exit",
       "text": "出た"
     },
@@ -750,6 +754,11 @@
       "text": "光を吸収した"
     },
     {
+      "verb": "absorb",
+      "extra": "a chord of {0} light",
+      "text": "{0}の光の和音を吸収した"
+    },
+    {
       "verb": "are",
       "extra": "already full",
       "text": "{subject}はすでに満タンだ"
@@ -1008,6 +1017,11 @@
       "verb": "are",
       "extra": "immobilized",
       "text": "動けなくなった"
+    },
+    {
+      "verb": "are",
+      "extra": "enraged by the mockery",
+      "text": "嘲りに激怒した"
     },
     {
       "verb": "are",
@@ -1350,6 +1364,11 @@
       "text": "突撃した！"
     },
     {
+      "verb": "climb",
+      "extra": "through {0} {1}",
+      "text": "{subject}は{t1}の{t0}を通って這い出てきた{endmark}"
+    },
+    {
       "verb": "click",
       "extra": "merely",
       "text": "{subject}はカチッと鳴るだけだった"
@@ -1528,6 +1547,11 @@
       "verb": "fall",
       "extra": "asleep",
       "text": "眠りに落ちた"
+    },
+    {
+      "verb": "fall",
+      "extra": "through {0} {1}",
+      "text": "{subject}は{t1}の{t0}を通って落ちてきた{endmark}"
     },
     {
       "verb": "fall",
@@ -1943,6 +1967,11 @@
       "verb": "start",
       "extra": "scintillating in {{rainbow|prismatic hues}}",
       "text": "{{rainbow|虹色の輝き}}を放ち始めた"
+    },
+    {
+      "verb": "start",
+      "extra": "interfacing with {0}",
+      "text": "{t0}とのインターフェースを開始した"
     },
     {
       "verb": "start",
@@ -2543,8 +2572,8 @@
     },
     {
       "verb": "are",
-      "extra": "occupied\\.\\n\\nAttempting to enter is a hostile action and will function as an attack with (.+)",
-      "text": "{subject}は占有されている。\\n\\n侵入しようとすると敵対行動と見なされ、{0}での攻撃として扱われる{endmark}"
+      "extra": "occupied\\.\\n\\nAttempting to enter is a hostile action and will function as an attack with (\\d+)% infiltration chance per penetration\\.\\n\\nAre you sure you want to proceed",
+      "text": "{subject}は占有されている。\n\n中に入ろうとすると敵対行動となり、貫通1回ごとに{0}%の侵入確率を持つ攻撃として扱われる。\n\n続行しますか？"
     },
     {
       "verb": "are",
@@ -2767,6 +2796,66 @@
       "text": "{0}ピストルを熱心に握りしめた"
     },
     {
+      "verb": "clean",
+      "extra": "the mess from {0}",
+      "text": "{t0}の汚れを落とした"
+    },
+    {
+      "verb": "clean",
+      "extra": "the mess from {0} with {1}",
+      "text": "{t1}で{t0}の汚れを落とした"
+    },
+    {
+      "verb": "clean",
+      "extra": "the mess from {0} with a dram of {1}",
+      "text": "{t1} 1ドラムで{t0}の汚れを落とした"
+    },
+    {
+      "verb": "clean",
+      "extra": "the mess from {0} with a dram of {1} {2}",
+      "text": "{t2}で{t1} 1ドラムを使って{t0}の汚れを落とした"
+    },
+    {
+      "verb": "clean",
+      "extra": "the mess from {0} with a dram of {1} from {2}",
+      "text": "{t2}から{t1} 1ドラムを使って{t0}の汚れを落とした"
+    },
+    {
+      "verb": "clean",
+      "extra": "the mess from {0} with a dram of {1} from {2} {3}",
+      "text": "{t2}（{t3}）から{t1} 1ドラムを使って{t0}の汚れを落とした"
+    },
+    {
+      "verb": "clean",
+      "extra": "the {0} from {1}",
+      "text": "{t1}から{t0}を落とした"
+    },
+    {
+      "verb": "clean",
+      "extra": "the {0} from {1} with {2}",
+      "text": "{t2}で{t1}から{t0}を落とした"
+    },
+    {
+      "verb": "clean",
+      "extra": "the {0} from {1} with a dram of {2}",
+      "text": "{t2} 1ドラムを使って{t1}から{t0}を落とした"
+    },
+    {
+      "verb": "clean",
+      "extra": "the {0} from {1} with a dram of {2} {3}",
+      "text": "{t3}で{t2} 1ドラムを使って{t1}から{t0}を落とした"
+    },
+    {
+      "verb": "clean",
+      "extra": "the {0} from {1} with a dram of {2} from {3}",
+      "text": "{t3}から{t2} 1ドラムを使って{t1}から{t0}を落とした"
+    },
+    {
+      "verb": "clean",
+      "extra": "the {0} from {1} with a dram of {2} from {3} {4}",
+      "text": "{t3}（{t4}）から{t2} 1ドラムを使って{t1}から{t0}を落とした"
+    },
+    {
       "verb": "cleave",
       "extra": "through (?:the |a |an )?(.+?)",
       "text": "{subject}は{t0}を両断した"
@@ -2967,6 +3056,11 @@
       "text": "{0}を通り抜けた"
     },
     {
+      "verb": "shimmer",
+      "extra": "into existence in {0} grasp",
+      "text": "{subject}は{t0}手の中にきらめきながら現れた{endmark}"
+    },
+    {
       "verb": "fling",
       "extra": "(?:your|his|her|its|their) quills",
       "text": "棘を飛ばした"
@@ -3094,7 +3188,7 @@
     {
       "verb": "infiltrate",
       "extra": "(?:the |a |an )?(.+?)",
-      "text": "{subject}は{0}に潜入した{endmark}"
+      "text": "{subject}は{t0}に入り込んだ{endmark}"
     },
     {
       "verb": "juke",
@@ -3453,6 +3547,11 @@
     },
     {
       "verb": "teach",
+      "extra": "{0} {1}",
+      "text": "{subject}は{0}に{1}を教えた{endmark}"
+    },
+    {
+      "verb": "teach",
       "extra": "you to craft (.+?)",
       "text": "{subject}は{0}の製作法をあなたに教えた"
     },
@@ -3733,6 +3832,11 @@
     },
     {
       "verb": "vibrate",
+      "extra": "to warm {0}",
+      "text": "{0}を温めようと振動した"
+    },
+    {
+      "verb": "vibrate",
       "extra": "as the current location is imprinted in (?:your|his|her|its|their) geospatial core",
       "text": "現在地を地理空間コアに刻み込み、振動した"
     },
@@ -3787,6 +3891,21 @@
       "text": "{1}で{0}傷を止血しようとしたが、影響を与えられなかった"
     },
     {
+      "verb": "transfer",
+      "extra": "{1} to {0}",
+      "text": "{t1}を{t0}に移した"
+    },
+    {
+      "verb": "transfer",
+      "extra": "{1} {0}",
+      "text": "{t1}を{t0}に移した"
+    },
+    {
+      "verb": "swim",
+      "extra": "through {0}",
+      "text": "{0}の中を泳いだ"
+    },
+    {
       "verb": "wade",
       "extra": "through {0}",
       "text": "{subject}は{0}の中をかき分けて進んだ"
@@ -3795,6 +3914,11 @@
       "verb": "wince",
       "extra": "",
       "text": "{subject}はたじろいだ"
+    },
+    {
+      "verb": "yell",
+      "extra": "an? (?:terrible|ghastly|corny|shameful|rude|painful|monstrous|horrid|puerile|childish|boring|ridiculous) (?:pun|joke|double entendre|jape|goof|tall tale) about (.+?)",
+      "text": "{subject}は{t0}についてひどい冗談を叫んだ{endmark}"
     },
     {
       "verb": "won't",

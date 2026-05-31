@@ -662,9 +662,24 @@ internal static class MessageFrameTranslator
             return "それ";
         }
 
+        if (string.Equals(trimmed, "itself", StringComparison.OrdinalIgnoreCase))
+        {
+            return "それ自身";
+        }
+
         if (string.Equals(trimmed, "them", StringComparison.OrdinalIgnoreCase))
         {
             return "それら";
+        }
+
+        if (string.Equals(trimmed, "themselves", StringComparison.OrdinalIgnoreCase))
+        {
+            return "それら自身";
+        }
+
+        if (string.Equals(trimmed, "yourself", StringComparison.OrdinalIgnoreCase))
+        {
+            return "自分";
         }
 
         if (string.Equals(trimmed, "your", StringComparison.OrdinalIgnoreCase))
@@ -700,6 +715,11 @@ internal static class MessageFrameTranslator
         if (TryTranslateBodyPartPlaceholderValue(trimmed, out var bodyPartName))
         {
             return bodyPartName;
+        }
+
+        if (TryTranslateColorAwarePlaceholderValue(trimmed, out var colorAwareTranslation))
+        {
+            return colorAwareTranslation;
         }
 
         if (trimmed.EndsWith("'s", StringComparison.Ordinal))
@@ -740,6 +760,40 @@ internal static class MessageFrameTranslator
         }
 
         return trimmed;
+    }
+
+    private static bool TryTranslateColorAwarePlaceholderValue(string source, out string translated)
+    {
+        if (!ColorAwareTranslationComposer.HasColorMarkup(source))
+        {
+            translated = string.Empty;
+            return false;
+        }
+
+        var visible = ColorAwareTranslationComposer.GetVisibleText(source).Trim();
+        if (visible.Length == 0)
+        {
+            translated = string.Empty;
+            return false;
+        }
+
+        if (!TryGetOptionalGlobalTranslation(visible, out var visibleTranslation)
+            || string.Equals(visibleTranslation, visible, StringComparison.Ordinal))
+        {
+            var withoutArticle = StringHelpers.StripLeadingEnglishArticle(
+                visible,
+                includeCapitalizedDefiniteArticle: true);
+            if (string.Equals(withoutArticle, visible, StringComparison.Ordinal)
+                || !TryGetOptionalGlobalTranslation(withoutArticle, out visibleTranslation)
+                || string.Equals(visibleTranslation, withoutArticle, StringComparison.Ordinal))
+            {
+                translated = string.Empty;
+                return false;
+            }
+        }
+
+        translated = ColorAwareTranslationComposer.TranslatePreservingColors(source, _ => visibleTranslation);
+        return true;
     }
 
     private static bool TryTranslateBodyPartPlaceholderValue(string source, out string translated)

@@ -12,6 +12,7 @@ public static class SingleCallsiteOwnerQueueTranslationPatch
 {
     private const string Context = nameof(SingleCallsiteOwnerQueueTranslationPatch);
     private const string ActivatedAbilityEntryOwner = "XRL.World.Parts.ActivatedAbilityEntry|TrySendCommandEventOnPlayer";
+    private const string BiomeSurfaceDistributionOwner = "XRL.World.Biomes.BiomeManager|DisplaySurfaceDistribution";
     private const string ElevatorSwitchOwner = "XRL.World.Parts.ElevatorSwitch|FireEvent";
     private const string FetchesOwner = "XRL.World.Parts.Fetches|HandleEvent";
     private const string ModMorphogeneticOwner = "XRL.World.Parts.ModMorphogenetic|ApplyMorphicShock";
@@ -34,6 +35,10 @@ public static class SingleCallsiteOwnerQueueTranslationPatch
 
     private static readonly Regex FetchesRunsOffToFetchPattern = new(
         "^(?<actor>.+?) (?:runs|run) off to fetch (?<object>.+?)!$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex BiomeSurfaceDistributionPattern = new(
+        "^(?<biome>.+?) biome: (?<count>\\d+)/(?<total>\\d+), (?<percent>\\d+)%\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     private static readonly Regex TonicVisibleConsumePattern = new(
@@ -97,6 +102,7 @@ public static class SingleCallsiteOwnerQueueTranslationPatch
         var targets = new List<MethodBase>();
         var activatedAbilityEntryType = FindAssemblyCSharpType("XRL.World.Parts.ActivatedAbilityEntry");
         var aiBoredEventType = FindAssemblyCSharpType("XRL.World.AIBoredEvent");
+        var biomeManagerType = FindAssemblyCSharpType("XRL.World.Biomes.BiomeManager");
         var elevatorSwitchType = FindAssemblyCSharpType("XRL.World.Parts.ElevatorSwitch");
         var eventType = FindAssemblyCSharpType("XRL.World.Event");
         var fetchesType = FindAssemblyCSharpType("XRL.World.Parts.Fetches");
@@ -114,6 +120,7 @@ public static class SingleCallsiteOwnerQueueTranslationPatch
         var weirdwireConduitType = FindAssemblyCSharpType("XRL.World.Quests.WeirdwireConduitSystem");
         if (activatedAbilityEntryType is null
             || aiBoredEventType is null
+            || biomeManagerType is null
             || elevatorSwitchType is null
             || eventType is null
             || fetchesType is null
@@ -139,6 +146,11 @@ public static class SingleCallsiteOwnerQueueTranslationPatch
             activatedAbilityEntryType,
             "TrySendCommandEventOnPlayer",
             Type.EmptyTypes);
+        AddTarget(
+            targets,
+            biomeManagerType,
+            "DisplaySurfaceDistribution",
+            [typeof(string)]);
         AddTarget(
             targets,
             elevatorSwitchType,
@@ -375,6 +387,21 @@ public static class SingleCallsiteOwnerQueueTranslationPatch
             return true;
         }
 
+        match = BiomeSurfaceDistributionPattern.Match(source);
+        if (match.Success && OwnerMatches(ownerKey, BiomeSurfaceDistributionOwner))
+        {
+            translated = TranslateBiomeName(match.Groups["biome"].Value)
+                + "バイオーム: "
+                + match.Groups["count"].Value
+                + "/"
+                + match.Groups["total"].Value
+                + "、"
+                + match.Groups["percent"].Value
+                + "%。";
+            detail = "BiomeSurfaceDistribution";
+            return true;
+        }
+
         if (TryTranslateTonicHandleEventFailure(source, ownerKey, out translated, out detail))
         {
             return true;
@@ -402,6 +429,19 @@ public static class SingleCallsiteOwnerQueueTranslationPatch
         translated = source;
         detail = string.Empty;
         return false;
+    }
+
+    private static string TranslateBiomeName(string source)
+    {
+        return source switch
+        {
+            "Slimy" => "ぬめる",
+            "Tarry" => "タール塗れの",
+            "Rusty" => "錆びた",
+            "Fungal" => "菌類",
+            "Psychic" => "サイキック",
+            _ => source,
+        };
     }
 
     private static bool TryTranslateTonicHandleEventFailure(

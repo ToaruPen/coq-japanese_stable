@@ -515,6 +515,38 @@ public sealed class WorldPartsProducerTranslationPatchTests
     }
 
     [Test]
+    public void DesalinationPelletPatch_TranslatesFixedFailurePopup_WhenPatched()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            PatchPopupShow(harmony, nameof(DummyPopupShow.ShowFail));
+            PatchOwner(
+                harmony,
+                RequireMethod(
+                    typeof(DummyDesalinationPelletProducerTarget),
+                    nameof(DummyDesalinationPelletProducerTarget.HandleFailureEvent),
+                    typeof(DummyInventoryActionEvent)),
+                typeof(DesalinationPelletTranslationPatch));
+
+            var target = new DummyDesalinationPelletProducerTarget
+            {
+                PopupMessageToShow = "It doesn't seem to do anything.",
+            };
+
+            target.HandleFailureEvent(new DummyInventoryActionEvent());
+
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("何も起こらないようだ。"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void ClonelingVehiclePatch_TranslatesPopupFailure_WhenPatched()
     {
         var harmonyId = CreateHarmonyId();

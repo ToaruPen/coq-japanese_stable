@@ -75,6 +75,98 @@ public sealed class PopupAskStringTranslationPatchTests
     }
 
     [Test]
+    public void Prefix_TranslatesFrameworkSearchPrompt()
+    {
+        WriteDictionary(("Enter search text", "検索テキストを入力"));
+
+        using var patch = PatchMethod(nameof(DummyPopupGenericTarget.AskStringAsync));
+
+        _ = DummyPopupGenericTarget.AskStringAsync("Enter search text").GetAwaiter().GetResult();
+
+        Assert.That(DummyPopupGenericTarget.LastAskStringMessage, Is.EqualTo("検索テキストを入力"));
+    }
+
+    [Test]
+    public void Prefix_RepositoryDictionary_TranslatesCodaEndGamePrompt()
+    {
+        Translator.SetDictionaryDirectoryForTests(GetRepositoryDictionaryDirectory());
+
+        using var patch = PatchMethod(nameof(DummyPopupGenericTarget.AskString));
+
+        DummyPopupGenericTarget.AskString("Leaving the village will end the game.\n\nType END GAME to confirm.");
+
+        Assert.That(
+            DummyPopupGenericTarget.LastAskStringMessage,
+            Is.EqualTo("村を出るとゲームが終了する。\n\n確認するには END GAME と入力。"));
+    }
+
+    [Test]
+    public void Prefix_RepositoryDictionary_TranslatesBuildLibraryPrompts()
+    {
+        Translator.SetDictionaryDirectoryForTests(GetRepositoryDictionaryDirectory());
+
+        using var patch = PatchMethod(nameof(DummyPopupGenericTarget.AskStringAsync));
+
+        _ = DummyPopupGenericTarget.AskStringAsync("Paste build code:").GetAwaiter().GetResult();
+        var pastePrompt = DummyPopupGenericTarget.LastAskStringMessage;
+
+        _ = DummyPopupGenericTarget.AskStringAsync("Name this build:").GetAwaiter().GetResult();
+        var namePrompt = DummyPopupGenericTarget.LastAskStringMessage;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(pastePrompt, Is.EqualTo("ビルドコードを貼り付け："));
+            Assert.That(namePrompt, Is.EqualTo("このビルドに名前を付ける："));
+        });
+    }
+
+    [Test]
+    public void Prefix_TranslatesGenderCustomizeNamePromptTemplate()
+    {
+        WriteDictionary((
+            "What name should be used for your {0}? (Male, female, etc.)",
+            "あなたの{0}に使う名前は？（Male、female など）"));
+
+        using var patch = PatchMethod(nameof(DummyPopupGenericTarget.AskStringAsync));
+
+        _ = DummyPopupGenericTarget.AskStringAsync(
+            "What name should be used for your gender? (Male, female, etc.)").GetAwaiter().GetResult();
+
+        Assert.That(DummyPopupGenericTarget.LastAskStringMessage, Is.EqualTo("あなたのgenderに使う名前は？（Male、female など）"));
+    }
+
+    [Test]
+    public void Prefix_TranslatesEndGameConversationConfirmPromptTemplate()
+    {
+        WriteDictionary(("End game?\n\nType {0} to confirm.", "ゲームを終了しますか？\n\n確認するには {0} と入力。"));
+
+        using var patch = PatchMethod(nameof(DummyPopupGenericTarget.AskString));
+
+        DummyPopupGenericTarget.AskString("End game?\n\nType ASCEND to confirm.");
+
+        Assert.That(
+            DummyPopupGenericTarget.LastAskStringMessage,
+            Is.EqualTo("ゲームを終了しますか？\n\n確認するには ASCEND と入力。"));
+    }
+
+    [TestCase(
+        "Launch spaceship and end game? (type LAUNCH to confirm)",
+        "宇宙船を発射してゲームを終了しますか？（確認するには LAUNCH と入力）")]
+    [TestCase(
+        "Opening the ark will expose its nondeterministic core to the chamber's ambient normality and irrevocably damage Resheph. Continue?\n\nType OPEN ARK to confirm.",
+        "方舟を開くと、その非決定論的コアが部屋の周囲正常性にさらされ、レシェフに取り返しのつかない損傷を与える。続けますか？\n\n確認するには OPEN ARK と入力。")]
+    public void Prefix_TranslatesShipArkConfirmationPrompts(string source, string expected)
+    {
+        WriteDictionary((source, expected));
+
+        using var patch = PatchMethod(nameof(DummyPopupGenericTarget.AskString));
+
+        DummyPopupGenericTarget.AskString(source);
+
+        Assert.That(DummyPopupGenericTarget.LastAskStringMessage, Is.EqualTo(expected));
+    }
+
+    [Test]
     public void Prefix_LeavesAlreadyLocalizedAskStringPromptUnchanged()
     {
         using var patch = PatchMethod(nameof(DummyPopupGenericTarget.AskString));
@@ -216,6 +308,9 @@ public sealed class PopupAskStringTranslationPatchTests
     {
         return $"qudjp.tests.{Guid.NewGuid():N}";
     }
+
+    private static string GetRepositoryDictionaryDirectory() =>
+        Path.Combine(QudJP.Tests.L1.TestProjectPaths.GetRepositoryRoot(), "Mods", "QudJP", "Localization", "Dictionaries");
 
     private static MethodInfo RequireMethod(Type type, string methodName)
     {
