@@ -319,38 +319,41 @@ public sealed class PopupMessageTranslationPatchTests
             PopupTranslatedMessageHandoff.ExitScope(handoffScope);
         }
 
-        string? translated = null;
-        Exception? thrown = null;
-        var thread = new System.Threading.Thread(() =>
-        {
-            try
-            {
-                var message = "&Csame text&y";
-                string? title = null;
-                string? contextTitle = null;
-                PopupMessageTranslationPatch.Prefix(
-                    ref message,
-                    null,
-                    null,
-                    ref title,
-                    ref contextTitle,
-                    null);
-                translated = message;
-            }
-            catch (Exception ex)
-            {
-                thrown = ex;
-            }
-        });
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
 
-        thread.Start();
-        Assert.That(thread.Join(5000), Is.True);
-        if (thrown is not null)
+        try
         {
-            Assert.Fail(thrown.ToString());
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyPopupMessageTarget), nameof(DummyPopupMessageTarget.ShowPopup)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(PopupMessageTranslationPatch), nameof(PopupMessageTranslationPatch.Prefix))));
+
+            Exception? thrown = null;
+            var thread = new System.Threading.Thread(() =>
+            {
+                try
+                {
+                    new DummyPopupMessageTarget().ShowPopup("&Csame text&y");
+                }
+                catch (Exception ex)
+                {
+                    thrown = ex;
+                }
+            });
+
+            thread.Start();
+            Assert.That(thread.Join(5000), Is.True);
+            if (thrown is not null)
+            {
+                Assert.Fail(thrown.ToString());
+            }
+
+            Assert.That(DummyPopupMessageTarget.LastMessage, Is.EqualTo("&Csame text&y"));
         }
-
-        Assert.That(translated, Is.EqualTo("&Csame text&y"));
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
     }
 
     [Test]
