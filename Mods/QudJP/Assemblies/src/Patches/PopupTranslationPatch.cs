@@ -37,6 +37,8 @@ public static class PopupTranslationPatch
         new Regex("[A-Za-z]", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex HotkeyLabelPattern =
         new Regex("^\\[(?<hotkey>[^\\]]+)\\]\\s+(?<label>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex EmbeddedHotkeyLabelPattern =
+        new Regex("^[A-Za-z][A-Za-z .]*[A-Za-z.]$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex EnergyCellSocketPickerTitlePattern =
         new Regex("^Choose a cell for (?<target>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex EnergyCellSocketRemoveCellPattern =
@@ -1328,7 +1330,7 @@ public static class PopupTranslationPatch
         }
 
         if (source.IndexOf("{{hotkey|", StringComparison.Ordinal) < 0
-            || !Regex.IsMatch(stripped, "^[A-Za-z][A-Za-z ]*[A-Za-z]$", RegexOptions.CultureInvariant))
+            || !EmbeddedHotkeyLabelPattern.IsMatch(stripped))
         {
             return false;
         }
@@ -1342,6 +1344,11 @@ public static class PopupTranslationPatch
         if (string.Equals(embeddedTranslated, stripped, StringComparison.Ordinal))
         {
             return false;
+        }
+
+        if (!embeddedTranslated.StartsWith("{{hotkey|", StringComparison.Ordinal) && TryGetEmbeddedHotkeyMarker(stripped, spans, labelGroup: null, labelStart: 0, out var embeddedHotkeyMarker))
+        {
+            embeddedTranslated = embeddedHotkeyMarker + embeddedTranslated;
         }
 
         translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
@@ -1646,6 +1653,11 @@ public static class PopupTranslationPatch
                     visible,
                     nameof(PopupTranslationPatch)));
             translated = AppendDefaultColorAfterInlineColor(translatedCell) + "を充電する";
+            if (TryGetLeadingEmbeddedHotkeyMarker(label, spans, labelGroup, labelStart, out var hotkeyMarker))
+            {
+                translated = hotkeyMarker + translated;
+            }
+
             return true;
         }
 
@@ -1700,6 +1712,90 @@ public static class PopupTranslationPatch
 
         translated = translatedMeal + "を食べる";
         return true;
+    }
+
+    private static bool TryGetLeadingEmbeddedHotkeyMarker(
+        string label,
+        IReadOnlyList<ColorSpan>? spans,
+        Group? labelGroup,
+        int? labelStart,
+        out string marker)
+    {
+        marker = string.Empty;
+        if (label.Length == 0 || spans is null || spans.Count == 0)
+        {
+            return false;
+        }
+
+        var visibleStart = GetVisibleStart(labelGroup, labelStart);
+        if (!HasColorSpanTokenAt(spans, visibleStart, "{{hotkey|")
+            || !HasColorSpanTokenAt(spans, visibleStart + 1, "}}"))
+        {
+            return false;
+        }
+
+        marker = "{{hotkey|" + label[0] + "}}";
+        return true;
+    }
+
+    private static bool TryGetEmbeddedHotkeyMarker(
+        string label,
+        IReadOnlyList<ColorSpan>? spans,
+        Group? labelGroup,
+        int? labelStart,
+        out string marker)
+    {
+        marker = string.Empty;
+        if (label.Length == 0 || spans is null || spans.Count == 0)
+        {
+            return false;
+        }
+
+        var visibleStart = GetVisibleStart(labelGroup, labelStart);
+        var visibleEnd = visibleStart + label.Length;
+        for (var index = 0; index < spans.Count; index++)
+        {
+            var span = spans[index];
+            if (span.Index < visibleStart
+                || span.Index >= visibleEnd
+                || !string.Equals(span.Token, "{{hotkey|", StringComparison.Ordinal))
+            {
+                continue;
+            }
+
+            var relativeIndex = span.Index - visibleStart;
+            if (!HasColorSpanTokenAt(spans, span.Index + 1, "}}"))
+            {
+                continue;
+            }
+
+            marker = "{{hotkey|" + label[relativeIndex] + "}}";
+            return true;
+        }
+
+        return false;
+    }
+
+    private static int GetVisibleStart(Group? labelGroup, int? labelStart)
+    {
+        return labelGroup is { Success: true }
+            ? labelGroup.Index
+            : labelStart ?? 0;
+    }
+
+    private static bool HasColorSpanTokenAt(IReadOnlyList<ColorSpan> spans, int index, string token)
+    {
+        for (var spanIndex = 0; spanIndex < spans.Count; spanIndex++)
+        {
+            var span = spans[spanIndex];
+            if (span.Index == index
+                && string.Equals(span.Token, token, StringComparison.Ordinal))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private static string RestoreNestedVisibleSlice(Group parentGroup, Group childGroup, IReadOnlyList<ColorSpan> spans)
