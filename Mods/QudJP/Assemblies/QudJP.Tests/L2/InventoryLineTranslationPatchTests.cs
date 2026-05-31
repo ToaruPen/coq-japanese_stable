@@ -47,14 +47,17 @@ public sealed partial class Issue201StatusScreensBatch2Tests
     {
         WriteDictionaryFile("ui-displayname-atomic.ja.json", ("water flask", "水袋"));
 
+        var initialCacheCount = InventoryLineTranslationPatch.GetTranslationCacheCountForTests();
         var first = InventoryLineTranslationPatch.TranslateItemDisplayNameForQudTest("water flask");
+        var afterFirstCacheCount = InventoryLineTranslationPatch.GetTranslationCacheCountForTests();
         var second = InventoryLineTranslationPatch.TranslateItemDisplayNameForQudTest("water flask");
 
         Assert.Multiple(() =>
         {
             Assert.That(first, Is.EqualTo("水袋"));
             Assert.That(second, Is.EqualTo(first));
-            Assert.That(InventoryLineTranslationPatch.GetTranslationCacheCountForTests(), Is.GreaterThanOrEqualTo(1));
+            Assert.That(afterFirstCacheCount, Is.EqualTo(initialCacheCount + 1));
+            Assert.That(InventoryLineTranslationPatch.GetTranslationCacheCountForTests(), Is.EqualTo(afterFirstCacheCount));
         });
     }
 
@@ -64,13 +67,17 @@ public sealed partial class Issue201StatusScreensBatch2Tests
         WriteDictionaryFile("ui-displayname-atomic.ja.json", ("water flask", "水袋"));
         WriteDictionaryFile("ui-displayname-adjectives.ja.json", ("[empty]", "[空]"));
 
+        var initialCacheCount = InventoryLineTranslationPatch.GetTranslationCacheCountForTests();
         var first = InventoryLineTranslationPatch.TranslateItemDisplayNameForQudTest("water flask [empty]");
+        var afterFirstCacheCount = InventoryLineTranslationPatch.GetTranslationCacheCountForTests();
         var second = InventoryLineTranslationPatch.TranslateItemDisplayNameForQudTest("water flask [empty]");
 
         Assert.Multiple(() =>
         {
             Assert.That(first, Is.EqualTo("水袋 [空]"));
             Assert.That(second, Is.EqualTo("水袋 [空]"));
+            Assert.That(afterFirstCacheCount, Is.EqualTo(initialCacheCount + 1));
+            Assert.That(InventoryLineTranslationPatch.GetTranslationCacheCountForTests(), Is.EqualTo(afterFirstCacheCount));
         });
     }
 

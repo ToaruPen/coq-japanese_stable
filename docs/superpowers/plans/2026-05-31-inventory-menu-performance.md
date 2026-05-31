@@ -477,6 +477,30 @@ public void TranslateItemDisplayNameForQudTest_CachesRepeatedDisplayName()
 }
 ```
 
+Add an L2 companion assertion near the inventory display-name cache tests so the
+cache policy is tied to real localization output, not only to accessor counts:
+
+```csharp
+[Test]
+public void TranslateItemDisplayNameForQudTest_CachesRepeatedDisplayName()
+{
+    WriteDictionaryFile("ui-displayname-atomic.ja.json", ("water flask", "水袋"));
+
+    var initialCacheCount = InventoryLineTranslationPatch.GetTranslationCacheCountForTests();
+    var first = InventoryLineTranslationPatch.TranslateItemDisplayNameForQudTest("water flask");
+    var afterFirstCacheCount = InventoryLineTranslationPatch.GetTranslationCacheCountForTests();
+    var second = InventoryLineTranslationPatch.TranslateItemDisplayNameForQudTest("water flask");
+
+    Assert.Multiple(() =>
+    {
+        Assert.That(first, Is.EqualTo("水袋"));
+        Assert.That(second, Is.EqualTo(first));
+        Assert.That(afterFirstCacheCount, Is.EqualTo(initialCacheCount + 1));
+        Assert.That(InventoryLineTranslationPatch.GetTranslationCacheCountForTests(), Is.EqualTo(afterFirstCacheCount));
+    });
+}
+```
+
 Modify the existing `ReflectionUtilsTests` file and add this cache test:
 
 ```csharp
@@ -941,7 +965,7 @@ Expected: all pass.
 Run:
 
 ```bash
-just deploy-mod
+just deploy-dev
 ```
 
 Manual verification in Caves of Qud 1.0.4:

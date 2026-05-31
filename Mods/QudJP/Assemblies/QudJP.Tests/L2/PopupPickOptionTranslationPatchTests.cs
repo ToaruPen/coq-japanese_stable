@@ -300,14 +300,19 @@ public sealed class PopupPickOptionTranslationPatchTests
     {
         WriteCommonMenuActionDictionary(("get", "取る"));
 
-        _ = SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+        var first = SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
             "{{W|[g]}} {{y|get}}",
             "InventoryActionMenu:a");
-        _ = SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+        var second = SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
             "{{W|[g]}} {{y|get}}",
             "InventoryActionMenu:b");
 
-        Assert.That(SelectableTextMenuItemTranslationPatch.GetDisplayTranslationCacheCountForTests(), Is.EqualTo(2));
+        Assert.Multiple(() =>
+        {
+            Assert.That(first, Is.EqualTo("{{W|[g]}} {{y|取る}}"));
+            Assert.That(second, Is.EqualTo("{{W|[g]}} {{y|取る}}"));
+            Assert.That(SelectableTextMenuItemTranslationPatch.GetDisplayTranslationCacheCountForTests(), Is.EqualTo(2));
+        });
     }
 
     [Test]
