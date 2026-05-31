@@ -295,7 +295,54 @@ public sealed class Issue289OrphanRoutePatchTests
 
             Assert.Multiple(() =>
             {
+                Assert.That(target.LastHighlightCid, Is.EqualTo("QudTextMenuItem:look"));
                 Assert.That(target.LastHighlightText, Is.EqualTo("{{y|スナップジョーを調べろ。}}"));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(nameof(TutorialManagerHighlightTranslationPatch), "TutorialManager.HighlightText"),
+                    Is.EqualTo(1));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void TutorialManagerHighlightPrefix_RewritesMehmetPoiControlId_WhenDisplayNameIsLocalized()
+    {
+        WriteDictionary(("Choose Mehmet.", "メフメットを選んでください。"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(
+                    typeof(DummyTutorialManagerInstanceTarget),
+                    nameof(DummyTutorialManagerInstanceTarget.HighlightByCID),
+                    new[]
+                    {
+                        typeof(string),
+                        typeof(string),
+                        typeof(string),
+                        typeof(int),
+                        typeof(int),
+                        typeof(float),
+                        typeof(string),
+                    }),
+                prefix: new HarmonyMethod(RequireMethod(typeof(TutorialManagerHighlightTranslationPatch), nameof(TutorialManagerHighlightTranslationPatch.Prefix))));
+
+            var target = new DummyTutorialManagerInstanceTarget();
+            target.HighlightByCID(
+                "QudTextMenuItem:mehmet [ne]",
+                "Choose Mehmet.",
+                "ne");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(target.LastHighlightCid, Is.EqualTo("QudTextMenuItem:メフメット [ne]"));
+                Assert.That(target.LastHighlightText, Is.EqualTo("{{y|メフメットを選んでください。}}"));
                 Assert.That(
                     DynamicTextObservability.GetRouteFamilyHitCountForTests(nameof(TutorialManagerHighlightTranslationPatch), "TutorialManager.HighlightText"),
                     Is.EqualTo(1));
