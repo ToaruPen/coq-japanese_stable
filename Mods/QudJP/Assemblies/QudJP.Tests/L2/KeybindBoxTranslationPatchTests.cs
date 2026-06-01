@@ -71,22 +71,72 @@ public sealed class KeybindBoxTranslationPatchTests
     }
 
     [Test]
-    public void Postfix_LeavesUnknownTextUnchanged()
+    public void Postfix_LeavesUnknownTextUnchanged_WhenPatched()
     {
-        var target = new DummyTextSkin { text = "{{c|None}}" };
-
-        KeybindBoxTranslationPatch.Postfix(target);
-
-        Assert.Multiple(() =>
+        var harmonyId = "qudjp.tests.keybind-box." + Guid.NewGuid().ToString("N");
+        var harmony = new Harmony(harmonyId);
+        try
         {
-            Assert.That(target.text, Is.EqualTo("{{c|None}}"));
-            Assert.That(target.AppliedCount, Is.Zero);
-            Assert.That(
-                DynamicTextObservability.GetRouteFamilyHitCountForTests(
-                    KeybindBoxTranslationPatch.Context,
-                    KeybindBoxTranslationPatch.Family),
-                Is.Zero);
-        });
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyKeybindBoxTarget), nameof(DummyKeybindBoxTarget.Update)),
+                postfix: new HarmonyMethod(RequireMethod(
+                    typeof(KeybindBoxTranslationPatch),
+                    nameof(KeybindBoxTranslationPatch.Postfix))));
+
+            var target = new DummyKeybindBoxTarget { textSkin = { text = "{{c|None}}" } };
+            target.Update();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(target.textSkin.text, Is.EqualTo("{{c|None}}"));
+                Assert.That(target.textSkin.AppliedCount, Is.EqualTo(1));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        KeybindBoxTranslationPatch.Context,
+                        KeybindBoxTranslationPatch.Family),
+                    Is.Zero);
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void Postfix_StripsDirectMarkedText_WhenPatched()
+    {
+        var harmonyId = "qudjp.tests.keybind-box." + Guid.NewGuid().ToString("N");
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyKeybindBoxTarget), nameof(DummyKeybindBoxTarget.Update)),
+                postfix: new HarmonyMethod(RequireMethod(
+                    typeof(KeybindBoxTranslationPatch),
+                    nameof(KeybindBoxTranslationPatch.Postfix))));
+
+            var target = new DummyKeybindBoxTarget
+            {
+                textSkin = { text = MessageFrameTranslator.MarkDirectTranslation("{{c|None}}") },
+            };
+            target.Update();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(target.textSkin.text, Is.EqualTo("{{c|None}}"));
+                Assert.That(target.textSkin.AppliedCount, Is.EqualTo(1));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        KeybindBoxTranslationPatch.Context,
+                        KeybindBoxTranslationPatch.Family),
+                    Is.Zero);
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
     }
 
     private static MethodInfo RequireMethod(Type type, string methodName)

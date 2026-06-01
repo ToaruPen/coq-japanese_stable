@@ -99,10 +99,10 @@ public static class ObjectFinderConfigFiltersTranslationPatch
             return false;
         }
 
-        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out _))
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
         {
-            translated = source;
-            return false;
+            translated = markedText;
+            return true;
         }
 
         if (TryTranslateFixedPopupText(source, out translated))

@@ -86,29 +86,30 @@ public static class TinkeringHelpersMakersMarkTranslationPatch
             return false;
         }
 
-        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out _))
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
         {
-            translated = source;
-            return false;
+            translated = markedText;
+            return true;
         }
 
-        if (string.Equals(source, "Select your maker's mark.", StringComparison.Ordinal))
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        if (string.Equals(stripped, "Select your maker's mark.", StringComparison.Ordinal))
         {
-            translated = "作り手の印を選ぶ。";
+            translated = ColorAwareTranslationComposer.Restore("作り手の印を選ぶ。", spans);
             Record(route, family, "Select", source, translated);
             return true;
         }
 
-        if (string.Equals(source, "Choose a color for your maker's mark.", StringComparison.Ordinal))
+        if (string.Equals(stripped, "Choose a color for your maker's mark.", StringComparison.Ordinal))
         {
-            translated = "作り手の印の色を選ぶ。";
+            translated = ColorAwareTranslationComposer.Restore("作り手の印の色を選ぶ。", spans);
             Record(route, family, "Color", source, translated);
             return true;
         }
 
-        if (string.Equals(source, "none", StringComparison.Ordinal))
+        if (string.Equals(stripped, "none", StringComparison.Ordinal))
         {
-            translated = "なし";
+            translated = ColorAwareTranslationComposer.Restore("なし", spans);
             Record(route, family, "None", source, translated);
             return true;
         }

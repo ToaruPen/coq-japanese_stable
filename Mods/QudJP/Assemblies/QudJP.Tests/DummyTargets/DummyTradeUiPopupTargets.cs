@@ -81,6 +81,8 @@ internal sealed class DummyTradeUiVendorPopupProducerTarget
 
     public bool UseConfirmationPopup { get; set; }
 
+    public IReadOnlyList<string>? VendorActionOptions { get; set; }
+
     public string? LastVendorActionSelection { get; private set; }
 
     public void ShowTradeScreen()
@@ -90,7 +92,9 @@ internal sealed class DummyTradeUiVendorPopupProducerTarget
 
     public void ShowVendorActions()
     {
-        var options = new List<string> { "Look", "Add to trade", "Identify", "Repair", "Recharge", "Read" };
+        var options = VendorActionOptions is null
+            ? new List<string> { "Look", "Add to trade", "Identify", "Repair", "Recharge", "Read" }
+            : new List<string>(VendorActionOptions);
         var index = DummyPopupGenericTarget.PickOption(
             Title: "select an action",
             Options: options.ToArray(),

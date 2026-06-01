@@ -44,6 +44,12 @@ public static class KeybindBoxTranslationPatch
                 return;
             }
 
+            if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
+            {
+                _ = UITextSkinReflectionAccessor.SetCurrentText(___textSkin, markedText, Context);
+                return;
+            }
+
             var translated = ScopedDictionaryLookup.TranslateExactOrLowerAsciiForContextOnly(
                 source!,
                 DictionaryContext,

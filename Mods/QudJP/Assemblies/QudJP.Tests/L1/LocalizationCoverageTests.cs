@@ -827,7 +827,7 @@ public sealed class LocalizationCoverageTests
         {
             Assert.That(figurineDisplayNames, Is.Not.Empty);
             Assert.That(figurineDisplayNames, Has.All.Contains("のフィギュリン"));
-            Assert.That(figurineDisplayNames, Has.None.Contains("figurine"));
+            Assert.That(figurineDisplayNames, Has.None.Matches("(?i)figurine"));
         });
     }
 

@@ -105,8 +105,38 @@ public sealed class TextFilterSpeechStatusTranslationPatchTests
     [Test]
     public void LallatedPostfix_LeavesUnknownSpeechTextUntouched()
     {
-        var result = TextFilterSpeechStatusTranslator.TranslateLallated("nya unknown words nya", "unknown words");
-        Assert.That(result, Is.EqualTo("nya unknown words nya"));
+        var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(
+                    typeof(DummyTextFiltersTarget),
+                    nameof(DummyTextFiltersTarget.Lallated),
+                    typeof(string),
+                    typeof(string)),
+                postfix: new HarmonyMethod(RequireMethod(
+                    typeof(TextFiltersLallatedTranslationPatch),
+                    nameof(TextFiltersLallatedTranslationPatch.Postfix),
+                    typeof(string),
+                    typeof(string).MakeByRefType())));
+
+            var result = DummyTextFiltersTarget.Lallated("unknown words", "nya");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(result, Is.EqualTo("nya unknown words nya"));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(TextFiltersLallatedTranslationPatch),
+                        "TextFilters.Lallated"),
+                    Is.Zero);
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
     }
 
     private void WriteDictionary(params (string key, string text)[] entries)

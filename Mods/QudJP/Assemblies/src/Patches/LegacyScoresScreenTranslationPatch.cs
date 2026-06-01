@@ -128,8 +128,9 @@ public static class LegacyScoresScreenTranslationPatch
 
     internal static StringBuilder TranslateBufferBuilder(StringBuilder source)
     {
-        var translated = TranslateBufferText(source.ToString());
-        return string.Equals(translated, source.ToString(), StringComparison.Ordinal)
+        var original = source.ToString();
+        var translated = TranslateBufferText(original);
+        return string.Equals(translated, original, StringComparison.Ordinal)
             ? source
             : new StringBuilder(translated);
     }

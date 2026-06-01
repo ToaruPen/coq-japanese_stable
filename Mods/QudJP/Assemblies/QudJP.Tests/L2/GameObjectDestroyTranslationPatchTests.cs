@@ -1,10 +1,10 @@
 using QudJP.Patches;
 using QudJP.Tests.L1;
 
-namespace QudJP.Tests.L2;
+namespace QudJP.Tests.L1;
 
 [TestFixture]
-[Category("L2")]
+[Category("L1")]
 [NonParallelizable]
 public sealed class GameObjectDestroyTranslationPatchTests
 {
@@ -38,6 +38,63 @@ public sealed class GameObjectDestroyTranslationPatchTests
                     out var translated),
                 Is.True);
             Assert.That(translated, Is.EqualTo("仲間のスナップジョーは死亡した。スナップジョーは蒸発した。"));
+        }
+        finally
+        {
+            Translator.ResetForTests();
+        }
+    }
+
+    [TestCase("Your companion, snapjaw, died.", true, "仲間のスナップジョーは死亡した。")]
+    [TestCase("Your companion, snapjaw, left.", false, "Your companion, snapjaw, left.")]
+    [TestCase("", false, "")]
+    [TestCase("\u0001Your companion, snapjaw, died.", false, "\u0001Your companion, snapjaw, died.")]
+    public void TranslateCompanionDeathMessage_HandlesFallbackEmptyAndDirectMarker(
+        string source,
+        bool expectedTranslated,
+        string expected)
+    {
+        Translator.ResetForTests();
+        Translator.SetDictionaryDirectoryForTests(Path.Combine(
+            TestProjectPaths.GetRepositoryRoot(),
+            "Mods",
+            "QudJP",
+            "Localization",
+            "Dictionaries"));
+        try
+        {
+            Assert.Multiple(() =>
+            {
+                Assert.That(
+                    GameObjectDestroyTranslationPatch.TryTranslateCompanionDeathMessage(source, out var translated),
+                    Is.EqualTo(expectedTranslated));
+                Assert.That(translated, Is.EqualTo(expected));
+            });
+        }
+        finally
+        {
+            Translator.ResetForTests();
+        }
+    }
+
+    [Test]
+    public void TranslateCompanionDeathMessage_PreservesColorTaggedCompanionName()
+    {
+        Translator.ResetForTests();
+        Translator.SetDictionaryDirectoryForTests(Path.Combine(
+            TestProjectPaths.GetRepositoryRoot(),
+            "Mods",
+            "QudJP",
+            "Localization",
+            "Dictionaries"));
+        try
+        {
+            Assert.That(
+                GameObjectDestroyTranslationPatch.TryTranslateCompanionDeathMessage(
+                    "Your companion, {{R|snapjaw}}, died.",
+                    out var translated),
+                Is.True);
+            Assert.That(translated, Is.EqualTo("仲間の{{R|スナップジョー}}は死亡した。"));
         }
         finally
         {

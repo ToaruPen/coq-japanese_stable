@@ -459,6 +459,26 @@ public sealed class TradeUiPopupTranslationPatchTests
     }
 
     [Test]
+    public void VendorOwnerPatch_PreservesColorTagsInShowVendorActionsPopup()
+    {
+        using var ownerPatch = PatchVendorOwner(nameof(DummyTradeUiVendorPopupProducerTarget.ShowVendorActions));
+        using var pickOptionPatch = PatchPickOption();
+        var target = new DummyTradeUiVendorPopupProducerTarget
+        {
+            VendorActionOptions = new[] { "{{R|Look}}" },
+        };
+
+        target.ShowVendorActions();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(DummyPopupGenericTarget.LastPickOptionOptions, Is.EqualTo(new[] { "{{R|見る}}" }));
+            Assert.That(target.LastVendorActionSelection, Is.EqualTo("{{R|Look}}"));
+            Assert.That(TradeUiPopupHitCount("TradeUiPopup.ShowVendorActions.Option"), Is.EqualTo(1));
+        });
+    }
+
+    [Test]
     public void VendorOwnerPatch_TranslatesRepairBrokenPopups_WhenOwnerPatched()
     {
         WriteDictionary(("{0} isn't broken!", "{0}は壊れていない！"));

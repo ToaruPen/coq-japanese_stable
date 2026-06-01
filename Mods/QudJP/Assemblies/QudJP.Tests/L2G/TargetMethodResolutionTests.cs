@@ -273,8 +273,6 @@ public sealed class TargetMethodResolutionTests
     [TestCase(typeof(RandomStatueDisplayNameTranslationPatch), "SetCreature", "XRL.World.Parts.RandomStatue", "System.Void", new[] { "XRL.World.GameObject" })]
     [TestCase(typeof(PetPhylacteryDisplayNameTranslationPatch), "HandleEvent", "XRL.World.Parts.PetPhylactery", "System.Boolean", new[] { "XRL.World.AfterObjectCreatedEvent" })]
     [TestCase(typeof(TombCultistTemplateDisplayNameTranslationPatch), "Apply", "XRL.World.Parts.TombCultistTemplate", "System.Void", new[] { "XRL.World.GameObject", "HistoryKit.HistoricEntitySnapshot" })]
-    [TestCase(typeof(TextFiltersAngryTranslationPatch), "Angry", "XRL.Language.TextFilters", "System.String", new[] { "System.String" })]
-    [TestCase(typeof(TextFiltersLallatedTranslationPatch), "Lallated", "XRL.Language.TextFilters", "System.String", new[] { "System.String", "System.String" })]
     [TestCase(typeof(ZoneManagerSetActiveZoneTranslationPatch), "SetActiveZone", "XRL.World.ZoneManager", "XRL.World.Zone", new[] { "XRL.World.Zone" })]
     [TestCase(typeof(JournalEntryDisplayTextPatch), "GetDisplayText", "Qud.API.IBaseJournalEntry", "System.String", new string[0])]
     [TestCase(typeof(JournalMapNoteDisplayTextPatch), "GetDisplayText", "Qud.API.JournalMapNote", "System.String", new string[0])]
@@ -812,10 +810,6 @@ public sealed class TargetMethodResolutionTests
     [TestCase(typeof(PopupShowColorPickerTranslationPatch), new[]
     {
         "System.String|System.Int32|System.String|System.Int32|System.Boolean|System.Boolean|System.String|System.String|System.Boolean|System.Boolean|System.Boolean|System.String",
-    })]
-    [TestCase(typeof(SavesApiFatalSaveErrorTranslationPatch), new[]
-    {
-        "System.Exception|System.String",
     })]
     [TestCase(typeof(PopupAskNumberTranslationPatch), new[]
     {

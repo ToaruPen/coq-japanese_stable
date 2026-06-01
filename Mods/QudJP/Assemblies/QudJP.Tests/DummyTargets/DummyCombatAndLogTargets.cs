@@ -745,6 +745,8 @@ internal sealed class DummyLiquidWarmStaticTarget
 
     public string PopupMessageToSend { get; set; } = string.Empty;
 
+    public string? LastWishWarmEffectSpecName { get; private set; }
+
     public void GlitchSkills(bool usePopup)
     {
         Emit(usePopup);
@@ -767,7 +769,7 @@ internal sealed class DummyLiquidWarmStaticTarget
 
     public void WishWarmEffectSpec(string name)
     {
-        _ = name;
+        LastWishWarmEffectSpecName = name;
         Emit(usePopup: false);
     }
 

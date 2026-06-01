@@ -67,6 +67,57 @@ public sealed class VillageSignatureItemTranslationPatchTests
             var target = new DummyVillageSignatureItemsTarget("the mysterious bauble");
             target.generateSignatureItems();
 
+            Assert.Multiple(() =>
+            {
+                Assert.That(target.signatureHistoricObjectInstance!.DisplayName, Is.EqualTo("the mysterious bauble"));
+                Assert.That(RouteHitCount(), Is.Zero);
+            });
+        });
+    }
+
+    [Test]
+    public void Postfix_LeavesEmptyDisplayNameUntouched()
+    {
+        RunWithPatch(() =>
+        {
+            var target = new DummyVillageSignatureItemsTarget(string.Empty);
+            target.generateSignatureItems();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(target.signatureHistoricObjectInstance!.DisplayName, Is.Empty);
+                Assert.That(RouteHitCount(), Is.Zero);
+            });
+        });
+    }
+
+    [Test]
+    public void Postfix_PreservesColorTagsInTranslatedSignatureDisplayName()
+    {
+        WriteDictionary(("folded paper crane", "折り紙の鶴"));
+
+        RunWithPatch(() =>
+        {
+            var target = new DummyVillageSignatureItemsTarget("the oldest {{C|folded paper crane}}");
+            target.generateSignatureItems();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(target.signatureHistoricObjectInstance!.DisplayName, Is.EqualTo("最古の{{C|折り紙の鶴}}"));
+                Assert.That(RouteHitCount(), Is.EqualTo(1));
+            });
+        });
+    }
+
+    [Test]
+    public void Postfix_StripsDirectMarkedSignatureDisplayName()
+    {
+        RunWithPatch(() =>
+        {
+            var target = new DummyVillageSignatureItemsTarget(
+                MessageFrameTranslator.MarkDirectTranslation("the mysterious bauble"));
+            target.generateSignatureItems();
+
             Assert.That(target.signatureHistoricObjectInstance!.DisplayName, Is.EqualTo("the mysterious bauble"));
         });
     }
@@ -112,6 +163,13 @@ public sealed class VillageSignatureItemTranslationPatchTests
 
         builder.Append("]}\n");
         File.WriteAllText(Path.Combine(tempDirectory, "village-signature-item-l2.ja.json"), builder.ToString());
+    }
+
+    private static int RouteHitCount()
+    {
+        return DynamicTextObservability.GetRouteFamilyHitCountForTests(
+            nameof(VillageSignatureItemTranslationPatch),
+            "VillageSignatureItem.HistoricObjectDisplayName");
     }
 
     private static MethodInfo RequireMethod(Type type, string name, params Type[] parameters) =>

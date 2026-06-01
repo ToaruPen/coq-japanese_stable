@@ -121,17 +121,13 @@ public sealed class CyberneticsTerminalInterfacePopupTranslationPatchTests
 
     private static string RepositoryMessageFramePath()
     {
-        return Path.GetFullPath(
-            Path.Combine(
-                AppDomain.CurrentDomain.BaseDirectory,
-                "..",
-                "..",
-                "..",
-                "..",
-                "..",
-                "Localization",
-                "MessageFrames",
-                "verbs.ja.json"));
+        return Path.Combine(
+            TestProjectPaths.GetRepositoryRoot(),
+            "Mods",
+            "QudJP",
+            "Localization",
+            "MessageFrames",
+            "verbs.ja.json");
     }
 
     private sealed class DummyCyberneticsTerminal2InterfaceTarget

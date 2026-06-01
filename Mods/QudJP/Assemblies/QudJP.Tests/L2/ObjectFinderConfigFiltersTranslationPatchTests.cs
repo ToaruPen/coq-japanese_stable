@@ -56,7 +56,7 @@ public sealed class ObjectFinderConfigFiltersTranslationPatchTests
     }
 
     [Test]
-    public void ConfigFilters_LeavesUnknownAndDirectMarkedTextUnchanged()
+    public void ConfigFilters_LeavesUnknownAndStripsDirectMarkedText()
     {
         Assert.Multiple(() =>
         {
@@ -74,8 +74,8 @@ public sealed class ObjectFinderConfigFiltersTranslationPatchTests
                     nameof(PopupPickOptionTranslationPatch),
                     "Popup.ProducerText",
                     out var marked),
-                Is.False);
-            Assert.That(marked, Is.EqualTo("\u0001Show Items"));
+                Is.True);
+            Assert.That(marked, Is.EqualTo("Show Items"));
         });
     }
 

@@ -64,6 +64,59 @@ public sealed class GameTextDeathReasonTranslationPatchTests
             Is.EqualTo("snapjaw was splatted."));
     }
 
+    [TestCase("snapjaw was vaporized.", "スナップジョーは蒸発した。")]
+    [TestCase("snapjaws were vaporized.", "snapjawsは蒸発した。")]
+    [TestCase("snapjaw was vaporized", "snapjaw was vaporized")]
+    [TestCase("snapjaw was vaporized!", "snapjaw was vaporized!")]
+    [TestCase("", "")]
+    public void TranslateThirdPersonDeathReason_HandlesWasWerePunctuationAndEmptyCases(
+        string source,
+        string expected)
+    {
+        Assert.That(
+            GameTextDeathReasonTranslationPatch.TranslateThirdPersonDeathReasonForTests(source),
+            Is.EqualTo(expected));
+    }
+
+    [Test]
+    public void TranslateThirdPersonDeathReason_PreservesColorTaggedSubject()
+    {
+        Assert.That(
+            GameTextDeathReasonTranslationPatch.TranslateThirdPersonDeathReasonForTests("{{R|snapjaw}} was vaporized."),
+            Is.EqualTo("{{R|スナップジョー}}は蒸発した。"));
+    }
+
+    [Test]
+    public void TranslateThirdPersonDeathReason_StripsDirectMarkerWithoutRetranslating()
+    {
+        Assert.That(
+            GameTextDeathReasonTranslationPatch.TranslateThirdPersonDeathReasonForTests(
+                MessageFrameTranslator.MarkDirectTranslation("snapjaw was vaporized.")),
+            Is.EqualTo("snapjaw was vaporized."));
+    }
+
+    [Test]
+    public void TranslateThirdPersonDeathReason_UsesSingleJapaneseSentenceEnd()
+    {
+        var result = GameTextDeathReasonTranslationPatch.TranslateThirdPersonDeathReasonForTests("snapjaw was vaporized.");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.EqualTo("スナップジョーは蒸発した。"));
+            Assert.That(result.Count(character => character == '。'), Is.EqualTo(1));
+        });
+    }
+
+    [Test]
+    public void RoughConvertSecondPersonToThirdPerson_TargetMethodExistsInL2Harness()
+    {
+        Assert.That(
+            RequireMethod(
+                typeof(DummyGameTextTarget),
+                nameof(DummyGameTextTarget.RoughConvertSecondPersonToThirdPerson)),
+            Is.Not.Null);
+    }
+
     private static MethodInfo RequireMethod(Type type, string methodName)
     {
         return AccessTools.Method(type, methodName)

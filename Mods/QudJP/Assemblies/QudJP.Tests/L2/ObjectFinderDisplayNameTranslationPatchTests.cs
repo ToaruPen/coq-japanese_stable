@@ -57,16 +57,16 @@ public sealed class ObjectFinderDisplayNameTranslationPatchTests
         }
     }
 
-    [Test]
-    public void Postfix_LeavesUnknownDisplayNameUnchanged()
+    [TestCase("Other", "Other")]
+    [TestCase("", "")]
+    [TestCase("\u0001Something", "\u0001Something")]
+    public void Postfix_LeavesUnknownAndEdgeDisplayNameUnchanged(string source, string expected)
     {
-        var source = "Other";
-
         ObjectFinderDisplayNameTranslationPatch.Postfix(ref source);
 
         Assert.Multiple(() =>
         {
-            Assert.That(source, Is.EqualTo("Other"));
+            Assert.That(source, Is.EqualTo(expected));
             Assert.That(
                 DynamicTextObservability.GetRouteFamilyHitCountForTests(
                     ObjectFinderDisplayNameTranslationPatch.Context,

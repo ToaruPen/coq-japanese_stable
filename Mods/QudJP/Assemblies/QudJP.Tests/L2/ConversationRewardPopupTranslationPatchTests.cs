@@ -15,6 +15,7 @@ public sealed class ConversationRewardPopupTranslationPatchTests
     {
         DynamicTextObservability.ResetForTests();
         DummyPopupShow.Reset();
+        Translator.ResetForTests();
         MessageFrameTranslator.ResetForTests();
         MessagePatternTranslator.ResetForTests();
     }
@@ -23,6 +24,7 @@ public sealed class ConversationRewardPopupTranslationPatchTests
     public void TearDown()
     {
         LocalizationAssetResolver.SetLocalizationRootForTests(null);
+        Translator.ResetForTests();
         MessageFrameTranslator.ResetForTests();
         MessagePatternTranslator.ResetForTests();
     }
@@ -113,6 +115,7 @@ public sealed class ConversationRewardPopupTranslationPatchTests
             + " some insightful commentary on 'The Corpus Choliys'.";
 
         UseRepositoryMessageFrames();
+        UseRepositoryPatternDictionary();
 
         RunWithOwnerAndPopupPatches(nameof(DummyConversationRewardProducer.LibrarianGiveBookHandleEvent), () =>
         {

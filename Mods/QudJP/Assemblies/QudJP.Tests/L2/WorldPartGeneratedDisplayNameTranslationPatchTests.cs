@@ -50,6 +50,34 @@ public sealed class WorldPartGeneratedDisplayNameTranslationPatchTests
             });
     }
 
+    [TestCase(null, "snapjawのホログラム")]
+    [TestCase("", "")]
+    [TestCase("\u0001hologram of a snapjaw", "hologram of a snapjaw")]
+    public void ModQuantumReverbPostfix_HandlesFallbackEmptyAndDirectMarkedDisplayNames(
+        string? generatedNameOverride,
+        string expected)
+    {
+        DummyModQuantumReverbTarget.GeneratedDisplayNameOverride = generatedNameOverride;
+        try
+        {
+            RunWithPostfix(
+                typeof(DummyModQuantumReverbTarget),
+                nameof(DummyModQuantumReverbTarget.CreateHologramOf),
+                new[] { typeof(DummyGameObject) },
+                typeof(ModQuantumReverbDisplayNameTranslationPatch),
+                nameof(ModQuantumReverbDisplayNameTranslationPatch.Postfix),
+                () =>
+                {
+                    var result = DummyModQuantumReverbTarget.CreateHologramOf(new DummyGameObject("snapjaw"));
+                    Assert.That(result.Render.DisplayName, Is.EqualTo(expected));
+                });
+        }
+        finally
+        {
+            DummyModQuantumReverbTarget.GeneratedDisplayNameOverride = null;
+        }
+    }
+
     [Test]
     public void RandomStatuePostfix_TranslatesParentRenderDisplayName()
     {
@@ -73,6 +101,28 @@ public sealed class WorldPartGeneratedDisplayNameTranslationPatchTests
     }
 
     [Test]
+    public void RandomStatuePostfix_PreservesColorTagsInGeneratedDisplayName()
+    {
+        WriteDictionaryWithContexts(
+            ("snapjaw", "スナップジョー", null),
+            ("stone", "石", "GetDisplayName.GeneratedRandomStatue.Component"),
+            ("statue", "像", "GetDisplayName.GeneratedRandomStatue.Component"));
+
+        RunWithPostfix(
+            typeof(DummyRandomStatueTarget),
+            nameof(DummyRandomStatueTarget.SetCreature),
+            new[] { typeof(DummyGameObject) },
+            typeof(RandomStatueDisplayNameTranslationPatch),
+            nameof(RandomStatueDisplayNameTranslationPatch.Postfix),
+            () =>
+            {
+                var part = new DummyRandomStatueTarget();
+                part.SetCreature(new DummyGameObject("{{C|snapjaw}}"));
+                Assert.That(part.ParentObject.Render.DisplayName, Is.EqualTo("石 像of a {{C|snapjaw}}"));
+            });
+    }
+
+    [Test]
     public void PetPhylacteryPostfix_TranslatesParentRenderDisplayName()
     {
         WriteDictionary(("High Templar", "高位聖堂騎士"));
@@ -91,6 +141,32 @@ public sealed class WorldPartGeneratedDisplayNameTranslationPatchTests
             });
     }
 
+    [TestCase("phylactery of Unknown", "Unknownのファイラクテリー")]
+    [TestCase("\u0001phylactery of Unknown", "phylactery of Unknown")]
+    public void PetPhylacteryPostfix_HandlesFallbackAndDirectMarkedDisplayNames(string generatedName, string expected)
+    {
+        DummyPetPhylacteryTarget.GeneratedDisplayNameOverride = generatedName;
+        try
+        {
+            RunWithPostfix(
+                typeof(DummyPetPhylacteryTarget),
+                nameof(DummyPetPhylacteryTarget.HandleEvent),
+                new[] { typeof(DummyAfterObjectCreatedEvent) },
+                typeof(PetPhylacteryDisplayNameTranslationPatch),
+                nameof(PetPhylacteryDisplayNameTranslationPatch.Postfix),
+                () =>
+                {
+                    var part = new DummyPetPhylacteryTarget();
+                    part.HandleEvent(new DummyAfterObjectCreatedEvent());
+                    Assert.That(part.ParentObject.Render.DisplayName, Is.EqualTo(expected));
+                });
+        }
+        finally
+        {
+            DummyPetPhylacteryTarget.GeneratedDisplayNameOverride = null;
+        }
+    }
+
     [Test]
     public void TombCultistTemplatePostfix_TranslatesDeathPilgrimDisplayName()
     {
@@ -103,6 +179,19 @@ public sealed class WorldPartGeneratedDisplayNameTranslationPatchTests
             DummyTombCultistTemplateTarget.Apply(go, new DummyHistoricEntitySnapshot("Argyve's Own"));
 
             Assert.That(go.DisplayName, Is.EqualTo("{{Y|Argyve's Own}}の死の巡礼者、墓所の番人"));
+        });
+    }
+
+    [Test]
+    public void TombCultistTemplatePostfix_LeavesFallbackDisplayNameUntouched()
+    {
+        RunWithTombCultistPatch(() =>
+        {
+            var go = new DummyGameObject("unknown pilgrim");
+            go.Render.DisplayName = "unknown pilgrim";
+            DummyTombCultistTemplateTarget.Apply(go, new DummyHistoricEntitySnapshot("Argyve's Own"));
+
+            Assert.That(go.DisplayName, Is.EqualTo("{{Y|Argyve's Own}}の死の巡礼者、unknown pilgrim"));
         });
     }
 
@@ -216,13 +305,15 @@ public sealed class WorldPartGeneratedDisplayNameTranslationPatchTests
 
     private static class DummyModQuantumReverbTarget
     {
+        public static string? GeneratedDisplayNameOverride { get; set; }
+
         public static DummyGameObject CreateHologramOf(DummyGameObject source)
         {
             return new DummyGameObject
             {
                 Render =
                 {
-                    DisplayName = "hologram of a " + source.DisplayName,
+                    DisplayName = GeneratedDisplayNameOverride ?? "hologram of a " + source.DisplayName,
                 },
             };
         }
@@ -244,12 +335,14 @@ public sealed class WorldPartGeneratedDisplayNameTranslationPatchTests
 
     private sealed class DummyPetPhylacteryTarget
     {
+        public static string? GeneratedDisplayNameOverride { get; set; }
+
         public DummyGameObject ParentObject { get; } = new();
 
         public void HandleEvent(DummyAfterObjectCreatedEvent e)
         {
             _ = e;
-            ParentObject.Render.DisplayName = "phylactery of High Templar";
+            ParentObject.Render.DisplayName = GeneratedDisplayNameOverride ?? "phylactery of High Templar";
         }
     }
 

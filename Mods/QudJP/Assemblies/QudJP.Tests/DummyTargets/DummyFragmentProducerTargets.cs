@@ -1293,13 +1293,26 @@ internal static class DummyMutationsApiTarget
 
 internal static class DummyTinkeringHelpersTarget
 {
+    public static string PickOptionTitleToSend { get; set; } = "Select your maker's mark.";
+
+    public static IReadOnlyList<string> PickOptionOptionsToSend { get; set; } = new[] { "none", "{{C|star}}" };
+
+    public static string ColorPickerTitleToSend { get; set; } = "Choose a color for your maker's mark.";
+
+    public static void ResetForTests()
+    {
+        PickOptionTitleToSend = "Select your maker's mark.";
+        PickOptionOptionsToSend = new[] { "none", "{{C|star}}" };
+        ColorPickerTitleToSend = "Choose a color for your maker's mark.";
+    }
+
     public static void CheckMakersMark()
     {
         _ = DummyPopupGenericTarget.PickOption(
-            Title: "Select your maker's mark.",
-            Options: new[] { "none", "{{C|star}}" });
+            Title: PickOptionTitleToSend,
+            Options: PickOptionOptionsToSend);
         _ = DummyPopupGenericTarget.ShowColorPicker(
-            "Choose a color for your maker's mark.",
+            ColorPickerTitleToSend,
             0,
             null,
             60,

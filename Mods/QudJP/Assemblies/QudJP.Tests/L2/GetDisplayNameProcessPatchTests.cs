@@ -1002,7 +1002,11 @@ public sealed class GetDisplayNameProcessPatchTests
             var processor = new DummyDisplayNameProcessor();
             var result = processor.ProcessFor("defoliant grenade mk I miner mk I");
 
-            Assert.That(result, Is.EqualTo("落葉剤グレネード mk I 採掘機 mk I"));
+            Assert.Multiple(() =>
+            {
+                Assert.That(result, Is.EqualTo("落葉剤グレネード mk I 採掘機 mk I"));
+                Assert.That(Translator.GetMissingKeyHitCountForTests("defoliant grenade mk I miner mk I"), Is.EqualTo(0));
+            });
         });
     }
 

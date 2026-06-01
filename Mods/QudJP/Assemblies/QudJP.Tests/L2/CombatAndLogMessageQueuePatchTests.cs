@@ -2800,21 +2800,25 @@ public sealed class CombatAndLogMessageQueuePatchTests
     [TestCase(
         nameof(DummyLiquidWarmStaticTarget.WishWarmEffect),
         "{{rules|Confused}} applied to {{G|Argyve}}.",
-        "{{rules|Confused}}が{{G|Argyve}}に適用された。")]
+        "{{rules|Confused}}が{{G|Argyve}}に適用された。",
+        null)]
     [TestCase(
         nameof(DummyLiquidWarmStaticTarget.WishWarmEffectSpec),
         "{{rules|Glotrot}} applied to rusted short sword.",
-        "{{rules|Glotrot}}がrusted short swordに適用された。")]
+        "{{rules|Glotrot}}がrusted short swordに適用された。",
+        "Glotrot")]
     [TestCase(
         nameof(DummyLiquidWarmStaticTarget.WishWarmEffectSpec),
         "No valid targets for {{rules|Phase-Conjugate}}.",
-        "{{rules|Phase-Conjugate}}の有効な対象がありません。")]
+        "{{rules|Phase-Conjugate}}の有効な対象がありません。",
+        "Phase-Conjugate")]
     public void LiquidWarmStatic_TranslatesWishWarmEffectMessages_WhenOwnerPatched(
         string methodName,
         string source,
-        string expected)
+        string expected,
+        string? specName)
     {
-        AssertLiquidWarmStaticQueuedMessage(methodName, source, expected);
+        AssertLiquidWarmStaticQueuedMessage(methodName, source, expected, specName);
     }
 
     [TestCase(
@@ -5206,6 +5210,60 @@ public sealed class CombatAndLogMessageQueuePatchTests
                     DummyPopupGenericTarget.LastPickOptionOptions,
                     Is.EqualTo(new[] { "左腕", "右手", "unknown feeler" }));
             });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void FungalSporeInfectionChooseLimbForInfection_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupPickOption(harmony);
+
+            _ = DummyFungalSporeInfectionTarget.ChooseLimbForInfection(
+                "glowcrust",
+                new[] { "left arm" });
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyPopupGenericTarget.LastPickOptionTitle, Is.EqualTo("Choose a limb to infect with glowcrust."));
+                Assert.That(DummyPopupGenericTarget.LastPickOptionOptions, Is.EqualTo(new[] { "left arm" }));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void FungalSporeInfectionChooseLimbForInfection_StripsDirectMarkedBodyPart_WhenOwnerPatched()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupPickOption(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(
+                    typeof(DummyFungalSporeInfectionTarget),
+                    nameof(DummyFungalSporeInfectionTarget.ChooseLimbForInfection),
+                    typeof(string),
+                    typeof(IReadOnlyList<string>)),
+                typeof(FungalSporeInfectionTranslationPatch));
+
+            _ = DummyFungalSporeInfectionTarget.ChooseLimbForInfection(
+                "glowcrust",
+                new[] { MessageFrameTranslator.MarkDirectTranslation("custom feeler") });
+
+            Assert.That(DummyPopupGenericTarget.LastPickOptionOptions, Is.EqualTo(new[] { "custom feeler" }));
         }
         finally
         {
@@ -9358,7 +9416,11 @@ public sealed class CombatAndLogMessageQueuePatchTests
         }
     }
 
-    private static void AssertLiquidWarmStaticQueuedMessage(string methodName, string message, string expected)
+    private static void AssertLiquidWarmStaticQueuedMessage(
+        string methodName,
+        string message,
+        string expected,
+        string? specName = null)
     {
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
@@ -9375,9 +9437,16 @@ public sealed class CombatAndLogMessageQueuePatchTests
                 MessageToSend = message,
             };
 
-            InvokeLiquidWarmStaticDummyMethod(target, methodName);
+            InvokeLiquidWarmStaticDummyMethod(target, methodName, specName);
 
-            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+                if (specName is not null)
+                {
+                    Assert.That(target.LastWishWarmEffectSpecName, Is.EqualTo(specName));
+                }
+            });
         }
         finally
         {
@@ -9427,7 +9496,10 @@ public sealed class CombatAndLogMessageQueuePatchTests
         return RequireMethod(typeof(DummyLiquidWarmStaticTarget), methodName, typeof(bool));
     }
 
-    private static void InvokeLiquidWarmStaticDummyMethod(DummyLiquidWarmStaticTarget target, string methodName)
+    private static void InvokeLiquidWarmStaticDummyMethod(
+        DummyLiquidWarmStaticTarget target,
+        string methodName,
+        string? specName)
     {
         if (methodName == nameof(DummyLiquidWarmStaticTarget.WishWarmEffect))
         {
@@ -9437,7 +9509,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
 
         if (methodName == nameof(DummyLiquidWarmStaticTarget.WishWarmEffectSpec))
         {
-            LiquidWarmStaticDummyMethod(methodName).Invoke(target, new object[] { "Confused" });
+            LiquidWarmStaticDummyMethod(methodName).Invoke(target, new object[] { specName ?? "Confused" });
             return;
         }
 

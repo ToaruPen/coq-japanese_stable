@@ -35,6 +35,16 @@ public static class LeftSideCategoryTranslationPatch
                 return;
             }
 
+            var (stripped, spans) = ColorAwareTranslationComposer.Strip(current);
+            if (MessageFrameTranslator.TryStripDirectTranslationMarker(stripped, out var markedText))
+            {
+                _ = UITextSkinReflectionAccessor.SetCurrentText(
+                    textSkin,
+                    ColorAwareTranslationComposer.Restore(markedText, spans),
+                    Context);
+                return;
+            }
+
             var route = ObservabilityHelpers.ComposeContext(Context, "field=text");
             var translated = UiBindingTranslationHelpers.TranslateVisibleText(
                 current!,

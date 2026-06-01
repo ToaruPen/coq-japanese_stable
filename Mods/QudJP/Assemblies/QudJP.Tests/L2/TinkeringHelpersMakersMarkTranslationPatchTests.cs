@@ -15,6 +15,7 @@ public sealed class TinkeringHelpersMakersMarkTranslationPatchTests
     {
         DynamicTextObservability.ResetForTests();
         DummyPopupGenericTarget.Reset();
+        DummyTinkeringHelpersTarget.ResetForTests();
     }
 
     [TearDown]
@@ -22,6 +23,7 @@ public sealed class TinkeringHelpersMakersMarkTranslationPatchTests
     {
         DynamicTextObservability.ResetForTests();
         DummyPopupGenericTarget.Reset();
+        DummyTinkeringHelpersTarget.ResetForTests();
         TinkeringHelpersMakersMarkTranslationPatch.ResetForTests();
     }
 
@@ -51,6 +53,68 @@ public sealed class TinkeringHelpersMakersMarkTranslationPatchTests
             Assert.That(DummyPopupGenericTarget.LastPickOptionOptions, Is.EqualTo(new[] { "none", "{{C|star}}" }));
             Assert.That(DummyPopupGenericTarget.LastShowColorPickerTitle, Is.EqualTo("Choose a color for your maker's mark."));
             Assert.That(HitCount(nameof(PopupPickOptionTranslationPatch), "Select"), Is.Zero);
+            Assert.That(HitCount(nameof(PopupShowColorPickerTranslationPatch), "Color"), Is.Zero);
+        });
+    }
+
+    [Test]
+    public void Patch_StripsDirectMarkedMakersMarkPrompts_WhenOwnerPatched()
+    {
+        DummyTinkeringHelpersTarget.PickOptionTitleToSend =
+            MessageFrameTranslator.MarkDirectTranslation("Select your maker's mark.");
+        DummyTinkeringHelpersTarget.PickOptionOptionsToSend =
+            new[] { MessageFrameTranslator.MarkDirectTranslation("none") };
+        DummyTinkeringHelpersTarget.ColorPickerTitleToSend =
+            MessageFrameTranslator.MarkDirectTranslation("Choose a color for your maker's mark.");
+
+        WithPatchedOwner(() => DummyTinkeringHelpersTarget.CheckMakersMark());
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(DummyPopupGenericTarget.LastPickOptionTitle, Is.EqualTo("Select your maker's mark."));
+            Assert.That(DummyPopupGenericTarget.LastPickOptionOptions, Is.EqualTo(new[] { "none" }));
+            Assert.That(DummyPopupGenericTarget.LastShowColorPickerTitle, Is.EqualTo("Choose a color for your maker's mark."));
+            Assert.That(HitCount(nameof(PopupPickOptionTranslationPatch), "Select"), Is.Zero);
+            Assert.That(HitCount(nameof(PopupShowColorPickerTranslationPatch), "Color"), Is.Zero);
+        });
+    }
+
+    [Test]
+    public void Patch_TranslatesColorTaggedMakersMarkPrompts_WhenOwnerPatched()
+    {
+        DummyTinkeringHelpersTarget.PickOptionTitleToSend = "{{C|Select your maker's mark.}}";
+        DummyTinkeringHelpersTarget.PickOptionOptionsToSend = new[] { "{{C|none}}" };
+        DummyTinkeringHelpersTarget.ColorPickerTitleToSend = "{{C|Choose a color for your maker's mark.}}";
+
+        WithPatchedOwner(() => DummyTinkeringHelpersTarget.CheckMakersMark());
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(DummyPopupGenericTarget.LastPickOptionTitle, Is.EqualTo("{{C|作り手の印を選ぶ。}}"));
+            Assert.That(DummyPopupGenericTarget.LastPickOptionOptions, Is.EqualTo(new[] { "{{C|なし}}" }));
+            Assert.That(DummyPopupGenericTarget.LastShowColorPickerTitle, Is.EqualTo("{{C|作り手の印の色を選ぶ。}}"));
+            Assert.That(HitCount(nameof(PopupPickOptionTranslationPatch), "Select"), Is.EqualTo(1));
+            Assert.That(HitCount(nameof(PopupPickOptionTranslationPatch), "None"), Is.Zero);
+            Assert.That(HitCount(nameof(PopupShowColorPickerTranslationPatch), "Color"), Is.EqualTo(1));
+        });
+    }
+
+    [Test]
+    public void Patch_LeavesEmptyMakersMarkPromptsUnclaimed_WhenOwnerPatched()
+    {
+        DummyTinkeringHelpersTarget.PickOptionTitleToSend = string.Empty;
+        DummyTinkeringHelpersTarget.PickOptionOptionsToSend = new[] { string.Empty };
+        DummyTinkeringHelpersTarget.ColorPickerTitleToSend = string.Empty;
+
+        WithPatchedOwner(() => DummyTinkeringHelpersTarget.CheckMakersMark());
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(DummyPopupGenericTarget.LastPickOptionTitle, Is.Empty);
+            Assert.That(DummyPopupGenericTarget.LastPickOptionOptions, Is.EqualTo(new[] { string.Empty }));
+            Assert.That(DummyPopupGenericTarget.LastShowColorPickerTitle, Is.Empty);
+            Assert.That(HitCount(nameof(PopupPickOptionTranslationPatch), "Select"), Is.Zero);
+            Assert.That(HitCount(nameof(PopupPickOptionTranslationPatch), "None"), Is.Zero);
             Assert.That(HitCount(nameof(PopupShowColorPickerTranslationPatch), "Color"), Is.Zero);
         });
     }

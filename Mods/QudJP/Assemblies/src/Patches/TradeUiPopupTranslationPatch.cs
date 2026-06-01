@@ -372,7 +372,7 @@ public static class TradeUiPopupTranslationPatch
         }
 
         var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
-        if (TryTranslateVendorActionMenuText(source, stripped, out translated))
+        if (TryTranslateVendorActionMenuText(source, stripped, spans, out translated))
         {
             return true;
         }
@@ -773,7 +773,11 @@ public static class TradeUiPopupTranslationPatch
         return false;
     }
 
-    private static bool TryTranslateVendorActionMenuText(string source, string stripped, out string translated)
+    private static bool TryTranslateVendorActionMenuText(
+        string source,
+        string stripped,
+        IReadOnlyList<ColorSpan> spans,
+        out string translated)
     {
         if (!VendorActionMenuTranslations.TryGetValue(stripped, out var entry))
         {
@@ -781,9 +785,9 @@ public static class TradeUiPopupTranslationPatch
             return false;
         }
 
-        translated = string.Equals(source, stripped, StringComparison.Ordinal)
+        translated = spans.Count == 0
             ? entry.Text
-            : source.Replace(stripped, entry.Text);
+            : ColorAwareTranslationComposer.Restore(entry.Text, spans);
         DynamicTextObservability.RecordTransform(Context, entry.Family, source, translated);
         return true;
     }

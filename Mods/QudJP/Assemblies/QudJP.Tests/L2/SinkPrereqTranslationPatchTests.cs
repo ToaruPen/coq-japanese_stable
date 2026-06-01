@@ -98,6 +98,43 @@ public sealed class SinkPrereqTranslationPatchTests
     }
 
     [Test]
+    public void LeftSideCategoryOwnerPatch_LeavesFallbackEmptyColorAndDirectMarkedTextSafe()
+    {
+        WriteDictionary(("Keybinds", "キーバインド"));
+        Translator.SetDictionaryDirectoryForTests(tempDir);
+
+        harmony.Patch(
+            original: RequireMethod(typeof(DummyLeftSideCategory), "setData"),
+            postfix: new HarmonyMethod(RequireMethod(
+                typeof(LeftSideCategoryTranslationPatch), "Postfix")));
+
+        var fallback = new DummyLeftSideCategory();
+        fallback.setData(new DummyFrameworkDataElement { Description = "Unknown Category" });
+        var empty = new DummyLeftSideCategory();
+        empty.setData(new DummyFrameworkDataElement { Description = string.Empty });
+        var colored = new DummyLeftSideCategory();
+        colored.setData(new DummyFrameworkDataElement { Description = "{{C|Keybinds}}" });
+        var marked = new DummyLeftSideCategory();
+        marked.setData(new DummyFrameworkDataElement
+        {
+            Description = MessageFrameTranslator.MarkDirectTranslation("Keybinds"),
+        });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(fallback.text.text, Is.EqualTo("{{C|Unknown Category}}"));
+            Assert.That(empty.text.text, Is.EqualTo("{{C|}}"));
+            Assert.That(colored.text.text, Is.EqualTo("{{C|{{C|キーバインド}}}}"));
+            Assert.That(marked.text.text, Is.EqualTo("{{C|Keybinds}}"));
+            Assert.That(
+                DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                    nameof(LeftSideCategoryTranslationPatch),
+                    "LeftSideCategory.Text"),
+                Is.EqualTo(1));
+        });
+    }
+
+    [Test]
     public void SetDataPatch_ObservationOnly_LeavesFrameworkHeaderTextUnchanged()
     {
         WriteDictionary(("Choose your genotype", "遺伝子型を選択"));
