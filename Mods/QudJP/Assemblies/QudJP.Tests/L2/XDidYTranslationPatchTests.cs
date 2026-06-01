@@ -903,8 +903,16 @@ public sealed class XDidYTranslationPatchTests
         });
     }
 
-    [Test]
-    public void Prefix_RepositoryFrames_TranslateMagazineAmmoLoaderTransferFrame()
+    [TestCase("three lead slugs to", "\u0001あなたは3 鉛スラッグを{{Y|タレット}}に移した。")]
+    [TestCase("thirteen lead slugs to", "\u0001あなたは13 鉛スラッグを{{Y|タレット}}に移した。")]
+    [TestCase("a lead slug to", "\u0001あなたは鉛スラッグを{{Y|タレット}}に移した。")]
+    [TestCase("three {{Y|lead slugs}} to", "\u0001あなたは3 {{Y|鉛スラッグ}}を{{Y|タレット}}に移した。")]
+    [TestCase("twenty-one {{Y|lead slugs}} to", "\u0001あなたは21 {{Y|鉛スラッグ}}を{{Y|タレット}}に移した。")]
+    [TestCase("{{Y|three lead slugs}} to", "\u0001あなたは{{Y|3 鉛スラッグ}}を{{Y|タレット}}に移した。")]
+    [TestCase("{{Y|twenty-one lead slugs}} to", "\u0001あなたは{{Y|21 鉛スラッグ}}を{{Y|タレット}}に移した。")]
+    public void Prefix_RepositoryFrames_TranslateMagazineAmmoLoaderTransferFrame(
+        string preposition,
+        string expected)
     {
         UseRepositoryMessageFrames();
         UseRepositoryDictionaries();
@@ -914,7 +922,7 @@ public sealed class XDidYTranslationPatchTests
             DummyXDidYTarget.XDidYToZ(
                 Actor: null,
                 Verb: "transfer",
-                Preposition: "3 lead slugs to",
+                Preposition: preposition,
                 Object: "{{Y|turret}}",
                 SubjectOverride: "あなた",
                 AlwaysVisible: true);
@@ -922,7 +930,7 @@ public sealed class XDidYTranslationPatchTests
             Assert.Multiple(() =>
             {
                 Assert.That(DummyXDidYTarget.OriginalExecuted, Is.False);
-                Assert.That(lastMessage, Is.EqualTo("\u0001あなたは3 lead slugsを{{Y|タレット}}に移した。"));
+                Assert.That(lastMessage, Is.EqualTo(expected));
             });
         });
     }

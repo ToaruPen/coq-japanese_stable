@@ -298,8 +298,6 @@ jobs:
           --ignore=scripts/tests/test_roslyn_semantic_probe.py
           --ignore=scripts/tests/test_roslyn_text_construction_inventory.py
           --ignore=scripts/tests/test_scan_static_producer_inventory.py
-          --ignore=scripts/tests/test_static_producer_closure.py
-          --ignore=scripts/tests/test_text_construction_surface_policy.py
           --durations=30
 
       - name: Check CHANGELOG release links

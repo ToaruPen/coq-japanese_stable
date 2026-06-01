@@ -7,6 +7,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
+using QudJP.Patches;
 
 namespace QudJP;
 
@@ -19,7 +20,42 @@ internal static class MessageFrameTranslator
         new Regex(@"\{t(?<index>\d+)\}", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex AdverbPlaceholderPattern =
         new Regex(@"\{a(?<index>\d+)\}", RegexOptions.CultureInvariant | RegexOptions.Compiled);
-
+    private static readonly Regex CountedDisplayNamePattern =
+        new Regex("^(?<count>\\d+)\\s+(?<item>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Dictionary<string, long> CardinalSmallNumbers = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ["zero"] = 0,
+        ["one"] = 1,
+        ["two"] = 2,
+        ["three"] = 3,
+        ["four"] = 4,
+        ["five"] = 5,
+        ["six"] = 6,
+        ["seven"] = 7,
+        ["eight"] = 8,
+        ["nine"] = 9,
+        ["ten"] = 10,
+        ["eleven"] = 11,
+        ["twelve"] = 12,
+        ["thirteen"] = 13,
+        ["fourteen"] = 14,
+        ["fifteen"] = 15,
+        ["sixteen"] = 16,
+        ["seventeen"] = 17,
+        ["eighteen"] = 18,
+        ["nineteen"] = 19,
+    };
+    private static readonly Dictionary<string, long> CardinalTens = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ["twenty"] = 20,
+        ["thirty"] = 30,
+        ["forty"] = 40,
+        ["fifty"] = 50,
+        ["sixty"] = 60,
+        ["seventy"] = 70,
+        ["eighty"] = 80,
+        ["ninety"] = 90,
+    };
     private static LoadedVerbDictionary? loadedDictionary;
     private static string? dictionaryPathOverride;
     private static int loadInvocationCount;
@@ -722,6 +758,11 @@ internal static class MessageFrameTranslator
             return colorAwareTranslation;
         }
 
+        if (TryTranslateCountedDisplayNamePlaceholderValue(trimmed, out var countedDisplayName))
+        {
+            return countedDisplayName;
+        }
+
         if (trimmed.EndsWith("'s", StringComparison.Ordinal))
         {
             return TranslatePlaceholderValue(trimmed.Substring(0, trimmed.Length - 2)) + "の";
@@ -735,7 +776,13 @@ internal static class MessageFrameTranslator
             || trimmed.StartsWith("an ", StringComparison.Ordinal))
         {
             var separator = trimmed.IndexOf(' ');
-            return TranslatePlaceholderValue(trimmed.Substring(separator + 1));
+            var withoutArticle = trimmed.Substring(separator + 1);
+            return DisplayNamePlaceholderTranslator.TryTranslatePlaceholderValue(
+                withoutArticle,
+                TranslateDisplayNameCandidate,
+                out var displayName)
+                ? displayName
+                : TranslatePlaceholderValue(withoutArticle);
         }
 
         if (trimmed.StartsWith("your ", StringComparison.OrdinalIgnoreCase))
@@ -760,6 +807,128 @@ internal static class MessageFrameTranslator
         }
 
         return trimmed;
+    }
+
+    private static bool TryTranslateCountedDisplayNamePlaceholderValue(string source, out string translated)
+    {
+        var trimmed = source.Trim();
+
+        if (TryTranslateVisibleCountedDisplayName(trimmed, out translated))
+        {
+            return true;
+        }
+
+        if (!ColorAwareTranslationComposer.HasColorMarkup(source))
+        {
+            translated = source;
+            return false;
+        }
+
+        var visible = ColorAwareTranslationComposer.GetVisibleText(source).Trim();
+        if (!TryTranslateVisibleCountedDisplayName(visible, out var visibleTranslation))
+        {
+            translated = source;
+            return false;
+        }
+
+        translated = ColorAwareTranslationComposer.TranslatePreservingColors(
+            source,
+            _ => visibleTranslation);
+        return true;
+    }
+
+    private static bool TryTranslateVisibleCountedDisplayName(string source, out string translated)
+    {
+        var match = CountedDisplayNamePattern.Match(source);
+        if (match.Success
+            && DisplayNamePlaceholderTranslator.TryTranslatePlaceholderValue(
+                match.Groups["item"].Value.Trim(),
+                TranslateDisplayNameCandidate,
+                out var digitItemTranslation))
+        {
+            translated = match.Groups["count"].Value + " " + digitItemTranslation;
+            return true;
+        }
+
+        var index = source.IndexOf(' ');
+        while (index > 0)
+        {
+            var countSource = source.Substring(0, index);
+            var item = source.Substring(index + 1).TrimStart();
+            if (TryTranslateCardinalCount(countSource, out var count)
+                && item.Length > 0
+                && DisplayNamePlaceholderTranslator.TryTranslatePlaceholderValue(
+                    item,
+                    TranslateDisplayNameCandidate,
+                    out var itemTranslation))
+            {
+                translated = count + " " + itemTranslation;
+                return true;
+            }
+
+            index = source.IndexOf(' ', index + 1);
+        }
+
+        translated = source;
+        return false;
+    }
+
+    private static bool TryTranslateCardinalCount(string source, out string translated)
+    {
+        if (long.TryParse(source, NumberStyles.None, CultureInfo.InvariantCulture, out var digitCount))
+        {
+            translated = digitCount.ToString(CultureInfo.InvariantCulture);
+            return true;
+        }
+
+        if (TryParseEnglishCardinalCount(source, out var wordCount))
+        {
+            translated = wordCount.ToString(CultureInfo.InvariantCulture);
+            return true;
+        }
+
+        translated = source;
+        return false;
+    }
+
+    private static bool TryParseEnglishCardinalCount(string source, out long value)
+    {
+        value = 0;
+        var tokens = source.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+        if (tokens.Length == 0)
+        {
+            return false;
+        }
+
+        if (tokens.Length != 1)
+        {
+            return false;
+        }
+
+        var parts = tokens[0].Split(new[] { '-' }, StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length == 1)
+        {
+            return CardinalSmallNumbers.TryGetValue(parts[0], out value)
+                || CardinalTens.TryGetValue(parts[0], out value);
+        }
+
+        if (parts.Length == 2
+            && CardinalTens.TryGetValue(parts[0], out var tens)
+            && CardinalSmallNumbers.TryGetValue(parts[1], out var small)
+            && small is > 0 and < 10)
+        {
+            value = tens + small;
+            return true;
+        }
+
+        return false;
+    }
+
+    private static string TranslateDisplayNameCandidate(string source)
+    {
+        return GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            source,
+            nameof(MessageFrameTranslator));
     }
 
     private static bool TryTranslateColorAwarePlaceholderValue(string source, out string translated)

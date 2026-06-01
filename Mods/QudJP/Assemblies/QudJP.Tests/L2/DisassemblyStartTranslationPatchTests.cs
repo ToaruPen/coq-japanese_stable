@@ -102,6 +102,15 @@ public sealed class DisassemblyStartTranslationPatchTests
     }
 
     [Test]
+    public void DisassemblyEnd_TranslatesEurekaBuildReceiptQueuedMessage_WhenOwnerPatched()
+    {
+        AssertEndQueuedMessage(
+            "You disassemble {{c|ケムセル}}. {{G|Eureka! You may now build {{c|ケムセル}}.}} You receive tinkering bits <{{|B{{r|1}}}}>.",
+            "{{c|ケムセル}}を分解し、修理ビット<{{|B{{r|1}}}}>を受け取った。ひらめいた！ {{c|ケムセル}}を作れるようになった。",
+            expectedColor: "white");
+    }
+
+    [Test]
     public void DisassemblyEnd_TranslatesDisassembleBitsReceiptPopup_WithLocationSuffix_WhenOwnerPatched()
     {
         AssertPopupShowMessage(
@@ -344,6 +353,35 @@ public sealed class DisassemblyStartTranslationPatchTests
         }
     }
 
+    private static void AssertEndQueuedMessage(
+        string source,
+        string expected,
+        string? expectedColor = null)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(harmony);
+
+            DummyDisassemblyStartTarget.MessageToSend = source;
+            DummyDisassemblyStartTarget.ColorToSend = expectedColor;
+            DummyDisassemblyStartTarget.EndQueue();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+                Assert.That(DummyMessageQueue.LastColor, Is.EqualTo(expectedColor));
+            });
+        }
+        finally
+        {
+            DummyDisassemblyStartTarget.Reset();
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
     private static void AssertPopupShowMessage(string source, string expected)
     {
         var harmonyId = CreateHarmonyId();
@@ -411,6 +449,7 @@ public sealed class DisassemblyStartTranslationPatchTests
             nameof(DummyDisassemblyStartTarget.ContinuePopup),
             nameof(DummyDisassemblyStartTarget.ContinueQueue),
             nameof(DummyDisassemblyStartTarget.EndPopup),
+            nameof(DummyDisassemblyStartTarget.EndQueue),
         })
         {
             harmony.Patch(
@@ -482,6 +521,14 @@ public sealed class DisassemblyStartTranslationPatchTests
         public static bool EndPopup()
         {
             DummyPopupShow.Show(PopupMessageToShow);
+            return true;
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public static bool EndQueue()
+        {
+            var message = MessageToSend;
+            DummyMessageQueue.AddPlayerMessage(message, ColorToSend, Capitalize: false);
             return true;
         }
 

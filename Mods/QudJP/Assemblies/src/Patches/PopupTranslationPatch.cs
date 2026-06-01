@@ -967,6 +967,7 @@ public static class PopupTranslationPatch
                 GenderCustomizeNamePromptPattern,
                 "What name should be used for your {0}? (Male, female, etc.)",
                 spans,
+                TranslateGenderCustomizeNamePromptValue,
                 out var genderCustomizePromptTranslated))
         {
             translated = genderCustomizePromptTranslated;
@@ -2369,6 +2370,7 @@ public static class PopupTranslationPatch
         string templateKey,
         IReadOnlyList<ColorSpan> spans,
         bool translateValueAsDisplayName,
+        Func<string, string>? translateValue,
         out string translated)
     {
         var match = pattern.Match(source);
@@ -2396,6 +2398,11 @@ public static class PopupTranslationPatch
             value = DisplayNameCaptureTranslator.TranslatePreservingColors(value, nameof(PopupTranslationPatch));
         }
 
+        if (translateValue is not null)
+        {
+            value = translateValue(value);
+        }
+
         translated = translatedTemplate.Replace("{0}", value);
         if (spans.Count > 0)
         {
@@ -2405,6 +2412,28 @@ public static class PopupTranslationPatch
 
         DynamicTextObservability.RecordTransform(route, family, source, translated);
         return true;
+    }
+
+    private static bool TryTranslateSinglePlaceholderTemplate(
+        string source,
+        string route,
+        string family,
+        Regex pattern,
+        string templateKey,
+        IReadOnlyList<ColorSpan> spans,
+        bool translateValueAsDisplayName,
+        out string translated)
+    {
+        return TryTranslateSinglePlaceholderTemplate(
+            source,
+            route,
+            family,
+            pattern,
+            templateKey,
+            spans,
+            translateValueAsDisplayName,
+            translateValue: null,
+            out translated);
     }
 
     private static bool TryTranslateSinglePlaceholderTemplate(
@@ -2424,7 +2453,37 @@ public static class PopupTranslationPatch
             templateKey,
             spans,
             translateValueAsDisplayName: false,
+            translateValue: null,
             out translated);
+    }
+
+    private static bool TryTranslateSinglePlaceholderTemplate(
+        string source,
+        string route,
+        string family,
+        Regex pattern,
+        string templateKey,
+        IReadOnlyList<ColorSpan> spans,
+        Func<string, string> translateValue,
+        out string translated)
+    {
+        return TryTranslateSinglePlaceholderTemplate(
+            source,
+            route,
+            family,
+            pattern,
+            templateKey,
+            spans,
+            translateValueAsDisplayName: false,
+            translateValue,
+            out translated);
+    }
+
+    private static string TranslateGenderCustomizeNamePromptValue(string value)
+    {
+        return string.Equals(value.Trim(), "gender", StringComparison.OrdinalIgnoreCase)
+            ? "ジェンダー"
+            : value;
     }
 
     private static bool TryTranslateQuestReceived(

@@ -158,6 +158,20 @@ def test_covered_owner_families_are_removed_from_owner_action_queue() -> None:
     assert queued_family_ids.isdisjoint(covered_family_ids())
 
 
+def test_disassembly_end_runtime_family_is_closed_by_disassembly_start_patch() -> None:
+    """Disassembly.End shares the DisassemblyStart owner patch and must stay out of the queue."""
+    inventory = load_inventory(TRACKED_INVENTORY)
+    raw_families = {family["producer_family_id"]: family for family in inventory["families"]}
+    family_id = "XRL.World.Tinkering/Disassembly.cs::XRL.World.Tinkering.Disassembly.End"
+
+    assert raw_families[family_id]["family_closure_status"] == "runtime_required"
+    assert family_closure_status(raw_families[family_id]) == COVERED_BY_OWNER_PATCH
+    assert family_id not in {
+        family["producer_family_id"]
+        for family in owner_action_queue(inventory)
+    }
+
+
 def test_game_object_heal_owner_family_is_closed_by_current_owner_tests() -> None:
     """GameObject.Heal has current owner-route evidence and must stay out of the queue."""
     inventory = load_inventory(TRACKED_INVENTORY)

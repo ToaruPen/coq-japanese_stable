@@ -10743,6 +10743,7 @@ def _disassembly_start_families() -> tuple[CoveredOwnerFamily, ...]:
         (
             "DisassemblyStartTranslationPatch",
             "Continue",
+            "End",
             "TryTranslateQueuedMessage",
             "TryTranslatePopupMessage",
             "ReverseEngineerPromptPattern",
@@ -10766,6 +10767,11 @@ def _disassembly_start_families() -> tuple[CoveredOwnerFamily, ...]:
             "DisassemblyContinue_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
             "DisassemblyContinue_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
             "DisassemblyContinue_LeavesUnsupportedMessagesUnchanged_WhenOwnerPatched",
+            "DisassemblyEnd_TranslatesEurekaBuildReceiptPopup_WhenOwnerPatched",
+            "DisassemblyEnd_TranslatesEurekaBuildReceiptQueuedMessage_WhenOwnerPatched",
+            "DisassemblyEnd_TranslatesDisassembleBitsReceiptPopup_WithLocationSuffix_WhenOwnerPatched",
+            "DisassemblyEnd_TranslatesRuntimeEurekaPopup_WithLocationSuffix_WhenOwnerPatched",
+            "DisassemblyEnd_TranslatesEurekaModReceiptPopup_WhenOwnerPatched",
             "DummyDisassemblyStartTarget",
         ),
     )
@@ -10774,12 +10780,18 @@ def _disassembly_start_families() -> tuple[CoveredOwnerFamily, ...]:
         (
             "typeof(DisassemblyStartTranslationPatch)",
             "XRL.World.Tinkering.Disassembly|Continue|System.Boolean",
+            "XRL.World.Tinkering.Disassembly|End|System.Void",
         ),
     )
     return (
         CoveredOwnerFamily(
             family_id="XRL.World.Tinkering/Disassembly.cs::XRL.World.Tinkering.Disassembly.Continue",
             inventory_statuses=("owner_patch_required",),
+            evidence_files=(patch, queue_pipeline, popup_pipeline, tests, target_tests),
+        ),
+        CoveredOwnerFamily(
+            family_id="XRL.World.Tinkering/Disassembly.cs::XRL.World.Tinkering.Disassembly.End",
+            inventory_statuses=("runtime_required",),
             evidence_files=(patch, queue_pipeline, popup_pipeline, tests, target_tests),
         ),
     )

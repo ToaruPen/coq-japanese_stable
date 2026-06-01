@@ -125,14 +125,14 @@ public sealed class PopupAskStringTranslationPatchTests
     {
         WriteDictionary((
             "What name should be used for your {0}? (Male, female, etc.)",
-            "あなたの{0}に使う名前は？（Male、female など）"));
+            "あなたの{0}に使う名前は？（男性、女性など）"));
 
         using var patch = PatchMethod(nameof(DummyPopupGenericTarget.AskStringAsync));
 
         _ = DummyPopupGenericTarget.AskStringAsync(
             "What name should be used for your gender? (Male, female, etc.)").GetAwaiter().GetResult();
 
-        Assert.That(DummyPopupGenericTarget.LastAskStringMessage, Is.EqualTo("あなたのgenderに使う名前は？（Male、female など）"));
+        Assert.That(DummyPopupGenericTarget.LastAskStringMessage, Is.EqualTo("あなたのジェンダーに使う名前は？（男性、女性など）"));
     }
 
     [Test]
