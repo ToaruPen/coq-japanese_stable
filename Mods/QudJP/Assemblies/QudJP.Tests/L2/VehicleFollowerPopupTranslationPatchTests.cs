@@ -52,27 +52,23 @@ public sealed class VehicleFollowerPopupTranslationPatchTests
     [Test]
     public void Patch_TranslatesFollowerPickerTitle_WhenOwnerActive()
     {
-        VehicleFollowerPopupTranslationPatch.Prefix();
-        try
-        {
-            var translated = PopupTranslationPatch.TranslatePopupTextForProducerRoute(
-                "Choose a follower",
-                nameof(VehicleFollowerPopupTranslationPatch));
-
-            Assert.Multiple(() =>
+        OwnerPopupRouteTestHarness.WithPatchedPopupOwner(
+            typeof(VehicleFollowerPopupTranslationPatch),
+            OwnerPopupRouteTestHarness.RequireMethod(typeof(DummyVehicleFollowerTarget), nameof(DummyVehicleFollowerTarget.PickFollower)),
+            () =>
             {
-                Assert.That(translated, Is.EqualTo("仲間を選ぶ。"));
-                Assert.That(
-                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
-                        nameof(VehicleFollowerPopupTranslationPatch),
-                        "Popup.ProducerText.VehicleFollowerPopupTranslationPatch.PickGameObjectTitle"),
-                    Is.EqualTo(1));
+                var translated = DummyVehicleFollowerTarget.PickFollower();
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(translated, Is.EqualTo("仲間を選ぶ。"));
+                    Assert.That(
+                        DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                            nameof(VehicleFollowerPopupTranslationPatch),
+                            "Popup.ProducerText.VehicleFollowerPopupTranslationPatch.PickGameObjectTitle"),
+                        Is.EqualTo(1));
+                });
             });
-        }
-        finally
-        {
-            VehicleFollowerPopupTranslationPatch.Finalizer(null);
-        }
     }
 
     [Test]
@@ -146,6 +142,13 @@ public sealed class VehicleFollowerPopupTranslationPatchTests
         public void HandleEvent()
         {
             DummyPopupShow.ShowFail(PopupMessageToShow);
+        }
+
+        public static string PickFollower()
+        {
+            return PopupTranslationPatch.TranslatePopupTextForProducerRoute(
+                "Choose a follower",
+                nameof(VehicleFollowerPopupTranslationPatch));
         }
     }
 }

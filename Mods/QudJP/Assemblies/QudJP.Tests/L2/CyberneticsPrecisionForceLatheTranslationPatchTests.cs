@@ -106,6 +106,28 @@ public sealed class CyberneticsPrecisionForceLatheTranslationPatchTests
     }
 
     [Test]
+    public void ActivatePrecisionForceLathe_LeavesEmptyMessage_WhenOwnerPatched()
+    {
+        using var ownerPatch = PatchOwner();
+        using var popupPatch = PatchPopupShow();
+        using var queuePatch = PatchQueue();
+        var target = new DummyPrecisionForceLatheTarget
+        {
+            Message = string.Empty,
+        };
+
+        target.ActivatePrecisionForceLathe(new DummyGameObject(), new DummyGameObject(), new DummyEvent());
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(DummyPopupShow.LastShowMessage, Is.Empty);
+            Assert.That(DummyMessageQueue.LastMessage, Is.Empty);
+            Assert.That(HitCount("NoHoldSlot"), Is.Zero);
+            Assert.That(HitCount("StatusFailure"), Is.Zero);
+        });
+    }
+
+    [Test]
     public void ActivatePrecisionForceLathe_StripsDirectMarkedVisibleMessage_WhenOwnerPatched()
     {
         using var ownerPatch = PatchOwner();

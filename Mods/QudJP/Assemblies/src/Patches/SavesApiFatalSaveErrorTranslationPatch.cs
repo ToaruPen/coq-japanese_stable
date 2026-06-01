@@ -105,16 +105,23 @@ public static class SavesApiFatalSaveErrorTranslationPatch
             return false;
         }
 
-        if (string.Equals(source, "Error reading save location.", StringComparison.Ordinal))
+        var visible = ColorAwareTranslationComposer.HasColorMarkup(source)
+            ? ColorAwareTranslationComposer.GetVisibleText(source)
+            : source;
+        if (string.Equals(visible, "Error reading save location.", StringComparison.Ordinal))
         {
-            translated = "セーブ場所の読み取りエラー";
+            translated = ColorAwareTranslationComposer.HasColorMarkup(source)
+                ? ColorAwareTranslationComposer.TranslatePreservingColors(source, _ => "セーブ場所の読み取りエラー")
+                : "セーブ場所の読み取りエラー";
             Record(route, family, "Title", source, translated);
             return true;
         }
 
-        if (string.Equals(source, "Quit", StringComparison.Ordinal))
+        if (string.Equals(visible, "Quit", StringComparison.Ordinal))
         {
-            translated = "終了";
+            translated = ColorAwareTranslationComposer.HasColorMarkup(source)
+                ? ColorAwareTranslationComposer.TranslatePreservingColors(source, _ => "終了")
+                : "終了";
             Record(route, family, "QuitButton", source, translated);
             return true;
         }

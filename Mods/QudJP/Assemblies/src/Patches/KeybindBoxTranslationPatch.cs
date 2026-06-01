@@ -50,17 +50,38 @@ public static class KeybindBoxTranslationPatch
                 return;
             }
 
+            var sourceText = source!;
             var translated = ScopedDictionaryLookup.TranslateExactOrLowerAsciiForContextOnly(
-                source!,
+                sourceText,
                 DictionaryContext,
                 DictionaryFile);
-            if (string.IsNullOrEmpty(translated) || string.Equals(source, translated, StringComparison.Ordinal))
+            if (!string.IsNullOrEmpty(translated) && !string.Equals(sourceText, translated, StringComparison.Ordinal))
+            {
+                var exactTranslated = translated!;
+                _ = UITextSkinReflectionAccessor.SetCurrentText(___textSkin, exactTranslated, Context);
+                DynamicTextObservability.RecordTransform(Context, Family, sourceText, exactTranslated);
+                return;
+            }
+
+            var hasColorMarkup = ColorAwareTranslationComposer.HasColorMarkup(sourceText);
+            var visible = hasColorMarkup
+                ? ColorAwareTranslationComposer.GetVisibleText(sourceText)
+                : sourceText;
+            translated = ScopedDictionaryLookup.TranslateExactOrLowerAsciiForContextOnly(
+                visible,
+                DictionaryContext,
+                DictionaryFile);
+            if (string.IsNullOrEmpty(translated) || string.Equals(visible, translated, StringComparison.Ordinal))
             {
                 return;
             }
 
-            _ = UITextSkinReflectionAccessor.SetCurrentText(___textSkin, translated!, Context);
-            DynamicTextObservability.RecordTransform(Context, Family, source!, translated!);
+            var visibleTranslated = translated!;
+            var finalText = hasColorMarkup
+                ? ColorAwareTranslationComposer.TranslatePreservingColors(sourceText, _ => visibleTranslated)
+                : visibleTranslated;
+            _ = UITextSkinReflectionAccessor.SetCurrentText(___textSkin, finalText, Context);
+            DynamicTextObservability.RecordTransform(Context, Family, sourceText, finalText);
         }
         catch (Exception ex)
         {

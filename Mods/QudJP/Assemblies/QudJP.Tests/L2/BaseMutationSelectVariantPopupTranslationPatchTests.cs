@@ -116,6 +116,45 @@ public sealed class BaseMutationSelectVariantPopupTranslationPatchTests
     }
 
     [Test]
+    public void SelectVariant_PreservesColorTagsInVariantPickerTitle_WhenOwnerPatched()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            PatchPickOption(harmony);
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyBaseMutationTarget), nameof(DummyBaseMutationTarget.SelectVariant)),
+                prefix: new HarmonyMethod(RequireMethod(
+                    typeof(BaseMutationSelectVariantPopupTranslationPatch),
+                    nameof(BaseMutationSelectVariantPopupTranslationPatch.Prefix))),
+                finalizer: new HarmonyMethod(RequireMethod(
+                    typeof(BaseMutationSelectVariantPopupTranslationPatch),
+                    nameof(BaseMutationSelectVariantPopupTranslationPatch.Finalizer),
+                    typeof(Exception))));
+
+            DummyBaseMutationTarget.TitleToShow = "{{C|Choose variant}}";
+            _ = DummyBaseMutationTarget.SelectVariant();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyPopupGenericTarget.LastPickOptionTitle, Is.EqualTo("{{C|変種を選択}}"));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(PopupPickOptionTranslationPatch),
+                        "Popup.ProducerText.BaseMutationSelectVariantPopupTranslationPatch"),
+                    Is.GreaterThan(0));
+            });
+        }
+        finally
+        {
+            DummyBaseMutationTarget.Reset();
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void SelectVariant_LeavesUnknownAndEmptyTitle_WhenOwnerPatched()
     {
         var harmonyId = CreateHarmonyId();

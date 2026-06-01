@@ -71,6 +71,42 @@ public sealed class KeybindBoxTranslationPatchTests
     }
 
     [Test]
+    public void Postfix_PreservesColorTagsAroundTranslatedPrompt_WhenPatched()
+    {
+        WriteDictionary(("press key...", "Qud.UI.KeybindBox", "キーを押してください..."));
+
+        var harmonyId = "qudjp.tests.keybind-box." + Guid.NewGuid().ToString("N");
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyKeybindBoxTarget), nameof(DummyKeybindBoxTarget.Update)),
+                postfix: new HarmonyMethod(RequireMethod(
+                    typeof(KeybindBoxTranslationPatch),
+                    nameof(KeybindBoxTranslationPatch.Postfix))));
+
+            var target = new DummyKeybindBoxTarget { editMode = true };
+            target.textSkin.text = "{{R|press key...}}";
+            target.Update();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(target.textSkin.text, Is.EqualTo("{{R|キーを押してください...}}"));
+                Assert.That(target.textSkin.AppliedCount, Is.EqualTo(1));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        KeybindBoxTranslationPatch.Context,
+                        KeybindBoxTranslationPatch.Family),
+                    Is.EqualTo(1));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void Postfix_LeavesUnknownTextUnchanged_WhenPatched()
     {
         var harmonyId = "qudjp.tests.keybind-box." + Guid.NewGuid().ToString("N");

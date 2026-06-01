@@ -10,6 +10,8 @@ internal sealed class DummyQudMutationsModuleWindow
 
     public static int StaticPointsRemainingToShow { get; set; } = 2;
 
+    public static string? StaticPointsRemainingTitleToShow { get; set; }
+
     public DummyMutationCategoryMenusScroller prefabComponent = new();
 
     public List<DummyMutationCategoryMenuData> categoryMenus =
@@ -52,7 +54,7 @@ internal sealed class DummyQudMutationsModuleWindow
         {
             new DummyPopupMessageTarget().ShowPopup(
                 StaticSummaryPopupMessageToShow,
-                title: "Points Remaining: " + StaticPointsRemainingToShow);
+                title: StaticPointsRemainingTitleToShow ?? "Points Remaining: " + StaticPointsRemainingToShow);
         }
     }
 

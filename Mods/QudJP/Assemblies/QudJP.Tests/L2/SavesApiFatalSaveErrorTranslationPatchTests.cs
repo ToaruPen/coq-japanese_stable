@@ -93,6 +93,37 @@ public sealed class SavesApiFatalSaveErrorTranslationPatchTests
     }
 
     [Test]
+    public void Patch_PreservesColorTagsInFatalSaveErrorPopup_WhenOwnerPatched()
+    {
+        const string source =
+            "There was a permission error while trying to access your save directory.\n\n" +
+            "{{Y|Access denied: /Users/test/Saves}}\n\n" +
+            "Caves of Qud will exit now since we cannot save games. Please check your directory’s permissions.\n";
+
+        var buttons = new List<DummyPopupMessageItem>
+        {
+            new("{{R|Quit}}", "Accept,Cancel", "Cancel"),
+        };
+
+        WithPatchedOwner(() => new DummyPopupMessageTarget().ShowPopup(source, buttons, title: "{{r|Error reading save location.}}"));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                DummyPopupMessageTarget.LastMessage,
+                Is.EqualTo(
+                    "セーブディレクトリへのアクセス中に権限エラーが発生した。\n\n" +
+                    "{{Y|Access denied: /Users/test/Saves}}\n\n" +
+                    "ゲームを保存できないため、Caves of Qud を終了する。ディレクトリの権限を確認してください。\n"));
+            Assert.That(DummyPopupMessageTarget.LastTitle, Is.EqualTo("{{r|セーブ場所の読み取りエラー}}"));
+            Assert.That(DummyPopupMessageTarget.LastButtons?.Single().text, Is.EqualTo("{{R|終了}}"));
+            Assert.That(HitCount("PermissionBody"), Is.EqualTo(1));
+            Assert.That(HitCount("Title"), Is.EqualTo(1));
+            Assert.That(HitCount("QuitButton"), Is.EqualTo(1));
+        });
+    }
+
+    [Test]
     public void Patch_DoesNotClaimFatalSaveErrorPopup_WhenOwnerAbsent()
     {
         const string source = "There was an error while trying to access your save directory.";

@@ -77,13 +77,19 @@ public static class QudMutationsModuleWindowHandleMenuOptionPopupTranslationPatc
             return true;
         }
 
-        if (!source.StartsWith(PointsRemainingTitlePrefix, StringComparison.Ordinal))
+        var visible = ColorAwareTranslationComposer.HasColorMarkup(source)
+            ? ColorAwareTranslationComposer.GetVisibleText(source)
+            : source;
+        if (!visible.StartsWith(PointsRemainingTitlePrefix, StringComparison.Ordinal))
         {
             translated = source;
             return false;
         }
 
-        translated = "変異ポイント残り: " + source.Substring(PointsRemainingTitlePrefix.Length);
+        var translatedVisible = "変異ポイント残り: " + visible.Substring(PointsRemainingTitlePrefix.Length);
+        translated = ColorAwareTranslationComposer.HasColorMarkup(source)
+            ? ColorAwareTranslationComposer.TranslatePreservingColors(source, _ => translatedVisible)
+            : translatedVisible;
         DynamicTextObservability.RecordTransform(route, family + "." + Context + "." + PointsRemainingDetail, source, translated);
         return true;
     }

@@ -118,6 +118,10 @@ public sealed class AutomatedExternalDefibrillatorTranslationPatchTests
         target.AttemptDefibrillateConfirmationPopup();
         var unknown = DummyPopupShow.LastShowYesNoMessage;
 
+        target.PopupMessageToShow = "{{Y|Unknown defibrillator text.}}";
+        target.AttemptDefibrillateConfirmationPopup();
+        var coloredUnknown = DummyPopupShow.LastShowYesNoMessage;
+
         target.PopupMessageToShow = string.Empty;
         target.AttemptDefibrillateConfirmationPopup();
         var empty = DummyPopupShow.LastShowYesNoMessage;
@@ -126,11 +130,17 @@ public sealed class AutomatedExternalDefibrillatorTranslationPatchTests
         target.AttemptDefibrillateConfirmationPopup();
         var marked = DummyPopupShow.LastShowYesNoMessage;
 
+        target.PopupMessageToShow = MessageFrameTranslator.MarkDirectTranslation("{{Y|翻訳済み}}");
+        target.AttemptDefibrillateConfirmationPopup();
+        var coloredMarked = DummyPopupShow.LastShowYesNoMessage;
+
         Assert.Multiple(() =>
         {
             Assert.That(unknown, Is.EqualTo("Unknown defibrillator text."));
+            Assert.That(coloredUnknown, Is.EqualTo("{{Y|Unknown defibrillator text.}}"));
             Assert.That(empty, Is.Empty);
             Assert.That(marked, Is.EqualTo("翻訳済み"));
+            Assert.That(coloredMarked, Is.EqualTo("{{Y|翻訳済み}}"));
             Assert.That(DefibrillatorHitCount("Defibrillator.TargetConfirm"), Is.Zero);
             Assert.That(DefibrillatorHitCount("Defibrillator.SelfConfirm"), Is.Zero);
         });

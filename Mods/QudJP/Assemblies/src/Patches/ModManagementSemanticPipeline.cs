@@ -111,8 +111,8 @@ internal static class ModManagementSemanticPipeline
                 "\n\n必要なら転送できるよう、自動的にクリップボードへコピーされています: Mod作者。",
             "\n\nAutomatically on your clipboard should you wish to forward it to " =>
                 "\n\n必要なら転送できるよう、自動的にクリップボードへコピーされています: ",
-            "the mod author" => "Mod作者",
-            "." => "。",
+            "the mod author" => "Mod作者。",
+            "." => string.Empty,
             "{{W|[R]}} {{y|Retry}}" => "{{W|[R]}} {{y|再試行}}",
             "{{W|[W]}} {{y|Workshop}}" => "{{W|[W]}} {{y|ワークショップ}}",
             _ => source,

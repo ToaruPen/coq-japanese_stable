@@ -80,9 +80,14 @@ public static class QudMutationsModuleWindowVariantPopupTranslationPatch
             return false;
         }
 
-        if (string.Equals(source, ChooseVariantTitle, StringComparison.Ordinal))
+        var visible = ColorAwareTranslationComposer.HasColorMarkup(source)
+            ? ColorAwareTranslationComposer.GetVisibleText(source)
+            : source;
+        if (string.Equals(visible, ChooseVariantTitle, StringComparison.Ordinal))
         {
-            translated = ChooseVariantTitleTranslation;
+            translated = ColorAwareTranslationComposer.HasColorMarkup(source)
+                ? ColorAwareTranslationComposer.TranslatePreservingColors(source, _ => ChooseVariantTitleTranslation)
+                : ChooseVariantTitleTranslation;
             DynamicTextObservability.RecordTransform(route, family + "." + Context, source, translated);
             return true;
         }
