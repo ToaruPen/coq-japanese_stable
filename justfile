@@ -86,11 +86,11 @@ test-csharp:
 
 # Run Python static checks.
 python-check:
-  ruff check scripts/
+  uv run ruff check scripts/
 
 # Format Python scripts.
 python-format:
-  ruff format scripts/
+  uv run ruff format scripts/
 
 # Run Python tests.
 python-test:
@@ -525,7 +525,7 @@ roslyn-test:
 
 # Run Ruff for Roslyn Python files and basedpyright for the typed static-producer gate.
 roslyn-python-check:
-  ruff check scripts/dotnet_tool_runner.py scripts/extract_annals_patterns.py scripts/roslyn_semantic_probe.py scripts/scan_static_producer_inventory.py scripts/scan_unused_code_inventory.py scripts/static_producer_closure.py scripts/text_construction_surface_policy.py scripts/tests/test_extract_annals_patterns.py scripts/tests/test_parallel_dotnet_contract.py scripts/tests/test_roslyn_extractor_smoke.py scripts/tests/test_roslyn_semantic_probe.py scripts/tests/test_roslyn_text_construction_inventory.py scripts/tests/test_scan_static_producer_inventory.py scripts/tests/test_scan_unused_code_inventory.py scripts/tests/test_static_producer_closure.py scripts/tests/test_text_construction_surface_policy.py
+  uv run ruff check scripts/dotnet_tool_runner.py scripts/extract_annals_patterns.py scripts/roslyn_semantic_probe.py scripts/scan_static_producer_inventory.py scripts/scan_unused_code_inventory.py scripts/static_producer_closure.py scripts/text_construction_surface_policy.py scripts/tests/test_extract_annals_patterns.py scripts/tests/test_parallel_dotnet_contract.py scripts/tests/test_roslyn_extractor_smoke.py scripts/tests/test_roslyn_semantic_probe.py scripts/tests/test_roslyn_text_construction_inventory.py scripts/tests/test_scan_static_producer_inventory.py scripts/tests/test_scan_unused_code_inventory.py scripts/tests/test_static_producer_closure.py scripts/tests/test_text_construction_surface_policy.py
   uvx basedpyright scripts/dotnet_tool_runner.py scripts/roslyn_semantic_probe.py scripts/scan_static_producer_inventory.py scripts/scan_unused_code_inventory.py scripts/static_producer_closure.py scripts/text_construction_surface_policy.py scripts/tests/test_roslyn_semantic_probe.py scripts/tests/test_scan_static_producer_inventory.py scripts/tests/test_scan_unused_code_inventory.py scripts/tests/test_static_producer_closure.py scripts/tests/test_text_construction_surface_policy.py scripts/tests/test_roslyn_extractor_smoke.py
 
 # Run build, focused tests, and static checks for Roslyn analysis tooling.
@@ -538,7 +538,7 @@ semantic-probe *args:
 # Run focused validation for the generic Roslyn semantic probe.
 semantic-probe-check: roslyn-build-semantic-probe
   uv run pytest scripts/tests/test_roslyn_semantic_probe.py scripts/tests/test_roslyn_extractor_smoke.py -q
-  ruff check scripts/roslyn_semantic_probe.py scripts/tests/test_roslyn_semantic_probe.py scripts/tests/test_roslyn_extractor_smoke.py
+  uv run ruff check scripts/roslyn_semantic_probe.py scripts/tests/test_roslyn_semantic_probe.py scripts/tests/test_roslyn_extractor_smoke.py
   uvx basedpyright scripts/roslyn_semantic_probe.py scripts/tests/test_roslyn_semantic_probe.py scripts/tests/test_roslyn_extractor_smoke.py
 
 # Run optional real-source smoke for the generic Roslyn semantic probe.
@@ -548,7 +548,7 @@ semantic-probe-real-smoke:
 # Validate the executable localization coverage map.
 localization-coverage-map-check:
   uv run pytest scripts/tests/test_localization_coverage_map.py -q
-  ruff check scripts/localization_coverage_map.py scripts/tests/test_localization_coverage_map.py
+  uv run ruff check scripts/localization_coverage_map.py scripts/tests/test_localization_coverage_map.py
   uvx basedpyright scripts/localization_coverage_map.py scripts/tests/test_localization_coverage_map.py
 
 # Generate static producer inventory to a disposable local output.
@@ -563,7 +563,7 @@ static-producer-regenerate-tracked source_root=decompiled_root:
 # Run the static producer scanner's focused validation gate.
 static-producer-check: roslyn-build-static-producer
   uv run pytest scripts/tests/test_scan_static_producer_inventory.py scripts/tests/test_static_producer_closure.py scripts/tests/test_roslyn_extractor_smoke.py -q
-  ruff check scripts/scan_static_producer_inventory.py scripts/static_producer_closure.py scripts/tests/test_scan_static_producer_inventory.py scripts/tests/test_static_producer_closure.py scripts/tests/test_roslyn_extractor_smoke.py
+  uv run ruff check scripts/scan_static_producer_inventory.py scripts/static_producer_closure.py scripts/tests/test_scan_static_producer_inventory.py scripts/tests/test_static_producer_closure.py scripts/tests/test_roslyn_extractor_smoke.py
   uvx basedpyright scripts/scan_static_producer_inventory.py scripts/static_producer_closure.py scripts/tests/test_scan_static_producer_inventory.py scripts/tests/test_static_producer_closure.py scripts/tests/test_roslyn_extractor_smoke.py
 
 # Print the static producer owner work queue grouped by decompiled C# source file.
@@ -623,7 +623,7 @@ unused-code-gate source_root="." config="scripts/unused_code_inventory_config.js
 # Run the unused-code scanner's focused validation gate.
 unused-code-check: roslyn-build-unused-code
   uv run pytest scripts/tests/test_scan_unused_code_inventory.py scripts/tests/test_roslyn_extractor_smoke.py -q
-  ruff check scripts/scan_unused_code_inventory.py scripts/tests/test_scan_unused_code_inventory.py scripts/tests/test_roslyn_extractor_smoke.py
+  uv run ruff check scripts/scan_unused_code_inventory.py scripts/tests/test_scan_unused_code_inventory.py scripts/tests/test_roslyn_extractor_smoke.py
   uvx basedpyright scripts/scan_unused_code_inventory.py scripts/tests/test_scan_unused_code_inventory.py scripts/tests/test_roslyn_extractor_smoke.py
 
 # Audit source routes and test expectations for English function-word residue risks.

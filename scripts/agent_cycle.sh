@@ -4,7 +4,12 @@ set -euo pipefail
 ROOT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
 DOTFILES_ROOT=${DOTFILES_ROOT:-}
 ARTIFACT_DIR=${AGENT_LOOP_ARTIFACT_DIR:-"$ROOT_DIR/scripts/_artifacts/agent-loop"}
-PYTHON_BIN=${PYTHON_BIN:-python3.12}
+PYTHON_BIN=${PYTHON_BIN:-"uv run python"}
+if [[ -x "$PYTHON_BIN" ]] || command -v "$PYTHON_BIN" >/dev/null 2>&1; then
+  PYTHON_CMD=("$PYTHON_BIN")
+else
+  read -r -a PYTHON_CMD <<<"$PYTHON_BIN"
+fi
 
 usage() {
   cat <<'USAGE'
@@ -45,7 +50,7 @@ require_dotfiles_root() {
 
 tool_check() {
   local missing=0
-  for tool in just "$PYTHON_BIN"; do
+  for tool in just "${PYTHON_CMD[0]}"; do
     if ! command -v "$tool" >/dev/null 2>&1; then
       echo "missing tool: $tool" >&2
       missing=1
@@ -208,7 +213,7 @@ render_skill_evals() {
     args+=(--scenario "$scenario")
   fi
 
-  "$PYTHON_BIN" "$ROOT_DIR/scripts/render_skill_eval_prompts.py" "${args[@]}" \
+  "${PYTHON_CMD[@]}" "$ROOT_DIR/scripts/render_skill_eval_prompts.py" "${args[@]}" \
     | tee "$ARTIFACT_DIR/skill-eval-prompts.md"
 }
 
@@ -221,8 +226,8 @@ summarize_skill_evals() {
   fi
 
   mkdir -p "$ARTIFACT_DIR"
-  "$PYTHON_BIN" "$ROOT_DIR/scripts/validate_skill_eval_results.py" "$results"
-  "$PYTHON_BIN" "$DOTFILES_ROOT/scripts/summarize-skill-eval-results.py" "$results" \
+  "${PYTHON_CMD[@]}" "$ROOT_DIR/scripts/validate_skill_eval_results.py" "$results"
+  "${PYTHON_CMD[@]}" "$DOTFILES_ROOT/scripts/summarize-skill-eval-results.py" "$results" \
     | tee "$ARTIFACT_DIR/skill-eval-summary.md"
 }
 

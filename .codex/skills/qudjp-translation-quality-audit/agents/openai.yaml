@@ -1,0 +1,4 @@
+interface:
+  display_name: "QudJP Translation Quality Audit"
+  short_description: "Audit QudJP translations for context, fluency, and consistency."
+  default_prompt: "Use $qudjp-translation-quality-audit to review this QudJP translation for context accuracy, Japanese fluency, and glossary consistency."
