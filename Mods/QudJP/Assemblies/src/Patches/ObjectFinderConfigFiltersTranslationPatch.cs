@@ -88,6 +88,11 @@ public static class ObjectFinderConfigFiltersTranslationPatch
         return __exception;
     }
 
+    internal static bool ShouldClaimPopupMessagePassthrough()
+    {
+        return OwnerTranslationScope.IsActive(activeDepth);
+    }
+
     internal static bool TryTranslatePopupMessage(string source, string route, string family, out string translated)
     {
         _ = route;
@@ -122,7 +127,7 @@ public static class ObjectFinderConfigFiltersTranslationPatch
         }
 
         translated = source;
-        return true;
+        return false;
     }
 
     internal static bool TryTranslateFixedPopupText(string source, out string translated)

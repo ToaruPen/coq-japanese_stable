@@ -473,6 +473,12 @@ public static class PopupTranslationPatch
             return true;
         }
 
+        if (ObjectFinderConfigFiltersTranslationPatch.ShouldClaimPopupMessagePassthrough())
+        {
+            translated = source;
+            return true;
+        }
+
         if (GameObjectPopupTranslationPatch.TryTranslatePopupMessage(source, route, family, out var gameObjectPopupTranslated))
         {
             translated = gameObjectPopupTranslated;
