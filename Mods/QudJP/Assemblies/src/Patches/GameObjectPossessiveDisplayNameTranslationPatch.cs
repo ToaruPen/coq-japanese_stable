@@ -51,12 +51,7 @@ public static class GameObjectPossessiveDisplayNameTranslationPatch
         try
         {
             var source = __result;
-            if (!TryTranslatePossessiveDisplayName(source, out var translated)
-                && string.Equals(source, translated, StringComparison.Ordinal))
-            {
-                return;
-            }
-
+            TryTranslatePossessiveDisplayName(source, out var translated);
             if (string.Equals(source, translated, StringComparison.Ordinal))
             {
                 return;

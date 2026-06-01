@@ -23,6 +23,7 @@ public sealed class CookingRecipeDisplayNameTranslatorTests
     }
 
     [TestCase("{{W|Fried Wafers}}", "{{W|揚げウェハー}}")]
+    [TestCase("{{R|Fried Wafers}}", "{{R|揚げウェハー}}")]
     [TestCase("{{W|Honeyed Salt Stew}}", "{{W|ハチミツ風味の塩シチュー}}")]
     [TestCase("{{W|Salt Bread}}", "{{W|塩パン}}")]
     [TestCase("{{W|Marrow Fillet}}", "{{W|髄切り身}}")]
@@ -320,7 +321,6 @@ public sealed class CookingRecipeDisplayNameTranslatorTests
     [TestCase("")]
     [TestCase("Fried Wafers")]
     [TestCase("{{W|Qwern Wafers}}")]
-    [TestCase("{{R|Fried Wafers}}")]
     public void TryProcessDisplayName_LeavesUnsupportedDisplayNamesUnchanged(string source)
     {
         var ok = CookingRecipeDisplayNameTranslationPatch.TryProcessDisplayName(

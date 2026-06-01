@@ -119,10 +119,10 @@ public sealed partial class Issue201OtherUiBindingPatchTests
         RunWithCyberneticsTerminalTextTranspiler(() =>
         {
             var screen = new CyberneticsScreen();
-            screen.Options.Add(MessageFrameTranslator.MarkDirectTranslation("Already translated option"));
+            screen.Options.Add(MessageFrameTranslator.MarkDirectTranslation("既に翻訳済みオプション"));
             screen.Update();
 
-            Assert.That(screen.Options[0], Is.EqualTo("Already translated option"));
+            Assert.That(screen.Options[0], Is.EqualTo("既に翻訳済みオプション"));
         });
     }
 

@@ -47,6 +47,7 @@ public sealed class CookingRecipeDisplayNameTranslationPatchTests
     }
 
     [TestCase("{{W|Apple Matz}}", "{{W|アップルマッツァ}}")]
+    [TestCase("{{C|Apple Matz}}", "{{C|アップルマッツァ}}")]
     [TestCase("{{W|Bone Babka}}", "{{W|ボーンバブカ}}")]
     [TestCase("{{W|Cloaca Surprise}}", "{{W|クロアカ・サプライズ}}")]
     [TestCase("{{W|Crystal Delight}}", "{{W|クリスタル・ディライト}}")]

@@ -143,12 +143,13 @@ public static class MechanicalWingsPopupTranslationPatch
     private static bool TryTranslateCore(string source, out string translated)
     {
         var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        var captureSpans = ColorAwareTranslationComposer.WithoutTrueWholeSourceBoundarySpans(spans, stripped.Length);
         var longFallMatch = LongFallWarningPattern.Match(stripped);
         if (longFallMatch.Success)
         {
             var longFallSubject = ColorAwareTranslationComposer.RestoreCapture(
                 longFallMatch.Groups["subject"].Value,
-                spans,
+                captureSpans,
                 longFallMatch.Groups["subject"]).Trim();
             var core = $"あなたがいる{longFallSubject}の下はかなり深そうだ。飛行をやめてもよいですか？";
             translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
@@ -164,7 +165,7 @@ public static class MechanicalWingsPopupTranslationPatch
         {
             var wingsSubject = ColorAwareTranslationComposer.RestoreCapture(
                 willNotMoveMatch.Groups["subject"].Value,
-                spans,
+                captureSpans,
                 willNotMoveMatch.Groups["subject"]).Trim();
             if (wingsSubject.StartsWith("Your ", StringComparison.Ordinal))
             {
@@ -188,7 +189,7 @@ public static class MechanicalWingsPopupTranslationPatch
 
         var subject = ColorAwareTranslationComposer.RestoreCapture(
             match.Groups["subject"].Value,
-            spans,
+            captureSpans,
             match.Groups["subject"]).Trim();
         var extra = match.Groups["extra"].Value;
         var endmark = match.Groups["endmark"].Success ? match.Groups["endmark"].Value : null;

@@ -197,6 +197,32 @@ public sealed class MechanicalWingsPopupTranslationPatchTests
         });
     }
 
+    [TestCase("Unknown wings warning.", "Unknown wings warning.", 0)]
+    [TestCase("", "", 0)]
+    [TestCase("{{R|Your wings will not move!}}", "{{R|あなたのwingsは動かない！}}", 1)]
+    [TestCase("\u0001" + WingsWillNotMoveSource, WingsWillNotMoveSource, 0)]
+    public void Patch_HandlesMutationWingsWillNotMoveEdgeCases_WhenCommandOwnerPatched(
+        string source,
+        string expected,
+        int expectedHitCount)
+    {
+        RunWithOwnerAndPopupPatches([nameof(DummyMechanicalWingsProducer.HandleCommand)], () =>
+        {
+            var target = new DummyMechanicalWingsProducer
+            {
+                PopupMessageToShow = source,
+            };
+
+            target.HandleCommand();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(expected));
+                Assert.That(GetWingsWillNotMoveHitCount(), Is.EqualTo(expectedHitCount));
+            });
+        });
+    }
+
     [Test]
     public void Patch_StripsDirectMarkedPopup_WhenOwnerPatched()
     {

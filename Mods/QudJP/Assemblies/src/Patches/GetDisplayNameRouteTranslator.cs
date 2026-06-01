@@ -313,6 +313,11 @@ internal static class GetDisplayNameRouteTranslator
             return skillsoftTranslation;
         }
 
+        if (TryTranslateGeneratedRandomStatueName(source!, route, out var randomStatueEarlyTranslation))
+        {
+            return randomStatueEarlyTranslation;
+        }
+
         if (TryTranslateGeneratedEnglishPrefixDisplayName(source!, route, out var prefixTranslation))
         {
             return prefixTranslation;
@@ -4416,7 +4421,7 @@ internal static class GetDisplayNameRouteTranslator
         var subject = StringHelpers.StripLeadingEnglishArticle(
             match.Groups["subject"].Value,
             includeCapitalizedDefiniteArticle: true);
-        var translatedSubject = TranslateDisplayNameFragment(subject, route);
+        var translatedSubject = TranslateDisplayNameFragmentPreservingColors(subject, route);
         translated = modifierPrefix + translatedSubject + "の" + translatedMaterial + "の" + translatedStatue;
         DynamicTextObservability.RecordTransform(route, "DisplayName.GeneratedRandomStatue", source, translated);
         return true;

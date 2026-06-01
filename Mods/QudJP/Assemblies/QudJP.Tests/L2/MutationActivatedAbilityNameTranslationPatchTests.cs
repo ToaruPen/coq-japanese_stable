@@ -208,6 +208,45 @@ public sealed class MutationActivatedAbilityNameTranslationPatchTests
         });
     }
 
+    [Test]
+    public void SyncAbilityName_StripsDirectMarkerFromRecoilZone_WhenPatched()
+    {
+        WithPatchedSyncAbilityName(() =>
+        {
+            var mutation = new DummyMutationAbilityProvider("Recoil to \u0001ジョッパ");
+
+            mutation.SyncAbilityName();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(mutation.StrengthEntry.DisplayName, Is.EqualTo("ジョッパへ帰還"));
+                Assert.That(HitCount(), Is.EqualTo(1));
+            });
+        });
+    }
+
+    [TestCase("", "", 0)]
+    [TestCase("\u0001Lase (4 charges)", "Lase (4 charges)", 0)]
+    [TestCase("Unknown Ability (3 charges)", "Unknown Ability (3 charges)", 0)]
+    public void SyncAbilityName_HandlesFallbackEmptyAndDirectMarkedAbilityNames_WhenPatched(
+        string source,
+        string expected,
+        int expectedHitCount)
+    {
+        WithPatchedSyncAbilityName(() =>
+        {
+            var mutation = new DummyMutationAbilityProvider(source);
+
+            mutation.SyncAbilityName();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(mutation.StrengthEntry.DisplayName, Is.EqualTo(expected));
+                Assert.That(HitCount(), Is.EqualTo(expectedHitCount));
+            });
+        });
+    }
+
 
     [Test]
     public void RegistrationNameFallbackSetter_RejectsNonStringDisplayNameMember()

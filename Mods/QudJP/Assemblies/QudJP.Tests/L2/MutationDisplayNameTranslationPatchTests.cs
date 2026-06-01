@@ -97,9 +97,9 @@ public sealed class MutationDisplayNameTranslationPatchTests
     [TestCase("Unknown Mutation")]
     public void Postfix_LeavesUnsupportedMutationDisplayNamesUnchanged(string source)
     {
-        var result = source;
-
-        MutationDisplayNameTranslationPatch.Postfix(ref result);
+        var result = InvokePatchedDisplayName(
+            nameof(DummyMutationDisplayNameTarget.BaseMutationGetDisplayName),
+            source);
 
         Assert.Multiple(() =>
         {
@@ -113,13 +113,44 @@ public sealed class MutationDisplayNameTranslationPatchTests
     }
 
     [Test]
-    public void Postfix_LeavesDirectMarkedDisplayNameUnchanged()
+    public void Postfix_StripsDirectMarkedDisplayName()
     {
-        var result = MessageFrameTranslator.MarkDirectTranslation("Force Wall");
+        var result = InvokePatchedDisplayName(
+            nameof(DummyMutationDisplayNameTarget.BaseMutationGetDisplayName),
+            MessageFrameTranslator.MarkDirectTranslation("Force Wall"));
 
-        MutationDisplayNameTranslationPatch.Postfix(ref result);
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.EqualTo("Force Wall"));
+            Assert.That(
+                DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                    MutationDisplayNameTranslationPatch.Context,
+                    MutationDisplayNameTranslationPatch.Family),
+                Is.EqualTo(1));
+        });
+    }
 
-        Assert.That(result, Is.EqualTo(MessageFrameTranslator.MarkDirectTranslation("Force Wall")));
+    private static string InvokePatchedDisplayName(string methodName, string source)
+    {
+        var harmonyId = "qudjp.tests.mutation-display-name." + Guid.NewGuid().ToString("N");
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyMutationDisplayNameTarget), methodName, typeof(bool)),
+                postfix: new HarmonyMethod(RequireMethod(
+                    typeof(MutationDisplayNameTranslationPatch),
+                    nameof(MutationDisplayNameTranslationPatch.Postfix),
+                    typeof(string).MakeByRefType())));
+
+            DummyMutationDisplayNameTarget.NextResult = source;
+            return (string)RequireMethod(typeof(DummyMutationDisplayNameTarget), methodName, typeof(bool))
+                .Invoke(null, new object[] { true })!;
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
     }
 
     private static MethodInfo RequireMethod(Type type, string methodName, params Type[] parameterTypes)

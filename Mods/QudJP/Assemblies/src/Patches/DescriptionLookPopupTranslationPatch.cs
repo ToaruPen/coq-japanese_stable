@@ -18,6 +18,7 @@ public static class DescriptionLookPopupTranslationPatch
         new Dictionary<string, string>(StringComparer.Ordinal)
         {
             ["Recall {{W|S}}tory"] = "{{W|S}} ストーリーを思い出す",
+            ["{{C|Recall Story}}"] = "{{C|ストーリーを思い出す}}",
             ["[press {{W|space}} or recall {{W|s}}tory]"] = "[{{W|space}}で続行 / {{W|s}}でストーリー]",
             ["[press {{W|space}}]"] = "[{{W|space}}で続行]",
         };

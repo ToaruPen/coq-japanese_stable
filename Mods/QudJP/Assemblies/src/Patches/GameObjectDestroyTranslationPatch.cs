@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Text.RegularExpressions;
@@ -80,15 +81,33 @@ public static class GameObjectDestroyTranslationPatch
 
     public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
     {
-        foreach (var instruction in instructions)
+        var originalInstructions = instructions as List<CodeInstruction> ?? instructions.ToList();
+        IEnumerable<CodeInstruction> result;
+        try
         {
-            if (instruction.opcode == OpCodes.Ldstr
-                && instruction.operand is string source
-                && FixedLiteralTranslations.TryGetValue(source, out var translated))
+            var modified = new List<CodeInstruction>(originalInstructions.Count);
+            foreach (var instruction in originalInstructions)
             {
-                instruction.operand = translated;
+                if (instruction.opcode == OpCodes.Ldstr
+                    && instruction.operand is string source
+                    && FixedLiteralTranslations.TryGetValue(source, out var translated))
+                {
+                    instruction.operand = translated;
+                }
+
+                modified.Add(instruction);
             }
 
+            result = modified;
+        }
+        catch (Exception ex)
+        {
+            Trace.TraceError("QudJP: {0}.Transpiler failed: {1}", Context, ex);
+            result = originalInstructions;
+        }
+
+        foreach (var instruction in result)
+        {
             yield return instruction;
         }
     }

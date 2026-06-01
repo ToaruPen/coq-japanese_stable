@@ -69,7 +69,7 @@ public static class CyberneticsLowLevelHackPopupTranslationPatch
     internal static bool TryTranslatePopupMessage(string source, string route, string family, out string translated)
     {
         _ = family;
-        if (!OwnerTranslationScope.IsActive(activeDepth) || string.IsNullOrEmpty(source))
+        if (string.IsNullOrEmpty(source))
         {
             translated = source;
             return false;
@@ -79,6 +79,12 @@ public static class CyberneticsLowLevelHackPopupTranslationPatch
         {
             translated = markedText;
             return true;
+        }
+
+        if (!OwnerTranslationScope.IsActive(activeDepth))
+        {
+            translated = source;
+            return false;
         }
 
         if (!string.Equals(source, SourcePrompt, StringComparison.Ordinal))

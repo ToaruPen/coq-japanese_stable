@@ -106,7 +106,12 @@ public static class WorldPartFixedDisplayNameTranslationPatch
             return;
         }
 
-        if (!FixedTextTranslations.TryGetValue(source!, out var translated))
+        var translated = ColorAwareTranslationComposer.TranslatePreservingColors(
+            source!,
+            visible => FixedTextTranslations.TryGetValue(visible, out var fixedTranslation)
+                ? fixedTranslation
+                : visible);
+        if (string.Equals(source, translated, StringComparison.Ordinal))
         {
             return;
         }

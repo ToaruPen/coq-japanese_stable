@@ -13,7 +13,6 @@ public static class CookingRecipeDisplayNameTranslationPatch
     internal const string Family = Context + ".HistoricSpiceGeneratedName";
 
     private const string PresetMealNameDictionaryFile = "Scoped/ui-popup-campfire-preset-meals.ja.json";
-    private const string WhiteMarkupPrefix = "{{W|";
     private const string MarkupSuffix = "}}";
 
     [ThreadStatic]
@@ -135,29 +134,39 @@ public static class CookingRecipeDisplayNameTranslationPatch
 
     internal static bool TryTranslateDisplayName(string source, out string translated)
     {
-        if (!TryExtractWhiteMarkup(source, out var inner)
+        if (!TryExtractColorMarkup(source, out var markupPrefix, out var inner)
             || !TryTranslateDisplayNameInner(inner, out var translatedInner))
         {
             translated = source;
             return false;
         }
 
-        translated = WhiteMarkupPrefix + translatedInner + MarkupSuffix;
+        translated = markupPrefix + translatedInner + MarkupSuffix;
         return true;
     }
 
-    private static bool TryExtractWhiteMarkup(string source, out string inner)
+    private static bool TryExtractColorMarkup(string source, out string markupPrefix, out string inner)
     {
-        if (!source.StartsWith(WhiteMarkupPrefix, StringComparison.Ordinal)
+        if (!source.StartsWith("{{", StringComparison.Ordinal)
             || !source.EndsWith(MarkupSuffix, StringComparison.Ordinal))
         {
+            markupPrefix = string.Empty;
             inner = source;
             return false;
         }
 
+        var separatorIndex = source.IndexOf('|', startIndex: 2);
+        if (separatorIndex < 0)
+        {
+            markupPrefix = string.Empty;
+            inner = source;
+            return false;
+        }
+
+        markupPrefix = source.Substring(0, separatorIndex + 1);
         inner = source.Substring(
-            WhiteMarkupPrefix.Length,
-            source.Length - WhiteMarkupPrefix.Length - MarkupSuffix.Length);
+            separatorIndex + 1,
+            source.Length - separatorIndex - 1 - MarkupSuffix.Length);
         return true;
     }
 

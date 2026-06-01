@@ -87,8 +87,7 @@ public static class GameObjectSpotTranslationPatch
 
     internal static bool TryTranslatePopupMessage(string source, string route, string family, out string translated)
     {
-        _ = route;
-        _ = family;
+        // Route and family are kept for compatibility with popup owner-route delegates.
         translated = source;
 
         if (activeDepth <= 0 || string.IsNullOrEmpty(source))

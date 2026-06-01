@@ -77,14 +77,25 @@ public static class MutationDisplayNameTranslationPatch
 
     internal static bool TryTranslateDisplayName(string? source, out string translated)
     {
-        translated = source ?? string.Empty;
-        if (string.IsNullOrEmpty(source)
-            || MessageFrameTranslator.TryStripDirectTranslationMarker(source, out _))
+        if (source is null)
+        {
+            translated = string.Empty;
+            return false;
+        }
+
+        translated = source;
+        if (source.Length == 0)
         {
             return false;
         }
 
-        var sourceText = source!;
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var stripped))
+        {
+            translated = stripped;
+            return !string.Equals(source, stripped, StringComparison.Ordinal);
+        }
+
+        var sourceText = source;
         if (sourceText.EndsWith(DefectSuffix, StringComparison.Ordinal))
         {
             var baseName = sourceText.Substring(0, sourceText.Length - DefectSuffix.Length);

@@ -118,7 +118,7 @@ public sealed class WorldPartGeneratedDisplayNameTranslationPatchTests
             {
                 var part = new DummyRandomStatueTarget();
                 part.SetCreature(new DummyGameObject("{{C|snapjaw}}"));
-                Assert.That(part.ParentObject.Render.DisplayName, Is.EqualTo("石 像of a {{C|snapjaw}}"));
+                Assert.That(part.ParentObject.Render.DisplayName, Is.EqualTo("{{C|スナップジョー}}の石の像"));
             });
     }
 

@@ -97,9 +97,7 @@ public sealed class GameObjectPossessiveDisplayNameTranslationPatchTests
     [Test]
     public void Postfix_LeavesNonPossessiveDisplayNameUnchanged()
     {
-        var result = "レーザーライフル";
-
-        GameObjectPossessiveDisplayNameTranslationPatch.Postfix(ref result);
+        var result = InvokePatchedPossResult("レーザーライフル");
 
         Assert.Multiple(() =>
         {
@@ -115,9 +113,7 @@ public sealed class GameObjectPossessiveDisplayNameTranslationPatchTests
     [Test]
     public void Postfix_StripsDirectMarkerFromUnknownDisplayName()
     {
-        var result = MessageFrameTranslator.MarkDirectTranslation("レーザーライフル");
-
-        GameObjectPossessiveDisplayNameTranslationPatch.Postfix(ref result);
+        var result = InvokePatchedPossResult(MessageFrameTranslator.MarkDirectTranslation("レーザーライフル"));
 
         Assert.Multiple(() =>
         {
@@ -128,6 +124,29 @@ public sealed class GameObjectPossessiveDisplayNameTranslationPatchTests
                     GameObjectPossessiveDisplayNameTranslationPatch.Family),
                 Is.EqualTo(1));
         });
+    }
+
+    private static string InvokePatchedPossResult(string source)
+    {
+        var harmonyId = "qudjp.tests.gameobject-possessive-display-name." + Guid.NewGuid().ToString("N");
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyPossessiveDisplayNameTarget), nameof(DummyPossessiveDisplayNameTarget.Poss)),
+                postfix: new HarmonyMethod(RequireMethod(
+                    typeof(GameObjectPossessiveDisplayNameTranslationPatch),
+                    nameof(GameObjectPossessiveDisplayNameTranslationPatch.Postfix),
+                    typeof(string).MakeByRefType())));
+
+            DummyPossessiveDisplayNameTarget.NextResult = source;
+            return (string)RequireMethod(typeof(DummyPossessiveDisplayNameTarget), nameof(DummyPossessiveDisplayNameTarget.Poss))
+                .Invoke(null, new object?[] { new object(), true, null })!;
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
     }
 
     private static MethodInfo RequireMethod(Type type, string methodName, params Type[] parameterTypes)

@@ -25,12 +25,71 @@ public sealed class DescriptionLookPopupTranslationPatchTests
         });
     }
 
+    [Test]
+    public void HandleEvent_LeavesUnknownLookPopupChrome_WhenOwnerPatched()
+    {
+        using var patch = PatchDummyTarget(
+            typeof(DummyDescriptionLookPopupEdgeTarget),
+            nameof(DummyDescriptionLookPopupEdgeTarget.HandleUnknown));
+        var target = new DummyDescriptionLookPopupEdgeTarget();
+
+        target.HandleUnknown();
+
+        Assert.That(target.Text, Is.EqualTo("Unknown look popup text"));
+    }
+
+    [Test]
+    public void HandleEvent_HandlesEmptyLookPopupChrome_WhenOwnerPatched()
+    {
+        using var patch = PatchDummyTarget(
+            typeof(DummyDescriptionLookPopupEdgeTarget),
+            nameof(DummyDescriptionLookPopupEdgeTarget.HandleEmpty));
+        var target = new DummyDescriptionLookPopupEdgeTarget();
+
+        target.HandleEmpty();
+
+        Assert.That(target.Text, Is.Empty);
+    }
+
+    [Test]
+    public void HandleEvent_TranslatesColorTaggedLookPopupChrome_WhenOwnerPatched()
+    {
+        using var patch = PatchDummyTarget(
+            typeof(DummyDescriptionLookPopupEdgeTarget),
+            nameof(DummyDescriptionLookPopupEdgeTarget.HandleColorTagged));
+        var target = new DummyDescriptionLookPopupEdgeTarget();
+
+        target.HandleColorTagged();
+
+        Assert.That(target.Text, Is.EqualTo("{{C|ストーリーを思い出す}}"));
+    }
+
+    [Test]
+    public void HandleEvent_StripsDirectMarkedLookPopupChrome_WhenOwnerPatched()
+    {
+        using var patch = PatchDummyTarget(
+            typeof(DummyDescriptionLookPopupEdgeTarget),
+            nameof(DummyDescriptionLookPopupEdgeTarget.HandleDirectMarked));
+        var target = new DummyDescriptionLookPopupEdgeTarget();
+
+        target.HandleDirectMarked();
+
+        Assert.That(target.Text, Is.EqualTo("Recall {{W|S}}tory"));
+    }
+
     private static IDisposable PatchDummyTarget()
+    {
+        return PatchDummyTarget(
+            typeof(DummyDescriptionLookPopupTarget),
+            nameof(DummyDescriptionLookPopupTarget.HandleEvent));
+    }
+
+    private static IDisposable PatchDummyTarget(Type targetType, string methodName)
     {
         var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";
         var harmony = new Harmony(harmonyId);
         harmony.Patch(
-            original: RequireMethod(typeof(DummyDescriptionLookPopupTarget), nameof(DummyDescriptionLookPopupTarget.HandleEvent)),
+            original: RequireMethod(targetType, methodName),
             transpiler: new HarmonyMethod(RequireMethod(
                 typeof(DescriptionLookPopupTranslationPatch),
                 nameof(DescriptionLookPopupTranslationPatch.Transpiler))));
@@ -73,6 +132,31 @@ public sealed class DescriptionLookPopupTranslationPatchTests
         public string hotkey = string.Empty;
 
         public string text = string.Empty;
+    }
+
+    private sealed class DummyDescriptionLookPopupEdgeTarget
+    {
+        public string Text { get; private set; } = string.Empty;
+
+        public void HandleUnknown()
+        {
+            Text = "Unknown look popup text";
+        }
+
+        public void HandleEmpty()
+        {
+            Text = "";
+        }
+
+        public void HandleColorTagged()
+        {
+            Text = "{{C|Recall Story}}";
+        }
+
+        public void HandleDirectMarked()
+        {
+            Text = "\u0001Recall {{W|S}}tory";
+        }
     }
 
     private sealed class HarmonyScope : IDisposable

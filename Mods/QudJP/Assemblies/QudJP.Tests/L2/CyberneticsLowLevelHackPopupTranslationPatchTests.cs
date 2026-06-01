@@ -95,6 +95,19 @@ public sealed class CyberneticsLowLevelHackPopupTranslationPatchTests
     }
 
     [Test]
+    public void Patch_StripsDirectMarkedPopupOnlyTraffic_WhenOwnerAbsent()
+    {
+        OwnerPopupRouteTestHarness.WithPatchedPopupOnly(
+            () => _ = DummyPopupShow.ShowYesNo(MessageFrameTranslator.MarkDirectTranslation("既に翻訳済みプロンプト")));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(DummyPopupShow.LastShowYesNoMessage, Is.EqualTo("既に翻訳済みプロンプト"));
+            Assert.That(GetHitCount(), Is.Zero);
+        });
+    }
+
+    [Test]
     public void Patch_DoesNotRetranslateDirectMarkedPrompt_WhenOwnerPatched()
     {
         OwnerPopupRouteTestHarness.WithPatchedPopupOwner(

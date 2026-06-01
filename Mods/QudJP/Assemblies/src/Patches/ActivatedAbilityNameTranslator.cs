@@ -279,13 +279,21 @@ internal static class ActivatedAbilityNameTranslator
 
     private static bool TryTranslateRecoilZone(string zone, out string translated)
     {
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(zone, out var strippedZone))
+        {
+            zone = strippedZone;
+        }
+
         if (GetDisplayNameRouteTranslator.IsAlreadyLocalizedDisplayNameStateText(zone))
         {
             translated = zone;
             return true;
         }
 
-        translated = TranslateDisplayNameTarget(zone, ".RecoilZone");
+        var rawTranslated = TranslateDisplayNameTarget(zone, ".RecoilZone");
+        translated = MessageFrameTranslator.TryStripDirectTranslationMarker(rawTranslated, out var stripped)
+            ? stripped
+            : rawTranslated;
         return !ContainsAsciiLetter(ColorAwareTranslationComposer.GetVisibleText(translated));
     }
 

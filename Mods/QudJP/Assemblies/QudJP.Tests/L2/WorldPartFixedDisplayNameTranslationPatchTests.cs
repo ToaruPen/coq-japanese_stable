@@ -133,6 +133,52 @@ public sealed class WorldPartFixedDisplayNameTranslationPatchTests
             });
     }
 
+    [Test]
+    public void SyncState_HandlesEmptyDisplayNameAndDescription_WhenPatched()
+    {
+        WithPatchedOwner(
+            typeof(DummyEmptyDisplayWorldPart),
+            nameof(DummyEmptyDisplayWorldPart.SyncState),
+            Type.EmptyTypes,
+            () =>
+            {
+                var owner = new DummyEmptyDisplayWorldPart();
+
+                owner.SyncState();
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(owner.ParentObject.DisplayName, Is.Empty);
+                    Assert.That(owner.ParentObject.Description.Short, Is.Empty);
+                    Assert.That(HitCount(), Is.Zero);
+                });
+            });
+    }
+
+    [Test]
+    public void SyncState_PreservesColorTagsInFixedDisplayName_WhenPatched()
+    {
+        WithPatchedOwner(
+            typeof(DummyColorTaggedWorldPart),
+            nameof(DummyColorTaggedWorldPart.SyncState),
+            Type.EmptyTypes,
+            () =>
+            {
+                var owner = new DummyColorTaggedWorldPart();
+
+                owner.SyncState();
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(owner.ParentObject.Render.DisplayName, Is.EqualTo("{{W|ベイ・ラー}}"));
+                    Assert.That(
+                        owner.ParentObject.Description.Short,
+                        Is.EqualTo("{{Y|濃い林の中心で草木が開けている。花で飾られた小屋がその空き地に寄り集まり、整然としたウォーターヴァインの列とよく手入れされたラーに囲まれている。}}"));
+                    Assert.That(HitCount(), Is.EqualTo(2));
+                });
+            });
+    }
+
     private static void WithPatchedOwner(Type targetType, string targetMethodName, Type[] targetParameterTypes, Action action)
     {
         var harmonyId = "qudjp.tests.world-part-fixed-display-name." + Guid.NewGuid().ToString("N");
@@ -243,6 +289,31 @@ internal sealed class DummyUnknownWorldPart
     {
         ParentObject.DisplayName = "unknown terrain";
         ParentObject.Description.Short = "Unknown description.";
+    }
+}
+
+internal sealed class DummyEmptyDisplayWorldPart
+{
+    public FixedDisplayDummyGameObject ParentObject { get; } = new();
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public void SyncState()
+    {
+        ParentObject.DisplayName = string.Empty;
+        ParentObject.Description.Short = string.Empty;
+    }
+}
+
+internal sealed class DummyColorTaggedWorldPart
+{
+    public FixedDisplayDummyGameObject ParentObject { get; } = new();
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public void SyncState()
+    {
+        ParentObject.Render.DisplayName = "{{W|Bey Lah}}";
+        ParentObject.Description.Short =
+            "{{Y|At the center of a particularly thick copse, the vegetation clears. Flower-bedecked huts huddle in the clearing within, surrounded by phalanxes of tidy watervine rows and carefully-tended lah.}}";
     }
 }
 

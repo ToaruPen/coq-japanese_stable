@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
 using System.Text;
 using HarmonyLib;
@@ -88,6 +89,63 @@ public sealed class LegacyOptionsUiTranslationPatchTests
         });
     }
 
+    [Test]
+    public void TranslateBufferText_TranslatesLiteralRestartPromptWhitespaceAndColorTerms()
+    {
+        var restartPrompt = "These options require a game restart to take effect:\n\n"
+            + "{{g|* Use Tiles}}\n\nDo you want to do so now?";
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                LegacyOptionsUiTranslationPatch.TranslateBufferText("[ &wGame Options&y ]"),
+                Is.EqualTo("[ &wゲームオプション&y ]"));
+            Assert.That(
+                LegacyOptionsUiTranslationPatch.TranslateBufferText(restartPrompt),
+                Is.EqualTo("これらのオプションを有効にするにはゲームの再起動が必要です:\n\n{{g|* タイルを使用}}\n\n今すぐ再起動しますか？"));
+            Assert.That(
+                LegacyOptionsUiTranslationPatch.TranslateBufferText("  &WVSync  "),
+                Is.EqualTo("  &W垂直同期  "));
+            Assert.That(
+                LegacyOptionsUiTranslationPatch.TranslateBufferText("&CGameplay&y"),
+                Is.EqualTo("&Cゲームプレイ&y"));
+        });
+    }
+
+    [Test]
+    public void TranslateBufferText_StripsDirectMarkerWithoutRecordingTransform()
+    {
+        var result = LegacyOptionsUiTranslationPatch.TranslateBufferText(
+            MessageFrameTranslator.MarkDirectTranslation("既に翻訳済みオプション"));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.EqualTo("既に翻訳済みオプション"));
+            Assert.That(
+                DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                    LegacyOptionsUiTranslationPatch.Context,
+                    LegacyOptionsUiTranslationPatch.Family),
+                Is.Zero);
+        });
+    }
+
+    [Test]
+    public void Transpiler_RoutesLiteralsWriteCallsAndToStringThroughTranslateBufferText()
+    {
+        var writeMethod = RequireMethod(typeof(DummyLegacyOptionsBuffer), nameof(DummyLegacyOptionsBuffer.Write), typeof(string));
+        var toStringMethod = RequireMethod(typeof(StringBuilder), nameof(StringBuilder.ToString), Type.EmptyTypes);
+        var instructions = new[]
+        {
+            new CodeInstruction(OpCodes.Ldstr, "[ &wGame Options&y ]"),
+            new CodeInstruction(OpCodes.Callvirt, writeMethod),
+            new CodeInstruction(OpCodes.Callvirt, toStringMethod),
+        };
+
+        var translated = LegacyOptionsUiTranslationPatch.Transpiler(instructions).ToList();
+
+        Assert.That(translated.Count(IsTranslateBufferTextCall), Is.EqualTo(3));
+    }
+
     private static void WithPatchedShow(Action action)
     {
         var harmonyId = "qudjp.tests.legacy-options-ui." + Guid.NewGuid().ToString("N");
@@ -113,6 +171,14 @@ public sealed class LegacyOptionsUiTranslationPatchTests
         var method = AccessTools.Method(type, name, parameterTypes);
         Assert.That(method, Is.Not.Null, $"{type.FullName}.{name} not found");
         return method!;
+    }
+
+    private static bool IsTranslateBufferTextCall(CodeInstruction instruction)
+    {
+        return instruction.opcode == OpCodes.Call
+            && instruction.operand is MethodInfo method
+            && method.DeclaringType == typeof(LegacyOptionsUiTranslationPatch)
+            && method.Name == nameof(LegacyOptionsUiTranslationPatch.TranslateBufferText);
     }
 }
 
