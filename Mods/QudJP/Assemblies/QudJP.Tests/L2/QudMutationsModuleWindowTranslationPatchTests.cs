@@ -200,7 +200,7 @@ public sealed class QudMutationsModuleWindowTranslationPatchTests
     }
 
     [Test]
-    public void PopupPrefix_TranslatesShowPointsTitle_WhenHandleMenuOptionOwnerPatched()
+    public void PopupPrefix_TranslatesShowPointsTitleOnly_WhenHandleMenuOptionOwnerPatched()
     {
         var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";
         var harmony = new Harmony(harmonyId);
@@ -226,6 +226,7 @@ public sealed class QudMutationsModuleWindowTranslationPatchTests
 
             Assert.Multiple(() =>
             {
+                // The owner route translates the generated title; the static summary body remains unchanged.
                 Assert.That(DummyPopupMessageTarget.LastMessage, Is.EqualTo("Mutation summary"));
                 Assert.That(DummyPopupMessageTarget.LastTitle, Is.EqualTo("変異ポイント残り: 3"));
                 Assert.That(

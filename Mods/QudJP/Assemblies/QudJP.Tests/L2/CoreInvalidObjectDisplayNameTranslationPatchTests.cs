@@ -77,27 +77,35 @@ public sealed class CoreInvalidObjectDisplayNameTranslationPatchTests
     }
 
     [Test]
-    public void Postfix_LeavesRegularDisplayNameUnchanged()
+    public void Postfix_LeavesRegularDisplayNameUnchanged_WhenPatched()
     {
-        var target = new DummyCoreInvalidObject
+        DummyCoreInvalidObjectTarget.NextDisplayName = "snapjaw";
+
+        var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";
+        var harmony = new Harmony(harmonyId);
+        try
         {
-            Render = new DummyCoreInvalidObjectRender
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyCoreInvalidObjectTarget), nameof(DummyCoreInvalidObjectTarget.CreateObjectFull), typeof(string)),
+                postfix: new HarmonyMethod(RequireMethod(typeof(CoreInvalidObjectDisplayNameTranslationPatch), nameof(CoreInvalidObjectDisplayNameTranslationPatch.Postfix), typeof(object))));
+
+            var target = DummyCoreInvalidObjectTarget.CreateObjectFull("snapjaw");
+
+            Assert.Multiple(() =>
             {
-                DisplayName = "snapjaw",
-            },
-        };
-
-        CoreInvalidObjectDisplayNameTranslationPatch.Postfix(target);
-
-        Assert.Multiple(() =>
+                Assert.That(target.Render.DisplayName, Is.EqualTo("snapjaw"));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        CoreInvalidObjectDisplayNameTranslationPatch.Context,
+                        CoreInvalidObjectDisplayNameTranslationPatch.Family),
+                    Is.Zero);
+            });
+        }
+        finally
         {
-            Assert.That(target.Render.DisplayName, Is.EqualTo("snapjaw"));
-            Assert.That(
-                DynamicTextObservability.GetRouteFamilyHitCountForTests(
-                    CoreInvalidObjectDisplayNameTranslationPatch.Context,
-                    CoreInvalidObjectDisplayNameTranslationPatch.Family),
-                Is.Zero);
-        });
+            harmony.UnpatchAll(harmonyId);
+            DummyCoreInvalidObjectTarget.NextDisplayName = string.Empty;
+        }
     }
 
     private static MethodInfo RequireMethod(Type type, string methodName, params Type[] parameterTypes)

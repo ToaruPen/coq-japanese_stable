@@ -113,6 +113,7 @@ public static class GameObjectEmitMessageTranslationPatch
             return true;
         }
 
+        // Let does-verb consume marked fragments before the final direct-marked pattern fallback.
         var patternCandidate = message;
         if (MessageLogProducerTranslationHelpers.TryPreparePatternMessage(
                 ref patternCandidate,
