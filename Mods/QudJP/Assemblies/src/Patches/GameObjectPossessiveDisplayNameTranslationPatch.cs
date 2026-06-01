@@ -80,9 +80,25 @@ public static class GameObjectPossessiveDisplayNameTranslationPatch
         }
 
         var nonNullSource = source!;
-        var cleanedSource = MessageFrameTranslator.TryStripDirectTranslationMarker(nonNullSource, out var unmarked)
-            ? unmarked ?? string.Empty
-            : nonNullSource;
+        string cleanedSource;
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(nonNullSource, out var unmarked))
+        {
+            if (unmarked is null)
+            {
+                Trace.TraceWarning(
+                    "QudJP: {0}.TryTranslatePossessiveDisplayName received a null direct-marker payload.",
+                    Context);
+                cleanedSource = string.Empty;
+            }
+            else
+            {
+                cleanedSource = unmarked;
+            }
+        }
+        else
+        {
+            cleanedSource = nonNullSource;
+        }
         translated = cleanedSource;
 
         var playerMatch = PlayerPossessivePattern.Match(cleanedSource);

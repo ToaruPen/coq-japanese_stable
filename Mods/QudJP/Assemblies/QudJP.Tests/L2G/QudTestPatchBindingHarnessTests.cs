@@ -110,7 +110,11 @@ public sealed class QudTestPatchBindingHarnessTests
             Assert.That(result.Passed, Is.False);
             Assert.That(result.FailCount, Is.EqualTo(1));
             Assert.That(result.Cases[0].Expected, Is.EqualTo("XRL.World.Skills.Cooking.CookingRecipe|OldDisplayName|System.String"));
-            Assert.That(result.Cases[0].Actual.Split('\n'), Is.EquivalentTo(new[]
+            var actualTargets = result.Cases[0].Actual
+                .Split('\n')
+                .Select(line => line.Trim())
+                .Where(line => line.Length > 0);
+            Assert.That(actualTargets, Is.EquivalentTo(new[]
             {
                 "XRL.World.Skills.Cooking.CookingRecipe|GetDisplayName|System.String",
                 "XRL.World.Skills.Cooking.AppleMatz|GetDisplayName|System.String",
