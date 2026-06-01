@@ -26,14 +26,24 @@ internal static class TextFilterSpeechStatusTranslator
             return markedText;
         }
 
-        if (string.IsNullOrEmpty(originalText)
-            || !StringHelpers.TryGetTranslationExactOrLowerAscii(originalText, out var translatedText)
-            || string.Equals(translatedText, originalText, StringComparison.Ordinal))
+        if (string.IsNullOrEmpty(originalText))
         {
             return source;
         }
 
-        return source.Replace(originalText, translatedText);
+        var lookupText = ColorAwareTranslationComposer.HasColorMarkup(originalText)
+            ? ColorAwareTranslationComposer.GetVisibleText(originalText)
+            : originalText;
+        if (!StringHelpers.TryGetTranslationExactOrLowerAscii(lookupText, out var translatedText)
+            || string.Equals(translatedText, lookupText, StringComparison.Ordinal))
+        {
+            return source;
+        }
+
+        var replacement = ColorAwareTranslationComposer.HasColorMarkup(originalText)
+            ? ColorAwareTranslationComposer.TranslatePreservingColors(originalText, _ => translatedText)
+            : translatedText;
+        return source.Replace(originalText, replacement);
     }
 }
 

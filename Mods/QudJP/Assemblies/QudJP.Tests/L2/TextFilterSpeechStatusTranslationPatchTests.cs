@@ -178,7 +178,8 @@ public sealed class TextFilterSpeechStatusTranslationPatchTests
     }
 
     [TestCase("", "nya  nya", 0)]
-    [TestCase("{{Y|hello there}}", "nya {{Y|hello there}} nya", 0)]
+    [TestCase("{{Y|hello there}}", "nya {{Y|こんにちは}} nya", 1)]
+    [TestCase("{{R|hello there}}", "nya {{R|こんにちは}} nya", 1)]
     public void LallatedPostfix_HandlesEmptyAndColoredSpeechSafely(
         string text,
         string expected,

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using HarmonyLib;
@@ -47,13 +48,30 @@ public static class DescriptionLookPopupTranslationPatch
 
     public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
     {
-        foreach (var instruction in instructions)
+        var originalInstructions = instructions.ToList();
+        List<CodeInstruction> translatedInstructions;
+        try
         {
-            if (instruction.opcode == OpCodes.Ldstr && instruction.operand is string literal)
+            translatedInstructions = new List<CodeInstruction>(originalInstructions.Count);
+            foreach (var instruction in originalInstructions)
             {
-                instruction.operand = TranslateLiteral(literal);
-            }
+                var translatedInstruction = new CodeInstruction(instruction);
+                if (translatedInstruction.opcode == OpCodes.Ldstr && translatedInstruction.operand is string literal)
+                {
+                    translatedInstruction.operand = TranslateLiteral(literal);
+                }
 
+                translatedInstructions.Add(translatedInstruction);
+            }
+        }
+        catch (Exception ex)
+        {
+            Trace.TraceError("QudJP: {0}.Transpiler failed: {1}", Context, ex);
+            translatedInstructions = originalInstructions;
+        }
+
+        foreach (var instruction in translatedInstructions)
+        {
             yield return instruction;
         }
     }

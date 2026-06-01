@@ -89,6 +89,36 @@ public sealed class StatisticStatShiftDisplayNameTranslationPatchTests
         });
     }
 
+    [TestCase("")]
+    [TestCase("{{R|camouflage}}")]
+    public void Prefix_LeavesEdgeCaseDisplayNamesUnchanged(string source)
+    {
+        AssertUnchangedWithoutHit(source);
+    }
+
+    [Test]
+    public void Prefix_LeavesDirectMarkedDisplayNameUnchanged()
+    {
+        var source = MessageFrameTranslator.MarkDirectTranslation("camouflage");
+
+        AssertUnchangedWithoutHit(source);
+    }
+
+    private static void AssertUnchangedWithoutHit(string source)
+    {
+        var result = InvokePatchedAddShift(source);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.EqualTo(source));
+            Assert.That(
+                DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                    StatisticStatShiftDisplayNameTranslationPatch.Context,
+                    StatisticStatShiftDisplayNameTranslationPatch.Family),
+                Is.Zero);
+        });
+    }
+
     private static string InvokePatchedAddShift(string source)
     {
         var harmonyId = "qudjp.tests.statistic-stat-shift-display-name." + Guid.NewGuid().ToString("N");

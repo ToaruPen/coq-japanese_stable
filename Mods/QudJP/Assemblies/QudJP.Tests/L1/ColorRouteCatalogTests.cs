@@ -327,6 +327,7 @@ internal static class ColorRouteCatalog
             ["Mods/QudJP/Assemblies/src/QudTest/QudTestRouteExecutor.cs|PopupTranslationPatch.TranslatePopupMenuItemTextForProducerRoute("] = 1,
             ["Mods/QudJP/Assemblies/src/QudTest/QudTestRouteExecutor.cs|PopupTranslationPatch.TranslatePopupTextForProducerRoute("] = 2,
             ["Mods/QudJP/Assemblies/src/Patches/SelectableTextMenuItemTranslationPatch.cs|PopupTranslationPatch.TranslatePopupMenuItemTextForProducerRoute("] = 1,
+            ["Mods/QudJP/Assemblies/src/Patches/TextFilterSpeechStatusTranslationPatches.cs|ColorAwareTranslationComposer.TranslatePreservingColors("] = 1,
             ["Mods/QudJP/Assemblies/src/Patches/TradeUiPopupTranslationPatch.cs|MessagePatternTranslator.TranslateIfPatternMatches("] = 1,
             ["Mods/QudJP/Assemblies/src/Patches/TradeUiPopupTranslationPatch.cs|PopupTranslationPatch.TranslatePopupTextForProducerRoute("] = 1,
             ["Mods/QudJP/Assemblies/src/Patches/TradeUiPopupTranslationPatch.cs|GetDisplayNameRouteTranslator.TranslatePreservingColors("] = 1,

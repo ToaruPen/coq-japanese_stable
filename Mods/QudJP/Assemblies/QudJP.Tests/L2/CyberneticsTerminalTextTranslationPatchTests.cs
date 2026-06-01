@@ -65,7 +65,7 @@ public sealed partial class Issue201OtherUiBindingPatchTests
         WriteCyberneticsDictionary(
             ("Welcome, Aristocrat, to a becoming nook. {0} one step closer to the Grand Unification. Please choose from the following options.", "ようこそ、貴顕よ、変容の窪みへ。{0}は大統一へまた一歩近づいた。以下の選択肢から選ぶがよい。"),
             ("[{0} license points]", "[{0} ライセンスポイント]"),
-            (" [will replace {0}]", " [{0} を置き換える]"),
+            (" [will replace {0}]", " [{0}を置き換える]"),
             ("Night Vision Goggles", "暗視ゴーグル"),
             ("Optic Chisel", "視神経チゼル"));
 
@@ -78,7 +78,7 @@ public sealed partial class Issue201OtherUiBindingPatchTests
             {
                 Assert.That(screen.MainText, Is.EqualTo("ようこそ、貴顕よ、変容の窪みへ。あなたは大統一へまた一歩近づいた。以下の選択肢から選ぶがよい。"));
                 Assert.That(screen.Options[0], Is.EqualTo("暗視ゴーグル {{C|[3 ライセンスポイント]}}"));
-                Assert.That(screen.Options[1], Is.EqualTo("視神経チゼル [暗視ゴーグル を置き換える]"));
+                Assert.That(screen.Options[1], Is.EqualTo("視神経チゼル [暗視ゴーグルを置き換える]"));
             });
         });
     }
