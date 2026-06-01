@@ -424,37 +424,37 @@
       "route": "emit-message"
     },
     {
-      "pattern": "^You see (?:a |an |the )?(.+?) to the (north|south|east|west|northeast|northwest|southeast|southwest) and stop moving[.!]?$",
+      "pattern": "^You see (?:a |an |the )?(.+?) to the (north|south|east|west|northeast|northwest|southeast|southwest) and stop (?:moving|移動中)[.!]?$",
       "template": "{t1}に{0}が見えたので移動をやめた。",
       "route": "emit-message"
     },
     {
-      "pattern": "^You see (.+?) above and stop moving[.!]?$",
+      "pattern": "^You see (.+?) above and stop (?:moving|移動中)[.!]?$",
       "template": "頭上に{0}が見えたので移動をやめた。",
       "route": "emit-message"
     },
     {
-      "pattern": "^You see (.+?) below and stop moving[.!]?$",
+      "pattern": "^You see (.+?) below and stop (?:moving|移動中)[.!]?$",
       "template": "足元に{0}が見えたので移動をやめた。",
       "route": "emit-message"
     },
     {
-      "pattern": "^You see (?:a |an |the )?(.+?) to the (north|south|east|west|northeast|northwest|southeast|southwest) and stop (moving|resting|digging|gathering|attacking|acting|auto-exploring|exploring|waiting|disassembling)[.!]?$",
+      "pattern": "^You see (?:a |an |the )?(.+?) to the (north|south|east|west|northeast|northwest|southeast|southwest) and stop (moving|resting|digging|gathering|attacking|acting|auto-exploring|exploring|waiting|disassembling|移動中|休息中|掘削中|収集中|攻撃中|行動中|探索中|待機中|分解中)[.!]?$",
       "template": "{t1}に{0}が見えたので{t2}をやめた。",
       "route": "emit-message"
     },
     {
-      "pattern": "^You see (.+?) above and stop (moving|resting|digging|gathering|attacking|acting|auto-exploring|exploring|waiting|disassembling)[.!]?$",
+      "pattern": "^You see (.+?) above and stop (moving|resting|digging|gathering|attacking|acting|auto-exploring|exploring|waiting|disassembling|移動中|休息中|掘削中|収集中|攻撃中|行動中|探索中|待機中|分解中)[.!]?$",
       "template": "頭上に{0}が見えたので{t1}をやめた。",
       "route": "emit-message"
     },
     {
-      "pattern": "^You see (.+?) below and stop (moving|resting|digging|gathering|attacking|acting|auto-exploring|exploring|waiting|disassembling)[.!]?$",
+      "pattern": "^You see (.+?) below and stop (moving|resting|digging|gathering|attacking|acting|auto-exploring|exploring|waiting|disassembling|移動中|休息中|掘削中|収集中|攻撃中|行動中|探索中|待機中|分解中)[.!]?$",
       "template": "足元に{0}が見えたので{t1}をやめた。",
       "route": "emit-message"
     },
     {
-      "pattern": "^You see (?:a |an |the )?(.+?) and stop (moving|resting|digging|gathering|attacking|acting|auto-exploring|exploring|waiting|disassembling)[.!]?$",
+      "pattern": "^You see (?:a |an |the )?(.+?) and stop (moving|resting|digging|gathering|attacking|acting|auto-exploring|exploring|waiting|disassembling|移動中|休息中|掘削中|収集中|攻撃中|行動中|探索中|待機中|分解中)[.!]?$",
       "template": "{0}が見えたので{t1}をやめた。",
       "route": "emit-message"
     },
@@ -989,92 +989,92 @@
       "route": "emit-message"
     },
     {
-      "pattern": "^You stop moving because the (.+?) is in the way[.!]?$",
+      "pattern": "^You stop (?:moving|移動中) because the (.+?) is in the way[.!]?$",
       "template": "{0}が邪魔で移動をやめた。",
       "route": "emit-message"
     },
     {
-      "pattern": "^You stop (moving|resting|digging|gathering|attacking|acting|auto-exploring|exploring|waiting|disassembling) because (?:the |a |an )?(.+?) is in the way[.!]?$",
+      "pattern": "^You stop (moving|resting|digging|gathering|attacking|acting|auto-exploring|exploring|waiting|disassembling|移動中|休息中|掘削中|収集中|攻撃中|行動中|探索中|待機中|分解中) because (?:the |a |an )?(.+?) is in the way[.!]?$",
       "template": "{1}が邪魔なので{t0}をやめた。",
       "route": "emit-message"
     },
     {
-      "pattern": "^You stop (moving|resting|digging|gathering|attacking|acting|auto-exploring|exploring|waiting|disassembling) because (?:the |a |an )?(.+?) are in the way[.!]?$",
+      "pattern": "^You stop (moving|resting|digging|gathering|attacking|acting|auto-exploring|exploring|waiting|disassembling|移動中|休息中|掘削中|収集中|攻撃中|行動中|探索中|待機中|分解中) because (?:the |a |an )?(.+?) are in the way[.!]?$",
       "template": "{1}が邪魔なので{t0}をやめた。",
       "route": "emit-message"
     },
     {
-      "pattern": "^You stop (moving|resting|digging|gathering|attacking|acting|auto-exploring|exploring|waiting|disassembling) because you cannot keep (.+?) open[.!]?$",
+      "pattern": "^You stop (moving|resting|digging|gathering|attacking|acting|auto-exploring|exploring|waiting|disassembling|移動中|休息中|掘削中|収集中|攻撃中|行動中|探索中|待機中|分解中) because you cannot keep (.+?) open[.!]?$",
       "template": "{1}を開けたままにできないので{t0}をやめた。",
       "route": "emit-message"
     },
     {
-      "pattern": "^You stop (moving|resting|digging|gathering|attacking|acting|auto-exploring|exploring|waiting|disassembling) because you cannot open (.+?)[.!]?$",
+      "pattern": "^You stop (moving|resting|digging|gathering|attacking|acting|auto-exploring|exploring|waiting|disassembling|移動中|休息中|掘削中|収集中|攻撃中|行動中|探索中|待機中|分解中) because you cannot open (.+?)[.!]?$",
       "template": "{1}を開けられないので{t0}をやめた。",
       "route": "emit-message"
     },
     {
-      "pattern": "^You stop (moving|resting|digging|gathering|attacking|acting|auto-exploring|exploring|waiting|disassembling) because you cannot seem to make any progress[.!]?$",
+      "pattern": "^You stop (moving|resting|digging|gathering|attacking|acting|auto-exploring|exploring|waiting|disassembling|移動中|休息中|掘削中|収集中|攻撃中|行動中|探索中|待機中|分解中) because you cannot seem to make any progress[.!]?$",
       "template": "進展がないので{t0}をやめた。",
       "route": "emit-message"
     },
     {
-      "pattern": "^You stop (moving|resting|digging|gathering|attacking|acting|auto-exploring|exploring|waiting|disassembling) because you tried to move but stayed in the same place[.!]?$",
+      "pattern": "^You stop (moving|resting|digging|gathering|attacking|acting|auto-exploring|exploring|waiting|disassembling|移動中|休息中|掘削中|収集中|攻撃中|行動中|探索中|待機中|分解中) because you tried to move but stayed in the same place[.!]?$",
       "template": "同じ場所に留まったので{t0}をやめた。",
       "route": "emit-message"
     },
     {
-      "pattern": "^You stop (moving|resting|digging|gathering|attacking|acting|auto-exploring|exploring|waiting|disassembling) because you can go no further[.!]?$",
+      "pattern": "^You stop (moving|resting|digging|gathering|attacking|acting|auto-exploring|exploring|waiting|disassembling|移動中|休息中|掘削中|収集中|攻撃中|行動中|探索中|待機中|分解中) because you can go no further[.!]?$",
       "template": "これ以上進めないので{t0}をやめた。",
       "route": "emit-message"
     },
     {
-      "pattern": "^You stop (moving|resting|digging|gathering|attacking|acting|auto-exploring|exploring|waiting|disassembling) because your spacetime context is incoherent[.!]?$",
+      "pattern": "^You stop (moving|resting|digging|gathering|attacking|acting|auto-exploring|exploring|waiting|disassembling|移動中|休息中|掘削中|収集中|攻撃中|行動中|探索中|待機中|分解中) because your spacetime context is incoherent[.!]?$",
       "template": "時空間の状態が不整合なので{t0}をやめた。",
       "route": "emit-message"
     },
     {
-      "pattern": "^You stop (moving|resting|digging|gathering|attacking|acting|auto-exploring|exploring|waiting|disassembling) because something is wrong with the spacetime connectivity of your environment[.!]?$",
+      "pattern": "^You stop (moving|resting|digging|gathering|attacking|acting|auto-exploring|exploring|waiting|disassembling|移動中|休息中|掘削中|収集中|攻撃中|行動中|探索中|待機中|分解中) because something is wrong with the spacetime connectivity of your environment[.!]?$",
       "template": "周囲の時空間接続に異常があるので{t0}をやめた。",
       "route": "emit-message"
     },
     {
-      "pattern": "^You stop (moving|resting|digging|gathering|attacking|acting|auto-exploring|exploring|waiting|disassembling) because the direction you seem to be trying to go makes no sense[.!]?$",
+      "pattern": "^You stop (moving|resting|digging|gathering|attacking|acting|auto-exploring|exploring|waiting|disassembling|移動中|休息中|掘削中|収集中|攻撃中|行動中|探索中|待機中|分解中) because the direction you seem to be trying to go makes no sense[.!]?$",
       "template": "進もうとしている方向が不正なので{t0}をやめた。",
       "route": "emit-message"
     },
     {
-      "pattern": "^You stop (moving|resting|digging|gathering|attacking|acting|auto-exploring|exploring|waiting|disassembling) because you chose not to enter (.+?)[.!]?$",
+      "pattern": "^You stop (moving|resting|digging|gathering|attacking|acting|auto-exploring|exploring|waiting|disassembling|移動中|休息中|掘削中|収集中|攻撃中|行動中|探索中|待機中|分解中) because you chose not to enter (.+?)[.!]?$",
       "template": "{1}へ入るのをやめたので{t0}をやめた。",
       "route": "emit-message"
     },
     {
-      "pattern": "^You stop (moving|resting|digging|gathering|attacking|acting|auto-exploring|exploring|waiting|disassembling) because something is shooting at you[.!]?$",
+      "pattern": "^You stop (moving|resting|digging|gathering|attacking|acting|auto-exploring|exploring|waiting|disassembling|移動中|休息中|掘削中|収集中|攻撃中|行動中|探索中|待機中|分解中) because something is shooting at you[.!]?$",
       "template": "何かがあなたを撃っているので{t0}をやめた。",
       "route": "emit-message"
     },
     {
-      "pattern": "^You stop (moving|resting|digging|gathering|attacking|acting|auto-exploring|exploring|waiting|disassembling) because you see something shooting at you[.!]?$",
+      "pattern": "^You stop (moving|resting|digging|gathering|attacking|acting|auto-exploring|exploring|waiting|disassembling|移動中|休息中|掘削中|収集中|攻撃中|行動中|探索中|待機中|分解中) because you see something shooting at you[.!]?$",
       "template": "何かがあなたを撃っているのが見えたので{t0}をやめた。",
       "route": "emit-message"
     },
     {
-      "pattern": "^You stop (moving|resting|digging|gathering|attacking|acting|auto-exploring|exploring|waiting|disassembling) because (?:the |a |an )?(.+?) is in your way[.!]?$",
+      "pattern": "^You stop (moving|resting|digging|gathering|attacking|acting|auto-exploring|exploring|waiting|disassembling|移動中|休息中|掘削中|収集中|攻撃中|行動中|探索中|待機中|分解中) because (?:the |a |an )?(.+?) is in your way[.!]?$",
       "template": "{1}が邪魔なので{t0}をやめた。",
       "route": "emit-message"
     },
     {
-      "pattern": "^You stop (moving|resting|digging|gathering|attacking|acting|auto-exploring|exploring|waiting|disassembling|分解中) because you hear (.+?) fighting to the (north|south|east|west|northeast|northwest|southeast|southwest)[.!]?$",
+      "pattern": "^You stop (moving|resting|digging|gathering|attacking|acting|auto-exploring|exploring|waiting|disassembling|移動中|休息中|掘削中|収集中|攻撃中|行動中|探索中|待機中|分解中) because you hear (.+?) fighting to the (north|south|east|west|northeast|northwest|southeast|southwest)[.!]?$",
       "template": "{t2}で{d1}が戦っている音が聞こえたので{t0}をやめた。",
       "route": "emit-message"
     },
     {
-      "pattern": "^You stop (moving|resting|digging|gathering|attacking|acting|auto-exploring|exploring|waiting|disassembling|分解中) because you hear (.+?) being injured to the (north|south|east|west|northeast|northwest|southeast|southwest)[.!]?$",
+      "pattern": "^You stop (moving|resting|digging|gathering|attacking|acting|auto-exploring|exploring|waiting|disassembling|移動中|休息中|掘削中|収集中|攻撃中|行動中|探索中|待機中|分解中) because you hear (.+?) being injured to the (north|south|east|west|northeast|northwest|southeast|southwest)[.!]?$",
       "template": "{t2}で{d1}が傷つく音が聞こえたので{t0}をやめた。",
       "route": "emit-message"
     },
     {
-      "pattern": "^You stop (moving|resting|digging|gathering|attacking|acting|auto-exploring|exploring|waiting|disassembling) because (.+?)[.!]?$",
+      "pattern": "^You stop (moving|resting|digging|gathering|attacking|acting|auto-exploring|exploring|waiting|disassembling|移動中|休息中|掘削中|収集中|攻撃中|行動中|探索中|待機中|分解中) because (.+?)[.!]?$",
       "template": "{1}ので{t0}をやめた。",
       "route": "emit-message"
     },

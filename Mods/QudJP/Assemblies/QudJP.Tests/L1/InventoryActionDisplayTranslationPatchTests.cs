@@ -72,6 +72,25 @@ public sealed class InventoryActionDisplayTranslationPatchTests
     }
 
     [Test]
+    public void TranslateActionTable_PreservesRechargeCellHotkey_WhenActionKeyIsProvided()
+    {
+        WriteDisplayNameAtomicDictionary(("chem cell", "ケムセル"));
+        var actions = new Dictionary<string, DummyInventoryAction>
+        {
+            ["RechargeSlotted"] = new()
+            {
+                Display = "recharge chem cell",
+                Command = "RechargeEnergyCell",
+                Key = 'R',
+            },
+        };
+
+        InventoryActionDisplayTranslationPatch.TranslateActionTableForTests(actions);
+
+        Assert.That(actions["RechargeSlotted"].Display, Is.EqualTo("{{hotkey|R}}ケムセルを充電する"));
+    }
+
+    [Test]
     public void TranslateActionTable_DoesNotUseInventoryActionDictionaryForRechargeCellCapture()
     {
         WriteInventoryActionDictionary(("chem cell", "誤った経路"));
@@ -218,5 +237,7 @@ public sealed class InventoryActionDisplayTranslationPatchTests
         public string? Display { get; set; }
 
         public string? Command { get; set; }
+
+        public char Key { get; set; }
     }
 }

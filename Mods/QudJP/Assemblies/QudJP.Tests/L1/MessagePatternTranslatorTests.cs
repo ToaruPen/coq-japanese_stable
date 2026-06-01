@@ -1079,6 +1079,48 @@ public sealed class MessagePatternTranslatorTests
     }
 
     [Test]
+    public void Translate_RepositoryDictionary_TranslatesDirectionalSeeAndStopWithLocalizedAutoActDescription()
+    {
+        UseRepositoryPatternDictionary();
+
+        var translated = MessagePatternTranslator.Translate(
+            "You see 巨大トンボ and {{r|クッズー}}共生体 to the northeast and stop 移動中.");
+
+        Assert.That(translated, Is.EqualTo("北東に巨大トンボ and {{r|クッズー}}共生体が見えたので移動をやめた。"));
+    }
+
+    [Test]
+    public void Translate_RepositoryDictionary_TranslatesStopBecauseWithLocalizedAutoActDescription()
+    {
+        UseRepositoryPatternDictionary();
+
+        var translated = MessagePatternTranslator.Translate("You stop 移動中 because you can go no further.");
+
+        Assert.That(translated, Is.EqualTo("これ以上進めないので移動をやめた。"));
+    }
+
+    [Test]
+    public void Translate_RepositoryDictionary_PreservesWholeLineColorForLocalizedAutoActStopBecause()
+    {
+        UseRepositoryPatternDictionary();
+
+        var translated = MessagePatternTranslator.Translate("{{y|You stop 移動中 because you can go no further.}}");
+
+        Assert.That(translated, Is.EqualTo("{{y|これ以上進めないので移動をやめた。}}"));
+    }
+
+    [Test]
+    public void Translate_RepositoryDictionary_PreservesCaptureColorForLocalizedDirectionalSeeAndStop()
+    {
+        UseRepositoryPatternDictionary();
+
+        var translated = MessagePatternTranslator.Translate(
+            "You see {{r|巨大トンボ}} and {{G|q蓮の共生体}} to the northeast and stop 移動中.");
+
+        Assert.That(translated, Is.EqualTo("北東に{{r|巨大トンボ}} and {{G|q蓮の共生体}}が見えたので移動をやめた。"));
+    }
+
+    [Test]
     public void Translate_AppliesGenericSultanHistoriesJournalPattern()
     {
         WritePatternDictionary(("^You note this piece of information in the Sultan Histories > (.+?) section of your journal\\.[.!]?$", "この情報をジャーナルの「スルタン史 > {0}」欄に記録した。"));
@@ -2093,7 +2135,7 @@ public sealed class MessagePatternTranslatorTests
         Assert.Multiple(() =>
         {
             Assert.That(translated, Is.EqualTo("北でタムが戦っている音が聞こえたので移動をやめた。"));
-            Assert.That(translatedLocalizedAction, Is.EqualTo("北でタムが戦っている音が聞こえたので分解中をやめた。"));
+            Assert.That(translatedLocalizedAction, Is.EqualTo("北でタムが戦っている音が聞こえたので分解をやめた。"));
             Assert.That(unknownTranslated, Is.EqualTo(unknownAction));
             Assert.That(MessagePatternTranslator.GetMissingPatternHitCountForTests(unknownAction), Is.EqualTo(1));
         });

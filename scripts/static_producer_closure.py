@@ -7136,7 +7136,8 @@ def _auto_act_families() -> tuple[CoveredOwnerFamily, ...]:
                     "Mods/QudJP/Localization/Dictionaries/messages.ja.json",
                     (
                         "auto-exploring|exploring|waiting|disassembling",
-                        "auto-exploring|exploring|waiting|disassembling) because",
+                        "auto-exploring|exploring|waiting|disassembling|移動中",
+                        "移動中|休息中|掘削中|収集中|攻撃中|行動中|探索中|待機中|分解中) because",
                     ),
                 ),
                 EvidenceFile(

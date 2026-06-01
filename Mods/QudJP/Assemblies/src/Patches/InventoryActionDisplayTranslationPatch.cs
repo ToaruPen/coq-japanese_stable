@@ -108,7 +108,7 @@ public static class InventoryActionDisplayTranslationPatch
             return;
         }
 
-        if (!TryTranslateDisplay(original, out var translated)
+        if (!TryTranslateDisplay(action, original, out var translated)
             || string.Equals(translated, original, StringComparison.Ordinal))
         {
             return;
@@ -118,7 +118,7 @@ public static class InventoryActionDisplayTranslationPatch
         DynamicTextObservability.RecordTransform(Context, "InventoryAction.Display", original, translated);
     }
 
-    private static bool TryTranslateDisplay(string display, out string translated)
+    private static bool TryTranslateDisplay(object action, string display, out string translated)
     {
         var exact = ScopedDictionaryLookup.TranslateExactOrLowerAsciiForContextOnly(
             display,
@@ -159,6 +159,15 @@ public static class InventoryActionDisplayTranslationPatch
             cell,
             GetDisplayNameRouteTranslator.TranslateScopedExactPreservingColors);
         translated = translatedCell + "を充電する";
+        var key = GetCharMember(action, "Key");
+        if (key.HasValue
+            && key.Value != '\0'
+            && key.Value != ' '
+            && translated.IndexOf("{{hotkey|", StringComparison.Ordinal) < 0)
+        {
+            translated = "{{hotkey|" + key.Value + "}}" + translated;
+        }
+
         return true;
     }
 
@@ -192,5 +201,20 @@ public static class InventoryActionDisplayTranslationPatch
         {
             field.SetValue(instance, value);
         }
+    }
+
+    private static char? GetCharMember(object instance, string memberName)
+    {
+        var type = instance.GetType();
+        var property = AccessTools.Property(type, memberName);
+        if (property is not null && property.CanRead && property.PropertyType == typeof(char))
+        {
+            return (char?)property.GetValue(instance);
+        }
+
+        var field = AccessTools.Field(type, memberName);
+        return field?.FieldType == typeof(char)
+            ? (char?)field.GetValue(instance)
+            : null;
     }
 }
