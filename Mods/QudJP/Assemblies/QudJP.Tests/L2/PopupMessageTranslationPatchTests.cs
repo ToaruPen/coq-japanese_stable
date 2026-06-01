@@ -113,14 +113,19 @@ public sealed class PopupMessageTranslationPatchTests
     [Test]
     public void Prefix_RepositoryDictionary_TranslatesBuildLibraryAndSummaryMessages()
     {
-        Translator.SetDictionaryDirectoryForTests(GetRepositoryDictionaryDirectory());
+        Translator.SetDictionaryDirectoryForTests(Path.Combine(
+            QudJP.Tests.L1.TestProjectPaths.GetRepositoryRoot(),
+            "Mods",
+            "QudJP",
+            "Localization",
+            "Dictionaries"));
 
         var buttons = new List<DummyPopupMessageItem>
         {
             new DummyPopupMessageItem("Delete Build", "delete", "delete"),
             new DummyPopupMessageItem("Rename Build", "rename", "rename"),
         };
-        var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";
+        var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
 
         try
@@ -1360,11 +1365,4 @@ public sealed class PopupMessageTranslationPatchTests
             .Replace("\t", "\\t", StringComparison.Ordinal);
     }
 
-    private static string GetRepositoryDictionaryDirectory() =>
-        Path.Combine(
-            QudJP.Tests.L1.TestProjectPaths.GetRepositoryRoot(),
-            "Mods",
-            "QudJP",
-            "Localization",
-            "Dictionaries");
 }
