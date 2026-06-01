@@ -94,6 +94,14 @@ public sealed class DominationProcessTargetTranslationPatchTests
                         null),
                     Is.True);
                 Assert.That(marked, Is.EqualTo(MessageFrameTranslator.MarkDirectTranslation("翻訳済み")));
+
+                var empty = string.Empty;
+                Assert.That(
+                    DominationProcessTargetTranslationPatch.TryTranslateQueuedMessage(
+                        ref empty,
+                        null),
+                    Is.False);
+                Assert.That(empty, Is.Empty);
             });
         }
         finally

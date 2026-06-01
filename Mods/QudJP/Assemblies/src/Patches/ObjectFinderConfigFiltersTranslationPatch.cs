@@ -132,9 +132,12 @@ public static class ObjectFinderConfigFiltersTranslationPatch
 
     internal static bool TryTranslateFixedPopupText(string source, out string translated)
     {
-        if (FixedTranslations.TryGetValue(source, out var fixedTranslation))
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        if (FixedTranslations.TryGetValue(stripped, out var fixedTranslation))
         {
-            translated = fixedTranslation.Text;
+            translated = spans.Count == 0
+                ? fixedTranslation.Text
+                : ColorAwareTranslationComposer.Restore(fixedTranslation.Text, spans);
             DynamicTextObservability.RecordTransform(Context, fixedTranslation.Family, source, translated);
             return true;
         }

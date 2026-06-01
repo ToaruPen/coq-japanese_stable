@@ -50,13 +50,19 @@ public static class GameObjectPossessiveDisplayNameTranslationPatch
     {
         try
         {
-            if (!TryTranslatePossessiveDisplayName(__result, out var translated)
-                || string.Equals(__result, translated, StringComparison.Ordinal))
+            var source = __result;
+            if (!TryTranslatePossessiveDisplayName(source, out var translated)
+                && string.Equals(source, translated, StringComparison.Ordinal))
             {
                 return;
             }
 
-            DynamicTextObservability.RecordTransform(Context, Family, __result, translated);
+            if (string.Equals(source, translated, StringComparison.Ordinal))
+            {
+                return;
+            }
+
+            DynamicTextObservability.RecordTransform(Context, Family, source, translated);
             __result = translated;
         }
         catch (Exception ex)
@@ -67,20 +73,26 @@ public static class GameObjectPossessiveDisplayNameTranslationPatch
 
     internal static bool TryTranslatePossessiveDisplayName(string? source, out string translated)
     {
-        translated = source ?? string.Empty;
         if (string.IsNullOrEmpty(source))
         {
+            translated = string.Empty;
             return false;
         }
 
-        var playerMatch = PlayerPossessivePattern.Match(source);
+        var nonNullSource = source!;
+        var cleanedSource = MessageFrameTranslator.TryStripDirectTranslationMarker(nonNullSource, out var unmarked)
+            ? unmarked ?? string.Empty
+            : nonNullSource;
+        translated = cleanedSource;
+
+        var playerMatch = PlayerPossessivePattern.Match(cleanedSource);
         if (playerMatch.Success)
         {
             translated = "あなたの" + TranslateCapture(playerMatch.Groups["item"].Value);
             return true;
         }
 
-        var ownerMatch = OwnerPossessivePattern.Match(source);
+        var ownerMatch = OwnerPossessivePattern.Match(cleanedSource);
         if (ownerMatch.Success)
         {
             translated = TranslateCapture(ownerMatch.Groups["owner"].Value)

@@ -12,6 +12,9 @@ namespace QudJP.Tests.L2;
 [NonParallelizable]
 public sealed class CyberneticsLowLevelHackPopupTranslationPatchTests
 {
+    private const string ExpectedPrompt =
+        "低レベルハックを使用しますか？低レベルハックを使用すると端末出力の解読が難しくなるが、セキュリティ警報を作動させる可能性が下がる。";
+
     [SetUp]
     public void SetUp()
     {
@@ -45,8 +48,35 @@ public sealed class CyberneticsLowLevelHackPopupTranslationPatchTests
                 {
                     Assert.That(
                         DummyPopupShow.LastShowYesNoMessage,
-                        Is.EqualTo(CyberneticsLowLevelHackPopupTranslationPatch.TranslatedPrompt));
+                        Is.EqualTo(ExpectedPrompt));
                     Assert.That(GetHitCount(), Is.EqualTo(1));
+                });
+            });
+    }
+
+    [TestCase("", "", 0)]
+    [TestCase("{{W|Unknown low-level hack prompt.}}", "{{W|Unknown low-level hack prompt.}}", 0)]
+    public void Patch_LeavesEmptyAndColorTaggedFallbackPromptsUnchanged_WhenOwnerPatched(
+        string source,
+        string expected,
+        int expectedHitCount)
+    {
+        OwnerPopupRouteTestHarness.WithPatchedPopupOwner(
+            typeof(CyberneticsLowLevelHackPopupTranslationPatch),
+            RequireMethod(nameof(DummyCyberneticsLowLevelHackTarget.AskLowLevelHack)),
+            () =>
+            {
+                var target = new DummyCyberneticsLowLevelHackTarget
+                {
+                    PopupMessageToShow = source,
+                };
+
+                target.AskLowLevelHack();
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(DummyPopupShow.LastShowYesNoMessage, Is.EqualTo(expected));
+                    Assert.That(GetHitCount(), Is.EqualTo(expectedHitCount));
                 });
             });
     }

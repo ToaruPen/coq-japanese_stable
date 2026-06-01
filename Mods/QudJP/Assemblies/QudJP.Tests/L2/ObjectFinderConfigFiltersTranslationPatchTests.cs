@@ -76,6 +76,24 @@ public sealed class ObjectFinderConfigFiltersTranslationPatchTests
                     out var marked),
                 Is.True);
             Assert.That(marked, Is.EqualTo("Show Items"));
+
+            Assert.That(
+                ObjectFinderConfigFiltersTranslationPatch.TryTranslatePopupMessage(
+                    string.Empty,
+                    nameof(PopupPickOptionTranslationPatch),
+                    "Popup.ProducerText",
+                    out var empty),
+                Is.False);
+            Assert.That(empty, Is.Empty);
+
+            Assert.That(
+                ObjectFinderConfigFiltersTranslationPatch.TryTranslatePopupMessage(
+                    "{{R|Show Items}}",
+                    nameof(PopupPickOptionTranslationPatch),
+                    "Popup.ProducerText",
+                    out var colored),
+                Is.True);
+            Assert.That(colored, Is.EqualTo("{{R|アイテムを表示}}"));
         });
     }
 

@@ -59,7 +59,6 @@ public sealed class ObjectFinderDisplayNameTranslationPatchTests
 
     [TestCase("Other", "Other")]
     [TestCase("", "")]
-    [TestCase("\u0001Something", "\u0001Something")]
     public void Postfix_LeavesUnknownAndEdgeDisplayNameUnchanged(string source, string expected)
     {
         ObjectFinderDisplayNameTranslationPatch.Postfix(ref source);
@@ -72,6 +71,41 @@ public sealed class ObjectFinderDisplayNameTranslationPatchTests
                     ObjectFinderDisplayNameTranslationPatch.Context,
                     ObjectFinderDisplayNameTranslationPatch.Family),
                 Is.Zero);
+        });
+    }
+
+    [Test]
+    public void Postfix_StripsDirectMarkedUnknownDisplayName()
+    {
+        var source = "\u0001Something";
+
+        ObjectFinderDisplayNameTranslationPatch.Postfix(ref source);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(source, Is.EqualTo("Something"));
+            Assert.That(
+                DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                    ObjectFinderDisplayNameTranslationPatch.Context,
+                    ObjectFinderDisplayNameTranslationPatch.Family),
+                Is.EqualTo(1));
+        });
+    }
+
+    [TestCase("{{W|Nearby Items}}", "{{W|近くのアイテム}}")]
+    [TestCase("&GValue", "&G価値")]
+    public void Postfix_PreservesColorTags_WhenTranslatingDisplayName(string source, string expected)
+    {
+        ObjectFinderDisplayNameTranslationPatch.Postfix(ref source);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(source, Is.EqualTo(expected));
+            Assert.That(
+                DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                    ObjectFinderDisplayNameTranslationPatch.Context,
+                    ObjectFinderDisplayNameTranslationPatch.Family),
+                Is.EqualTo(1));
         });
     }
 

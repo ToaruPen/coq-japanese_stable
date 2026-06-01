@@ -2819,6 +2819,30 @@ public sealed class TargetMethodResolutionTests
         Assert.That(actualSignatures, Is.EquivalentTo(expectedSignatures));
     }
 
+    [Test]
+    public void MutationActivatedAbilityNameTargetMethods_ResolveLightManipulationSyncAbilityName()
+    {
+        var targetMethodsMethod = typeof(MutationActivatedAbilityNameTranslationPatch)
+            .GetMethod("TargetMethods", BindingFlags.NonPublic | BindingFlags.Static);
+        Assert.That(targetMethodsMethod, Is.Not.Null, "TargetMethods not found for MutationActivatedAbilityNameTranslationPatch");
+
+        var result = targetMethodsMethod!.Invoke(null, null) as System.Collections.IEnumerable;
+        Assert.That(result, Is.Not.Null, "TargetMethods returned null for MutationActivatedAbilityNameTranslationPatch");
+
+        var actualSignatures = new List<string>();
+        foreach (var item in result!)
+        {
+            if (item is MethodBase methodBase)
+            {
+                actualSignatures.Add(FullMethodSignature(methodBase));
+            }
+        }
+
+        Assert.That(
+            actualSignatures,
+            Does.Contain("XRL.World.Parts.Mutation.LightManipulation|SyncAbilityName|System.Void"));
+    }
+
     private static string FullMethodSignature(MethodBase methodBase)
     {
         var returnType = methodBase is MethodInfo methodInfo

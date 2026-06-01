@@ -111,6 +111,24 @@ public sealed class GameObjectPossessiveDisplayNameTranslationPatchTests
         });
     }
 
+    [Test]
+    public void Postfix_StripsDirectMarkerFromUnknownDisplayName()
+    {
+        var result = MessageFrameTranslator.MarkDirectTranslation("レーザーライフル");
+
+        GameObjectPossessiveDisplayNameTranslationPatch.Postfix(ref result);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.EqualTo("レーザーライフル"));
+            Assert.That(
+                DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                    GameObjectPossessiveDisplayNameTranslationPatch.Context,
+                    GameObjectPossessiveDisplayNameTranslationPatch.Family),
+                Is.EqualTo(1));
+        });
+    }
+
     private static MethodInfo RequireMethod(Type type, string methodName, params Type[] parameterTypes)
     {
         var method = parameterTypes.Length == 0

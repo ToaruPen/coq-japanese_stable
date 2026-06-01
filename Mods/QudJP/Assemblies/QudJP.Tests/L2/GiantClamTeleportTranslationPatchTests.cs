@@ -15,6 +15,8 @@ public sealed class GiantClamTeleportTranslationPatchTests
     [SetUp]
     public void SetUp()
     {
+        Translator.ResetForTests();
+        MessageFrameTranslator.ResetForTests();
         DynamicTextObservability.ResetForTests();
         DummyPopupShow.Reset();
     }
@@ -22,6 +24,8 @@ public sealed class GiantClamTeleportTranslationPatchTests
     [TearDown]
     public void TearDown()
     {
+        Translator.ResetForTests();
+        MessageFrameTranslator.ResetForTests();
         DynamicTextObservability.ResetForTests();
         DummyPopupShow.Reset();
     }

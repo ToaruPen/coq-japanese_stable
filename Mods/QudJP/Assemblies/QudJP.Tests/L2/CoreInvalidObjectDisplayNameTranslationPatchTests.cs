@@ -51,18 +51,18 @@ public sealed class CoreInvalidObjectDisplayNameTranslationPatchTests
                     typeof(object))));
 
             DummyCoreInvalidObjectTarget.NextDisplayName = source;
-            var result = methodName switch
+            IReadOnlyList<DummyCoreInvalidObject> result = methodName switch
             {
                 nameof(DummyCoreInvalidObjectTarget.CreateObjectFull) =>
-                    DummyCoreInvalidObjectTarget.CreateObjectFull("MissingThing"),
+                    new[] { DummyCoreInvalidObjectTarget.CreateObjectFull("MissingThing") },
                 nameof(DummyCoreInvalidObjectTarget.CreateObjectWithBefore) =>
-                    DummyCoreInvalidObjectTarget.CreateObjectWithBefore("OtherThing", static _ => { }),
+                    new[] { DummyCoreInvalidObjectTarget.CreateObjectWithBefore("OtherThing", static _ => { }) },
                 _ => DummyCoreInvalidObjectTarget.GetCachedObjects("cache-1"),
             };
 
             Assert.Multiple(() =>
             {
-                Assert.That(result.Render.DisplayName, Is.EqualTo(expected));
+                Assert.That(result.Single().Render.DisplayName, Is.EqualTo(expected));
                 Assert.That(
                     DynamicTextObservability.GetRouteFamilyHitCountForTests(
                         CoreInvalidObjectDisplayNameTranslationPatch.Context,
@@ -129,10 +129,10 @@ public sealed class CoreInvalidObjectDisplayNameTranslationPatchTests
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        public static DummyCoreInvalidObject GetCachedObjects(string id)
+        public static List<DummyCoreInvalidObject> GetCachedObjects(string id)
         {
             _ = id;
-            return CreateInvalidObject();
+            return new List<DummyCoreInvalidObject> { CreateInvalidObject() };
         }
 
         private static DummyCoreInvalidObject CreateInvalidObject()

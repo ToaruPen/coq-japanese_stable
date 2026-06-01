@@ -100,7 +100,7 @@ internal sealed class DummyTradeUiVendorPopupProducerTarget
             Options: options.ToArray(),
             Hotkeys: new[] { 'l', 't', 'i', 'r', 'c', 'b' },
             AllowEscape: true);
-        LastVendorActionSelection = index >= 0 ? options[index] : null;
+        LastVendorActionSelection = index >= 0 && index < options.Count ? options[index] : null;
     }
 
     public void TryRemove()

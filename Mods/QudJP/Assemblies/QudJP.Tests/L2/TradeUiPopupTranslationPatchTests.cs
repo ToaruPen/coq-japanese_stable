@@ -479,6 +479,46 @@ public sealed class TradeUiPopupTranslationPatchTests
     }
 
     [Test]
+    public void VendorOwnerPatch_LeavesUnknownShowVendorActionOptionInEnglish()
+    {
+        using var ownerPatch = PatchVendorOwner(nameof(DummyTradeUiVendorPopupProducerTarget.ShowVendorActions));
+        using var pickOptionPatch = PatchPickOption();
+        var target = new DummyTradeUiVendorPopupProducerTarget
+        {
+            VendorActionOptions = new[] { "Talk" },
+        };
+
+        target.ShowVendorActions();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(DummyPopupGenericTarget.LastPickOptionOptions, Is.EqualTo(new[] { "Talk" }));
+            Assert.That(target.LastVendorActionSelection, Is.EqualTo("Talk"));
+            Assert.That(TradeUiPopupHitCount("TradeUiPopup.ShowVendorActions.Option"), Is.Zero);
+        });
+    }
+
+    [Test]
+    public void VendorOwnerPatch_DoesNotRetranslateDirectMarkedShowVendorActionOption()
+    {
+        using var ownerPatch = PatchVendorOwner(nameof(DummyTradeUiVendorPopupProducerTarget.ShowVendorActions));
+        using var pickOptionPatch = PatchPickOption();
+        var target = new DummyTradeUiVendorPopupProducerTarget
+        {
+            VendorActionOptions = new[] { MessageFrameTranslator.MarkDirectTranslation("Look") },
+        };
+
+        target.ShowVendorActions();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(DummyPopupGenericTarget.LastPickOptionOptions, Is.EqualTo(new[] { "Look" }));
+            Assert.That(target.LastVendorActionSelection, Is.EqualTo(MessageFrameTranslator.MarkDirectTranslation("Look")));
+            Assert.That(TradeUiPopupHitCount("TradeUiPopup.ShowVendorActions.Option"), Is.Zero);
+        });
+    }
+
+    [Test]
     public void VendorOwnerPatch_TranslatesRepairBrokenPopups_WhenOwnerPatched()
     {
         WriteDictionary(("{0} isn't broken!", "{0}は壊れていない！"));

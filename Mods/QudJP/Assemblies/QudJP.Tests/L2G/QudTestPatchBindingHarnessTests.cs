@@ -76,7 +76,11 @@ public sealed class QudTestPatchBindingHarnessTests
         Assert.Multiple(() =>
         {
             Assert.That(result.Passed, Is.True);
-            Assert.That(result.Cases[0].Actual.Split('\n'), Is.EquivalentTo(new[]
+            var actualTargets = result.Cases[0].Actual
+                .Split('\n')
+                .Select(line => line.Trim())
+                .Where(line => line.Length > 0);
+            Assert.That(actualTargets, Is.EquivalentTo(new[]
             {
                 "XRL.World.Parts.Campfire|Preserve|System.Boolean",
                 "XRL.World.Parts.Campfire|PreserveExotic|System.Boolean",

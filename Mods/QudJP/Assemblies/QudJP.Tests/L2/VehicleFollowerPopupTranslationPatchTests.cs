@@ -92,6 +92,48 @@ public sealed class VehicleFollowerPopupTranslationPatchTests
         });
     }
 
+    [Test]
+    public void Patch_LeavesEmptyVehicleFollowerPopup_WhenOwnerPatched()
+    {
+        OwnerPopupRouteTestHarness.WithPatchedPopupOwner(
+            typeof(VehicleFollowerPopupTranslationPatch),
+            OwnerPopupRouteTestHarness.RequireMethod(typeof(DummyVehicleFollowerTarget), nameof(DummyVehicleFollowerTarget.HandleEvent)),
+            () =>
+            {
+                new DummyVehicleFollowerTarget
+                {
+                    PopupMessageToShow = string.Empty,
+                }.HandleEvent();
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(DummyPopupShow.LastShowMessage, Is.Empty);
+                    Assert.That(RouteHitCount("NoFollowers"), Is.Zero);
+                });
+            });
+    }
+
+    [Test]
+    public void Patch_StripsDirectMarkerVehicleFollowerPopup_WhenOwnerPatched()
+    {
+        OwnerPopupRouteTestHarness.WithPatchedPopupOwner(
+            typeof(VehicleFollowerPopupTranslationPatch),
+            OwnerPopupRouteTestHarness.RequireMethod(typeof(DummyVehicleFollowerTarget), nameof(DummyVehicleFollowerTarget.HandleEvent)),
+            () =>
+            {
+                new DummyVehicleFollowerTarget
+                {
+                    PopupMessageToShow = MessageFrameTranslator.MarkDirectTranslation("翻訳済み"),
+                }.HandleEvent();
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("翻訳済み"));
+                    Assert.That(RouteHitCount("NoFollowers"), Is.Zero);
+                });
+            });
+    }
+
     private static int RouteHitCount(string detail)
     {
         return OwnerPopupRouteTestHarness.RouteHitCount(typeof(VehicleFollowerPopupTranslationPatch), detail);

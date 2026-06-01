@@ -48,7 +48,7 @@ public sealed class EmbarkBuilderValidationPopupTranslationPatchTests
     }
 
     [Test]
-    public void CheckState_TranslatesFixedValidationPopup_WhenOwnerAbsent()
+    public void CheckState_DoesNotTranslateFixedValidationPopup_WhenOwnerAbsent()
     {
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
@@ -62,7 +62,7 @@ public sealed class EmbarkBuilderValidationPopupTranslationPatchTests
 
             Assert.Multiple(() =>
             {
-                Assert.That(DummyPopupMessageTarget.LastMessage, Is.EqualTo("You have unspent attribute points.\n\n続行しますか？"));
+                Assert.That(DummyPopupMessageTarget.LastMessage, Is.EqualTo("You have unspent attribute points.\n\nContinue anyway?"));
                 Assert.That(DummyPopupMessageTarget.LastTitle, Is.EqualTo("{{W|警告！}}"));
             });
         }
@@ -70,6 +70,18 @@ public sealed class EmbarkBuilderValidationPopupTranslationPatchTests
         {
             harmony.UnpatchAll(harmonyId);
         }
+    }
+
+    [Test]
+    public void CheckState_LeavesUnknownAndEmptyValidationPopup_WhenOwnerPatched()
+    {
+        AssertPopup(
+            "Unrecognized validation body.",
+            "Unrecognized validation title",
+            "Unrecognized validation body.",
+            "Unrecognized validation title");
+
+        AssertPopup(string.Empty, string.Empty, string.Empty, string.Empty);
     }
 
     [Test]

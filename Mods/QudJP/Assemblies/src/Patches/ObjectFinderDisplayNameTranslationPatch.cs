@@ -54,13 +54,30 @@ public static class ObjectFinderDisplayNameTranslationPatch
     {
         try
         {
-            if (string.IsNullOrEmpty(__result) || !FixedTranslations.TryGetValue(__result, out var translated))
+            if (string.IsNullOrEmpty(__result))
             {
                 return;
             }
 
-            DynamicTextObservability.RecordTransform(Context, Family, __result, translated);
-            __result = translated;
+            var original = __result;
+            var hadMarker = MessageFrameTranslator.TryStripDirectTranslationMarker(original, out var stripped);
+            var lookupSource = hadMarker ? stripped : original;
+            var (visible, spans) = ColorAwareTranslationComposer.Strip(lookupSource);
+            if (FixedTranslations.TryGetValue(visible, out var fixedTranslation))
+            {
+                var translated = spans.Count == 0
+                    ? fixedTranslation
+                    : ColorAwareTranslationComposer.Restore(fixedTranslation, spans);
+                DynamicTextObservability.RecordTransform(Context, Family, original, translated);
+                __result = translated;
+                return;
+            }
+
+            if (hadMarker)
+            {
+                DynamicTextObservability.RecordTransform(Context, Family, original, stripped);
+                __result = stripped;
+            }
         }
         catch (Exception ex)
         {

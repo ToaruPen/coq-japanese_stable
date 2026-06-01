@@ -60,9 +60,7 @@ public sealed class StatisticStatShiftDisplayNameTranslationPatchTests
     [Test]
     public void Prefix_LeavesUnknownDisplayNameUnchanged()
     {
-        var source = "unknown source";
-
-        StatisticStatShiftDisplayNameTranslationPatch.Prefix(ref source);
+        var source = InvokePatchedAddShift("unknown source");
 
         Assert.Multiple(() =>
         {
@@ -78,9 +76,7 @@ public sealed class StatisticStatShiftDisplayNameTranslationPatchTests
     [Test]
     public void Prefix_DoesNotTranslateMalformedPossessiveDisplayName()
     {
-        var source = "owner' camouflage";
-
-        StatisticStatShiftDisplayNameTranslationPatch.Prefix(ref source);
+        var source = InvokePatchedAddShift("owner' camouflage");
 
         Assert.Multiple(() =>
         {
@@ -91,6 +87,27 @@ public sealed class StatisticStatShiftDisplayNameTranslationPatchTests
                     StatisticStatShiftDisplayNameTranslationPatch.Family),
                 Is.Zero);
         });
+    }
+
+    private static string InvokePatchedAddShift(string source)
+    {
+        var harmonyId = "qudjp.tests.statistic-stat-shift-display-name." + Guid.NewGuid().ToString("N");
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyStatisticTarget), nameof(DummyStatisticTarget.AddShift)),
+                prefix: new HarmonyMethod(RequireMethod(
+                    typeof(StatisticStatShiftDisplayNameTranslationPatch),
+                    nameof(StatisticStatShiftDisplayNameTranslationPatch.Prefix),
+                    typeof(string).MakeByRefType())));
+
+            return DummyStatisticTarget.AddShift(1, source);
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
     }
 
     private static MethodInfo RequireMethod(Type type, string methodName, params Type[] parameterTypes)

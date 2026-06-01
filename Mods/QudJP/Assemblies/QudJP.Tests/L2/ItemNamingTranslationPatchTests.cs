@@ -144,7 +144,7 @@ public sealed class ItemNamingTranslationPatchTests
     }
 
     [Test]
-    public void Patch_DoesNotClaimColorPickerPrompt_WhenOwnerPatched()
+    public void Patch_ClaimsColorPickerPrompt_WhenOwnerPatched()
     {
         var target = new DummyItemNamingProducerTarget();
 

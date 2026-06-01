@@ -12,6 +12,8 @@ namespace QudJP.Tests.L2;
 [NonParallelizable]
 public sealed class CyberneticsOnboardRecoilerPopupTranslationPatchTests
 {
+    private const string ExpectedPrompt = "まだリコイルできない。";
+
     [SetUp]
     public void SetUp()
     {
@@ -45,8 +47,35 @@ public sealed class CyberneticsOnboardRecoilerPopupTranslationPatchTests
                 {
                     Assert.That(
                         DummyPopupShow.LastShowMessage,
-                        Is.EqualTo(CyberneticsOnboardRecoilerPopupTranslationPatch.TranslatedPrompt));
+                        Is.EqualTo(ExpectedPrompt));
                     Assert.That(GetHitCount(), Is.EqualTo(1));
+                });
+            });
+    }
+
+    [TestCase("", "", 0)]
+    [TestCase("{{W|You can't recoil yet.}}", "{{W|You can't recoil yet.}}", 0)]
+    public void Patch_LeavesEmptyAndColorTaggedFallbackPromptsUnchanged_WhenOwnerPatched(
+        string source,
+        string expected,
+        int expectedHitCount)
+    {
+        OwnerPopupRouteTestHarness.WithPatchedPopupOwner(
+            typeof(CyberneticsOnboardRecoilerPopupTranslationPatch),
+            RequireMethod(nameof(DummyCyberneticsOnboardRecoilerTarget.ActuateTeleport)),
+            () =>
+            {
+                var target = new DummyCyberneticsOnboardRecoilerTarget
+                {
+                    PopupMessageToShow = source,
+                };
+
+                target.ActuateTeleport();
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(expected));
+                    Assert.That(GetHitCount(), Is.EqualTo(expectedHitCount));
                 });
             });
     }

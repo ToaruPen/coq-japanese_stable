@@ -91,6 +91,17 @@ public static class XrlCoreRestoreModsLoadedTranslationPatch
             return unmarked;
         }
 
-        return LiteralTranslations.TryGetValue(source, out var translated) ? translated : source;
+        if (LiteralTranslations.TryGetValue(source, out var translated))
+        {
+            return translated;
+        }
+
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        if (spans.Count > 0 && LiteralTranslations.TryGetValue(stripped, out translated))
+        {
+            return ColorAwareTranslationComposer.Restore(translated, spans);
+        }
+
+        return source;
     }
 }

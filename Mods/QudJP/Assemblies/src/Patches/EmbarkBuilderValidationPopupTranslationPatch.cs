@@ -66,6 +66,12 @@ public static class EmbarkBuilderValidationPopupTranslationPatch
             return false;
         }
 
+        if (!OwnerTranslationScope.IsActive(activeDepth))
+        {
+            translated = source;
+            return false;
+        }
+
         if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
         {
             translated = markedText;

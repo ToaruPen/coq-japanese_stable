@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
@@ -66,6 +67,16 @@ public static class CoreInvalidObjectDisplayNameTranslationPatch
     {
         try
         {
+            if (__result is IEnumerable objects and not string)
+            {
+                foreach (var item in objects)
+                {
+                    TranslateRenderDisplayName(item);
+                }
+
+                return;
+            }
+
             TranslateRenderDisplayName(__result);
         }
         catch (Exception ex)

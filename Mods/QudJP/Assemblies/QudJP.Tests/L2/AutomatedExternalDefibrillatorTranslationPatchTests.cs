@@ -106,34 +106,30 @@ public sealed class AutomatedExternalDefibrillatorTranslationPatchTests
     [Test]
     public void AttemptDefibrillate_LeavesUnknownAndDirectMarkedTextUnchanged()
     {
-        AutomatedExternalDefibrillatorTranslationPatch.Prefix();
-        try
-        {
-            Assert.Multiple(() =>
-            {
-                Assert.That(
-                    AutomatedExternalDefibrillatorTranslationPatch.TryTranslatePopupMessage(
-                        "Unknown defibrillator text.",
-                        nameof(PopupShowTranslationPatch),
-                        "Popup.Show",
-                        out var unknown),
-                    Is.False);
-                Assert.That(unknown, Is.EqualTo("Unknown defibrillator text."));
+        using var ownerPatch = PatchOwner();
+        using var popupPatch = PatchPopupShowYesNo();
+        var target = new DummyAutomatedExternalDefibrillatorTarget();
 
-                Assert.That(
-                    AutomatedExternalDefibrillatorTranslationPatch.TryTranslatePopupMessage(
-                        MessageFrameTranslator.MarkDirectTranslation("翻訳済み"),
-                        nameof(PopupShowTranslationPatch),
-                        "Popup.Show",
-                        out var marked),
-                    Is.True);
-                Assert.That(marked, Is.EqualTo("翻訳済み"));
-            });
-        }
-        finally
+        target.PopupMessageToShow = "Unknown defibrillator text.";
+        target.AttemptDefibrillateConfirmationPopup();
+        var unknown = DummyPopupShow.LastShowYesNoMessage;
+
+        target.PopupMessageToShow = string.Empty;
+        target.AttemptDefibrillateConfirmationPopup();
+        var empty = DummyPopupShow.LastShowYesNoMessage;
+
+        target.PopupMessageToShow = MessageFrameTranslator.MarkDirectTranslation("翻訳済み");
+        target.AttemptDefibrillateConfirmationPopup();
+        var marked = DummyPopupShow.LastShowYesNoMessage;
+
+        Assert.Multiple(() =>
         {
-            _ = AutomatedExternalDefibrillatorTranslationPatch.Finalizer(null);
-        }
+            Assert.That(unknown, Is.EqualTo("Unknown defibrillator text."));
+            Assert.That(empty, Is.Empty);
+            Assert.That(marked, Is.EqualTo("翻訳済み"));
+            Assert.That(DefibrillatorHitCount("Defibrillator.TargetConfirm"), Is.Zero);
+            Assert.That(DefibrillatorHitCount("Defibrillator.SelfConfirm"), Is.Zero);
+        });
     }
 
     private static IDisposable PatchOwner()
@@ -226,9 +222,9 @@ public sealed class AutomatedExternalDefibrillatorTranslationPatchTests
 
     private sealed class DummyAutomatedExternalDefibrillatorTarget
     {
-        public string MessageToQueue { get; init; } = string.Empty;
+        public string MessageToQueue { get; set; } = string.Empty;
 
-        public string PopupMessageToShow { get; init; } = string.Empty;
+        public string PopupMessageToShow { get; set; } = string.Empty;
 
         public void AttemptDefibrillateQueuedMessage()
         {
