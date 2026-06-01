@@ -200,6 +200,51 @@ public sealed class QudMutationsModuleWindowTranslationPatchTests
     }
 
     [Test]
+    public void PopupPrefix_LeavesVariantPickerTitleSafe_ForOwnerAbsentEmptyAndDirectMarked()
+    {
+        var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            PatchPickOption(harmony);
+
+            DummyQudMutationsModuleWindow.StaticPopupTitleToShow = "Choose variant";
+            DummyQudMutationsModuleWindow.SelectVariant().GetAwaiter().GetResult();
+            Assert.That(DummyPopupGenericTarget.LastPickOptionTitle, Is.EqualTo("Choose variant"));
+
+            var ownerOriginal = ResolveStateMachineMoveNext(RequireMethod(
+                typeof(DummyQudMutationsModuleWindow),
+                nameof(DummyQudMutationsModuleWindow.SelectVariant)))
+                ?? throw new InvalidOperationException("Dummy SelectVariant state machine not found.");
+            harmony.Patch(
+                original: ownerOriginal,
+                prefix: new HarmonyMethod(RequireMethod(
+                    typeof(QudMutationsModuleWindowVariantPopupTranslationPatch),
+                    nameof(QudMutationsModuleWindowVariantPopupTranslationPatch.Prefix))),
+                finalizer: new HarmonyMethod(RequireMethod(
+                    typeof(QudMutationsModuleWindowVariantPopupTranslationPatch),
+                    nameof(QudMutationsModuleWindowVariantPopupTranslationPatch.Finalizer),
+                    typeof(Exception))));
+
+            DummyQudMutationsModuleWindow.StaticPopupTitleToShow = string.Empty;
+            DummyQudMutationsModuleWindow.SelectVariant().GetAwaiter().GetResult();
+            Assert.That(DummyPopupGenericTarget.LastPickOptionTitle, Is.Empty);
+
+            DummyQudMutationsModuleWindow.StaticPopupTitleToShow =
+                MessageFrameTranslator.MarkDirectTranslation("翻訳済みタイトル");
+            DummyQudMutationsModuleWindow.SelectVariant().GetAwaiter().GetResult();
+            Assert.That(DummyPopupGenericTarget.LastPickOptionTitle, Is.EqualTo("翻訳済みタイトル"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+            DummyPopupGenericTarget.Reset();
+            DummyQudMutationsModuleWindow.StaticPopupTitleToShow = "Choose variant";
+        }
+    }
+
+    [Test]
     public void PopupPrefix_TranslatesShowPointsTitleOnly_WhenHandleMenuOptionOwnerPatched()
     {
         var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";

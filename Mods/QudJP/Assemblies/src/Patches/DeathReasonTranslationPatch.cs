@@ -121,7 +121,7 @@ public static class DeathReasonTranslationPatch
             match.Groups["subject"].Value,
             spans,
             match.Groups["subject"]);
-        var translatedSubject = GetDisplayNameRouteTranslator.TranslatePreservingColors(subject, Context);
+        var translatedSubject = DisplayNameCaptureTranslator.TranslatePreservingColors(subject, Context);
         translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
             translatedSubject + "は" + bodyTranslation,
             spans,

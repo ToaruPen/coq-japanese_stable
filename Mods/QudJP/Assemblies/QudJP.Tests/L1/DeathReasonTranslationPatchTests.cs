@@ -102,6 +102,18 @@ public sealed class DeathReasonTranslationPatchTests
     }
 
     [Test]
+    public void TranslateDeathReason_StripsDirectMarkerInsideColorTaggedSubject()
+    {
+        WriteDictionary(
+            ("snapjaw", "スナップジョー"),
+            ("QudJP.DeathWrapper.Exploded.Bare", "爆発した。"));
+
+        var result = DeathReasonTranslationPatch.TranslateDeathReason("{{R|\u0001snapjaw @@exploded.}}");
+
+        Assert.That(result, Is.EqualTo("{{R|スナップジョーは爆発した。}}"));
+    }
+
+    [Test]
     public void TranslateDeathReason_PreservesColorCodes()
     {
         WriteDictionary(("You were stepped on.", "踏みつぶされた。"));

@@ -115,6 +115,40 @@ public sealed class BaseMutationSelectVariantPopupTranslationPatchTests
         }
     }
 
+    [Test]
+    public void SelectVariant_LeavesUnknownAndEmptyTitle_WhenOwnerPatched()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            PatchPickOption(harmony);
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyBaseMutationTarget), nameof(DummyBaseMutationTarget.SelectVariant)),
+                prefix: new HarmonyMethod(RequireMethod(
+                    typeof(BaseMutationSelectVariantPopupTranslationPatch),
+                    nameof(BaseMutationSelectVariantPopupTranslationPatch.Prefix))),
+                finalizer: new HarmonyMethod(RequireMethod(
+                    typeof(BaseMutationSelectVariantPopupTranslationPatch),
+                    nameof(BaseMutationSelectVariantPopupTranslationPatch.Finalizer),
+                    typeof(Exception))));
+
+            DummyBaseMutationTarget.TitleToShow = "Unknown variant title";
+            _ = DummyBaseMutationTarget.SelectVariant();
+            Assert.That(DummyPopupGenericTarget.LastPickOptionTitle, Is.EqualTo("Unknown variant title"));
+
+            DummyBaseMutationTarget.TitleToShow = string.Empty;
+            _ = DummyBaseMutationTarget.SelectVariant();
+            Assert.That(DummyPopupGenericTarget.LastPickOptionTitle, Is.EqualTo(string.Empty));
+        }
+        finally
+        {
+            DummyBaseMutationTarget.Reset();
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
     private static void PatchPickOption(Harmony harmony)
     {
         harmony.Patch(

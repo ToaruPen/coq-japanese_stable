@@ -58,6 +58,9 @@ public sealed class CrayonsPopupTranslationPatchTests
             Assert.That(CrayonsPopupTranslationPatch.TranslateLiteralForTests("unknown prompt"), Is.EqualTo("unknown prompt"));
             Assert.That(CrayonsPopupTranslationPatch.TranslateLiteralForTests(string.Empty), Is.Empty);
             Assert.That(CrayonsPopupTranslationPatch.TranslateLiteralForTests("\u0001You draw a pretty picture."), Is.EqualTo("You draw a pretty picture."));
+            Assert.That(
+                CrayonsPopupTranslationPatch.TranslateLiteralForTests("{{Y|You draw a pretty picture.}}"),
+                Is.EqualTo("{{Y|きれいな絵を描いた。}}"));
         });
     }
 

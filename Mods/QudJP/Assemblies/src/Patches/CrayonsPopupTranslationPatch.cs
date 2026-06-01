@@ -97,6 +97,8 @@ public static class CrayonsPopupTranslationPatch
             return unmarked;
         }
 
-        return LiteralTranslations.TryGetValue(source, out var translated) ? translated : source;
+        return ColorAwareTranslationComposer.TranslatePreservingColors(
+            source,
+            static visible => LiteralTranslations.TryGetValue(visible, out var translated) ? translated : visible);
     }
 }

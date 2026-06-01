@@ -106,6 +106,24 @@ public sealed class SavesApiFatalSaveErrorTranslationPatchTests
         });
     }
 
+    [Test]
+    public void Patch_LeavesFallbackEmptyAndDirectMarkedFatalSaveErrorPopupSafe_WhenOwnerPatched()
+    {
+        WithPatchedOwner(() =>
+        {
+            new DummyPopupMessageTarget().ShowPopup("Unrecognized save failure.");
+            Assert.That(DummyPopupMessageTarget.LastMessage, Is.EqualTo("Unrecognized save failure."));
+
+            new DummyPopupMessageTarget().ShowPopup(string.Empty);
+            Assert.That(DummyPopupMessageTarget.LastMessage, Is.Empty);
+
+            new DummyPopupMessageTarget().ShowPopup(MessageFrameTranslator.MarkDirectTranslation("翻訳済み"));
+            Assert.That(DummyPopupMessageTarget.LastMessage, Is.EqualTo("翻訳済み"));
+        });
+
+        Assert.That(HitCount("GenericBody"), Is.Zero);
+    }
+
     private static void WithPatchedOwner(Action action)
     {
         var harmonyId = CreateHarmonyId();

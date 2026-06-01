@@ -118,7 +118,7 @@ public static class DanceRitualOpponentTranslationPatch
 
         if (MessageFrameTranslator.TryStripDirectTranslationMarker(message, out var markedText))
         {
-            message = markedText;
+            message = MessageFrameTranslator.MarkDirectTranslation(markedText);
             return true;
         }
 

@@ -97,7 +97,7 @@ public static class GameTextDeathReasonTranslationPatch
             match.Groups["subject"].Value,
             spans,
             match.Groups["subject"]);
-        var translatedSubject = GetDisplayNameRouteTranslator.TranslatePreservingColors(subject, Context);
+        var translatedSubject = DisplayNameCaptureTranslator.TranslatePreservingColors(subject, Context);
         var translated = translatedSubject + "は" + TrimJapaneseSentenceEnd(translatedBare) + "。";
         return ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
             translated,

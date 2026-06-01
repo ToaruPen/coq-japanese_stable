@@ -278,9 +278,9 @@ internal static class CyberneticsTerminalTextTranslator
 
     private static string ApplyDisplayNameOptionTemplates(string source)
     {
-        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out _))
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var unmarked))
         {
-            return source;
+            return unmarked;
         }
 
         if (TryTranslateLicensePointOption(source, out var translated))
@@ -368,15 +368,16 @@ internal static class CyberneticsTerminalTextTranslator
 
     private static string TranslateDisplayNameSegment(string source)
     {
-        return GetDisplayNameRouteTranslator.TranslatePreservingColors(source, Context);
+        return DisplayNameCaptureTranslator.TranslatePreservingColors(source, Context);
     }
 
     private static bool TryTranslateCyberneticsSlot(string source, out string translated)
     {
         translated = source;
-        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out _))
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var unmarked))
         {
-            return false;
+            translated = unmarked;
+            return true;
         }
 
         var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);

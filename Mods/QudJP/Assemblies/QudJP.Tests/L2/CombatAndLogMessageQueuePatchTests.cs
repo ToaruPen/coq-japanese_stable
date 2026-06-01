@@ -5218,6 +5218,43 @@ public sealed class CombatAndLogMessageQueuePatchTests
     }
 
     [Test]
+    public void FungalSporeInfectionChooseLimbForInfection_TranslatesDisplayNameCaptureInTitle_WhenOwnerPatched()
+    {
+        File.WriteAllText(
+            Path.Combine(tempDirectory, "ui-displayname-atomic.ja.json"),
+            "{\"entries\":[{\"key\":\"snapjaw\",\"text\":\"スナップジョー\"}]}\n",
+            new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupPickOption(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(
+                    typeof(DummyFungalSporeInfectionTarget),
+                    nameof(DummyFungalSporeInfectionTarget.ChooseLimbForInfection),
+                    typeof(string),
+                    typeof(IReadOnlyList<string>)),
+                typeof(FungalSporeInfectionTranslationPatch));
+
+            _ = DummyFungalSporeInfectionTarget.ChooseLimbForInfection(
+                "{{G|the snapjaw}}",
+                new[] { "left arm" });
+
+            Assert.That(
+                DummyPopupGenericTarget.LastPickOptionTitle,
+                Is.EqualTo("{{G|スナップジョー}}で感染させる部位を選ぶ。"));
+        }
+        finally
+        {
+            DummyPopupGenericTarget.Reset();
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void FungalSporeInfectionChooseLimbForInfection_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent()
     {
         var harmonyId = CreateHarmonyId();

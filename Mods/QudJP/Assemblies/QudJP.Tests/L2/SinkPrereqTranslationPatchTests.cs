@@ -124,7 +124,7 @@ public sealed class SinkPrereqTranslationPatchTests
         {
             Assert.That(fallback.text.text, Is.EqualTo("{{C|Unknown Category}}"));
             Assert.That(empty.text.text, Is.EqualTo("{{C|}}"));
-            Assert.That(colored.text.text, Is.EqualTo("{{C|{{C|キーバインド}}}}"));
+            Assert.That(colored.text.text, Is.EqualTo("{{C|キーバインド}}"));
             Assert.That(marked.text.text, Is.EqualTo("{{C|Keybinds}}"));
             Assert.That(
                 DynamicTextObservability.GetRouteFamilyHitCountForTests(

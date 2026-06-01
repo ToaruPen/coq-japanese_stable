@@ -164,7 +164,7 @@ public static class GameObjectDestroyTranslationPatch
             return false;
         }
 
-        var name = GetDisplayNameRouteTranslator.TranslatePreservingColors(match.Groups["name"].Value, Context);
+        var name = DisplayNameCaptureTranslator.TranslatePreservingColors(match.Groups["name"].Value, Context);
         translated = "仲間の" + name + "は" + translatedVerb + "。";
 
         var reason = match.Groups["reason"];

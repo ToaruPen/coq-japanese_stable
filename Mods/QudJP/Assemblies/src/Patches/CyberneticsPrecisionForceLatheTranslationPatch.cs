@@ -105,7 +105,7 @@ public static class CyberneticsPrecisionForceLatheTranslationPatch
         bool stripDirectMarker,
         out string translated)
     {
-        if (!OwnerTranslationScope.IsActive(activeDepth) || string.IsNullOrEmpty(source))
+        if (string.IsNullOrEmpty(source))
         {
             translated = source;
             return false;
@@ -115,6 +115,12 @@ public static class CyberneticsPrecisionForceLatheTranslationPatch
         {
             translated = markedText;
             return stripDirectMarker;
+        }
+
+        if (!OwnerTranslationScope.IsActive(activeDepth))
+        {
+            translated = source;
+            return false;
         }
 
         if (!TryTranslateCore(source, out translated, out var detail))
@@ -143,16 +149,38 @@ public static class CyberneticsPrecisionForceLatheTranslationPatch
                     : $"{TranslateDisplayName(item)}を保持できる空き部位がない。";
             },
             "NoHoldSlot",
-            out translated,
-            out detail)
-            || TryTranslatePattern(
-                StatusFailurePattern,
-                source,
-                (match, spans) =>
-                    $"{TranslateDisplayName(Restore(match, spans, "subject"))}は{TranslateStatusPhrase(Restore(match, spans, "status"))}。",
-                "StatusFailure",
                 out translated,
-                out detail);
+                out detail)
+            || TryTranslateStatusFailure(source, out translated, out detail);
+    }
+
+    private static bool TryTranslateStatusFailure(string source, out string translated, out string detail)
+    {
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        var match = StatusFailurePattern.Match(stripped);
+        if (!match.Success)
+        {
+            translated = source;
+            detail = string.Empty;
+            return false;
+        }
+
+        var status = Restore(match, spans, "status");
+        var translatedStatus = TranslateStatusPhrase(status);
+        if (string.Equals(translatedStatus, status, StringComparison.Ordinal))
+        {
+            translated = source;
+            detail = string.Empty;
+            return false;
+        }
+
+        translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+            $"{TranslateDisplayName(Restore(match, spans, "subject"))}は{translatedStatus}。",
+            spans,
+            stripped.Length,
+            source);
+        detail = "StatusFailure";
+        return true;
     }
 
     private static bool TryTranslatePattern(

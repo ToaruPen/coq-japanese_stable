@@ -62,6 +62,24 @@ public sealed class EquipmentScreenBodypartEquipPopupTranslationPatchTests
         });
     }
 
+    [Test]
+    public void Patch_LeavesFallbackEmptyAndDirectMarkedBodypartEquipPopupSafe_WhenOwnerPatched()
+    {
+        WithPatchedOwner(() =>
+        {
+            DummyPopupShow.Show("Unknown equip popup.");
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("Unknown equip popup."));
+
+            DummyPopupShow.Show(string.Empty);
+            Assert.That(DummyPopupShow.LastShowMessage, Is.Empty);
+
+            DummyPopupShow.Show(MessageFrameTranslator.MarkDirectTranslation("翻訳済み"));
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("翻訳済み"));
+        });
+
+        Assert.That(HitCount("NoInventory"), Is.Zero);
+    }
+
     private static void WithPatchedOwner(Action action)
     {
         var harmonyId = CreateHarmonyId();

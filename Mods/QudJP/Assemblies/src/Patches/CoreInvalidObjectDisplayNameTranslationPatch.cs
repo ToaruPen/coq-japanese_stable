@@ -115,9 +115,17 @@ public static class CoreInvalidObjectDisplayNameTranslationPatch
             return null;
         }
 
-        var method = parameterTypes is null
-            ? AccessTools.Method(targetType, methodName)
-            : AccessTools.Method(targetType, methodName, parameterTypes);
+        if (parameterTypes is null)
+        {
+            Trace.TraceError(
+                "QudJP: {0}: parameter types not resolved for method '{1}.{2}'.",
+                Context,
+                targetType.FullName,
+                methodName);
+            return null;
+        }
+
+        var method = AccessTools.Method(targetType, methodName, parameterTypes);
         if (method is null)
         {
             Trace.TraceError("QudJP: {0}: method '{1}.{2}' not found.", Context, targetType.FullName, methodName);

@@ -64,6 +64,44 @@ public sealed class TextFilterSpeechStatusTranslationPatchTests
         }
     }
 
+    [TestCase("", "NO!  ARGH!", "いや！  ぐああ！", 1)]
+    [TestCase("{{Y|Stop.}}", "NO! {{Y|Stop.}} ARGH!", "いや！ {{Y|Stop.}} ぐああ！", 1)]
+    public void AngryPostfix_HandlesEmptyAndDirectMarkedSpeechSafely(
+        string phrase,
+        string expectedSource,
+        string expected,
+        int expectedHitCount)
+    {
+        var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyTextFiltersTarget), nameof(DummyTextFiltersTarget.Angry), typeof(string)),
+                postfix: new HarmonyMethod(RequireMethod(
+                    typeof(TextFiltersAngryTranslationPatch),
+                    nameof(TextFiltersAngryTranslationPatch.Postfix),
+                    typeof(string).MakeByRefType())));
+
+            var result = DummyTextFiltersTarget.Angry(phrase);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(result, Is.EqualTo(expected));
+                Assert.That(DummyTextFiltersTarget.LastAngrySource, Is.EqualTo(expectedSource));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(TextFiltersAngryTranslationPatch),
+                        "TextFilters.Angry"),
+                    Is.EqualTo(expectedHitCount));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
     [Test]
     public void LallatedPostfix_TranslatesCarriedSpeechTextOnly()
     {
@@ -139,6 +177,87 @@ public sealed class TextFilterSpeechStatusTranslationPatchTests
         }
     }
 
+    [TestCase("", "nya  nya", 0)]
+    [TestCase("{{Y|hello there}}", "nya {{Y|hello there}} nya", 0)]
+    public void LallatedPostfix_HandlesEmptyAndColoredSpeechSafely(
+        string text,
+        string expected,
+        int expectedHitCount)
+    {
+        WriteDictionary(("hello there", "こんにちは"));
+        var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(
+                    typeof(DummyTextFiltersTarget),
+                    nameof(DummyTextFiltersTarget.Lallated),
+                    typeof(string),
+                    typeof(string)),
+                postfix: new HarmonyMethod(RequireMethod(
+                    typeof(TextFiltersLallatedTranslationPatch),
+                    nameof(TextFiltersLallatedTranslationPatch.Postfix),
+                    typeof(string),
+                    typeof(string).MakeByRefType())));
+
+            var result = DummyTextFiltersTarget.Lallated(text, "nya");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(result, Is.EqualTo(expected));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(TextFiltersLallatedTranslationPatch),
+                        "TextFilters.Lallated"),
+                    Is.EqualTo(expectedHitCount));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void LallatedPostfix_StripsDirectMarkedWholeResultSafely()
+    {
+        var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(
+                    typeof(DummyTextFiltersTarget),
+                    nameof(DummyTextFiltersTarget.LallatedRaw),
+                    typeof(string),
+                    typeof(string)),
+                postfix: new HarmonyMethod(RequireMethod(
+                    typeof(TextFiltersLallatedTranslationPatch),
+                    nameof(TextFiltersLallatedTranslationPatch.Postfix),
+                    typeof(string),
+                    typeof(string).MakeByRefType())));
+
+            var result = DummyTextFiltersTarget.LallatedRaw(
+                MessageFrameTranslator.MarkDirectTranslation("翻訳済み"),
+                "nya");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(result, Is.EqualTo("翻訳済み"));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(TextFiltersLallatedTranslationPatch),
+                        "TextFilters.Lallated"),
+                    Is.EqualTo(1));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
     private void WriteDictionary(params (string key, string text)[] entries)
     {
         var builder = new System.Text.StringBuilder();
@@ -167,14 +286,23 @@ public sealed class TextFilterSpeechStatusTranslationPatchTests
 
     private static class DummyTextFiltersTarget
     {
+        public static string LastAngrySource { get; private set; } = string.Empty;
+
         public static string Angry(string phrase)
         {
-            return "NO! " + phrase + " ARGH!";
+            LastAngrySource = "NO! " + phrase + " ARGH!";
+            return LastAngrySource;
         }
 
         public static string Lallated(string Text, string Noise)
         {
             return Noise + " " + Text + " " + Noise;
+        }
+
+        public static string LallatedRaw(string Text, string Noise)
+        {
+            _ = Noise;
+            return Text;
         }
     }
 }

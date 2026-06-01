@@ -53,6 +53,7 @@ public sealed class GameObjectPossessiveDisplayNameTranslationPatchTests
     [TestCase(nameof(DummyPossessiveDisplayNameTarget.poss), "your レーザーライフル", "あなたのレーザーライフル")]
     [TestCase(nameof(DummyPossessiveDisplayNameTarget.Poss), "Your laser rifle", "あなたのレーザーライフル")]
     [TestCase(nameof(DummyPossessiveDisplayNameTarget.Poss), "Your \x01レーザーライフル", "あなたのレーザーライフル")]
+    [TestCase(nameof(DummyPossessiveDisplayNameTarget.Poss), "{{Y|Your laser rifle}}", "{{Y|あなたのレーザーライフル}}")]
     [TestCase(nameof(DummyPossessiveDisplayNameTarget.Poss), "スナップジョー's 鋼の盾", "スナップジョーの鋼の盾")]
     [TestCase(nameof(DummyPossessiveDisplayNameTarget.Poss), "snapjaw's laser rifle", "スナップジョーのレーザーライフル")]
     [TestCase(nameof(DummyPossessiveDisplayNameTarget.Poss), "{{R|snapjaw}}'s {{Y|laser rifle}}", "{{R|スナップジョー}}の{{Y|レーザーライフル}}")]

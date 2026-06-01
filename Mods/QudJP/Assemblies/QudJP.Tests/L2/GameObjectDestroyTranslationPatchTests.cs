@@ -101,4 +101,29 @@ public sealed class GameObjectDestroyTranslationPatchTests
             Translator.ResetForTests();
         }
     }
+
+    [Test]
+    public void TranslateCompanionDeathMessage_StripsDirectMarkerInsideColorTaggedCompanionName()
+    {
+        Translator.ResetForTests();
+        Translator.SetDictionaryDirectoryForTests(Path.Combine(
+            TestProjectPaths.GetRepositoryRoot(),
+            "Mods",
+            "QudJP",
+            "Localization",
+            "Dictionaries"));
+        try
+        {
+            Assert.That(
+                GameObjectDestroyTranslationPatch.TryTranslateCompanionDeathMessage(
+                    "Your companion, {{R|\u0001snapjaw}}, died.",
+                    out var translated),
+                Is.True);
+            Assert.That(translated, Is.EqualTo("仲間の{{R|スナップジョー}}は死亡した。"));
+        }
+        finally
+        {
+            Translator.ResetForTests();
+        }
+    }
 }

@@ -295,8 +295,11 @@ public static class FungalSporeInfectionTranslationPatch
         var chooseLimbMatch = ChooseLimbTitlePattern.Match(stripped);
         if (chooseLimbMatch.Success)
         {
+            var fungus = DisplayNameCaptureTranslator.TranslatePreservingColors(
+                Restore(chooseLimbMatch, spans, "fungus"),
+                Context);
             translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
-                $"{Restore(chooseLimbMatch, spans, "fungus")}で感染させる部位を選ぶ。",
+                $"{fungus}で感染させる部位を選ぶ。",
                 spans,
                 stripped.Length,
                 source);

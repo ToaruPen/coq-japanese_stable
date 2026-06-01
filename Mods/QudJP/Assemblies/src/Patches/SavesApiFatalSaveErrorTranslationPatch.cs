@@ -87,13 +87,19 @@ public static class SavesApiFatalSaveErrorTranslationPatch
 
     internal static bool TryTranslatePopupMessage(string source, string route, string family, out string translated)
     {
-        if (activeDepth <= 0 || string.IsNullOrEmpty(source))
+        if (string.IsNullOrEmpty(source))
         {
             translated = source;
             return false;
         }
 
-        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out _))
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
+        {
+            translated = markedText;
+            return true;
+        }
+
+        if (activeDepth <= 0)
         {
             translated = source;
             return false;

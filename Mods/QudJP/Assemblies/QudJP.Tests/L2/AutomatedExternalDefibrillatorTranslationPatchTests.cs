@@ -82,6 +82,10 @@ public sealed class AutomatedExternalDefibrillatorTranslationPatchTests
         "You are not in cardiac arrest. Do you want to use {{Y|defibrillator}} on yourself anyway?",
         "あなたは心停止状態ではない。それでも{{Y|除細動器}}を自分自身に使いますか？",
         "Defibrillator.SelfConfirm")]
+    [TestCase(
+        "You are not in cardiac arrest. Do you want to use {{Y|defibrillator}} on {{Y|yourself}} anyway?",
+        "あなたは心停止状態ではない。それでも{{Y|除細動器}}を{{Y|自分自身}}に使いますか？",
+        "Defibrillator.SelfConfirm")]
     public void AttemptDefibrillate_TranslatesConfirmationPopup_WhenOwnerPatched(
         string source,
         string expected,

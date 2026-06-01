@@ -237,10 +237,10 @@ public static class AutomatedExternalDefibrillatorTranslationPatch
 
     private static string TranslateSelfPronoun(string source)
     {
-        var (stripped, _) = ColorAwareTranslationComposer.Strip(source);
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
         return string.Equals(stripped, "yourself", StringComparison.OrdinalIgnoreCase)
             || string.Equals(stripped, "itself", StringComparison.OrdinalIgnoreCase)
-                ? "自分自身"
+                ? ColorAwareTranslationComposer.Restore("自分自身", spans)
                 : source;
     }
 }

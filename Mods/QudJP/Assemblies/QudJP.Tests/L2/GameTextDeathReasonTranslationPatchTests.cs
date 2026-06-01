@@ -87,6 +87,14 @@ public sealed class GameTextDeathReasonTranslationPatchTests
     }
 
     [Test]
+    public void TranslateThirdPersonDeathReason_StripsDirectMarkerInsideColorTaggedSubject()
+    {
+        Assert.That(
+            GameTextDeathReasonTranslationPatch.TranslateThirdPersonDeathReasonForTests("{{R|\u0001snapjaw}} was vaporized."),
+            Is.EqualTo("{{R|スナップジョー}}は蒸発した。"));
+    }
+
+    [Test]
     public void TranslateThirdPersonDeathReason_StripsDirectMarkerWithoutRetranslating()
     {
         Assert.That(

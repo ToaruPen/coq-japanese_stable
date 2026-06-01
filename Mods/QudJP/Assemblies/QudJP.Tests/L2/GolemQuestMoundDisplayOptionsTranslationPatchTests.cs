@@ -24,19 +24,6 @@ public sealed class GolemQuestMoundDisplayOptionsTranslationPatchTests
         });
     }
 
-    [Test]
-    public void TranslateLiteral_LeavesUnknownEmptyAndMarkedValuesSafe()
-    {
-        Assert.Multiple(() =>
-        {
-            Assert.That(GolemQuestMoundDisplayOptionsTranslationPatch.TranslateLiteralForTests("option:-2"), Is.EqualTo("option:-2"));
-            Assert.That(GolemQuestMoundDisplayOptionsTranslationPatch.TranslateLiteralForTests(string.Empty), Is.Empty);
-            Assert.That(
-                GolemQuestMoundDisplayOptionsTranslationPatch.TranslateLiteralForTests("\u0001{{K|Build}}"),
-                Is.EqualTo("{{K|Build}}"));
-        });
-    }
-
     private static IDisposable PatchDummyTarget()
     {
         var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";

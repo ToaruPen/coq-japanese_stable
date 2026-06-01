@@ -100,20 +100,31 @@ public static class GameObjectPossessiveDisplayNameTranslationPatch
             cleanedSource = nonNullSource;
         }
         translated = cleanedSource;
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(cleanedSource);
+        var captureSpans = ColorAwareTranslationComposer.WithoutTrueWholeSourceBoundarySpans(spans, stripped.Length);
 
-        var playerMatch = PlayerPossessivePattern.Match(cleanedSource);
+        var playerMatch = PlayerPossessivePattern.Match(stripped);
         if (playerMatch.Success)
         {
-            translated = "あなたの" + TranslateCapture(playerMatch.Groups["item"].Value);
+            var item = RestoreCapture(playerMatch, captureSpans, "item");
+            translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+                "あなたの" + TranslateCapture(item),
+                spans,
+                stripped.Length,
+                cleanedSource);
             return true;
         }
 
-        var ownerMatch = OwnerPossessivePattern.Match(cleanedSource);
+        var ownerMatch = OwnerPossessivePattern.Match(stripped);
         if (ownerMatch.Success)
         {
-            translated = TranslateCapture(ownerMatch.Groups["owner"].Value)
-                + "の"
-                + TranslateCapture(ownerMatch.Groups["item"].Value);
+            var owner = RestoreCapture(ownerMatch, captureSpans, "owner");
+            var item = RestoreCapture(ownerMatch, captureSpans, "item");
+            translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+                TranslateCapture(owner) + "の" + TranslateCapture(item),
+                spans,
+                stripped.Length,
+                cleanedSource);
             return true;
         }
 
@@ -126,5 +137,11 @@ public static class GameObjectPossessiveDisplayNameTranslationPatch
         return MessageFrameTranslator.TryStripDirectTranslationMarker(translated, out var stripped)
             ? stripped
             : translated;
+    }
+
+    private static string RestoreCapture(Match match, IReadOnlyList<ColorSpan> spans, string groupName)
+    {
+        var group = match.Groups[groupName];
+        return ColorAwareTranslationComposer.RestoreCapture(group.Value, spans, group).Trim();
     }
 }

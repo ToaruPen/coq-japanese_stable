@@ -17,7 +17,7 @@ public static class PopupShowTranslationPatch
     private const string Context = nameof(PopupShowTranslationPatch);
 
     [ThreadStatic]
-    private static int pendingDirectMarkerWrapperDepth;
+    private static string? pendingDirectMarkerPassThroughText;
 
     [HarmonyTargetMethods]
     private static IEnumerable<MethodBase> TargetMethods()
@@ -196,7 +196,7 @@ public static class PopupShowTranslationPatch
             __0 = PopupShowSemanticPipeline.TranslateMessage(__0, Context);
             if (expectsNestedDirectMarkerPassThrough)
             {
-                pendingDirectMarkerWrapperDepth++;
+                pendingDirectMarkerPassThroughText = __0;
             }
         }
         catch (Exception ex)
@@ -209,11 +209,7 @@ public static class PopupShowTranslationPatch
     {
         try
         {
-            if (pendingDirectMarkerWrapperDepth > 0)
-            {
-                pendingDirectMarkerWrapperDepth--;
-            }
-
+            pendingDirectMarkerPassThroughText = null;
             PopupTranslatedMessageHandoff.ExitCurrentScope();
         }
         catch (Exception ex)
@@ -226,18 +222,24 @@ public static class PopupShowTranslationPatch
 
     internal static bool TryConsumeDirectMarkerPassThrough(string source, ref string? passThroughText)
     {
+        if (pendingDirectMarkerPassThroughText is not null)
+        {
+            var pending = pendingDirectMarkerPassThroughText;
+            pendingDirectMarkerPassThroughText = null;
+            if (string.Equals(source, pending, StringComparison.Ordinal)
+                && (passThroughText is null || string.Equals(source, passThroughText, StringComparison.Ordinal)))
+            {
+                passThroughText = null;
+                return true;
+            }
+        }
+
         if (passThroughText is null)
         {
             return false;
         }
 
-        var shouldPassThrough = false;
-        if (pendingDirectMarkerWrapperDepth > 0)
-        {
-            pendingDirectMarkerWrapperDepth--;
-            shouldPassThrough = string.Equals(source, passThroughText, StringComparison.Ordinal);
-        }
-
+        var shouldPassThrough = string.Equals(source, passThroughText, StringComparison.Ordinal);
         passThroughText = null;
         return shouldPassThrough;
     }

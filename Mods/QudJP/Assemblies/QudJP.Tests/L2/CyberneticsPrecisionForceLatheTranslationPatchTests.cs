@@ -81,23 +81,48 @@ public sealed class CyberneticsPrecisionForceLatheTranslationPatchTests
             Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("Unknown force lathe failure."));
         }
 
-        CyberneticsPrecisionForceLatheTranslationPatch.Prefix();
-        try
+        using (PatchOwner())
+        using (PatchPopupShow())
+        using (PatchQueue())
         {
-            var marked = MessageFrameTranslator.MarkDirectTranslation("翻訳済み");
-            Assert.That(
-                CyberneticsPrecisionForceLatheTranslationPatch.TryTranslatePopupMessage(
-                    marked,
-                    nameof(PopupShowTranslationPatch),
-                    "Popup",
-                    out var translated),
-                Is.True);
-            Assert.That(translated, Is.EqualTo("翻訳済み"));
+            var target = new DummyPrecisionForceLatheTarget
+            {
+                Message = "The precision force lathe is {{K|mysteriously jammed}}.",
+            };
+
+            target.ActivatePrecisionForceLathe(new DummyGameObject(), new DummyGameObject(), new DummyEvent());
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(
+                    DummyPopupShow.LastShowMessage,
+                    Is.EqualTo("The precision force lathe is {{K|mysteriously jammed}}."));
+                Assert.That(
+                    DummyMessageQueue.LastMessage,
+                    Is.EqualTo("The precision force lathe is {{K|mysteriously jammed}}."));
+                Assert.That(HitCount("StatusFailure"), Is.EqualTo(0));
+            });
         }
-        finally
+    }
+
+    [Test]
+    public void ActivatePrecisionForceLathe_StripsDirectMarkedVisibleMessage_WhenOwnerPatched()
+    {
+        using var ownerPatch = PatchOwner();
+        using var popupPatch = PatchPopupShow();
+        using var queuePatch = PatchQueue();
+        var target = new DummyPrecisionForceLatheTarget
         {
-            _ = CyberneticsPrecisionForceLatheTranslationPatch.Finalizer(null);
-        }
+            Message = MessageFrameTranslator.MarkDirectTranslation("翻訳済み"),
+        };
+
+        target.ActivatePrecisionForceLathe(new DummyGameObject(), new DummyGameObject(), new DummyEvent());
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("翻訳済み"));
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("翻訳済み"));
+        });
     }
 
     private static IDisposable PatchOwner()

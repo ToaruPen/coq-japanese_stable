@@ -114,6 +114,19 @@ public sealed partial class Issue201OtherUiBindingPatchTests
     }
 
     [Test]
+    public void CyberneticsTerminalTextTranspiler_StripsDirectMarkedVisibleOptionText()
+    {
+        RunWithCyberneticsTerminalTextTranspiler(() =>
+        {
+            var screen = new CyberneticsScreen();
+            screen.Options.Add(MessageFrameTranslator.MarkDirectTranslation("Already translated option"));
+            screen.Update();
+
+            Assert.That(screen.Options[0], Is.EqualTo("Already translated option"));
+        });
+    }
+
+    [Test]
     public void CyberneticsTerminalTextTranspiler_TranslatesBodySlotSuffixes()
     {
         WriteCyberneticsDictionary(("translucent skin", "透明皮膚"));
