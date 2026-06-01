@@ -14894,7 +14894,7 @@ COVERED_OWNER_FAMILIES: Final = (
                     "Patch_TranslatesNameItemPopup_WhenOwnerPatched",
                     "Patch_DoesNotClaimNameItemPopup_WhenOwnerAbsent",
                     "Patch_DoesNotRetranslateDirectMarkedNameItemPopup_WhenOwnerPatched",
-                    "Patch_DoesNotClaimColorPickerPrompt_WhenOwnerPatched",
+                    "Patch_ClaimsColorPickerPrompt_WhenOwnerPatched",
                     "Interactive.ColorPicker",
                 ),
             ),
