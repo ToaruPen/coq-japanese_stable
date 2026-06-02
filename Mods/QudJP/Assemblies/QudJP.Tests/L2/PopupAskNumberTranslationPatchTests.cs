@@ -187,6 +187,7 @@ public sealed class PopupAskNumberTranslationPatchTests
     [TestCase(
         "Supply {{Y|turret}} with how many ? (max=7)",
         "Supply {{Y|turret}} with how many ? (max=7)")]
+    [TestCase("", "")]
     public void Prefix_TranslatesMagazineAmmoLoaderSupplyPrompt(string source, string expected)
     {
         WriteDictionary((
@@ -218,6 +219,7 @@ public sealed class PopupAskNumberTranslationPatchTests
     [TestCase(
         "\u0001Supply {{Y|turret}} with how many drams of your water? (max=7)",
         "Supply {{Y|turret}} with how many drams of your water? (max=7)")]
+    [TestCase("", "")]
     public void Prefix_TranslatesLiquidLoaderSupplyPrompt(string source, string expected)
     {
         WriteDictionaryFile(

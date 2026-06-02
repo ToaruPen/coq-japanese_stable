@@ -762,7 +762,7 @@ public sealed class WorldPartsProducerTranslationPatchTests
     [TestCase("Unmapped desalination message.", "Unmapped desalination message.", 0)]
     [TestCase("\u0001何も起こらないようだ。", "何も起こらないようだ。", 0)]
     [TestCase("", "", 0)]
-    [TestCase("{{R|It doesn't seem to do anything.}}", "{{R|何も起こらないようだ。}}", 0)]
+    [TestCase("{{R|It doesn't seem to do anything.}}", "{{R|何も起こらないようだ。}}", 1)]
     public void DesalinationPelletPatch_HandlesFailurePopupEdges_WhenPatched(
         string source,
         string expected,

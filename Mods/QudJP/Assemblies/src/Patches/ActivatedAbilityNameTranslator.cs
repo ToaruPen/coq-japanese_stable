@@ -281,7 +281,8 @@ internal static class ActivatedAbilityNameTranslator
     {
         if (MessageFrameTranslator.TryStripDirectTranslationMarker(zone, out var strippedZone))
         {
-            zone = strippedZone;
+            translated = strippedZone;
+            return true;
         }
 
         if (GetDisplayNameRouteTranslator.IsAlreadyLocalizedDisplayNameStateText(zone))

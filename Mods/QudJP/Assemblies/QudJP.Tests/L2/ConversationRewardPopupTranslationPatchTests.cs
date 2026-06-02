@@ -240,15 +240,35 @@ public sealed class ConversationRewardPopupTranslationPatchTests
     }
 
     [Test]
-    public void Patch_TranslatesRepositoryDictionaryFallback_WhenGiveReshephSecretOwnerPatched()
+    public void Patch_RecordsRepositoryDictionaryFallbackAsPopupExact_NotConversationRewardOwner()
     {
+        const string source = "You do not have any unshared secrets about the life of Resheph.";
+        const string expected = "レシェフの生涯に関する未共有の秘密はない。";
+
         Translator.SetDictionaryDirectoryForTests(GetRepositoryDictionaryDirectory());
+
+        OwnerPopupRouteTestHarness.WithPatchedPopupOnly(
+            () => DummyPopupShow.Show(source));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(expected));
+            Assert.That(HitCount("ReshephSecretInsight"), Is.Zero);
+            Assert.That(
+                DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                    nameof(PopupShowTranslationPatch),
+                    "Popup.ProducerText.Exact"),
+                Is.EqualTo(1));
+        });
+
+        DynamicTextObservability.ResetForTests();
+        DummyPopupShow.Reset();
 
         RunWithOwnerAndPopupPatches(nameof(DummyConversationRewardProducer.GiveReshephSecretHandleEvent), () =>
         {
             var target = new DummyConversationRewardProducer
             {
-                PopupMessageToShow = "You do not have any unshared secrets about the life of Resheph.",
+                PopupMessageToShow = source,
             };
 
             target.GiveReshephSecretHandleEvent();
@@ -257,7 +277,7 @@ public sealed class ConversationRewardPopupTranslationPatchTests
             {
                 Assert.That(
                     DummyPopupShow.LastShowMessage,
-                    Is.EqualTo("レシェフの生涯に関する未共有の秘密はない。"));
+                    Is.EqualTo(expected));
                 Assert.That(HitCount("ReshephSecretInsight"), Is.Zero);
                 Assert.That(
                     DynamicTextObservability.GetRouteFamilyHitCountForTests(

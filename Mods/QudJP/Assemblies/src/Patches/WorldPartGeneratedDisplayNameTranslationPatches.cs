@@ -41,7 +41,30 @@ internal static class WorldPartGeneratedDisplayNameTranslator
 
     public static void TranslateTombCultistDisplayName(object? go, string route, string family)
     {
-        TranslateStringMember(go, "DisplayName", route, family, TranslateTombCultistName);
+        if (go is null)
+        {
+            return;
+        }
+
+        var source = UiBindingTranslationHelpers.GetStringMemberValue(go, "DisplayName");
+        if (string.IsNullOrEmpty(source))
+        {
+            return;
+        }
+
+        var translated = TranslateTombCultistName(source!, route);
+        if (string.Equals(translated, source, StringComparison.Ordinal))
+        {
+            if (MessageFrameTranslator.TryStripDirectTranslationMarker(source!, out var markedText))
+            {
+                UiBindingTranslationHelpers.SetMemberValue(go, "DisplayName", markedText);
+            }
+
+            return;
+        }
+
+        UiBindingTranslationHelpers.SetMemberValue(go, "DisplayName", translated);
+        DynamicTextObservability.RecordTransform(route, family, source!, translated);
     }
 
     private static void TranslateStringMember(
@@ -86,7 +109,10 @@ internal static class WorldPartGeneratedDisplayNameTranslator
             return source;
         }
 
-        var baseName = GetDisplayNameRouteTranslator.TranslatePreservingColors(match.Groups["base"].Value, route);
+        var baseSource = match.Groups["base"].Value;
+        var baseName = MessageFrameTranslator.TryStripDirectTranslationMarker(baseSource, out var markedBaseName)
+            ? markedBaseName
+            : GetDisplayNameRouteTranslator.TranslatePreservingColors(baseSource, route);
         return string.IsNullOrEmpty(baseName)
             ? match.Groups["cult"].Value + "の死の巡礼者"
             : match.Groups["cult"].Value + "の死の巡礼者、" + baseName;

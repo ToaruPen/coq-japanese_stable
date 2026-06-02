@@ -200,7 +200,7 @@ public sealed class WorldPartGeneratedDisplayNameTranslationPatchTests
 
     [TestCase("", "{{Y|Argyve's Own}}の死の巡礼者")]
     [TestCase("{{C|unknown pilgrim}}", "{{Y|Argyve's Own}}の死の巡礼者、{{C|unknown pilgrim}}")]
-    [TestCase("\u0001unknown pilgrim", "unknown pilgrim and death pilgrim of the {{Y|Argyve's Own}}")]
+    [TestCase("\u0001unknown pilgrim", "{{Y|Argyve's Own}}の死の巡礼者、unknown pilgrim")]
     public void TombCultistTemplatePostfix_HandlesEdgeDisplayNames(string displayName, string expected)
     {
         RunWithTombCultistPatch(() =>

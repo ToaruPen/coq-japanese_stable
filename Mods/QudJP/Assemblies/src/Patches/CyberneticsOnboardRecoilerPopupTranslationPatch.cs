@@ -46,13 +46,12 @@ public static class CyberneticsOnboardRecoilerPopupTranslationPatch
         try
         {
             __state = directMarkerPassThroughText;
-            directMarkerPassThroughText = null;
             OwnerTranslationScope.Enter(ref activeDepth);
+            directMarkerPassThroughText = null;
         }
         catch (Exception ex)
         {
-            __state = null;
-            directMarkerPassThroughText = null;
+            __state = directMarkerPassThroughText;
             Trace.TraceError("QudJP: {0}.Prefix failed: {1}", Context, ex);
         }
     }

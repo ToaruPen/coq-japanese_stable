@@ -81,6 +81,7 @@ public sealed class StomachTranslationPatchTests
     }
 
     [TestCase("The moisture is sucked out of your body.", "StomachMoistureBody")]
+    [TestCase("You drank way too much!", "StomachOverdrink")]
     [TestCase("You drank way too much! You vomit!", "StomachOverdrinkVomiting")]
     public void AddWater_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent(string source, string detail)
     {

@@ -7272,6 +7272,9 @@ public sealed class CombatAndLogMessageQueuePatchTests
     [Test]
     public void GameObjectDie_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched()
     {
+        WritePatternDictionary(
+            ("^Your companion, (.+?), (.+?)\\.$", "あなたの仲間である{0}は{1}。"));
+
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
         try

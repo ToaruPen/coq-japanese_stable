@@ -1100,6 +1100,34 @@ public sealed class MessagePatternTranslatorTests
     }
 
     [Test]
+    public void Translate_RepositoryDictionary_LeavesUnknownLocalizedAutoActStopSeeMessageUnchanged()
+    {
+        UseRepositoryPatternDictionary();
+
+        const string source = "You see 巨大トンボ to the northeast and stop 鑑賞中.";
+
+        Assert.That(MessagePatternTranslator.Translate(source), Is.EqualTo(source));
+    }
+
+    [Test]
+    public void Translate_RepositoryDictionary_PreservesWholeLineColorForUnknownLocalizedAutoActStopSeeMessage()
+    {
+        UseRepositoryPatternDictionary();
+
+        const string source = "{{y|You see 巨大トンボ to the northeast and stop 鑑賞中.}}";
+
+        Assert.That(MessagePatternTranslator.Translate(source), Is.EqualTo(source));
+    }
+
+    [Test]
+    public void Translate_RepositoryDictionary_LeavesEmptyAutoActInputUnchanged()
+    {
+        UseRepositoryPatternDictionary();
+
+        Assert.That(MessagePatternTranslator.Translate(string.Empty), Is.Empty);
+    }
+
+    [Test]
     public void Translate_RepositoryDictionary_PreservesWholeLineColorForLocalizedAutoActStopBecause()
     {
         UseRepositoryPatternDictionary();
@@ -1115,6 +1143,17 @@ public sealed class MessagePatternTranslatorTests
         UseRepositoryPatternDictionary();
 
         var source = MessageFrameTranslator.MarkDirectTranslation("You stop 移動中 because you can go no further.");
+
+        Assert.That(MessagePatternTranslator.Translate(source), Is.EqualTo(source));
+    }
+
+    [Test]
+    public void Translate_RepositoryDictionary_PreservesDirectMarkerForLocalizedAutoActStopSeeMessage()
+    {
+        UseRepositoryPatternDictionary();
+
+        var source = MessageFrameTranslator.MarkDirectTranslation(
+            "You see 巨大トンボ to the northeast and stop 移動中.");
 
         Assert.That(MessagePatternTranslator.Translate(source), Is.EqualTo(source));
     }
