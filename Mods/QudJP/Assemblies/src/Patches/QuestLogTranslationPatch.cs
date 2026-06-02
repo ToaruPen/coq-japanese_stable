@@ -18,6 +18,8 @@ public static class QuestLogTranslationPatch
         new Regex("^(?<prefix>.*?)(?<label>Optional:\\s)(?<suffix>.*)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex BonusRewardPattern =
         new Regex("^(?<indent>\\s*)Bonus reward for completing this quest by level &C(?<value>.+?)&y\\.$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex QuestStepStatusPrefixPattern =
+        new Regex("^(?<prefix>\\s*(?:[Xûù]\\s*)?(?:(?:Optional|任意):\\s)?)(?<name>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     [HarmonyTargetMethod]
     private static MethodBase? TargetMethod()
@@ -79,6 +81,7 @@ public static class QuestLogTranslationPatch
             {
                 var translated = optionalMatch.Groups["prefix"].Value + translatedLabel + optionalMatch.Groups["suffix"].Value;
                 translated = GeneratedQuestTitleTranslator.TranslateEmbeddedPreservingColors(translated, route);
+                translated = TranslateAuthoredQuestStepLine(translated, route);
                 DynamicTextObservability.RecordTransform(route, "QuestLog.OptionalPrefix", source, translated);
                 return translated;
             }
@@ -98,6 +101,48 @@ public static class QuestLogTranslationPatch
             }
         }
 
+        var stepTranslated = TranslateAuthoredQuestStepLine(source, route);
+        if (!string.Equals(stepTranslated, source, StringComparison.Ordinal))
+        {
+            return stepTranslated;
+        }
+
         return GeneratedQuestTitleTranslator.TranslateEmbeddedPreservingColors(source, route);
+    }
+
+    internal static string TranslateAuthoredQuestStepLine(string source, string route)
+    {
+        return ColorAwareTranslationComposer.TranslatePreservingColors(
+            source,
+            visible => TranslateQuestStepVisible(visible, route, source));
+    }
+
+    private static string TranslateQuestStepVisible(string visible, string route, string originalSource)
+    {
+        var direct = ScopedDictionaryLookup.TranslateExactOrLowerAscii(visible, DictionaryFile);
+        if (direct is not null
+            && direct.Length != 0
+            && !string.Equals(direct, visible, StringComparison.Ordinal))
+        {
+            DynamicTextObservability.RecordTransform(route, "QuestLog.StepName", originalSource, direct);
+            return direct;
+        }
+
+        var match = QuestStepStatusPrefixPattern.Match(visible);
+        if (!match.Success)
+        {
+            return visible;
+        }
+
+        var name = match.Groups["name"].Value;
+        var translatedName = ScopedDictionaryLookup.TranslateExactOrLowerAscii(name, DictionaryFile);
+        if (string.IsNullOrEmpty(translatedName) || string.Equals(translatedName, name, StringComparison.Ordinal))
+        {
+            return visible;
+        }
+
+        var translated = match.Groups["prefix"].Value + translatedName;
+        DynamicTextObservability.RecordTransform(route, "QuestLog.StepName", originalSource, translated);
+        return translated;
     }
 }

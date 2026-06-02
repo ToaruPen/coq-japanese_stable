@@ -117,7 +117,7 @@ public sealed class SifrahPureOwnerPopupTranslationPatchTests
     [TestCase(
         nameof(DummySifrahPureOwnerPopupProducerTarget.RitualAttributeSacrificeCheckTokenUse),
         "Your Strength is too depleted to do that.",
-        "Strengthが消耗しすぎているため、それはできない。",
+        "筋力が消耗しすぎているため、それはできない。",
         "AttributeSacrifice")]
     [TestCase(
         nameof(DummySifrahPureOwnerPopupProducerTarget.RitualInvokeHigherBeingCheckTokenUse),

@@ -42,12 +42,12 @@
         {
             "key": "QN",
             "context": "Qud.UI.CharacterAttributeLine.AttributeLabel",
-            "text": "俊敏"
+            "text": "クイックネス"
         },
         {
             "key": "Speed",
             "context": "Qud.UI.CharacterAttributeLine.AttributeLabel",
-            "text": "俊敏"
+            "text": "クイックネス"
         },
         {
             "key": "MoveSpeed",
@@ -247,7 +247,7 @@
         {
             "key": "Your {{W|Quickness}} measures the speed you perform every action you take. Your base Quickness score is 100.",
             "context": "XRL.World.Statistic.GetHelpText",
-            "text": "あなたの{{W|俊敏}}はあらゆる行動をこなす速度を示す。基礎俊敏は100。"
+            "text": "あなたの{{W|クイックネス}}はあらゆる行動をこなす速度を示す。基本値は100。"
         },
         {
             "key": "Your {{W|Move Speed}} measures how fast you walk or fly. Your base move speed is 100.",
@@ -257,7 +257,7 @@
         {
             "key": "Your {{W|Temperature}} measures how hot or cold you are. Being too cold can reduce your Quickness and prevent you from taking physical actions. Being too hot can set you aflame and cause damage every round.",
             "context": "XRL.World.Statistic.GetHelpText",
-            "text": "あなたの{{W|体温}}はどれだけ熱いか寒いかを示す。冷えすぎると俊敏が下がり、物理行動ができなくなることがある。熱すぎると発火し、毎ラウンドダメージを受ける。"
+            "text": "あなたの{{W|体温}}はどれだけ熱いか寒いかを示す。冷えすぎるとクイックネスが下がり、物理行動ができなくなることがある。熱すぎると発火し、毎ラウンドダメージを受ける。"
         },
         {
             "key": "Your {{W|Acid Resist}} determines how much acid damage you ablate. Your base acid resist score is 0. At 100, you are immune to acid damage.",

@@ -13960,8 +13960,12 @@ def followup_issue_payload(
     }
     issue_counts: dict[str, int] = {}
     track_counts: dict[str, int] = {}
+    total_entries = 0
 
     for entry in residual_payload["entries"]:
+        if entry["closure_status"] not in {"unreviewed", "action_required", "runtime_required"}:
+            continue
+        total_entries += 1
         residual_bucket = entry["residual_bucket"]
         followup_id = ISSUE719_FOLLOWUP_BY_BUCKET.get(residual_bucket)
         if followup_id is None:
@@ -13996,7 +14000,7 @@ def followup_issue_payload(
     return {
         "schema_version": "1.0",
         "inventory": str(inventory_path),
-        "total_entries": residual_payload["total_entries"],
+        "total_entries": total_entries,
         "issue_counts": dict(sorted(issue_counts.items())),
         "track_counts": dict(sorted(track_counts.items())),
         "issues": dict(sorted(issues.items())),

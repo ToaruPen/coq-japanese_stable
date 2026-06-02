@@ -152,7 +152,7 @@
   </ability>
   <ability Command="CommandInflateAxons">
 		<description>			
-			<p><stat Name="QuicknessDuration" />ラウンドのあいだ迅速さに+<stat Name="QuicknessBonus" />、その後10ラウンドは鈍足になる。</p>
+			<p><stat Name="QuicknessDuration" />ラウンドのあいだクイックネスに+<stat Name="QuicknessBonus" />、その後10ラウンドは鈍足になる。</p>
 			<br />			
 			<statline Name="Cooldown" />
 		</description>
@@ -672,9 +672,9 @@
 			<p>自分の周囲の時間を歪め、敵の動きを鈍らせる。</p>
 			<br />
 			<p>半径<stat Name="Range" />マスのクリーチャーは、距離に応じて減速する。</p>
-			<p>距離1: 迅速さに<stat Name="QuicknessPenalty1" />%のペナルティ</p>
-			<p>距離4: 迅速さに<stat Name="QuicknessPenalty4" />%のペナルティ</p>
-			<p>距離7: 迅速さに<stat Name="QuicknessPenalty7" />%のペナルティ</p>
+			<p>距離1: クイックネスに<stat Name="QuicknessPenalty1" />%のペナルティ</p>
+			<p>距離4: クイックネスに<stat Name="QuicknessPenalty4" />%のペナルティ</p>
+			<p>距離7: クイックネスに<stat Name="QuicknessPenalty7" />%のペナルティ</p>
 			<statline Name="Duration" />
 			<statline Name="Cooldown" />			
 		</description>
@@ -975,7 +975,7 @@
   </ability>
   <ability Command="CommandBreathe_StunBreather">
     <description>
-      <p>スタンガスを吐く。</p>
+      <p>気絶ガスを吐く。</p>
       <br />
       <statline Name="ConeLength" DisplayName="錐の長さ" Unit="tile" />
       <statline Name="ConeAngle" DisplayName="錐角度" Unit="degree" />
@@ -986,7 +986,7 @@
   <ability Command="CommandReleaseAdrenaline">
     <description>
       <p>体内のアドレナリン分泌を<stat Name="Duration" />のあいだ高める。</p>
-      <p>分泌中は迅速さに+<stat Name="QuicknessBonus" />、ほかの物理変異に+<stat Name="MutationBonus" />ランクのボーナスを得る。</p>
+      <p>分泌中はクイックネスに+<stat Name="QuicknessBonus" />、ほかの物理変異に+<stat Name="MutationBonus" />ランクのボーナスを得る。</p>
       <br />      
       <statline Name="Cooldown" />
     </description>
@@ -1189,7 +1189,7 @@
       <p><stat Name="DurationDay" />のあいだ特別な代謝効果を得る。</p>
       <br />
       <statline Name="BonusRegen" DisplayName="自然回復率ボーナス"/>
-      <statline Name="BonusQuickness" DisplayName="迅速さボーナス" />
+      <statline Name="BonusQuickness" DisplayName="クイックネスボーナス" />
     </description>  
     <UITile Tile="Mutations/photosynthetic_skin.bmp" Foreground="g" Detail="W" />
   </ability>
@@ -1399,7 +1399,7 @@
   <ability Command="CommandConk">
     <description>
       <p>隣接する相手に棍棒で攻撃し、命中すると自動で3-4ラウンド朦朧状態にする。</p>
-      <p>すでに朦朧としている相手をさらに朦朧させると昏倒する。</p>
+      <p>すでに朦朧としている相手をさらに朦朧させると気絶させる。</p>
       <p>気絶中の相手を殴ると代わりに30-40ラウンドの昏睡状態にする（ダメージを受けると朦朧して目覚める）。</p>      
       <br />            
       <statline Name="Cooldown" />
@@ -1527,7 +1527,7 @@
   </ability>
   <ability Command="CommandPersuasionBerate">
     <description>
-      <p>近くのクリーチャーを辱め、DV、命中、自我、意志力に-4、迅速さに-10%のペナルティを与える。</p>
+      <p>近くのクリーチャーを辱め、DV、命中、自我、意志力に-4、クイックネスに-10%のペナルティを与える。</p>
       <br />
       <statline Name="Duration" />
       <statline Name="Range" />

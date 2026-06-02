@@ -432,6 +432,7 @@ public static class ConversationDisplayTextPatch
         translated = TranslateQuestSignpostDirections(translated);
         translated = TranslateWaterRitualRecipeLabel(translated);
         translated = TranslateHermitOathFallback(translated);
+        translated = TranslateDynamicQuestSiteIntroFixedFrames(translated);
         return translated;
     }
 
@@ -613,6 +614,27 @@ public static class ConversationDisplayTextPatch
             "hermit、もう二度と邪魔しないと誓う。",
             "隠者、もう二度と邪魔しないと誓う。",
             "ConversationDisplay.HermitOathFallback");
+    }
+
+    private static string TranslateDynamicQuestSiteIntroFixedFrames(string source)
+    {
+        if (source.IndexOf("But they wouldn't reveal the location.", StringComparison.Ordinal) < 0
+            || source.IndexOf("We must know.", StringComparison.Ordinal) < 0)
+        {
+            return source;
+        }
+
+        var translated = ReplaceStructuredSegment(
+            source,
+            "But they wouldn't reveal the location.",
+            "だが、彼らは場所を明かさなかった。",
+            "ConversationDisplay.DynamicQuestSiteIntroFixedFrame");
+        translated = ReplaceStructuredSegment(
+            translated,
+            "We must know.",
+            "どうしても知る必要がある。",
+            "ConversationDisplay.DynamicQuestSiteIntroFixedFrame");
+        return translated;
     }
 
     private static string ReplaceStructuredSegment(string source, string english, string japanese, string detail)

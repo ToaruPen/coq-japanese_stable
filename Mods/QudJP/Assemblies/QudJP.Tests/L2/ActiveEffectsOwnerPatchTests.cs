@@ -97,8 +97,8 @@ public sealed class ActiveEffectsOwnerPatchTests
             ("{{R|adrenaline flowing}}", "{{R|アドレナリン全開}}"));
         WriteScopedDictionary(
             "Scoped/world-effects-generated-templates.ja.json",
-            ("+{0} Quickness\n+1 rank to physical mutations", "XRL.World.Effects.AdrenalControl2Boosted.GetDetails", "+{0} Quickness\n肉体変異 +1ランク"),
-            ("+{0} Quickness\n+{1} ranks to physical mutations", "XRL.World.Effects.AdrenalControl2Boosted.GetDetails", "+{0} Quickness\n肉体変異 +{1}ランク"));
+            ("+{0} Quickness\n+1 rank to physical mutations", "XRL.World.Effects.AdrenalControl2Boosted.GetDetails", "クイックネス+{0}\n肉体変異 +1ランク"),
+            ("+{0} Quickness\n+{1} ranks to physical mutations", "XRL.World.Effects.AdrenalControl2Boosted.GetDetails", "クイックネス+{0}\n肉体変異 +{1}ランク"));
 
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
@@ -120,7 +120,7 @@ public sealed class ActiveEffectsOwnerPatchTests
             Assert.Multiple(() =>
             {
                 Assert.That(effect.GetDescription(), Is.EqualTo("{{R|アドレナリン全開}}"));
-                Assert.That(effect.GetDetails(), Is.EqualTo("+20 Quickness\n肉体変異 +2ランク"));
+                Assert.That(effect.GetDetails(), Is.EqualTo("クイックネス+20\n肉体変異 +2ランク"));
             });
         }
         finally
@@ -177,7 +177,7 @@ public sealed class ActiveEffectsOwnerPatchTests
         WriteScopedDictionary(
             "Scoped/world-effects-generated-templates.ja.json",
             ("dominated ({0} turns remaining)", "XRL.World.Effects.Dominated.GetDescription", "支配された（残り{0}ターン）"),
-            ("time-dilated ({{C|-{0}}} Quickness)", "XRL.World.Effects.ITimeDilated.GetDescription", "時間遅延 ({{C|-{0}}} Quickness)"),
+            ("time-dilated ({{C|-{0}}} Quickness)", "XRL.World.Effects.ITimeDilated.GetDescription", "時間遅延 ({{C|-{0}}} クイックネス)"),
             ("lying on {0}", "XRL.World.Effects.Prone.GetDescription", "{0}に横たわっている"),
             ("engulfed by {0}", "XRL.World.Effects.Engulfed.DisplayName", "{0}に呑み込まれている"),
             ("piloting {0}", "XRL.World.Effects.Piloting.DisplayName", "{0}を操縦中"),
@@ -196,7 +196,7 @@ public sealed class ActiveEffectsOwnerPatchTests
             Assert.Multiple(() =>
             {
                 Assert.That(new DummyEffect { DescriptionText = "dominated (3 turns remaining)" }.GetDescription(), Is.EqualTo("支配された（残り3ターン）"));
-                Assert.That(new DummyEffect { DescriptionText = "time-dilated ({{C|-40}} Quickness)" }.GetDescription(), Is.EqualTo("時間遅延 ({{C|-40}} Quickness)"));
+                Assert.That(new DummyEffect { DescriptionText = "time-dilated ({{C|-40}} Quickness)" }.GetDescription(), Is.EqualTo("時間遅延 ({{C|-40}} クイックネス)"));
                 Assert.That(new DummyEffect { DescriptionText = "{{C|lying on a chair}}" }.GetDescription(), Is.EqualTo("{{C|椅子に横たわっている}}"));
                 Assert.That(new DummyEffect { DescriptionText = "{{B|engulfed by a starapple tree}}" }.GetDescription(), Is.EqualTo("{{B|スターアップルの木に呑み込まれている}}"));
                 Assert.That(new DummyEffect { DescriptionText = "{{C|piloting a hovercraft}}" }.GetDescription(), Is.EqualTo("{{C|ホバークラフトを操縦中}}"));
@@ -431,8 +431,8 @@ public sealed class ActiveEffectsOwnerPatchTests
             ("{{R|adrenaline flowing}}", "{{R|アドレナリン全開}}"));
         WriteScopedDictionary(
             "Scoped/world-effects-generated-templates.ja.json",
-            ("+{0} Quickness\n+1 rank to physical mutations", "XRL.World.Effects.AdrenalControl2Boosted.GetDetails", "+{0} Quickness\n肉体変異 +1ランク"),
-            ("+{0} Quickness\n+{1} ranks to physical mutations", "XRL.World.Effects.AdrenalControl2Boosted.GetDetails", "+{0} Quickness\n肉体変異 +{1}ランク"));
+            ("+{0} Quickness\n+1 rank to physical mutations", "XRL.World.Effects.AdrenalControl2Boosted.GetDetails", "クイックネス+{0}\n肉体変異 +1ランク"),
+            ("+{0} Quickness\n+{1} ranks to physical mutations", "XRL.World.Effects.AdrenalControl2Boosted.GetDetails", "クイックネス+{0}\n肉体変異 +{1}ランク"));
 
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
@@ -458,7 +458,7 @@ public sealed class ActiveEffectsOwnerPatchTests
                 },
             });
 
-            Assert.That(screen.mutationsDetails.Text, Is.EqualTo("{{R|アドレナリン全開}}\n\n+20 Quickness\n肉体変異 +1ランク"));
+            Assert.That(screen.mutationsDetails.Text, Is.EqualTo("{{R|アドレナリン全開}}\n\nクイックネス+20\n肉体変異 +1ランク"));
         }
         finally
         {

@@ -14,6 +14,7 @@ namespace QudJP.Patches;
 public static class QuestLifecyclePopupTranslationPatch
 {
     private const string Context = nameof(QuestLifecyclePopupTranslationPatch);
+    private const string QuestDictionaryFile = "ui-quests.ja.json";
 
     private static readonly Regex QuestReceivedPattern = new(
         "^You have received a new quest, (?<quest>.+)!$",
@@ -353,9 +354,21 @@ public static class QuestLifecyclePopupTranslationPatch
             return false;
         }
 
-        if (GetQuestStepTextByName().TryGetValue(stepName, out var found))
+        var stepTextByName = GetQuestStepTextByName();
+        if (stepTextByName.TryGetValue(stepName, out var found))
         {
             translated = found;
+            return true;
+        }
+
+        var localizedStepName = ScopedDictionaryLookup.TranslateExactOrLowerAscii(stepName, QuestDictionaryFile);
+        if (localizedStepName is not null
+            && localizedStepName.Length != 0
+            && !string.Equals(localizedStepName, stepName, StringComparison.Ordinal))
+        {
+            translated = stepTextByName.TryGetValue(localizedStepName, out found)
+                ? found
+                : localizedStepName;
             return true;
         }
 

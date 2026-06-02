@@ -4228,9 +4228,9 @@ public sealed class CombatAndLogMessageQueuePatchTests
     [TestCase("snapjaw cleaves through your armor.", "snapjawがあなたの装甲を切り裂いた。")]
     [TestCase("snapjaw cleaves through glowfish's armor.", "snapjawがglowfishの装甲を切り裂いた。")]
     [TestCase("監視官ニーラヒンド cleaves through ゼラチンの角柱の armor.", "監視官ニーラヒンドがゼラチンの角柱の装甲を切り裂いた。")]
-    [TestCase("You shook off the stun.", "スタンを振り払った。")]
+    [TestCase("You shook off the stun.", "気絶を振り払った。")]
     [TestCase("You shook off the dazing.", "朦朧を振り払った。")]
-    [TestCase("The snapjaw shook off the stun.", "snapjawはスタンを振り払った。")]
+    [TestCase("The snapjaw shook off the stun.", "snapjawは気絶を振り払った。")]
     [TestCase("The snapjaw shook off the dazing.", "snapjawは朦朧を振り払った。")]
     [TestCase(
         "A supernal force helps you shake off the effect!",
@@ -8308,7 +8308,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
             ("A loud buzz is emitted. The unauthorized glyph flashes on the display.", "大きなブザー音が鳴った。認証されていないグリフがディスプレイに点滅した。"),
             ("Youは氷で滑った！", "あなたは氷で滑った！"),
             ("The 濡れた ジュースサップは氷で滑った！", "濡れた ジュースサップは氷で滑った！"),
-            ("濡れたチェインレーザー砲座の shot goes wild!", "濡れたチェインレーザー砲座の弾が逸れた！"),
+            ("濡れたチェーンレーザー砲座の shot goes wild!", "濡れたチェーンレーザー砲座の弾が逸れた！"),
         };
 
         UseRepositoryPatternDictionary();

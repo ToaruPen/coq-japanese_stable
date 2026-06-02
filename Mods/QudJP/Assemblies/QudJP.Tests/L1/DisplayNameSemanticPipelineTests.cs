@@ -35,7 +35,7 @@ public sealed class DisplayNameSemanticPipelineTests
     [Test]
     public void TryTranslateResult_UpdatesTranslatedDisplayName()
     {
-        WriteDictionary(("phase cannon", "フェーズキャノン"));
+        WriteDictionary(("phase cannon", "フェイズキャノン"));
         var result = "phase cannon";
 
         var changed = DisplayNameSemanticPipeline.TryTranslateResult(ref result, nameof(GetDisplayNamePatch));
@@ -43,7 +43,7 @@ public sealed class DisplayNameSemanticPipelineTests
         Assert.Multiple(() =>
         {
             Assert.That(changed, Is.True);
-            Assert.That(result, Is.EqualTo("フェーズキャノン"));
+            Assert.That(result, Is.EqualTo("フェイズキャノン"));
         });
     }
 
@@ -78,7 +78,7 @@ public sealed class DisplayNameSemanticPipelineTests
     [Test]
     public void TryTranslateResult_PreservesColorTags()
     {
-        WriteDictionary(("phase cannon", "フェーズキャノン"));
+        WriteDictionary(("phase cannon", "フェイズキャノン"));
         var result = "{{W|phase cannon}}";
 
         var changed = DisplayNameSemanticPipeline.TryTranslateResult(ref result, nameof(GetDisplayNamePatch));
@@ -86,14 +86,14 @@ public sealed class DisplayNameSemanticPipelineTests
         Assert.Multiple(() =>
         {
             Assert.That(changed, Is.True);
-            Assert.That(result, Is.EqualTo("{{W|フェーズキャノン}}"));
+            Assert.That(result, Is.EqualTo("{{W|フェイズキャノン}}"));
         });
     }
 
     [Test]
     public void TryTranslateResult_UsesExactLookupForControlMarkerDisplayName()
     {
-        WriteDictionary(("phase \u0001 cannon", "制御マーカー付きフェーズキャノン"));
+        WriteDictionary(("phase \u0001 cannon", "制御マーカー付きフェイズキャノン"));
         var result = "phase \u0001 cannon";
 
         var changed = DisplayNameSemanticPipeline.TryTranslateResult(ref result, nameof(GetDisplayNamePatch));
@@ -101,14 +101,14 @@ public sealed class DisplayNameSemanticPipelineTests
         Assert.Multiple(() =>
         {
             Assert.That(changed, Is.True);
-            Assert.That(result, Is.EqualTo("制御マーカー付きフェーズキャノン"));
+            Assert.That(result, Is.EqualTo("制御マーカー付きフェイズキャノン"));
         });
     }
 
     [Test]
     public void TryTranslateResult_ComposesMethodContext()
     {
-        WriteDictionary(("phase cannon", "フェーズキャノン"));
+        WriteDictionary(("phase cannon", "フェイズキャノン"));
         var result = "phase cannon";
         var method = typeof(DisplayNameSemanticPipelineTests).GetMethod(
             nameof(TryTranslateResult_ComposesMethodContext),
@@ -120,7 +120,7 @@ public sealed class DisplayNameSemanticPipelineTests
         Assert.Multiple(() =>
         {
             Assert.That(changed, Is.True);
-            Assert.That(result, Is.EqualTo("フェーズキャノン"));
+            Assert.That(result, Is.EqualTo("フェイズキャノン"));
             Assert.That(
                 context,
                 Is.EqualTo(

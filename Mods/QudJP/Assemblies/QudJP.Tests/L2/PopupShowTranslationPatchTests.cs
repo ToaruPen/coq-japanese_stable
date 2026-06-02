@@ -503,7 +503,7 @@ public sealed class PopupShowTranslationPatchTests
             + "On the horizon, Qud's jungles strangle chrome steeples and rusted archways to the earth. Further and beyond, the fabled Spindle rises above the fray and pierces the cloud-ribboned sky.";
         var expected = "イユル・ウトの第10日、あなたは大塩砂漠モグラヤイの遥かな縁にあるオアシス集落ジョッパに到着した。\n\n"
             + "あたりではウォーターヴァインの茂みを水耕農家たちが世話している。岩塩とブラインストークで組まれた小屋が建っている。\n\n"
-            + "地平線では、Qudのジャングルがクロームの尖塔と錆びたアーチを大地に絡みつかせている。さらにその彼方では、伝説のスピンドルが乱景の上にそびえ、雲の帯を貫いて空へ伸びている。";
+            + "地平線では、クッドのジャングルがクロームの尖塔と錆びたアーチを大地に絡みつかせている。さらにその彼方では、伝説のスピンドルが乱景の上にそびえ、雲の帯を貫いて空へ伸びている。";
 
         try
         {

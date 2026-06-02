@@ -141,6 +141,50 @@ public sealed class QuestUiTranslationPatchTests
     }
 
     [Test]
+    public void QuestsLinePostfix_TranslatesQuestLogBodyStepNames_WhenPatched()
+    {
+        WriteDictionary(
+            ("Travel to Red Rock", "レッドロックへ向かう"),
+            ("Find the Vermin", "害獣を見つける"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyQuestsLineTarget), nameof(DummyQuestsLineTarget.setData)),
+                postfix: new HarmonyMethod(RequireMethod(typeof(QuestsLineTranslationPatch), nameof(QuestsLineTranslationPatch.Postfix))));
+
+            var target = new DummyQuestsLineTarget();
+            target.setData(
+                new DummyQuestsLineDataTarget
+                {
+                    quest = new DummyQuestTarget
+                    {
+                        DisplayName = "What's Eating the Watervine?",
+                        QuestGiverName = "Mehmet",
+                        QuestGiverLocationName = "Joppa",
+                    },
+                    BodyText = "{{white|ù Travel to Red Rock}}\n   {{y|Find the Vermin}}",
+                });
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(
+                    target.bodyText.Text,
+                    Is.EqualTo("{{white|ù レッドロックへ向かう}}\n   {{y|害獣を見つける}}"));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(nameof(QuestsLineTranslationPatch), "QuestLog.StepName"),
+                    Is.EqualTo(2));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void QuestsStatusScreenPostfix_TranslatesQuestMapPinTitleAndPrefix_WhenPatched()
     {
         WriteDictionary(
@@ -299,6 +343,49 @@ public sealed class QuestUiTranslationPatchTests
                 Assert.That(
                     DynamicTextObservability.GetRouteFamilyHitCountForTests(nameof(QuestLogTranslationPatch), "QuestLog.BonusReward"),
                     Is.EqualTo(1));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void QuestLogPostfix_TranslatesAuthoredQuestStepNames_WhenPatched()
+    {
+        WriteDictionary(
+            ("Optional: ", "任意: "),
+            ("Travel to Red Rock", "レッドロックへ向かう"),
+            ("Return with the Corpse", "死体を持って戻る"));
+        DummyQuestLogTarget.LinesOverride = new List<string>
+        {
+            "{{white|ù Travel to Red Rock}}",
+            "{{white|ù Optional: Return with the Corpse}}",
+        };
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyQuestLogTarget), nameof(DummyQuestLogTarget.GetLinesForQuest)),
+                postfix: new HarmonyMethod(RequireMethod(typeof(QuestLogTranslationPatch), nameof(QuestLogTranslationPatch.Postfix))));
+
+            var lines = DummyQuestLogTarget.GetLinesForQuest(null);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(
+                    lines,
+                    Is.EqualTo(new[]
+                    {
+                        "{{white|ù レッドロックへ向かう}}",
+                        "{{white|ù 任意: 死体を持って戻る}}",
+                    }));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(nameof(QuestLogTranslationPatch), "QuestLog.StepName"),
+                    Is.EqualTo(2));
             });
         }
         finally

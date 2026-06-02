@@ -379,7 +379,7 @@ public static class CombatSkillMessageTranslationPatch
             || TryTranslatePattern(
                 ShookOffStunPattern,
                 source,
-                (match, spans) => $"{Restore(match, spans, "actor")}はスタンを振り払った。",
+                (match, spans) => $"{Restore(match, spans, "actor")}は気絶を振り払った。",
                 out translated)
             || TryTranslatePattern(
                 ShookOffDazingPattern,
@@ -437,7 +437,7 @@ public static class CombatSkillMessageTranslationPatch
     {
         translated = source switch
         {
-            "You shook off the stun." => "スタンを振り払った。",
+            "You shook off the stun." => "気絶を振り払った。",
             "You shook off the dazing." => "朦朧を振り払った。",
             "A supernal force helps you shake off the effect!" => "超自然的な力が効果を振り払う助けとなった！",
             "A supernal force helps you shake off a mental state!" => "超自然的な力が精神状態を振り払う助けとなった！",

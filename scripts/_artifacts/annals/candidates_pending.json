@@ -4518,10 +4518,10 @@
       "sample_source": "",
       "extracted_pattern": "",
       "slots": [],
-      "status": "needs_manual",
-      "reason": "unsupported expression for PR1 AST subset: CoalesceExpression 'Gospel ?? \"[NO GOSPEL]\"'",
+      "status": "skip",
+      "reason": "GospelEvent stores an already-generated or caller-provided gospel string; it has no fixed annals template to merge.",
       "ja_template": "",
-      "review_notes": "",
+      "review_notes": "Display-time JournalPatternTranslator owns generated gospel body text. The null fallback [NO GOSPEL] is covered as a journal exact leaf.",
       "route": "annals",
       "en_template_hash": "sha256:4af8b073c3946dbda6f29fa0b8cab26f5b11015ccdc56bafc8839c9b756bfac7"
     },

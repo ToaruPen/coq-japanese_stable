@@ -53,14 +53,14 @@ public sealed class GameObjectActivatedAbilityDescriptionTranslationPatchTests
         var ability = new DummyActivatedAbility
         {
             Description =
-                "近くのクリーチャーを辱め、DV、命中、自我、意志力に-4、迅速さに-10%のペナルティを与える。\n\nDuration: 6d6 round\nRange: 8\nCooldown: {{G|43}} round\n\nCooldown reduced by 7 due to high Willpower.",
+                "近くのクリーチャーを辱め、DV、命中、自我、意志力に-4、クイックネスに-10%のペナルティを与える。\n\nDuration: 6d6 round\nRange: 8\nCooldown: {{G|43}} round\n\nCooldown reduced by 7 due to high Willpower.",
         };
 
         GameObjectActivatedAbilityDescriptionTranslationPatch.TranslateActivatedAbilityDescriptionForTests(ability);
 
         Assert.That(
             ability.Description,
-            Is.EqualTo("近くのクリーチャーを辱め、DV、命中、自我、意志力に-4、迅速さに-10%のペナルティを与える。\n\n持続時間: 6d6 ラウンド\n射程: 8\nクールダウン: {{G|43}} ラウンド\n\nクールダウンが7短縮（高い意志力による）。"));
+            Is.EqualTo("近くのクリーチャーを辱め、DV、命中、自我、意志力に-4、クイックネスに-10%のペナルティを与える。\n\n持続時間: 6d6 ラウンド\n射程: 8\nクールダウン: {{G|43}} ラウンド\n\nクールダウンが7短縮（高い意志力による）。"));
     }
 
     [Test]

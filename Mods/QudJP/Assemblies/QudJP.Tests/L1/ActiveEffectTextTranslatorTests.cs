@@ -182,7 +182,7 @@ public sealed class ActiveEffectTextTranslatorTests
     }
 
     [TestCase("dominated (3 turns remaining)", "支配された（残り3ターン）")]
-    [TestCase("time-dilated ({{C|-40}} Quickness)", "時間遅延 ({{C|-40}} Quickness)")]
+    [TestCase("time-dilated ({{C|-40}} Quickness)", "時間遅延 ({{C|-40}} クイックネス)")]
     [TestCase("{{C|lying on a chair}}", "{{C|椅子に横たわっている}}")]
     [TestCase("{{C|lying on a 寝袋}}", "{{C|寝袋に横たわっている}}")]
     [TestCase("{{B|engulfed by a starapple tree}}", "{{B|スターアップルの木に呑み込まれている}}")]
@@ -205,7 +205,7 @@ public sealed class ActiveEffectTextTranslatorTests
         WriteScopedDictionary(
             "Scoped/world-effects-generated-templates.ja.json",
             ("dominated ({0} turns remaining)", "XRL.World.Effects.Dominated.GetDescription", "支配された（残り{0}ターン）"),
-            ("time-dilated ({{C|-{0}}} Quickness)", "XRL.World.Effects.ITimeDilated.GetDescription", "時間遅延 ({{C|-{0}}} Quickness)"),
+            ("time-dilated ({{C|-{0}}} Quickness)", "XRL.World.Effects.ITimeDilated.GetDescription", "時間遅延 ({{C|-{0}}} クイックネス)"),
             ("lying on {0}", "XRL.World.Effects.Prone.GetDescription", "{0}に横たわっている"),
             ("engulfed by {0}", "XRL.World.Effects.Engulfed.DisplayName", "{0}に呑み込まれている"),
             ("enclosed in {0}", "XRL.World.Effects.Enclosed.DisplayName", "{0}に閉じ込められている"),

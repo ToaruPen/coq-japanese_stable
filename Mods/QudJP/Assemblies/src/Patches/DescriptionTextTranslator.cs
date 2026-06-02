@@ -108,6 +108,15 @@ internal static class DescriptionTextTranslator
     private static readonly Regex SaveBonusLinePattern =
         new Regex("^(?<amount>[+-]\\d+) to saves vs\\. (?<targets>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex CreditsRemainingLinePattern =
+        new Regex("^Credits remaining: (?<value>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex CreatesLinePattern =
+        new Regex("^Creates: (?<item>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex FittedWithCleatsLinePattern =
+        new Regex("^Fitted with cleats: (?<amount>[+-]\\d+) to saves vs\\. (?<targets>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     private static readonly Regex WallPenetrationLinePattern =
         new Regex("^(?<powered>When powered, )?(?<amount>[+-]\\d+) penetration vs\\. walls\\.$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
@@ -1236,6 +1245,47 @@ internal static class DescriptionTextTranslator
             return true;
         }
 
+        var creditsRemainingMatch = CreditsRemainingLinePattern.Match(source);
+        if (creditsRemainingMatch.Success)
+        {
+            translated = "残りクレジット: " + creditsRemainingMatch.Groups["value"].Value;
+            DynamicTextObservability.RecordTransform(route, "Description.RuntimeObservedLine", source, translated);
+            return true;
+        }
+
+        var createsMatch = CreatesLinePattern.Match(source);
+        if (createsMatch.Success)
+        {
+            translated = "作成物：" + createsMatch.Groups["item"].Value;
+            DynamicTextObservability.RecordTransform(route, "Description.RuntimeObservedLine", source, translated);
+            return true;
+        }
+
+        var fittedWithCleatsMatch = FittedWithCleatsLinePattern.Match(source);
+        if (fittedWithCleatsMatch.Success)
+        {
+            translated = "クリート付き: "
+                + TranslateSaveBonusTargets(fittedWithCleatsMatch.Groups["targets"].Value)
+                + "に対するセーヴ"
+                + fittedWithCleatsMatch.Groups["amount"].Value;
+            DynamicTextObservability.RecordTransform(route, "Description.RuntimeObservedLine", source, translated);
+            return true;
+        }
+
+        if (string.Equals(source, "Deactivated: Currently without power.", StringComparison.Ordinal))
+        {
+            translated = "停止中: 現在電力がない。";
+            DynamicTextObservability.RecordTransform(route, "Description.RuntimeObservedLine", source, translated);
+            return true;
+        }
+
+        if (string.Equals(source, "Integrated power systems: When equipped, you can power this device via Electrical Generation.", StringComparison.Ordinal))
+        {
+            translated = "統合電力システム: 装備中、発電でこの装置に電力を供給できる。";
+            DynamicTextObservability.RecordTransform(route, "Description.RuntimeObservedLine", source, translated);
+            return true;
+        }
+
         var toHitMatch = ToHitLinePattern.Match(source);
         if (toHitMatch.Success)
         {
@@ -1594,19 +1644,32 @@ internal static class DescriptionTextTranslator
             return false;
         }
 
-        var targets = match.Groups["targets"].Value
-            .Split(new[] { ", " }, StringSplitOptions.RemoveEmptyEntries)
-            .Select(static target => TranslateSaveBonusTarget(target.Trim()))
-            .ToArray();
-        if (targets.Length == 0 || targets.Any(static target => target.Length == 0))
+        var targets = TranslateSaveBonusTargets(match.Groups["targets"].Value);
+        if (string.Equals(targets, match.Groups["targets"].Value, StringComparison.Ordinal))
         {
             translated = source;
             return false;
         }
 
-        translated = string.Join("・", targets) + "に対するセーヴ" + match.Groups["amount"].Value;
+        translated = targets + "に対するセーヴ" + match.Groups["amount"].Value;
         DynamicTextObservability.RecordTransform(route, "Description.RuntimeObservedLine", source, translated);
         return true;
+    }
+
+    private static string TranslateSaveBonusTargets(string source)
+    {
+        var targets = source
+            .Replace("、", ", ")
+            .Replace(", と", ", ")
+            .Split(new[] { ", " }, StringSplitOptions.RemoveEmptyEntries)
+            .Select(static target => TranslateSaveBonusTarget(target.Trim()))
+            .ToArray();
+        if (targets.Length == 0 || targets.Any(static target => target.Length == 0))
+        {
+            return source;
+        }
+
+        return string.Join("・", targets);
     }
 
     private static string TranslateSaveBonusTarget(string source)
@@ -1700,7 +1763,7 @@ internal static class DescriptionTextTranslator
             "Intelligence" => "知力",
             "Willpower" => "意志力",
             "Ego" => "自我",
-            "quickness" => "俊敏",
+            "quickness" => "クイックネス",
             "hit points" => "ヒットポイント",
             "move speed" => "移動速度",
             "acid resistance" => "酸耐性",

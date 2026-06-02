@@ -427,25 +427,25 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
     [TestCase(
         nameof(DummySingleCallsiteOwnerPopupTarget.HandleFood),
         "You eat the {{Y|jerky}}.\n塩辛い。\nYou are now {{|{{g|Sated}}}} and {{|{{g|Quenched}}}}.",
-        "{{Y|jerky}}を食べた。\n塩辛い。\n現在、{{|{{g|満腹}}}}、{{|{{g|潤っている}}}}だ。",
+        "{{Y|jerky}}を食べた。\n塩辛い。\n今は{{|{{g|満腹}}}}で、{{|{{g|喉が潤っている}}}}。",
         "FoodConsumptionFrame",
         PopupMethod.Show)]
     [TestCase(
         nameof(DummySingleCallsiteOwnerPopupTarget.HandleFood),
         "You eat {{Y|raw meat}}.\nYou are now {{|{{W|Hungry}}}} and {{|{{Y|Thirsty}}}}.",
-        "{{Y|raw meat}}を食べた。\n現在、{{|{{W|空腹}}}}、{{|{{Y|喉が渇いた}}}}だ。",
+        "{{Y|raw meat}}を食べた。\n今は{{|{{W|空腹}}}}で、{{|{{Y|喉が渇いている}}}}。",
         "FoodConsumptionFrame",
         PopupMethod.Show)]
     [TestCase(
         nameof(DummySingleCallsiteOwnerPopupTarget.HandleFood),
         "You eat your {{R|恋人の花}}.\nThat hits the spot!\nYou are now {{|Sated}} and {{|Quenched}}.",
-        "{{R|恋人の花}}を食べた。\nおいしく腹に収まった！\n現在、{{|満腹}}、{{|潤っている}}だ。",
+        "{{R|恋人の花}}を食べた。\nおいしく腹に収まった！\n今は{{|満腹}}で、{{|喉が潤っている}}。",
         "FoodConsumptionFrame",
         PopupMethod.Show)]
     [TestCase(
         nameof(DummySingleCallsiteOwnerPopupTarget.HandleFood),
         "You eat {{R|your raw meat}}.\nYou are now {{|Sated}} and {{|Quenched}}.",
-        "{{R|raw meat}}を食べた。\n現在、{{|満腹}}、{{|潤っている}}だ。",
+        "{{R|raw meat}}を食べた。\n今は{{|満腹}}で、{{|喉が潤っている}}。",
         "FoodConsumptionFrame",
         PopupMethod.Show)]
     [TestCase(

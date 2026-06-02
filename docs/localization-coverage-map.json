@@ -112,6 +112,69 @@
       ]
     },
     {
+      "id": "issue_809_authored_runtime_text_audit",
+      "label": "Issue #809 conversation, quest body, cooking, active-effect, and status text audit",
+      "category": "route_family_tests",
+      "status": "partial_tests_no_inventory",
+      "closure_owner": "Issue #809 cross-surface audit ledger and existing surface-specific owner lanes",
+      "closure_gate_type": "route_family_test_gap",
+      "closure_evidence": [
+        "docs/reports/2026-06-02-issue-809-text-surface-audit.md",
+        "scripts/text_construction_surface_policy.py",
+        "docs/localization-coverage-map.json",
+        "docs/active-effect-producer-inventory.json",
+        "docs/reports/2026-05-03-issue-466-cooking-procedural-inventory.md",
+        "docs/reports/2026-05-16-issue-719-conversation-text-construction-routes.md",
+        "docs/reports/2026-05-21-issue-747-route-family-inventory.md"
+      ],
+      "target_surfaces": [
+        "ConversationChoiceTag",
+        "ConversationTextAppend",
+        "ConversationTextReplace",
+        "QuestBody",
+        "QuestStepText",
+        "QuestHandlerChoiceTag",
+        "DynamicQuestRewardOption",
+        "CookingEffectDescription",
+        "MealEffectSummary",
+        "FoodWaterStatus",
+        "ActiveEffectDisplayName",
+        "ActiveEffectDescription",
+        "StatusScreenEffectText"
+      ],
+      "summary_artifact": "docs/reports/2026-06-02-issue-809-text-surface-audit.md",
+      "closure_gate": "scripts/text_construction_surface_policy.py",
+      "tests": [
+        "scripts/tests/test_localization_coverage_map.py",
+        "scripts/tests/test_text_construction_surface_policy.py",
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/ConversationDisplayTextPatchTests.cs",
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/QuestUiTranslationPatchTests.cs",
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/CookingRuntimeTranslationPatchTests.cs",
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/ActiveEffectsOwnerPatchTests.cs",
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/StatusScreenBindingOwnerPatchTests.cs"
+      ],
+      "commands": [
+        "just text-construction-surface-queue \"$HOME/dev/coq-decompiled_stable\" /tmp/issue809-text-construction.json 80",
+        "uv run python scripts/text_construction_surface_policy.py --inventory /tmp/issue809-text-construction.json --format lanes-json --include valuable --limit 0",
+        "just localization-coverage-map-check",
+        "just roslyn-test",
+        "just test-l1",
+        "just test-l2"
+      ],
+      "known_limits": [
+        "This audit reconciles existing lanes; it is not a new claim of true untranslated-zero coverage.",
+        "Static producer queue zero does not close conversation, quest body, cooking effect, active-effect, or status UI routes.",
+        "quest titles are intentionally excluded from issue #809 translation targets; quest body, journal, handler, step, and reward text remain separately auditable.",
+        "Conversation and quest authored XML assets do not have a complete tracked inventory in this lane.",
+        "Cooking and active-effect inventories cover audited owner slices only; runtime meal, food/water status, and UI embedding shapes still need emitted-shape tests before promotion."
+      ],
+      "next_actions": [
+        "Use the issue #809 report to pick one surface group and add an emitted-shape test before implementation.",
+        "Keep authored data-source fixes separate from runtime owner-route fixes.",
+        "Fetch fresh runtime Player.log evidence only when deciding whether a candidate shape is live-visible or sink-only."
+      ]
+    },
+    {
       "id": "annals_history_patterns",
       "label": "Annals and HistorySpice generated narrative patterns",
       "category": "generated_text_inventory",

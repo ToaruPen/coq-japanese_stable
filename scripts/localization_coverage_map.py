@@ -50,6 +50,7 @@ REQUIRED_SURFACE_IDS: Final = {
     "description_effect_detail_routes",
     "display_name_composition",
     "hud_status_ability_bar_routes",
+    "issue_809_authored_runtime_text_audit",
     "journal_quest_routes",
     "legacy_candidate_inventory",
     "localization_assets",

@@ -363,7 +363,7 @@
       <choice GotoID="End" CompleteQuestStep="If, Then, Else~Return to the Keter" FinishQuest="If, Then, Else"><text>生きて飲め。</text><part Name="IfThenElseAchievement" /></choice>
     </node>
     <node ID="Accept"><text>ありがとう、旅人 =name=。</text><choice GotoID="Welcome">……</choice></node>
-    <node ID="Tau" Inherits="Welcome"><text>私の小鈴、燃えて輝く、心は星光と直角で満ちている。彼女はチャヴァを去る――それは彼女の選択だ。私 は……。</text><choice GotoID="Work2" Priority="1">私は何をすべき？</choice><choice Target="Chime" Load="Remove" /><choice Target="Barathrum" Load="Remove" /></node>
+    <node ID="Tau" Inherits="Welcome"><text>私の小鈴、燃えて輝く、心は星光と直角で満ちている。彼女はチャヴァを去る――それは彼女の選択だ。私は……。</text><choice GotoID="Work2" Priority="1">私は何をすべき？</choice><choice Target="Chime" Load="Remove" /><choice Target="Barathrum" Load="Remove" /></node>
     <node ID="Name" Inherits="Welcome"><text>かつて〈自我〉の詩人が、私に〈生命の樹〉の名をこぼした。私にとって私は、浸潤する〈柔(ソフト)〉から吸い上げた多数の〈自我〉だ。私はチャヴァ、そして私はディヴラックだ。</text><choice GotoID="ManySelves" Priority="99">多数の自我？ どういうことだ？</choice></node>
     <node ID="ManySelves"><text>チャヴァとして私は多数。ディヴラックとして私は一。私は一であり多数。一なるものは私を〈樹の都市〉、〈知性ある場所〉と呼んだ。君は〈二堅(ツーファーム)〉から芽吹いた自我を、そのように思えばよい。</text></node>
     <node ID="Physiology" SetSpeakerIntProperty="PhysiologyExplained,1">
@@ -386,7 +386,7 @@
     <node ID="SlynthRequestReject">驚きが先に立ち、落ち着きは後から来る。=name=、彼らの住まいについて合意が見いだせぬ。すまぬ。</node>
     <node ID="SlynthAbout">我らは光帽子の決断を待っている。可能性の数多きを思い描いている。</node>
     <node ID="SlynthArrived"><text>このケテルはざわめく！ スリンスが我らの中にあり、植物の民と我らが互いに慣れるのは緩やかだ。単一の感情を語ることはできないが、新しき伴侶と共に我らは -then に向かう。</text><choice Target="Start">感謝する、ディヴラック。</choice></node>
-    <node ID="SlynthSettled"><text>よく来た、=name=。いく人かはすでに -else を選んだが、最初のスリンスたちは我らのサントのように我らに連なった。可動で別であり、共有で共だ。これは奇妙な -then だが、ここからどんな枝がこぼれ出るだろう？ 見届けるのが楽しみだ。</text><choice Target="Start">共に生き、飲もう、チャヴァ。</choice></node>
+    <node ID="SlynthSettled"><text>よく来た、=name=。何人かはすでに -else を選んだが、最初のスリンスたちは我らのサントのように我らに連なった。可動で別であり、共有で共だ。これは奇妙な -then だが、ここからどんな枝がこぼれ出るだろう？ 見届けるのが楽しみだ。</text><choice Target="Start">共に生き、飲もう、チャヴァ。</choice></node>
   </conversation>
 
   <!-- Tikva (chime) -->
@@ -5427,7 +5427,7 @@
 
         知恵を軽んじることは、カサフェセンスを軽んじることだ。彼女は虚空の中で輝きを屈折させ、周囲を照らす。私たちの先人の書いた知恵も同じなんだ。
 
-        クロームの機構は神性ゆえに複雑だ。それを知らずにいること、過去も未来も知らずにいることは、父祖への侮辱ではないか？ 知る喜びを求める価値はないか？ 我が同士エシェルシュタット二世、最初の子は私と同じ考えを持っている。
+        クロームの機構は神性ゆえに複雑だ。それを知らずにいること、過去も未来も知らずにいることは、父祖への侮辱ではないか？ 知る喜びを求める価値はないか？ 我が同志エシェルシュタット二世、最初の子は私と同じ考えを持っている。
       </text>
       <choice GotoID="Start" Transient="true">
         <text>本を寄贈しよう。</text>

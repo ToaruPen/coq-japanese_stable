@@ -652,12 +652,12 @@
         {
             "key": "You phase back in.",
             "context": "XRL.World.Effects.Phased",
-            "text": "相位相から戻った。"
+            "text": "フェイズインした。"
         },
         {
             "key": "You phase out.",
             "context": "XRL.World.Effects.Phased",
-            "text": "相位相に移行した。"
+            "text": "フェイズアウトした。"
         },
         {
             "key": "&GYou executed that step correctly! [",
@@ -897,12 +897,12 @@
         {
             "key": "You shook off the dazing.",
             "context": "XRL.World.Parts.Skill.Endurance_ShakeItOff",
-            "text": "眩暈を振り払った。"
+            "text": "朦朧を振り払った。"
         },
         {
             "key": "You shook off the stun.",
             "context": "XRL.World.Parts.Skill.Endurance_ShakeItOff",
-            "text": "スタンを振り払った。"
+            "text": "気絶を振り払った。"
         },
         {
             "key": "You start disassembling ",
@@ -972,7 +972,7 @@
         {
             "key": "You will phase back in in ",
             "context": "XRL.World.Effects.Phased",
-            "text": "{duration}で相位相から戻る。"
+            "text": "{duration}でフェイズインする。"
         },
         {
             "key": "{{G|You innervate your mind at someone's expense.}}",

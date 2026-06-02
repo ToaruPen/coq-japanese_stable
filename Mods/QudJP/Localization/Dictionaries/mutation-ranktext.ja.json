@@ -1908,52 +1908,52 @@
         {
             "key": "mutation:Stun Breath:rank:1",
             "context": "Chargen.Mutation.RankText",
-            "text": "スタンガスを円錐状に吐き出す。\n円錐の長さ: 5マス\n円錐角度: 22度\nクールダウン: 15ラウンド"
+            "text": "気絶ガスを円錐状に吐き出す。\n円錐の長さ: 5マス\n円錐角度: 22度\nクールダウン: 15ラウンド"
         },
         {
             "key": "mutation:Stun Breath:rank:2",
             "context": "Chargen.Mutation.RankText",
-            "text": "スタンガスを円錐状に吐き出す。\n円錐の長さ: 6マス\n円錐角度: 24度\nクールダウン: 15ラウンド"
+            "text": "気絶ガスを円錐状に吐き出す。\n円錐の長さ: 6マス\n円錐角度: 24度\nクールダウン: 15ラウンド"
         },
         {
             "key": "mutation:Stun Breath:rank:3",
             "context": "Chargen.Mutation.RankText",
-            "text": "スタンガスを円錐状に吐き出す。\n円錐の長さ: 7マス\n円錐角度: 26度\nクールダウン: 15ラウンド"
+            "text": "気絶ガスを円錐状に吐き出す。\n円錐の長さ: 7マス\n円錐角度: 26度\nクールダウン: 15ラウンド"
         },
         {
             "key": "mutation:Stun Breath:rank:4",
             "context": "Chargen.Mutation.RankText",
-            "text": "スタンガスを円錐状に吐き出す。\n円錐の長さ: 8マス\n円錐角度: 28度\nクールダウン: 15ラウンド"
+            "text": "気絶ガスを円錐状に吐き出す。\n円錐の長さ: 8マス\n円錐角度: 28度\nクールダウン: 15ラウンド"
         },
         {
             "key": "mutation:Stun Breath:rank:5",
             "context": "Chargen.Mutation.RankText",
-            "text": "スタンガスを円錐状に吐き出す。\n円錐の長さ: 9マス\n円錐角度: 30度\nクールダウン: 15ラウンド"
+            "text": "気絶ガスを円錐状に吐き出す。\n円錐の長さ: 9マス\n円錐角度: 30度\nクールダウン: 15ラウンド"
         },
         {
             "key": "mutation:Stun Breath:rank:6",
             "context": "Chargen.Mutation.RankText",
-            "text": "スタンガスを円錐状に吐き出す。\n円錐の長さ: 10マス\n円錐角度: 32度\nクールダウン: 15ラウンド"
+            "text": "気絶ガスを円錐状に吐き出す。\n円錐の長さ: 10マス\n円錐角度: 32度\nクールダウン: 15ラウンド"
         },
         {
             "key": "mutation:Stun Breath:rank:7",
             "context": "Chargen.Mutation.RankText",
-            "text": "スタンガスを円錐状に吐き出す。\n円錐の長さ: 11マス\n円錐角度: 34度\nクールダウン: 15ラウンド"
+            "text": "気絶ガスを円錐状に吐き出す。\n円錐の長さ: 11マス\n円錐角度: 34度\nクールダウン: 15ラウンド"
         },
         {
             "key": "mutation:Stun Breath:rank:8",
             "context": "Chargen.Mutation.RankText",
-            "text": "スタンガスを円錐状に吐き出す。\n円錐の長さ: 12マス\n円錐角度: 36度\nクールダウン: 15ラウンド"
+            "text": "気絶ガスを円錐状に吐き出す。\n円錐の長さ: 12マス\n円錐角度: 36度\nクールダウン: 15ラウンド"
         },
         {
             "key": "mutation:Stun Breath:rank:9",
             "context": "Chargen.Mutation.RankText",
-            "text": "スタンガスを円錐状に吐き出す。\n円錐の長さ: 13マス\n円錐角度: 38度\nクールダウン: 15ラウンド"
+            "text": "気絶ガスを円錐状に吐き出す。\n円錐の長さ: 13マス\n円錐角度: 38度\nクールダウン: 15ラウンド"
         },
         {
             "key": "mutation:Stun Breath:rank:10",
             "context": "Chargen.Mutation.RankText",
-            "text": "スタンガスを円錐状に吐き出す。\n円錐の長さ: 14マス\n円錐角度: 40度\nクールダウン: 15ラウンド"
+            "text": "気絶ガスを円錐状に吐き出す。\n円錐の長さ: 14マス\n円錐角度: 40度\nクールダウン: 15ラウンド"
         },
         {
             "key": "mutation:Urchin Belching:rank:1",
@@ -2058,52 +2058,52 @@
         {
             "key": "mutation:Adrenal Control:rank:1",
             "context": "Chargen.Mutation.RankText",
-            "text": "20ラウンドのあいだアドレナリン分泌を高められる。\n持続中は俊敏+{{C|10}}、ほかの肉体突然変異のランクも+{{C|1}}。\nクールダウン: 200ラウンド"
+            "text": "20ラウンドのあいだアドレナリン分泌を高められる。\n持続中はクイックネス+{{C|10}}、ほかの肉体突然変異のランクも+{{C|1}}。\nクールダウン: 200ラウンド"
         },
         {
             "key": "mutation:Adrenal Control:rank:2",
             "context": "Chargen.Mutation.RankText",
-            "text": "20ラウンドのあいだアドレナリン分泌を高められる。\n持続中は俊敏+{{C|11}}、ほかの肉体突然変異のランクも+{{C|1}}。\nクールダウン: 200ラウンド"
+            "text": "20ラウンドのあいだアドレナリン分泌を高められる。\n持続中はクイックネス+{{C|11}}、ほかの肉体突然変異のランクも+{{C|1}}。\nクールダウン: 200ラウンド"
         },
         {
             "key": "mutation:Adrenal Control:rank:3",
             "context": "Chargen.Mutation.RankText",
-            "text": "20ラウンドのあいだアドレナリン分泌を高められる。\n持続中は俊敏+{{C|12}}、ほかの肉体突然変異のランクも+{{C|2}}。\nクールダウン: 200ラウンド"
+            "text": "20ラウンドのあいだアドレナリン分泌を高められる。\n持続中はクイックネス+{{C|12}}、ほかの肉体突然変異のランクも+{{C|2}}。\nクールダウン: 200ラウンド"
         },
         {
             "key": "mutation:Adrenal Control:rank:4",
             "context": "Chargen.Mutation.RankText",
-            "text": "20ラウンドのあいだアドレナリン分泌を高められる。\n持続中は俊敏+{{C|13}}、ほかの肉体突然変異のランクも+{{C|2}}。\nクールダウン: 200ラウンド"
+            "text": "20ラウンドのあいだアドレナリン分泌を高められる。\n持続中はクイックネス+{{C|13}}、ほかの肉体突然変異のランクも+{{C|2}}。\nクールダウン: 200ラウンド"
         },
         {
             "key": "mutation:Adrenal Control:rank:5",
             "context": "Chargen.Mutation.RankText",
-            "text": "20ラウンドのあいだアドレナリン分泌を高められる。\n持続中は俊敏+{{C|14}}、ほかの肉体突然変異のランクも+{{C|2}}。\nクールダウン: 200ラウンド"
+            "text": "20ラウンドのあいだアドレナリン分泌を高められる。\n持続中はクイックネス+{{C|14}}、ほかの肉体突然変異のランクも+{{C|2}}。\nクールダウン: 200ラウンド"
         },
         {
             "key": "mutation:Adrenal Control:rank:6",
             "context": "Chargen.Mutation.RankText",
-            "text": "20ラウンドのあいだアドレナリン分泌を高められる。\n持続中は俊敏+{{C|15}}、ほかの肉体突然変異のランクも+{{C|3}}。\nクールダウン: 200ラウンド"
+            "text": "20ラウンドのあいだアドレナリン分泌を高められる。\n持続中はクイックネス+{{C|15}}、ほかの肉体突然変異のランクも+{{C|3}}。\nクールダウン: 200ラウンド"
         },
         {
             "key": "mutation:Adrenal Control:rank:7",
             "context": "Chargen.Mutation.RankText",
-            "text": "20ラウンドのあいだアドレナリン分泌を高められる。\n持続中は俊敏+{{C|16}}、ほかの肉体突然変異のランクも+{{C|3}}。\nクールダウン: 200ラウンド"
+            "text": "20ラウンドのあいだアドレナリン分泌を高められる。\n持続中はクイックネス+{{C|16}}、ほかの肉体突然変異のランクも+{{C|3}}。\nクールダウン: 200ラウンド"
         },
         {
             "key": "mutation:Adrenal Control:rank:8",
             "context": "Chargen.Mutation.RankText",
-            "text": "20ラウンドのあいだアドレナリン分泌を高められる。\n持続中は俊敏+{{C|17}}、ほかの肉体突然変異のランクも+{{C|3}}。\nクールダウン: 200ラウンド"
+            "text": "20ラウンドのあいだアドレナリン分泌を高められる。\n持続中はクイックネス+{{C|17}}、ほかの肉体突然変異のランクも+{{C|3}}。\nクールダウン: 200ラウンド"
         },
         {
             "key": "mutation:Adrenal Control:rank:9",
             "context": "Chargen.Mutation.RankText",
-            "text": "20ラウンドのあいだアドレナリン分泌を高められる。\n持続中は俊敏+{{C|18}}、ほかの肉体突然変異のランクも+{{C|4}}。\nクールダウン: 200ラウンド"
+            "text": "20ラウンドのあいだアドレナリン分泌を高められる。\n持続中はクイックネス+{{C|18}}、ほかの肉体突然変異のランクも+{{C|4}}。\nクールダウン: 200ラウンド"
         },
         {
             "key": "mutation:Adrenal Control:rank:10",
             "context": "Chargen.Mutation.RankText",
-            "text": "20ラウンドのあいだアドレナリン分泌を高められる。\n持続中は俊敏+{{C|19}}、ほかの肉体突然変異のランクも+{{C|4}}。\nクールダウン: 200ラウンド"
+            "text": "20ラウンドのあいだアドレナリン分泌を高められる。\n持続中はクイックネス+{{C|19}}、ほかの肉体突然変異のランクも+{{C|4}}。\nクールダウン: 200ラウンド"
         },
         {
             "key": "mutation:Triple-jointed:rank:1",
@@ -2308,52 +2308,52 @@
         {
             "key": "mutation:Photosynthetic Skin:rank:1",
             "context": "Chargen.Mutation.RankText",
-            "text": "食事の代わりに日光浴して{{rules|1日}}の代謝効果を得られる: 自然回復率+{{rules|30%}}、迅速さ+{{rules|15}}\n日光下で澱粉とリグニンを蓄え、料理の材料に使える（各最大{{rules|1食}}）。\n植生と同じマスにいるあいだDV+{{rules|1}}\n根・木・ツタ・フィタ連合との評判+200"
+            "text": "食事の代わりに日光浴して{{rules|1日}}の代謝効果を得られる: 自然回復率+{{rules|30%}}、クイックネス+{{rules|15}}\n日光下で澱粉とリグニンを蓄え、料理の材料に使える（各最大{{rules|1食}}）。\n植生と同じマスにいるあいだDV+{{rules|1}}\n根・木・ツタ・フィタ連合との評判+200"
         },
         {
             "key": "mutation:Photosynthetic Skin:rank:2",
             "context": "Chargen.Mutation.RankText",
-            "text": "食事の代わりに日光浴して{{rules|1日}}の代謝効果を得られる: 自然回復率+{{rules|40%}}、迅速さ+{{rules|17}}\n日光下で澱粉とリグニンを蓄え、料理の材料に使える（各最大{{rules|1食}}）。\n植生と同じマスにいるあいだDV+{{rules|1}}\n根・木・ツタ・フィタ連合との評判+200"
+            "text": "食事の代わりに日光浴して{{rules|1日}}の代謝効果を得られる: 自然回復率+{{rules|40%}}、クイックネス+{{rules|17}}\n日光下で澱粉とリグニンを蓄え、料理の材料に使える（各最大{{rules|1食}}）。\n植生と同じマスにいるあいだDV+{{rules|1}}\n根・木・ツタ・フィタ連合との評判+200"
         },
         {
             "key": "mutation:Photosynthetic Skin:rank:3",
             "context": "Chargen.Mutation.RankText",
-            "text": "食事の代わりに日光浴して{{rules|1日}}の代謝効果を得られる: 自然回復率+{{rules|50%}}、迅速さ+{{rules|19}}\n日光下で澱粉とリグニンを蓄え、料理の材料に使える（各最大{{rules|1食}}）。\n植生と同じマスにいるあいだDV+{{rules|1}}\n根・木・ツタ・フィタ連合との評判+200"
+            "text": "食事の代わりに日光浴して{{rules|1日}}の代謝効果を得られる: 自然回復率+{{rules|50%}}、クイックネス+{{rules|19}}\n日光下で澱粉とリグニンを蓄え、料理の材料に使える（各最大{{rules|1食}}）。\n植生と同じマスにいるあいだDV+{{rules|1}}\n根・木・ツタ・フィタ連合との評判+200"
         },
         {
             "key": "mutation:Photosynthetic Skin:rank:4",
             "context": "Chargen.Mutation.RankText",
-            "text": "食事の代わりに日光浴して{{rules|1日}}の代謝効果を得られる: 自然回復率+{{rules|60%}}、迅速さ+{{rules|21}}\n日光下で澱粉とリグニンを蓄え、料理の材料に使える（各最大{{rules|1食}}）。\n植生と同じマスにいるあいだDV+{{rules|1}}\n根・木・ツタ・フィタ連合との評判+200"
+            "text": "食事の代わりに日光浴して{{rules|1日}}の代謝効果を得られる: 自然回復率+{{rules|60%}}、クイックネス+{{rules|21}}\n日光下で澱粉とリグニンを蓄え、料理の材料に使える（各最大{{rules|1食}}）。\n植生と同じマスにいるあいだDV+{{rules|1}}\n根・木・ツタ・フィタ連合との評判+200"
         },
         {
             "key": "mutation:Photosynthetic Skin:rank:5",
             "context": "Chargen.Mutation.RankText",
-            "text": "食事の代わりに日光浴して{{rules|2日}}の代謝効果を得られる: 自然回復率+{{rules|70%}}、迅速さ+{{rules|23}}\n日光下で澱粉とリグニンを蓄え、料理の材料に使える（各最大{{rules|2食}}）。\n植生と同じマスにいるあいだDV+{{rules|2}}\n根・木・ツタ・フィタ連合との評判+200"
+            "text": "食事の代わりに日光浴して{{rules|2日}}の代謝効果を得られる: 自然回復率+{{rules|70%}}、クイックネス+{{rules|23}}\n日光下で澱粉とリグニンを蓄え、料理の材料に使える（各最大{{rules|2食}}）。\n植生と同じマスにいるあいだDV+{{rules|2}}\n根・木・ツタ・フィタ連合との評判+200"
         },
         {
             "key": "mutation:Photosynthetic Skin:rank:6",
             "context": "Chargen.Mutation.RankText",
-            "text": "食事の代わりに日光浴して{{rules|2日}}の代謝効果を得られる: 自然回復率+{{rules|80%}}、迅速さ+{{rules|25}}\n日光下で澱粉とリグニンを蓄え、料理の材料に使える（各最大{{rules|2食}}）。\n植生と同じマスにいるあいだDV+{{rules|2}}\n根・木・ツタ・フィタ連合との評判+200"
+            "text": "食事の代わりに日光浴して{{rules|2日}}の代謝効果を得られる: 自然回復率+{{rules|80%}}、クイックネス+{{rules|25}}\n日光下で澱粉とリグニンを蓄え、料理の材料に使える（各最大{{rules|2食}}）。\n植生と同じマスにいるあいだDV+{{rules|2}}\n根・木・ツタ・フィタ連合との評判+200"
         },
         {
             "key": "mutation:Photosynthetic Skin:rank:7",
             "context": "Chargen.Mutation.RankText",
-            "text": "食事の代わりに日光浴して{{rules|2日}}の代謝効果を得られる: 自然回復率+{{rules|90%}}、迅速さ+{{rules|27}}\n日光下で澱粉とリグニンを蓄え、料理の材料に使える（各最大{{rules|2食}}）。\n植生と同じマスにいるあいだDV+{{rules|2}}\n根・木・ツタ・フィタ連合との評判+200"
+            "text": "食事の代わりに日光浴して{{rules|2日}}の代謝効果を得られる: 自然回復率+{{rules|90%}}、クイックネス+{{rules|27}}\n日光下で澱粉とリグニンを蓄え、料理の材料に使える（各最大{{rules|2食}}）。\n植生と同じマスにいるあいだDV+{{rules|2}}\n根・木・ツタ・フィタ連合との評判+200"
         },
         {
             "key": "mutation:Photosynthetic Skin:rank:8",
             "context": "Chargen.Mutation.RankText",
-            "text": "食事の代わりに日光浴して{{rules|2日}}の代謝効果を得られる: 自然回復率+{{rules|100%}}、迅速さ+{{rules|29}}\n日光下で澱粉とリグニンを蓄え、料理の材料に使える（各最大{{rules|2食}}）。\n植生と同じマスにいるあいだDV+{{rules|2}}\n根・木・ツタ・フィタ連合との評判+200"
+            "text": "食事の代わりに日光浴して{{rules|2日}}の代謝効果を得られる: 自然回復率+{{rules|100%}}、クイックネス+{{rules|29}}\n日光下で澱粉とリグニンを蓄え、料理の材料に使える（各最大{{rules|2食}}）。\n植生と同じマスにいるあいだDV+{{rules|2}}\n根・木・ツタ・フィタ連合との評判+200"
         },
         {
             "key": "mutation:Photosynthetic Skin:rank:9",
             "context": "Chargen.Mutation.RankText",
-            "text": "食事の代わりに日光浴して{{rules|3日}}の代謝効果を得られる: 自然回復率+{{rules|110%}}、迅速さ+{{rules|31}}\n日光下で澱粉とリグニンを蓄え、料理の材料に使える（各最大{{rules|3食}}）。\n植生と同じマスにいるあいだDV+{{rules|3}}\n根・木・ツタ・フィタ連合との評判+200"
+            "text": "食事の代わりに日光浴して{{rules|3日}}の代謝効果を得られる: 自然回復率+{{rules|110%}}、クイックネス+{{rules|31}}\n日光下で澱粉とリグニンを蓄え、料理の材料に使える（各最大{{rules|3食}}）。\n植生と同じマスにいるあいだDV+{{rules|3}}\n根・木・ツタ・フィタ連合との評判+200"
         },
         {
             "key": "mutation:Photosynthetic Skin:rank:10",
             "context": "Chargen.Mutation.RankText",
-            "text": "食事の代わりに日光浴して{{rules|3日}}の代謝効果を得られる: 自然回復率+{{rules|120%}}、迅速さ+{{rules|33}}\n日光下で澱粉とリグニンを蓄え、料理の材料に使える（各最大{{rules|3食}}）。\n植生と同じマスにいるあいだDV+{{rules|3}}\n根・木・ツタ・フィタ連合との評判+200"
+            "text": "食事の代わりに日光浴して{{rules|3日}}の代謝効果を得られる: 自然回復率+{{rules|120%}}、クイックネス+{{rules|33}}\n日光下で澱粉とリグニンを蓄え、料理の材料に使える（各最大{{rules|3食}}）。\n植生と同じマスにいるあいだDV+{{rules|3}}\n根・木・ツタ・フィタ連合との評判+200"
         },
         {
             "key": "mutation:Regeneration:rank:1",
@@ -2758,52 +2758,52 @@
         {
             "key": "mutation:Heightened Quickness:rank:1",
             "context": "Chargen.Mutation.RankText",
-            "text": "俊敏+{{rules|15}}"
+            "text": "クイックネス+{{rules|15}}"
         },
         {
             "key": "mutation:Heightened Quickness:rank:2",
             "context": "Chargen.Mutation.RankText",
-            "text": "俊敏+{{rules|17}}"
+            "text": "クイックネス+{{rules|17}}"
         },
         {
             "key": "mutation:Heightened Quickness:rank:3",
             "context": "Chargen.Mutation.RankText",
-            "text": "俊敏+{{rules|19}}"
+            "text": "クイックネス+{{rules|19}}"
         },
         {
             "key": "mutation:Heightened Quickness:rank:4",
             "context": "Chargen.Mutation.RankText",
-            "text": "俊敏+{{rules|21}}"
+            "text": "クイックネス+{{rules|21}}"
         },
         {
             "key": "mutation:Heightened Quickness:rank:5",
             "context": "Chargen.Mutation.RankText",
-            "text": "俊敏+{{rules|23}}"
+            "text": "クイックネス+{{rules|23}}"
         },
         {
             "key": "mutation:Heightened Quickness:rank:6",
             "context": "Chargen.Mutation.RankText",
-            "text": "俊敏+{{rules|25}}"
+            "text": "クイックネス+{{rules|25}}"
         },
         {
             "key": "mutation:Heightened Quickness:rank:7",
             "context": "Chargen.Mutation.RankText",
-            "text": "俊敏+{{rules|27}}"
+            "text": "クイックネス+{{rules|27}}"
         },
         {
             "key": "mutation:Heightened Quickness:rank:8",
             "context": "Chargen.Mutation.RankText",
-            "text": "俊敏+{{rules|29}}"
+            "text": "クイックネス+{{rules|29}}"
         },
         {
             "key": "mutation:Heightened Quickness:rank:9",
             "context": "Chargen.Mutation.RankText",
-            "text": "俊敏+{{rules|31}}"
+            "text": "クイックネス+{{rules|31}}"
         },
         {
             "key": "mutation:Heightened Quickness:rank:10",
             "context": "Chargen.Mutation.RankText",
-            "text": "俊敏+{{rules|33}}"
+            "text": "クイックネス+{{rules|33}}"
         },
         {
             "key": "mutation:Heightened Hearing:rank:1",
@@ -4958,52 +4958,52 @@
         {
             "key": "mutation:Time Dilation:rank:1",
             "context": "Chargen.Mutation.RankText",
-            "text": "半径9マス以内の生物を距離に応じて減速させる。\n距離1: 俊敏に{{rules|57%}}のペナルティ\n距離4: 俊敏に{{rules|22%}}のペナルティ\n距離7: 俊敏に{{rules|3%}}のペナルティ\n持続: 15ラウンド\nクールダウン: 150ラウンド"
+            "text": "半径9マス以内の生物を距離に応じて減速させる。\n距離1: クイックネスに{{rules|57%}}のペナルティ\n距離4: クイックネスに{{rules|22%}}のペナルティ\n距離7: クイックネスに{{rules|3%}}のペナルティ\n持続: 15ラウンド\nクールダウン: 150ラウンド"
         },
         {
             "key": "mutation:Time Dilation:rank:2",
             "context": "Chargen.Mutation.RankText",
-            "text": "半径9マス以内の生物を距離に応じて減速させる。\n距離1: 俊敏に{{rules|60%}}のペナルティ\n距離4: 俊敏に{{rules|23%}}のペナルティ\n距離7: 俊敏に{{rules|3%}}のペナルティ\n持続: 15ラウンド\nクールダウン: 150ラウンド"
+            "text": "半径9マス以内の生物を距離に応じて減速させる。\n距離1: クイックネスに{{rules|60%}}のペナルティ\n距離4: クイックネスに{{rules|23%}}のペナルティ\n距離7: クイックネスに{{rules|3%}}のペナルティ\n持続: 15ラウンド\nクールダウン: 150ラウンド"
         },
         {
             "key": "mutation:Time Dilation:rank:3",
             "context": "Chargen.Mutation.RankText",
-            "text": "半径9マス以内の生物を距離に応じて減速させる。\n距離1: 俊敏に{{rules|64%}}のペナルティ\n距離4: 俊敏に{{rules|25%}}のペナルティ\n距離7: 俊敏に{{rules|4%}}のペナルティ\n持続: 15ラウンド\nクールダウン: 150ラウンド"
+            "text": "半径9マス以内の生物を距離に応じて減速させる。\n距離1: クイックネスに{{rules|64%}}のペナルティ\n距離4: クイックネスに{{rules|25%}}のペナルティ\n距離7: クイックネスに{{rules|4%}}のペナルティ\n持続: 15ラウンド\nクールダウン: 150ラウンド"
         },
         {
             "key": "mutation:Time Dilation:rank:4",
             "context": "Chargen.Mutation.RankText",
-            "text": "半径9マス以内の生物を距離に応じて減速させる。\n距離1: 俊敏に{{rules|67%}}のペナルティ\n距離4: 俊敏に{{rules|26%}}のペナルティ\n距離7: 俊敏に{{rules|4%}}のペナルティ\n持続: 15ラウンド\nクールダウン: 150ラウンド"
+            "text": "半径9マス以内の生物を距離に応じて減速させる。\n距離1: クイックネスに{{rules|67%}}のペナルティ\n距離4: クイックネスに{{rules|26%}}のペナルティ\n距離7: クイックネスに{{rules|4%}}のペナルティ\n持続: 15ラウンド\nクールダウン: 150ラウンド"
         },
         {
             "key": "mutation:Time Dilation:rank:5",
             "context": "Chargen.Mutation.RankText",
-            "text": "半径9マス以内の生物を距離に応じて減速させる。\n距離1: 俊敏に{{rules|70%}}のペナルティ\n距離4: 俊敏に{{rules|27%}}のペナルティ\n距離7: 俊敏に{{rules|4%}}のペナルティ\n持続: 15ラウンド\nクールダウン: 150ラウンド"
+            "text": "半径9マス以内の生物を距離に応じて減速させる。\n距離1: クイックネスに{{rules|70%}}のペナルティ\n距離4: クイックネスに{{rules|27%}}のペナルティ\n距離7: クイックネスに{{rules|4%}}のペナルティ\n持続: 15ラウンド\nクールダウン: 150ラウンド"
         },
         {
             "key": "mutation:Time Dilation:rank:6",
             "context": "Chargen.Mutation.RankText",
-            "text": "半径9マス以内の生物を距離に応じて減速させる。\n距離1: 俊敏に{{rules|73%}}のペナルティ\n距離4: 俊敏に{{rules|28%}}のペナルティ\n距離7: 俊敏に{{rules|4%}}のペナルティ\n持続: 15ラウンド\nクールダウン: 150ラウンド"
+            "text": "半径9マス以内の生物を距離に応じて減速させる。\n距離1: クイックネスに{{rules|73%}}のペナルティ\n距離4: クイックネスに{{rules|28%}}のペナルティ\n距離7: クイックネスに{{rules|4%}}のペナルティ\n持続: 15ラウンド\nクールダウン: 150ラウンド"
         },
         {
             "key": "mutation:Time Dilation:rank:7",
             "context": "Chargen.Mutation.RankText",
-            "text": "半径9マス以内の生物を距離に応じて減速させる。\n距離1: 俊敏に{{rules|76%}}のペナルティ\n距離4: 俊敏に{{rules|30%}}のペナルティ\n距離7: 俊敏に{{rules|4%}}のペナルティ\n持続: 15ラウンド\nクールダウン: 150ラウンド"
+            "text": "半径9マス以内の生物を距離に応じて減速させる。\n距離1: クイックネスに{{rules|76%}}のペナルティ\n距離4: クイックネスに{{rules|30%}}のペナルティ\n距離7: クイックネスに{{rules|4%}}のペナルティ\n持続: 15ラウンド\nクールダウン: 150ラウンド"
         },
         {
             "key": "mutation:Time Dilation:rank:8",
             "context": "Chargen.Mutation.RankText",
-            "text": "半径9マス以内の生物を距離に応じて減速させる。\n距離1: 俊敏に{{rules|80%}}のペナルティ\n距離4: 俊敏に{{rules|31%}}のペナルティ\n距離7: 俊敏に{{rules|5%}}のペナルティ\n持続: 15ラウンド\nクールダウン: 150ラウンド"
+            "text": "半径9マス以内の生物を距離に応じて減速させる。\n距離1: クイックネスに{{rules|80%}}のペナルティ\n距離4: クイックネスに{{rules|31%}}のペナルティ\n距離7: クイックネスに{{rules|5%}}のペナルティ\n持続: 15ラウンド\nクールダウン: 150ラウンド"
         },
         {
             "key": "mutation:Time Dilation:rank:9",
             "context": "Chargen.Mutation.RankText",
-            "text": "半径9マス以内の生物を距離に応じて減速させる。\n距離1: 俊敏に{{rules|83%}}のペナルティ\n距離4: 俊敏に{{rules|32%}}のペナルティ\n距離7: 俊敏に{{rules|5%}}のペナルティ\n持続: 15ラウンド\nクールダウン: 150ラウンド"
+            "text": "半径9マス以内の生物を距離に応じて減速させる。\n距離1: クイックネスに{{rules|83%}}のペナルティ\n距離4: クイックネスに{{rules|32%}}のペナルティ\n距離7: クイックネスに{{rules|5%}}のペナルティ\n持続: 15ラウンド\nクールダウン: 150ラウンド"
         },
         {
             "key": "mutation:Time Dilation:rank:10",
             "context": "Chargen.Mutation.RankText",
-            "text": "半径9マス以内の生物を距離に応じて減速させる。\n距離1: 俊敏に{{rules|86%}}のペナルティ\n距離4: 俊敏に{{rules|33%}}のペナルティ\n距離7: 俊敏に{{rules|5%}}のペナルティ\n持続: 15ラウンド\nクールダウン: 150ラウンド"
+            "text": "半径9マス以内の生物を距離に応じて減速させる。\n距離1: クイックネスに{{rules|86%}}のペナルティ\n距離4: クイックネスに{{rules|33%}}のペナルティ\n距離7: クイックネスに{{rules|5%}}のペナルティ\n持続: 15ラウンド\nクールダウン: 150ラウンド"
         },
         {
             "key": "mutation:Temporal Fugue:rank:1",

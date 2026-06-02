@@ -289,7 +289,7 @@ public sealed class DescriptionTextTranslatorTests
     [TestCase("{{rules|When activated, +1 Agility ({{K|unpowered}})}}", "{{rules|起動時、敏捷+1（無電力）}}")]
     [TestCase("+2 Strength", "筋力+2")]
     [TestCase("-1 Toughness", "頑健-1")]
-    [TestCase("When activated, +25% quickness", "起動時、俊敏+25%")]
+    [TestCase("When activated, +25% quickness", "起動時、クイックネス+25%")]
     [TestCase("Chance of becoming lost reduced by 10%.", "道に迷う確率が10%低下する。")]
     [TestCase("Its readout indicates that its startup sequence will take an estimated 7 more rounds.", "表示には、起動シーケンス完了まであとおよそ7ラウンドかかると示されている。")]
     [TestCase("Graffiti is scrawled across the surface. It reads: ", "表面に落書きが走り書きされている。そこにはこう書かれている: ")]
@@ -308,6 +308,11 @@ public sealed class DescriptionTextTranslatorTests
     [TestCase("At daybreak on the first day of autumn、ひとりの嬰児（with colossal mace in each hand）がin the mouth of a she-wolfにて産着に包まれて見いだされた。その嬰児はのちにウーヒム IIとして知られるようになった。", "秋の第一日、夜明けに、両手に巨大なメイスを握ったひとりの嬰児が雌狼の口の中で産着に包まれて見いだされた。その嬰児はのちにウーヒム IIとして知られるようになった。")]
     [TestCase("While、visiting an obscure observatory in the Jewelersの Province of ドゥシュル, ウーヒム IV fabricated horoscope reading that evoked the presence of lucent ruby. SheはそれをRubycusと名づけた。", "宝石商の州ドゥシュルの無名の天文台を訪れていたとき、ウーヒム IVは透明なルビーの存在を呼び起こす星占いを作り上げた。彼女はそれをRubycusと名づけた。")]
     [TestCase("After treating with 昆虫, ウーヒム IV convinced them to help her found observatory in the Stargazersの Province of カルクヘタラ for the purpose of mapping stars to the shapes of jewels. They named it the Jeweled O...", "昆虫と交渉した後、ウーヒム IVは宝石の形に星を対応づける目的で、カルクヘタラの星見の州に天文台を創設する手助けをするよう彼らを説得した。彼らはそれをJeweled O...と名づけた。")]
+    [TestCase("Credits remaining: 2\u009B", "残りクレジット: 2\u009B")]
+    [TestCase("Creates: バイオダイナミック セル", "作成物：バイオダイナミック セル")]
+    [TestCase("Deactivated: Currently without power.", "停止中: 現在電力がない。")]
+    [TestCase("Integrated power systems: When equipped, you can power this device via Electrical Generation.", "統合電力システム: 装備中、発電でこの装置に電力を供給できる。")]
+    [TestCase("Fitted with cleats: +2 to saves vs. forced movement、knockdown、とbeing restrained", "クリート付き: 強制移動・転倒・拘束に対するセーヴ+2")]
     public void TranslateShortDescription_TranslatesRuntimeObservedDescriptionLines(
         string source,
         string expected)

@@ -152,7 +152,7 @@ public sealed class JapaneseBlockWrapTests
     [Test]
     public void TryWrapTooltipLongDescription_UsesNarrowWidthForJapaneseInjectorRules()
     {
-        const string source = "持続：41-50ラウンド　熱耐性 +100／冷気耐性 -50／クイックネス +10（真系：+20）。凍結しない。あなたが与える熱ダメージ +25%。外部の熱源で体温は上昇しない。発火して効果を失わないよう、移動し続けなければならない。";
+        const string source = "持続：41-50ラウンド　熱耐性 +100／冷気耐性 -50／クイックネス+10（真系：+20）。凍結無効。熱ダメージ +25%。外部の熱源で体温は上昇しない。発火して効果を失わないよう、移動し続けなければならない。";
 
         var changed = JapaneseBlockWrap.TryWrapTooltipLongDescription(source, out var wrapped);
 
@@ -183,7 +183,7 @@ public sealed class JapaneseBlockWrapTests
     public void TryWrapForCjkBlock_DoesNotPreferStatDelimitersAsLineBreaks()
     {
         var changed = JapaneseBlockWrap.TryWrapForCjkBlock(
-            "熱耐性 +100／冷気耐性 -50／クイックネス +10。",
+            "熱耐性 +100／冷気耐性 -50／クイックネス+10。",
             width: 12,
             maxLines: 5000,
             out var wrapped);

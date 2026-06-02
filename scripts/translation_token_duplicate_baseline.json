@@ -214,7 +214,7 @@
         },
         {
           "path": "Dictionaries/ui-journal.ja.json",
-          "entry_index": 30,
+          "entry_index": 31,
           "text": "受け入れる"
         },
         {
@@ -263,7 +263,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-journal.ja.json",
-          "entry_index": 44,
+          "entry_index": 45,
           "text": "遺物"
         },
         {
@@ -3498,7 +3498,7 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-journal.ja.json",
-          "entry_index": 43,
+          "entry_index": 44,
           "text": "忘れ去られた廃墟"
         },
         {
@@ -5794,7 +5794,7 @@
         },
         {
           "path": "Dictionaries/ui-journal.ja.json",
-          "entry_index": 37,
+          "entry_index": 38,
           "text": "ジョッパ"
         }
       ]
@@ -5816,7 +5816,7 @@
         },
         {
           "path": "Dictionaries/ui-journal.ja.json",
-          "entry_index": 38,
+          "entry_index": 39,
           "text": "キャクキャ"
         }
       ]
@@ -5838,7 +5838,7 @@
         },
         {
           "path": "Dictionaries/ui-journal.ja.json",
-          "entry_index": 39,
+          "entry_index": 40,
           "text": "イド・フリーホールド"
         }
       ]
@@ -5855,12 +5855,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-journal.ja.json",
-          "entry_index": 29,
+          "entry_index": 30,
           "text": "[+] "
         },
         {
           "path": "Dictionaries/ui-journal.ja.json",
-          "entry_index": 34,
+          "entry_index": 35,
           "text": "[+] "
         }
       ]
@@ -5877,12 +5877,12 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-journal.ja.json",
-          "entry_index": 28,
+          "entry_index": 29,
           "text": "[-] "
         },
         {
           "path": "Dictionaries/ui-journal.ja.json",
-          "entry_index": 33,
+          "entry_index": 34,
           "text": "[-] "
         }
       ]
@@ -5900,17 +5900,17 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-journal.ja.json",
-          "entry_index": 58,
+          "entry_index": 59,
           "text": "}}\n\nこの情報を{{W|"
         },
         {
           "path": "Dictionaries/ui-journal.ja.json",
-          "entry_index": 60,
+          "entry_index": 61,
           "text": "}}\n\nこの情報を{{W|"
         },
         {
           "path": "Dictionaries/ui-journal.ja.json",
-          "entry_index": 62,
+          "entry_index": 63,
           "text": "}}\n\nこの情報を{{W|"
         }
       ]
@@ -5928,17 +5928,17 @@
       "occurrences": [
         {
           "path": "Dictionaries/ui-journal.ja.json",
-          "entry_index": 59,
+          "entry_index": 60,
           "text": "}} 欄に記した。"
         },
         {
           "path": "Dictionaries/ui-journal.ja.json",
-          "entry_index": 61,
+          "entry_index": 62,
           "text": "}} 欄に記した。"
         },
         {
           "path": "Dictionaries/ui-journal.ja.json",
-          "entry_index": 63,
+          "entry_index": 64,
           "text": "}} 欄に記した。"
         }
       ]

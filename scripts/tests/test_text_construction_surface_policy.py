@@ -19202,6 +19202,39 @@ def test_load_inventory_backfills_empty_first_lines_from_representative_calls(tm
     assert entry["first_lines"] == [738]
 
 
+def test_followup_issue_payload_filters_covered_entries_when_called_with_valuable_include() -> None:
+    """Follow-up grouping remains residual-only even if the caller asks for valuable entries."""
+    covered_book_line = (
+        "XRL.World.Conversations.Parts/InsertRandomBookLine.cs::"
+        "InsertRandomBookLine.HandleEvent(PrepareTextEvent)"
+    )
+    action_required_status_line = "Qud.UI/LeftSideCategory.cs::LeftSideCategory.setData(object)"
+    inventory = _inventory(
+        [
+            _family(
+                covered_book_line,
+                "XRL.World.Conversations.Parts/InsertRandomBookLine.cs",
+                "HandleEvent",
+                {"ConversationTextAppend": 1},
+            ),
+            _family(
+                action_required_status_line,
+                "Qud.UI/LeftSideCategory.cs",
+                "setData",
+                {"SetText": 1},
+            ),
+        ]
+    )
+
+    payload = followup_issue_payload(inventory, inventory_path=Path("issue809-followup-test.json"), include="valuable")
+
+    issue = payload["issues"]["issue719-consolidated-residuals"]
+    assert payload["total_entries"] == 1
+    assert payload["issue_counts"] == {"issue719-consolidated-residuals": 1}
+    assert issue["entry_count"] == 1
+    assert issue["top_entries"][0]["family_id"] == action_required_status_line
+
+
 def _inventory(families: list[TextConstructionFamily]) -> TextConstructionInventory:
     return {
         "schema_version": "1.0",

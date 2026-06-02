@@ -308,6 +308,36 @@ public sealed class JournalEntryDisplayTextPatchTests
     }
 
     [Test]
+    public void Postfix_TranslatesNoGospelFallbackWithProductionJournalLeaf_WhenPatched()
+    {
+        var localizationRoot = Path.Combine(TestProjectPaths.GetRepositoryRoot(), "Mods", "QudJP", "Localization");
+        Translator.SetDictionaryDirectoryForTests(Path.Combine(localizationRoot, "Dictionaries"));
+        LocalizationAssetResolver.SetLocalizationRootForTests(localizationRoot);
+        JournalPatternTranslator.SetPatternFilesForTests(null);
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyBaseJournalEntry), nameof(DummyBaseJournalEntry.GetDisplayText)),
+                postfix: new HarmonyMethod(RequireMethod(typeof(JournalEntryDisplayTextPatch), nameof(JournalEntryDisplayTextPatch.Postfix))));
+
+            var entry = new DummyJournalSultanNote
+            {
+                Text = "[NO GOSPEL]",
+            };
+
+            Assert.That(entry.GetDisplayText(), Is.EqualTo("[年代記なし]"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+            LocalizationAssetResolver.SetLocalizationRootForTests(null);
+        }
+    }
+
+    [Test]
     public void Postfix_TranslatesExpandedHistorySpiceRouteGrammarWithProductionAnnalsPatterns_WhenPatched()
     {
         var localizationRoot = Path.Combine(TestProjectPaths.GetRepositoryRoot(), "Mods", "QudJP", "Localization");

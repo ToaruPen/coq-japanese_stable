@@ -21,12 +21,12 @@
         {
             "key": "+100 Heat Resistance\nCan't be frozen.\n+25% heat damage dealt.\n-50 Cold Resistance\n+20 Quickness\nTemperature can't be increased by external heat sources.\nMust move around to avoid combusting and losing the effects of this tonic.",
             "context": "XRL.World.Effects.Blaze_Tonic.Details",
-            "text": "+100 熱耐性\n凍結しない。\n与える熱ダメージ+25%。\n-50 冷気耐性\n迅速+20\n外部の熱源では体温が上がらない。\n動き続けないと発火してトニックの効果を失う。"
+            "text": "+100 熱耐性\n凍結しない。\n与える熱ダメージ+25%。\n-50 冷気耐性\nクイックネス+20\n外部の熱源では体温が上がらない。\n動き続けないと発火してトニックの効果を失う。"
         },
         {
             "key": "+100 Heat Resistance\nCan't be frozen.\n+25% heat damage dealt.\n-50 Cold Resistance\n+10 Quickness\nTemperature can't be increased by external heat sources.\nMust move around to avoid combusting and losing the effects of this tonic.",
             "context": "XRL.World.Effects.Blaze_Tonic.Details",
-            "text": "+100 熱耐性\n凍結しない。\n与える熱ダメージ+25%。\n-50 冷気耐性\n迅速+10\n外部の熱源では体温が上がらない。\n動き続けないと発火してトニックの効果を失う。"
+            "text": "+100 熱耐性\n凍結しない。\n与える熱ダメージ+25%。\n-50 冷気耐性\nクイックネス+10\n外部の熱源では体温が上がらない。\n動き続けないと発火してトニックの効果を失う。"
         },
         {
             "key": "{{C|illuminated}}",
@@ -321,7 +321,7 @@
         {
             "key": "Your mutant physiology reacts adversely to the tonic. You cannot see to see -- your mind cracks as a bell struck by a hammer.",
             "context": "XRL.World.Effects.SphynxSalt_Tonic.Popup.Show",
-            "text": "変異体質がそのトニックに悪く反応する。見えも見えず、心はハンマーで打たれた鐘のようにひび割れる。"
+            "text": "変異体質がそのトニックに悪く反応する。見ようにも見えない。心は槌で打たれた鐘のようにひび割れる。"
         },
         {
             "key": "The tonics you ingested react adversely to each other. You cannot see to see -- your mind cracks as a bell struck by a hammer.",
@@ -336,7 +336,7 @@
         {
             "key": "The torrent of life sweeps away.",
             "context": "XRL.World.Effects.Ubernostrum_Tonic.Popup.Show",
-            "text": "生命の奔流が押し流す。"
+            "text": "生命の奔流が去っていく。"
         },
         {
             "key": "Your mutant physiology reacts adversely to the tonic. The torrent of life sweeps away.",
@@ -346,7 +346,7 @@
         {
             "key": "The tonics you ingested react adversely to each other. The torrent of life sweeps away.",
             "context": "XRL.World.Effects.Ubernostrum_Tonic.Popup.Show",
-            "text": "飲んだ薬液が互いに悪反応を起こす。生命の奔流が押し流す。"
+            "text": "飲んだ薬液が互いに悪反応を起こす。生命の奔流が去っていく。"
         },
         {
             "key": "Your hearts begin to beat faster and your pupils dilate.",

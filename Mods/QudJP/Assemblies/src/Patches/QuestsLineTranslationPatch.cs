@@ -31,6 +31,7 @@ public static class QuestsLineTranslationPatch
             TranslateStaticMenuOptions(type);
             TranslateExactTextField(__instance, "titleText", "titleText", "QuestsLine.TitleText");
             TranslateGiverText(__instance, "giverText", "giverText");
+            TranslateBodyText(__instance, "bodyText", "bodyText");
         }
         catch (Exception ex)
         {
@@ -130,6 +131,44 @@ public static class QuestsLineTranslationPatch
 
         var translatedText = string.Join(" / ", parts);
         OwnerTextSetter.SetTranslatedText(uiTextSkin, current!, translatedText, Context, typeof(QuestsLineTranslationPatch));
+    }
+
+    private static void TranslateBodyText(object instance, string memberName, string routeSuffix)
+    {
+        var uiTextSkin = GetMemberValue(instance, memberName);
+        var current = UITextSkinReflectionAccessor.GetCurrentText(uiTextSkin, Context);
+        if (string.IsNullOrEmpty(current))
+        {
+            return;
+        }
+
+        var currentText = current!;
+        var newline = currentText.Contains("\r\n") ? "\r\n" : "\n";
+        var normalized = newline == "\r\n"
+            ? currentText.Replace("\r\n", "\n")
+            : currentText;
+        var lines = normalized.Split(new[] { '\n' }, StringSplitOptions.None);
+        var changed = false;
+        for (var index = 0; index < lines.Length; index++)
+        {
+            var route = ObservabilityHelpers.ComposeContext(Context, "field=" + routeSuffix + "[" + index + "]");
+            var translated = QuestLogTranslationPatch.TranslateQuestLogLine(lines[index], route);
+            if (string.Equals(translated, lines[index], StringComparison.Ordinal))
+            {
+                continue;
+            }
+
+            lines[index] = translated;
+            changed = true;
+        }
+
+        if (!changed)
+        {
+            return;
+        }
+
+        var translatedText = string.Join(newline, lines);
+        OwnerTextSetter.SetTranslatedText(uiTextSkin, currentText, translatedText, Context, typeof(QuestsLineTranslationPatch));
     }
 
     private static string TranslateExactLeaf(string source, string route, string family)

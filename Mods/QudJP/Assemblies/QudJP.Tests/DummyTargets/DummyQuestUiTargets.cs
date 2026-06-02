@@ -17,6 +17,8 @@ internal sealed class DummyQuestsLineDataTarget
     public DummyQuestTarget? quest { get; set; }
 
     public bool expanded { get; set; }
+
+    public string? BodyText { get; set; }
 }
 
 internal sealed class DummyQuestsLineTarget
@@ -71,7 +73,7 @@ internal sealed class DummyQuestsLineTarget
         giverLabel.SetActive(active: true);
         titleText.SetText((questsLineData.expanded ? "[-]" : "[+]") + " " + questsLineData.quest.DisplayName);
         giverText.SetText((questsLineData.quest.QuestGiverName ?? "<unknown>") + " / " + (questsLineData.quest.QuestGiverLocationName ?? "<unknown>"));
-        bodyText.SetText("details");
+        bodyText.SetText(questsLineData.BodyText ?? "details");
     }
 }
 

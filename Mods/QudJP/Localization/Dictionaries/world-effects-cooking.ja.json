@@ -636,12 +636,12 @@
         {
             "key": "whenever @thisCreature phase@s in,",
             "context": "XRL.World.Effects.CookingDomainPhase_OnPhaseIn.GetTriggerDescription",
-            "text": "@thisCreature が相から戻るたび、"
+            "text": "@thisCreature がフェイズインするたび、"
         },
         {
             "key": "whenever @thisCreature phase@s out,",
             "context": "XRL.World.Effects.CookingDomainPhase_OnPhaseOut.GetTriggerDescription",
-            "text": "@thisCreature が相から抜けるたび、"
+            "text": "@thisCreature がフェイズアウトするたび、"
         },
         {
             "key": "@they can't be phased for 2 hours.",
@@ -651,7 +651,7 @@
         {
             "key": "@they become phase-anchored.",
             "context": "XRL.World.Effects.CookingDomainPhase_NoPhase_ProceduralCookingTriggeredAction.GetNotification",
-            "text": "@they は相位固定される。"
+            "text": "@they はフェイズ固定される。"
         },
         {
             "key": "@they phase out for 20 turns.",
@@ -821,7 +821,7 @@
         {
             "key": "Causes @their tongue to rot away.",
             "context": "XRL.World.Effects.CookingDomainSelfHarm_UnitSelfGlotrot.GetDescription",
-            "text": "@their の舌が腐り落ちる。"
+            "text": "@they の舌が腐り落ちる。"
         },
         {
             "key": "Poisons @thisCreature.",

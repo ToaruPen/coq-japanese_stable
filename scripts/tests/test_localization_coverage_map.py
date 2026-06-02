@@ -74,6 +74,20 @@ def test_localization_coverage_map_keeps_runtime_and_sink_boundary_lanes_explici
     assert surfaces["renderer_and_sink_boundaries"]["status"] == "boundary_observed"
 
 
+def test_localization_coverage_map_tracks_issue809_without_quest_title_or_static_queue_overclaim() -> None:
+    """Issue #809 needs a cross-surface audit lane that does not overclaim static closure."""
+    document = load_map(MAP_PATH)
+    surfaces = {surface["id"]: surface for surface in document["surfaces"]}
+
+    issue809 = surfaces["issue_809_authored_runtime_text_audit"]
+    combined_limits = " ".join(issue809["known_limits"])
+
+    assert "docs/reports/2026-06-02-issue-809-text-surface-audit.md" in issue809["closure_evidence"]
+    assert "QuestTitle" not in issue809["target_surfaces"]
+    assert "quest titles are intentionally excluded" in combined_limits
+    assert "Static producer queue zero does not close" in combined_limits
+
+
 def test_localization_coverage_map_does_not_treat_legacy_inventory_as_source_of_truth() -> None:
     """Legacy bridge artifacts must remain explicitly view-only."""
     document = load_map(MAP_PATH)

@@ -115,6 +115,10 @@
       "text": "不明"
     },
     {
+      "key": "[NO GOSPEL]",
+      "text": "[年代記なし]"
+    },
+    {
       "key": "<unknown>",
       "context": "Qud.UI.Qud.UI.JournalStatusScreen",
       "text": "<不明>"

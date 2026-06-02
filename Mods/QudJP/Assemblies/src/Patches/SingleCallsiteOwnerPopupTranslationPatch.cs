@@ -1653,7 +1653,7 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
             var message = TranslateFoodConsumptionMessage(match.Groups["message"].Value);
             var foodStatus = TranslateFoodOrWaterStatus(match.Groups["foodStatus"].Value);
             var waterStatus = TranslateFoodOrWaterStatus(match.Groups["waterStatus"].Value);
-            translated = $"{food}を食べた。\n{message}現在、{{{{|{foodStatus}}}}}、{{{{|{waterStatus}}}}}だ。";
+            translated = $"{food}を食べた。\n{message}今は{{{{|{foodStatus}}}}}で、{{{{|{waterStatus}}}}}。";
             detail = "FoodConsumptionFrame";
             return true;
         }
@@ -2128,8 +2128,8 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
             "Hungry" => "空腹",
             "Wilted!" => "枯れた！",
             "Famished!" => "飢餓！",
-            "Quenched" => "潤っている",
-            "Thirsty" => "喉が渇いた",
+            "Quenched" => "喉が潤っている",
+            "Thirsty" => "喉が渇いている",
             "Parched" => "乾き",
             "Dehydrated!" => "脱水！",
             "Desiccated!" => "干からびた！",
