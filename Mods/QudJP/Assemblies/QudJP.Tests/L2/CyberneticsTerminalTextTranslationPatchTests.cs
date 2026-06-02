@@ -65,7 +65,9 @@ public sealed partial class Issue201OtherUiBindingPatchTests
         WriteCyberneticsDictionary(
             ("Welcome, Aristocrat, to a becoming nook. {0} one step closer to the Grand Unification. Please choose from the following options.", "ようこそ、貴顕よ、変容の窪みへ。{0}は大統一へまた一歩近づいた。以下の選択肢から選ぶがよい。"),
             ("[{0} license points]", "[{0} ライセンスポイント]"),
-            (" [will replace {0}]", " [{0} を置き換える]"));
+            (" [will replace {0}]", " [{0}を置き換える]"),
+            ("Night Vision Goggles", "暗視ゴーグル"),
+            ("Optic Chisel", "視神経チゼル"));
 
         RunWithCyberneticsTerminalTextTranspiler(() =>
         {
@@ -74,10 +76,53 @@ public sealed partial class Issue201OtherUiBindingPatchTests
 
             Assert.Multiple(() =>
             {
-                Assert.That(screen.MainText, Is.EqualTo("ようこそ、貴顕よ、変容の窪みへ。you areは大統一へまた一歩近づいた。以下の選択肢から選ぶがよい。"));
-                Assert.That(screen.Options[0], Is.EqualTo("Night Vision Goggles {{C|[3 ライセンスポイント]}}"));
-                Assert.That(screen.Options[1], Is.EqualTo("Optic Chisel [Night Vision Goggles を置き換える]"));
+                Assert.That(screen.MainText, Is.EqualTo("ようこそ、貴顕よ、変容の窪みへ。あなたは大統一へまた一歩近づいた。以下の選択肢から選ぶがよい。"));
+                Assert.That(screen.Options[0], Is.EqualTo("暗視ゴーグル {{C|[3 ライセンスポイント]}}"));
+                Assert.That(screen.Options[1], Is.EqualTo("視神経チゼル [暗視ゴーグルを置き換える]"));
             });
+        });
+    }
+
+    [Test]
+    public void CyberneticsTerminalTextTranspiler_TranslatesInstallOptionDisplayNames()
+    {
+        WriteCyberneticsDictionary(
+            ("You are becoming, aristocrat. Choose an implant to install.", "変容しつつあるな、貴顕よ。装着するインプラントを選ぶがよい。"),
+            ("[{0} license points]", "[{0} ライセンスポイント]"),
+            ("[already installed]", "[装着済み]"),
+            ("Night Vision Goggles", "暗視ゴーグル"),
+            ("Optic Chisel", "視神経チゼル"));
+
+        RunWithCyberneticsTerminalTextTranspiler(() =>
+        {
+            var screen = new CyberneticsScreen();
+            screen.MainText = "You are becoming, aristocrat. Choose an implant to install.";
+            screen.Options.Add("Night Vision Goggles {{C|[3 license points]}}");
+            screen.Options.Add("Optic Chisel [already installed]");
+            screen.Update();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(screen.MainText, Is.EqualTo("変容しつつあるな、貴顕よ。装着するインプラントを選ぶがよい。"));
+                Assert.That(screen.Options[0], Is.EqualTo("暗視ゴーグル {{C|[3 ライセンスポイント]}}"));
+                Assert.That(screen.Options[1], Is.EqualTo("視神経チゼル [装着済み]"));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(nameof(CyberneticsTerminalTextTranslator), "CyberneticsTerminal.OptionText"),
+                    Is.GreaterThan(0));
+            });
+        });
+    }
+
+    [Test]
+    public void CyberneticsTerminalTextTranspiler_StripsDirectMarkedVisibleOptionText()
+    {
+        RunWithCyberneticsTerminalTextTranspiler(() =>
+        {
+            var screen = new CyberneticsScreen();
+            screen.Options.Add(MessageFrameTranslator.MarkDirectTranslation("既に翻訳済みオプション"));
+            screen.Update();
+
+            Assert.That(screen.Options[0], Is.EqualTo("既に翻訳済みオプション"));
         });
     }
 

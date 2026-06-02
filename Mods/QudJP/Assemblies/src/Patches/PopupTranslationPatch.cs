@@ -63,6 +63,8 @@ public static class PopupTranslationPatch
         new Regex("^That code is already in your library\\. It's named (?<value>.+)\\.$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex ManageBuildTitlePattern =
         new Regex("^Manage Build: (?<value>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex GenderCustomizeNamePromptPattern =
+        new Regex("^What name should be used for your (?<value>.+?)\\? \\(Male, female, etc\\.\\)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex SifrahChosenCorrectPattern =
         new Regex("^You have already chosen the correct option for (?<value>.+)\\.$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex SifrahUseWhichPattern =
@@ -85,8 +87,12 @@ public static class PopupTranslationPatch
         new Regex("^You discovered (?<value>.+)\\.$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex DiscoverHiddenExaminerPattern =
         new Regex("^You discover something about (?<value>.+?) that was hidden!$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex TemporalFugueDuplicateImpossiblePattern =
+        new Regex("^It is impossible to duplicate (?<value>.+?)\\.$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex QuestReceivedPattern =
         new Regex("^You have received a new quest, (?<value>.+)!$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex EndGameConfirmPattern =
+        new Regex("^End game\\?\\n\\nType (?<value>.+?) to confirm\\.$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex PhysicsAttackConfirmPattern =
         new Regex("^Do you really want to attack (?<value>(?:the |a |an )?.+?)\\?$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex ConversationRefusalPattern =
@@ -340,14 +346,47 @@ public static class PopupTranslationPatch
             return source ?? string.Empty;
         }
 
-        if (TryStripPopupDirectTranslationMarker(source, out var markedText))
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
         {
             return markedText;
+        }
+
+        if (ObjectFinderConfigFiltersTranslationPatch.TryTranslateFixedPopupText(source, out var objectFinderFixedTranslated))
+        {
+            return NormalizeProducerText(objectFinderFixedTranslated);
         }
 
         if (ItemNamingTranslationPatch.TryTranslatePopupMessage(source, route, family, out var itemNamingOwnerTranslated))
         {
             return NormalizeProducerText(itemNamingOwnerTranslated);
+        }
+
+        if (TinkeringHelpersMakersMarkTranslationPatch.TryTranslatePopupMessage(source, route, family, out var makersMarkTranslated))
+        {
+            return NormalizeProducerText(makersMarkTranslated);
+        }
+
+        if (SavesApiFatalSaveErrorTranslationPatch.TryTranslatePopupMessage(source, route, family, out var saveErrorTranslated))
+        {
+            return NormalizeProducerText(saveErrorTranslated);
+        }
+
+        if (EquipmentScreenBodypartEquipPopupTranslationPatch.TryTranslatePopupMessage(
+            source,
+            route,
+            family,
+            out var equipmentScreenTranslated))
+        {
+            return NormalizeProducerText(equipmentScreenTranslated);
+        }
+
+        if (ModDisguiseBeingAppliedPopupTranslationPatch.TryTranslatePopupMessage(
+            source,
+            route,
+            family,
+            out var disguiseTranslated))
+        {
+            return NormalizeProducerText(disguiseTranslated);
         }
 
         if (DoesVerbRouteTranslator.TryTranslateMarkedMessage(source, out var doesVerbTranslated))
@@ -365,6 +404,12 @@ public static class PopupTranslationPatch
         if (TryTranslatePopupProducerText(source, route, family, popupId, out var translated))
         {
             return NormalizeProducerText(translated);
+        }
+
+        var unmarkedSource = MessageFrameTranslator.StripAllDirectTranslationMarkers(source);
+        if (!string.Equals(unmarkedSource, source, StringComparison.Ordinal))
+        {
+            return unmarkedSource;
         }
 
         return source;
@@ -412,15 +457,47 @@ public static class PopupTranslationPatch
     {
         var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
 
+        if (EmbarkBuilderValidationPopupTranslationPatch.TryTranslatePopupMessage(
+                source,
+                route,
+                family,
+                out var embarkBuilderValidationTranslated))
+        {
+            translated = embarkBuilderValidationTranslated;
+            return true;
+        }
+
         if (TradeUiVendorPopupTranslationPatch.TryTranslatePopupMessage(source, route, family, out var tradeUiVendorTranslated))
         {
             translated = tradeUiVendorTranslated;
             return true;
         }
 
+        if (ObjectFinderConfigFiltersTranslationPatch.TryTranslatePopupMessage(source, route, family, out var objectFinderTranslated))
+        {
+            translated = objectFinderTranslated;
+            return true;
+        }
+
+        if (ObjectFinderConfigFiltersTranslationPatch.ShouldClaimPopupMessagePassthrough())
+        {
+            translated = source;
+            return true;
+        }
+
         if (GameObjectPopupTranslationPatch.TryTranslatePopupMessage(source, route, family, out var gameObjectPopupTranslated))
         {
             translated = gameObjectPopupTranslated;
+            return true;
+        }
+
+        if (VehicleFollowerPopupTranslationPatch.TryTranslatePopupProducerText(
+                source,
+                route,
+                family,
+                out var vehicleFollowerTranslated))
+        {
+            translated = vehicleFollowerTranslated;
             return true;
         }
 
@@ -466,6 +543,12 @@ public static class PopupTranslationPatch
             return true;
         }
 
+        if (FungalSporeInfectionTranslationPatch.TryTranslatePopupMessage(source, route, family, out var fungalSporeTranslated))
+        {
+            translated = fungalSporeTranslated;
+            return true;
+        }
+
         if (ClonelingVehicleTranslationPatch.TryTranslatePopupMessage(source, route, family, out var clonelingVehicleTranslated))
         {
             translated = clonelingVehicleTranslated;
@@ -481,6 +564,12 @@ public static class PopupTranslationPatch
         if (RepairTranslationPatch.TryTranslatePopupMessage(source, route, family, out var repairTranslated))
         {
             translated = repairTranslated;
+            return true;
+        }
+
+        if (TinkeringMinePopupTranslationPatch.TryTranslatePopupMessage(source, route, family, out var tinkeringMineTranslated))
+        {
+            translated = tinkeringMineTranslated;
             return true;
         }
 
@@ -517,6 +606,36 @@ public static class PopupTranslationPatch
         if (MutationsApiTranslationPatch.TryTranslatePopupMessage(source, route, family, out var mutationTranslated))
         {
             translated = mutationTranslated;
+            return true;
+        }
+
+        if (QudMutationsModuleWindowVariantPopupTranslationPatch.TryTranslatePopupMessage(
+                source,
+                route,
+                family,
+                out var mutationVariantTranslated))
+        {
+            translated = mutationVariantTranslated;
+            return true;
+        }
+
+        if (BaseMutationSelectVariantPopupTranslationPatch.TryTranslatePopupMessage(
+                source,
+                route,
+                family,
+                out var baseMutationVariantTranslated))
+        {
+            translated = baseMutationVariantTranslated;
+            return true;
+        }
+
+        if (QudMutationsModuleWindowHandleMenuOptionPopupTranslationPatch.TryTranslatePopupMessage(
+                source,
+                route,
+                family,
+                out var mutationMenuOptionTranslated))
+        {
+            translated = mutationMenuOptionTranslated;
             return true;
         }
 
@@ -632,6 +751,12 @@ public static class PopupTranslationPatch
             return true;
         }
 
+        if (TryTranslateStatusOptionToggle(source, route, family, out var statusOptionTranslated))
+        {
+            translated = statusOptionTranslated;
+            return true;
+        }
+
         if (TryTranslateSinglePlaceholderTemplate(
                 source,
                 route,
@@ -710,6 +835,20 @@ public static class PopupTranslationPatch
             return true;
         }
 
+        if (TryTranslateSinglePlaceholderTemplate(
+                stripped,
+                route,
+                family + ".TemporalFugueDuplicateImpossible",
+                TemporalFugueDuplicateImpossiblePattern,
+                "It is impossible to duplicate {0}.",
+                spans,
+                translateValueAsDisplayName: true,
+                out var temporalFugueDuplicateTranslated))
+        {
+            translated = temporalFugueDuplicateTranslated;
+            return true;
+        }
+
         if (TryTranslateQuestReceived(
                 stripped,
                 route,
@@ -718,6 +857,19 @@ public static class PopupTranslationPatch
                 out var questReceivedTranslated))
         {
             translated = questReceivedTranslated;
+            return true;
+        }
+
+        if (TryTranslateSinglePlaceholderTemplate(
+                stripped,
+                route,
+                family + ".EndGameConfirm",
+                EndGameConfirmPattern,
+                "End game?\n\nType {0} to confirm.",
+                spans,
+                out var endGameConfirmTranslated))
+        {
+            translated = endGameConfirmTranslated;
             return true;
         }
 
@@ -817,6 +969,20 @@ public static class PopupTranslationPatch
                 out var manageBuildTitleTranslated))
         {
             translated = manageBuildTitleTranslated;
+            return true;
+        }
+
+        if (TryTranslateSinglePlaceholderTemplate(
+                stripped,
+                route,
+                family + ".GenderCustomizeNamePrompt",
+                GenderCustomizeNamePromptPattern,
+                "What name should be used for your {0}? (Male, female, etc.)",
+                spans,
+                TranslateGenderCustomizeNamePromptValue,
+                out var genderCustomizePromptTranslated))
+        {
+            translated = genderCustomizePromptTranslated;
             return true;
         }
 
@@ -2136,6 +2302,78 @@ public static class PopupTranslationPatch
         return true;
     }
 
+    private static bool TryTranslateStatusOptionToggle(
+        string source,
+        string route,
+        string family,
+        out string translated)
+    {
+        if (TryTranslateBinaryOption(
+                source,
+                "Equipment View: ",
+                "Paperdoll",
+                "List",
+                "装備表示：",
+                "紙人形",
+                "リスト",
+                out translated)
+            || TryTranslateBinaryOption(
+                source,
+                "Sort Mode: ",
+                "Category",
+                "A-Z",
+                "ソート方式：",
+                "カテゴリー",
+                "A-Z",
+                out translated)
+            || TryTranslateBinaryOption(
+                source,
+                "Search Mode: ",
+                "Strict",
+                "Fuzzy",
+                "検索方式：",
+                "厳密",
+                "あいまい",
+                out translated))
+        {
+            DynamicTextObservability.RecordTransform(route, family + ".StatusOptionToggle", source, translated);
+            return true;
+        }
+
+        translated = source;
+        return false;
+    }
+
+    private static bool TryTranslateBinaryOption(
+        string source,
+        string prefix,
+        string left,
+        string right,
+        string translatedPrefix,
+        string translatedLeft,
+        string translatedRight,
+        out string translated)
+    {
+        var selectedLeft = "{{W|" + left + "}}";
+        var selectedRight = "{{W|" + right + "}}";
+        var leftSelectedSource = prefix + selectedLeft + "/" + right;
+        if (string.Equals(source, leftSelectedSource, StringComparison.Ordinal))
+        {
+            translated = translatedPrefix + "{{W|" + translatedLeft + "}}/" + translatedRight;
+            return true;
+        }
+
+        var rightSelectedSource = prefix + left + "/" + selectedRight;
+        if (string.Equals(source, rightSelectedSource, StringComparison.Ordinal))
+        {
+            translated = translatedPrefix + translatedLeft + "/{{W|" + translatedRight + "}}";
+            return true;
+        }
+
+        translated = source;
+        return false;
+    }
+
     private static bool TryTranslateSinglePlaceholderTemplate(
         string source,
         string route,
@@ -2143,6 +2381,8 @@ public static class PopupTranslationPatch
         Regex pattern,
         string templateKey,
         IReadOnlyList<ColorSpan> spans,
+        bool translateValueAsDisplayName,
+        Func<string, string>? translateValue,
         out string translated)
     {
         var match = pattern.Match(source);
@@ -2165,6 +2405,16 @@ public static class PopupTranslationPatch
             value = ColorAwareTranslationComposer.RestoreCapture(value, spans, match.Groups["value"]);
         }
 
+        if (translateValueAsDisplayName)
+        {
+            value = DisplayNameCaptureTranslator.TranslatePreservingColors(value, nameof(PopupTranslationPatch));
+        }
+
+        if (translateValue is not null)
+        {
+            value = translateValue(value);
+        }
+
         translated = translatedTemplate.Replace("{0}", value);
         if (spans.Count > 0)
         {
@@ -2174,6 +2424,78 @@ public static class PopupTranslationPatch
 
         DynamicTextObservability.RecordTransform(route, family, source, translated);
         return true;
+    }
+
+    private static bool TryTranslateSinglePlaceholderTemplate(
+        string source,
+        string route,
+        string family,
+        Regex pattern,
+        string templateKey,
+        IReadOnlyList<ColorSpan> spans,
+        bool translateValueAsDisplayName,
+        out string translated)
+    {
+        return TryTranslateSinglePlaceholderTemplate(
+            source,
+            route,
+            family,
+            pattern,
+            templateKey,
+            spans,
+            translateValueAsDisplayName,
+            translateValue: null,
+            out translated);
+    }
+
+    private static bool TryTranslateSinglePlaceholderTemplate(
+        string source,
+        string route,
+        string family,
+        Regex pattern,
+        string templateKey,
+        IReadOnlyList<ColorSpan> spans,
+        out string translated)
+    {
+        return TryTranslateSinglePlaceholderTemplate(
+            source,
+            route,
+            family,
+            pattern,
+            templateKey,
+            spans,
+            translateValueAsDisplayName: false,
+            translateValue: null,
+            out translated);
+    }
+
+    private static bool TryTranslateSinglePlaceholderTemplate(
+        string source,
+        string route,
+        string family,
+        Regex pattern,
+        string templateKey,
+        IReadOnlyList<ColorSpan> spans,
+        Func<string, string> translateValue,
+        out string translated)
+    {
+        return TryTranslateSinglePlaceholderTemplate(
+            source,
+            route,
+            family,
+            pattern,
+            templateKey,
+            spans,
+            translateValueAsDisplayName: false,
+            translateValue,
+            out translated);
+    }
+
+    private static string TranslateGenderCustomizeNamePromptValue(string value)
+    {
+        return string.Equals(value.Trim(), "gender", StringComparison.OrdinalIgnoreCase)
+            ? "ジェンダー"
+            : value;
     }
 
     private static bool TryTranslateQuestReceived(

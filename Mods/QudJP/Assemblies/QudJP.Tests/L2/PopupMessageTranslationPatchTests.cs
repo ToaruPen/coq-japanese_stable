@@ -111,6 +111,54 @@ public sealed class PopupMessageTranslationPatchTests
     }
 
     [Test]
+    public void Prefix_RepositoryDictionary_TranslatesBuildLibraryAndSummaryMessages()
+    {
+        Translator.SetDictionaryDirectoryForTests(Path.Combine(
+            QudJP.Tests.L1.TestProjectPaths.GetRepositoryRoot(),
+            "Mods",
+            "QudJP",
+            "Localization",
+            "Dictionaries"));
+
+        var buttons = new List<DummyPopupMessageItem>
+        {
+            new DummyPopupMessageItem("Delete Build", "delete", "delete"),
+            new DummyPopupMessageItem("Rename Build", "rename", "rename"),
+        };
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyPopupMessageTarget), nameof(DummyPopupMessageTarget.ShowPopup)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(PopupMessageTranslationPatch), nameof(PopupMessageTranslationPatch.Prefix))));
+
+            new DummyPopupMessageTarget().ShowPopup("That code appears to be invalid.");
+            var invalidMessage = DummyPopupMessageTarget.LastMessage;
+
+            new DummyPopupMessageTarget().ShowPopup("Build code copied to clipboard.");
+            var copiedMessage = DummyPopupMessageTarget.LastMessage;
+
+            new DummyPopupMessageTarget().ShowPopup("Prompt", buttons, title: "Manage Build: Salt Dunes");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(invalidMessage, Is.EqualTo("そのコードは無効のようです。"));
+                Assert.That(copiedMessage, Is.EqualTo("ビルドコードをクリップボードにコピーしました。"));
+                Assert.That(DummyPopupMessageTarget.LastTitle, Is.EqualTo("ビルド管理：Salt Dunes"));
+                Assert.That(DummyPopupMessageTarget.LastButtons, Is.Not.Null);
+                Assert.That(DummyPopupMessageTarget.LastButtons![0].text, Is.EqualTo("ビルドを削除"));
+                Assert.That(DummyPopupMessageTarget.LastButtons[1].text, Is.EqualTo("ビルド名を変更"));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void Prefix_PreservesColorCodes_WhenDeleteTemplatesReorderPlaceholder()
     {
         WriteDictionary(
@@ -1220,6 +1268,48 @@ public sealed class PopupMessageTranslationPatchTests
         }
     }
 
+    [Test]
+    public void Prefix_TranslatesModManagerRestartConfirmation_AndPreservesButtonContracts()
+    {
+        const string source = "Your mod configuration has changed, do you want to apply your changes and restart the game?";
+        WriteDictionary(
+            (source, "Mod 設定が変更されています。変更を適用してゲームを再起動しますか？"),
+            ("Yes", "はい"),
+            ("No", "いいえ"));
+        var buttons = new List<DummyPopupMessageItem>
+        {
+            new("Yes", "Y", "Yes"),
+            new("No", "N", "No"),
+        };
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyPopupMessageTarget), nameof(DummyPopupMessageTarget.ShowPopup)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(PopupMessageTranslationPatch), nameof(PopupMessageTranslationPatch.Prefix))));
+
+            new DummyPopupMessageTarget().ShowPopup(source, buttons);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyPopupMessageTarget.LastMessage, Is.EqualTo("Mod 設定が変更されています。変更を適用してゲームを再起動しますか？"));
+                Assert.That(DummyPopupMessageTarget.LastButtons![0].text, Is.EqualTo("はい"));
+                Assert.That(DummyPopupMessageTarget.LastButtons[1].text, Is.EqualTo("いいえ"));
+                Assert.That(DummyPopupMessageTarget.LastButtons![0].command, Is.EqualTo("Yes"));
+                Assert.That(DummyPopupMessageTarget.LastButtons[1].command, Is.EqualTo("No"));
+                Assert.That(DummyPopupMessageTarget.LastButtons[0].hotkey, Is.EqualTo("Y"));
+                Assert.That(DummyPopupMessageTarget.LastButtons[1].hotkey, Is.EqualTo("N"));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
     private static string CreateHarmonyId()
     {
         return $"qudjp.tests.{Guid.NewGuid():N}";
@@ -1279,4 +1369,5 @@ public sealed class PopupMessageTranslationPatchTests
             .Replace("\n", "\\n", StringComparison.Ordinal)
             .Replace("\t", "\\t", StringComparison.Ordinal);
     }
+
 }

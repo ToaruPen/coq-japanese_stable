@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 using HarmonyLib;
 using QudJP.Patches;
@@ -76,6 +77,38 @@ public sealed class JournalApiAddTranslationPatchTests
                 Assert.That(entry.MuralText, Is.EqualTo("\u0001備考: キャクキャ"));
                 Assert.That(entry.GospelText, Is.EqualTo("\u0001備考: キャクキャ"));
             });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void AddAccomplishment_TranslatesGameObjectDieDeathJournalText_WhenPatched()
+    {
+        WriteExactDictionary(
+            ("5th", "第5"),
+            ("Ut yara Ux", "ウト・ヤラ・ウクス"));
+        WritePatternDictionary(("^On the (.+?) of (.+?)$", "{t1}の{t0}日"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyJournalApi), nameof(DummyJournalApi.AddAccomplishment)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(JournalAccomplishmentAddTranslationPatch), nameof(JournalAccomplishmentAddTranslationPatch.Prefix))),
+                postfix: new HarmonyMethod(RequireMethod(typeof(JournalAccomplishmentAddTranslationPatch), nameof(JournalAccomplishmentAddTranslationPatch.Postfix))));
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyGameObjectDieJournalTarget), nameof(DummyGameObjectDieJournalTarget.Die)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(GameObjectDieTranslationPatch), nameof(GameObjectDieTranslationPatch.Prefix))),
+                finalizer: new HarmonyMethod(RequireMethod(typeof(GameObjectDieTranslationPatch), nameof(GameObjectDieTranslationPatch.Finalizer))));
+
+            DummyGameObjectDieJournalTarget.Die();
+
+            var entry = DummyJournalApi.Accomplishments.Single();
+            Assert.That(entry.Text, Is.EqualTo("\u0001ウト・ヤラ・ウクスの第5日、蒸発した。"));
         }
         finally
         {
@@ -868,6 +901,17 @@ public sealed class JournalApiAddTranslationPatchTests
     {
         return AccessTools.Method(type, methodName)
                ?? throw new InvalidOperationException($"Method not found: {type.FullName}.{methodName}");
+    }
+
+    private static class DummyGameObjectDieJournalTarget
+    {
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public static void Die()
+        {
+            DummyJournalApi.AddAccomplishment(
+                "On the 5th of Ut yara Ux, 蒸発した。",
+                category: "general");
+        }
     }
 
     private void WritePatternDictionary(params (string pattern, string template)[] patterns)

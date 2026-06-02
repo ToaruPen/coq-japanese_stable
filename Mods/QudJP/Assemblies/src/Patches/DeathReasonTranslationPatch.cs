@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using HarmonyLib;
 
 namespace QudJP.Patches;
@@ -13,6 +14,10 @@ namespace QudJP.Patches;
 public static class DeathReasonTranslationPatch
 {
     private const string Context = nameof(DeathReasonTranslationPatch);
+
+    private static readonly Regex ExplodeThirdPersonReasonPattern = new(
+        "^(?<subject>.+?) @@(?<cause>exploded|crushed under the weight of a thousand suns)\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.Singleline);
 
     [HarmonyTargetMethod]
     private static MethodBase? TargetMethod()
@@ -77,10 +82,51 @@ public static class DeathReasonTranslationPatch
             return markedText;
         }
 
+        if (TryTranslateExplodeThirdPersonReason(reason, out var generatedTranslated))
+        {
+            return generatedTranslated;
+        }
+
         return ColorAwareTranslationComposer.TranslatePreservingColors(
             reason,
             static visible => StringHelpers.TryGetTranslationExactOrLowerAscii(visible, out var translated)
                 ? translated
                 : visible);
+    }
+
+    private static bool TryTranslateExplodeThirdPersonReason(string reason, out string translated)
+    {
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(reason);
+        var match = ExplodeThirdPersonReasonPattern.Match(stripped);
+        if (!match.Success)
+        {
+            translated = reason;
+            return false;
+        }
+
+        var bodyKey = match.Groups["cause"].Value switch
+        {
+            "exploded" => "QudJP.DeathWrapper.Exploded.Bare",
+            "crushed under the weight of a thousand suns" => "QudJP.DeathWrapper.CrushedUnderSuns.Bare",
+            _ => string.Empty,
+        };
+        if (string.IsNullOrEmpty(bodyKey)
+            || !StringHelpers.TryGetTranslationExactOrLowerAscii(bodyKey, out var bodyTranslation))
+        {
+            translated = reason;
+            return false;
+        }
+
+        var subject = ColorAwareTranslationComposer.RestoreCapture(
+            match.Groups["subject"].Value,
+            spans,
+            match.Groups["subject"]);
+        var translatedSubject = DisplayNameCaptureTranslator.TranslatePreservingColors(subject, Context);
+        translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+            translatedSubject + "は" + bodyTranslation,
+            spans,
+            stripped.Length,
+            reason);
+        return true;
     }
 }

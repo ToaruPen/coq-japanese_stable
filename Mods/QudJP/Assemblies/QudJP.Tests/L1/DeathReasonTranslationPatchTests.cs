@@ -56,6 +56,64 @@ public sealed class DeathReasonTranslationPatchTests
     }
 
     [Test]
+    public void TranslateDeathReason_RepositoryDictionary_TranslatesCodaEndGameReason()
+    {
+        Translator.SetDictionaryDirectoryForTests(GetRepositoryDictionaryDirectory());
+
+        var result = DeathReasonTranslationPatch.TranslateDeathReason("You ended the game.");
+
+        Assert.That(result, Is.EqualTo("ゲームを終了した。"));
+    }
+
+    [Test]
+    public void TranslateDeathReason_TranslatesExplodeThirdPersonReason()
+    {
+        WriteDictionary(
+            ("snapjaw", "スナップジョー"),
+            ("QudJP.DeathWrapper.Exploded.Bare", "爆発した。"));
+
+        var result = DeathReasonTranslationPatch.TranslateDeathReason("snapjaw @@exploded.");
+
+        Assert.That(result, Is.EqualTo("スナップジョーは爆発した。"));
+    }
+
+    [Test]
+    public void TranslateDeathReason_TranslatesCrushedUnderSunsThirdPersonReason()
+    {
+        WriteDictionary(
+            ("snapjaw", "スナップジョー"),
+            ("QudJP.DeathWrapper.CrushedUnderSuns.Bare", "千の太陽の重みで押し潰された。"));
+
+        var result = DeathReasonTranslationPatch.TranslateDeathReason("snapjaw @@crushed under the weight of a thousand suns.");
+
+        Assert.That(result, Is.EqualTo("スナップジョーは千の太陽の重みで押し潰された。"));
+    }
+
+    [Test]
+    public void TranslateDeathReason_TranslatesExplodeThirdPersonReason_PreservesColorCodes()
+    {
+        WriteDictionary(
+            ("snapjaw", "スナップジョー"),
+            ("QudJP.DeathWrapper.Exploded.Bare", "爆発した。"));
+
+        var result = DeathReasonTranslationPatch.TranslateDeathReason("{{R|snapjaw @@exploded.}}");
+
+        Assert.That(result, Is.EqualTo("{{R|スナップジョーは爆発した。}}"));
+    }
+
+    [Test]
+    public void TranslateDeathReason_StripsDirectMarkerInsideColorTaggedSubject()
+    {
+        WriteDictionary(
+            ("snapjaw", "スナップジョー"),
+            ("QudJP.DeathWrapper.Exploded.Bare", "爆発した。"));
+
+        var result = DeathReasonTranslationPatch.TranslateDeathReason("{{R|\u0001snapjaw @@exploded.}}");
+
+        Assert.That(result, Is.EqualTo("{{R|スナップジョーは爆発した。}}"));
+    }
+
+    [Test]
     public void TranslateDeathReason_PreservesColorCodes()
     {
         WriteDictionary(("You were stepped on.", "踏みつぶされた。"));
@@ -116,4 +174,7 @@ public sealed class DeathReasonTranslationPatchTests
         sb.Append("]}");
         File.WriteAllText(Path.Combine(tempDir, "test.ja.json"), sb.ToString());
     }
+
+    private static string GetRepositoryDictionaryDirectory() =>
+        Path.Combine(TestProjectPaths.GetRepositoryRoot(), "Mods", "QudJP", "Localization", "Dictionaries");
 }

@@ -192,6 +192,65 @@ public sealed class MutationActivatedAbilityNameTranslationPatchTests
     }
 
     [Test]
+    public void SyncAbilityName_TranslatesUpdatedLightManipulationAbilityName_WhenPatched()
+    {
+        WithPatchedSyncAbilityName(() =>
+        {
+            var mutation = new DummyMutationAbilityProvider("Lase (4 charges)");
+
+            mutation.SyncAbilityName();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(mutation.StrengthEntry.DisplayName, Is.EqualTo("レーザー照射 (4チャージ)"));
+                Assert.That(HitCount(), Is.EqualTo(1));
+            });
+        });
+    }
+
+    [Test]
+    public void SyncAbilityName_StripsDirectMarkerFromRecoilZone_WhenPatched()
+    {
+        WithPatchedSyncAbilityName(() =>
+        {
+            var mutation = new DummyMutationAbilityProvider("Recoil to \u0001ジョッパ");
+
+            mutation.SyncAbilityName();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(mutation.StrengthEntry.DisplayName, Is.EqualTo("ジョッパへ帰還"));
+                Assert.That(HitCount(), Is.EqualTo(1));
+            });
+        });
+    }
+
+    [TestCase("", "", 0)]
+    [TestCase("\u0001Lase (4 charges)", "Lase (4 charges)", 0)]
+    [TestCase("<color=red>Lase (4 charges)</color>", "<color=red>レーザー照射 (4チャージ)</color>", 1)]
+    [TestCase("\u0001<color=red>Lase (4 charges)</color>", "<color=red>Lase (4 charges)</color>", 0)]
+    [TestCase("Unknown Ability (3 charges)", "Unknown Ability (3 charges)", 0)]
+    public void SyncAbilityName_HandlesFallbackEmptyAndDirectMarkedAbilityNames_WhenPatched(
+        string source,
+        string expected,
+        int expectedHitCount)
+    {
+        WithPatchedSyncAbilityName(() =>
+        {
+            var mutation = new DummyMutationAbilityProvider(source);
+
+            mutation.SyncAbilityName();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(mutation.StrengthEntry.DisplayName, Is.EqualTo(expected));
+                Assert.That(HitCount(), Is.EqualTo(expectedHitCount));
+            });
+        });
+    }
+
+
+    [Test]
     public void RegistrationNameFallbackSetter_RejectsNonStringDisplayNameMember()
     {
         var entry = new DummyMutationActivatedAbilityEntryWithObjectDisplayName();
@@ -217,6 +276,26 @@ public sealed class MutationActivatedAbilityNameTranslationPatchTests
         {
             harmony.Patch(
                 original: RequireMethod(typeof(DummyMutationAbilityProvider), nameof(DummyMutationAbilityProvider.Mutate), typeof(object), typeof(int)),
+                postfix: new HarmonyMethod(RequireMethod(
+                    typeof(MutationActivatedAbilityNameTranslationPatch),
+                    nameof(MutationActivatedAbilityNameTranslationPatch.Postfix),
+                    typeof(object))));
+            action();
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static void WithPatchedSyncAbilityName(Action action)
+    {
+        var harmonyId = "qudjp.tests.mutation-activated-ability-name." + Guid.NewGuid().ToString("N");
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyMutationAbilityProvider), nameof(DummyMutationAbilityProvider.SyncAbilityName)),
                 postfix: new HarmonyMethod(RequireMethod(
                     typeof(MutationActivatedAbilityNameTranslationPatch),
                     nameof(MutationActivatedAbilityNameTranslationPatch.Postfix),
@@ -305,6 +384,13 @@ internal sealed class DummyMutationAbilityProvider
         }
 
         return true;
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public void SyncAbilityName()
+    {
+        StrengthActivatedAbilityID = StrengthEntry.ID;
+        StrengthEntry.DisplayName = _strengthName;
     }
 
     public DummyMutationActivatedAbilityEntry? MyActivatedAbility(Guid id)

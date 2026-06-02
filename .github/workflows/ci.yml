@@ -298,8 +298,6 @@ jobs:
           --ignore=scripts/tests/test_roslyn_semantic_probe.py
           --ignore=scripts/tests/test_roslyn_text_construction_inventory.py
           --ignore=scripts/tests/test_scan_static_producer_inventory.py
-          --ignore=scripts/tests/test_static_producer_closure.py
-          --ignore=scripts/tests/test_text_construction_surface_policy.py
           --durations=30
 
       - name: Check CHANGELOG release links
@@ -348,7 +346,7 @@ jobs:
           --expect-count popup=24
           --expect-count journal=1
           --expect-count leaf=0
-          --expect-count emit-message=386
+          --expect-count emit-message=387
           --expect-count does-verb=0
           --expect-count message-log=1
           --expect-count description=14

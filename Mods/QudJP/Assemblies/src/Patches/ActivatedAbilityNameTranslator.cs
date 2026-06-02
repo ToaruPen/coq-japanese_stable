@@ -30,6 +30,9 @@ internal static class ActivatedAbilityNameTranslator
     private static readonly Regex LayMineTargetPattern =
         new Regex("^Lay Mine \\[(?<target>.+)\\]$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex RecoilToZonePattern =
+        new Regex("^Recoil to (?<zone>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     private static readonly Regex TinkerTurretRemainingPattern =
         new Regex("^Tinker Turret\\s+\\[(?<count>\\d+) remaining\\]$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
@@ -48,6 +51,7 @@ internal static class ActivatedAbilityNameTranslator
             ["Clone"] = "クローン作成",
             ["Dig"] = "掘る",
             ["Engulf"] = "呑み込む",
+            ["Release Poison Gas"] = "毒ガス放出",
             ["Run"] = "走る",
             ["Run Over"] = "轢く",
         };
@@ -152,6 +156,15 @@ internal static class ActivatedAbilityNameTranslator
             && TryTranslateBaseAbilityName("Lay Mine", out var layMine))
         {
             translated = layMine + " [" + TranslateDisplayNameTarget(layMineTargetMatch.Groups["target"].Value, ".LayMineTarget") + "]";
+            return true;
+        }
+
+        var recoilToZoneMatch = RecoilToZonePattern.Match(source);
+        if (recoilToZoneMatch.Success
+            && TryTranslateBaseAbilityName("Recoil", out var recoil)
+            && TryTranslateRecoilZone(recoilToZoneMatch.Groups["zone"].Value, out var recoilZone))
+        {
+            translated = recoilZone + "へ" + recoil;
             return true;
         }
 
@@ -263,6 +276,27 @@ internal static class ActivatedAbilityNameTranslator
         }
 
         return false;
+    }
+
+    private static bool TryTranslateRecoilZone(string zone, out string translated)
+    {
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(zone, out var strippedZone))
+        {
+            translated = strippedZone;
+            return true;
+        }
+
+        if (GetDisplayNameRouteTranslator.IsAlreadyLocalizedDisplayNameStateText(zone))
+        {
+            translated = zone;
+            return true;
+        }
+
+        var rawTranslated = TranslateDisplayNameTarget(zone, ".RecoilZone");
+        translated = MessageFrameTranslator.TryStripDirectTranslationMarker(rawTranslated, out var stripped)
+            ? stripped
+            : rawTranslated;
+        return !ContainsAsciiLetter(ColorAwareTranslationComposer.GetVisibleText(translated));
     }
 
     private static string TranslateFabricateName(string target)

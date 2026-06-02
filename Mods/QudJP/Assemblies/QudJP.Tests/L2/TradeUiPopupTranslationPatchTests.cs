@@ -37,6 +37,8 @@ public sealed class TradeUiPopupTranslationPatchTests
         DummyTradeUiPopupTarget.Reset();
         DummyPopupShow.Reset();
         DummyPopupTarget.Reset();
+        DummyPopupGenericTarget.Reset();
+        PopupPickOptionTranslationPatch.ClearPopupOptionMenuDataPreservationForTests();
     }
 
     [TearDown]
@@ -48,6 +50,8 @@ public sealed class TradeUiPopupTranslationPatchTests
         MessageFrameTranslator.ResetForTests();
         DynamicTextObservability.ResetForTests();
         DummyTradeUiPopupTarget.Reset();
+        DummyPopupGenericTarget.Reset();
+        PopupPickOptionTranslationPatch.ClearPopupOptionMenuDataPreservationForTests();
 
         if (Directory.Exists(tempDirectory))
         {
@@ -436,6 +440,107 @@ public sealed class TradeUiPopupTranslationPatchTests
     }
 
     [Test]
+    public void VendorOwnerPatch_TranslatesShowVendorActionsPopup_WithoutChangingSelectedCommand()
+    {
+        using var ownerPatch = PatchVendorOwner(nameof(DummyTradeUiVendorPopupProducerTarget.ShowVendorActions));
+        using var pickOptionPatch = PatchPickOption();
+        var target = new DummyTradeUiVendorPopupProducerTarget();
+
+        target.ShowVendorActions();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(DummyPopupGenericTarget.LastPickOptionTitle, Is.EqualTo("操作を選択"));
+            Assert.That(
+                DummyPopupGenericTarget.LastPickOptionOptions,
+                Is.EqualTo(new[] { "見る", "取引に追加", "識別", "修理", "充電", "読む" }));
+            Assert.That(target.LastVendorActionSelection, Is.EqualTo("Look"));
+            Assert.That(TradeUiPopupHitCount("TradeUiPopup.ShowVendorActions.Title"), Is.EqualTo(1));
+            Assert.That(TradeUiPopupHitCount("TradeUiPopup.ShowVendorActions.Option"), Is.EqualTo(6));
+        });
+    }
+
+    [Test]
+    public void VendorOwnerPatch_PreservesColorTagsInShowVendorActionsPopup()
+    {
+        using var ownerPatch = PatchVendorOwner(nameof(DummyTradeUiVendorPopupProducerTarget.ShowVendorActions));
+        using var pickOptionPatch = PatchPickOption();
+        var target = new DummyTradeUiVendorPopupProducerTarget
+        {
+            VendorActionOptions = new[] { "{{R|Look}}" },
+        };
+
+        target.ShowVendorActions();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(DummyPopupGenericTarget.LastPickOptionOptions, Is.EqualTo(new[] { "{{R|見る}}" }));
+            Assert.That(target.LastVendorActionSelection, Is.EqualTo("{{R|Look}}"));
+            Assert.That(TradeUiPopupHitCount("TradeUiPopup.ShowVendorActions.Option"), Is.EqualTo(1));
+        });
+    }
+
+    [Test]
+    public void VendorOwnerPatch_LeavesUnknownShowVendorActionOptionInEnglish()
+    {
+        using var ownerPatch = PatchVendorOwner(nameof(DummyTradeUiVendorPopupProducerTarget.ShowVendorActions));
+        using var pickOptionPatch = PatchPickOption();
+        var target = new DummyTradeUiVendorPopupProducerTarget
+        {
+            VendorActionOptions = new[] { "Talk" },
+        };
+
+        target.ShowVendorActions();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(DummyPopupGenericTarget.LastPickOptionOptions, Is.EqualTo(new[] { "Talk" }));
+            Assert.That(target.LastVendorActionSelection, Is.EqualTo("Talk"));
+            Assert.That(TradeUiPopupHitCount("TradeUiPopup.ShowVendorActions.Option"), Is.Zero);
+        });
+    }
+
+    [Test]
+    public void VendorOwnerPatch_DoesNotRetranslateDirectMarkedShowVendorActionOption()
+    {
+        using var ownerPatch = PatchVendorOwner(nameof(DummyTradeUiVendorPopupProducerTarget.ShowVendorActions));
+        using var pickOptionPatch = PatchPickOption();
+        var target = new DummyTradeUiVendorPopupProducerTarget
+        {
+            VendorActionOptions = new[] { MessageFrameTranslator.MarkDirectTranslation("Look") },
+        };
+
+        target.ShowVendorActions();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(DummyPopupGenericTarget.LastPickOptionOptions, Is.EqualTo(new[] { "Look" }));
+            Assert.That(target.LastVendorActionSelection, Is.EqualTo(MessageFrameTranslator.MarkDirectTranslation("Look")));
+            Assert.That(TradeUiPopupHitCount("TradeUiPopup.ShowVendorActions.Option"), Is.Zero);
+        });
+    }
+
+    [Test]
+    public void VendorOwnerPatch_LeavesEmptyShowVendorActionOptionUnchanged()
+    {
+        using var ownerPatch = PatchVendorOwner(nameof(DummyTradeUiVendorPopupProducerTarget.ShowVendorActions));
+        using var pickOptionPatch = PatchPickOption();
+        var target = new DummyTradeUiVendorPopupProducerTarget
+        {
+            VendorActionOptions = new[] { string.Empty },
+        };
+
+        target.ShowVendorActions();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(DummyPopupGenericTarget.LastPickOptionOptions, Is.EqualTo(new[] { string.Empty }));
+            Assert.That(target.LastVendorActionSelection, Is.EqualTo(string.Empty));
+            Assert.That(TradeUiPopupHitCount("TradeUiPopup.ShowVendorActions.Option"), Is.Zero);
+        });
+    }
+
+    [Test]
     public void VendorOwnerPatch_TranslatesRepairBrokenPopups_WhenOwnerPatched()
     {
         WriteDictionary(("{0} isn't broken!", "{0}は壊れていない！"));
@@ -464,20 +569,21 @@ public sealed class TradeUiPopupTranslationPatchTests
     [Test]
     public void VendorOwnerPatch_DoesNotRetranslateDirectMarkedRepairPopup_WhenOwnerPatched()
     {
+        const string translatedMessage = "その品は壊れていない！";
         WriteDictionary(("{0} isn't broken!", "{0}は壊れていない！"));
 
         using var showPatch = PatchPopupShow(nameof(DummyPopupShow.Show));
         using var ownerPatch = PatchVendorOwner(nameof(DummyTradeUiVendorPopupProducerTarget.DoVendorRepair));
         var target = new DummyTradeUiVendorPopupProducerTarget
         {
-            PopupMessageToShow = MessageFrameTranslator.MarkDirectTranslation("That item isn't broken!"),
+            PopupMessageToShow = MessageFrameTranslator.MarkDirectTranslation(translatedMessage),
         };
 
         target.DoVendorRepair();
 
         Assert.Multiple(() =>
         {
-            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("That item isn't broken!"));
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(translatedMessage));
             Assert.That(TradeUiPopupHitCount("TradeUiPopup.RepairBroken"), Is.Zero);
         });
     }
@@ -937,6 +1043,17 @@ public sealed class TradeUiPopupTranslationPatchTests
         return new HarmonyPatchScope(harmony, harmonyId);
     }
 
+    private static IDisposable PatchPickOption()
+    {
+        var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";
+        var harmony = new Harmony(harmonyId);
+        harmony.Patch(
+            original: RequireMethod(typeof(DummyPopupGenericTarget), nameof(DummyPopupGenericTarget.PickOption)),
+            prefix: new HarmonyMethod(RequireMethod(typeof(PopupPickOptionTranslationPatch), nameof(PopupPickOptionTranslationPatch.Prefix))),
+            finalizer: new HarmonyMethod(RequireMethod(typeof(PopupPickOptionTranslationPatch), nameof(PopupPickOptionTranslationPatch.Finalizer))));
+        return new HarmonyPatchScope(harmony, harmonyId);
+    }
+
     private static MethodInfo RequireMethod(Type type, string methodName)
     {
         return AccessTools.Method(type, methodName)
@@ -972,33 +1089,12 @@ public sealed class TradeUiPopupTranslationPatchTests
         Translator.SetDictionaryDirectoryForTests(Path.Combine(GetLocalizationRoot(), "Dictionaries"));
     }
 
-    // To-do: consolidate these JSON test helpers once the shared usage reaches 3+ files.
     private void WriteDictionary(params (string key, string text)[] entries)
     {
-        var builder = new StringBuilder();
-        builder.Append("{\"entries\":[");
-
-        for (var index = 0; index < entries.Length; index++)
-        {
-            if (index > 0)
-            {
-                builder.Append(',');
-            }
-
-            builder.Append("{\"key\":\"");
-            builder.Append(EscapeJson(entries[index].key));
-            builder.Append("\",\"text\":\"");
-            builder.Append(EscapeJson(entries[index].text));
-            builder.Append("\"}");
-        }
-
-        builder.Append("]}");
-        builder.AppendLine();
-
-        File.WriteAllText(
+        TestDictionaryWriter.WriteEntries(
             Path.Combine(dictionaryDirectory, "trade-ui-popup-tests.ja.json"),
-            builder.ToString(),
-            Utf8WithoutBom);
+            appendNewLine: true,
+            entries);
     }
 
     private void WritePatternDictionary(params (string pattern, string template)[] patterns)

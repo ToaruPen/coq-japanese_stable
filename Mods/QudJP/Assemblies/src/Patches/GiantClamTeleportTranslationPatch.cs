@@ -10,6 +10,7 @@ namespace QudJP.Patches;
 public static class GiantClamTeleportTranslationPatch
 {
     private const string Context = nameof(GiantClamTeleportTranslationPatch);
+    private const string HomeDimensionPopupDetail = "HomeDimensionPopup";
 
     [ThreadStatic]
     private static int activeDepth;
@@ -85,6 +86,37 @@ public static class GiantClamTeleportTranslationPatch
 
         DynamicTextObservability.RecordTransform("MessageQueue.AddPlayerMessage", Context, message, translated);
         message = translated;
+        return true;
+    }
+
+    internal static bool TryTranslatePopupMessage(string source, string route, string family, out string translated)
+    {
+        translated = source;
+        if (!OwnerTranslationScope.IsActive(activeDepth) || string.IsNullOrEmpty(source))
+        {
+            return false;
+        }
+
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
+        {
+            translated = markedText;
+            return true;
+        }
+
+        if (!string.Equals(
+                source,
+                "You find a passageway back to your home dimension.",
+                StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        translated = "元の次元へ戻る通路を見つけた。";
+        DynamicTextObservability.RecordTransform(
+            route,
+            family + "." + Context + "." + HomeDimensionPopupDetail,
+            source,
+            translated);
         return true;
     }
 

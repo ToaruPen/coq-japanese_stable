@@ -115,6 +115,55 @@ public static class SifrahTokenDescriptionTranslationPatch
         "XRL.World.TinkeringSifrahTokenVisualInspection",
     ];
 
+    private static readonly string[] IntArgumentTokenTypeNames =
+    [
+        "XRL.World.PsionicSifrahTokenEffectNosebleed",
+        "XRL.World.RitualSifrahTokenEffectAsleep",
+        "XRL.World.RitualSifrahTokenEffectBleeding",
+        "XRL.World.RitualSifrahTokenEffectCardiacArrest",
+        "XRL.World.RitualSifrahTokenEffectConfused",
+        "XRL.World.RitualSifrahTokenEffectDazed",
+        "XRL.World.RitualSifrahTokenEffectDisoriented",
+        "XRL.World.RitualSifrahTokenEffectExhausted",
+        "XRL.World.RitualSifrahTokenEffectIll",
+        "XRL.World.RitualSifrahTokenEffectLost",
+        "XRL.World.RitualSifrahTokenEffectPoisoned",
+        "XRL.World.RitualSifrahTokenEffectShaken",
+        "XRL.World.RitualSifrahTokenEffectShatterMentalArmor",
+        "XRL.World.RitualSifrahTokenEffectTerrified",
+        "XRL.World.SocialSifrahTokenCharge",
+        "XRL.World.SocialSifrahTokenEffectLovesick",
+        "XRL.World.SocialSifrahTokenEffectShamed",
+        "XRL.World.TinkeringSifrahTokenCharge",
+        "XRL.World.TinkeringSifrahTokenComputePower",
+    ];
+
+    private static readonly string[] StringArgumentTokenTypeNames =
+    [
+        "XRL.World.RitualSifrahTokenFood",
+        "XRL.World.RitualSifrahTokenGift",
+        "XRL.World.RitualSifrahTokenItem",
+        "XRL.World.RitualSifrahTokenLiquid",
+        "XRL.World.SocialSifrahTokenGift",
+        "XRL.World.SocialSifrahTokenItem",
+        "XRL.World.SocialSifrahTokenLiquid",
+        "XRL.World.TinkeringSifrahTokenCreationKnowledge",
+        "XRL.World.TinkeringSifrahTokenLiquid",
+    ];
+
+    private static readonly string[] BitTypeArgumentTokenTypeNames =
+    [
+        "XRL.World.RitualSifrahTokenBit",
+        "XRL.World.SocialSifrahTokenBit",
+        "XRL.World.TinkeringSifrahTokenBit",
+    ];
+
+    private static readonly string[] ScanArgumentTokenTypeNames =
+    [
+        "XRL.World.SocialSifrahTokenScanning",
+        "XRL.World.TinkeringSifrahTokenScanning",
+    ];
+
     [HarmonyTargetMethods]
     private static IEnumerable<MethodBase> TargetMethods()
     {
@@ -134,6 +183,54 @@ public static class SifrahTokenDescriptionTranslationPatch
         foreach (var constructor in ResolveConstructor("XRL.World.RitualSifrahTokenAttributeSacrifice", [typeof(string)]))
         {
             yield return constructor;
+        }
+
+        foreach (var typeName in IntArgumentTokenTypeNames)
+        {
+            foreach (var constructor in ResolveConstructor(typeName, [typeof(int)]))
+            {
+                yield return constructor;
+            }
+        }
+
+        foreach (var typeName in StringArgumentTokenTypeNames)
+        {
+            foreach (var constructor in ResolveConstructor(typeName, [typeof(string)]))
+            {
+                yield return constructor;
+            }
+        }
+
+        var bitType = AccessTools.TypeByName("XRL.World.Tinkering.BitType");
+        if (bitType is not null)
+        {
+            foreach (var typeName in BitTypeArgumentTokenTypeNames)
+            {
+                foreach (var constructor in ResolveConstructor(typeName, [bitType]))
+                {
+                    yield return constructor;
+                }
+            }
+        }
+        else
+        {
+            Trace.TraceError("QudJP: {0} BitType type not found.", Context);
+        }
+
+        var scanType = AccessTools.TypeByName("XRL.World.Capabilities.Scanning+Scan");
+        if (scanType is not null)
+        {
+            foreach (var typeName in ScanArgumentTokenTypeNames)
+            {
+                foreach (var constructor in ResolveConstructor(typeName, [scanType]))
+                {
+                    yield return constructor;
+                }
+            }
+        }
+        else
+        {
+            Trace.TraceError("QudJP: {0} Scanning.Scan type not found.", Context);
         }
 
         var worshippableType = AccessTools.TypeByName("XRL.World.Worshippable");
@@ -299,6 +396,38 @@ internal static class SifrahTokenDescriptionTranslator
         "^gift (?<item>.+)$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex OfferNamedItemPattern = new(
+        "^offer (?<item>.+)$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex UseNamedBitPattern = new(
+        "^use (?<bit>.+)$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex GiftNamedBitPattern = new(
+        "^gift (?<bit>.+)$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex OfferNamedBitPattern = new(
+        "^offer (?<bit>.+)$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex AcceptChancePattern = new(
+        "^accept (?:an? )?(?<chance>\\{\\{C\\|\\d+\\}\\}|\\d+)% chance of (?<tail>.+)$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex ComputePowerAmountPattern = new(
+        "^apply (?<count>\\{\\{C\\|-?\\d+\\}\\}|-?\\d+) units? of compute power$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex CreationKnowledgePattern = new(
+        "^apply knowledge of the manufacture of (?<item>.+)$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex ScanSubjectPattern = new(
+        "^(?<action>read|interpret) (?<subject>.+)$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     private static readonly Regex SacrificeNamedAttributePattern = new(
         "^sacrifice a point of (?<attribute>Strength|Agility|Toughness|Intelligence|Willpower|Ego)$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
@@ -448,6 +577,52 @@ internal static class SifrahTokenDescriptionTranslator
             return true;
         }
 
+        var acceptChanceMatch = AcceptChancePattern.Match(stripped);
+        if (acceptChanceMatch.Success)
+        {
+            var tailDescription = "accept " + acceptChanceMatch.Groups["tail"].Value;
+            if (TryTranslateDescription(tailDescription, out var tailTranslated, out _))
+            {
+                translated = Restore(acceptChanceMatch, spans, "chance")
+                    + "%の確率で"
+                    + tailTranslated;
+                detail = "AcceptChance";
+                return true;
+            }
+        }
+
+        var computePowerMatch = ComputePowerAmountPattern.Match(stripped);
+        if (computePowerMatch.Success)
+        {
+            translated = Restore(computePowerMatch, spans, "count") + "ユニットの計算力を使う";
+            detail = "ApplyComputePowerAmount";
+            return true;
+        }
+
+        var creationKnowledgeMatch = CreationKnowledgePattern.Match(stripped);
+        if (creationKnowledgeMatch.Success)
+        {
+            translated = TranslateItemCapture(Restore(creationKnowledgeMatch, spans, "item")) + "の製造知識を使う";
+            detail = "ApplyCreationKnowledgeItem";
+            return true;
+        }
+
+        var scanSubjectMatch = ScanSubjectPattern.Match(stripped);
+        if (scanSubjectMatch.Success)
+        {
+            var subject = TranslateGeneralCapture(Restore(scanSubjectMatch, spans, "subject"));
+            if (scanSubjectMatch.Groups["action"].Value == "read")
+            {
+                translated = subject + "を読み取る";
+                detail = "ReadScanSubject";
+                return true;
+            }
+
+            translated = subject + "を解釈する";
+            detail = "InterpretScanSubject";
+            return true;
+        }
+
         var chargeActionMatch = ChargeActionPattern.Match(stripped);
         if (chargeActionMatch.Success)
         {
@@ -514,6 +689,39 @@ internal static class SifrahTokenDescriptionTranslator
             var item = TranslateItemCapture(Restore(giftMatch, spans, "item"));
             translated = item + "を贈る";
             detail = "GiftNamedItem";
+            return true;
+        }
+
+        var offerItemMatch = OfferNamedItemPattern.Match(stripped);
+        if (offerItemMatch.Success && !LooksLikeLiquidName(offerItemMatch.Groups["item"].Value))
+        {
+            var item = TranslateItemCapture(Restore(offerItemMatch, spans, "item"));
+            translated = item + "を差し出す";
+            detail = "OfferNamedItem";
+            return true;
+        }
+
+        var bitMatch = UseNamedBitPattern.Match(stripped);
+        if (bitMatch.Success && LooksLikeBitDescription(bitMatch.Groups["bit"].Value))
+        {
+            translated = TranslateGeneralCapture(Restore(bitMatch, spans, "bit")) + "を使う";
+            detail = "UseNamedBit";
+            return true;
+        }
+
+        bitMatch = GiftNamedBitPattern.Match(stripped);
+        if (bitMatch.Success && LooksLikeBitDescription(bitMatch.Groups["bit"].Value))
+        {
+            translated = TranslateGeneralCapture(Restore(bitMatch, spans, "bit")) + "を贈る";
+            detail = "GiftNamedBit";
+            return true;
+        }
+
+        bitMatch = OfferNamedBitPattern.Match(stripped);
+        if (bitMatch.Success && LooksLikeBitDescription(bitMatch.Groups["bit"].Value))
+        {
+            translated = TranslateGeneralCapture(Restore(bitMatch, spans, "bit")) + "を差し出す";
+            detail = "OfferNamedBit";
             return true;
         }
 
@@ -661,5 +869,20 @@ internal static class SifrahTokenDescriptionTranslator
 
         var strippedArticle = StringHelpers.StripLeadingEnglishArticle(source);
         return TranslateGeneralCapture(strippedArticle);
+    }
+
+    private static bool LooksLikeLiquidName(string source)
+    {
+        return ScopedDictionaryLookup.TranslateExactOrLowerAsciiForContext(source, LiquidContext, LiquidDictionaryFile)
+            is not null;
+    }
+
+    private static bool LooksLikeBitDescription(string source)
+    {
+        return StringHelpers.ContainsOrdinalIgnoreCase(source, "bit")
+            || StringHelpers.ContainsOrdinalIgnoreCase(source, "scrap")
+            || StringHelpers.ContainsOrdinalIgnoreCase(source, "phasic")
+            || StringHelpers.ContainsOrdinalIgnoreCase(source, "crystal")
+            || StringHelpers.ContainsOrdinalIgnoreCase(source, "data");
     }
 }

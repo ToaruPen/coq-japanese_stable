@@ -274,6 +274,157 @@ public sealed class PopupPickOptionTranslationPatchTests
     }
 
     [Test]
+    public void Prefix_RepositoryDictionary_TranslatesGripRecoilerAndWishPickGameObjectPayloads()
+    {
+        Translator.SetDictionaryDirectoryForTests(GetRepositoryDictionaryDirectory());
+
+        using var patch = PatchPickOption();
+
+        DummyPopupGenericTarget.PickOption(
+            Title: "Choose a style",
+            Options: new[]
+            {
+                "Axe",
+                "Cudgel",
+                "{{W|Long Blades}}",
+                "Short Blades",
+            });
+        var gripTitle = DummyPopupGenericTarget.LastPickOptionTitle;
+        var gripOptions = DummyPopupGenericTarget.LastPickOptionOptions;
+
+        DummyPopupGenericTarget.PickOption(Title: "Use which recoiler?");
+        var recoilerTitle = DummyPopupGenericTarget.LastPickOptionTitle;
+
+        DummyPopupGenericTarget.PickOption(Title: "Pick item");
+        var pickItemTitle = DummyPopupGenericTarget.LastPickOptionTitle;
+
+        DummyPopupGenericTarget.PickOption(Title: "Choose an item to slot a cell into.");
+        var replaceCellTitle = DummyPopupGenericTarget.LastPickOptionTitle;
+
+        DummyPopupGenericTarget.PickOption(Title: "Choose a reward");
+        var rewardTitle = DummyPopupGenericTarget.LastPickOptionTitle;
+
+        DummyPopupGenericTarget.PickOption(Title: "Choose an artifact to give.");
+        var giveArtifactTitle = DummyPopupGenericTarget.LastPickOptionTitle;
+
+        DummyPopupGenericTarget.PickOption(Title: "Choose secrets about the life of Resheph to share.");
+        var reshephSecretTitle = DummyPopupGenericTarget.LastPickOptionTitle;
+
+        DummyPopupGenericTarget.PickOption(Title: "Choose a secret to share:");
+        var secretTitle = DummyPopupGenericTarget.LastPickOptionTitle;
+
+        DummyPopupGenericTarget.PickOption(Title: "Choose some gossip to share:");
+        var gossipTitle = DummyPopupGenericTarget.LastPickOptionTitle;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(gripTitle, Is.EqualTo("スタイルを選ぶ。"));
+            Assert.That(
+                gripOptions,
+                Is.EqualTo(new[]
+                {
+                    "斧",
+                    "棍棒",
+                    "{{W|長剣}}",
+                    "短剣",
+                }));
+            Assert.That(recoilerTitle, Is.EqualTo("使うリコイラーを選ぶ。"));
+            Assert.That(pickItemTitle, Is.EqualTo("アイテムを選ぶ。"));
+            Assert.That(replaceCellTitle, Is.EqualTo("セルを入れるアイテムを選ぶ。"));
+            Assert.That(rewardTitle, Is.EqualTo("報酬を選ぶ。"));
+            Assert.That(giveArtifactTitle, Is.EqualTo("渡すアーティファクトを選ぶ。"));
+            Assert.That(reshephSecretTitle, Is.EqualTo("共有するレシェフの生涯の秘密を選ぶ。"));
+            Assert.That(secretTitle, Is.EqualTo("共有する秘密を選ぶ:"));
+            Assert.That(gossipTitle, Is.EqualTo("共有する噂話を選ぶ:"));
+        });
+    }
+
+    [Test]
+    public void Prefix_RepositoryDictionary_TranslatesHolographicVisagePickOptionPayload()
+    {
+        Translator.SetDictionaryDirectoryForTests(GetRepositoryDictionaryDirectory());
+
+        using var patch = PatchPickOption();
+
+        DummyPopupGenericTarget.PickOption(
+            Title: "Choose a model faction for your holographic glamour.",
+            Options: new[]
+            {
+                "none",
+                "Barathrumites",
+                "{{Y|Consortium of Phyta}}",
+            });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                DummyPopupGenericTarget.LastPickOptionTitle,
+                Is.EqualTo("ホログラム仮装のモデルにする派閥を選ぶ。"));
+            Assert.That(
+                DummyPopupGenericTarget.LastPickOptionOptions,
+                Is.EqualTo(new[]
+                {
+                    "なし",
+                    "バラサラム派",
+                    "{{Y|フィタ・コンソーシアム}}",
+                }));
+        });
+    }
+
+    [Test]
+    public void Prefix_RepositoryDictionary_TranslatesStatusAndKeybindOptionPopups()
+    {
+        Translator.SetDictionaryDirectoryForTests(GetRepositoryDictionaryDirectory());
+
+        using var patch = PatchPickOption();
+
+        DummyPopupGenericTarget.PickOption(
+            Title: "Sort By",
+            Options: new[]
+            {
+                "{{W|Highest reputation}}",
+                "{{y|Lowest reputation}}",
+                "{{y|Alphabetical}}",
+            });
+        var sortTitle = DummyPopupGenericTarget.LastPickOptionTitle;
+        var sortOptions = DummyPopupGenericTarget.LastPickOptionOptions;
+
+        DummyPopupGenericTarget.PickOption(
+            Title: "Options",
+            Options: new[]
+            {
+                "Equipment View: {{W|Paperdoll}}/List",
+                "Sort Mode: Category/{{W|A-Z}}",
+                "Search Mode: {{W|Strict}}/Fuzzy",
+            });
+        var inventoryTitle = DummyPopupGenericTarget.LastPickOptionTitle;
+        var inventoryOptions = DummyPopupGenericTarget.LastPickOptionOptions;
+
+        DummyPopupGenericTarget.PickOption(
+            Title: "Selected Bind Set",
+            Options: new[] { "Normal", "HJKL" });
+        var keybindTitle = DummyPopupGenericTarget.LastPickOptionTitle;
+        var keybindOptions = DummyPopupGenericTarget.LastPickOptionOptions;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(sortTitle, Is.EqualTo("並べ替え"));
+            Assert.That(sortOptions, Is.EqualTo(new[] { "{{W|評判が高い順}}", "{{y|評判が低い順}}", "{{y|アルファベット順}}" }));
+            Assert.That(inventoryTitle, Is.EqualTo("オプション"));
+            Assert.That(
+                inventoryOptions,
+                Is.EqualTo(new[]
+                {
+                    "装備表示：{{W|紙人形}}/リスト",
+                    "ソート方式：カテゴリー/{{W|A-Z}}",
+                    "検索方式：{{W|厳密}}/あいまい",
+                }));
+            Assert.That(keybindTitle, Is.EqualTo("キー割り当てセットを選択"));
+            Assert.That(keybindOptions, Is.EqualTo(new[] { "通常", "HJKL" }));
+        });
+    }
+
+    [Test]
     public void Prefix_PreservesInventoryActionMenuOptions_ForTutorialCommandGuards()
     {
         WriteDictionary(("get", "取得"), ("equip (auto)", "装備（自動）"));

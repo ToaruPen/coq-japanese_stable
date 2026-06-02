@@ -93,6 +93,62 @@ public sealed class ActivatedAbilityNameTranslatorTests
         });
     }
 
+    [Test]
+    public void TryTranslateVisibleName_TranslatesCyberneticsRecoilerDestination()
+    {
+        var translated = ActivatedAbilityNameTranslator.TryTranslateVisibleName(
+            "Recoil to {{Y|Joppa}}",
+            out var result);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.True);
+            Assert.That(result, Is.EqualTo("{{Y|ジョッパ}}へ帰還"));
+        });
+    }
+
+    [Test]
+    public void TryTranslateVisibleName_RecoilDestinationFallsBackWhenZoneRemainsAscii()
+    {
+        var translated = ActivatedAbilityNameTranslator.TryTranslateVisibleName(
+            "Recoil to odd nowhere",
+            out var result);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.False);
+            Assert.That(result, Is.EqualTo("Recoil to odd nowhere"));
+        });
+    }
+
+    [Test]
+    public void TryTranslateVisibleName_RecoilEmptyInputFallsBack()
+    {
+        var translated = ActivatedAbilityNameTranslator.TryTranslateVisibleName(
+            "Recoil to ",
+            out var result);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.False);
+            Assert.That(result, Is.EqualTo("Recoil to "));
+        });
+    }
+
+    [Test]
+    public void TryTranslateVisibleName_RecoilWithControlMarkerFallsBack()
+    {
+        var source = MessageFrameTranslator.MarkDirectTranslation("Recoil to Joppa");
+
+        var translated = ActivatedAbilityNameTranslator.TryTranslateVisibleName(source, out var result);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.False);
+            Assert.That(result, Is.EqualTo(source));
+        });
+    }
+
     [TestCase("")]
     [TestCase("Deactivate ")]
     [TestCase("Deactivate {{Y|odd gizmo}}")]
@@ -157,6 +213,37 @@ public sealed class ActivatedAbilityNameTranslatorTests
             Assert.That(ActivatedAbilityNameTranslator.TryTranslateVisibleName(source, out var translated), Is.True);
             Assert.That(translated, Is.EqualTo(expected));
         });
+    }
+
+    [Test]
+    public void TryTranslateVisibleName_ReleasePoisonGasDoesNotDependOnChargenXmlRoot()
+    {
+        var tempDirectory = Path.Combine(
+            Path.GetTempPath(),
+            "qudjp-activated-ability-name-empty-xml-root",
+            Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(tempDirectory);
+        try
+        {
+            var localizationRoot = Path.Combine(TestProjectPaths.GetRepositoryRoot(), "Mods", "QudJP", "Localization");
+            Translator.ResetForTests();
+            ScopedDictionaryLookup.ResetForTests();
+            ChargenStructuredTextTranslator.ResetForTests();
+            LocalizationAssetResolver.SetLocalizationRootForTests(tempDirectory);
+            Translator.SetDictionaryDirectoryForTests(Path.Combine(localizationRoot, "Dictionaries"));
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(ActivatedAbilityNameTranslator.TryTranslateVisibleName("Release Poison Gas", out var translated), Is.True);
+                Assert.That(translated, Is.EqualTo("毒ガス放出"));
+            });
+        }
+        finally
+        {
+            LocalizationAssetResolver.SetLocalizationRootForTests(null);
+            ChargenStructuredTextTranslator.ResetForTests();
+            Directory.Delete(tempDirectory, recursive: true);
+        }
     }
 
     [Test]

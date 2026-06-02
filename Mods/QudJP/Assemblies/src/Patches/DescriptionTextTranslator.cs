@@ -105,6 +105,9 @@ internal static class DescriptionTextTranslator
     private static readonly Regex ToHitLinePattern =
         new Regex("^\\+(?<amount>\\d+) to hit$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex SaveBonusLinePattern =
+        new Regex("^(?<amount>[+-]\\d+) to saves vs\\. (?<targets>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     private static readonly Regex WallPenetrationLinePattern =
         new Regex("^(?<powered>When powered, )?(?<amount>[+-]\\d+) penetration vs\\. walls\\.$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
@@ -1429,6 +1432,16 @@ internal static class DescriptionTextTranslator
             return true;
         }
 
+        if (TryTranslateRuntimeObservedFixedEquipmentRuleLine(source, route, out translated))
+        {
+            return true;
+        }
+
+        if (TryTranslateSaveBonusLine(source, route, out translated))
+        {
+            return true;
+        }
+
         var waterBondedMatch = WaterBondedLinePattern.Match(source);
         if (waterBondedMatch.Success)
         {
@@ -1539,6 +1552,77 @@ internal static class DescriptionTextTranslator
 
         translated = source;
         return false;
+    }
+
+    private static bool TryTranslateRuntimeObservedFixedEquipmentRuleLine(
+        string source,
+        string route,
+        out string translated)
+    {
+        translated = source switch
+        {
+            "Replaces Sprint with Power Skate (unlimited duration)." => "スプリントをパワースケート（持続時間無制限）に置き換える。",
+            "Emits plumes of fire when the wearer moves while power skating." => "パワースケート中に装備者が移動すると炎の噴煙を放つ。",
+            "Replaces Jump with Rocket Jump." => "ジャンプをロケットジャンプに置き換える。",
+            "This item's AV and DV bonuses are being averaged across all body parts of the same type." => "このアイテムのAVとDVボーナスは同じ種類の全身体部位で平均化されている。",
+            "This item's AV and DV penalties are being averaged across all body parts of the same type." => "このアイテムのAVとDVペナルティは同じ種類の全身体部位で平均化されている。",
+            "This item's AV and DV modifiers are being averaged across all body parts of the same type." => "このアイテムのAVとDV修正は同じ種類の全身体部位で平均化されている。",
+            "This item's AV bonus is being averaged across all body parts of the same type." => "このアイテムのAVボーナスは同じ種類の全身体部位で平均化されている。",
+            "This item's AV penalty is being averaged across all body parts of the same type." => "このアイテムのAVペナルティは同じ種類の全身体部位で平均化されている。",
+            "This item's DV bonus is being averaged across all body parts of the same type." => "このアイテムのDVボーナスは同じ種類の全身体部位で平均化されている。",
+            "This item's DV penalty is being averaged across all body parts of the same type." => "このアイテムのDVペナルティは同じ種類の全身体部位で平均化されている。",
+            "Being restrained" => "拘束",
+            "being restrained" => "拘束",
+            _ => source,
+        };
+
+        if (string.Equals(translated, source, StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        DynamicTextObservability.RecordTransform(route, "Description.RuntimeObservedLine", source, translated);
+        return true;
+    }
+
+    private static bool TryTranslateSaveBonusLine(string source, string route, out string translated)
+    {
+        var match = SaveBonusLinePattern.Match(source);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        var targets = match.Groups["targets"].Value
+            .Split(new[] { ", " }, StringSplitOptions.RemoveEmptyEntries)
+            .Select(static target => TranslateSaveBonusTarget(target.Trim()))
+            .ToArray();
+        if (targets.Length == 0 || targets.Any(static target => target.Length == 0))
+        {
+            translated = source;
+            return false;
+        }
+
+        translated = string.Join("・", targets) + "に対するセーヴ" + match.Groups["amount"].Value;
+        DynamicTextObservability.RecordTransform(route, "Description.RuntimeObservedLine", source, translated);
+        return true;
+    }
+
+    private static string TranslateSaveBonusTarget(string source)
+    {
+        return source switch
+        {
+            "forced movement" => "強制移動",
+            "knockdown" => "転倒",
+            "Knockdown" => "転倒",
+            "being restrained" => "拘束",
+            "Being restrained" => "拘束",
+            "bleeding" => "出血",
+            "disease" => "病気",
+            "disease onset" => "病気の発症",
+            _ => string.Empty,
+        };
     }
 
     private static string TranslateRuntimeObservedStatueMaterial(string source)

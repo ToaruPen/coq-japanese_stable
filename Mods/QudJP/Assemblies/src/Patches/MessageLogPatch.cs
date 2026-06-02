@@ -18,15 +18,8 @@ public static class MessageLogPatch
             _ = Color;
             _ = Capitalize;
 
-            if (CampfirePreserveTranslationPatch.TryTranslateMessageLogMessage(
-                    Message,
-                    nameof(MessageLogPatch),
-                    "MessageLog.CampfirePreserve",
-                    out var campfirePreserveTranslated))
-            {
-                Message = campfirePreserveTranslated;
-                return true;
-            }
+            var directPassthroughFromQueue =
+                MessageQueueSemanticPipeline.TryConsumeDirectPassthroughFromMessageQueue(Message);
 
             if (MessageFrameTranslator.TryStripDirectTranslationMarker(Message, out var markedText))
             {
@@ -37,6 +30,21 @@ public static class MessageLogPatch
                     Message,
                     markedText);
                 Message = markedText;
+                return true;
+            }
+
+            if (directPassthroughFromQueue)
+            {
+                return true;
+            }
+
+            if (CampfirePreserveTranslationPatch.TryTranslateMessageLogMessage(
+                    Message,
+                    nameof(MessageLogPatch),
+                    "MessageLog.CampfirePreserve",
+                    out var campfirePreserveTranslated))
+            {
+                Message = campfirePreserveTranslated;
                 return true;
             }
 

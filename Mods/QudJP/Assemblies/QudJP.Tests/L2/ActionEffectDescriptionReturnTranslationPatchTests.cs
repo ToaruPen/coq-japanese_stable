@@ -32,6 +32,13 @@ public sealed class ActionEffectDescriptionReturnTranslationPatchTests
     [TestCase(nameof(DummyActionEffectDescriptionTarget.KillGetDetails), "Player", "プレイヤー", "Player")]
     [TestCase(nameof(DummyActionEffectDescriptionTarget.DisassemblyGetDescription), "disassembling", "分解中", "Disassembling")]
     [TestCase(nameof(DummyActionEffectDescriptionTarget.OngoingActionGetDescription), "acting", "行動中", "Acting")]
+    [TestCase(nameof(DummyActionEffectDescriptionTarget.AutoActGetDescription), "exploring", "探索中", "AutoActExploring")]
+    [TestCase(nameof(DummyActionEffectDescriptionTarget.AutoActGetDescription), "waiting", "待機中", "AutoActWaiting")]
+    [TestCase(nameof(DummyActionEffectDescriptionTarget.AutoActGetDescription), "digging", "掘削中", "AutoActDigging")]
+    [TestCase(nameof(DummyActionEffectDescriptionTarget.AutoActGetDescription), "gathering", "収集中", "AutoActGathering")]
+    [TestCase(nameof(DummyActionEffectDescriptionTarget.AutoActGetDescription), "resting", "休息中", "AutoActResting")]
+    [TestCase(nameof(DummyActionEffectDescriptionTarget.AutoActGetDescription), "attacking", "攻撃中", "AutoActAttacking")]
+    [TestCase(nameof(DummyActionEffectDescriptionTarget.AutoActGetDescription), "moving", "移動中", "AutoActMoving")]
     [TestCase(
         nameof(DummyActionEffectDescriptionTarget.MetamorphedGetDetails),
         "Assuming another creature's form.",
@@ -136,6 +143,9 @@ internal sealed class DummyActionEffectDescriptionTarget
 
     [MethodImpl(MethodImplOptions.NoInlining)]
     public string OngoingActionGetDescription() => source;
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public string AutoActGetDescription() => source;
 
     [MethodImpl(MethodImplOptions.NoInlining)]
     public string MetamorphedGetDetails() => source;

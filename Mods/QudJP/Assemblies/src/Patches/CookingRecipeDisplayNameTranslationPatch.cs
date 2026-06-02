@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
 using HarmonyLib;
@@ -11,31 +12,48 @@ public static class CookingRecipeDisplayNameTranslationPatch
     internal const string Context = nameof(CookingRecipeDisplayNameTranslationPatch);
     internal const string Family = Context + ".HistoricSpiceGeneratedName";
 
-    private const string WhiteMarkupPrefix = "{{W|";
-    private const string MarkupSuffix = "}}";
-
+    private const string PresetMealNameDictionaryFile = "Scoped/ui-popup-campfire-preset-meals.ja.json";
     [ThreadStatic]
     private static int generateRecipeTileSuppressionDepth;
 
     internal static bool IsGenerateRecipeTileSuppressed => generateRecipeTileSuppressionDepth > 0;
 
-    [HarmonyTargetMethod]
-    private static MethodBase? TargetMethod()
+    [HarmonyTargetMethods]
+    private static IEnumerable<MethodBase> TargetMethods()
     {
-        var targetType = AccessTools.TypeByName("XRL.World.Skills.Cooking.CookingRecipe");
-        if (targetType is null)
+        foreach (var typeName in new[]
+                 {
+                     "XRL.World.Skills.Cooking.CookingRecipe",
+                     "XRL.World.Skills.Cooking.AppleMatz",
+                     "XRL.World.Skills.Cooking.BoneBabka",
+                     "XRL.World.Skills.Cooking.CloacaSurprise",
+                     "XRL.World.Skills.Cooking.CrystalDelight",
+                     "XRL.World.Skills.Cooking.GoatAndSweetLeaf",
+                     "XRL.World.Skills.Cooking.HotandSpiny",
+                     "XRL.World.Skills.Cooking.MahLahSoup",
+                     "XRL.World.Skills.Cooking.MushroomCider",
+                     "XRL.World.Skills.Cooking.ThePorridge",
+                     "XRL.World.Skills.Cooking.TongueAndCheek",
+                 })
         {
-            Trace.TraceError("QudJP: {0} target type not found.", Context);
-            return null;
-        }
+            var targetType = AccessTools.TypeByName(typeName);
+            if (targetType is null)
+            {
+                Trace.TraceError("QudJP: {0} target type {1} not found.", Context, typeName);
+                continue;
+            }
 
-        var method = AccessTools.Method(targetType, "GetDisplayName", Type.EmptyTypes);
-        if (method is null)
-        {
-            Trace.TraceError("QudJP: {0}.GetDisplayName() target not found.", Context);
-        }
+            var method = AccessTools.Method(targetType, "GetDisplayName", Type.EmptyTypes);
+            if (method is not null)
+            {
+                yield return method;
+            }
+            else
+            {
+                Trace.TraceError("QudJP: {0}.{1}.GetDisplayName() target not found.", Context, typeName);
+            }
 
-        return method;
+        }
     }
 
     public static void Postfix(ref string __result)
@@ -114,34 +132,26 @@ public static class CookingRecipeDisplayNameTranslationPatch
 
     internal static bool TryTranslateDisplayName(string source, out string translated)
     {
-        if (!TryExtractWhiteMarkup(source, out var inner)
-            || !TryTranslateDisplayNameInner(inner, out var translatedInner))
+        var (inner, spans) = ColorAwareTranslationComposer.Strip(source);
+        if (!TryTranslateDisplayNameInner(inner, out var translatedInner))
         {
             translated = source;
             return false;
         }
 
-        translated = WhiteMarkupPrefix + translatedInner + MarkupSuffix;
-        return true;
-    }
-
-    private static bool TryExtractWhiteMarkup(string source, out string inner)
-    {
-        if (!source.StartsWith(WhiteMarkupPrefix, StringComparison.Ordinal)
-            || !source.EndsWith(MarkupSuffix, StringComparison.Ordinal))
-        {
-            inner = source;
-            return false;
-        }
-
-        inner = source.Substring(
-            WhiteMarkupPrefix.Length,
-            source.Length - WhiteMarkupPrefix.Length - MarkupSuffix.Length);
+        translated = ColorAwareTranslationComposer.Restore(translatedInner, spans);
         return true;
     }
 
     private static bool TryTranslateDisplayNameInner(string source, out string translated)
     {
+        var presetMeal = ScopedDictionaryLookup.TranslateExactOrLowerAscii(source, PresetMealNameDictionaryFile);
+        if (presetMeal is not null)
+        {
+            translated = presetMeal;
+            return true;
+        }
+
         if (HistoricSpiceGeneratedNameTranslator.TryTranslateCapture(source, out translated))
         {
             return true;

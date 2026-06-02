@@ -17,6 +17,7 @@ internal static class ModManagementSemanticPipeline
         {
             "ConfirmDependencies" => TranslateConfirmDependenciesLiteral(source),
             "ConfirmUpdate" => TranslateConfirmUpdateLiteral(source),
+            "ConfirmFailure" => TranslateConfirmFailureLiteral(source),
             "DownloadUpdate" => TranslateDownloadUpdateLiteral(source),
             "AppendDependencyConfirmation" => TranslateAppendDependencyConfirmationLiteral(source),
             _ => source,
@@ -96,6 +97,24 @@ internal static class ModManagementSemanticPipeline
         {
             "Updating " => string.Empty,
             "..." => "を更新中…",
+            _ => source,
+        };
+    }
+
+    private static string TranslateConfirmFailureLiteral(string source)
+    {
+        return source switch
+        {
+            " - {{R|Errors}}" => " - {{R|エラー}}",
+            "}} more)" => "}} 件追加)",
+            "\n\nAutomatically on your clipboard should you wish to forward it to the mod author." =>
+                "\n\n必要なら転送できるよう、自動的にクリップボードへコピーされています: Mod作者。",
+            "\n\nAutomatically on your clipboard should you wish to forward it to " =>
+                "\n\n必要なら転送できるよう、自動的にクリップボードへコピーされています: ",
+            "the mod author" => "Mod作者。",
+            "." => string.Empty,
+            "{{W|[R]}} {{y|Retry}}" => "{{W|[R]}} {{y|再試行}}",
+            "{{W|[W]}} {{y|Workshop}}" => "{{W|[W]}} {{y|ワークショップ}}",
             _ => source,
         };
     }

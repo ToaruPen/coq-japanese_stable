@@ -76,7 +76,11 @@ public sealed class QudTestPatchBindingHarnessTests
         Assert.Multiple(() =>
         {
             Assert.That(result.Passed, Is.True);
-            Assert.That(result.Cases[0].Actual.Split('\n'), Is.EquivalentTo(new[]
+            var actualTargets = result.Cases[0].Actual
+                .Split('\n')
+                .Select(line => line.Trim())
+                .Where(line => line.Length > 0);
+            Assert.That(actualTargets, Is.EquivalentTo(new[]
             {
                 "XRL.World.Parts.Campfire|Preserve|System.Boolean",
                 "XRL.World.Parts.Campfire|PreserveExotic|System.Boolean",
@@ -106,7 +110,24 @@ public sealed class QudTestPatchBindingHarnessTests
             Assert.That(result.Passed, Is.False);
             Assert.That(result.FailCount, Is.EqualTo(1));
             Assert.That(result.Cases[0].Expected, Is.EqualTo("XRL.World.Skills.Cooking.CookingRecipe|OldDisplayName|System.String"));
-            Assert.That(result.Cases[0].Actual, Is.EqualTo("XRL.World.Skills.Cooking.CookingRecipe|GetDisplayName|System.String"));
+            var actualTargets = result.Cases[0].Actual
+                .Split('\n')
+                .Select(line => line.Trim())
+                .Where(line => line.Length > 0);
+            Assert.That(actualTargets, Is.EquivalentTo(new[]
+            {
+                "XRL.World.Skills.Cooking.CookingRecipe|GetDisplayName|System.String",
+                "XRL.World.Skills.Cooking.AppleMatz|GetDisplayName|System.String",
+                "XRL.World.Skills.Cooking.BoneBabka|GetDisplayName|System.String",
+                "XRL.World.Skills.Cooking.CloacaSurprise|GetDisplayName|System.String",
+                "XRL.World.Skills.Cooking.CrystalDelight|GetDisplayName|System.String",
+                "XRL.World.Skills.Cooking.GoatAndSweetLeaf|GetDisplayName|System.String",
+                "XRL.World.Skills.Cooking.HotandSpiny|GetDisplayName|System.String",
+                "XRL.World.Skills.Cooking.MahLahSoup|GetDisplayName|System.String",
+                "XRL.World.Skills.Cooking.MushroomCider|GetDisplayName|System.String",
+                "XRL.World.Skills.Cooking.ThePorridge|GetDisplayName|System.String",
+                "XRL.World.Skills.Cooking.TongueAndCheek|GetDisplayName|System.String",
+            }));
             Assert.That(result.Cases[0].Diagnostic, Does.Contain("expected"));
         });
     }

@@ -11,6 +11,7 @@ namespace QudJP.Tests.L2;
 public sealed class SingleCallsiteOwnerQueueTranslationPatchTests
 {
     private const string ActivatedAbilityEntryOwner = "XRL.World.Parts.ActivatedAbilityEntry|TrySendCommandEventOnPlayer";
+    private const string BiomeSurfaceDistributionOwner = "XRL.World.Biomes.BiomeManager|DisplaySurfaceDistribution";
     private const string ElevatorSwitchOwner = "XRL.World.Parts.ElevatorSwitch|FireEvent";
     private const string FetchesOwner = "XRL.World.Parts.Fetches|HandleEvent";
     private const string ModMorphogeneticOwner = "XRL.World.Parts.ModMorphogenetic|ApplyMorphicShock";
@@ -51,6 +52,11 @@ public sealed class SingleCallsiteOwnerQueueTranslationPatchTests
         "You must wait {{C|7 round}} before using {{C|Phase Blink}}.",
         "{{C|Phase Blink}}を使うには{{C|7ラウンド}}待つ必要がある。",
         "ActivatedAbilityEntryNotUsableDescription")]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerQueueTarget.DisplaySurfaceDistribution),
+        "Fungal biome: 37/4200, 0%.",
+        "菌類バイオーム: 37/4200、0%。",
+        "BiomeSurfaceDistribution")]
     [TestCase(
         nameof(DummySingleCallsiteOwnerQueueTarget.FireElevatorSwitchEvent),
         "Nothing seems to happen when you hit the switch.",
@@ -452,6 +458,7 @@ public sealed class SingleCallsiteOwnerQueueTranslationPatchTests
         return methodName switch
         {
             nameof(DummySingleCallsiteOwnerQueueTarget.TrySendCommandEventOnPlayer) => CreateOwnerRouteFromKey(ActivatedAbilityEntryOwner),
+            nameof(DummySingleCallsiteOwnerQueueTarget.DisplaySurfaceDistribution) => CreateOwnerRouteFromKey(BiomeSurfaceDistributionOwner),
             nameof(DummySingleCallsiteOwnerQueueTarget.FireElevatorSwitchEvent) => CreateOwnerRouteFromKey(ElevatorSwitchOwner),
             nameof(DummySingleCallsiteOwnerQueueTarget.HandleFetchesEvent) => CreateOwnerRouteFromKey(FetchesOwner),
             nameof(DummySingleCallsiteOwnerQueueTarget.ApplyMorphicShock) => CreateOwnerRouteFromKey(ModMorphogeneticOwner),
@@ -476,6 +483,10 @@ public sealed class SingleCallsiteOwnerQueueTranslationPatchTests
     private static class DummySingleCallsiteOwnerQueueTarget
     {
         public static void TrySendCommandEventOnPlayer()
+        {
+        }
+
+        public static void DisplaySurfaceDistribution()
         {
         }
 

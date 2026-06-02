@@ -7136,7 +7136,8 @@ def _auto_act_families() -> tuple[CoveredOwnerFamily, ...]:
                     "Mods/QudJP/Localization/Dictionaries/messages.ja.json",
                     (
                         "auto-exploring|exploring|waiting|disassembling",
-                        "auto-exploring|exploring|waiting|disassembling) because",
+                        "auto-exploring|exploring|waiting|disassembling|移動中",
+                        "移動中|休息中|掘削中|収集中|攻撃中|行動中|探索中|待機中|分解中) because",
                     ),
                 ),
                 EvidenceFile(
@@ -10748,9 +10749,6 @@ def _disassembly_start_families() -> tuple[CoveredOwnerFamily, ...]:
             "TryTranslatePopupMessage",
             "ReverseEngineerPromptPattern",
             "StartDisassemblingPattern",
-            "TryTranslateDisassembleReceiptMessage",
-            "DisassembleEurekaBuildReceiptPattern",
-            "DisassembleEurekaModReceiptPattern",
         ),
     )
     queue_pipeline = EvidenceFile(
@@ -10771,12 +10769,11 @@ def _disassembly_start_families() -> tuple[CoveredOwnerFamily, ...]:
             "DisassemblyContinue_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
             "DisassemblyContinue_LeavesUnsupportedMessagesUnchanged_WhenOwnerPatched",
             "DisassemblyEnd_TranslatesEurekaBuildReceiptPopup_WhenOwnerPatched",
+            "DisassemblyEnd_TranslatesEurekaBuildReceiptQueuedMessage_WhenOwnerPatched",
             "DisassemblyEnd_TranslatesDisassembleBitsReceiptPopup_WithLocationSuffix_WhenOwnerPatched",
             "DisassemblyEnd_TranslatesRuntimeEurekaPopup_WithLocationSuffix_WhenOwnerPatched",
-            "DisassemblyEnd_TranslatesRuntimeEurekaPopup_WithDirectionalLocationSuffix_WhenOwnerPatched",
             "DisassemblyEnd_TranslatesEurekaModReceiptPopup_WhenOwnerPatched",
             "DummyDisassemblyStartTarget",
-            "EndPopup",
         ),
     )
     target_tests = EvidenceFile(
@@ -10795,8 +10792,8 @@ def _disassembly_start_families() -> tuple[CoveredOwnerFamily, ...]:
         ),
         CoveredOwnerFamily(
             family_id="XRL.World.Tinkering/Disassembly.cs::XRL.World.Tinkering.Disassembly.End",
-            inventory_statuses=("runtime_required", "owner_patch_required"),
-            evidence_files=(patch, popup_pipeline, tests, target_tests),
+            inventory_statuses=("runtime_required",),
+            evidence_files=(patch, queue_pipeline, popup_pipeline, tests, target_tests),
         ),
     )
 
@@ -11782,9 +11779,7 @@ def _hidden_render_families() -> tuple[CoveredOwnerFamily, ...]:
         (
             "HiddenRenderTranslationPatch",
             "TryTranslateQueuedMessage",
-            "TryTranslateMessageLogMessage",
             "Reveal",
-            "RevealInternal",
             "RevealedPattern",
         ),
     )
@@ -11799,11 +11794,8 @@ def _hidden_render_families() -> tuple[CoveredOwnerFamily, ...]:
             "HiddenRender_DoesNotTranslateTraffic_WhenOwnerAbsent",
             "HiddenRender_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched",
             "HiddenRender_LeavesUnsupportedMessagesUnchanged_WhenOwnerPatched",
-            "Hidden_TranslatesRevealMessages_WhenOwnerPatched",
-            "HiddenRender_TranslatesRevealMessageLog_WhenOwnerScopeIsActive",
             "DummyHiddenRenderTarget",
             "Reveal",
-            "HiddenRevealInternal",
         ),
     )
     target_tests = EvidenceFile(
@@ -11811,7 +11803,6 @@ def _hidden_render_families() -> tuple[CoveredOwnerFamily, ...]:
         (
             "typeof(HiddenRenderTranslationPatch)",
             "XRL.World.Parts.HiddenRender|Reveal|System.Void",
-            "XRL.World.Parts.Hidden|RevealInternal|System.Void|System.Boolean",
         ),
     )
     return (
@@ -14904,8 +14895,8 @@ COVERED_OWNER_FAMILIES: Final = (
                     "Patch_TranslatesNameItemPopup_WhenOwnerPatched",
                     "Patch_DoesNotClaimNameItemPopup_WhenOwnerAbsent",
                     "Patch_DoesNotRetranslateDirectMarkedNameItemPopup_WhenOwnerPatched",
-                    "Patch_DoesNotClaimColorPickerPrompt_WhenOwnerPatched",
-                    "You select the name",
+                    "Patch_ClaimsColorPickerPrompt_WhenOwnerPatched",
+                    "Interactive.ColorPicker",
                 ),
             ),
             EvidenceFile(

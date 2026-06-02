@@ -149,6 +149,9 @@ public sealed class DoesVerbRouteTranslatorTests
     [TestCase("The 水筒 is", "are", " already full.", "水筒はすでに満タンだ")]
     [TestCase("The 武器 is", "are", " already fully loaded.", "武器はすでに完全に装填されている")]
     [TestCase("The 熊 falls", "fall", " to the ground.", "熊は地面に倒れた。")]
+    [TestCase("The 装置 falls", "fall", " to the ground; you pick it up.", "装置は地面に落ちた。あなたはそれを拾った。")]
+    [TestCase("The 装置 ceases", "cease", " floating near you.", "装置はあなたの近くで浮遊するのをやめた")]
+    [TestCase("The 銅の短剣 seems", "seem", " to have taken on new qualities.", "銅の短剣は新たな特質を帯びたようだ")]
     [TestCase("The 熊 returns", "return", " to the ground.", "熊は地上に戻った")]
     [TestCase("The 水筒 has", "have", " no room for more water.", "水筒にはこれ以上の水を入れる余地がない。")]
     [TestCase(

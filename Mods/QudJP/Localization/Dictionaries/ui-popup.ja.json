@@ -66,6 +66,56 @@
             "text": "[o] オプション"
         },
         {
+            "key": "Options",
+            "context": "XRL.UI.Popup.PickOption.Title",
+            "text": "オプション"
+        },
+        {
+            "key": "Sort By",
+            "context": "XRL.UI.Popup.PickOption.Title",
+            "text": "並べ替え"
+        },
+        {
+            "key": "Selected Bind Set",
+            "context": "XRL.UI.Popup.PickOption.Title",
+            "text": "キー割り当てセットを選択"
+        },
+        {
+            "key": "Highest reputation",
+            "context": "Qud.UI.FactionsStatusScreen.SortOption",
+            "text": "評判が高い順"
+        },
+        {
+            "key": "Lowest reputation",
+            "context": "Qud.UI.FactionsStatusScreen.SortOption",
+            "text": "評判が低い順"
+        },
+        {
+            "key": "Alphabetical",
+            "context": "Qud.UI.FactionsStatusScreen.SortOption",
+            "text": "アルファベット順"
+        },
+        {
+            "key": "Equipment View: Paperdoll/List",
+            "context": "Qud.UI.InventoryAndEquipmentStatusScreen.Option",
+            "text": "装備表示：紙人形/リスト"
+        },
+        {
+            "key": "Sort Mode: Category/A-Z",
+            "context": "Qud.UI.InventoryAndEquipmentStatusScreen.Option",
+            "text": "ソート方式：カテゴリー/A-Z"
+        },
+        {
+            "key": "Search Mode: Strict/Fuzzy",
+            "context": "Qud.UI.InventoryAndEquipmentStatusScreen.Option",
+            "text": "検索方式：厳密/あいまい"
+        },
+        {
+            "key": "Normal",
+            "context": "XRL.UI.CommandBindingManager.RestoreDefaults.BindSet",
+            "text": "通常"
+        },
+        {
             "key": "[g] Game Info",
             "text": "[g] ゲーム情報"
         },
@@ -310,6 +360,11 @@
             "text": "このキャラクターを引退するとスコアは記録されますがキャラクターは失われます。本当にこのキャラクターを永遠に引退させますか？「RETIRE」と入力すると確定します。"
         },
         {
+            "key": "Your mod configuration has changed, do you want to apply your changes and restart the game?",
+            "context": "Qud.UI.ModManagerUI.OnCancel",
+            "text": "Mod 設定が変更されています。変更を適用してゲームを再起動しますか？"
+        },
+        {
             "key": "Enter text to filter inventory by item name.",
             "context": "Popup.AskString.Prompt",
             "text": "アイテム名でフィルタするテキストを入力してください。"
@@ -318,6 +373,11 @@
             "key": "Entry text",
             "context": "Popup.AskString.Prompt",
             "text": "入力テキスト"
+        },
+        {
+            "key": "Enter search text",
+            "context": "Popup.AskString.Prompt",
+            "text": "検索テキストを入力"
         },
         {
             "key": "What do you want to draw?",
@@ -467,6 +527,16 @@
             "key": "If you quit without saving, you will lose all your unsaved progress. Are you sure you want to QUIT and LOSE YOUR PROGRESS?\n\nType 'ABANDON' to confirm.",
             "context": "XRL.UI.Popup.AskString.Prompt",
             "text": "セーブせずに終了すると未保存の進行状況がすべて失われます。本当に終了して進行状況を失いますか？\n\n「ABANDON」と入力すると確定します。"
+        },
+        {
+            "key": "Leaving the village will end the game.\n\nType END GAME to confirm.",
+            "context": "XRL.UI.Popup.AskString.Prompt",
+            "text": "村を出るとゲームが終了する。\n\n確認するには END GAME と入力。"
+        },
+        {
+            "key": "End game?\n\nType {0} to confirm.",
+            "context": "XRL.UI.Popup.AskString.Prompt",
+            "text": "ゲームを終了しますか？\n\n確認するには {0} と入力。"
         },
         {
             "key": "Your wish is my command!",
@@ -634,6 +704,11 @@
             "text": "ホログラム仮装のモデルにする派閥を選ぶ。"
         },
         {
+            "key": "none",
+            "context": "XRL.UI.Popup.PickOption.Option.None",
+            "text": "なし"
+        },
+        {
             "key": "Choose a mutation for me to gobble up!",
             "context": "XRL.UI.Popup.PickOption.Title",
             "text": "私が飲み込む変異を選ぶ！"
@@ -654,9 +729,44 @@
             "text": "共有する秘密を選ぶ:\n"
         },
         {
+            "key": "Choose a secret to share:",
+            "context": "XRL.UI.Popup.PickOption.Title",
+            "text": "共有する秘密を選ぶ:"
+        },
+        {
+            "key": "Choose secrets about the life of Resheph to share.",
+            "context": "XRL.UI.Popup.PickSeveral.Title",
+            "text": "共有するレシェフの生涯の秘密を選ぶ。"
+        },
+        {
+            "key": "Choose some gossip to share:",
+            "context": "XRL.UI.Popup.PickSeveral.Title",
+            "text": "共有する噂話を選ぶ:"
+        },
+        {
             "key": "Choose a style",
             "context": "XRL.UI.Popup.PickOption.Title",
             "text": "スタイルを選ぶ。"
+        },
+        {
+            "key": "Choose an artifact to give.",
+            "context": "XRL.UI.Popup.PickGameObject.Title",
+            "text": "渡すアーティファクトを選ぶ。"
+        },
+        {
+            "key": "Use which recoiler?",
+            "context": "XRL.UI.Popup.PickOption.Title",
+            "text": "使うリコイラーを選ぶ。"
+        },
+        {
+            "key": "Pick item",
+            "context": "XRL.UI.Popup.PickOption.Title",
+            "text": "アイテムを選ぶ。"
+        },
+        {
+            "key": "Choose an item to slot a cell into.",
+            "context": "XRL.World.GameObject.PerformReplaceCell.PickGameObjectTitle",
+            "text": "セルを入れるアイテムを選ぶ。"
         },
         {
             "key": "Choose an object to animate.",
@@ -1621,6 +1731,11 @@
             "text": "充電が必要なアイテムがない。"
         },
         {
+            "key": "You have no items that can be magnetized.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "磁化できるアイテムがない。"
+        },
+        {
             "key": "You do not have a bow or rifle equipped!",
             "context": "XRL.World.Parts.Skill.Rifle_SuppressiveFire.FireEvent",
             "text": "弓またはライフルを装備していない！"
@@ -1659,6 +1774,16 @@
             "key": "You may not use this mutation on the world map.",
             "context": "XRL.UI.Popup.ShowFail.Message",
             "text": "ワールドマップではこの変異は使えない。"
+        },
+        {
+            "key": "You may not perform temporal fugue on the world map.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "ワールドマップでは時間遁走を実行できない。"
+        },
+        {
+            "key": "It is impossible to duplicate {0}.",
+            "context": "XRL.UI.Popup.ShowFail.Message",
+            "text": "{0}は複製できない。"
         },
         {
             "key": "You may not {{Y|w}}alk into a hostile creature!",
@@ -1946,6 +2071,16 @@
             "text": "方舟は壊れていた。"
         },
         {
+            "key": "The protective force of the cherubim prevents you from opening the ark.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "ケルビムの守護力があなたに方舟を開かせない。"
+        },
+        {
+            "key": "Opening the ark will expose its nondeterministic core to the chamber's ambient normality and irrevocably damage Resheph. Continue?\n\nType OPEN ARK to confirm.",
+            "context": "XRL.UI.Popup.AskString.Prompt",
+            "text": "方舟を開くと、その非決定論的コアが部屋の周囲正常性にさらされ、レシェフに取り返しのつかない損傷を与える。続けますか？\n\n確認するには OPEN ARK と入力。"
+        },
+        {
             "key": "The astral friction diffuses.",
             "context": "XRL.UI.Popup.Show.Message",
             "text": "星界の摩擦が霧散する。"
@@ -1994,6 +2129,31 @@
             "key": "The moors rattle and a marble brick crumbles as a starship takes off.",
             "context": "XRL.UI.Popup.Show.Message",
             "text": "荒野が震え、星船の離昇で大理石の煉瓦が崩れる。"
+        },
+        {
+            "key": "The spaceship's launch sequence has already begun.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "宇宙船の発射シーケンスはすでに始まっている。"
+        },
+        {
+            "key": "The spaceship is already traversing the void.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "宇宙船はすでに虚空を航行している。"
+        },
+        {
+            "key": "The spaceship can't launch from here.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "宇宙船はここから発射できない。"
+        },
+        {
+            "key": "Launch spaceship and end game? (type LAUNCH to confirm)",
+            "context": "XRL.UI.Popup.AskString.Prompt",
+            "text": "宇宙船を発射してゲームを終了しますか？（確認するには LAUNCH と入力）"
+        },
+        {
+            "key": "There is no starship to enter. The docking bay is empty.",
+            "context": "XRL.UI.Popup.Show.Message",
+            "text": "入るべき星船はない。ドッキングベイは空だ。"
         },
         {
             "key": "The neoteric body is differently charged. Tying inside you is another of the secret knots that bind the world.",
@@ -2763,6 +2923,11 @@
             "text": "その名前は既に使われている。"
         },
         {
+            "key": "What name should be used for your {0}? (Male, female, etc.)",
+            "context": "XRL.UI.Popup.AskString.Message",
+            "text": "あなたの{0}に使う名前は？（男性、女性など）"
+        },
+        {
             "key": "There was a fatal exception attempting to save your game. Caves of Qud attempted to recover your prior save. You probably want to close the game and reload your most recent save. It'd be helpful to send the save and logs to support@freeholdgames.com",
             "context": "XRL.UI.Popup.Show.Message",
             "text": "ゲーム保存中に致命的な例外が発生した。Caves of Qud は以前のセーブの復元を試みた。ゲームを終了して直近のセーブを読み込み直すのがよいだろう。セーブデータとログを support@freeholdgames.com に送ると助かる。"
@@ -2796,6 +2961,16 @@
             "key": "You are out of turrets to place.",
             "context": "XRL.World.Parts.TurretTinker.CommandTinkerTurret.ShowFailure",
             "text": "設置できるタレットが残っていない。"
+        },
+        {
+            "key": "You do not have any recoilers.",
+            "context": "XRL.UI.Popup.ShowFail",
+            "text": "リコイラーを持っていない。"
+        },
+        {
+            "key": "You have no devices that use energy cells.",
+            "context": "XRL.World.GameObject.PerformReplaceCell.ShowFail",
+            "text": "エネルギーセルを使う装置を持っていない。"
         },
         {
             "key": "The sealing mechanisms inside this sarcophagus will certainly kill you if you close itself inside. Are you sure you want to enter the sarcophagus?\n\nType 'ENTOMB' to confirm.",

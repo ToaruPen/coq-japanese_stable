@@ -728,6 +728,118 @@ public sealed class WorldPartsProducerTranslationPatchTests
     }
 
     [Test]
+    public void DesalinationPelletPatch_TranslatesFixedFailurePopup_WhenPatched()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            PatchPopupShow(harmony, nameof(DummyPopupShow.ShowFail));
+            PatchOwner(
+                harmony,
+                RequireMethod(
+                    typeof(DummyDesalinationPelletProducerTarget),
+                    nameof(DummyDesalinationPelletProducerTarget.HandleFailureEvent),
+                    typeof(DummyInventoryActionEvent)),
+                typeof(DesalinationPelletTranslationPatch));
+
+            var target = new DummyDesalinationPelletProducerTarget
+            {
+                PopupMessageToShow = "It doesn't seem to do anything.",
+            };
+
+            target.HandleFailureEvent(new DummyInventoryActionEvent());
+
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("何も起こらないようだ。"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [TestCase("Unmapped desalination message.", "Unmapped desalination message.", 0)]
+    [TestCase("\u0001何も起こらないようだ。", "何も起こらないようだ。", 0)]
+    [TestCase("", "", 0)]
+    [TestCase("{{R|It doesn't seem to do anything.}}", "{{R|何も起こらないようだ。}}", 1)]
+    public void DesalinationPelletPatch_HandlesFailurePopupEdges_WhenPatched(
+        string source,
+        string expected,
+        int expectedHitCount)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            PatchPopupShow(harmony, nameof(DummyPopupShow.ShowFail));
+            PatchOwner(
+                harmony,
+                RequireMethod(
+                    typeof(DummyDesalinationPelletProducerTarget),
+                    nameof(DummyDesalinationPelletProducerTarget.HandleFailureEvent),
+                    typeof(DummyInventoryActionEvent)),
+                typeof(DesalinationPelletTranslationPatch));
+
+            var target = new DummyDesalinationPelletProducerTarget
+            {
+                PopupMessageToShow = source,
+            };
+
+            target.HandleFailureEvent(new DummyInventoryActionEvent());
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(expected));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(PopupShowTranslationPatch),
+                        "Popup.Show.DesalinationPelletTranslationPatch.NoEffect"),
+                    Is.EqualTo(expectedHitCount));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void DesalinationPelletPatch_LeavesFailurePopupUnchanged_WhenOwnerAbsent()
+    {
+        const string source = "It doesn't seem to do anything.";
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            PatchPopupShow(harmony, nameof(DummyPopupShow.ShowFail));
+
+            var target = new DummyDesalinationPelletProducerTarget
+            {
+                PopupMessageToShow = source,
+            };
+
+            target.HandleFailureEvent(new DummyInventoryActionEvent());
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(source));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(PopupShowTranslationPatch),
+                        "Popup.Show.DesalinationPelletTranslationPatch.NoEffect"),
+                    Is.Zero);
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void ClonelingVehiclePatch_TranslatesPopupFailure_WhenPatched()
     {
         var harmonyId = CreateHarmonyId();
@@ -1182,7 +1294,7 @@ public sealed class WorldPartsProducerTranslationPatchTests
 
             InvokeEnclosingMethod(target, methodName);
 
-            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(markedSource));
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(source));
         }
         finally
         {
@@ -1701,10 +1813,11 @@ public sealed class WorldPartsProducerTranslationPatchTests
                 RequireMethod(typeof(DummyPetEitherOrProducerTarget), nameof(DummyPetEitherOrProducerTarget.explode)),
                 typeof(PetEitherOrExplodeTranslationPatch));
 
-            var source = MessageFrameTranslator.MarkDirectTranslation("temporal clone implodes.");
+            const string source = "temporal clone implodes.";
+            var markedSource = MessageFrameTranslator.MarkDirectTranslation(source);
             var target = new DummyPetEitherOrProducerTarget
             {
-                QueuedMessageToSend = source,
+                QueuedMessageToSend = markedSource,
             };
 
             target.explode();
@@ -2061,10 +2174,11 @@ public sealed class WorldPartsProducerTranslationPatchTests
                 RequireMethod(typeof(DummyZoneWindChangeProducerTarget), nameof(DummyZoneWindChangeProducerTarget.WindChange), typeof(long)),
                 typeof(ZoneWindChangeTranslationPatch));
 
-            var source = MessageFrameTranslator.MarkDirectTranslation("The wind becomes still.");
+            const string source = "The wind becomes still.";
+            var markedSource = MessageFrameTranslator.MarkDirectTranslation(source);
             var target = new DummyZoneWindChangeProducerTarget
             {
-                QueuedMessageToSend = source,
+                QueuedMessageToSend = markedSource,
             };
 
             target.WindChange(1234);

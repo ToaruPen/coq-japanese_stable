@@ -30,6 +30,7 @@ public sealed class ITeleporterTranslationPatchTests
         RuntimeDiagnostics.SetVerboseProbesEnabledForTests(true);
         DynamicTextObservability.ResetForTests();
         MessageFrameTranslator.ResetForTests();
+        Translator.SetDictionaryDirectoryForTests(RepositoryDictionaryDirectory());
         MessageFrameTranslator.SetDictionaryPathForTests(RepositoryMessageFramePath());
         DummyMessageQueue.Reset();
         DummyPopupShow.Reset();
@@ -42,6 +43,7 @@ public sealed class ITeleporterTranslationPatchTests
         DummyMessageQueue.Reset();
         DummyPopupShow.Reset();
         MessageFrameTranslator.ResetForTests();
+        Translator.ResetForTests();
         DynamicTextObservability.ResetForTests();
     }
 
@@ -345,6 +347,16 @@ public sealed class ITeleporterTranslationPatchTests
             "Localization",
             "MessageFrames",
             "verbs.ja.json");
+    }
+
+    private static string RepositoryDictionaryDirectory()
+    {
+        return Path.Combine(
+            TestProjectPaths.GetRepositoryRoot(),
+            "Mods",
+            "QudJP",
+            "Localization",
+            "Dictionaries");
     }
 
     private sealed class DummyITeleporterProducer

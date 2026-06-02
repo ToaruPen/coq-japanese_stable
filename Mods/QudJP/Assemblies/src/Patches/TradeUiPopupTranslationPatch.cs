@@ -134,6 +134,18 @@ public static class TradeUiPopupTranslationPatch
         "^You may recharge (?<target>.+?) for (?<amount>\\d+) drams? of fresh water\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly IReadOnlyDictionary<string, (string Text, string Family)> VendorActionMenuTranslations =
+        new Dictionary<string, (string Text, string Family)>(StringComparer.Ordinal)
+        {
+            ["select an action"] = ("操作を選択", "TradeUiPopup.ShowVendorActions.Title"),
+            ["Look"] = ("見る", "TradeUiPopup.ShowVendorActions.Option"),
+            ["Add to trade"] = ("取引に追加", "TradeUiPopup.ShowVendorActions.Option"),
+            ["Identify"] = ("識別", "TradeUiPopup.ShowVendorActions.Option"),
+            ["Repair"] = ("修理", "TradeUiPopup.ShowVendorActions.Option"),
+            ["Recharge"] = ("充電", "TradeUiPopup.ShowVendorActions.Option"),
+            ["Read"] = ("読む", "TradeUiPopup.ShowVendorActions.Option"),
+        };
+
     private static readonly Regex MissingTradeSkillPattern = new(
         "^(?<trader>.+?) (?:don't|doesn't|do not|does not) have the skill to (?<action>identify artifacts|repair items|recharge items)\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
@@ -360,6 +372,11 @@ public static class TradeUiPopupTranslationPatch
         }
 
         var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        if (TryTranslateVendorActionMenuText(source, stripped, spans, out translated))
+        {
+            return true;
+        }
+
         if (TryTranslateTemplate(
                 source,
                 stripped,
@@ -754,6 +771,25 @@ public static class TradeUiPopupTranslationPatch
 
         translated = source;
         return false;
+    }
+
+    private static bool TryTranslateVendorActionMenuText(
+        string source,
+        string stripped,
+        IReadOnlyList<ColorSpan> spans,
+        out string translated)
+    {
+        if (!VendorActionMenuTranslations.TryGetValue(stripped, out var entry))
+        {
+            translated = source;
+            return false;
+        }
+
+        translated = spans.Count == 0
+            ? entry.Text
+            : ColorAwareTranslationComposer.Restore(entry.Text, spans);
+        DynamicTextObservability.RecordTransform(Context, entry.Family, source, translated);
+        return true;
     }
 
     private static bool TryTranslateTemplate(

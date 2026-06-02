@@ -33,6 +33,9 @@ public static class AbilityManagerPopupTranslationPatch
         "^Are you sure you wish to remove the binding for (?<ability>.+)\\?$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private const string NoActivatedAbilitiesMessage = "You have no activated abilities.";
+    private const string NoActivatedAbilitiesTranslation = "発動できるアビリティがない。";
+
     [ThreadStatic]
     private static int activeDepth;
 
@@ -42,13 +45,15 @@ public static class AbilityManagerPopupTranslationPatch
         var targets = new List<MethodBase>();
         var targetType = GameTypeResolver.FindType("Qud.UI.AbilityManagerScreen", "AbilityManagerScreen");
         var abilityEntryType = GameTypeResolver.FindType("XRL.World.Parts.ActivatedAbilityEntry", "ActivatedAbilityEntry");
-        if (targetType is null || abilityEntryType is null)
+        var gameObjectType = GameTypeResolver.FindType("XRL.World.GameObject", "GameObject");
+        if (targetType is null || abilityEntryType is null || gameObjectType is null)
         {
-            Trace.TraceError("QudJP: {0} target or ActivatedAbilityEntry type not found.", Context);
+            Trace.TraceError("QudJP: {0} target or dependent type not found.", Context);
             return targets;
         }
 
         AddTarget(targets, targetType, "HandleFilterItems", Type.EmptyTypes);
+        AddStateMachineTarget(targets, targetType, "showScreen", new[] { gameObjectType });
         AddStateMachineTarget(targets, targetType, "HandleRebindAsync", new[] { abilityEntryType, typeof(string) });
         AddStateMachineTarget(targets, targetType, "HandleRemoveBindAsync", new[] { abilityEntryType });
         return targets;
@@ -82,7 +87,7 @@ public static class AbilityManagerPopupTranslationPatch
 
     internal static bool TryTranslatePopupMessage(string source, string route, string family, out string translated)
     {
-        if (!OwnerTranslationScope.IsActive(activeDepth) || string.IsNullOrEmpty(source))
+        if (string.IsNullOrEmpty(source))
         {
             translated = source;
             return false;
@@ -91,6 +96,19 @@ public static class AbilityManagerPopupTranslationPatch
         if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
         {
             translated = markedText;
+            return true;
+        }
+
+        if (!OwnerTranslationScope.IsActive(activeDepth))
+        {
+            translated = source;
+            return false;
+        }
+
+        if (string.Equals(source, NoActivatedAbilitiesMessage, StringComparison.Ordinal))
+        {
+            translated = NoActivatedAbilitiesTranslation;
+            DynamicTextObservability.RecordTransform(route, family + "." + Context, source, translated);
             return true;
         }
 

@@ -54,6 +54,28 @@ public sealed class BasePronounProviderCustomizePopupTranslationPatchTests
     }
 
     [Test]
+    public void BasePronounProviderCustomize_StripsDirectMarkedPopup_WhenOwnerAbsent()
+    {
+        const string translated = "既に翻訳済み";
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShowYesNoCancelAsync(harmony);
+
+            _ = DummyPopupShow.ShowYesNoCancelAsync(MessageFrameTranslator.MarkDirectTranslation(translated))
+                .GetAwaiter()
+                .GetResult();
+
+            Assert.That(DummyPopupShow.LastShowYesNoCancelAsyncMessage, Is.EqualTo(translated));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void BasePronounProviderCustomize_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched()
     {
         AssertPopupMessage(

@@ -169,6 +169,10 @@
             "text": "集合精神に再吸収された。"
         },
         {
+            "key": "You ended the game.",
+            "text": "ゲームを終了した。"
+        },
+        {
             "key": "Your psyche exploded",
             "text": "精神が爆発した"
         }

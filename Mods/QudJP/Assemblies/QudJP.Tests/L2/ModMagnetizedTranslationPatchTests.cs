@@ -27,6 +27,7 @@ public sealed class ModMagnetizedTranslationPatchTests
         RuntimeDiagnostics.SetVerboseProbesEnabledForTests(null);
         DynamicTextObservability.ResetForTests();
         MessageFrameTranslator.ResetForTests();
+        Translator.ResetForTests();
         DummyPopupShow.Reset();
     }
 
@@ -170,8 +171,15 @@ public sealed class ModMagnetizedTranslationPatchTests
 
     private static void UseRepositoryVerbDictionary()
     {
+        var repositoryRoot = TestProjectPaths.GetRepositoryRoot();
+        Translator.SetDictionaryDirectoryForTests(Path.Combine(
+            repositoryRoot,
+            "Mods",
+            "QudJP",
+            "Localization",
+            "Dictionaries"));
         var repositoryDictionaryPath = Path.Combine(
-            TestProjectPaths.GetRepositoryRoot(),
+            repositoryRoot,
             "Mods",
             "QudJP",
             "Localization",

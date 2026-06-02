@@ -3,6 +3,7 @@ using System.Text;
 using HarmonyLib;
 using QudJP.Patches;
 using QudJP.Tests.DummyTargets;
+using QudJP.Tests.L1;
 
 namespace QudJP.Tests.L2;
 
@@ -240,6 +241,8 @@ public sealed class PopupShowTranslationPatchTests
     [TestCase("There is no one there to sting.", "そこに刺す相手がいない。")]
     [TestCase("There is no one there you can sting.", "そこに刺せる相手がいない。")]
     [TestCase("You may not use this mutation on the world map.", "ワールドマップではこの変異は使えない。")]
+    [TestCase("You may not perform temporal fugue on the world map.", "ワールドマップでは時間遁走を実行できない。")]
+    [TestCase("It is impossible to duplicate {{Y|the turret}}.", "{{Y|タレット}}は複製できない。")]
     [TestCase("That target is out of range! (5 squares)", "その対象は射程外だ！(5マス)")]
     [TestCase("You are already burrowed.", "もう潜伏している。")]
     [TestCase("You cannot burrow on the world map.", "ワールドマップでは潜伏できない。")]
@@ -255,6 +258,30 @@ public sealed class PopupShowTranslationPatchTests
     [TestCase(
         "You are dying of thirst! Do you want to stop travelling?",
         "渇きで死にかけている！移動を止めますか？")]
+    [TestCase(
+        "Your abysmal ritual performance deeply shames you.",
+        "惨憺たる儀式の出来に、深く恥じ入る。")]
+    [TestCase(
+        "Your performance of the formal water ritual was sublime and inspiring.",
+        "正式な水儀は崇高で感動的だった。")]
+    [TestCase(
+        "Your performance of the naming ritual was solemn and dignified.",
+        "命名の儀式は厳粛で威厳があった。")]
+    [TestCase(
+        "You have no more usable options, so your performance so far will determine the outcome.",
+        "使える手段が尽きたので、ここまでの成果で結果が決まる。")]
+    [TestCase(
+        "You do not have a leather whip.",
+        "革鞭がない。")]
+    [TestCase(
+        "You do not have a farmer's token.",
+        "農夫の証票がない。")]
+    [TestCase(
+        "You do not have a merchant's token.",
+        "商人の証票がない。")]
+    [TestCase(
+        "You do not have a minstrel's token.",
+        "吟遊詩人の証票がない。")]
     [TestCase(
         "You are leaving the ambient broadcast power grid and transitioning to backup power. Are you sure?",
         "環境放送電力網を離れ、予備電源に切り替えますか？")]
@@ -273,6 +300,12 @@ public sealed class PopupShowTranslationPatchTests
     [TestCase(
         "[{{R|!!! ERROR: REMOTE MANAGEMENT OFFLINE !!!}}]\n[{{R|!!! FORCE PROJECTORS MUST BE ACTIVATED MANUALLY !!!}}]",
         "[{{R|!!! エラー: リモート管理はオフライン !!!}}]\n[{{R|!!! フォース・プロジェクターは手動で起動する必要がある !!!}}]")]
+    [TestCase(
+        "You do not have any recoilers.",
+        "リコイラーを持っていない。")]
+    [TestCase(
+        "You have no devices that use energy cells.",
+        "エネルギーセルを使う装置を持っていない。")]
     public void Prefix_TranslatesReviewedResidualFixedPopups_FromRepositoryDictionary(
         string source,
         string expected)
@@ -513,6 +546,40 @@ public sealed class PopupShowTranslationPatchTests
             DummyPopupShow.ShowFail("You can't excavate with hostiles nearby.");
 
             Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("敵対者が近くにいると掘削できない。"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [TestCase("The spaceship's launch sequence has already begun.", "宇宙船の発射シーケンスはすでに始まっている。")]
+    [TestCase("The spaceship is already traversing the void.", "宇宙船はすでに虚空を航行している。")]
+    [TestCase("The spaceship can't launch from here.", "宇宙船はここから発射できない。")]
+    [TestCase("There is no starship to enter. The docking bay is empty.", "入るべき星船はない。ドッキングベイは空だ。")]
+    [TestCase("The protective force of the cherubim prevents you from opening the ark.", "ケルビムの守護力があなたに方舟を開かせない。")]
+    public void Prefix_TranslatesShipArkExactPopupLeaves(string source, string expected)
+    {
+        Translator.ResetForTests();
+        Translator.SetDictionaryDirectoryForTests(Path.Combine(
+            TestProjectPaths.GetRepositoryRoot(),
+            "Mods",
+            "QudJP",
+            "Localization",
+            "Dictionaries"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyPopupShow), nameof(DummyPopupShow.ShowFail)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(PopupShowTranslationPatch), nameof(PopupShowTranslationPatch.Prefix))));
+
+            DummyPopupShow.ShowFail(source);
+
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(expected));
         }
         finally
         {

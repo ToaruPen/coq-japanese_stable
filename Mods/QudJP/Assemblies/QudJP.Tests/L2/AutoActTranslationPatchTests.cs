@@ -150,7 +150,7 @@ public sealed class AutoActTranslationPatchTests
     {
         AssertInterruptWithReasonMessage(
             "{{y|You stop 分解中 because you hear 血まみれのラアーアー fighting to the north.}}",
-            "{{y|北で血まみれのラアーアーが戦っている音が聞こえたので分解中をやめた。}}");
+            "{{y|北で血まみれのラアーアーが戦っている音が聞こえたので分解をやめた。}}");
     }
 
     [Test]

@@ -118,7 +118,7 @@
         },
         {
           "path": "Dictionaries/ui-popup.ja.json",
-          "entry_index": 354,
+          "entry_index": 379,
           "text": "……"
         }
       ]
@@ -2022,7 +2022,7 @@
         },
         {
           "path": "Dictionaries/ui-displayname-atomic.ja.json",
-          "entry_index": 26,
+          "entry_index": 37,
           "text": "真鍮"
         },
         {
@@ -2658,7 +2658,7 @@
         },
         {
           "path": "Dictionaries/ui-popup.ja.json",
-          "entry_index": 81,
+          "entry_index": 93,
           "text": "操作する"
         }
       ]

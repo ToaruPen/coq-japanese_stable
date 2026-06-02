@@ -27,6 +27,7 @@ public static class MutationActivatedAbilityNameTranslationPatch
         AddMutateTarget(targets, "XRL.World.Parts.Mutation.BurrowingClaws", gameObjectType);
         AddMutateTarget(targets, "XRL.World.Parts.Mutation.ElectricalGeneration", gameObjectType);
         AddMutateTarget(targets, "XRL.World.Parts.Mutation.LightManipulation", gameObjectType);
+        AddNoArgumentTarget(targets, "XRL.World.Parts.Mutation.LightManipulation", "SyncAbilityName");
         AddMutateTarget(targets, "XRL.World.Parts.Mutation.Precognition", gameObjectType);
         AddMutateTarget(targets, "XRL.World.Parts.Mutation.SlogGlands", gameObjectType);
         AddMutateTarget(targets, "XRL.World.Parts.Mutation.Beguiling", gameObjectType);

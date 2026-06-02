@@ -18,7 +18,20 @@ internal static class DesalinationPelletFragmentTranslator
             return false;
         }
 
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
+        {
+            translated = markedText;
+            return true;
+        }
+
         var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        if (string.Equals(stripped, "It doesn't seem to do anything.", StringComparison.Ordinal))
+        {
+            translated = ColorAwareTranslationComposer.Restore("何も起こらないようだ。", spans);
+            DynamicTextObservability.RecordTransform(route, family + ".NoEffect", source, translated);
+            return true;
+        }
+
         var match = DropPattern.Match(stripped);
         if (!match.Success)
         {

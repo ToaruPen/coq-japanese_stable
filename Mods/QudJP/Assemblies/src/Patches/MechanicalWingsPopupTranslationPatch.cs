@@ -14,12 +14,16 @@ public static class MechanicalWingsPopupTranslationPatch
     private const string StartupFamily = "MechanicalWingsStartup";
     private const string UnresponsiveFamily = "MechanicalWingsUnresponsive";
     private const string LongFallWarningFamily = "MechanicalWingsLongFallWarning";
+    private const string WingsWillNotMoveFamily = "WingsWillNotMove";
 
     private static readonly Regex StatusPattern = new(
         "^(?:The |the |A |a |An |an )?(?<subject>.+?) (?:is|are) (?<extra>still starting up|unresponsive)(?<endmark>[.!])?$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex LongFallWarningPattern = new(
         "^It looks like a long way down (?:the |a |an )?(?<subject>.+?) you're above\\. Are you sure you want to stop flying\\?$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex WingsWillNotMovePattern = new(
+        "^(?<subject>.+?) will not move!$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     [ThreadStatic]
@@ -55,6 +59,33 @@ public static class MechanicalWingsPopupTranslationPatch
         else
         {
             targets.Add(fireEvent);
+        }
+
+        var cathedraType = AccessTools.TypeByName("XRL.World.Parts.CyberneticsCathedra");
+        var commandEventType = AccessTools.TypeByName("XRL.World.CommandEvent");
+        var cathedraHandleEvent = cathedraType is null || commandEventType is null
+            ? null
+            : AccessTools.Method(cathedraType, "HandleEvent", [commandEventType]);
+        if (cathedraHandleEvent is null)
+        {
+            Trace.TraceError("QudJP: {0}.CyberneticsCathedra.HandleEvent target not found.", Context);
+        }
+        else
+        {
+            targets.Add(cathedraHandleEvent);
+        }
+
+        var wingsType = AccessTools.TypeByName("XRL.World.Parts.Mutation.Wings");
+        var wingsHandleEvent = wingsType is null || commandEventType is null
+            ? null
+            : AccessTools.Method(wingsType, "HandleEvent", [commandEventType]);
+        if (wingsHandleEvent is null)
+        {
+            Trace.TraceError("QudJP: {0}.Wings.HandleEvent target not found.", Context);
+        }
+        else
+        {
+            targets.Add(wingsHandleEvent);
         }
 
         return targets;
@@ -112,16 +143,37 @@ public static class MechanicalWingsPopupTranslationPatch
     private static bool TryTranslateCore(string source, out string translated)
     {
         var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        var captureSpans = ColorAwareTranslationComposer.WithoutTrueWholeSourceBoundarySpans(spans, stripped.Length);
         var longFallMatch = LongFallWarningPattern.Match(stripped);
         if (longFallMatch.Success)
         {
             var longFallSubject = ColorAwareTranslationComposer.RestoreCapture(
                 longFallMatch.Groups["subject"].Value,
-                spans,
+                captureSpans,
                 longFallMatch.Groups["subject"]).Trim();
             var core = $"あなたがいる{longFallSubject}の下はかなり深そうだ。飛行をやめてもよいですか？";
             translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
                 core,
+                spans,
+                stripped.Length,
+                source);
+            return true;
+        }
+
+        var willNotMoveMatch = WingsWillNotMovePattern.Match(stripped);
+        if (willNotMoveMatch.Success)
+        {
+            var wingsSubject = ColorAwareTranslationComposer.RestoreCapture(
+                willNotMoveMatch.Groups["subject"].Value,
+                captureSpans,
+                willNotMoveMatch.Groups["subject"]).Trim();
+            if (wingsSubject.StartsWith("Your ", StringComparison.Ordinal))
+            {
+                wingsSubject = "あなたの" + wingsSubject.Substring("Your ".Length).Trim();
+            }
+
+            translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+                wingsSubject + "は動かない！",
                 spans,
                 stripped.Length,
                 source);
@@ -137,7 +189,7 @@ public static class MechanicalWingsPopupTranslationPatch
 
         var subject = ColorAwareTranslationComposer.RestoreCapture(
             match.Groups["subject"].Value,
-            spans,
+            captureSpans,
             match.Groups["subject"]).Trim();
         var extra = match.Groups["extra"].Value;
         var endmark = match.Groups["endmark"].Success ? match.Groups["endmark"].Value : null;
@@ -150,6 +202,11 @@ public static class MechanicalWingsPopupTranslationPatch
         if (stripped.Contains("long way down"))
         {
             return LongFallWarningFamily;
+        }
+
+        if (stripped.Contains("will not move"))
+        {
+            return WingsWillNotMoveFamily;
         }
 
         return stripped.Contains("still starting up")

@@ -8,10 +8,10 @@ namespace QudJP.Patches;
 [HarmonyPatch]
 public static class GameObjectDieTranslationPatch
 {
-    private const string Context = nameof(GameObjectDieTranslationPatch);
-
     [ThreadStatic]
     private static int activeDepth;
+
+    internal static bool IsActive => activeDepth > 0;
 
     [HarmonyTargetMethod]
     private static MethodBase? TargetMethod()
@@ -82,9 +82,15 @@ public static class GameObjectDieTranslationPatch
     {
         _ = color;
 
-        return activeDepth > 0
-            && !string.IsNullOrEmpty(message)
-            && message.StartsWith("Your companion, ", StringComparison.Ordinal)
-            && MessageLogProducerTranslationHelpers.TryPreparePatternMessage(ref message, Context, "Die");
+        if (activeDepth <= 0
+            || string.IsNullOrEmpty(message)
+            || !message.StartsWith("Your companion, ", StringComparison.Ordinal)
+            || !GameObjectDestroyTranslationPatch.TryTranslateCompanionDeathMessage(message, out var translated))
+        {
+            return false;
+        }
+
+        message = MessageFrameTranslator.MarkDirectTranslation(translated);
+        return true;
     }
 }

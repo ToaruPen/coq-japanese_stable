@@ -18,6 +18,10 @@ public static class WishCommandQueueTranslationPatch
         "^Turns until nephal arrives: (?<turns>\\d+)$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex FindASiteDynamicQuestWherePattern = new(
+        "^quest in (?<zone>.+?) secret id is (?<secret>.+?) for quest (?<quest>.+)$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     [ThreadStatic]
     private static int activeDepth;
 
@@ -27,6 +31,7 @@ public static class WishCommandQueueTranslationPatch
         var landingPadsType = AccessTools.TypeByName("XRL.World.Quests.LandingPadsSystem");
         var reclamationType = AccessTools.TypeByName("XRL.World.Quests.ReclamationSystem");
         var statWishType = AccessTools.TypeByName("XRL.World.StatWishHandler");
+        var findASiteType = AccessTools.TypeByName("XRL.World.ZoneBuilders.FindASiteDynamicQuestManager");
         if (landingPadsType is null || reclamationType is null || statWishType is null)
         {
             Trace.TraceError("QudJP: {0} target types not found.", Context);
@@ -62,6 +67,25 @@ public static class WishCommandQueueTranslationPatch
         {
             Trace.TraceError("QudJP: {0}.StatWishHandler.ClearStatShifts() not found.", Context);
         }
+
+        if (findASiteType is not null)
+        {
+            var dynamicQuestWhere = AccessTools.Method(findASiteType, "DynamicQuestWhere", Type.EmptyTypes);
+            if (dynamicQuestWhere is not null)
+            {
+                yield return dynamicQuestWhere;
+            }
+            else
+            {
+                Trace.TraceError("QudJP: {0}.FindASiteDynamicQuestManager.DynamicQuestWhere() not found.", Context);
+            }
+        }
+        else
+        {
+            Trace.TraceError(
+                "QudJP: {0} target type not found: XRL.World.ZoneBuilders.FindASiteDynamicQuestManager.",
+                Context);
+        }
     }
 
     public static void Prefix()
@@ -94,7 +118,7 @@ public static class WishCommandQueueTranslationPatch
     {
         _ = color;
 
-        if (!OwnerTranslationScope.IsActive(activeDepth) || string.IsNullOrEmpty(message))
+        if (string.IsNullOrEmpty(message))
         {
             return false;
         }
@@ -103,6 +127,11 @@ public static class WishCommandQueueTranslationPatch
         {
             message = markedText;
             return true;
+        }
+
+        if (!OwnerTranslationScope.IsActive(activeDepth))
+        {
+            return false;
         }
 
         if (!TryTranslateWishCommandMessage(message, out var translated, out var detail))
@@ -155,6 +184,14 @@ public static class WishCommandQueueTranslationPatch
         {
             translated = "プレイヤー身体の能力値補正を消去中...";
             detail = "ClearStatShifts";
+            return true;
+        }
+
+        match = FindASiteDynamicQuestWherePattern.Match(source);
+        if (match.Success)
+        {
+            translated = $"クエスト {match.Groups["quest"].Value} の場所は {match.Groups["zone"].Value}、秘密IDは {match.Groups["secret"].Value}。";
+            detail = "FindASiteDynamicQuestWhere";
             return true;
         }
 
