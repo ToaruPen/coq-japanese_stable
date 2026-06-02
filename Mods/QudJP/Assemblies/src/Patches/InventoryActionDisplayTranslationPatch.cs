@@ -16,6 +16,8 @@ public static class InventoryActionDisplayTranslationPatch
     private const string InventoryActionContext = "XRL.World.IInventoryActionsEvent";
     private const string InventoryActionDictionaryFile = "ui-inventory-actions.ja.json";
 
+    private static Predicate<char>? keyMappedPredicateForTests;
+
     private static readonly Regex RechargeDisplayPattern = new(
         "^recharge (?<cell>.+)$",
         RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.Compiled);
@@ -49,7 +51,7 @@ public static class InventoryActionDisplayTranslationPatch
     {
         try
         {
-            TranslateActionTable(__2);
+            TranslateActionTable(__2, IsInventoryActionKeyMapped);
         }
         catch (Exception ex)
         {
@@ -59,16 +61,22 @@ public static class InventoryActionDisplayTranslationPatch
 
     internal static void TranslateActionTableForTests(object? actionTable)
     {
-        TranslateActionTable(actionTable);
+        TranslateActionTable(actionTable, keyMappedPredicateForTests ?? (_ => false));
     }
 
-    private static void TranslateActionTable(object? actionTable)
+    internal static void SetInventoryActionKeyMappedPredicateForTests(Predicate<char>? predicate)
+    {
+        keyMappedPredicateForTests = predicate;
+    }
+
+    private static void TranslateActionTable(object? actionTable, Predicate<char> isKeyMapped)
     {
         if (actionTable is null || actionTable is string || actionTable is not IEnumerable entries)
         {
             return;
         }
 
+        var actions = new List<object>();
         foreach (var entry in entries)
         {
             var action = GetActionFromEntry(entry);
@@ -77,8 +85,16 @@ public static class InventoryActionDisplayTranslationPatch
                 continue;
             }
 
-            TranslateActionDisplay(action);
+            actions.Add(action);
         }
+
+        var states = new List<ActionTranslationState>(actions.Count);
+        foreach (var action in actions)
+        {
+            states.Add(TranslateActionDisplay(action));
+        }
+
+        AssignFallbackHotkeys(states, isKeyMapped);
     }
 
     private static object? GetActionFromEntry(object? entry)
@@ -92,12 +108,12 @@ public static class InventoryActionDisplayTranslationPatch
         return valueProperty?.GetValue(entry);
     }
 
-    private static void TranslateActionDisplay(object action)
+    private static ActionTranslationState TranslateActionDisplay(object action)
     {
         var display = GetStringMember(action, "Display");
         if (string.IsNullOrWhiteSpace(display))
         {
-            return;
+            return new ActionTranslationState(action, null);
         }
 
         var original = display!;
@@ -105,28 +121,30 @@ public static class InventoryActionDisplayTranslationPatch
         {
             SetStringMember(action, "Display", unmarked);
             DynamicTextObservability.RecordTransform(Context, "InventoryAction.Display", original, unmarked);
-            return;
+            return new ActionTranslationState(action, null);
         }
 
-        if (!TryTranslateDisplay(action, original, out var translated)
+        if (!TryTranslateDisplay(original, out var translated, out var fallbackKeyCandidates)
             || string.Equals(translated, original, StringComparison.Ordinal))
         {
-            return;
+            return new ActionTranslationState(action, null);
         }
 
         SetStringMember(action, "Display", translated);
         DynamicTextObservability.RecordTransform(Context, "InventoryAction.Display", original, translated);
+        return new ActionTranslationState(action, fallbackKeyCandidates);
     }
 
-    private static bool TryTranslateDisplay(object action, string display, out string translated)
+    private static bool TryTranslateDisplay(string display, out string translated, out string? fallbackKeyCandidates)
     {
+        fallbackKeyCandidates = BuildFallbackHotkeyCandidates(display);
         var exact = ScopedDictionaryLookup.TranslateExactOrLowerAsciiForContextOnly(
             display,
             InventoryActionContext,
             InventoryActionDictionaryFile);
         if (exact is not null)
         {
-            translated = ApplyHotkeyPrefix(action, exact);
+            translated = exact;
             return true;
         }
 
@@ -158,22 +176,173 @@ public static class InventoryActionDisplayTranslationPatch
         var translatedCell = ColorAwareTranslationComposer.TranslatePreservingColors(
             cell,
             GetDisplayNameRouteTranslator.TranslateScopedExactPreservingColors);
-        translated = ApplyHotkeyPrefix(action, translatedCell + "を充電する");
+        translated = translatedCell + "を充電する";
         return true;
     }
 
-    private static string ApplyHotkeyPrefix(object action, string translated)
+    private static string BuildFallbackHotkeyCandidates(string display)
     {
-        var key = GetCharMember(action, "Key");
-        if (key.HasValue
-            && key.Value != '\0'
-            && key.Value != ' '
-            && translated.IndexOf("{{hotkey|", StringComparison.Ordinal) < 0)
+        var visible = ColorAwareTranslationComposer.GetVisibleText(display);
+        var candidates = new List<char>();
+        foreach (var character in visible)
         {
-            return "{{hotkey|" + key.Value + "}}" + translated;
+            if (!IsAsciiLetter(character))
+            {
+                continue;
+            }
+
+            var candidate = char.ToLowerInvariant(character);
+            if (!candidates.Contains(candidate))
+            {
+                candidates.Add(candidate);
+            }
         }
 
-        return translated;
+        return new string(candidates.ToArray());
+    }
+
+    private static void AssignFallbackHotkeys(IEnumerable<ActionTranslationState> states, Predicate<char> isKeyMapped)
+    {
+        var sortedStates = new List<ActionTranslationState>(states);
+        sortedStates.Sort(static (left, right) => CompareInventoryActions(left.Action, right.Action));
+
+        var assignedKeys = new HashSet<char>();
+        foreach (var state in sortedStates)
+        {
+            var currentKey = GetCharMember(state.Action, "Key");
+            if (!IsUsableInventoryActionKey(currentKey))
+            {
+                continue;
+            }
+
+            if (!isKeyMapped(currentKey!.Value) && !assignedKeys.Contains(currentKey.Value))
+            {
+                assignedKeys.Add(currentKey.Value);
+                continue;
+            }
+
+            if (!state.HasFallbackHotkeyCandidates)
+            {
+                continue;
+            }
+
+            if (!TryAssignFallbackHotkey(state, assignedKeys, isKeyMapped))
+            {
+                SetCharMember(state.Action, "Key", ' ');
+            }
+        }
+    }
+
+    private static bool TryAssignFallbackHotkey(
+        ActionTranslationState state,
+        ISet<char> assignedKeys,
+        Predicate<char> isKeyMapped)
+    {
+        foreach (var candidate in state.FallbackHotkeyCandidates!)
+        {
+            if (!IsUsableInventoryActionKey(candidate)
+                || isKeyMapped(candidate)
+                || IsReservedActionKey(candidate, assignedKeys))
+            {
+                continue;
+            }
+
+            SetCharMember(state.Action, "Key", candidate);
+            assignedKeys.Add(candidate);
+            return true;
+        }
+
+        return false;
+    }
+
+    private static int CompareInventoryActions(object left, object right)
+    {
+        var leftKeyValue = GetCharMember(left, "Key");
+        var rightKeyValue = GetCharMember(right, "Key");
+        var leftKey = leftKeyValue.HasValue ? leftKeyValue.Value : ' ';
+        var rightKey = rightKeyValue.HasValue ? rightKeyValue.Value : ' ';
+        var leftKeyMissing = leftKey == ' ';
+        var rightKeyMissing = rightKey == ' ';
+        if (!leftKeyMissing && !rightKeyMissing)
+        {
+            var keyComparison = char.ToUpperInvariant(leftKey).CompareTo(char.ToUpperInvariant(rightKey));
+            if (keyComparison != 0)
+            {
+                return keyComparison;
+            }
+
+            if (leftKey != rightKey)
+            {
+                return -leftKey.CompareTo(rightKey);
+            }
+
+            var defaultComparison = GetIntMember(left, "Default").CompareTo(GetIntMember(right, "Default"));
+            if (defaultComparison != 0)
+            {
+                return -defaultComparison;
+            }
+        }
+        else if (leftKeyMissing || rightKeyMissing)
+        {
+            return leftKeyMissing.CompareTo(rightKeyMissing);
+        }
+
+        var priorityComparison = GetIntMember(left, "Priority").CompareTo(GetIntMember(right, "Priority"));
+        if (priorityComparison != 0)
+        {
+            return -priorityComparison;
+        }
+
+        var leftDisplay = GetStringMember(left, "Display");
+        var rightDisplay = GetStringMember(right, "Display");
+        return -Comparer<string>.Default.Compare(leftDisplay is null ? string.Empty : leftDisplay, rightDisplay is null ? string.Empty : rightDisplay);
+    }
+
+    private static bool IsReservedActionKey(char key, IEnumerable<char> reservedKeys)
+    {
+        var upper = char.ToUpperInvariant(key);
+        var lower = char.ToLowerInvariant(key);
+        foreach (var reservedKey in reservedKeys)
+        {
+            if (reservedKey == key
+                || char.ToUpperInvariant(reservedKey) == upper
+                || char.ToLowerInvariant(reservedKey) == lower)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static bool IsAsciiLetter(char character)
+    {
+        return character is >= 'A' and <= 'Z' or >= 'a' and <= 'z';
+    }
+
+    private static bool IsUsableInventoryActionKey(char? key)
+    {
+        return key.HasValue && key.Value != '\0' && key.Value != ' ';
+    }
+
+    private static bool IsInventoryActionKeyMapped(char key)
+    {
+        try
+        {
+            var controlManagerType = AccessTools.TypeByName("ControlManager");
+            var isKeyMappedMethod = AccessTools.Method(
+                controlManagerType,
+                "isKeyMapped",
+                new[] { typeof(char), typeof(List<string>) });
+            return isKeyMappedMethod?.Invoke(
+                null,
+                new object[] { key, new List<string> { "UINav", "Menus" } }) is true;
+        }
+        catch (Exception ex)
+        {
+            Trace.TraceWarning("QudJP: {0}.IsInventoryActionKeyMapped failed for '{1}': {2}", Context, key, ex);
+            return false;
+        }
     }
 
     private static string? GetStringMember(object instance, string memberName)
@@ -221,5 +390,57 @@ public static class InventoryActionDisplayTranslationPatch
         return field?.FieldType == typeof(char)
             ? (char?)field.GetValue(instance)
             : null;
+    }
+
+    private static int GetIntMember(object instance, string memberName)
+    {
+        var type = instance.GetType();
+        var property = AccessTools.Property(type, memberName);
+        if (property is not null && property.CanRead && property.PropertyType == typeof(int))
+        {
+            var value = property.GetValue(instance);
+            return value is int integer ? integer : 0;
+        }
+
+        var field = AccessTools.Field(type, memberName);
+        if (field?.FieldType != typeof(int))
+        {
+            return 0;
+        }
+
+        var fieldValue = field.GetValue(instance);
+        return fieldValue is int fieldInteger ? fieldInteger : 0;
+    }
+
+    private static void SetCharMember(object instance, string memberName, char value)
+    {
+        var type = instance.GetType();
+        var property = AccessTools.Property(type, memberName);
+        if (property is not null && property.CanWrite && property.PropertyType == typeof(char))
+        {
+            property.SetValue(instance, value);
+            return;
+        }
+
+        var field = AccessTools.Field(type, memberName);
+        if (field?.FieldType == typeof(char))
+        {
+            field.SetValue(instance, value);
+        }
+    }
+
+    private sealed class ActionTranslationState
+    {
+        public ActionTranslationState(object action, string? fallbackHotkeyCandidates)
+        {
+            Action = action;
+            FallbackHotkeyCandidates = fallbackHotkeyCandidates;
+        }
+
+        public object Action { get; }
+
+        public string? FallbackHotkeyCandidates { get; }
+
+        public bool HasFallbackHotkeyCandidates => !string.IsNullOrEmpty(FallbackHotkeyCandidates);
     }
 }

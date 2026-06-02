@@ -20,6 +20,7 @@ public sealed class InventoryActionDisplayTranslationPatchTests
         Translator.SetDictionaryDirectoryForTests(tempDirectory);
         ScopedDictionaryLookup.ResetForTests();
         DynamicTextObservability.ResetForTests();
+        InventoryActionDisplayTranslationPatch.SetInventoryActionKeyMappedPredicateForTests(null);
     }
 
     [TearDown]
@@ -28,6 +29,7 @@ public sealed class InventoryActionDisplayTranslationPatchTests
         Translator.ResetForTests();
         ScopedDictionaryLookup.ResetForTests();
         DynamicTextObservability.ResetForTests();
+        InventoryActionDisplayTranslationPatch.SetInventoryActionKeyMappedPredicateForTests(null);
 
         if (Directory.Exists(tempDirectory))
         {
@@ -54,7 +56,7 @@ public sealed class InventoryActionDisplayTranslationPatchTests
     }
 
     [Test]
-    public void TranslateActionTable_PreservesExactDictionaryHotkey_WhenActionKeyIsProvided()
+    public void TranslateActionTable_DoesNotEmbedExactDictionaryHotkey_WhenActionKeyIsProvided()
     {
         WriteInventoryActionDictionary(("direct to change follow distance", "追従距離を変更"));
         var actions = new Dictionary<string, DummyInventoryAction>
@@ -69,7 +71,11 @@ public sealed class InventoryActionDisplayTranslationPatchTests
 
         InventoryActionDisplayTranslationPatch.TranslateActionTableForTests(actions);
 
-        Assert.That(actions["Change Follow Distance"].Display, Is.EqualTo("{{hotkey|D}}追従距離を変更"));
+        Assert.Multiple(() =>
+        {
+            Assert.That(actions["Change Follow Distance"].Display, Is.EqualTo("追従距離を変更"));
+            Assert.That(actions["Change Follow Distance"].Key, Is.EqualTo('D'));
+        });
     }
 
     [Test]
@@ -91,7 +97,7 @@ public sealed class InventoryActionDisplayTranslationPatchTests
     }
 
     [Test]
-    public void TranslateActionTable_PreservesRechargeCellHotkey_WhenActionKeyIsProvided()
+    public void TranslateActionTable_DoesNotEmbedRechargeCellHotkey_WhenActionKeyIsProvided()
     {
         WriteDisplayNameAtomicDictionary(("chem cell", "ケムセル"));
         var actions = new Dictionary<string, DummyInventoryAction>
@@ -106,7 +112,195 @@ public sealed class InventoryActionDisplayTranslationPatchTests
 
         InventoryActionDisplayTranslationPatch.TranslateActionTableForTests(actions);
 
-        Assert.That(actions["RechargeSlotted"].Display, Is.EqualTo("{{hotkey|R}}ケムセルを充電する"));
+        Assert.Multiple(() =>
+        {
+            Assert.That(actions["RechargeSlotted"].Display, Is.EqualTo("ケムセルを充電する"));
+            Assert.That(actions["RechargeSlotted"].Key, Is.EqualTo('R'));
+        });
+    }
+
+    [Test]
+    public void TranslateActionTable_TranslatesRechargeAntimatterCell_WithoutUsingCellNameAsHotkey()
+    {
+        WriteDisplayNameAtomicDictionary(("antimatter cell", "反物質セル"));
+        var actions = new Dictionary<string, DummyInventoryAction>
+        {
+            ["RechargeSlotted"] = new()
+            {
+                Display = "recharge antimatter cell",
+                Command = "RechargeEnergyCell",
+                Key = 'R',
+            },
+        };
+
+        InventoryActionDisplayTranslationPatch.TranslateActionTableForTests(actions);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(actions["RechargeSlotted"].Display, Is.EqualTo("反物質セルを充電する"));
+            Assert.That(actions["RechargeSlotted"].Key, Is.EqualTo('R'));
+        });
+    }
+
+    [Test]
+    public void TranslateActionTable_RekeysTranslatedRechargeCell_WhenNativeRechargeHotkeyCollides()
+    {
+        WriteDisplayNameAtomicDictionary(("antimatter cell", "反物質セル"));
+        WriteInventoryActionDictionary(("repair", "修理する"));
+        var actions = new Dictionary<string, DummyInventoryAction>
+        {
+            ["Repair"] = new()
+            {
+                Display = "repair",
+                Command = "Repair",
+                Key = 'R',
+                Default = 10,
+            },
+            ["RechargeSlotted"] = new()
+            {
+                Display = "recharge antimatter cell",
+                Command = "RechargeEnergyCell",
+                Key = 'R',
+            },
+        };
+
+        InventoryActionDisplayTranslationPatch.TranslateActionTableForTests(actions);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(actions["Repair"].Display, Is.EqualTo("修理する"));
+            Assert.That(actions["Repair"].Key, Is.EqualTo('R'));
+            Assert.That(actions["RechargeSlotted"].Display, Is.EqualTo("反物質セルを充電する"));
+            Assert.That(actions["RechargeSlotted"].Key, Is.EqualTo('e'));
+        });
+    }
+
+    [Test]
+    public void TranslateActionTable_RekeysExactRechargeAction_WhenNativeRechargeHotkeyCollides()
+    {
+        WriteInventoryActionDictionary(("repair", "修理する"), ("recharge", "充電する"));
+        var actions = new Dictionary<string, DummyInventoryAction>
+        {
+            ["Repair"] = new()
+            {
+                Display = "repair",
+                Command = "Repair",
+                Key = 'R',
+                Default = 10,
+            },
+            ["Recharge"] = new()
+            {
+                Display = "recharge",
+                Command = "RechargeCapacitor",
+                Key = 'R',
+            },
+        };
+
+        InventoryActionDisplayTranslationPatch.TranslateActionTableForTests(actions);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(actions["Repair"].Display, Is.EqualTo("修理する"));
+            Assert.That(actions["Repair"].Key, Is.EqualTo('R'));
+            Assert.That(actions["Recharge"].Display, Is.EqualTo("充電する"));
+            Assert.That(actions["Recharge"].Key, Is.EqualTo('e'));
+        });
+    }
+
+    [Test]
+    public void TranslateActionTable_RekeysAnyTranslatedAction_WhenNativeHotkeyCollides()
+    {
+        WriteInventoryActionDictionary(("remove", "外す"), ("repair", "修理する"));
+        var actions = new Dictionary<string, DummyInventoryAction>
+        {
+            ["Remove"] = new()
+            {
+                Display = "remove",
+                Command = "Unequip",
+                Key = 'r',
+                Default = 10,
+            },
+            ["Repair"] = new()
+            {
+                Display = "repair",
+                Command = "Repair",
+                Key = 'r',
+            },
+        };
+
+        InventoryActionDisplayTranslationPatch.TranslateActionTableForTests(actions);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(actions["Remove"].Display, Is.EqualTo("外す"));
+            Assert.That(actions["Remove"].Key, Is.EqualTo('r'));
+            Assert.That(actions["Repair"].Display, Is.EqualTo("修理する"));
+            Assert.That(actions["Repair"].Key, Is.EqualTo('e'));
+        });
+    }
+
+    [Test]
+    public void TranslateActionTable_PreservesDistinctUpperAndLowerNativeHotkeys()
+    {
+        WriteInventoryActionDictionary(("drop", "落とす"), ("drop all", "すべて落とす"));
+        var actions = new Dictionary<string, DummyInventoryAction>
+        {
+            ["Drop"] = new()
+            {
+                Display = "drop",
+                Command = "CommandDropObject",
+                Key = 'd',
+            },
+            ["DropAll"] = new()
+            {
+                Display = "drop all",
+                Command = "CommandDropAllObject",
+                Key = 'D',
+            },
+        };
+
+        InventoryActionDisplayTranslationPatch.TranslateActionTableForTests(actions);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(actions["Drop"].Display, Is.EqualTo("落とす"));
+            Assert.That(actions["Drop"].Key, Is.EqualTo('d'));
+            Assert.That(actions["DropAll"].Display, Is.EqualTo("すべて落とす"));
+            Assert.That(actions["DropAll"].Key, Is.EqualTo('D'));
+        });
+    }
+
+    [Test]
+    public void TranslateActionTable_RekeysTranslatedActions_WhenNativeHotkeysAreConsumedByMenuNavigation()
+    {
+        WriteInventoryActionDictionary(("mark important", "重要にする"), ("look", "見る"));
+        InventoryActionDisplayTranslationPatch.SetInventoryActionKeyMappedPredicateForTests(
+            key => key is 'i' or 'l');
+        var actions = new Dictionary<string, DummyInventoryAction>
+        {
+            ["Mark Important"] = new()
+            {
+                Display = "mark important",
+                Command = "MarkImportant",
+                Key = 'i',
+            },
+            ["Look"] = new()
+            {
+                Display = "look",
+                Command = "Look",
+                Key = 'l',
+            },
+        };
+
+        InventoryActionDisplayTranslationPatch.TranslateActionTableForTests(actions);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(actions["Mark Important"].Display, Is.EqualTo("重要にする"));
+            Assert.That(actions["Mark Important"].Key, Is.EqualTo('m'));
+            Assert.That(actions["Look"].Display, Is.EqualTo("見る"));
+            Assert.That(actions["Look"].Key, Is.EqualTo('o'));
+        });
     }
 
     [Test]
@@ -258,5 +452,7 @@ public sealed class InventoryActionDisplayTranslationPatchTests
         public string? Command { get; set; }
 
         public char Key { get; set; }
+
+        public int Default { get; set; }
     }
 }
