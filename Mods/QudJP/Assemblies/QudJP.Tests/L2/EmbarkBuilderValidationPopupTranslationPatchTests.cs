@@ -35,7 +35,8 @@ public sealed class EmbarkBuilderValidationPopupTranslationPatchTests
             "Choose a genotype.",
             "{{r|Error!}}",
             "Choose a genotype.",
-            "{{r|エラー！}}");
+            "{{r|エラー！}}",
+            expectedOwnerHitCount: 1);
     }
 
     [Test]
@@ -45,7 +46,8 @@ public sealed class EmbarkBuilderValidationPopupTranslationPatchTests
             "You have unspent attribute points.\n\nContinue anyway?",
             "{{W|Warning!}}",
             "You have unspent attribute points.\n\n続行しますか？",
-            "{{W|警告！}}");
+            "{{W|警告！}}",
+            expectedOwnerHitCount: 2);
     }
 
     [Test]
@@ -65,6 +67,7 @@ public sealed class EmbarkBuilderValidationPopupTranslationPatchTests
             {
                 Assert.That(DummyPopupMessageTarget.LastMessage, Is.EqualTo("You have unspent attribute points.\n\nContinue anyway?"));
                 Assert.That(DummyPopupMessageTarget.LastTitle, Is.EqualTo("{{W|警告！}}"));
+                Assert.That(OwnerHitCount(), Is.Zero);
             });
         }
         finally
@@ -80,9 +83,10 @@ public sealed class EmbarkBuilderValidationPopupTranslationPatchTests
             "Unrecognized validation body.",
             "Unrecognized validation title",
             "Unrecognized validation body.",
-            "Unrecognized validation title");
+            "Unrecognized validation title",
+            expectedOwnerHitCount: 0);
 
-        AssertPopup(string.Empty, string.Empty, string.Empty, string.Empty);
+        AssertPopup(string.Empty, string.Empty, string.Empty, string.Empty, expectedOwnerHitCount: 0);
     }
 
     [Test]
@@ -92,10 +96,16 @@ public sealed class EmbarkBuilderValidationPopupTranslationPatchTests
             MessageFrameTranslator.MarkDirectTranslation("未使用の能力値ポイントがあります。\n\n続行しますか？"),
             MessageFrameTranslator.MarkDirectTranslation("{{W|警告！}}"),
             "未使用の能力値ポイントがあります。\n\n続行しますか？",
-            "{{W|警告！}}");
+            "{{W|警告！}}",
+            expectedOwnerHitCount: 0);
     }
 
-    private static void AssertPopup(string source, string sourceTitle, string expected, string expectedTitle)
+    private static void AssertPopup(
+        string source,
+        string sourceTitle,
+        string expected,
+        string expectedTitle,
+        int expectedOwnerHitCount)
     {
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
@@ -110,6 +120,7 @@ public sealed class EmbarkBuilderValidationPopupTranslationPatchTests
             {
                 Assert.That(DummyPopupMessageTarget.LastMessage, Is.EqualTo(expected));
                 Assert.That(DummyPopupMessageTarget.LastTitle, Is.EqualTo(expectedTitle));
+                Assert.That(OwnerHitCount(), Is.EqualTo(expectedOwnerHitCount));
             });
         }
         finally
@@ -155,6 +166,13 @@ public sealed class EmbarkBuilderValidationPopupTranslationPatchTests
     private static string CreateHarmonyId()
     {
         return $"qudjp.tests.{Guid.NewGuid():N}";
+    }
+
+    private static int OwnerHitCount()
+    {
+        return DynamicTextObservability.GetRouteFamilyHitCountForTests(
+            nameof(PopupMessageTranslationPatch),
+            "Popup.ProducerText." + nameof(EmbarkBuilderValidationPopupTranslationPatch));
     }
 
     private static string GetRepositoryDictionaryDirectory() =>

@@ -182,8 +182,8 @@ public sealed class PopupAskNumberTranslationPatchTests
         "Supply {{Y|turret}} with how many mystery shells? (max=7)",
         "{{Y|タレット}}へmystery shellsをいくつ補給しますか？ (最大=7)")]
     [TestCase(
-        "\u0001Supply {{Y|turret}} with how many lead slugs? (max=7)",
-        "Supply {{Y|turret}} with how many lead slugs? (max=7)")]
+        "\u0001{{Y|タレット}}へ鉛スラッグをいくつ補給しますか？ (最大=7)",
+        "{{Y|タレット}}へ鉛スラッグをいくつ補給しますか？ (最大=7)")]
     [TestCase(
         "Supply {{Y|turret}} with how many ? (max=7)",
         "Supply {{Y|turret}} with how many ? (max=7)")]
@@ -217,8 +217,8 @@ public sealed class PopupAskNumberTranslationPatchTests
         "Supply {{Y|turret}} with how many drams of your mystery fluid? (max=7)",
         "{{Y|タレット}}へあなたのmystery fluidを何ドラム補給しますか？ (最大=7)")]
     [TestCase(
-        "\u0001Supply {{Y|turret}} with how many drams of your water? (max=7)",
-        "Supply {{Y|turret}} with how many drams of your water? (max=7)")]
+        "\u0001{{Y|タレット}}へあなたの水を何ドラム補給しますか？ (最大=7)",
+        "{{Y|タレット}}へあなたの水を何ドラム補給しますか？ (最大=7)")]
     [TestCase("", "")]
     public void Prefix_TranslatesLiquidLoaderSupplyPrompt(string source, string expected)
     {

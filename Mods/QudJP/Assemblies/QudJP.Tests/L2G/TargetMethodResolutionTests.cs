@@ -2851,6 +2851,7 @@ public sealed class TargetMethodResolutionTests
         Assert.That(actualSignatures, Is.EquivalentTo(expectedSignatures));
     }
 
+#if HAS_GAME_DLL
     [Test]
     public void MutationActivatedAbilityNameTargetMethods_ResolveExpectedSignatures()
     {
@@ -2923,6 +2924,7 @@ public sealed class TargetMethodResolutionTests
             "XRL.World.Parts.Mutation.TemporalFugue|Mutate|System.Boolean|XRL.World.GameObject|System.Int32",
         }));
     }
+#endif
 
     private static string FullMethodSignature(MethodBase methodBase)
     {

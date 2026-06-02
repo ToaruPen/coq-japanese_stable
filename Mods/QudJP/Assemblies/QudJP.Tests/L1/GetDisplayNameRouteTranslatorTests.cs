@@ -1424,7 +1424,7 @@ public sealed class GetDisplayNameRouteTranslatorTests
         "{{Y|Skillsoft [{{W|Long Blade}}]}}",
         "{{Y|スキルソフト [{{W|Long Blade}}]}}")]
     [TestCase(
-        "{{Y|Skillsoft [{{W|\u0001Tinkering}}]}}",
+        "{{Y|Skillsoft [{{W|\u0001工作}}]}}",
         "{{Y|スキルソフト [{{W|工作}}]}}")]
     public void TranslatePreservingColors_TranslatesCyberneticsSkillsoftGeneratedDisplayNames(
         string source,
