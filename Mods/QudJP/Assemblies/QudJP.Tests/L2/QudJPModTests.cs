@@ -1,4 +1,6 @@
 using System.Reflection;
+using System.Text;
+using System.Text.Json;
 using HarmonyLib;
 using QudJP.Patches;
 
@@ -9,16 +11,23 @@ namespace QudJP.Tests.L2;
 [NonParallelizable]
 public sealed class QudJPModTests
 {
+    private static readonly UTF8Encoding Utf8WithoutBom = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
+
     [SetUp]
     public void SetUp()
     {
         QudJPMod.ResetInitializationForTests();
+        DisplayNameRouteTranslation.ResetForTests();
+        Translator.ResetForTests();
     }
 
     [TearDown]
     public void TearDown()
     {
         QudJPMod.ResetInitializationForTests();
+        DisplayNameRouteTranslation.ResetForTests();
+        Translator.ResetForTests();
+        ScopedDictionaryLookup.ResetForTests();
     }
 
     [Test]
@@ -85,6 +94,39 @@ public sealed class QudJPModTests
     }
 
     [Test]
+    public void InitializeForTests_RegistersDisplayNameRouteTranslator()
+    {
+        var tempDirectory = Path.Combine(
+            Path.GetTempPath(),
+            "qudjp-display-name-route-registration-l2",
+            Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(tempDirectory);
+
+        try
+        {
+            Translator.SetDictionaryDirectoryForTests(tempDirectory);
+            WriteDisplayNameDictionary(tempDirectory, "raw widget", "登録済み表示名");
+
+            Assert.That(
+                DisplayNameRouteTranslation.TranslatePreservingColors("raw widget", "QudJPModTests"),
+                Is.EqualTo("raw widget"));
+
+            QudJPMod.InitializeForTests(static () => { }, static () => { });
+
+            Assert.That(
+                DisplayNameRouteTranslation.TranslatePreservingColors("raw widget", nameof(GetDisplayNamePatch)),
+                Is.EqualTo("登録済み表示名"));
+        }
+        finally
+        {
+            if (Directory.Exists(tempDirectory))
+            {
+                Directory.Delete(tempDirectory, recursive: true);
+            }
+        }
+    }
+
+    [Test]
     public void InvokePatchAll_ScansQudJPModAssembly_WithoutRequiringRealHarmonyPatchApplication()
     {
         var harmony = new RecordingHarmonyProcessor();
@@ -98,6 +140,19 @@ public sealed class QudJPModTests
             Assert.That(harmony.RequestedPatchTypes, Does.Not.Contain(typeof(QudJPModTests)));
             Assert.That(harmony.PatchCallCount, Is.EqualTo(harmony.RequestedPatchTypes.Count));
         });
+    }
+
+    private static void WriteDisplayNameDictionary(string directory, string key, string text)
+    {
+        var contents = "{\"entries\":[{\"key\":"
+            + JsonSerializer.Serialize(key)
+            + ",\"text\":"
+            + JsonSerializer.Serialize(text)
+            + "}]}";
+        File.WriteAllText(
+            Path.Combine(directory, "ui-displayname-route.ja.json"),
+            contents,
+            Utf8WithoutBom);
     }
 
     [Test]

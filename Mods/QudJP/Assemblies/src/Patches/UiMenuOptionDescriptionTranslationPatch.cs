@@ -68,6 +68,106 @@ public static class UiMenuOptionDescriptionTranslationPatch
         "Expand",
     };
 
+    private static readonly OwnerDispatch[] OwnerDispatches =
+    {
+        new OwnerDispatch(
+            "Qud.UI.FactionsStatusScreen",
+            "DummyFactionsStatusScreenTarget",
+            (_, instance) => TranslateFactionsMenuOptions(instance)),
+        new OwnerDispatch(
+            "Qud.UI.HighScoresScreen",
+            "DummyHighScoresScreenTarget",
+            (_, instance) => TranslateHotkeyBarChoices(instance, HighScoresFamily, NavigationDescriptions)),
+        new OwnerDispatch(
+            "Qud.UI.KeybindsScreen",
+            "DummyKeybindsScreenTarget",
+            (_, instance) => TranslateHotkeyBarChoices(instance, KeybindsFamily, NavigationDescriptions)),
+        new OwnerDispatch(
+            "Qud.UI.AskNumberScreen",
+            "DummyAskNumberScreenTarget",
+            (ownerType, _) => TranslateStaticCollectionField(ownerType, "getItemMenuOptions", AskNumberFamily, NavigationDescriptions)),
+        new OwnerDispatch(
+            "Qud.UI.SaveManagement",
+            "DummySaveManagementTarget",
+            (_, instance) => TranslateHotkeyBarChoices(instance, SaveManagementFamily, NavigationDescriptions)),
+        new OwnerDispatch(
+            "Qud.UI.CharacterAttributeLine",
+            "DummyCharacterAttributeLineTarget",
+            (ownerType, _) => TranslateExpandCollapseStaticCollectionFields(ownerType, CharacterAttributeLineFamily)),
+        new OwnerDispatch(
+            "Qud.UI.CharacterEffectLine",
+            "DummyCharacterEffectLineTarget",
+            (ownerType, _) => TranslateExpandCollapseStaticCollectionFields(ownerType, CharacterEffectLineFamily)),
+        new OwnerDispatch(
+            "Qud.UI.CharacterMutationLine",
+            "DummyCharacterMutationLineTarget",
+            (ownerType, _) => TranslateExpandCollapseStaticCollectionFields(ownerType, CharacterMutationLineFamily)),
+        new OwnerDispatch(
+            "Qud.UI.EquipmentLine",
+            "DummyEquipmentLineTarget",
+            (ownerType, _) => TranslateExpandCollapseStaticCollectionFields(ownerType, EquipmentLineFamily)),
+        new OwnerDispatch(
+            "Qud.UI.ButtonBarButton",
+            "DummyButtonBarButtonTarget",
+            (ownerType, _) => TranslateStaticCollectionField(ownerType, "itemOptions", ButtonBarButtonFamily, SelectDescriptions)),
+        new OwnerDispatch(
+            "Qud.UI.FactionsLine",
+            "DummyFactionsLineTarget",
+            (ownerType, _) => TranslateExpandCollapseStaticCollectionFields(ownerType, FactionsLineFamily)),
+        new OwnerDispatch(
+            "Qud.UI.InventoryLine",
+            "DummyInventoryLineTarget",
+            (ownerType, _) => TranslateExpandCollapseStaticCollectionFields(ownerType, InventoryLineFamily)),
+        new OwnerDispatch(
+            "Qud.UI.JournalSultanStatueLine",
+            "DummyJournalSultanStatueLineTarget",
+            (ownerType, _) => TranslateExpandCollapseStaticCollectionFields(ownerType, JournalSultanStatueLineFamily)),
+        new OwnerDispatch(
+            "Qud.UI.SkillsAndPowersLine",
+            "DummySkillsAndPowersLineTarget",
+            (ownerType, _) => TranslateExpandCollapseStaticCollectionFields(ownerType, SkillsAndPowersLineFamily)),
+        new OwnerDispatch(
+            "Qud.UI.TinkeringBitsLine",
+            "DummyTinkeringBitsLineTarget",
+            (ownerType, _) => TranslateExpandCollapseStaticCollectionFields(ownerType, TinkeringBitsLineFamily)),
+        new OwnerDispatch(
+            "Qud.UI.TinkeringDetailsLine",
+            "DummyTinkeringDetailsLineTarget",
+            (ownerType, _) => TranslateExpandCollapseStaticCollectionFields(ownerType, TinkeringDetailsLineFamily)),
+        new OwnerDispatch(
+            "Qud.UI.TinkeringLine",
+            "DummyTinkeringLineTarget",
+            (ownerType, _) => TranslateExpandCollapseStaticCollectionFields(ownerType, TinkeringLineFamily)),
+        new OwnerDispatch(
+            "Qud.UI.TradeLine",
+            "DummyTradeLineTarget",
+            (ownerType, _) => TranslateTradeLineStaticFields(ownerType)),
+        new OwnerDispatch(
+            "Qud.UI.OptionsCategoryControl",
+            "DummyOptionsCategoryControlTarget",
+            (ownerType, _) => TranslateStaticMenuOptionField(
+                ownerType,
+                "TOGGLE_OPTION",
+                OptionsCategoryControlFamily,
+                "Qud.UI.OptionsCategoryControl.TOGGLE_OPTION.Description")),
+        new OwnerDispatch(
+            "Qud.UI.OptionsCheckboxControl",
+            "DummyOptionsCheckboxControlTarget",
+            (ownerType, _) => TranslateStaticMenuOptionField(
+                ownerType,
+                "TOGGLE_OPTION",
+                OptionsCheckboxControlFamily,
+                "Qud.UI.OptionsCheckboxControl.TOGGLE_OPTION.Description")),
+        new OwnerDispatch(
+            "Qud.UI.OptionsSliderControl",
+            "DummyOptionsSliderControlTarget",
+            (ownerType, _) => TranslateOptionsSliderControlFields(ownerType)),
+        new OwnerDispatch(
+            "Qud.UI.OptionsComboBoxControl",
+            "DummyOptionsComboBoxControlTarget",
+            (_, instance) => TranslateOptionsComboBoxRenderOptions(instance)),
+    };
+
     [HarmonyTargetMethods]
     private static IEnumerable<MethodBase> TargetMethods()
     {
@@ -217,169 +317,7 @@ public static class UiMenuOptionDescriptionTranslationPatch
             }
 
             var instanceType = __instance.GetType();
-            if (IsType(instanceType, "Qud.UI.FactionsStatusScreen", "DummyFactionsStatusScreenTarget"))
-            {
-                TranslateFactionsMenuOptions(__instance);
-                return;
-            }
-
-            if (IsType(instanceType, "Qud.UI.HighScoresScreen", "DummyHighScoresScreenTarget"))
-            {
-                TranslateHotkeyBarChoices(__instance, HighScoresFamily, NavigationDescriptions);
-                return;
-            }
-
-            if (IsType(instanceType, "Qud.UI.KeybindsScreen", "DummyKeybindsScreenTarget"))
-            {
-                TranslateHotkeyBarChoices(__instance, KeybindsFamily, NavigationDescriptions);
-                return;
-            }
-
-            if (IsType(instanceType, "Qud.UI.AskNumberScreen", "DummyAskNumberScreenTarget"))
-            {
-                TranslateStaticCollectionField(instanceType, "getItemMenuOptions", AskNumberFamily, NavigationDescriptions);
-                return;
-            }
-
-            if (IsType(instanceType, "Qud.UI.SaveManagement", "DummySaveManagementTarget"))
-            {
-                TranslateHotkeyBarChoices(__instance, SaveManagementFamily, NavigationDescriptions);
-                return;
-            }
-
-            if (IsType(instanceType, "Qud.UI.CharacterAttributeLine", "DummyCharacterAttributeLineTarget"))
-            {
-                TranslateStaticCollectionField(instanceType, "categoryExpandOptions", CharacterAttributeLineFamily, CharacterAttributeLineDescriptions);
-                TranslateStaticCollectionField(instanceType, "categoryCollapseOptions", CharacterAttributeLineFamily, CharacterAttributeLineDescriptions);
-                return;
-            }
-
-            if (IsType(instanceType, "Qud.UI.CharacterEffectLine", "DummyCharacterEffectLineTarget"))
-            {
-                TranslateStaticCollectionField(instanceType, "categoryExpandOptions", CharacterEffectLineFamily, CharacterAttributeLineDescriptions);
-                TranslateStaticCollectionField(instanceType, "categoryCollapseOptions", CharacterEffectLineFamily, CharacterAttributeLineDescriptions);
-                return;
-            }
-
-            if (IsType(instanceType, "Qud.UI.CharacterMutationLine", "DummyCharacterMutationLineTarget"))
-            {
-                TranslateStaticCollectionField(instanceType, "categoryExpandOptions", CharacterMutationLineFamily, CharacterAttributeLineDescriptions);
-                TranslateStaticCollectionField(instanceType, "categoryCollapseOptions", CharacterMutationLineFamily, CharacterAttributeLineDescriptions);
-                return;
-            }
-
-            if (IsType(instanceType, "Qud.UI.EquipmentLine", "DummyEquipmentLineTarget"))
-            {
-                TranslateStaticCollectionField(instanceType, "categoryExpandOptions", EquipmentLineFamily, CharacterAttributeLineDescriptions);
-                TranslateStaticCollectionField(instanceType, "categoryCollapseOptions", EquipmentLineFamily, CharacterAttributeLineDescriptions);
-                return;
-            }
-
-            if (IsType(instanceType, "Qud.UI.ButtonBarButton", "DummyButtonBarButtonTarget"))
-            {
-                TranslateStaticCollectionField(instanceType, "itemOptions", ButtonBarButtonFamily, SelectDescriptions);
-                return;
-            }
-
-            if (IsType(instanceType, "Qud.UI.FactionsLine", "DummyFactionsLineTarget"))
-            {
-                TranslateExpandCollapseStaticCollectionFields(instanceType, FactionsLineFamily);
-                return;
-            }
-
-            if (IsType(instanceType, "Qud.UI.InventoryLine", "DummyInventoryLineTarget"))
-            {
-                TranslateExpandCollapseStaticCollectionFields(instanceType, InventoryLineFamily);
-                return;
-            }
-
-            if (IsType(instanceType, "Qud.UI.JournalSultanStatueLine", "DummyJournalSultanStatueLineTarget"))
-            {
-                TranslateExpandCollapseStaticCollectionFields(instanceType, JournalSultanStatueLineFamily);
-                return;
-            }
-
-            if (IsType(instanceType, "Qud.UI.SkillsAndPowersLine", "DummySkillsAndPowersLineTarget"))
-            {
-                TranslateExpandCollapseStaticCollectionFields(instanceType, SkillsAndPowersLineFamily);
-                return;
-            }
-
-            if (IsType(instanceType, "Qud.UI.TinkeringBitsLine", "DummyTinkeringBitsLineTarget"))
-            {
-                TranslateExpandCollapseStaticCollectionFields(instanceType, TinkeringBitsLineFamily);
-                return;
-            }
-
-            if (IsType(instanceType, "Qud.UI.TinkeringDetailsLine", "DummyTinkeringDetailsLineTarget"))
-            {
-                TranslateExpandCollapseStaticCollectionFields(instanceType, TinkeringDetailsLineFamily);
-                return;
-            }
-
-            if (IsType(instanceType, "Qud.UI.TinkeringLine", "DummyTinkeringLineTarget"))
-            {
-                TranslateExpandCollapseStaticCollectionFields(instanceType, TinkeringLineFamily);
-                return;
-            }
-
-            if (IsType(instanceType, "Qud.UI.TradeLine", "DummyTradeLineTarget"))
-            {
-                TranslateStaticCollectionField(instanceType, "categoryExpandOptions", TradeLineFamily, ExpandDescriptions);
-                TranslateStaticCollectionField(instanceType, "categoryCollapseOptions", TradeLineFamily, CharacterAttributeLineDescriptions);
-                TranslateStaticCollectionField(instanceType, "itemOptions", TradeLineFamily, SelectDescriptions);
-                return;
-            }
-
-            if (IsType(instanceType, "Qud.UI.OptionsCategoryControl", "DummyOptionsCategoryControlTarget"))
-            {
-                TranslateStaticMenuOptionField(
-                    instanceType,
-                    "TOGGLE_OPTION",
-                    OptionsCategoryControlFamily,
-                    "Qud.UI.OptionsCategoryControl.TOGGLE_OPTION.Description");
-                return;
-            }
-
-            if (IsType(instanceType, "Qud.UI.OptionsCheckboxControl", "DummyOptionsCheckboxControlTarget"))
-            {
-                TranslateStaticMenuOptionField(
-                    instanceType,
-                    "TOGGLE_OPTION",
-                    OptionsCheckboxControlFamily,
-                    "Qud.UI.OptionsCheckboxControl.TOGGLE_OPTION.Description");
-                return;
-            }
-
-            if (IsType(instanceType, "Qud.UI.OptionsSliderControl", "DummyOptionsSliderControlTarget"))
-            {
-                TranslateStaticMenuOptionField(
-                    instanceType,
-                    "CHANGE_VALUE",
-                    OptionsSliderControlFamily,
-                    "Qud.UI.OptionsSliderControl.CHANGE_VALUE.Description");
-                TranslateStaticMenuOptionField(
-                    instanceType,
-                    "ARROWS_CHANGE_VALUE",
-                    OptionsSliderControlFamily,
-                    "Qud.UI.OptionsSliderControl.ARROWS_CHANGE_VALUE.Description");
-                TranslateStaticMenuOptionField(
-                    instanceType,
-                    "SAVE_VALUE",
-                    OptionsSliderControlFamily,
-                    "Qud.UI.OptionsSliderControl.SAVE_VALUE.Description");
-                TranslateStaticMenuOptionField(
-                    instanceType,
-                    "CANCEL_VALUE",
-                    OptionsSliderControlFamily,
-                    "Qud.UI.OptionsSliderControl.CANCEL_VALUE.Description");
-                return;
-            }
-
-            if (IsType(instanceType, "Qud.UI.OptionsComboBoxControl", "DummyOptionsComboBoxControlTarget"))
-            {
-                TranslateOptionsComboBoxRenderOptions(__instance);
-            }
+            DispatchOwner(instanceType, __instance);
         }
         catch (Exception ex)
         {
@@ -404,6 +342,20 @@ public static class UiMenuOptionDescriptionTranslationPatch
         }
 
         return method;
+    }
+
+    private static void DispatchOwner(Type instanceType, object instance)
+    {
+        foreach (var dispatch in OwnerDispatches)
+        {
+            if (!dispatch.Matches(instanceType))
+            {
+                continue;
+            }
+
+            dispatch.Translate(instanceType, instance);
+            return;
+        }
     }
 
     private static void TranslateFactionsMenuOptions(object instance)
@@ -456,6 +408,37 @@ public static class UiMenuOptionDescriptionTranslationPatch
     {
         TranslateStaticCollectionField(ownerType, "categoryExpandOptions", family, CharacterAttributeLineDescriptions);
         TranslateStaticCollectionField(ownerType, "categoryCollapseOptions", family, CharacterAttributeLineDescriptions);
+    }
+
+    private static void TranslateTradeLineStaticFields(Type ownerType)
+    {
+        TranslateStaticCollectionField(ownerType, "categoryExpandOptions", TradeLineFamily, ExpandDescriptions);
+        TranslateStaticCollectionField(ownerType, "categoryCollapseOptions", TradeLineFamily, CharacterAttributeLineDescriptions);
+        TranslateStaticCollectionField(ownerType, "itemOptions", TradeLineFamily, SelectDescriptions);
+    }
+
+    private static void TranslateOptionsSliderControlFields(Type ownerType)
+    {
+        TranslateStaticMenuOptionField(
+            ownerType,
+            "CHANGE_VALUE",
+            OptionsSliderControlFamily,
+            "Qud.UI.OptionsSliderControl.CHANGE_VALUE.Description");
+        TranslateStaticMenuOptionField(
+            ownerType,
+            "ARROWS_CHANGE_VALUE",
+            OptionsSliderControlFamily,
+            "Qud.UI.OptionsSliderControl.ARROWS_CHANGE_VALUE.Description");
+        TranslateStaticMenuOptionField(
+            ownerType,
+            "SAVE_VALUE",
+            OptionsSliderControlFamily,
+            "Qud.UI.OptionsSliderControl.SAVE_VALUE.Description");
+        TranslateStaticMenuOptionField(
+            ownerType,
+            "CANCEL_VALUE",
+            OptionsSliderControlFamily,
+            "Qud.UI.OptionsSliderControl.CANCEL_VALUE.Description");
     }
 
     private static void TranslateStaticMenuOptionField(
@@ -610,9 +593,28 @@ public static class UiMenuOptionDescriptionTranslationPatch
         return visible;
     }
 
-    private static bool IsType(Type type, string fullName, string testName)
+    private readonly struct OwnerDispatch
     {
-        return string.Equals(type.FullName, fullName, StringComparison.Ordinal)
-            || string.Equals(type.Name, testName, StringComparison.Ordinal);
+        private readonly string fullName;
+        private readonly string testName;
+        private readonly Action<Type, object> translate;
+
+        public OwnerDispatch(string fullName, string testName, Action<Type, object> translate)
+        {
+            this.fullName = fullName;
+            this.testName = testName;
+            this.translate = translate;
+        }
+
+        public bool Matches(Type type)
+        {
+            return string.Equals(type.FullName, fullName, StringComparison.Ordinal)
+                || string.Equals(type.Name, testName, StringComparison.Ordinal);
+        }
+
+        public void Translate(Type ownerType, object instance)
+        {
+            translate(ownerType, instance);
+        }
     }
 }

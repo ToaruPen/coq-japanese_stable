@@ -14153,6 +14153,199 @@ def _closure_overlay(family: TextConstructionFamily, closure_lane: ClosureLane) 
     return "unreviewed", []
 
 
+ISSUE719_SIMPLE_FAMILY_CLOSURE_DISPATCH: Final = (
+    (ISSUE719_VILLAGE_SIGNATURE_DISH_FAMILIES, "covered_by_owner_route", ISSUE719_VILLAGE_SIGNATURE_DISH_EVIDENCE),
+    (
+        ISSUE719_COOKING_PRESET_RECIPE_DISPLAY_NAME_FAMILIES,
+        "covered_by_owner_route",
+        ISSUE719_COOKING_PRESET_RECIPE_DISPLAY_NAME_EVIDENCE,
+    ),
+    (
+        ISSUE719_VILLAGE_CODA_SULTAN_ENTITY_DISPLAY_NAME_FAMILIES,
+        "covered_by_owner_route",
+        ISSUE719_VILLAGE_CODA_SULTAN_ENTITY_DISPLAY_NAME_EVIDENCE,
+    ),
+    (
+        ISSUE719_MURAL_BLANK_SLATE_DISPLAY_NAME_FAMILIES,
+        "covered_by_owner_route",
+        ISSUE719_MURAL_BLANK_SLATE_DISPLAY_NAME_EVIDENCE,
+    ),
+    (
+        ISSUE719_VILLAGE_SIGNATURE_ITEM_OWNER_FAMILIES,
+        "covered_by_owner_route",
+        ISSUE719_VILLAGE_SIGNATURE_ITEM_OWNER_EVIDENCE,
+    ),
+    (
+        ISSUE719_GENERATED_DISPLAY_NAME_OWNER_PATCH_FAMILIES,
+        "covered_by_owner_route",
+        ISSUE719_GENERATED_DISPLAY_NAME_OWNER_PATCH_EVIDENCE,
+    ),
+    (
+        ISSUE719_RUNNING_BEHAVIOR_EVENT_BRIDGE_FAMILIES,
+        "covered_by_owner_route",
+        ISSUE719_RUNNING_BEHAVIOR_EVENT_BRIDGE_EVIDENCE,
+    ),
+    (
+        ISSUE719_ROCKET_SKATES_RUNNING_BEHAVIOR_FAMILIES,
+        "covered_by_owner_route",
+        ISSUE719_ROCKET_SKATES_RUNNING_BEHAVIOR_EVIDENCE,
+    ),
+    (
+        ISSUE719_SOUND_MANAGER_DEBUG_PASSTHROUGH_FAMILIES,
+        "covered_by_owner_route",
+        ISSUE719_SOUND_MANAGER_DEBUG_PASSTHROUGH_EVIDENCE,
+    ),
+    (
+        ISSUE719_BRAIN_DEBUG_INTERNAL_PASSTHROUGH_FAMILIES,
+        "covered_by_owner_route",
+        ISSUE719_BRAIN_DEBUG_INTERNAL_PASSTHROUGH_EVIDENCE,
+    ),
+    (
+        ISSUE719_MISSILE_TRAJECTORY_MESSAGE_FRAME_FAMILIES,
+        "covered_by_owner_route",
+        ISSUE719_MISSILE_TRAJECTORY_MESSAGE_FRAME_EVIDENCE,
+    ),
+    (
+        ISSUE719_GAMEOBJECT_DIE_OWNER_FAMILIES,
+        "covered_by_owner_route",
+        ISSUE719_GAMEOBJECT_DIE_STATIC_GAP_EVIDENCE,
+    ),
+    (
+        ISSUE719_GAMEOBJECT_DESTROY_OWNER_FAMILIES,
+        "covered_by_owner_route",
+        ISSUE719_GAMEOBJECT_DESTROY_OWNER_EVIDENCE,
+    ),
+)
+
+
+ISSUE719_DISPLAY_NAME_FAMILY_CLOSURE_DISPATCH: Final = (
+    (
+        ISSUE719_WORLD_PART_FIXED_DISPLAY_NAME_FAMILIES,
+        "covered_by_owner_route",
+        ISSUE719_WORLD_PART_FIXED_DISPLAY_NAME_EVIDENCE,
+    ),
+    (
+        ISSUE719_WORLD_PART_GENERATED_DISPLAY_NAME_FAMILIES,
+        "covered_by_owner_route",
+        ISSUE719_WORLD_PART_GENERATED_DISPLAY_NAME_EVIDENCE,
+    ),
+    (
+        ISSUE719_RANDOM_FIGURINE_DISPLAY_NAME_FAMILIES,
+        "covered_by_owner_route",
+        ISSUE719_RANDOM_FIGURINE_DISPLAY_NAME_EVIDENCE,
+    ),
+    (
+        ISSUE719_MINER_GENERATED_ROLE_DISPLAY_NAME_FAMILIES,
+        "covered_by_owner_route",
+        ISSUE719_MINER_GENERATED_ROLE_DISPLAY_NAME_EVIDENCE,
+    ),
+    (
+        ISSUE719_POINTED_ASTERISK_WISH_DISPLAY_NAME_FAMILIES,
+        "covered_by_owner_route",
+        ISSUE719_POINTED_ASTERISK_WISH_DISPLAY_NAME_EVIDENCE,
+    ),
+    (
+        ISSUE719_SHIP_ARK_POPUP_DICTIONARY_FAMILIES,
+        "covered_by_owner_route",
+        ISSUE719_SHIP_ARK_POPUP_DICTIONARY_EVIDENCE,
+    ),
+    (
+        ISSUE719_CRAYONS_POPUP_OWNER_FAMILIES,
+        "covered_by_owner_route",
+        ISSUE719_CRAYONS_POPUP_OWNER_EVIDENCE,
+    ),
+)
+
+
+ISSUE719_UI_DISPLAY_FAMILY_CLOSURE_DISPATCH: Final = (
+    (
+        ISSUE719_OPTIONS_UI_SHOW_OWNER_FAMILIES,
+        "covered_by_owner_route",
+        ISSUE719_OPTIONS_UI_SHOW_OWNER_EVIDENCE,
+    ),
+    (
+        ISSUE719_OPTIONS_CONTROL_DESCRIPTION_FAMILIES,
+        "covered_by_owner_route",
+        ISSUE719_OPTIONS_CONTROL_DESCRIPTION_EVIDENCE,
+    ),
+    (
+        ISSUE719_OBJECT_FINDER_DISPLAY_NAME_FAMILIES,
+        "covered_by_owner_route",
+        ISSUE719_OBJECT_FINDER_DISPLAY_NAME_EVIDENCE,
+    ),
+    (
+        ISSUE719_CYBERNETICS_SKILLSOFT_DISPLAY_NAME_FAMILIES,
+        "covered_by_owner_route",
+        ISSUE719_CYBERNETICS_SKILLSOFT_DISPLAY_NAME_EVIDENCE,
+    ),
+    (
+        ISSUE719_CYBERNETICS_RECOILER_DISPLAY_NAME_FAMILIES,
+        "covered_by_owner_route",
+        ISSUE719_CYBERNETICS_RECOILER_DISPLAY_NAME_EVIDENCE,
+    ),
+    (
+        ISSUE719_STAT_SHIFT_DISPLAY_NAME_FAMILIES,
+        "covered_by_owner_route",
+        ISSUE719_STAT_SHIFT_DISPLAY_NAME_EVIDENCE,
+    ),
+    (
+        ISSUE719_MUTATION_BASE_DISPLAY_NAME_FAMILIES,
+        "covered_by_owner_route",
+        ISSUE719_MUTATION_BASE_DISPLAY_NAME_EVIDENCE,
+    ),
+    (
+        ISSUE719_MUTATION_EFFECT_DISPLAY_NAME_FAMILIES,
+        "covered_by_owner_route",
+        ISSUE719_MUTATION_EFFECT_DISPLAY_NAME_EVIDENCE,
+    ),
+    (
+        ISSUE719_LIGHT_MANIPULATION_ABILITY_DISPLAY_NAME_FAMILIES,
+        "covered_by_owner_route",
+        ISSUE719_LIGHT_MANIPULATION_ABILITY_DISPLAY_NAME_EVIDENCE,
+    ),
+    (
+        ISSUE719_CYBERNETICS_INSTALL_DISPLAY_NAME_FAMILIES,
+        "covered_by_owner_route",
+        ISSUE719_CYBERNETICS_INSTALL_DISPLAY_NAME_EVIDENCE,
+    ),
+    (
+        ISSUE719_UI_SCREEN_FIXED_LABEL_FAMILIES,
+        "covered_by_owner_route",
+        ISSUE719_UI_SCREEN_FIXED_LABEL_EVIDENCE,
+    ),
+    (
+        ISSUE719_EQUIPMENT_SCREEN_BODYPART_EQUIP_OWNER_FAMILIES,
+        "covered_by_owner_route",
+        ISSUE719_EQUIPMENT_SCREEN_BODYPART_EQUIP_OWNER_EVIDENCE,
+    ),
+    (
+        ISSUE719_STOMACH_FIRE_EVENT_OWNER_FAMILIES,
+        "covered_by_owner_route",
+        ISSUE719_STOMACH_FIRE_EVENT_OWNER_EVIDENCE,
+    ),
+    (
+        ISSUE719_FIXIT_SPRAY_OWNER_FAMILIES,
+        "covered_by_owner_route",
+        ISSUE719_FIXIT_SPRAY_OWNER_EVIDENCE,
+    ),
+    (
+        ISSUE719_MAGNETIZED_APPLICATOR_OWNER_FAMILIES,
+        "covered_by_owner_route",
+        ISSUE719_MAGNETIZED_APPLICATOR_OWNER_EVIDENCE,
+    ),
+)
+
+
+def _issue719_simple_family_closure(
+    family_id: str,
+    dispatch: tuple[tuple[set[str], ClosureStatus, list[str]], ...],
+) -> tuple[ClosureStatus, list[str]] | None:
+    for family_ids, status, closure_evidence in dispatch:
+        if family_id in family_ids:
+            return status, closure_evidence
+    return None
+
+
 def _issue719_closure_overlay(  # noqa: C901, PLR0911, PLR0912, PLR0915
     family: TextConstructionFamily,
     closure_lane: ClosureLane,
@@ -14185,44 +14378,12 @@ def _issue719_closure_overlay(  # noqa: C901, PLR0911, PLR0912, PLR0915
     if static_producer_evidence is not None:
         return "covered_by_owner_route", static_producer_evidence
 
-    if family["family_id"] in ISSUE719_VILLAGE_SIGNATURE_DISH_FAMILIES:
-        return "covered_by_owner_route", ISSUE719_VILLAGE_SIGNATURE_DISH_EVIDENCE
-
-    if family["family_id"] in ISSUE719_COOKING_PRESET_RECIPE_DISPLAY_NAME_FAMILIES:
-        return "covered_by_owner_route", ISSUE719_COOKING_PRESET_RECIPE_DISPLAY_NAME_EVIDENCE
-
-    if family["family_id"] in ISSUE719_VILLAGE_CODA_SULTAN_ENTITY_DISPLAY_NAME_FAMILIES:
-        return "covered_by_owner_route", ISSUE719_VILLAGE_CODA_SULTAN_ENTITY_DISPLAY_NAME_EVIDENCE
-
-    if family["family_id"] in ISSUE719_MURAL_BLANK_SLATE_DISPLAY_NAME_FAMILIES:
-        return "covered_by_owner_route", ISSUE719_MURAL_BLANK_SLATE_DISPLAY_NAME_EVIDENCE
-
-    if family["family_id"] in ISSUE719_VILLAGE_SIGNATURE_ITEM_OWNER_FAMILIES:
-        return "covered_by_owner_route", ISSUE719_VILLAGE_SIGNATURE_ITEM_OWNER_EVIDENCE
-
-    if family["family_id"] in ISSUE719_GENERATED_DISPLAY_NAME_OWNER_PATCH_FAMILIES:
-        return "covered_by_owner_route", ISSUE719_GENERATED_DISPLAY_NAME_OWNER_PATCH_EVIDENCE
-
-    if family["family_id"] in ISSUE719_RUNNING_BEHAVIOR_EVENT_BRIDGE_FAMILIES:
-        return "covered_by_owner_route", ISSUE719_RUNNING_BEHAVIOR_EVENT_BRIDGE_EVIDENCE
-
-    if family["family_id"] in ISSUE719_ROCKET_SKATES_RUNNING_BEHAVIOR_FAMILIES:
-        return "covered_by_owner_route", ISSUE719_ROCKET_SKATES_RUNNING_BEHAVIOR_EVIDENCE
-
-    if family["family_id"] in ISSUE719_SOUND_MANAGER_DEBUG_PASSTHROUGH_FAMILIES:
-        return "covered_by_owner_route", ISSUE719_SOUND_MANAGER_DEBUG_PASSTHROUGH_EVIDENCE
-
-    if family["family_id"] in ISSUE719_BRAIN_DEBUG_INTERNAL_PASSTHROUGH_FAMILIES:
-        return "covered_by_owner_route", ISSUE719_BRAIN_DEBUG_INTERNAL_PASSTHROUGH_EVIDENCE
-
-    if family["family_id"] in ISSUE719_MISSILE_TRAJECTORY_MESSAGE_FRAME_FAMILIES:
-        return "covered_by_owner_route", ISSUE719_MISSILE_TRAJECTORY_MESSAGE_FRAME_EVIDENCE
-
-    if family["family_id"] in ISSUE719_GAMEOBJECT_DIE_OWNER_FAMILIES:
-        return "covered_by_owner_route", ISSUE719_GAMEOBJECT_DIE_STATIC_GAP_EVIDENCE
-
-    if family["family_id"] in ISSUE719_GAMEOBJECT_DESTROY_OWNER_FAMILIES:
-        return "covered_by_owner_route", ISSUE719_GAMEOBJECT_DESTROY_OWNER_EVIDENCE
+    simple_family_closure = _issue719_simple_family_closure(
+        family["family_id"],
+        ISSUE719_SIMPLE_FAMILY_CLOSURE_DISPATCH,
+    )
+    if simple_family_closure is not None:
+        return simple_family_closure
 
     if family["family_id"] == "XRL/GameText.cs::GameText.RoughConvertSecondPersonToThirdPerson(string,GameObject)":
         return "covered_by_owner_route", ISSUE719_GAME_TEXT_THIRD_PERSON_DEATH_GAP_EVIDENCE
@@ -14260,26 +14421,12 @@ def _issue719_closure_overlay(  # noqa: C901, PLR0911, PLR0912, PLR0915
     ):
         return "covered_by_owner_route", ISSUE719_HARVESTABLE_OWNER_EVIDENCE
 
-    if family["family_id"] in ISSUE719_WORLD_PART_FIXED_DISPLAY_NAME_FAMILIES:
-        return "covered_by_owner_route", ISSUE719_WORLD_PART_FIXED_DISPLAY_NAME_EVIDENCE
-
-    if family["family_id"] in ISSUE719_WORLD_PART_GENERATED_DISPLAY_NAME_FAMILIES:
-        return "covered_by_owner_route", ISSUE719_WORLD_PART_GENERATED_DISPLAY_NAME_EVIDENCE
-
-    if family["family_id"] in ISSUE719_RANDOM_FIGURINE_DISPLAY_NAME_FAMILIES:
-        return "covered_by_owner_route", ISSUE719_RANDOM_FIGURINE_DISPLAY_NAME_EVIDENCE
-
-    if family["family_id"] in ISSUE719_MINER_GENERATED_ROLE_DISPLAY_NAME_FAMILIES:
-        return "covered_by_owner_route", ISSUE719_MINER_GENERATED_ROLE_DISPLAY_NAME_EVIDENCE
-
-    if family["family_id"] in ISSUE719_POINTED_ASTERISK_WISH_DISPLAY_NAME_FAMILIES:
-        return "covered_by_owner_route", ISSUE719_POINTED_ASTERISK_WISH_DISPLAY_NAME_EVIDENCE
-
-    if family["family_id"] in ISSUE719_SHIP_ARK_POPUP_DICTIONARY_FAMILIES:
-        return "covered_by_owner_route", ISSUE719_SHIP_ARK_POPUP_DICTIONARY_EVIDENCE
-
-    if family["family_id"] in ISSUE719_CRAYONS_POPUP_OWNER_FAMILIES:
-        return "covered_by_owner_route", ISSUE719_CRAYONS_POPUP_OWNER_EVIDENCE
+    display_name_family_closure = _issue719_simple_family_closure(
+        family["family_id"],
+        ISSUE719_DISPLAY_NAME_FAMILY_CLOSURE_DISPATCH,
+    )
+    if display_name_family_closure is not None:
+        return display_name_family_closure
 
     if family["family_id"] in ISSUE719_POPUP_MESSAGE_WRAPPER_SINK_FAMILIES:
         return "not_owner_surface", ISSUE719_POPUP_MESSAGE_WRAPPER_SINK_EVIDENCE
@@ -14293,47 +14440,12 @@ def _issue719_closure_overlay(  # noqa: C901, PLR0911, PLR0912, PLR0915
     if family["family_id"] == "XRL.Core/Scores.cs::Scores.Show()":
         return "covered_by_owner_route", ISSUE719_SCORES_SHOW_STATIC_GAP_EVIDENCE
 
-    if family["family_id"] in ISSUE719_OPTIONS_UI_SHOW_OWNER_FAMILIES:
-        return "covered_by_owner_route", ISSUE719_OPTIONS_UI_SHOW_OWNER_EVIDENCE
-
-    if family["family_id"] in ISSUE719_OPTIONS_CONTROL_DESCRIPTION_FAMILIES:
-        return "covered_by_owner_route", ISSUE719_OPTIONS_CONTROL_DESCRIPTION_EVIDENCE
-
-    if family["family_id"] in ISSUE719_OBJECT_FINDER_DISPLAY_NAME_FAMILIES:
-        return "covered_by_owner_route", ISSUE719_OBJECT_FINDER_DISPLAY_NAME_EVIDENCE
-
-    if family["family_id"] in ISSUE719_CYBERNETICS_SKILLSOFT_DISPLAY_NAME_FAMILIES:
-        return "covered_by_owner_route", ISSUE719_CYBERNETICS_SKILLSOFT_DISPLAY_NAME_EVIDENCE
-
-    if family["family_id"] in ISSUE719_CYBERNETICS_RECOILER_DISPLAY_NAME_FAMILIES:
-        return "covered_by_owner_route", ISSUE719_CYBERNETICS_RECOILER_DISPLAY_NAME_EVIDENCE
-
-    if family["family_id"] in ISSUE719_STAT_SHIFT_DISPLAY_NAME_FAMILIES:
-        return "covered_by_owner_route", ISSUE719_STAT_SHIFT_DISPLAY_NAME_EVIDENCE
-
-    if family["family_id"] in ISSUE719_MUTATION_BASE_DISPLAY_NAME_FAMILIES:
-        return "covered_by_owner_route", ISSUE719_MUTATION_BASE_DISPLAY_NAME_EVIDENCE
-
-    if family["family_id"] in ISSUE719_MUTATION_EFFECT_DISPLAY_NAME_FAMILIES:
-        return "covered_by_owner_route", ISSUE719_MUTATION_EFFECT_DISPLAY_NAME_EVIDENCE
-
-    if family["family_id"] in ISSUE719_LIGHT_MANIPULATION_ABILITY_DISPLAY_NAME_FAMILIES:
-        return "covered_by_owner_route", ISSUE719_LIGHT_MANIPULATION_ABILITY_DISPLAY_NAME_EVIDENCE
-
-    if family["family_id"] in ISSUE719_CYBERNETICS_INSTALL_DISPLAY_NAME_FAMILIES:
-        return "covered_by_owner_route", ISSUE719_CYBERNETICS_INSTALL_DISPLAY_NAME_EVIDENCE
-
-    if family["family_id"] in ISSUE719_UI_SCREEN_FIXED_LABEL_FAMILIES:
-        return "covered_by_owner_route", ISSUE719_UI_SCREEN_FIXED_LABEL_EVIDENCE
-    if family["family_id"] in ISSUE719_EQUIPMENT_SCREEN_BODYPART_EQUIP_OWNER_FAMILIES:
-        return "covered_by_owner_route", ISSUE719_EQUIPMENT_SCREEN_BODYPART_EQUIP_OWNER_EVIDENCE
-
-    if family["family_id"] in ISSUE719_STOMACH_FIRE_EVENT_OWNER_FAMILIES:
-        return "covered_by_owner_route", ISSUE719_STOMACH_FIRE_EVENT_OWNER_EVIDENCE
-    if family["family_id"] in ISSUE719_FIXIT_SPRAY_OWNER_FAMILIES:
-        return "covered_by_owner_route", ISSUE719_FIXIT_SPRAY_OWNER_EVIDENCE
-    if family["family_id"] in ISSUE719_MAGNETIZED_APPLICATOR_OWNER_FAMILIES:
-        return "covered_by_owner_route", ISSUE719_MAGNETIZED_APPLICATOR_OWNER_EVIDENCE
+    ui_display_family_closure = _issue719_simple_family_closure(
+        family["family_id"],
+        ISSUE719_UI_DISPLAY_FAMILY_CLOSURE_DISPATCH,
+    )
+    if ui_display_family_closure is not None:
+        return ui_display_family_closure
 
     world_part_queue_does_evidence = (
         ISSUE719_WORLD_PART_QUEUE_DOES_EXISTING_OWNER_EVIDENCE_BY_FAMILY.get(family["family_id"])
