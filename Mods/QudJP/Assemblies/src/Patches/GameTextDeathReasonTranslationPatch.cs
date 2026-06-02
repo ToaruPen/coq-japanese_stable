@@ -98,6 +98,11 @@ public static class GameTextDeathReasonTranslationPatch
             spans,
             match.Groups["subject"]);
         var translatedSubject = DisplayNameCaptureTranslator.TranslatePreservingColors(subject, Context);
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(translatedSubject, out var strippedSubject))
+        {
+            translatedSubject = strippedSubject;
+        }
+
         var translated = translatedSubject + "は" + TrimJapaneseSentenceEnd(translatedBare) + "。";
         return ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
             translated,

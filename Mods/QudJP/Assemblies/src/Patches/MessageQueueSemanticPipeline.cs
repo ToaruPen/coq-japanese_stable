@@ -189,15 +189,12 @@ internal static class MessageQueueSemanticPipeline
 
     private static bool TryConsumeDirectPassthrough(string message, DirectPassthroughSource source)
     {
-        if (directPassthroughSource != source
-            || !string.Equals(directPassthroughMessage, message, StringComparison.Ordinal))
-        {
-            return false;
-        }
+        var matches = directPassthroughSource == source
+            && string.Equals(directPassthroughMessage, message, StringComparison.Ordinal);
 
         directPassthroughMessage = null;
         directPassthroughSource = DirectPassthroughSource.None;
-        return true;
+        return matches;
     }
 
     private static bool TryTranslateQueuedMessageWithFallback(

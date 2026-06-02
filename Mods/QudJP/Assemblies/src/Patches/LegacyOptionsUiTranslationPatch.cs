@@ -181,6 +181,11 @@ public static class LegacyOptionsUiTranslationPatch
 
     private static string TranslateWithOuterWhitespace(string source)
     {
+        if (string.IsNullOrWhiteSpace(source))
+        {
+            return source;
+        }
+
         var leadingLength = source.Length - source.TrimStart().Length;
         var trailingLength = source.Length - source.TrimEnd().Length;
         var leading = source.Substring(0, leadingLength);

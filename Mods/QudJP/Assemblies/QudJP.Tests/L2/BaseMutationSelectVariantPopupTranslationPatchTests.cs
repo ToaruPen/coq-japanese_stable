@@ -102,11 +102,11 @@ public sealed class BaseMutationSelectVariantPopupTranslationPatchTests
                     nameof(BaseMutationSelectVariantPopupTranslationPatch.Finalizer),
                     typeof(Exception))));
 
-            DummyBaseMutationTarget.TitleToShow = MessageFrameTranslator.MarkDirectTranslation("Choose variant");
+            DummyBaseMutationTarget.TitleToShow = MessageFrameTranslator.MarkDirectTranslation("変種を選択");
 
             _ = DummyBaseMutationTarget.SelectVariant();
 
-            Assert.That(DummyPopupGenericTarget.LastPickOptionTitle, Is.EqualTo("Choose variant"));
+            Assert.That(DummyPopupGenericTarget.LastPickOptionTitle, Is.EqualTo("変種を選択"));
         }
         finally
         {

@@ -1453,6 +1453,8 @@ public sealed class GetDisplayNameRouteTranslatorTests
 
     [TestCase("defoliant grenade mk I miner mk I", "落葉剤グレネード mk I 採掘機 mk I")]
     [TestCase("defoliant grenade mk I bomber mk II", "落葉剤グレネード mk I 爆撃機 mk II")]
+    [TestCase("<color=green>defoliant grenade mk I miner mk I</color>", "<color=green>落葉剤グレネード mk I 採掘機 mk I</color>")]
+    [TestCase("{{C|defoliant grenade mk I bomber mk II}}", "{{C|落葉剤グレネード mk I 爆撃機 mk II}}")]
     public void TranslatePreservingColors_TranslatesMinerGeneratedRoleSuffix(
         string source,
         string expected)
@@ -1470,6 +1472,7 @@ public sealed class GetDisplayNameRouteTranslatorTests
 
     [TestCase("", "")]
     [TestCase("\u0001defoliant grenade mk I miner mk I", "\u0001defoliant grenade mk I miner mk I")]
+    [TestCase("<color=green>odd grenade mk I miner mk I</color>", "<color=green>odd grenade mk I miner mk I</color>")]
     public void TranslatePreservingColors_MinerGeneratedRoleSuffixEdgeInputsPassThrough(
         string source,
         string expected)

@@ -95,10 +95,11 @@ internal sealed class DummyTradeUiVendorPopupProducerTarget
         var options = VendorActionOptions is null
             ? new List<string> { "Look", "Add to trade", "Identify", "Repair", "Recharge", "Read" }
             : new List<string>(VendorActionOptions);
+        var defaultHotkeys = new[] { 'l', 't', 'i', 'r', 'c', 'b' };
         var index = DummyPopupGenericTarget.PickOption(
             Title: "select an action",
             Options: options.ToArray(),
-            Hotkeys: new[] { 'l', 't', 'i', 'r', 'c', 'b' },
+            Hotkeys: defaultHotkeys.Take(options.Count).ToArray(),
             AllowEscape: true);
         LastVendorActionSelection = index >= 0 && index < options.Count ? options[index] : null;
     }

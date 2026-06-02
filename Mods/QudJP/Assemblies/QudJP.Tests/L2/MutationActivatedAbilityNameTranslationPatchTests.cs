@@ -227,6 +227,8 @@ public sealed class MutationActivatedAbilityNameTranslationPatchTests
 
     [TestCase("", "", 0)]
     [TestCase("\u0001Lase (4 charges)", "Lase (4 charges)", 0)]
+    [TestCase("<color=red>Lase (4 charges)</color>", "<color=red>レーザー照射 (4チャージ)</color>", 1)]
+    [TestCase("\u0001<color=red>Lase (4 charges)</color>", "<color=red>Lase (4 charges)</color>", 0)]
     [TestCase("Unknown Ability (3 charges)", "Unknown Ability (3 charges)", 0)]
     public void SyncAbilityName_HandlesFallbackEmptyAndDirectMarkedAbilityNames_WhenPatched(
         string source,

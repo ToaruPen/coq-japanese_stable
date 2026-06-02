@@ -759,6 +759,86 @@ public sealed class WorldPartsProducerTranslationPatchTests
         }
     }
 
+    [TestCase("Unmapped desalination message.", "Unmapped desalination message.", 0)]
+    [TestCase("\u0001何も起こらないようだ。", "何も起こらないようだ。", 0)]
+    [TestCase("", "", 0)]
+    [TestCase("{{R|It doesn't seem to do anything.}}", "{{R|何も起こらないようだ。}}", 0)]
+    public void DesalinationPelletPatch_HandlesFailurePopupEdges_WhenPatched(
+        string source,
+        string expected,
+        int expectedHitCount)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            PatchPopupShow(harmony, nameof(DummyPopupShow.ShowFail));
+            PatchOwner(
+                harmony,
+                RequireMethod(
+                    typeof(DummyDesalinationPelletProducerTarget),
+                    nameof(DummyDesalinationPelletProducerTarget.HandleFailureEvent),
+                    typeof(DummyInventoryActionEvent)),
+                typeof(DesalinationPelletTranslationPatch));
+
+            var target = new DummyDesalinationPelletProducerTarget
+            {
+                PopupMessageToShow = source,
+            };
+
+            target.HandleFailureEvent(new DummyInventoryActionEvent());
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(expected));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(PopupShowTranslationPatch),
+                        "Popup.Show.DesalinationPelletTranslationPatch.NoEffect"),
+                    Is.EqualTo(expectedHitCount));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void DesalinationPelletPatch_LeavesFailurePopupUnchanged_WhenOwnerAbsent()
+    {
+        const string source = "It doesn't seem to do anything.";
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            PatchPopupShow(harmony, nameof(DummyPopupShow.ShowFail));
+
+            var target = new DummyDesalinationPelletProducerTarget
+            {
+                PopupMessageToShow = source,
+            };
+
+            target.HandleFailureEvent(new DummyInventoryActionEvent());
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(source));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(PopupShowTranslationPatch),
+                        "Popup.Show.DesalinationPelletTranslationPatch.NoEffect"),
+                    Is.Zero);
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
     [Test]
     public void ClonelingVehiclePatch_TranslatesPopupFailure_WhenPatched()
     {

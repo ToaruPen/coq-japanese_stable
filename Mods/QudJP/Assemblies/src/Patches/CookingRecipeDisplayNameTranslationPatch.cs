@@ -134,14 +134,21 @@ public static class CookingRecipeDisplayNameTranslationPatch
 
     internal static bool TryTranslateDisplayName(string source, out string translated)
     {
-        if (!TryExtractColorMarkup(source, out var markupPrefix, out var inner)
-            || !TryTranslateDisplayNameInner(inner, out var translatedInner))
+        var markupSuffix = MarkupSuffix;
+        if (!TryExtractColorMarkup(source, out var markupPrefix, out var inner))
+        {
+            markupPrefix = string.Empty;
+            markupSuffix = string.Empty;
+            inner = source;
+        }
+
+        if (!TryTranslateDisplayNameInner(inner, out var translatedInner))
         {
             translated = source;
             return false;
         }
 
-        translated = markupPrefix + translatedInner + MarkupSuffix;
+        translated = markupPrefix + translatedInner + markupSuffix;
         return true;
     }
 

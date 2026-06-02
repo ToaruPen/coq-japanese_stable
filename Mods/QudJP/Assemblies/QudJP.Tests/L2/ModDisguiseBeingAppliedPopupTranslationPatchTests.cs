@@ -52,6 +52,42 @@ public sealed class ModDisguiseBeingAppliedPopupTranslationPatchTests
     }
 
     [Test]
+    public void Patch_StripsDirectMarkedPopupWithoutRecordingTransform_WhenOwnerPatched()
+    {
+        const string translated = "変装に使えるほど見知った生き物がいない。";
+        var target = new DummyModDisguiseBeingAppliedTarget
+        {
+            PopupMessageToShow = MessageFrameTranslator.MarkDirectTranslation(translated),
+        };
+
+        WithPatchedOwner(() => target.BeingAppliedBy(new DummyGameObject(), new DummyGameObject()));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(translated));
+            Assert.That(HitCount(nameof(PopupShowTranslationPatch), "NoFamiliarCreatures"), Is.Zero);
+        });
+    }
+
+    [Test]
+    public void Patch_LeavesUnknownPopupUnchanged_WhenOwnerPatched()
+    {
+        const string source = "Unmapped disguise popup.";
+        var target = new DummyModDisguiseBeingAppliedTarget
+        {
+            PopupMessageToShow = source,
+        };
+
+        WithPatchedOwner(() => target.BeingAppliedBy(new DummyGameObject(), new DummyGameObject()));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(source));
+            Assert.That(HitCount(nameof(PopupShowTranslationPatch), "NoFamiliarCreatures"), Is.Zero);
+        });
+    }
+
+    [Test]
     public void Patch_TranslatesPickerTitle_WhenOwnerPatched()
     {
         var target = new DummyModDisguiseBeingAppliedTarget
@@ -69,6 +105,24 @@ public sealed class ModDisguiseBeingAppliedPopupTranslationPatchTests
                 Is.EqualTo(new[] { "{{Y|snapjaw}}", "creature of some kind" }));
             Assert.That(HitCount(nameof(PopupPickOptionTranslationPatch), "PickerTitle"), Is.EqualTo(1));
             Assert.That(HitCount(nameof(PopupPickOptionTranslationPatch), "FallbackCreatureOption"), Is.Zero);
+        });
+    }
+
+    [Test]
+    public void Patch_HandlesEmptyPickerOptions_WhenOwnerPatched()
+    {
+        var target = new DummyModDisguiseBeingAppliedTarget
+        {
+            PickerOptions = Array.Empty<string>(),
+        };
+
+        WithPatchedOwner(() => target.BeingAppliedBy(new DummyGameObject(), new DummyGameObject()));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(DummyPopupGenericTarget.LastPickOptionTitle, Is.EqualTo("作る変装を選ぶ。"));
+            Assert.That(DummyPopupGenericTarget.LastPickOptionOptions, Is.Empty);
+            Assert.That(HitCount(nameof(PopupPickOptionTranslationPatch), "PickerTitle"), Is.EqualTo(1));
         });
     }
 
@@ -95,12 +149,18 @@ public sealed class ModDisguiseBeingAppliedPopupTranslationPatchTests
         try
         {
             PatchPopupRoutes(harmony);
-            ModDisguiseBeingAppliedPopupTranslationPatch.Prefix();
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyModDisguiseBeingAppliedTarget), nameof(DummyModDisguiseBeingAppliedTarget.BeingAppliedBy)),
+                prefix: new HarmonyMethod(RequireMethod(
+                    typeof(ModDisguiseBeingAppliedPopupTranslationPatch),
+                    nameof(ModDisguiseBeingAppliedPopupTranslationPatch.Prefix))),
+                finalizer: new HarmonyMethod(RequireMethod(
+                    typeof(ModDisguiseBeingAppliedPopupTranslationPatch),
+                    nameof(ModDisguiseBeingAppliedPopupTranslationPatch.Finalizer))));
             action();
         }
         finally
         {
-            _ = ModDisguiseBeingAppliedPopupTranslationPatch.Finalizer(null);
             harmony.UnpatchAll(harmonyId);
         }
     }

@@ -18,10 +18,8 @@ public static class MessageLogPatch
             _ = Color;
             _ = Capitalize;
 
-            if (MessageQueueSemanticPipeline.TryConsumeDirectPassthroughFromMessageQueue(Message))
-            {
-                return true;
-            }
+            var directPassthroughFromQueue =
+                MessageQueueSemanticPipeline.TryConsumeDirectPassthroughFromMessageQueue(Message);
 
             if (MessageFrameTranslator.TryStripDirectTranslationMarker(Message, out var markedText))
             {
@@ -32,6 +30,11 @@ public static class MessageLogPatch
                     Message,
                     markedText);
                 Message = markedText;
+                return true;
+            }
+
+            if (directPassthroughFromQueue)
+            {
                 return true;
             }
 

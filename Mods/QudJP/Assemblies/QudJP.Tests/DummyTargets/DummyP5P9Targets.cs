@@ -30,11 +30,18 @@ internal sealed class DummyGameObjectDie
 
 internal static class DummyGameTextTarget
 {
+    public static string? ResultOverride { get; set; }
+
+    public static void Reset()
+    {
+        ResultOverride = null;
+    }
+
     public static string? RoughConvertSecondPersonToThirdPerson(string? text, object? who)
     {
         _ = text;
         _ = who;
-        return "snapjaw was vaporized.";
+        return ResultOverride ?? "snapjaw was vaporized.";
     }
 }
 

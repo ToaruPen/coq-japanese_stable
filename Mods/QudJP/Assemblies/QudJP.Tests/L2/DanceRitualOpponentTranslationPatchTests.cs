@@ -110,7 +110,12 @@ public sealed class DanceRitualOpponentTranslationPatchTests
 
             DummyMessageQueue.AddPlayerMessage(source, null, Capitalize: false);
 
-            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(source));
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(source));
+                Assert.That(QueueHitCount("HandleEvent.Debug"), Is.Zero);
+                Assert.That(QueueHitCount("Register.Debug"), Is.Zero);
+            });
         }
         finally
         {

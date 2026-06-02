@@ -1117,6 +1117,23 @@ internal sealed class DummyItemNamingProducerTarget
 {
     public string PopupMessageToShow { get; set; } = string.Empty;
 
+    public string InteractivePickOptionIntroToShow { get; set; } = "Rename {{Y|銅の短剣}}.";
+
+    public IReadOnlyList<string> InteractivePickOptionOptionsToShow { get; set; } = new[]
+    {
+        "Enter a name.",
+        "Name it based on its qualities.",
+        "Choose a random name from your own culture.",
+        "Choose a random name from {{C|Barathrumites' culture}}.",
+    };
+
+    public string InteractiveAskStringMessageToShow { get; set; } = "Enter a new name for {{Y|銅の短剣}}.";
+
+    public string InteractiveShowColorPickerTitleToShow { get; set; } = string.Empty;
+
+    public string InteractiveShowColorPickerIntroToShow { get; set; } =
+        "You select the name '{{C|暁}}' for {{Y|銅の短剣}}. Choose a color for it.";
+
     [MethodImpl(MethodImplOptions.NoInlining)]
     public bool Opportunity(
         DummyGameObject owner,
@@ -1223,19 +1240,13 @@ internal sealed class DummyItemNamingProducerTarget
         _ = opportunityType;
         _ = canBestow;
         _ = DummyPopupGenericTarget.PickOption(
-            Intro: "Rename {{Y|銅の短剣}}.",
-            Options: new[]
-            {
-                "Enter a name.",
-                "Name it based on its qualities.",
-                "Choose a random name from your own culture.",
-                "Choose a random name from {{C|Barathrumites' culture}}.",
-            });
-        _ = DummyPopupGenericTarget.AskString("Enter a new name for {{Y|銅の短剣}}.");
+            Intro: InteractivePickOptionIntroToShow,
+            Options: InteractivePickOptionOptionsToShow);
+        _ = DummyPopupGenericTarget.AskString(InteractiveAskStringMessageToShow);
         _ = DummyPopupGenericTarget.ShowColorPicker(
-            "",
+            InteractiveShowColorPickerTitleToShow,
             0,
-            "You select the name '{{C|暁}}' for {{Y|銅の短剣}}. Choose a color for it.",
+            InteractiveShowColorPickerIntroToShow,
             60,
             RespectOptionNewlines: false,
             AllowEscape: false,

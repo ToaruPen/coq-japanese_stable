@@ -90,15 +90,28 @@ public static class GameObjectSpotTranslationPatch
         // Route and family are kept for compatibility with popup owner-route delegates.
         translated = source;
 
-        if (activeDepth <= 0 || string.IsNullOrEmpty(source))
+        if (string.IsNullOrEmpty(source))
         {
             return false;
         }
 
         var message = source;
+        var hasDirectMarker = MessageFrameTranslator.TryStripDirectTranslationMarker(message, out var strippedSource);
+        if (hasDirectMarker)
+        {
+            message = strippedSource;
+        }
+
+        if (activeDepth <= 0)
+        {
+            translated = message;
+            return hasDirectMarker;
+        }
+
         if (!MessageLogProducerTranslationHelpers.TryPreparePatternMessage(ref message, Context, "Spot"))
         {
-            return false;
+            translated = message;
+            return hasDirectMarker;
         }
 
         translated = MessageFrameTranslator.TryStripDirectTranslationMarker(message, out var stripped)

@@ -76,17 +76,22 @@ public sealed class LegacyScoresScreenTranslationPatchTests
     }
 
     [Test]
-    public void TranslateBufferText_StripsDirectMarkerAndLeavesUnknownText()
+    public void Show_StripsDirectMarkerAndLeavesUnknownText_WhenPatched()
     {
-        Assert.Multiple(() =>
+        DummyLegacyScoresScreen.ExtraWrites.Add(MessageFrameTranslator.MarkDirectTranslation("既訳スコア"));
+        DummyLegacyScoresScreen.ExtraWrites.Add("Unmapped score text");
+
+        WithPatchedShow(() =>
         {
-            Assert.That(
-                LegacyScoresScreenTranslationPatch.TranslateBufferText(
-                    MessageFrameTranslator.DirectTranslationMarker + "Local Scores"),
-                Is.EqualTo("Local Scores"));
-            Assert.That(
-                LegacyScoresScreenTranslationPatch.TranslateBufferText("Unmapped score text"),
-                Is.EqualTo("Unmapped score text"));
+            var screen = new DummyLegacyScoresScreen();
+
+            screen.Show(hasScores: true, gameMode: "Classic");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(screen.Buffer.Writes, Does.Contain("既訳スコア"));
+                Assert.That(screen.Buffer.Writes, Does.Contain("Unmapped score text"));
+            });
         });
     }
 
@@ -135,7 +140,10 @@ internal sealed class DummyLegacyScoresScreen
 
     public static void Reset()
     {
+        ExtraWrites.Clear();
     }
+
+    public static List<string> ExtraWrites { get; } = [];
 
     [MethodImpl(MethodImplOptions.NoInlining)]
     public void Show(bool hasScores, string gameMode)
@@ -163,6 +171,10 @@ internal sealed class DummyLegacyScoresScreen
         Buffer.Write("&WDown&y-next page &WUp&y-previous page");
         Buffer.Write("&W7&y-previous board &W9&y-next board");
         Buffer.Write("This game was played in Roleplay mode.");
+        foreach (var write in ExtraWrites)
+        {
+            Buffer.Write(write);
+        }
     }
 }
 

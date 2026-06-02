@@ -197,7 +197,8 @@ internal static class JournalTextTranslator
             return false;
         }
 
-        translated = translatedDate + "、" + match.Groups["reason"].Value;
+        var reason = MessageFrameTranslator.StripAllDirectTranslationMarkers(match.Groups["reason"].Value);
+        translated = translatedDate + "、" + reason;
         DynamicTextObservability.RecordTransform(
             route,
             "Journal.GameObjectDieDeathAccomplishment",

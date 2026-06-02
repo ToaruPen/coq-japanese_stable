@@ -76,42 +76,31 @@ public sealed class DominationProcessTargetTranslationPatchTests
     }
 
     [Test]
-    public void ProcessTarget_LeavesUnknownAndDirectMarkedTextUnchanged()
+    public void ProcessTarget_LeavesUnknownAndStripsDirectMarkedText_WhenOwnerPatched()
     {
-        DominationProcessTargetTranslationPatch.Prefix();
-        try
-        {
-            Assert.Multiple(() =>
-            {
-                var unknown = "Unknown domination failure.";
-                Assert.That(
-                    DominationProcessTargetTranslationPatch.TryTranslateQueuedMessage(
-                        ref unknown,
-                        null),
-                    Is.False);
-                Assert.That(unknown, Is.EqualTo("Unknown domination failure."));
+        using var ownerPatch = PatchOwner();
+        using var queuePatch = PatchQueue();
 
-                var marked = MessageFrameTranslator.MarkDirectTranslation("翻訳済み");
-                Assert.That(
-                    DominationProcessTargetTranslationPatch.TryTranslateQueuedMessage(
-                        ref marked,
-                        null),
-                    Is.True);
-                Assert.That(marked, Is.EqualTo(MessageFrameTranslator.MarkDirectTranslation("翻訳済み")));
-
-                var empty = string.Empty;
-                Assert.That(
-                    DominationProcessTargetTranslationPatch.TryTranslateQueuedMessage(
-                        ref empty,
-                        null),
-                    Is.False);
-                Assert.That(empty, Is.Empty);
-            });
-        }
-        finally
+        Assert.Multiple(() =>
         {
-            _ = DominationProcessTargetTranslationPatch.Finalizer(null);
-        }
+            QueueDominationMessage("Unknown domination failure.");
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("Unknown domination failure."));
+
+            QueueDominationMessage(MessageFrameTranslator.MarkDirectTranslation("翻訳済み"));
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("翻訳済み"));
+
+            QueueDominationMessage(string.Empty);
+            Assert.That(DummyMessageQueue.LastMessage, Is.Empty);
+        });
+    }
+
+    private static void QueueDominationMessage(string message)
+    {
+        var target = new DummyDominationProcessTarget
+        {
+            MessageToQueue = message,
+        };
+        target.ProcessTargetQueuedMessage();
     }
 
     private static IDisposable PatchOwner()

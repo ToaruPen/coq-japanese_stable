@@ -355,7 +355,7 @@ public sealed class PopupTranslationPatchTests
     }
 
     [Test]
-    public void TranslatePopupTextForProducerRoute_TranslatesVehicleInfiltrationConfirmation()
+    public void Prefix_TranslatesVehicleInfiltrationConfirmation_WhenPatched()
     {
         UseRepositoryVerbDictionary();
         var source = DoesVerbRouteTranslator.MarkDoesFragment(
@@ -368,24 +368,35 @@ public sealed class PopupTranslationPatchTests
             + "10% infiltration chance per penetration.\n\n"
             + "Are you sure you want to proceed?";
 
-        var translated = PopupTranslationPatch.TranslatePopupTextForProducerRoute(
-            source,
-            nameof(PopupShowTranslationPatch));
-
-        Assert.Multiple(() =>
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
         {
-            Assert.That(
-                translated,
-                Is.EqualTo("メカは占有されている。\n\n中に入ろうとすると敵対行動となり、貫通1回ごとに10%の侵入確率を持つ攻撃として扱われる。\n\n続行しますか？"));
-            Assert.That(translated.IndexOf('\u0002'), Is.EqualTo(-1));
-            Assert.That(translated.IndexOf('\u001f'), Is.EqualTo(-1));
-            Assert.That(translated.IndexOf('\u0003'), Is.EqualTo(-1));
-            Assert.That(
-                DynamicTextObservability.GetRouteFamilyHitCountForTests(
-                    nameof(PopupShowTranslationPatch),
-                    "Popup.ProducerText.DoesVerb"),
-                Is.EqualTo(1));
-        });
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyPopupShow), nameof(DummyPopupShow.Show)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(PopupShowTranslationPatch), nameof(PopupShowTranslationPatch.Prefix))));
+
+            DummyPopupShow.Show(source);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(
+                    DummyPopupShow.LastShowMessage,
+                    Is.EqualTo("メカは占有されている。\n\n中に入ろうとすると敵対行動となり、貫通1回ごとに10%の侵入確率を持つ攻撃として扱われる。\n\n続行しますか？"));
+                Assert.That(DummyPopupShow.LastShowMessage!.IndexOf('\u0002'), Is.EqualTo(-1));
+                Assert.That(DummyPopupShow.LastShowMessage!.IndexOf('\u001f'), Is.EqualTo(-1));
+                Assert.That(DummyPopupShow.LastShowMessage!.IndexOf('\u0003'), Is.EqualTo(-1));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(PopupShowTranslationPatch),
+                        "Popup.ProducerText.DoesVerb"),
+                    Is.EqualTo(1));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
     }
 
     [Test]

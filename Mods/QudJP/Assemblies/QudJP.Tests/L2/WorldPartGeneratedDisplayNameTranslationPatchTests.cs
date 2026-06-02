@@ -51,6 +51,7 @@ public sealed class WorldPartGeneratedDisplayNameTranslationPatchTests
     }
 
     [TestCase(null, "snapjawのホログラム")]
+    [TestCase("hologram of a {{C|snapjaw}}", "{{C|snapjaw}}のホログラム")]
     [TestCase("", "")]
     [TestCase("\u0001hologram of a snapjaw", "hologram of a snapjaw")]
     public void ModQuantumReverbPostfix_HandlesFallbackEmptyAndDirectMarkedDisplayNames(
@@ -142,6 +143,8 @@ public sealed class WorldPartGeneratedDisplayNameTranslationPatchTests
     }
 
     [TestCase("phylactery of Unknown", "Unknownのファイラクテリー")]
+    [TestCase("", "")]
+    [TestCase("phylactery of {{C|Unknown}}", "{{C|Unknown}}のファイラクテリー")]
     [TestCase("\u0001phylactery of Unknown", "phylactery of Unknown")]
     public void PetPhylacteryPostfix_HandlesFallbackAndDirectMarkedDisplayNames(string generatedName, string expected)
     {
@@ -192,6 +195,21 @@ public sealed class WorldPartGeneratedDisplayNameTranslationPatchTests
             DummyTombCultistTemplateTarget.Apply(go, new DummyHistoricEntitySnapshot("Argyve's Own"));
 
             Assert.That(go.DisplayName, Is.EqualTo("{{Y|Argyve's Own}}の死の巡礼者、unknown pilgrim"));
+        });
+    }
+
+    [TestCase("", " and death pilgrim of the {{Y|Argyve's Own}}")]
+    [TestCase("{{C|unknown pilgrim}}", "{{Y|Argyve's Own}}の死の巡礼者、{{C|unknown pilgrim}}")]
+    [TestCase("\u0001unknown pilgrim", "unknown pilgrim and death pilgrim of the {{Y|Argyve's Own}}")]
+    public void TombCultistTemplatePostfix_HandlesEdgeDisplayNames(string displayName, string expected)
+    {
+        RunWithTombCultistPatch(() =>
+        {
+            var go = new DummyGameObject(displayName);
+            go.Render.DisplayName = displayName;
+            DummyTombCultistTemplateTarget.Apply(go, new DummyHistoricEntitySnapshot("Argyve's Own"));
+
+            Assert.That(go.DisplayName, Is.EqualTo(expected));
         });
     }
 
@@ -278,7 +296,7 @@ public sealed class WorldPartGeneratedDisplayNameTranslationPatchTests
     }
 
     private static MethodInfo RequireMethod(Type type, string name, params Type[] parameters) =>
-        type.GetMethod(name, BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic, parameters)
+        AccessTools.Method(type, name, parameters)
         ?? throw new MissingMethodException(type.FullName, name);
 
     private sealed class DummyRender

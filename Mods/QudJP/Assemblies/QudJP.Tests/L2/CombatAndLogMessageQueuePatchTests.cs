@@ -7165,6 +7165,65 @@ public sealed class CombatAndLogMessageQueuePatchTests
     }
 
     [Test]
+    public void GameObjectDestroy_LeavesCompanionDeathQueuedMessageUnchanged_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+
+            var target = new DummyGameObjectDestroyTarget
+            {
+                MessageToSend = "Your companion, Irudad, died.",
+            };
+
+            target.Destroy();
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("Your companion, Irudad, died."));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void GameObjectDestroy_StripsDirectMarkedPopupMessage_WhenPatched()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShow(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(
+                    typeof(DummyGameObjectDestroyTarget),
+                    nameof(DummyGameObjectDestroyTarget.Destroy),
+                    typeof(string),
+                    typeof(bool),
+                    typeof(bool),
+                    typeof(string)),
+                typeof(GameObjectDestroyTranslationPatch));
+
+            var target = new DummyGameObjectDestroyTarget
+            {
+                UsePopup = true,
+                PopupMessageToSend = MessageFrameTranslator.MarkDirectTranslation("仲間のIrudadは死亡した。"),
+            };
+
+            target.Destroy();
+
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("仲間のIrudadは死亡した。"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void GameObjectRegenera_TranslatesCureMessage_WhenPatched()
     {
         WritePatternDictionary(
@@ -7309,6 +7368,79 @@ public sealed class CombatAndLogMessageQueuePatchTests
                         "Spot"),
                     Is.EqualTo(1));
             });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void GameObjectSpot_LeavesUnsupportedPopupUnchanged_WhenOwnerPatched()
+    {
+        DynamicTextObservability.ResetForTests();
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShow(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(
+                    typeof(DummyGameObjectSpotTarget),
+                    nameof(DummyGameObjectSpotTarget.ArePerceptibleHostilesNearby),
+                    typeof(bool),
+                    typeof(bool),
+                    typeof(string),
+                    typeof(object),
+                    typeof(string),
+                    typeof(int),
+                    typeof(int),
+                    typeof(bool),
+                    typeof(bool)),
+                typeof(GameObjectSpotTranslationPatch));
+
+            var target = new DummyGameObjectSpotTarget
+            {
+                MessageToSend = "You notice something unrelated.",
+            };
+
+            target.ArePerceptibleHostilesNearby(popSpot: true);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("You notice something unrelated."));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(GameObjectSpotTranslationPatch),
+                        "Spot"),
+                    Is.Zero);
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void GameObjectSpot_StripsDirectMarkedPopup_WhenOwnerAbsent()
+    {
+        const string translated = "northのsnapjawを見つけ、auto-exploringをやめた。";
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShow(harmony);
+
+            var target = new DummyGameObjectSpotTarget
+            {
+                MessageToSend = MessageFrameTranslator.MarkDirectTranslation(translated),
+            };
+
+            target.ArePerceptibleHostilesNearby(popSpot: true);
+
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(translated));
         }
         finally
         {

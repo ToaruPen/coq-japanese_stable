@@ -68,7 +68,7 @@ public static class CyberneticsTerminalInterfacePopupTranslationPatch
         translated = source;
         try
         {
-            if (!OwnerTranslationScope.IsActive(activeDepth) || string.IsNullOrEmpty(source))
+            if (string.IsNullOrEmpty(source))
             {
                 return false;
             }
@@ -77,6 +77,11 @@ public static class CyberneticsTerminalInterfacePopupTranslationPatch
             {
                 translated = markedText;
                 return true;
+            }
+
+            if (!OwnerTranslationScope.IsActive(activeDepth))
+            {
+                return false;
             }
 
             if (!DoesVerbRouteTranslator.TryTranslateMarkedMessage(source, out translated)

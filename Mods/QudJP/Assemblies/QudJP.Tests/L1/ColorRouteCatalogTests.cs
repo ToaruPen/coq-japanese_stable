@@ -284,7 +284,7 @@ internal static class ColorRouteCatalog
             ["Mods/QudJP/Assemblies/src/Patches/JournalLineTranslationPatch.cs|ColorAwareTranslationComposer.TranslatePreservingColors("] = 1,
             ["Mods/QudJP/Assemblies/src/Patches/JournalTextTranslator.cs|ColorAwareTranslationComposer.TranslatePreservingColors("] = 1,
             ["Mods/QudJP/Assemblies/src/Patches/JournalTextTranslator.cs|JournalPatternTranslator.Translate("] = 3,
-            ["Mods/QudJP/Assemblies/src/Patches/KeybindBoxTranslationPatch.cs|ColorAwareTranslationComposer.TranslatePreservingColors("] = 1,
+            ["Mods/QudJP/Assemblies/src/Patches/KeybindBoxTranslationPatch.cs|ColorAwareTranslationComposer.TranslatePreservingColors("] = 2,
             ["Mods/QudJP/Assemblies/src/Patches/KeybindRowTranslationPatch.cs|ColorAwareTranslationComposer.TranslatePreservingColors("] = 1,
             ["Mods/QudJP/Assemblies/src/Patches/KeybindsScreenTranslationPatch.cs|ColorAwareTranslationComposer.TranslatePreservingColors("] = 1,
             ["Mods/QudJP/Assemblies/src/Patches/LegacyGamepadPromptTranslationHelpers.cs|ColorAwareTranslationComposer.TranslatePreservingColors("] = 2,

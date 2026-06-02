@@ -212,6 +212,42 @@ public sealed class KeybindBoxTranslationPatchTests
     }
 
     [Test]
+    public void Postfix_StripsDirectMarkerInsideColorMarkup_WhenPatched()
+    {
+        var harmonyId = "qudjp.tests.keybind-box." + Guid.NewGuid().ToString("N");
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyKeybindBoxTarget), nameof(DummyKeybindBoxTarget.Update)),
+                postfix: new HarmonyMethod(RequireMethod(
+                    typeof(KeybindBoxTranslationPatch),
+                    nameof(KeybindBoxTranslationPatch.Postfix))));
+
+            var target = new DummyKeybindBoxTarget
+            {
+                textSkin = { text = "{{c|" + MessageFrameTranslator.MarkDirectTranslation("None") + "}}" },
+            };
+            target.Update();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(target.textSkin.text, Is.EqualTo("{{c|None}}"));
+                Assert.That(target.textSkin.AppliedCount, Is.EqualTo(1));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        KeybindBoxTranslationPatch.Context,
+                        KeybindBoxTranslationPatch.Family),
+                    Is.Zero);
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void Postfix_LeavesEmptyTextUnchanged_WhenPatched()
     {
         var harmonyId = "qudjp.tests.keybind-box." + Guid.NewGuid().ToString("N");

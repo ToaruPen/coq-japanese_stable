@@ -88,12 +88,20 @@ public sealed class EquipmentScreenBodypartEquipPopupTranslationPatchTests
         try
         {
             PatchPopupShow(harmony);
-            EquipmentScreenBodypartEquipPopupTranslationPatch.Prefix();
+            harmony.Patch(
+                original: RequireMethod(
+                    typeof(DummyEquipmentScreenBodypartEquipTarget),
+                    nameof(DummyEquipmentScreenBodypartEquipTarget.ShowBodypartEquipUI)),
+                prefix: new HarmonyMethod(RequireMethod(
+                    typeof(EquipmentScreenBodypartEquipPopupTranslationPatch),
+                    nameof(EquipmentScreenBodypartEquipPopupTranslationPatch.Prefix))),
+                finalizer: new HarmonyMethod(RequireMethod(
+                    typeof(EquipmentScreenBodypartEquipPopupTranslationPatch),
+                    nameof(EquipmentScreenBodypartEquipPopupTranslationPatch.Finalizer))));
             action();
         }
         finally
         {
-            _ = EquipmentScreenBodypartEquipPopupTranslationPatch.Finalizer(null);
             harmony.UnpatchAll(harmonyId);
         }
     }

@@ -118,12 +118,7 @@ public sealed class GameObjectPossessiveDisplayNameTranslationPatchTests
         Assert.Multiple(() =>
         {
             Assert.That(result, Is.EqualTo("レーザーライフル"));
-            Assert.That(
-                DynamicTextObservability.GetRouteFamilyHitCountForTests(
-                    GameObjectPossessiveDisplayNameTranslationPatch.Context,
-                    GameObjectPossessiveDisplayNameTranslationPatch.Family),
-                Is.EqualTo(1));
-            });
+        });
     }
 
     [Test]

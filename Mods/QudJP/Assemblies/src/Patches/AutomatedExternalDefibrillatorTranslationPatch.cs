@@ -108,7 +108,7 @@ public static class AutomatedExternalDefibrillatorTranslationPatch
 
     private static bool TryTranslateMessage(string source, string route, string family, out string translated)
     {
-        if (!OwnerTranslationScope.IsActive(activeDepth) || string.IsNullOrEmpty(source))
+        if (string.IsNullOrEmpty(source))
         {
             translated = source;
             return false;
@@ -118,6 +118,12 @@ public static class AutomatedExternalDefibrillatorTranslationPatch
         {
             translated = markedText;
             return true;
+        }
+
+        if (!OwnerTranslationScope.IsActive(activeDepth))
+        {
+            translated = source;
+            return false;
         }
 
         if (!TryTranslateCore(source, out translated, out var detail))

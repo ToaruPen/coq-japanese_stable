@@ -100,6 +100,47 @@ public sealed class CyberneticsTerminalInterfacePopupTranslationPatchTests
         });
     }
 
+    [Test]
+    public void AttemptInterface_LeavesEmptyPopupUnchanged_WhenOwnerPatched()
+    {
+        var target = new DummyCyberneticsTerminal2InterfaceTarget
+        {
+            PopupMessageToShow = string.Empty,
+        };
+
+        OwnerPopupRouteTestHarness.WithPatchedPopupOwner(
+            typeof(CyberneticsTerminalInterfacePopupTranslationPatch),
+            RequireOwnerMethod(),
+            () => target.AttemptInterface());
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(string.Empty));
+            Assert.That(GetHitCount(), Is.Zero);
+        });
+    }
+
+    [Test]
+    public void AttemptInterface_PreservesColorTags_WhenOwnerPatched()
+    {
+        const string source = "<color=red>The Becoming nook is unpowered.</color>";
+        var target = new DummyCyberneticsTerminal2InterfaceTarget
+        {
+            PopupMessageToShow = source,
+        };
+
+        OwnerPopupRouteTestHarness.WithPatchedPopupOwner(
+            typeof(CyberneticsTerminalInterfacePopupTranslationPatch),
+            RequireOwnerMethod(),
+            () => target.AttemptInterface());
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("<color=red>変容の窪みは無電力だ。</color>"));
+            Assert.That(GetHitCount(), Is.EqualTo(1));
+        });
+    }
+
     private static string MarkDoesFragment(string fragment, string verb)
     {
         return DoesVerbRouteTranslator.MarkDoesFragment(fragment, verb, fragment.LastIndexOf(' '), null);

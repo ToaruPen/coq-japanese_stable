@@ -85,6 +85,47 @@ public sealed class GiantClamTeleportTranslationPatchTests
         });
     }
 
+    [Test]
+    public void TeleportFromClamWorld_LeavesEmptyPopupUnchanged_WhenOwnerPatched()
+    {
+        var target = new DummyGiantClamTeleportPopupTarget
+        {
+            PopupMessageToShow = string.Empty,
+        };
+
+        OwnerPopupRouteTestHarness.WithPatchedPopupOwner(
+            typeof(GiantClamTeleportTranslationPatch),
+            RequireOwnerMethod(),
+            () => target.TeleportFromClamWorld());
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(string.Empty));
+            Assert.That(GetHitCount(), Is.Zero);
+        });
+    }
+
+    [Test]
+    public void TeleportFromClamWorld_PreservesColorTaggedFallback_WhenOwnerPatched()
+    {
+        const string source = "<color=red>You find a passageway back to your home dimension.</color>";
+        var target = new DummyGiantClamTeleportPopupTarget
+        {
+            PopupMessageToShow = source,
+        };
+
+        OwnerPopupRouteTestHarness.WithPatchedPopupOwner(
+            typeof(GiantClamTeleportTranslationPatch),
+            RequireOwnerMethod(),
+            () => target.TeleportFromClamWorld());
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(source));
+            Assert.That(GetHitCount(), Is.Zero);
+        });
+    }
+
     private static MethodInfo RequireOwnerMethod()
     {
         return OwnerPopupRouteTestHarness.RequireMethod(

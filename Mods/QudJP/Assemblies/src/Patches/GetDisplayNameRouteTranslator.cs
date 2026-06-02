@@ -472,7 +472,7 @@ internal static class GetDisplayNameRouteTranslator
             return titleSuffixTranslation;
         }
 
-        if (TryTranslateDisplayNameRouteText(stripped, route, out var translated))
+        if (TryTranslateDisplayNameRouteText(stripped, spans, route, out var translated))
         {
             return ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
                 translated,
@@ -668,7 +668,14 @@ internal static class GetDisplayNameRouteTranslator
         return true;
     }
 
-    private static bool TryTranslateDisplayNameRouteText(string source, string route, out string translated)
+    private static bool TryTranslateDisplayNameRouteText(string source, string route, out string translated) =>
+        TryTranslateDisplayNameRouteText(source, null, route, out translated);
+
+    private static bool TryTranslateDisplayNameRouteText(
+        string source,
+        IReadOnlyList<ColorSpan>? spans,
+        string route,
+        out string translated)
     {
         translated = source;
         var transformed = source;
@@ -689,7 +696,7 @@ internal static class GetDisplayNameRouteTranslator
             return true;
         }
 
-        if (TryTranslateMinerGeneratedRoleDisplayNameSuffix(source, route, out translated))
+        if (TryTranslateMinerGeneratedRoleDisplayNameSuffix(source, spans, route, out translated))
         {
             return true;
         }
@@ -1463,7 +1470,11 @@ internal static class GetDisplayNameRouteTranslator
         return IsStableDisplayNameFragment(baseSource, route);
     }
 
-    private static bool TryTranslateMinerGeneratedRoleDisplayNameSuffix(string source, string route, out string translated)
+    private static bool TryTranslateMinerGeneratedRoleDisplayNameSuffix(
+        string source,
+        IReadOnlyList<ColorSpan>? spans,
+        string route,
+        out string translated)
     {
         var match = MinerGeneratedRoleDisplayNameSuffixPattern.Match(source);
         if (!match.Success)
@@ -1479,6 +1490,11 @@ internal static class GetDisplayNameRouteTranslator
         {
             translated = source;
             return false;
+        }
+
+        if (spans is not null)
+        {
+            translatedBase = RestoreWholeSlice(translatedBase, spans, match.Groups["base"]);
         }
 
         var translatedRole = match.Groups["role"].Value switch

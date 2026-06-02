@@ -1272,7 +1272,10 @@ public sealed class PopupMessageTranslationPatchTests
     public void Prefix_TranslatesModManagerRestartConfirmation_AndPreservesButtonContracts()
     {
         const string source = "Your mod configuration has changed, do you want to apply your changes and restart the game?";
-        WriteDictionary((source, "Mod 設定が変更されています。変更を適用してゲームを再起動しますか？"));
+        WriteDictionary(
+            (source, "Mod 設定が変更されています。変更を適用してゲームを再起動しますか？"),
+            ("Yes", "はい"),
+            ("No", "いいえ"));
         var buttons = new List<DummyPopupMessageItem>
         {
             new("Yes", "Y", "Yes"),
@@ -1293,6 +1296,8 @@ public sealed class PopupMessageTranslationPatchTests
             Assert.Multiple(() =>
             {
                 Assert.That(DummyPopupMessageTarget.LastMessage, Is.EqualTo("Mod 設定が変更されています。変更を適用してゲームを再起動しますか？"));
+                Assert.That(DummyPopupMessageTarget.LastButtons![0].text, Is.EqualTo("はい"));
+                Assert.That(DummyPopupMessageTarget.LastButtons[1].text, Is.EqualTo("いいえ"));
                 Assert.That(DummyPopupMessageTarget.LastButtons![0].command, Is.EqualTo("Yes"));
                 Assert.That(DummyPopupMessageTarget.LastButtons[1].command, Is.EqualTo("No"));
                 Assert.That(DummyPopupMessageTarget.LastButtons[0].hotkey, Is.EqualTo("Y"));

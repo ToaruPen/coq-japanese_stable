@@ -163,12 +163,18 @@ public sealed class SavesApiFatalSaveErrorTranslationPatchTests
         try
         {
             PatchPopupMessage(harmony);
-            SavesApiFatalSaveErrorTranslationPatch.Prefix();
-            action();
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyFatalSaveErrorOwnerTarget), nameof(DummyFatalSaveErrorOwnerTarget.Run)),
+                prefix: new HarmonyMethod(RequireMethod(
+                    typeof(SavesApiFatalSaveErrorTranslationPatch),
+                    nameof(SavesApiFatalSaveErrorTranslationPatch.Prefix))),
+                finalizer: new HarmonyMethod(RequireMethod(
+                    typeof(SavesApiFatalSaveErrorTranslationPatch),
+                    nameof(SavesApiFatalSaveErrorTranslationPatch.Finalizer))));
+            DummyFatalSaveErrorOwnerTarget.Run(action);
         }
         finally
         {
-            _ = SavesApiFatalSaveErrorTranslationPatch.Finalizer(null);
             harmony.UnpatchAll(harmonyId);
         }
     }
@@ -212,5 +218,10 @@ public sealed class SavesApiFatalSaveErrorTranslationPatchTests
     private static string CreateHarmonyId()
     {
         return $"qudjp.tests.{Guid.NewGuid():N}";
+    }
+
+    private static class DummyFatalSaveErrorOwnerTarget
+    {
+        public static void Run(Action action) => action();
     }
 }

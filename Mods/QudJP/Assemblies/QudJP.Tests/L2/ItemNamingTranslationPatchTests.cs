@@ -156,6 +156,85 @@ public sealed class ItemNamingTranslationPatchTests
     }
 
     [Test]
+    public void Patch_LeavesUnknownInteractivePromptsUnchanged_WhenOwnerPatched()
+    {
+        var target = new DummyItemNamingProducerTarget
+        {
+            InteractivePickOptionIntroToShow = "Rename an unknown item?",
+            InteractivePickOptionOptionsToShow = new[] { "Unknown option" },
+            InteractiveAskStringMessageToShow = "Enter an unknown name?",
+            InteractiveShowColorPickerIntroToShow = "Choose an unknown color?",
+        };
+
+        WithPatchedOwner(
+            () => InvokeInteractiveNameItem(target));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(DummyPopupGenericTarget.LastPickOptionIntro, Is.EqualTo("Rename an unknown item?"));
+            Assert.That(DummyPopupGenericTarget.LastPickOptionOptions, Is.EqualTo(new[] { "Unknown option" }));
+            Assert.That(DummyPopupGenericTarget.LastAskStringMessage, Is.EqualTo("Enter an unknown name?"));
+            Assert.That(DummyPopupGenericTarget.LastShowColorPickerIntro, Is.EqualTo("Choose an unknown color?"));
+            Assert.That(ItemNamingHitCount(nameof(PopupPickOptionTranslationPatch), "Interactive.Rename"), Is.Zero);
+            Assert.That(ItemNamingHitCount(nameof(PopupAskStringTranslationPatch), "Interactive.AskString"), Is.Zero);
+            Assert.That(ItemNamingHitCount(nameof(PopupShowColorPickerTranslationPatch), "Interactive.ColorPicker"), Is.Zero);
+        });
+    }
+
+    [Test]
+    public void Patch_HandlesEmptyInteractivePrompts_WhenOwnerPatched()
+    {
+        var target = new DummyItemNamingProducerTarget
+        {
+            InteractivePickOptionIntroToShow = string.Empty,
+            InteractivePickOptionOptionsToShow = Array.Empty<string>(),
+            InteractiveAskStringMessageToShow = string.Empty,
+            InteractiveShowColorPickerIntroToShow = string.Empty,
+        };
+
+        WithPatchedOwner(
+            () => InvokeInteractiveNameItem(target));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(DummyPopupGenericTarget.LastPickOptionIntro, Is.Empty);
+            Assert.That(DummyPopupGenericTarget.LastPickOptionOptions, Is.Empty);
+            Assert.That(DummyPopupGenericTarget.LastAskStringMessage, Is.Empty);
+            Assert.That(DummyPopupGenericTarget.LastShowColorPickerIntro, Is.Empty);
+            Assert.That(ItemNamingHitCount(nameof(PopupPickOptionTranslationPatch), "Interactive.Rename"), Is.Zero);
+            Assert.That(ItemNamingHitCount(nameof(PopupAskStringTranslationPatch), "Interactive.AskString"), Is.Zero);
+            Assert.That(ItemNamingHitCount(nameof(PopupShowColorPickerTranslationPatch), "Interactive.ColorPicker"), Is.Zero);
+        });
+    }
+
+    [Test]
+    public void Patch_StripsDirectMarkedInteractivePrompts_WhenOwnerPatched()
+    {
+        var target = new DummyItemNamingProducerTarget
+        {
+            InteractivePickOptionIntroToShow = MessageFrameTranslator.MarkDirectTranslation("{{Y|銅の短剣}}の名前を変更する。"),
+            InteractivePickOptionOptionsToShow = new[] { MessageFrameTranslator.MarkDirectTranslation("名前を入力する。") },
+            InteractiveAskStringMessageToShow = MessageFrameTranslator.MarkDirectTranslation("{{Y|銅の短剣}}の新しい名前を入力する。"),
+            InteractiveShowColorPickerIntroToShow = MessageFrameTranslator.MarkDirectTranslation("{{Y|銅の短剣}}の名前として「{{C|暁}}」を選択した。色を選ぶ。"),
+        };
+
+        WithPatchedOwner(
+            () => InvokeInteractiveNameItem(target));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(DummyPopupGenericTarget.LastPickOptionIntro, Is.EqualTo("{{Y|銅の短剣}}の名前を変更する。"));
+            Assert.That(DummyPopupGenericTarget.LastPickOptionOptions, Is.EqualTo(new[] { "名前を入力する。" }));
+            Assert.That(DummyPopupGenericTarget.LastAskStringMessage, Is.EqualTo("{{Y|銅の短剣}}の新しい名前を入力する。"));
+            Assert.That(DummyPopupGenericTarget.LastShowColorPickerIntro, Is.EqualTo("{{Y|銅の短剣}}の名前として「{{C|暁}}」を選択した。色を選ぶ。"));
+            Assert.That(ItemNamingHitCount(nameof(PopupPickOptionTranslationPatch), "Interactive.Rename"), Is.Zero);
+            Assert.That(ItemNamingMenuItemHitCount(nameof(PopupPickOptionTranslationPatch), "Interactive.EnterName"), Is.Zero);
+            Assert.That(ItemNamingHitCount(nameof(PopupAskStringTranslationPatch), "Interactive.AskString"), Is.Zero);
+            Assert.That(ItemNamingHitCount(nameof(PopupShowColorPickerTranslationPatch), "Interactive.ColorPicker"), Is.Zero);
+        });
+    }
+
+    [Test]
     public void Patch_TranslatesItemNamingWishDebugPopup_WhenOwnerPatched()
     {
         var target = new DummyItemNamingProducerTarget
@@ -194,6 +273,24 @@ public sealed class ItemNamingTranslationPatchTests
         {
             Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("[Debug: 命名に失敗した。]"));
             Assert.That(ItemNamingHitCount("WishDebugFailed"), Is.EqualTo(1));
+        });
+    }
+
+    [Test]
+    public void Patch_StripsDirectMarkedWishDebugPopup_WhenOwnerPatched()
+    {
+        var target = new DummyItemNamingProducerTarget
+        {
+            PopupMessageToShow = MessageFrameTranslator.MarkDirectTranslation("[Debug: 命名に失敗した。]"),
+        };
+
+        WithPatchedOwner(
+            () => InvokeHandleItemNamingWish(target));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("[Debug: 命名に失敗した。]"));
+            Assert.That(ItemNamingHitCount("WishDebugFailed"), Is.Zero);
         });
     }
 

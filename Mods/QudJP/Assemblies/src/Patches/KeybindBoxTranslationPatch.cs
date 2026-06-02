@@ -67,6 +67,15 @@ public static class KeybindBoxTranslationPatch
             var visible = hasColorMarkup
                 ? ColorAwareTranslationComposer.GetVisibleText(sourceText)
                 : sourceText;
+            if (MessageFrameTranslator.TryStripDirectTranslationMarker(visible, out var markedVisible))
+            {
+                var markedFinalText = hasColorMarkup
+                    ? ColorAwareTranslationComposer.TranslatePreservingColors(sourceText, _ => markedVisible)
+                    : markedVisible;
+                _ = UITextSkinReflectionAccessor.SetCurrentText(___textSkin, markedFinalText, Context);
+                return;
+            }
+
             translated = ScopedDictionaryLookup.TranslateExactOrLowerAsciiForContextOnly(
                 visible,
                 DictionaryContext,

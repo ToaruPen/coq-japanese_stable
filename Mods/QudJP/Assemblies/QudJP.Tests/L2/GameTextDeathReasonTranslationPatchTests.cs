@@ -22,6 +22,7 @@ public sealed class GameTextDeathReasonTranslationPatchTests
             "Localization",
             "Dictionaries"));
         DynamicTextObservability.ResetForTests();
+        DummyGameTextTarget.Reset();
     }
 
     [TearDown]
@@ -29,15 +30,46 @@ public sealed class GameTextDeathReasonTranslationPatchTests
     {
         Translator.ResetForTests();
         DynamicTextObservability.ResetForTests();
+        DummyGameTextTarget.Reset();
     }
 
     [Test]
     public void Postfix_TranslatesConvertedThirdPersonDeathReason_WhenPatched()
     {
+        AssertPatchedDeathReason("snapjaw was vaporized.", "スナップジョーは蒸発した。", 1);
+    }
+
+    [Test]
+    public void Postfix_LeavesUnsupportedDeathReasonUnchanged_WhenPatched()
+    {
+        AssertPatchedDeathReason("snapjaw was frobnicated.", "snapjaw was frobnicated.", 0);
+    }
+
+    [Test]
+    public void Postfix_LeavesEmptyDeathReasonUnchanged_WhenPatched()
+    {
+        AssertPatchedDeathReason(string.Empty, string.Empty, 0);
+    }
+
+    [Test]
+    public void Postfix_PreservesColorTagsInDeathReason_WhenPatched()
+    {
+        AssertPatchedDeathReason("{{C|snapjaw}} was vaporized.", "{{C|スナップジョー}}は蒸発した。", 1);
+    }
+
+    [Test]
+    public void Postfix_StripsDirectMarkerFromDeathReason_WhenPatched()
+    {
+        AssertPatchedDeathReason(MessageFrameTranslator.MarkDirectTranslation("スナップジョーは蒸発した。"), "スナップジョーは蒸発した。", 1);
+    }
+
+    private static void AssertPatchedDeathReason(string source, string expected, int expectedHitCount)
+    {
         var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";
         var harmony = new Harmony(harmonyId);
         try
         {
+            DummyGameTextTarget.ResultOverride = source;
             harmony.Patch(
                 original: RequireMethod(
                     typeof(DummyGameTextTarget),
@@ -48,7 +80,15 @@ public sealed class GameTextDeathReasonTranslationPatchTests
 
             var result = DummyGameTextTarget.RoughConvertSecondPersonToThirdPerson("You were vaporized.", new object());
 
-            Assert.That(result, Is.EqualTo("スナップジョーは蒸発した。"));
+            Assert.Multiple(() =>
+            {
+                Assert.That(result, Is.EqualTo(expected));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(GameTextDeathReasonTranslationPatch),
+                        "DeathReason.ThirdPersonConverted"),
+                    Is.EqualTo(expectedHitCount));
+            });
         }
         finally
         {

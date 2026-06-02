@@ -253,9 +253,18 @@ public sealed class ConversationRewardPopupTranslationPatchTests
 
             target.GiveReshephSecretHandleEvent();
 
-            Assert.That(
-                DummyPopupShow.LastShowMessage,
-                Is.EqualTo("レシェフの生涯に関する未共有の秘密はない。"));
+            Assert.Multiple(() =>
+            {
+                Assert.That(
+                    DummyPopupShow.LastShowMessage,
+                    Is.EqualTo("レシェフの生涯に関する未共有の秘密はない。"));
+                Assert.That(HitCount("ReshephSecretInsight"), Is.Zero);
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(PopupShowTranslationPatch),
+                        "Popup.ProducerText.Exact"),
+                    Is.EqualTo(1));
+            });
         });
     }
 

@@ -61,11 +61,11 @@ public sealed class ObjectFinderDisplayNameTranslationPatchTests
     [TestCase("", "")]
     public void Postfix_LeavesUnknownAndEdgeDisplayNameUnchanged(string source, string expected)
     {
-        ObjectFinderDisplayNameTranslationPatch.Postfix(ref source);
+        var result = InvokePatchedConfigurableDisplayName(source);
 
         Assert.Multiple(() =>
         {
-            Assert.That(source, Is.EqualTo(expected));
+            Assert.That(result, Is.EqualTo(expected));
             Assert.That(
                 DynamicTextObservability.GetRouteFamilyHitCountForTests(
                     ObjectFinderDisplayNameTranslationPatch.Context,
@@ -77,13 +77,11 @@ public sealed class ObjectFinderDisplayNameTranslationPatchTests
     [Test]
     public void Postfix_StripsDirectMarkedUnknownDisplayName()
     {
-        var source = "\u0001Something";
-
-        ObjectFinderDisplayNameTranslationPatch.Postfix(ref source);
+        var result = InvokePatchedConfigurableDisplayName("\u0001Something");
 
         Assert.Multiple(() =>
         {
-            Assert.That(source, Is.EqualTo("Something"));
+            Assert.That(result, Is.EqualTo("Something"));
             Assert.That(
                 DynamicTextObservability.GetRouteFamilyHitCountForTests(
                     ObjectFinderDisplayNameTranslationPatch.Context,
@@ -96,11 +94,11 @@ public sealed class ObjectFinderDisplayNameTranslationPatchTests
     [TestCase("&GValue", "&G価値")]
     public void Postfix_PreservesColorTags_WhenTranslatingDisplayName(string source, string expected)
     {
-        ObjectFinderDisplayNameTranslationPatch.Postfix(ref source);
+        var result = InvokePatchedConfigurableDisplayName(source);
 
         Assert.Multiple(() =>
         {
-            Assert.That(source, Is.EqualTo(expected));
+            Assert.That(result, Is.EqualTo(expected));
             Assert.That(
                 DynamicTextObservability.GetRouteFamilyHitCountForTests(
                     ObjectFinderDisplayNameTranslationPatch.Context,
@@ -116,6 +114,27 @@ public sealed class ObjectFinderDisplayNameTranslationPatchTests
             : AccessTools.Method(type, methodName, parameterTypes);
         return method
             ?? throw new InvalidOperationException($"Method not found: {type.FullName}.{methodName}");
+    }
+
+    private static string InvokePatchedConfigurableDisplayName(string source)
+    {
+        var harmonyId = "qudjp.tests.object-finder-display-name." + Guid.NewGuid().ToString("N");
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyConfigurableDisplayNameTarget), nameof(DummyConfigurableDisplayNameTarget.GetDisplayName)),
+                postfix: new HarmonyMethod(RequireMethod(
+                    typeof(ObjectFinderDisplayNameTranslationPatch),
+                    nameof(ObjectFinderDisplayNameTranslationPatch.Postfix),
+                    typeof(string).MakeByRefType())));
+
+            return new DummyConfigurableDisplayNameTarget(source).GetDisplayName();
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
     }
 
     private sealed class DummyAutogotItemsContextTarget
@@ -140,5 +159,11 @@ public sealed class ObjectFinderDisplayNameTranslationPatchTests
     {
         [MethodImpl(MethodImplOptions.NoInlining)]
         public string GetDisplayName() => "Value";
+    }
+
+    private sealed class DummyConfigurableDisplayNameTarget(string displayName)
+    {
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public string GetDisplayName() => displayName;
     }
 }

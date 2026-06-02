@@ -61,19 +61,19 @@ public sealed class TinkeringHelpersMakersMarkTranslationPatchTests
     public void Patch_StripsDirectMarkedMakersMarkPrompts_WhenOwnerPatched()
     {
         DummyTinkeringHelpersTarget.PickOptionTitleToSend =
-            MessageFrameTranslator.MarkDirectTranslation("Select your maker's mark.");
+            MessageFrameTranslator.MarkDirectTranslation("作り手の印を選ぶ。");
         DummyTinkeringHelpersTarget.PickOptionOptionsToSend =
-            new[] { MessageFrameTranslator.MarkDirectTranslation("none") };
+            new[] { MessageFrameTranslator.MarkDirectTranslation("なし") };
         DummyTinkeringHelpersTarget.ColorPickerTitleToSend =
-            MessageFrameTranslator.MarkDirectTranslation("Choose a color for your maker's mark.");
+            MessageFrameTranslator.MarkDirectTranslation("作り手の印の色を選ぶ。");
 
         WithPatchedOwner(() => DummyTinkeringHelpersTarget.CheckMakersMark());
 
         Assert.Multiple(() =>
         {
-            Assert.That(DummyPopupGenericTarget.LastPickOptionTitle, Is.EqualTo("Select your maker's mark."));
-            Assert.That(DummyPopupGenericTarget.LastPickOptionOptions, Is.EqualTo(new[] { "none" }));
-            Assert.That(DummyPopupGenericTarget.LastShowColorPickerTitle, Is.EqualTo("Choose a color for your maker's mark."));
+            Assert.That(DummyPopupGenericTarget.LastPickOptionTitle, Is.EqualTo("作り手の印を選ぶ。"));
+            Assert.That(DummyPopupGenericTarget.LastPickOptionOptions, Is.EqualTo(new[] { "なし" }));
+            Assert.That(DummyPopupGenericTarget.LastShowColorPickerTitle, Is.EqualTo("作り手の印の色を選ぶ。"));
             Assert.That(HitCount(nameof(PopupPickOptionTranslationPatch), "Select"), Is.Zero);
             Assert.That(HitCount(nameof(PopupShowColorPickerTranslationPatch), "Color"), Is.Zero);
         });
@@ -127,12 +127,18 @@ public sealed class TinkeringHelpersMakersMarkTranslationPatchTests
         try
         {
             PatchPopupRoutes(harmony);
-            TinkeringHelpersMakersMarkTranslationPatch.Prefix();
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyTinkeringHelpersTarget), nameof(DummyTinkeringHelpersTarget.CheckMakersMark)),
+                prefix: new HarmonyMethod(RequireMethod(
+                    typeof(TinkeringHelpersMakersMarkTranslationPatch),
+                    nameof(TinkeringHelpersMakersMarkTranslationPatch.Prefix))),
+                finalizer: new HarmonyMethod(RequireMethod(
+                    typeof(TinkeringHelpersMakersMarkTranslationPatch),
+                    nameof(TinkeringHelpersMakersMarkTranslationPatch.Finalizer))));
             action();
         }
         finally
         {
-            _ = TinkeringHelpersMakersMarkTranslationPatch.Finalizer(null);
             harmony.UnpatchAll(harmonyId);
         }
     }

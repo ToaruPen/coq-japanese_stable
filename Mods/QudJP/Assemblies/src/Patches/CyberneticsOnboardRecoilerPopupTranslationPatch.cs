@@ -41,23 +41,26 @@ public static class CyberneticsOnboardRecoilerPopupTranslationPatch
         return targets;
     }
 
-    public static void Prefix()
+    public static void Prefix(out string? __state)
     {
         try
         {
+            __state = directMarkerPassThroughText;
             OwnerTranslationScope.Enter(ref activeDepth);
         }
         catch (Exception ex)
         {
+            __state = null;
             Trace.TraceError("QudJP: {0}.Prefix failed: {1}", Context, ex);
         }
     }
 
-    public static Exception? Finalizer(Exception? __exception)
+    public static Exception? Finalizer(Exception? __exception, string? __state)
     {
         try
         {
             OwnerTranslationScope.Exit(ref activeDepth);
+            directMarkerPassThroughText = __state;
         }
         catch (Exception ex)
         {
@@ -70,7 +73,7 @@ public static class CyberneticsOnboardRecoilerPopupTranslationPatch
     internal static bool TryTranslatePopupMessage(string source, string route, string family, out string translated)
     {
         _ = family;
-        if (!OwnerTranslationScope.IsActive(activeDepth) || string.IsNullOrEmpty(source))
+        if (string.IsNullOrEmpty(source))
         {
             translated = source;
             return false;
@@ -82,6 +85,12 @@ public static class CyberneticsOnboardRecoilerPopupTranslationPatch
                 out translated))
         {
             return true;
+        }
+
+        if (!OwnerTranslationScope.IsActive(activeDepth))
+        {
+            translated = source;
+            return false;
         }
 
         var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);

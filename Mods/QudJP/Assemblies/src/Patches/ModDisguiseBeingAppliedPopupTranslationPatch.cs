@@ -77,9 +77,9 @@ public static class ModDisguiseBeingAppliedPopupTranslationPatch
             return false;
         }
 
-        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out _))
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
         {
-            translated = source;
+            translated = markedText;
             return false;
         }
 

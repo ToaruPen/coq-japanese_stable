@@ -103,6 +103,39 @@ public sealed class TextFilterSpeechStatusTranslationPatchTests
     }
 
     [Test]
+    public void AngryPostfix_StripsDirectMarkedWholeResultSafely()
+    {
+        var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyTextFiltersTarget), nameof(DummyTextFiltersTarget.AngryRaw), typeof(string)),
+                postfix: new HarmonyMethod(RequireMethod(
+                    typeof(TextFiltersAngryTranslationPatch),
+                    nameof(TextFiltersAngryTranslationPatch.Postfix),
+                    typeof(string).MakeByRefType())));
+
+            var result = DummyTextFiltersTarget.AngryRaw(MessageFrameTranslator.MarkDirectTranslation("Stop."));
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(result, Is.EqualTo("Stop."));
+                Assert.That(result.IndexOf(MessageFrameTranslator.DirectTranslationMarker), Is.EqualTo(-1));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(TextFiltersAngryTranslationPatch),
+                        "TextFilters.Angry"),
+                    Is.EqualTo(1));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void LallatedPostfix_TranslatesCarriedSpeechTextOnly()
     {
         WriteDictionary(("hello there", "こんにちは"));
@@ -293,6 +326,11 @@ public sealed class TextFilterSpeechStatusTranslationPatchTests
         {
             LastAngrySource = "NO! " + phrase + " ARGH!";
             return LastAngrySource;
+        }
+
+        public static string AngryRaw(string result)
+        {
+            return result;
         }
 
         public static string Lallated(string Text, string Noise)

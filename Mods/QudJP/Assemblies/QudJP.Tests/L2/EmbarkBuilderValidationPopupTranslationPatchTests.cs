@@ -88,10 +88,10 @@ public sealed class EmbarkBuilderValidationPopupTranslationPatchTests
     public void CheckState_DoesNotRetranslateDirectMarkedValidationMessage_WhenOwnerPatched()
     {
         AssertPopup(
-            MessageFrameTranslator.MarkDirectTranslation("You have unspent attribute points.\n\nContinue anyway?"),
-            MessageFrameTranslator.MarkDirectTranslation("{{W|Warning!}}"),
-            "You have unspent attribute points.\n\nContinue anyway?",
-            "{{W|Warning!}}");
+            MessageFrameTranslator.MarkDirectTranslation("未使用の能力値ポイントがあります。\n\n続行しますか？"),
+            MessageFrameTranslator.MarkDirectTranslation("{{W|警告！}}"),
+            "未使用の能力値ポイントがあります。\n\n続行しますか？",
+            "{{W|警告！}}");
     }
 
     private static void AssertPopup(string source, string sourceTitle, string expected, string expectedTitle)
