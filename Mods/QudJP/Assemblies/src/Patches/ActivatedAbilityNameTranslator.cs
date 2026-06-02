@@ -51,6 +51,7 @@ internal static class ActivatedAbilityNameTranslator
             ["Clone"] = "クローン作成",
             ["Dig"] = "掘る",
             ["Engulf"] = "呑み込む",
+            ["Release Poison Gas"] = "毒ガス放出",
             ["Run"] = "走る",
             ["Run Over"] = "轢く",
         };

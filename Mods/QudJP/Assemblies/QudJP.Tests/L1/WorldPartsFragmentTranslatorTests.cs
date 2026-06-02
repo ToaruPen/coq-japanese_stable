@@ -190,6 +190,27 @@ public sealed class WorldPartsFragmentTranslatorTests
         });
     }
 
+    [Test]
+    public void DesalinationPelletTranslator_StripsUnknownDirectMarkedPopupFragmentWithoutRecordingTransform()
+    {
+        DynamicTextObservability.ResetForTests();
+
+        var translated = DesalinationPelletFragmentTranslator.TryTranslatePopupMessage(
+            MessageFrameTranslator.MarkDirectTranslation("unrecognized"),
+            "Popup.Show",
+            "DesalinationPellet",
+            out var result);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.True);
+            Assert.That(result, Is.EqualTo("unrecognized"));
+            Assert.That(
+                DynamicTextObservability.GetRouteFamilyHitCountForTests("Popup.Show", "DesalinationPellet.NoEffect"),
+                Is.Zero);
+        });
+    }
+
     [TestCase("You do not have 1 dram of sunslag.", "sunslagを1ドラム持っていない。")]
     public void ClonelingVehicleTranslator_TranslatesPopupFragments(string input, string expected)
     {

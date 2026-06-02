@@ -48,6 +48,10 @@ public sealed class DominationProcessTargetTranslationPatchTests
         "それはできない。",
         "Domination.CannotDoThat")]
     [TestCase(
+        "{{R|You can't do that.}}",
+        "{{R|それはできない。}}",
+        "Domination.CannotDoThat")]
+    [TestCase(
         "{{Y|the turret}} does not have a consciousness you can make psychic contact with.",
         "{{Y|the turret}}には精神接触できる意識がない。",
         "Domination.NoConsciousness")]
@@ -86,12 +90,15 @@ public sealed class DominationProcessTargetTranslationPatchTests
         {
             QueueDominationMessage("Unknown domination failure.");
             Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("Unknown domination failure."));
+            AssertNoKnownHitCounts();
 
             QueueDominationMessage(MessageFrameTranslator.MarkDirectTranslation("翻訳済み"));
             Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("翻訳済み"));
+            AssertNoKnownHitCounts();
 
             QueueDominationMessage(string.Empty);
             Assert.That(DummyMessageQueue.LastMessage, Is.Empty);
+            AssertNoKnownHitCounts();
         });
     }
 
@@ -184,6 +191,24 @@ public sealed class DominationProcessTargetTranslationPatchTests
             nameof(CombatAndLogMessageQueuePatch),
             "MessageQueue." + nameof(DominationProcessTargetTranslationPatch) + "." + detail);
     }
+
+    private static void AssertNoKnownHitCounts()
+    {
+        foreach (var detail in KnownDetails)
+        {
+            Assert.That(HitCount(detail), Is.Zero, detail);
+        }
+    }
+
+    private static readonly string[] KnownDetails =
+    {
+        "Domination.AlreadyDominating",
+        "Domination.CannotDoThat",
+        "Domination.NoConsciousness",
+        "Domination.NoMind",
+        "Domination.NothingHappens",
+        "Domination.SelfTarget",
+    };
 
     private sealed class DummyDominationProcessTarget
     {

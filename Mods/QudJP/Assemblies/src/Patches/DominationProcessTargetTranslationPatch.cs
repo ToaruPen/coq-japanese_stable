@@ -122,24 +122,36 @@ public static class DominationProcessTargetTranslationPatch
 
     private static bool TryTranslateCore(string source, out string translated, out string detail)
     {
-        if (source == "You can't dominate someone you are already dominating.")
+        if (TryTranslateExact(
+            source,
+            "You can't dominate someone you are already dominating.",
+            "すでに支配している相手は支配できない。",
+            "Domination.AlreadyDominating",
+            out translated,
+            out detail))
         {
-            translated = "すでに支配している相手は支配できない。";
-            detail = "Domination.AlreadyDominating";
             return true;
         }
 
-        if (source == "You can't do that.")
+        if (TryTranslateExact(
+            source,
+            "You can't do that.",
+            "それはできない。",
+            "Domination.CannotDoThat",
+            out translated,
+            out detail))
         {
-            translated = "それはできない。";
-            detail = "Domination.CannotDoThat";
             return true;
         }
 
-        if (source == "Nothing happens.")
+        if (TryTranslateExact(
+            source,
+            "Nothing happens.",
+            "何も起こらない。",
+            "Domination.NothingHappens",
+            out translated,
+            out detail))
         {
-            translated = "何も起こらない。";
-            detail = "Domination.NothingHappens";
             return true;
         }
 
@@ -164,6 +176,31 @@ public static class DominationProcessTargetTranslationPatch
                 "Domination.NoConsciousness",
                 out translated,
                 out detail);
+    }
+
+    private static bool TryTranslateExact(
+        string source,
+        string literal,
+        string replacement,
+        string replacementDetail,
+        out string translated,
+        out string detail)
+    {
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        if (!string.Equals(stripped, literal, StringComparison.Ordinal))
+        {
+            translated = source;
+            detail = string.Empty;
+            return false;
+        }
+
+        translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+            replacement,
+            spans,
+            stripped.Length,
+            source);
+        detail = replacementDetail;
+        return true;
     }
 
     private static bool TryTranslatePattern(

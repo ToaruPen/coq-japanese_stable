@@ -517,6 +517,7 @@ public sealed class TargetMethodResolutionTests
     [TestCase(typeof(StairsUpTranslationPatch), "HandleEvent", "XRL.World.Parts.StairsUp", "System.Boolean", new[] { "XRL.World.InventoryActionEvent" })]
     [TestCase(typeof(GameSummaryScreenMenuBarsTranslationPatch), "UpdateMenuBars", "Qud.UI.GameSummaryScreen", "System.Void", new string[0])]
     [TestCase(typeof(GameSummaryScreenShowTranslationPatch), "_ShowGameSummary", "Qud.UI.GameSummaryScreen", "System.Threading.Tasks.Task`1[[System.Boolean]]", new[] { "System.String", "System.String", "System.String", "System.Boolean" })]
+    [TestCase(typeof(InventoryActionMenuCursorSoundPatch), "Update", "Qud.UI.PopupMessage", "System.Void", new string[0])]
     [TestCase(typeof(MainMenuRowTranslationPatch), "setData", "MainMenuRow", "System.Void", new[] { "XRL.UI.Framework.FrameworkDataElement" })]
     [TestCase(typeof(LeftSideCategoryTranslationPatch), "setData", "Qud.UI.LeftSideCategory", "System.Void", new[] { "XRL.UI.Framework.FrameworkDataElement" })]
     [TestCase(typeof(PickTargetWindowUpdateTranslationPatch), "Update", "Qud.UI.PickTargetWindow", "System.Void", new string[0])]

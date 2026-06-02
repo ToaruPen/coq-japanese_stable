@@ -216,6 +216,37 @@ public sealed class ActivatedAbilityNameTranslatorTests
     }
 
     [Test]
+    public void TryTranslateVisibleName_ReleasePoisonGasDoesNotDependOnChargenXmlRoot()
+    {
+        var tempDirectory = Path.Combine(
+            Path.GetTempPath(),
+            "qudjp-activated-ability-name-empty-xml-root",
+            Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(tempDirectory);
+        try
+        {
+            var localizationRoot = Path.Combine(TestProjectPaths.GetRepositoryRoot(), "Mods", "QudJP", "Localization");
+            Translator.ResetForTests();
+            ScopedDictionaryLookup.ResetForTests();
+            ChargenStructuredTextTranslator.ResetForTests();
+            LocalizationAssetResolver.SetLocalizationRootForTests(tempDirectory);
+            Translator.SetDictionaryDirectoryForTests(Path.Combine(localizationRoot, "Dictionaries"));
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(ActivatedAbilityNameTranslator.TryTranslateVisibleName("Release Poison Gas", out var translated), Is.True);
+                Assert.That(translated, Is.EqualTo("毒ガス放出"));
+            });
+        }
+        finally
+        {
+            LocalizationAssetResolver.SetLocalizationRootForTests(null);
+            ChargenStructuredTextTranslator.ResetForTests();
+            Directory.Delete(tempDirectory, recursive: true);
+        }
+    }
+
+    [Test]
     public void TryTranslateVisibleName_TranslatesCloneRemainingCount()
     {
         Assert.Multiple(() =>

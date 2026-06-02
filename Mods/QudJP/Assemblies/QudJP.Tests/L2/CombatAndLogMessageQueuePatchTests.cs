@@ -9997,7 +9997,14 @@ public sealed class CombatAndLogMessageQueuePatchTests
 
             InvokeLiquidWarmStaticDummyMethod(target, methodName, specName);
 
-            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+                if (specName is not null)
+                {
+                    Assert.That(target.LastWishWarmEffectSpecName, Is.EqualTo(specName));
+                }
+            });
         }
         finally
         {

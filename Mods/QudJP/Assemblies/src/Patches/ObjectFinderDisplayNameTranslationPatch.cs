@@ -75,7 +75,6 @@ public static class ObjectFinderDisplayNameTranslationPatch
 
             if (hadMarker)
             {
-                DynamicTextObservability.RecordTransform(Context, Family, original, stripped);
                 __result = stripped;
             }
         }

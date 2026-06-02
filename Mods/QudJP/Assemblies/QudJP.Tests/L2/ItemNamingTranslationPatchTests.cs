@@ -176,6 +176,10 @@ public sealed class ItemNamingTranslationPatchTests
             Assert.That(DummyPopupGenericTarget.LastAskStringMessage, Is.EqualTo("Enter an unknown name?"));
             Assert.That(DummyPopupGenericTarget.LastShowColorPickerIntro, Is.EqualTo("Choose an unknown color?"));
             Assert.That(ItemNamingHitCount(nameof(PopupPickOptionTranslationPatch), "Interactive.Rename"), Is.Zero);
+            Assert.That(ItemNamingMenuItemHitCount(nameof(PopupPickOptionTranslationPatch), "Interactive.EnterName"), Is.Zero);
+            Assert.That(ItemNamingMenuItemHitCount(nameof(PopupPickOptionTranslationPatch), "Interactive.Qualities"), Is.Zero);
+            Assert.That(ItemNamingMenuItemHitCount(nameof(PopupPickOptionTranslationPatch), "Interactive.OwnCulture"), Is.Zero);
+            Assert.That(ItemNamingMenuItemHitCount(nameof(PopupPickOptionTranslationPatch), "Interactive.Culture"), Is.Zero);
             Assert.That(ItemNamingHitCount(nameof(PopupAskStringTranslationPatch), "Interactive.AskString"), Is.Zero);
             Assert.That(ItemNamingHitCount(nameof(PopupShowColorPickerTranslationPatch), "Interactive.ColorPicker"), Is.Zero);
         });
@@ -202,6 +206,10 @@ public sealed class ItemNamingTranslationPatchTests
             Assert.That(DummyPopupGenericTarget.LastAskStringMessage, Is.Empty);
             Assert.That(DummyPopupGenericTarget.LastShowColorPickerIntro, Is.Empty);
             Assert.That(ItemNamingHitCount(nameof(PopupPickOptionTranslationPatch), "Interactive.Rename"), Is.Zero);
+            Assert.That(ItemNamingMenuItemHitCount(nameof(PopupPickOptionTranslationPatch), "Interactive.EnterName"), Is.Zero);
+            Assert.That(ItemNamingMenuItemHitCount(nameof(PopupPickOptionTranslationPatch), "Interactive.Qualities"), Is.Zero);
+            Assert.That(ItemNamingMenuItemHitCount(nameof(PopupPickOptionTranslationPatch), "Interactive.OwnCulture"), Is.Zero);
+            Assert.That(ItemNamingMenuItemHitCount(nameof(PopupPickOptionTranslationPatch), "Interactive.Culture"), Is.Zero);
             Assert.That(ItemNamingHitCount(nameof(PopupAskStringTranslationPatch), "Interactive.AskString"), Is.Zero);
             Assert.That(ItemNamingHitCount(nameof(PopupShowColorPickerTranslationPatch), "Interactive.ColorPicker"), Is.Zero);
         });

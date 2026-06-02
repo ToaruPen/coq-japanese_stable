@@ -86,7 +86,7 @@ public sealed class ObjectFinderDisplayNameTranslationPatchTests
                 DynamicTextObservability.GetRouteFamilyHitCountForTests(
                     ObjectFinderDisplayNameTranslationPatch.Context,
                     ObjectFinderDisplayNameTranslationPatch.Family),
-                Is.EqualTo(1));
+                Is.Zero);
         });
     }
 

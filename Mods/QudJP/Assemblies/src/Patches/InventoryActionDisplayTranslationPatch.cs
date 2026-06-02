@@ -16,6 +16,9 @@ public static class InventoryActionDisplayTranslationPatch
     private const string InventoryActionContext = "XRL.World.IInventoryActionsEvent";
     private const string InventoryActionDictionaryFile = "ui-inventory-actions.ja.json";
 
+    private static readonly object KeyMappingSyncRoot = new();
+    private static MethodInfo? isKeyMappedMethod;
+
     private static Predicate<char>? keyMappedPredicateForTests;
 
     private static readonly Regex RechargeDisplayPattern = new(
@@ -94,7 +97,7 @@ public static class InventoryActionDisplayTranslationPatch
             states.Add(TranslateActionDisplay(action));
         }
 
-        AssignFallbackHotkeys(states, isKeyMapped);
+        AssignFallbackHotkeys(states, CreateCachedKeyMappedPredicate(isKeyMapped));
     }
 
     private static object? GetActionFromEntry(object? entry)
@@ -329,12 +332,7 @@ public static class InventoryActionDisplayTranslationPatch
     {
         try
         {
-            var controlManagerType = AccessTools.TypeByName("ControlManager");
-            var isKeyMappedMethod = AccessTools.Method(
-                controlManagerType,
-                "isKeyMapped",
-                new[] { typeof(char), typeof(List<string>) });
-            return isKeyMappedMethod?.Invoke(
+            return GetIsKeyMappedMethod()?.Invoke(
                 null,
                 new object[] { key, new List<string> { "UINav", "Menus" } }) is true;
         }
@@ -342,6 +340,40 @@ public static class InventoryActionDisplayTranslationPatch
         {
             Trace.TraceWarning("QudJP: {0}.IsInventoryActionKeyMapped failed for '{1}': {2}", Context, key, ex);
             return false;
+        }
+    }
+
+    private static Predicate<char> CreateCachedKeyMappedPredicate(Predicate<char> isKeyMapped)
+    {
+        var cache = new Dictionary<char, bool>();
+        return key =>
+        {
+            if (cache.TryGetValue(key, out var mapped))
+            {
+                return mapped;
+            }
+
+            mapped = isKeyMapped(key);
+            cache[key] = mapped;
+            return mapped;
+        };
+    }
+
+    private static MethodInfo? GetIsKeyMappedMethod()
+    {
+        lock (KeyMappingSyncRoot)
+        {
+            if (isKeyMappedMethod is not null)
+            {
+                return isKeyMappedMethod;
+            }
+
+            var controlManagerType = AccessTools.TypeByName("ControlManager");
+            isKeyMappedMethod = AccessTools.Method(
+                controlManagerType,
+                "isKeyMapped",
+                new[] { typeof(char), typeof(List<string>) });
+            return isKeyMappedMethod;
         }
     }
 

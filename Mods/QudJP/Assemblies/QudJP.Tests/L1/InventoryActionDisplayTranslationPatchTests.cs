@@ -304,6 +304,45 @@ public sealed class InventoryActionDisplayTranslationPatchTests
     }
 
     [Test]
+    public void TranslateActionTable_CachesMappedKeyLookupsWithinActionTable()
+    {
+        WriteDisplayNameAtomicDictionary(("antimatter cell", "反物質セル"));
+        WriteInventoryActionDictionary(("repair", "修理する"));
+        var keyCheckCounts = new Dictionary<char, int>();
+        InventoryActionDisplayTranslationPatch.SetInventoryActionKeyMappedPredicateForTests(
+            key =>
+            {
+                keyCheckCounts[key] = keyCheckCounts.TryGetValue(key, out var count) ? count + 1 : 1;
+                return false;
+            });
+        var actions = new Dictionary<string, DummyInventoryAction>
+        {
+            ["Repair"] = new()
+            {
+                Display = "repair",
+                Command = "Repair",
+                Key = 'R',
+                Default = 10,
+            },
+            ["RechargeSlotted"] = new()
+            {
+                Display = "recharge antimatter cell",
+                Command = "RechargeEnergyCell",
+                Key = 'R',
+            },
+        };
+
+        InventoryActionDisplayTranslationPatch.TranslateActionTableForTests(actions);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(actions["RechargeSlotted"].Key, Is.EqualTo('e'));
+            Assert.That(keyCheckCounts['R'], Is.EqualTo(1));
+            Assert.That(keyCheckCounts['e'], Is.EqualTo(1));
+        });
+    }
+
+    [Test]
     public void TranslateActionTable_DoesNotUseInventoryActionDictionaryForRechargeCellCapture()
     {
         WriteInventoryActionDictionary(("chem cell", "誤った経路"));

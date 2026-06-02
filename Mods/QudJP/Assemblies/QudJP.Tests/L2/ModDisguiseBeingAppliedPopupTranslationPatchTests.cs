@@ -140,6 +140,7 @@ public sealed class ModDisguiseBeingAppliedPopupTranslationPatchTests
             Assert.That(DummyPopupGenericTarget.LastPickOptionTitle, Is.EqualTo("作る変装を選ぶ。"));
             Assert.That(DummyPopupGenericTarget.LastPickOptionOptions, Is.Empty);
             Assert.That(HitCount(nameof(PopupPickOptionTranslationPatch), "PickerTitle"), Is.EqualTo(1));
+            Assert.That(HitCount(nameof(PopupPickOptionTranslationPatch), "FallbackCreatureOption"), Is.Zero);
         });
     }
 
