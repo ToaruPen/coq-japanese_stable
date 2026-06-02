@@ -37,6 +37,7 @@ internal static class DummyGameTextTarget
         ResultOverride = null;
     }
 
+    [MethodImpl(MethodImplOptions.NoInlining)]
     public static string? RoughConvertSecondPersonToThirdPerson(string? text, object? who)
     {
         _ = text;

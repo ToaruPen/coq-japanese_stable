@@ -108,6 +108,41 @@ public sealed class CoreInvalidObjectDisplayNameTranslationPatchTests
         }
     }
 
+    [TestCase("\u0001already routed", "already routed")]
+    [TestCase("", "")]
+    public void Postfix_LeavesDirectMarkedAndEmptyDisplayNamesWithoutRecordingHit_WhenPatched(
+        string source,
+        string expected)
+    {
+        DummyCoreInvalidObjectTarget.NextDisplayName = source;
+
+        var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyCoreInvalidObjectTarget), nameof(DummyCoreInvalidObjectTarget.CreateObjectFull), typeof(string)),
+                postfix: new HarmonyMethod(RequireMethod(typeof(CoreInvalidObjectDisplayNameTranslationPatch), nameof(CoreInvalidObjectDisplayNameTranslationPatch.Postfix), typeof(object))));
+
+            var target = DummyCoreInvalidObjectTarget.CreateObjectFull("snapjaw");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(target.Render.DisplayName, Is.EqualTo(expected));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        CoreInvalidObjectDisplayNameTranslationPatch.Context,
+                        CoreInvalidObjectDisplayNameTranslationPatch.Family),
+                    Is.Zero);
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+            DummyCoreInvalidObjectTarget.NextDisplayName = string.Empty;
+        }
+    }
+
     private static MethodInfo RequireMethod(Type type, string methodName, params Type[] parameterTypes)
     {
         var method = parameterTypes.Length == 0

@@ -13,7 +13,18 @@ public sealed class WorldPartFixedDisplayNameTranslationPatchTests
     [SetUp]
     public void SetUp()
     {
+        Translator.ResetForTests();
+        ScopedDictionaryLookup.ResetForTests();
+        Translator.SetDictionaryDirectoryForTests(GetRepositoryDictionaryDirectory());
         DynamicTextObservability.ResetForTests();
+    }
+
+    [TearDown]
+    public void TearDown()
+    {
+        DynamicTextObservability.ResetForTests();
+        ScopedDictionaryLookup.ResetForTests();
+        Translator.ResetForTests();
     }
 
     [Test]
@@ -204,6 +215,16 @@ public sealed class WorldPartFixedDisplayNameTranslationPatchTests
         return DynamicTextObservability.GetRouteFamilyHitCountForTests(
             WorldPartFixedDisplayNameTranslationPatch.Context,
             WorldPartFixedDisplayNameTranslationPatch.Family);
+    }
+
+    private static string GetRepositoryDictionaryDirectory()
+    {
+        return Path.Combine(
+            QudJP.Tests.L1.TestProjectPaths.GetRepositoryRoot(),
+            "Mods",
+            "QudJP",
+            "Localization",
+            "Dictionaries");
     }
 
     private static MethodInfo RequireMethod(Type type, string name, params Type[] parameterTypes)

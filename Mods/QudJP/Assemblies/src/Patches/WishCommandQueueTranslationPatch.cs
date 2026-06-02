@@ -118,7 +118,7 @@ public static class WishCommandQueueTranslationPatch
     {
         _ = color;
 
-        if (!OwnerTranslationScope.IsActive(activeDepth) || string.IsNullOrEmpty(message))
+        if (string.IsNullOrEmpty(message))
         {
             return false;
         }
@@ -127,6 +127,11 @@ public static class WishCommandQueueTranslationPatch
         {
             message = markedText;
             return true;
+        }
+
+        if (!OwnerTranslationScope.IsActive(activeDepth))
+        {
+            return false;
         }
 
         if (!TryTranslateWishCommandMessage(message, out var translated, out var detail))

@@ -1497,6 +1497,15 @@ internal static class GetDisplayNameRouteTranslator
             _ => match.Groups["role"].Value,
         };
         translated = translatedBase + " " + translatedRole + " mk " + match.Groups["tier"].Value;
+        if (spans is not null)
+        {
+            translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+                translated,
+                spans,
+                source.Length,
+                source);
+        }
+
         if (!string.Equals(translated, source, StringComparison.Ordinal))
         {
             DynamicTextObservability.RecordTransform(route, "DisplayName.MinerGeneratedRoleSuffix", source, translated);
@@ -3420,7 +3429,9 @@ internal static class GetDisplayNameRouteTranslator
             return false;
         }
 
-        var skill = CharGenProducerTranslationHelpers.TranslateText(match.Groups["skill"].Value);
+        var skillSource = match.Groups["skill"].Value;
+        _ = MessageFrameTranslator.TryStripDirectTranslationMarker(skillSource, out skillSource);
+        var skill = CharGenProducerTranslationHelpers.TranslateText(skillSource);
         translated = "{{"
             + match.Groups["outer"].Value
             + "|"

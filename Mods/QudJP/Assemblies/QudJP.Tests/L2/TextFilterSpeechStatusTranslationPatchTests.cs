@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using HarmonyLib;
 using QudJP.Patches;
 
@@ -292,6 +293,45 @@ public sealed class TextFilterSpeechStatusTranslationPatchTests
         }
     }
 
+    [Test]
+    public void LallatedPostfix_StripsDirectMarkedOriginalTextThroughOwnerRoute()
+    {
+        var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(
+                    typeof(DummyTextFiltersTarget),
+                    nameof(DummyTextFiltersTarget.Lallated),
+                    typeof(string),
+                    typeof(string)),
+                postfix: new HarmonyMethod(RequireMethod(
+                    typeof(TextFiltersLallatedTranslationPatch),
+                    nameof(TextFiltersLallatedTranslationPatch.Postfix),
+                    typeof(string),
+                    typeof(string).MakeByRefType())));
+
+            var result = DummyTextFiltersTarget.Lallated(
+                MessageFrameTranslator.MarkDirectTranslation("翻訳済み"),
+                "nya");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(result, Is.EqualTo("翻訳済み"));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(TextFiltersLallatedTranslationPatch),
+                        "TextFilters.Lallated"),
+                    Is.EqualTo(1));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
     private void WriteDictionary(params (string key, string text)[] entries)
     {
         var builder = new System.Text.StringBuilder();
@@ -333,11 +373,13 @@ public sealed class TextFilterSpeechStatusTranslationPatchTests
             return result;
         }
 
+        [MethodImpl(MethodImplOptions.NoInlining)]
         public static string Lallated(string Text, string Noise)
         {
             return Noise + " " + Text + " " + Noise;
         }
 
+        [MethodImpl(MethodImplOptions.NoInlining)]
         public static string LallatedRaw(string Text, string Noise)
         {
             _ = Noise;

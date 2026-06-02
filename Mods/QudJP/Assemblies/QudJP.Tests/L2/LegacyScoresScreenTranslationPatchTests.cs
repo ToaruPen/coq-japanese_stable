@@ -79,6 +79,9 @@ public sealed class LegacyScoresScreenTranslationPatchTests
     public void Show_StripsDirectMarkerAndLeavesUnknownText_WhenPatched()
     {
         DummyLegacyScoresScreen.ExtraWrites.Add(MessageFrameTranslator.MarkDirectTranslation("既訳スコア"));
+        DummyLegacyScoresScreen.ExtraWrites.Add("");
+        DummyLegacyScoresScreen.ExtraWrites.Add("{{Y|" + MessageFrameTranslator.MarkDirectTranslation("既訳スコア") + "}}");
+        DummyLegacyScoresScreen.ExtraWrites.Add("{{Y|Unmapped}}");
         DummyLegacyScoresScreen.ExtraWrites.Add("Unmapped score text");
 
         WithPatchedShow(() =>
@@ -90,6 +93,9 @@ public sealed class LegacyScoresScreenTranslationPatchTests
             Assert.Multiple(() =>
             {
                 Assert.That(screen.Buffer.Writes, Does.Contain("既訳スコア"));
+                Assert.That(screen.Buffer.Writes, Does.Contain(""));
+                Assert.That(screen.Buffer.Writes, Does.Contain("{{Y|既訳スコア}}"));
+                Assert.That(screen.Buffer.Writes, Does.Contain("{{Y|Unmapped}}"));
                 Assert.That(screen.Buffer.Writes, Does.Contain("Unmapped score text"));
             });
         });

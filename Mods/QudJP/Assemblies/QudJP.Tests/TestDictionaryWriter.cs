@@ -32,7 +32,7 @@ internal static class TestDictionaryWriter
         builder.Append("]}");
         if (appendNewLine)
         {
-            builder.AppendLine();
+            builder.Append('\n');
         }
 
         File.WriteAllText(

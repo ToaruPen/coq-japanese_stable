@@ -54,6 +54,10 @@ public sealed class StomachTranslationPatchTests
         "You drank way too much! You vomit!",
         "飲みすぎた！ 吐いた！",
         "StomachOverdrinkVomiting")]
+    [TestCase(
+        "{{W|You drank way too much! You vomit!}}",
+        "{{W|飲みすぎた！ 吐いた！}}",
+        "StomachOverdrinkVomiting")]
     public void AddWater_TranslatesDehydrationQueueMessages_WhenOwnerPatched(
         string source,
         string expected,
@@ -76,10 +80,10 @@ public sealed class StomachTranslationPatchTests
         });
     }
 
-    [Test]
-    public void AddWater_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent()
+    [TestCase("The moisture is sucked out of your body.", "StomachMoistureBody")]
+    [TestCase("You drank way too much! You vomit!", "StomachOverdrinkVomiting")]
+    public void AddWater_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent(string source, string detail)
     {
-        const string source = "The moisture is sucked out of your body.";
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
         try
@@ -91,7 +95,7 @@ public sealed class StomachTranslationPatchTests
             Assert.Multiple(() =>
             {
                 Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(source));
-                Assert.That(HitCount("StomachMoistureBody"), Is.Zero);
+                Assert.That(HitCount(detail), Is.Zero);
             });
         }
         finally
@@ -103,7 +107,7 @@ public sealed class StomachTranslationPatchTests
     [Test]
     public void AddWater_DoesNotRetranslateDirectMarkedQueueMessage_WhenOwnerPatched()
     {
-        const string source = "The moisture is sucked out of your body.";
+        const string source = "You drank way too much! You vomit!";
 
         WithPatchedOwnerAndQueue(() =>
         {
@@ -115,7 +119,7 @@ public sealed class StomachTranslationPatchTests
             Assert.Multiple(() =>
             {
                 Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(source));
-                Assert.That(HitCount("StomachMoistureBody"), Is.Zero);
+                Assert.That(HitCount("StomachOverdrinkVomiting"), Is.Zero);
             });
         });
     }

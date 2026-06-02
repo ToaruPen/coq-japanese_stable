@@ -128,6 +128,12 @@ public static class LegacyScoresScreenTranslationPatch
                 return markedText;
             }
 
+            var (visibleText, colorSpans) = ColorAwareTranslationComposer.Strip(source);
+            if (MessageFrameTranslator.TryStripDirectTranslationMarker(visibleText, out var markedVisibleText))
+            {
+                return ColorAwareTranslationComposer.Restore(markedVisibleText, colorSpans);
+            }
+
             var translated = TranslateBufferTextCore(source);
             if (!string.Equals(translated, source, StringComparison.Ordinal))
             {

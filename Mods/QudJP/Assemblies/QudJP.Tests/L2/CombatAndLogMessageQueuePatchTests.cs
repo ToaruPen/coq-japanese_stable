@@ -1996,9 +1996,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
         {
             PatchPopupPickOption(harmony);
 
-            DummyPopupGenericTarget.PickOption(
-                Intro: "Instruct Irudad to follow at what distance?",
-                Options: new[] { "close", "medium", "far" });
+            new DummyGameObjectPopupTarget().HandleInventoryActionEvent();
 
             Assert.Multiple(() =>
             {
@@ -2025,15 +2023,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
         {
             PatchPopupPickOption(harmony);
 
-            DummyPopupGenericTarget.PickOption(
-                Title: "Select a destination",
-                Options: new[]
-                {
-                    "Current location (C)",
-                    "Arrival location, Rust Wells (NW)",
-                    "Center (C)",
-                    "Rust Wells (N)",
-                });
+            new DummyGameObjectPopupTarget().PullDown(allowAlternate: true);
 
             Assert.Multiple(() =>
             {
@@ -2878,6 +2868,18 @@ public sealed class CombatAndLogMessageQueuePatchTests
     public void LiquidWarmStatic_WishWarmEffectSpec_HandlesEdgeCases_WhenOwnerPatched()
     {
         AssertLiquidWarmStaticQueuedMessage(
+            nameof(DummyLiquidWarmStaticTarget.WishWarmEffect),
+            MessageFrameTranslator.MarkDirectTranslation("{{rules|Confused}} applied to {{G|Argyve}}."),
+            "{{rules|Confused}} applied to {{G|Argyve}}.");
+        AssertLiquidWarmStaticQueuedMessage(
+            nameof(DummyLiquidWarmStaticTarget.WishWarmEffect),
+            "{{rules|{{Y|Confused}}}} applied to {{G|Argyve}}.",
+            "{{rules|{{Y|Confused}}}}が{{G|Argyve}}に適用された。");
+        AssertLiquidWarmStaticQueuedMessage(
+            nameof(DummyLiquidWarmStaticTarget.WishWarmEffect),
+            "{{rules|Unknown}} fizzles around {{G|Argyve}}.",
+            "{{rules|Unknown}} fizzles around {{G|Argyve}}.");
+        AssertLiquidWarmStaticQueuedMessage(
             nameof(DummyLiquidWarmStaticTarget.WishWarmEffectSpec),
             MessageFrameTranslator.MarkDirectTranslation("No valid targets for {{rules|Phase-Conjugate}}."),
             "No valid targets for {{rules|Phase-Conjugate}}.",
@@ -2914,6 +2916,10 @@ public sealed class CombatAndLogMessageQueuePatchTests
     [Test]
     public void LiquidWarmStatic_DoesNotTranslateWishWarmEffectSpecTraffic_WhenOwnerAbsent()
     {
+        AssertLiquidWarmStaticQueuedMessageWithoutOwner(
+            nameof(DummyLiquidWarmStaticTarget.WishWarmEffect),
+            "{{rules|Confused}} applied to {{G|Argyve}}.",
+            "{{rules|Confused}} applied to {{G|Argyve}}.");
         AssertLiquidWarmStaticQueuedMessageWithoutOwner(
             nameof(DummyLiquidWarmStaticTarget.WishWarmEffectSpec),
             "{{rules|Glotrot}} applied to rusted short sword.",

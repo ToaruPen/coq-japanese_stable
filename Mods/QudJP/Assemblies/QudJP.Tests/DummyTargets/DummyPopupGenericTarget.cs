@@ -147,6 +147,7 @@ internal static class DummyPopupGenericTarget
         return Task.FromResult(Default);
     }
 
+    [MethodImpl(MethodImplOptions.NoInlining)]
     public static string ShowColorPicker(
         string Title,
         int Spacing = 0,

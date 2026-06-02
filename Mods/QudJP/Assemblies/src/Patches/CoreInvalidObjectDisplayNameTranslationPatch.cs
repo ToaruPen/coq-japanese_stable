@@ -147,6 +147,12 @@ public static class CoreInvalidObjectDisplayNameTranslationPatch
             return;
         }
 
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
+        {
+            SetMemberValue(render, "DisplayName", markedText);
+            return;
+        }
+
         if (!TryTranslateInvalidObjectDisplayName(source, out var translated)
             || string.Equals(source, translated, StringComparison.Ordinal))
         {

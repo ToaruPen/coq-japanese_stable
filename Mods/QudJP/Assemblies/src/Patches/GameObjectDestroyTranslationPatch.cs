@@ -134,8 +134,9 @@ public static class GameObjectDestroyTranslationPatch
         _ = route;
         translated = source;
 
-        if (activeDepth <= 0 || string.IsNullOrEmpty(source))
+        if (string.IsNullOrEmpty(source))
         {
+            translated = source;
             return false;
         }
 
@@ -143,6 +144,12 @@ public static class GameObjectDestroyTranslationPatch
         {
             translated = markedText;
             return true;
+        }
+
+        if (activeDepth <= 0)
+        {
+            translated = source;
+            return false;
         }
 
         if (FixedLiteralTranslations.TryGetValue(source, out var fixedTranslated))

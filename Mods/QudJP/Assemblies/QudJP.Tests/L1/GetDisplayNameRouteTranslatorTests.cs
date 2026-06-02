@@ -1423,6 +1423,9 @@ public sealed class GetDisplayNameRouteTranslatorTests
     [TestCase(
         "{{Y|Skillsoft [{{W|Long Blade}}]}}",
         "{{Y|スキルソフト [{{W|Long Blade}}]}}")]
+    [TestCase(
+        "{{Y|Skillsoft [{{W|\u0001Tinkering}}]}}",
+        "{{Y|スキルソフト [{{W|工作}}]}}")]
     public void TranslatePreservingColors_TranslatesCyberneticsSkillsoftGeneratedDisplayNames(
         string source,
         string expected)
@@ -1455,6 +1458,7 @@ public sealed class GetDisplayNameRouteTranslatorTests
     [TestCase("defoliant grenade mk I bomber mk II", "落葉剤グレネード mk I 爆撃機 mk II")]
     [TestCase("<color=green>defoliant grenade mk I miner mk I</color>", "<color=green>落葉剤グレネード mk I 採掘機 mk I</color>")]
     [TestCase("{{C|defoliant grenade mk I bomber mk II}}", "{{C|落葉剤グレネード mk I 爆撃機 mk II}}")]
+    [TestCase("{{C|odd grenade mk I miner mk I}}", "{{C|odd grenade mk I 採掘機 mk I}}")]
     public void TranslatePreservingColors_TranslatesMinerGeneratedRoleSuffix(
         string source,
         string expected)

@@ -1,3 +1,5 @@
+using System.Runtime.CompilerServices;
+
 #pragma warning disable S2325 // Dummy target instance methods mirror game instance methods for Harmony tests.
 
 namespace QudJP.Tests.DummyTargets;
@@ -42,12 +44,14 @@ internal sealed class DummyQudMutationsModuleWindow
         prefabComponent.BeforeShow(null, categoryMenus);
     }
 
+    [MethodImpl(MethodImplOptions.NoInlining)]
     public static async Task SelectVariant()
     {
         await Task.Yield();
         _ = DummyPopupGenericTarget.PickOption(Title: StaticPopupTitleToShow);
     }
 
+    [MethodImpl(MethodImplOptions.NoInlining)]
     public void HandleMenuOption(string menuOptionId)
     {
         if (menuOptionId == "ShowPoints")

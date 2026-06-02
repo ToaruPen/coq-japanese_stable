@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using HarmonyLib;
 using QudJP.Patches;
 using QudJP.Tests.DummyTargets;
@@ -188,6 +189,7 @@ public sealed class DominationProcessTargetTranslationPatchTests
     {
         public string MessageToQueue { get; init; } = string.Empty;
 
+        [MethodImpl(MethodImplOptions.NoInlining)]
         public void ProcessTargetQueuedMessage()
         {
             DummyMessageQueue.AddPlayerMessage(MessageToQueue);

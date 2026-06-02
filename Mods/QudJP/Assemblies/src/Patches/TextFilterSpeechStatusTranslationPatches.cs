@@ -21,6 +21,11 @@ internal static class TextFilterSpeechStatusTranslator
 
     public static string TranslateLallated(string source, string originalText)
     {
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(originalText, out var markedOriginalText))
+        {
+            return markedOriginalText;
+        }
+
         if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
         {
             return markedText;

@@ -66,7 +66,7 @@ public static class StomachTranslationPatch
     {
         _ = color;
 
-        if (!OwnerTranslationScope.IsActive(activeDepth) || string.IsNullOrEmpty(message))
+        if (string.IsNullOrEmpty(message))
         {
             return false;
         }
@@ -75,6 +75,11 @@ public static class StomachTranslationPatch
         {
             message = markedText;
             return true;
+        }
+
+        if (!OwnerTranslationScope.IsActive(activeDepth))
+        {
+            return false;
         }
 
         if (!TryTranslate(message, out var translated, out var detail))
