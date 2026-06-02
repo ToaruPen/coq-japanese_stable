@@ -243,14 +243,14 @@ public sealed class PlayerDanceRitualTranslationPatchTests
     {
         var target = new DummyPlayerDanceRitualProducerTarget
         {
-            QueuedMessageToSend = MessageFrameTranslator.MarkDirectTranslation("&KPlayer steps east"),
+            QueuedMessageToSend = MessageFrameTranslator.MarkDirectTranslation("&Kあなたは東へ一歩進んだ。"),
         };
 
         RunQueuedOwnerTest(
             nameof(DummyPlayerDanceRitualProducerTarget.ExecuteMove),
             new object[] { "Player", "east" },
             target,
-            "&KPlayer steps east");
+            "&Kあなたは東へ一歩進んだ。");
     }
 
     [Test]

@@ -5396,13 +5396,15 @@ public sealed class CombatAndLogMessageQueuePatchTests
             PatchPopupPickOption(harmony);
 
             _ = DummyFungalSporeInfectionTarget.ChooseLimbForInfection(
-                "glowcrust",
-                new[] { "left arm" });
+                MessageFrameTranslator.MarkDirectTranslation("glowcrust"),
+                new[] { MessageFrameTranslator.MarkDirectTranslation("left arm") });
 
             Assert.Multiple(() =>
             {
                 Assert.That(DummyPopupGenericTarget.LastPickOptionTitle, Is.EqualTo("Choose a limb to infect with glowcrust."));
                 Assert.That(DummyPopupGenericTarget.LastPickOptionOptions, Is.EqualTo(new[] { "left arm" }));
+                Assert.That(DummyPopupGenericTarget.LastPickOptionTitle, Does.Not.Contain(MessageFrameTranslator.DirectTranslationMarker));
+                Assert.That(DummyPopupGenericTarget.LastPickOptionOptions?.Single(), Does.Not.Contain(MessageFrameTranslator.DirectTranslationMarker));
             });
         }
         finally
