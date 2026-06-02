@@ -276,6 +276,7 @@ Producer or queue-gated patches that translate traffic before a generic sink mus
 - direct-translation markers passing through without retranslation
 - owner-absent or queue-only traffic staying unchanged
 - observability hit counts proving transformed owner traffic is recorded and pass-through traffic is not recorded as an owner hit
+- strip-only direct-marker cases proving the visible marker is removed and no transform hit is recorded unless a real translation occurred
 
 If a route can emit articles, generated names, quantities, or placeholder-like fragments, include those emitted shapes in tests instead of replacing them with dictionary leaves.
 
