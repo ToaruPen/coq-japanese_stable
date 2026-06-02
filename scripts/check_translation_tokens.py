@@ -92,7 +92,7 @@ class DuplicateOccurrence:
     """One source-key occurrence in a duplicate conflict state."""
 
     path: str
-    entry_index: int
+    entry_index: int | None
     text: str
 
 
@@ -582,7 +582,16 @@ def _duplicate_baseline_state(item: object, baseline_path: Path) -> DuplicateCon
         key=_duplicate_source_key_identity(key),
         entry_count=entry_count,
         texts=tuple(sorted(texts)),
-        occurrences=tuple(sorted(parsed_occurrences, key=lambda occurrence: (occurrence.path, occurrence.entry_index))),
+        occurrences=tuple(
+            sorted(
+                parsed_occurrences,
+                key=lambda occurrence: (
+                    occurrence.path,
+                    occurrence.text,
+                    -1 if occurrence.entry_index is None else occurrence.entry_index,
+                ),
+            ),
+        ),
     )
 
 
@@ -594,7 +603,10 @@ def _duplicate_occurrence_state(item: object, baseline_path: Path) -> DuplicateO
     relative_path = item.get("path")
     entry_index = item.get("entry_index")
     text = item.get("text")
-    if not isinstance(relative_path, str) or not isinstance(entry_index, int) or not isinstance(text, str):
+    if not isinstance(relative_path, str) or not isinstance(text, str):
+        msg = f"Invalid duplicate conflict baseline occurrence in {baseline_path}: {item!r}"
+        raise TypeError(msg)
+    if entry_index is not None and not isinstance(entry_index, int):
         msg = f"Invalid duplicate conflict baseline occurrence in {baseline_path}: {item!r}"
         raise TypeError(msg)
     return DuplicateOccurrence(path=relative_path, entry_index=entry_index, text=text)
@@ -690,7 +702,6 @@ def _duplicate_conflict_states(entries: list[TranslationEntry]) -> dict[tuple[st
 def _duplicate_occurrence_payload(occurrence: DuplicateOccurrence) -> dict[str, object]:
     return {
         "path": occurrence.path,
-        "entry_index": occurrence.entry_index,
         "text": occurrence.text,
     }
 
@@ -734,14 +745,27 @@ def _format_duplicate_state(state: DuplicateConflictState | None) -> str:
     if state is None:
         return "missing current conflict"
     texts = json.dumps(list(state.texts), ensure_ascii=False)
-    occurrences = json.dumps(
-        [
-            {"path": occurrence.path, "entry_index": occurrence.entry_index, "text": occurrence.text}
-            for occurrence in state.occurrences
-        ],
-        ensure_ascii=False,
-    )
+    occurrence_details: list[dict[str, object]] = []
+    for occurrence in state.occurrences:
+        detail: dict[str, object] = {"path": occurrence.path, "text": occurrence.text}
+        if occurrence.entry_index is not None:
+            detail["entry_index"] = occurrence.entry_index
+        occurrence_details.append(detail)
+    occurrences = json.dumps(occurrence_details, ensure_ascii=False)
     return f"scope={state.scope}, entry_count={state.entry_count}, texts={texts}, occurrences={occurrences}"
+
+
+def _duplicate_comparison_key(
+    state: DuplicateConflictState,
+) -> tuple[str, str, str, int, tuple[str, ...], tuple[tuple[str, str], ...]]:
+    return (
+        state.scope,
+        state.path,
+        state.key,
+        state.entry_count,
+        state.texts,
+        tuple(sorted((occurrence.path, occurrence.text) for occurrence in state.occurrences)),
+    )
 
 
 def _baseline_state_applies(state: DuplicateConflictState, scanned_paths: set[str]) -> bool:
@@ -763,7 +787,7 @@ def _find_duplicate_conflicts(
         if not _baseline_state_applies(expected, scanned_paths):
             continue
         current = current_states.get(identity)
-        if current == expected:
+        if current is not None and _duplicate_comparison_key(current) == _duplicate_comparison_key(expected):
             continue
         issues.append(
             TranslationIssue(

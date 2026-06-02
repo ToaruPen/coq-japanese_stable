@@ -28,6 +28,7 @@ public sealed class XDidYTranslationPatchTests
         Translator.ResetForTests();
         Translator.SetDictionaryDirectoryForTests(tempDirectory);
         File.WriteAllText(Path.Combine(tempDirectory, "ui-test.ja.json"), "{\"entries\":[]}\n", Utf8WithoutBom);
+        DisplayNameRouteTranslation.RegisterTranslatorForTests(GetDisplayNameRouteTranslator.TranslatePreservingColors);
         MessageFrameTranslator.ResetForTests();
         MessageFrameTranslator.SetDictionaryPathForTests(dictionaryPath);
         XDidYTranslationPatch.SetMessageDispatcherForTests((_, message, _, usePopup) =>
@@ -44,6 +45,7 @@ public sealed class XDidYTranslationPatchTests
     public void TearDown()
     {
         XDidYTranslationPatch.SetMessageDispatcherForTests(null);
+        DisplayNameRouteTranslation.ResetForTests();
         MessageFrameTranslator.ResetForTests();
         Translator.ResetForTests();
 

@@ -7,7 +7,6 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
-using QudJP.Patches;
 
 namespace QudJP;
 
@@ -926,7 +925,7 @@ internal static class MessageFrameTranslator
 
     private static string TranslateDisplayNameCandidate(string source)
     {
-        return GetDisplayNameRouteTranslator.TranslatePreservingColors(
+        return DisplayNameRouteTranslation.TranslatePreservingColors(
             source,
             nameof(MessageFrameTranslator));
     }

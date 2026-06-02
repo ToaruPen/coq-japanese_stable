@@ -461,6 +461,28 @@ public sealed class TradeUiPopupTranslationPatchTests
     }
 
     [Test]
+    public void VendorOwnerPatch_AllowsCustomShowVendorActionsOptionCounts()
+    {
+        using var ownerPatch = PatchVendorOwner(nameof(DummyTradeUiVendorPopupProducerTarget.ShowVendorActions));
+        using var pickOptionPatch = PatchPickOption();
+        var target = new DummyTradeUiVendorPopupProducerTarget
+        {
+            VendorActionOptions = new[] { "Look", "Add to trade", "Identify", "Repair", "Recharge", "Read", "Talk" },
+        };
+
+        target.ShowVendorActions();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                DummyPopupGenericTarget.LastPickOptionOptions,
+                Is.EqualTo(new[] { "見る", "取引に追加", "識別", "修理", "充電", "読む", "Talk" }));
+            Assert.That(target.LastVendorActionSelection, Is.EqualTo("Look"));
+            Assert.That(TradeUiPopupHitCount("TradeUiPopup.ShowVendorActions.Option"), Is.EqualTo(6));
+        });
+    }
+
+    [Test]
     public void VendorOwnerPatch_PreservesColorTagsInShowVendorActionsPopup()
     {
         using var ownerPatch = PatchVendorOwner(nameof(DummyTradeUiVendorPopupProducerTarget.ShowVendorActions));

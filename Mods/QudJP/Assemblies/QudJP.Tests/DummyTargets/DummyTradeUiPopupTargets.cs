@@ -78,6 +78,8 @@ internal static class DummyTradeUiPopupTarget
 
 internal sealed class DummyTradeUiVendorPopupProducerTarget
 {
+    private static readonly char[] DefaultVendorActionHotkeys = { 'l', 't', 'i', 'r', 'c', 'b' };
+
     public string PopupMessageToShow { get; set; } = string.Empty;
 
     public bool UseShowFailPopup { get; set; }
@@ -99,18 +101,39 @@ internal sealed class DummyTradeUiVendorPopupProducerTarget
         var options = VendorActionOptions is null
             ? new List<string> { "Look", "Add to trade", "Identify", "Repair", "Recharge", "Read" }
             : new List<string>(VendorActionOptions);
-        var defaultHotkeys = new[] { 'l', 't', 'i', 'r', 'c', 'b' };
-        if (options.Count > defaultHotkeys.Length)
-        {
-            throw new InvalidOperationException("ShowVendorActions supports at most 6 options.");
-        }
 
         var index = DummyPopupGenericTarget.PickOption(
             Title: "select an action",
             Options: options.ToArray(),
-            Hotkeys: defaultHotkeys.Take(options.Count).ToArray(),
+            Hotkeys: BuildVendorActionHotkeys(options.Count),
             AllowEscape: true);
         LastVendorActionSelection = index >= 0 && index < options.Count ? options[index] : null;
+    }
+
+    private static char[] BuildVendorActionHotkeys(int optionCount)
+    {
+        if (optionCount <= DefaultVendorActionHotkeys.Length)
+        {
+            return DefaultVendorActionHotkeys.Take(optionCount).ToArray();
+        }
+
+        const string extraHotkeyCandidates = "abcdefghijklmnopqrstuvwxyz0123456789";
+        var hotkeys = new List<char>(DefaultVendorActionHotkeys);
+        foreach (var candidate in extraHotkeyCandidates)
+        {
+            if (hotkeys.Contains(candidate))
+            {
+                continue;
+            }
+
+            hotkeys.Add(candidate);
+            if (hotkeys.Count == optionCount)
+            {
+                return hotkeys.ToArray();
+            }
+        }
+
+        throw new InvalidOperationException("ShowVendorActions does not have enough dummy hotkeys.");
     }
 
     public void TryRemove()

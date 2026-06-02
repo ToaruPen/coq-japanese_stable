@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using HarmonyLib;
+using QudJP.Patches;
 
 namespace QudJP;
 
@@ -66,6 +67,8 @@ public static class QudJPMod
             {
                 applyPatches();
             }
+
+            DisplayNameRouteTranslationRegistration.Register();
         }
         catch
         {
