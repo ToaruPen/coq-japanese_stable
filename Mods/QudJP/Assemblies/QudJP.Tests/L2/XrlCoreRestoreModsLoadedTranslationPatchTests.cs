@@ -55,6 +55,18 @@ public sealed class XrlCoreRestoreModsLoadedTranslationPatchTests
         }
     }
 
+    [TestCase("Incomplete Mod Configuration", "不完全なMod構成")]
+    [TestCase("", "")]
+    [TestCase("Unknown mod frame", "Unknown mod frame")]
+    [TestCase("{{red|Incomplete Mod Configuration}}", "{{red|不完全なMod構成}}")]
+    [TestCase("\u0001Mod Configuration Differs", "Mod Configuration Differs")]
+    public void TranslateLiteralForTests_CoversRestoreModsLoadedEdgeCases(
+        string source,
+        string expected)
+    {
+        Assert.That(XrlCoreRestoreModsLoadedTranslationPatch.TranslateLiteralForTests(source), Is.EqualTo(expected));
+    }
+
     private static MethodInfo RequireMethod(Type type, string methodName)
     {
         return AccessTools.Method(type, methodName)

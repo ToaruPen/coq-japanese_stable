@@ -113,6 +113,51 @@ public sealed class LegacyOptionsUiTranslationPatchTests
     }
 
     [Test]
+    public void TranslateBufferText_TranslatesLiteralDictionaryEntriesThroughCoreRoute()
+    {
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                LegacyOptionsUiTranslationPatch.TranslateBufferText("Would you like to save your changes?"),
+                Is.EqualTo("変更を保存しますか？"));
+            Assert.That(
+                LegacyOptionsUiTranslationPatch.TranslateBufferText("&W<More...>"),
+                Is.EqualTo("&W<続き…>"));
+        });
+    }
+
+    [Test]
+    public void TranslateBufferText_TranslatesRestartPromptHeaderFooterAndOptionLabels()
+    {
+        var restartPrompt = "These options require a game restart to take effect:\n\n"
+            + "{{g|* Use Tiles}}\n"
+            + "{{g|* VSync}}\n\nDo you want to do so now?";
+
+        Assert.That(
+            LegacyOptionsUiTranslationPatch.TranslateBufferText(restartPrompt),
+            Is.EqualTo("これらのオプションを有効にするにはゲームの再起動が必要です:\n\n"
+                + "{{g|* タイルを使用}}\n"
+                + "{{g|* 垂直同期}}\n\n今すぐ再起動しますか？"));
+    }
+
+    [Test]
+    public void TranslateBufferText_PreservesOuterWhitespaceAndColorPrefixes()
+    {
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                LegacyOptionsUiTranslationPatch.TranslateBufferText("   VSync\t"),
+                Is.EqualTo("   垂直同期\t"));
+            Assert.That(
+                LegacyOptionsUiTranslationPatch.TranslateBufferText("&YGeneral"),
+                Is.EqualTo("&Y一般"));
+            Assert.That(
+                LegacyOptionsUiTranslationPatch.TranslateBufferText("    "),
+                Is.EqualTo("    "));
+        });
+    }
+
+    [Test]
     public void TranslateBufferText_StripsDirectMarkerWithoutRecordingTransform()
     {
         var result = LegacyOptionsUiTranslationPatch.TranslateBufferText(
