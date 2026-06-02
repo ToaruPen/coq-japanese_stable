@@ -78,7 +78,7 @@ public static class CyberneticsButcherableCyberneticTranslationPatch
     {
         _ = color;
 
-        if (!OwnerTranslationScope.IsActive(activeDepth) || string.IsNullOrEmpty(message))
+        if (string.IsNullOrEmpty(message))
         {
             return false;
         }
@@ -87,6 +87,11 @@ public static class CyberneticsButcherableCyberneticTranslationPatch
         {
             message = markedText;
             return true;
+        }
+
+        if (!OwnerTranslationScope.IsActive(activeDepth))
+        {
+            return false;
         }
 
         var source = message;

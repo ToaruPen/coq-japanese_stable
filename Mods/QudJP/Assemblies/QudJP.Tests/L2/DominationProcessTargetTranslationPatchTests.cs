@@ -35,6 +35,10 @@ public sealed class DominationProcessTargetTranslationPatchTests
         "自分自身は支配できない！",
         "Domination.SelfTarget")]
     [TestCase(
+        "You can't dominate {{Y|yourself}}!",
+        "{{Y|自分自身}}は支配できない！",
+        "Domination.SelfTarget")]
+    [TestCase(
         "You can't dominate someone you are already dominating.",
         "すでに支配している相手は支配できない。",
         "Domination.AlreadyDominating")]

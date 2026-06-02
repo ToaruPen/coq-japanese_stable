@@ -148,6 +148,7 @@ public sealed class WorldPartsFragmentTranslatorTests
     [TestCase("You drop desalination pellet into canteen.\n\nThe water is purified.", "desalination pelletをcanteenに入れた。\n\nThe water is purified.")]
     [TestCase("You drop {{Y|desalination pellet}} into {{W|canteen}}.\n\n{{g|The water is purified.}}", "{{Y|desalination pellet}}を{{W|canteen}}に入れた。\n\n{{g|The water is purified.}}")]
     [TestCase("It doesn't seem to do anything.", "何も起こらないようだ。")]
+    [TestCase("{{Y|It doesn't seem to do anything.}}", "{{Y|何も起こらないようだ。}}")]
     public void DesalinationPelletTranslator_TranslatesCompositePopupPrefix(string input, string expected)
     {
         AssertTranslated(

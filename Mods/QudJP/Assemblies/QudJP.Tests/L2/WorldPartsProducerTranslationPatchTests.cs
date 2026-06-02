@@ -1214,7 +1214,7 @@ public sealed class WorldPartsProducerTranslationPatchTests
 
             InvokeEnclosingMethod(target, methodName);
 
-            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(markedSource));
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(source));
         }
         finally
         {
@@ -1733,10 +1733,11 @@ public sealed class WorldPartsProducerTranslationPatchTests
                 RequireMethod(typeof(DummyPetEitherOrProducerTarget), nameof(DummyPetEitherOrProducerTarget.explode)),
                 typeof(PetEitherOrExplodeTranslationPatch));
 
-            var source = MessageFrameTranslator.MarkDirectTranslation("temporal clone implodes.");
+            const string source = "temporal clone implodes.";
+            var markedSource = MessageFrameTranslator.MarkDirectTranslation(source);
             var target = new DummyPetEitherOrProducerTarget
             {
-                QueuedMessageToSend = source,
+                QueuedMessageToSend = markedSource,
             };
 
             target.explode();
@@ -2093,10 +2094,11 @@ public sealed class WorldPartsProducerTranslationPatchTests
                 RequireMethod(typeof(DummyZoneWindChangeProducerTarget), nameof(DummyZoneWindChangeProducerTarget.WindChange), typeof(long)),
                 typeof(ZoneWindChangeTranslationPatch));
 
-            var source = MessageFrameTranslator.MarkDirectTranslation("The wind becomes still.");
+            const string source = "The wind becomes still.";
+            var markedSource = MessageFrameTranslator.MarkDirectTranslation(source);
             var target = new DummyZoneWindChangeProducerTarget
             {
-                QueuedMessageToSend = source,
+                QueuedMessageToSend = markedSource,
             };
 
             target.WindChange(1234);

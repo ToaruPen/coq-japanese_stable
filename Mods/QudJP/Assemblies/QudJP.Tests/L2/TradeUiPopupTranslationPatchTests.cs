@@ -38,6 +38,7 @@ public sealed class TradeUiPopupTranslationPatchTests
         DummyPopupShow.Reset();
         DummyPopupTarget.Reset();
         DummyPopupGenericTarget.Reset();
+        PopupPickOptionTranslationPatch.ClearPopupOptionMenuDataPreservationForTests();
     }
 
     [TearDown]
@@ -50,6 +51,7 @@ public sealed class TradeUiPopupTranslationPatchTests
         DynamicTextObservability.ResetForTests();
         DummyTradeUiPopupTarget.Reset();
         DummyPopupGenericTarget.Reset();
+        PopupPickOptionTranslationPatch.ClearPopupOptionMenuDataPreservationForTests();
 
         if (Directory.Exists(tempDirectory))
         {

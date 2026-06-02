@@ -101,15 +101,9 @@ public sealed class EmbarkBuilderValidationPopupTranslationPatchTests
         try
         {
             PatchPopupMessage(harmony);
-            EmbarkBuilderValidationPopupTranslationPatch.Prefix();
-            try
-            {
-                new DummyPopupMessageTarget().ShowPopup(source, null, null, null, null, sourceTitle);
-            }
-            finally
-            {
-                _ = EmbarkBuilderValidationPopupTranslationPatch.Finalizer(null);
-            }
+            PatchOwner(harmony);
+
+            new DummyPopupMessageTarget().ShowPopup(source, null, null, null, null, sourceTitle);
 
             Assert.Multiple(() =>
             {
@@ -128,6 +122,21 @@ public sealed class EmbarkBuilderValidationPopupTranslationPatchTests
         harmony.Patch(
             original: RequireMethod(typeof(DummyPopupMessageTarget), nameof(DummyPopupMessageTarget.ShowPopup)),
             prefix: new HarmonyMethod(RequireMethod(typeof(PopupMessageTranslationPatch), nameof(PopupMessageTranslationPatch.Prefix))));
+    }
+
+    private static void PatchOwner(Harmony harmony)
+    {
+        var prefix = new HarmonyMethod(RequireMethod(typeof(EmbarkBuilderValidationPopupTranslationPatch), nameof(EmbarkBuilderValidationPopupTranslationPatch.Prefix)))
+        {
+            priority = Priority.First,
+        };
+        harmony.Patch(
+            original: RequireMethod(typeof(DummyPopupMessageTarget), nameof(DummyPopupMessageTarget.ShowPopup)),
+            prefix: prefix,
+            finalizer: new HarmonyMethod(RequireMethod(
+                typeof(EmbarkBuilderValidationPopupTranslationPatch),
+                nameof(EmbarkBuilderValidationPopupTranslationPatch.Finalizer),
+                typeof(Exception))));
     }
 
     private static System.Reflection.MethodInfo RequireMethod(Type type, string methodName, params Type[] parameterTypes)

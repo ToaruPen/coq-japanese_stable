@@ -106,6 +106,42 @@ public sealed class KeybindBoxTranslationPatchTests
         }
     }
 
+    [TestCase("UP", "上")]
+    [TestCase("{{Y|UP}}", "{{Y|上}}")]
+    public void Postfix_TranslatesLowerAsciiFallback_WhenPatched(string source, string expected)
+    {
+        WriteDictionary(("up", "Qud.UI.KeybindBox", "上"));
+
+        var harmonyId = "qudjp.tests.keybind-box." + Guid.NewGuid().ToString("N");
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyKeybindBoxTarget), nameof(DummyKeybindBoxTarget.Update)),
+                postfix: new HarmonyMethod(RequireMethod(
+                    typeof(KeybindBoxTranslationPatch),
+                    nameof(KeybindBoxTranslationPatch.Postfix))));
+
+            var target = new DummyKeybindBoxTarget { textSkin = { text = source } };
+            target.Update();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(target.textSkin.text, Is.EqualTo(expected));
+                Assert.That(target.textSkin.AppliedCount, Is.EqualTo(1));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        KeybindBoxTranslationPatch.Context,
+                        KeybindBoxTranslationPatch.Family),
+                    Is.EqualTo(1));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
     [Test]
     public void Postfix_LeavesUnknownTextUnchanged_WhenPatched()
     {

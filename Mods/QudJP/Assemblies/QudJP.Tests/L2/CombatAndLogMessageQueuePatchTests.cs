@@ -700,8 +700,8 @@ public sealed class CombatAndLogMessageQueuePatchTests
 
             Assert.Multiple(() =>
             {
-                Assert.That(translated, Is.False);
-                Assert.That(message, Is.EqualTo("\u0001You are crippled for 5 turns!"));
+                Assert.That(translated, Is.True);
+                Assert.That(message, Is.EqualTo("You are crippled for 5 turns!"));
             });
         }
         finally
@@ -5297,10 +5297,14 @@ public sealed class CombatAndLogMessageQueuePatchTests
                 typeof(FungalSporeInfectionTranslationPatch));
 
             _ = DummyFungalSporeInfectionTarget.ChooseLimbForInfection(
-                "glowcrust",
+                MessageFrameTranslator.MarkDirectTranslation("custom feeler"),
                 new[] { MessageFrameTranslator.MarkDirectTranslation("custom feeler") });
 
-            Assert.That(DummyPopupGenericTarget.LastPickOptionOptions, Is.EqualTo(new[] { "custom feeler" }));
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyPopupGenericTarget.LastPickOptionTitle, Is.EqualTo("Choose a limb to infect with custom feeler."));
+                Assert.That(DummyPopupGenericTarget.LastPickOptionOptions, Is.EqualTo(new[] { "custom feeler" }));
+            });
         }
         finally
         {

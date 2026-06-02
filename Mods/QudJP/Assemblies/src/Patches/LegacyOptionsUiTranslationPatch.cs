@@ -70,31 +70,47 @@ public static class LegacyOptionsUiTranslationPatch
 
     public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
     {
-        foreach (var instruction in instructions)
+        var originalInstructions = new List<CodeInstruction>(instructions);
+        List<CodeInstruction> translatedInstructions;
+        try
         {
-            if (instruction.opcode == OpCodes.Ldstr
-                && instruction.operand is string literal
-                && LiteralTranslations.ContainsKey(literal))
+            translatedInstructions = new List<CodeInstruction>(originalInstructions.Count);
+            foreach (var instruction in originalInstructions)
             {
-                yield return instruction;
-                yield return new CodeInstruction(OpCodes.Call, TranslateBufferTextMethod);
-                continue;
-            }
+                if (instruction.opcode == OpCodes.Ldstr
+                    && instruction.operand is string literal
+                    && LiteralTranslations.ContainsKey(literal))
+                {
+                    translatedInstructions.Add(instruction);
+                    translatedInstructions.Add(new CodeInstruction(OpCodes.Call, TranslateBufferTextMethod));
+                    continue;
+                }
 
-            if (IsStringWriteCall(instruction))
-            {
-                yield return new CodeInstruction(OpCodes.Call, TranslateBufferTextMethod);
-                yield return instruction;
-                continue;
-            }
+                if (IsStringWriteCall(instruction))
+                {
+                    translatedInstructions.Add(new CodeInstruction(OpCodes.Call, TranslateBufferTextMethod));
+                    translatedInstructions.Add(instruction);
+                    continue;
+                }
 
-            if (IsParameterlessStringToStringCall(instruction))
-            {
-                yield return instruction;
-                yield return new CodeInstruction(OpCodes.Call, TranslateBufferTextMethod);
-                continue;
-            }
+                if (IsParameterlessStringToStringCall(instruction))
+                {
+                    translatedInstructions.Add(instruction);
+                    translatedInstructions.Add(new CodeInstruction(OpCodes.Call, TranslateBufferTextMethod));
+                    continue;
+                }
 
+                translatedInstructions.Add(instruction);
+            }
+        }
+        catch (Exception ex)
+        {
+            Trace.TraceError("QudJP: {0}.Transpiler failed: {1}", Context, ex);
+            translatedInstructions = originalInstructions;
+        }
+
+        foreach (var instruction in translatedInstructions)
+        {
             yield return instruction;
         }
     }

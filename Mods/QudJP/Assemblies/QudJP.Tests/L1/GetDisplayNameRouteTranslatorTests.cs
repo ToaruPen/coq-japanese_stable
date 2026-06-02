@@ -1436,6 +1436,21 @@ public sealed class GetDisplayNameRouteTranslatorTests
         Assert.That(translated, Is.EqualTo(expected));
     }
 
+    [TestCase("", "")]
+    [TestCase("\u0001Skillsoft [{{W|Tinkering}}]", "\u0001Skillsoft [{{W|Tinkering}}]")]
+    public void TranslatePreservingColors_SkillsoftGeneratedDisplayNameEdgeInputsPassThrough(
+        string source,
+        string expected)
+    {
+        WriteDictionary(("Tinkering", "工作"));
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            source,
+            nameof(GetDisplayNamePatch));
+
+        Assert.That(translated, Is.EqualTo(expected));
+    }
+
     [TestCase("defoliant grenade mk I miner mk I", "落葉剤グレネード mk I 採掘機 mk I")]
     [TestCase("defoliant grenade mk I bomber mk II", "落葉剤グレネード mk I 爆撃機 mk II")]
     public void TranslatePreservingColors_TranslatesMinerGeneratedRoleSuffix(
@@ -1446,6 +1461,19 @@ public sealed class GetDisplayNameRouteTranslatorTests
             "ui-displayname-atomic.ja.json",
             ("defoliant grenade", "落葉剤グレネード"));
 
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            source,
+            nameof(GetDisplayNameProcessPatch));
+
+        Assert.That(translated, Is.EqualTo(expected));
+    }
+
+    [TestCase("", "")]
+    [TestCase("\u0001defoliant grenade mk I miner mk I", "\u0001defoliant grenade mk I miner mk I")]
+    public void TranslatePreservingColors_MinerGeneratedRoleSuffixEdgeInputsPassThrough(
+        string source,
+        string expected)
+    {
         var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
             source,
             nameof(GetDisplayNameProcessPatch));

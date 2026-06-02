@@ -55,7 +55,7 @@ public sealed class CyberneticsOnboardRecoilerPopupTranslationPatchTests
 
     [TestCase("", "", 0)]
     [TestCase("{{W|You can't recoil yet.}}", "{{W|まだリコイルできない。}}", 1)]
-    public void Patch_LeavesEmptyAndColorTaggedFallbackPromptsUnchanged_WhenOwnerPatched(
+    public void Patch_PassesThroughEmptyAndTranslatesColorTaggedPrompt_WhenOwnerPatched(
         string source,
         string expected,
         int expectedHitCount)

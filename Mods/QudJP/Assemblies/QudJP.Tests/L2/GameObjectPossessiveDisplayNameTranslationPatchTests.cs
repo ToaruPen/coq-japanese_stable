@@ -123,6 +123,22 @@ public sealed class GameObjectPossessiveDisplayNameTranslationPatchTests
                     GameObjectPossessiveDisplayNameTranslationPatch.Context,
                     GameObjectPossessiveDisplayNameTranslationPatch.Family),
                 Is.EqualTo(1));
+            });
+    }
+
+    [Test]
+    public void Postfix_LeavesEmptyDisplayNameUnchangedWithoutRecordingTransform()
+    {
+        var result = InvokePatchedPossResult(string.Empty);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.Empty);
+            Assert.That(
+                DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                    GameObjectPossessiveDisplayNameTranslationPatch.Context,
+                    GameObjectPossessiveDisplayNameTranslationPatch.Family),
+                Is.Zero);
         });
     }
 

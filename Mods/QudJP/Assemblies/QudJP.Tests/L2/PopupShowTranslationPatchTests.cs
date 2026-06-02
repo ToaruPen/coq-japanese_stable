@@ -3,6 +3,7 @@ using System.Text;
 using HarmonyLib;
 using QudJP.Patches;
 using QudJP.Tests.DummyTargets;
+using QudJP.Tests.L1;
 
 namespace QudJP.Tests.L2;
 
@@ -559,7 +560,13 @@ public sealed class PopupShowTranslationPatchTests
     [TestCase("The protective force of the cherubim prevents you from opening the ark.", "ケルビムの守護力があなたに方舟を開かせない。")]
     public void Prefix_TranslatesShipArkExactPopupLeaves(string source, string expected)
     {
-        WriteDictionary((source, expected));
+        Translator.ResetForTests();
+        Translator.SetDictionaryDirectoryForTests(Path.Combine(
+            TestProjectPaths.GetRepositoryRoot(),
+            "Mods",
+            "QudJP",
+            "Localization",
+            "Dictionaries"));
 
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);

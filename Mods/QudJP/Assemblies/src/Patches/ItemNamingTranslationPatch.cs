@@ -345,13 +345,26 @@ public static class ItemNamingTranslationPatch
             }
 
             var item = match.Groups["item"].Value;
-            var role = match.Groups["role"].Value;
+            var role = TranslateWishDebugRole(match.Groups["role"].Value);
             translatedLines.Add("[Debug: " + item + " を " + role + " として作成した。]" + (hasCarriageReturn ? "\r" : string.Empty));
             anyTranslated = true;
         }
 
         translated = anyTranslated ? string.Join("\n", translatedLines) : source;
         return anyTranslated;
+    }
+
+    private static string TranslateWishDebugRole(string role)
+    {
+        switch (role)
+        {
+            case "kill":
+                return "討伐対象";
+            case "InfluencedBy":
+                return "影響元";
+            default:
+                return role;
+        }
     }
 
     private static string RestoreCapture(Match match, IReadOnlyList<ColorSpan> spans, string groupName)

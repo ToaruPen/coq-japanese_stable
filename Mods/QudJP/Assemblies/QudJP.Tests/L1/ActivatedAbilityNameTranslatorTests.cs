@@ -121,6 +121,34 @@ public sealed class ActivatedAbilityNameTranslatorTests
         });
     }
 
+    [Test]
+    public void TryTranslateVisibleName_RecoilEmptyInputFallsBack()
+    {
+        var translated = ActivatedAbilityNameTranslator.TryTranslateVisibleName(
+            "Recoil to ",
+            out var result);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.False);
+            Assert.That(result, Is.EqualTo("Recoil to "));
+        });
+    }
+
+    [Test]
+    public void TryTranslateVisibleName_RecoilWithControlMarkerFallsBack()
+    {
+        var source = MessageFrameTranslator.MarkDirectTranslation("Recoil to Joppa");
+
+        var translated = ActivatedAbilityNameTranslator.TryTranslateVisibleName(source, out var result);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.False);
+            Assert.That(result, Is.EqualTo(source));
+        });
+    }
+
     [TestCase("")]
     [TestCase("Deactivate ")]
     [TestCase("Deactivate {{Y|odd gizmo}}")]

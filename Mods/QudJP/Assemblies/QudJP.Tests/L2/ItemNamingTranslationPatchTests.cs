@@ -54,39 +54,6 @@ public sealed class ItemNamingTranslationPatchTests
     }
 
     [Test]
-    public void TryTranslatePopupMessage_TranslatesMarkedCheckBestowals_WhenOwnerActive()
-    {
-        var doesFragment = DoesVerbRouteTranslator.MarkDoesFragment(
-            "The 銅の短剣 seems",
-            "seem",
-            "The 銅の短剣".Length,
-            null);
-        var source = doesFragment + " to have taken on new qualities.";
-
-        try
-        {
-            ItemNamingTranslationPatch.Prefix();
-
-            var ok = ItemNamingTranslationPatch.TryTranslatePopupMessage(
-                source,
-                nameof(PopupShowTranslationPatch),
-                "Popup.ProducerText",
-                out var translated);
-
-            Assert.Multiple(() =>
-            {
-                Assert.That(ok, Is.True);
-                Assert.That(translated, Is.EqualTo("銅の短剣は新たな特質を帯びたようだ"));
-                Assert.That(ItemNamingHitCount("CheckBestowals.DoesVerb"), Is.EqualTo(1));
-            });
-        }
-        finally
-        {
-            _ = ItemNamingTranslationPatch.Finalizer(null);
-        }
-    }
-
-    [Test]
     public void Patch_TranslatesMarkedCheckBestowalsPopup_WhenOwnerPatched()
     {
         var doesFragment = DoesVerbRouteTranslator.MarkDoesFragment(
@@ -206,8 +173,8 @@ public sealed class ItemNamingTranslationPatchTests
             Assert.That(
                 DummyPopupShow.LastShowMessage,
                 Is.EqualTo(
-                    "[Debug: {{Y|snapjaw}} を kill として作成した。]\n" +
-                    "[Debug: {{C|mechanimist}} を InfluencedBy として作成した。]\n"));
+                    "[Debug: {{Y|snapjaw}} を 討伐対象 として作成した。]\n" +
+                    "[Debug: {{C|mechanimist}} を 影響元 として作成した。]\n"));
             Assert.That(ItemNamingHitCount("WishDebugCreated"), Is.EqualTo(1));
         });
     }

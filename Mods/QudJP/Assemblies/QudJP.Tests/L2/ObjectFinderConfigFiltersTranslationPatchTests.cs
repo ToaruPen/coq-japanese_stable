@@ -154,7 +154,7 @@ public sealed class ObjectFinderConfigFiltersTranslationPatchTests
                 AllowEscape: true);
             SecondPickTitle = DummyPopupGenericTarget.LastPickOptionTitle;
             SecondPickOptions = DummyPopupGenericTarget.LastPickOptionOptions;
-            LastActionSelection = actionIndex >= 0 ? actions[actionIndex] : null;
+            LastActionSelection = actionIndex >= 0 && actionIndex < actions.Count ? actions[actionIndex] : null;
 
             var filterRows = new[] { "Custom Classifier{{G| [Show]}}" };
             _ = DummyPopupGenericTarget.PickOption(

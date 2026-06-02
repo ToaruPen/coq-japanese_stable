@@ -1019,6 +1019,27 @@ public sealed class TargetMethodResolutionTests
     }
 
     [Test]
+    public void CookingRecipeDisplayNameTranslationPatch_TargetMethods_ResolveExpectedOwners()
+    {
+        var signatures = ResolveTargetMethodSignatures(typeof(CookingRecipeDisplayNameTranslationPatch));
+
+        Assert.That(signatures, Is.EquivalentTo(new[]
+        {
+            "XRL.World.Skills.Cooking.CookingRecipe|GetDisplayName|System.String",
+            "XRL.World.Skills.Cooking.AppleMatz|GetDisplayName|System.String",
+            "XRL.World.Skills.Cooking.BoneBabka|GetDisplayName|System.String",
+            "XRL.World.Skills.Cooking.CloacaSurprise|GetDisplayName|System.String",
+            "XRL.World.Skills.Cooking.CrystalDelight|GetDisplayName|System.String",
+            "XRL.World.Skills.Cooking.GoatAndSweetLeaf|GetDisplayName|System.String",
+            "XRL.World.Skills.Cooking.HotandSpiny|GetDisplayName|System.String",
+            "XRL.World.Skills.Cooking.MahLahSoup|GetDisplayName|System.String",
+            "XRL.World.Skills.Cooking.MushroomCider|GetDisplayName|System.String",
+            "XRL.World.Skills.Cooking.ThePorridge|GetDisplayName|System.String",
+            "XRL.World.Skills.Cooking.TongueAndCheek|GetDisplayName|System.String",
+        }));
+    }
+
+    [Test]
     public void VillageWallDescriptionTranslationPatch_TargetMethods_ResolveExpectedOwners()
     {
         var signatures = ResolveTargetMethodSignatures(typeof(VillageWallDescriptionTranslationPatch));

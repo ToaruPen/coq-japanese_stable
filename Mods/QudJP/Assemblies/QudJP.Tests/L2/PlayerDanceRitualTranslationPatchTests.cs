@@ -250,7 +250,7 @@ public sealed class PlayerDanceRitualTranslationPatchTests
             nameof(DummyPlayerDanceRitualProducerTarget.ExecuteMove),
             new object[] { "Player", "east" },
             target,
-            target.QueuedMessageToSend);
+            "&KPlayer steps east");
     }
 
     [Test]

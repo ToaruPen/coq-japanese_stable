@@ -210,7 +210,7 @@ public sealed class UiMenuOptionDescriptionTranslationPatchTests
                 Assert.That(DummyTinkeringLineTarget.categoryExpandOptions[0].Description, Is.EqualTo("展開"));
                 Assert.That(DummyTinkeringLineTarget.categoryCollapseOptions[0].Description, Is.EqualTo("折りたたむ"));
                 Assert.That(DummyTradeLineTarget.categoryExpandOptions[0].Description, Is.EqualTo("展開"));
-                Assert.That(DummyTradeLineTarget.categoryCollapseOptions[0].Description, Is.EqualTo("選択"));
+                Assert.That(DummyTradeLineTarget.categoryCollapseOptions[0].Description, Is.EqualTo("折りたたむ"));
                 Assert.That(DummyTradeLineTarget.itemOptions[0].Description, Is.EqualTo("選択"));
                 Assert.That(
                     DynamicTextObservability.GetRouteFamilyHitCountForTests(
@@ -800,7 +800,7 @@ public sealed class UiMenuOptionDescriptionTranslationPatchTests
             };
             categoryCollapseOptions = new List<DummyMenuOption>
             {
-                new DummyMenuOption("Select", "Accept"),
+                new DummyMenuOption("Collapse", "Accept"),
             };
             itemOptions = new List<DummyMenuOption>
             {

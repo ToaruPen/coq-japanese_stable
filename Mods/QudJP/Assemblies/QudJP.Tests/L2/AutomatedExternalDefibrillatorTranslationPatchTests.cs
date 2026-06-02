@@ -146,6 +146,45 @@ public sealed class AutomatedExternalDefibrillatorTranslationPatchTests
         });
     }
 
+    [Test]
+    public void AttemptDefibrillate_QueuePathLeavesUnknownAndDirectMarkedTextUnchanged()
+    {
+        using var ownerPatch = PatchOwner();
+        using var queuePatch = PatchQueue();
+        var target = new DummyAutomatedExternalDefibrillatorTarget();
+
+        target.MessageToQueue = "Unknown defibrillator text.";
+        target.AttemptDefibrillateQueuedMessage();
+        var unknown = DummyMessageQueue.LastMessage;
+
+        target.MessageToQueue = "{{Y|Unknown defibrillator text.}}";
+        target.AttemptDefibrillateQueuedMessage();
+        var coloredUnknown = DummyMessageQueue.LastMessage;
+
+        target.MessageToQueue = string.Empty;
+        target.AttemptDefibrillateQueuedMessage();
+        var empty = DummyMessageQueue.LastMessage;
+
+        target.MessageToQueue = MessageFrameTranslator.MarkDirectTranslation("翻訳済み");
+        target.AttemptDefibrillateQueuedMessage();
+        var marked = DummyMessageQueue.LastMessage;
+
+        target.MessageToQueue = MessageFrameTranslator.MarkDirectTranslation("{{Y|翻訳済み}}");
+        target.AttemptDefibrillateQueuedMessage();
+        var coloredMarked = DummyMessageQueue.LastMessage;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(unknown, Is.EqualTo("Unknown defibrillator text."));
+            Assert.That(coloredUnknown, Is.EqualTo("{{Y|Unknown defibrillator text.}}"));
+            Assert.That(empty, Is.Empty);
+            Assert.That(marked, Is.EqualTo("翻訳済み"));
+            Assert.That(coloredMarked, Is.EqualTo("{{Y|翻訳済み}}"));
+            Assert.That(DefibrillatorHitCount("Defibrillator.NoSkill"), Is.Zero);
+            Assert.That(DefibrillatorHitCount("Defibrillator.Status"), Is.Zero);
+        });
+    }
+
     private static IDisposable PatchOwner()
     {
         var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";

@@ -5,6 +5,12 @@ namespace QudJP.Patches;
 
 internal static class MessageQueueSemanticPipeline
 {
+    [ThreadStatic]
+    private static string? directPassthroughMessage;
+
+    [ThreadStatic]
+    private static DirectPassthroughSource directPassthroughSource;
+
     private static readonly QueuedMessageTranslator[] Translators =
     [
         SapChargeOnHitTranslationPatch.TryTranslateQueuedMessage,
@@ -152,6 +158,13 @@ internal static class MessageQueueSemanticPipeline
 
     internal static bool TryTranslateQueuedMessage(ref string message, string? color)
     {
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(message, out var markedText))
+        {
+            message = markedText;
+            MarkDirectPassthroughFromMessageQueue(markedText);
+            return true;
+        }
+
         for (var index = 0; index < Translators.Length; index++)
         {
             if (TryTranslateQueuedMessageWithFallback(Translators[index], ref message, color))
@@ -161,6 +174,30 @@ internal static class MessageQueueSemanticPipeline
         }
 
         return false;
+    }
+
+    internal static void MarkDirectPassthroughFromMessageQueue(string message)
+    {
+        directPassthroughMessage = message;
+        directPassthroughSource = DirectPassthroughSource.MessageQueue;
+    }
+
+    internal static bool TryConsumeDirectPassthroughFromMessageQueue(string message)
+    {
+        return TryConsumeDirectPassthrough(message, DirectPassthroughSource.MessageQueue);
+    }
+
+    private static bool TryConsumeDirectPassthrough(string message, DirectPassthroughSource source)
+    {
+        if (directPassthroughSource != source
+            || !string.Equals(directPassthroughMessage, message, StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        directPassthroughMessage = null;
+        directPassthroughSource = DirectPassthroughSource.None;
+        return true;
     }
 
     private static bool TryTranslateQueuedMessageWithFallback(
@@ -191,4 +228,10 @@ internal static class MessageQueueSemanticPipeline
     }
 
     private delegate bool QueuedMessageTranslator(ref string message, string? color);
+
+    private enum DirectPassthroughSource
+    {
+        None,
+        MessageQueue,
+    }
 }

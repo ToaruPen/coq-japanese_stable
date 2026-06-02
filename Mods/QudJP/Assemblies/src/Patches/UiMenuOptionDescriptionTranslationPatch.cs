@@ -326,7 +326,7 @@ public static class UiMenuOptionDescriptionTranslationPatch
             if (IsType(instanceType, "Qud.UI.TradeLine", "DummyTradeLineTarget"))
             {
                 TranslateStaticCollectionField(instanceType, "categoryExpandOptions", TradeLineFamily, ExpandDescriptions);
-                TranslateStaticCollectionField(instanceType, "categoryCollapseOptions", TradeLineFamily, SelectDescriptions);
+                TranslateStaticCollectionField(instanceType, "categoryCollapseOptions", TradeLineFamily, CharacterAttributeLineDescriptions);
                 TranslateStaticCollectionField(instanceType, "itemOptions", TradeLineFamily, SelectDescriptions);
                 return;
             }

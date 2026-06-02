@@ -145,24 +145,10 @@ public sealed class VillageSignatureItemTranslationPatchTests
 
     private void WriteDictionary(params (string key, string text)[] entries)
     {
-        var builder = new System.Text.StringBuilder();
-        builder.Append("{\"entries\":[");
-        for (var index = 0; index < entries.Length; index++)
-        {
-            if (index > 0)
-            {
-                builder.Append(',');
-            }
-
-            builder.Append("{\"key\":\"");
-            builder.Append(entries[index].key);
-            builder.Append("\",\"text\":\"");
-            builder.Append(entries[index].text);
-            builder.Append("\"}");
-        }
-
-        builder.Append("]}\n");
-        File.WriteAllText(Path.Combine(tempDirectory, "village-signature-item-l2.ja.json"), builder.ToString());
+        TestDictionaryWriter.WriteEntries(
+            Path.Combine(tempDirectory, "village-signature-item-l2.ja.json"),
+            appendNewLine: true,
+            entries);
     }
 
     private static int RouteHitCount()

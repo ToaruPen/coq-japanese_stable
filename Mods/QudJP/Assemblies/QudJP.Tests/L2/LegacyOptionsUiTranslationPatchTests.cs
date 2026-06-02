@@ -126,6 +126,22 @@ public sealed class LegacyOptionsUiTranslationPatchTests
                     LegacyOptionsUiTranslationPatch.Context,
                     LegacyOptionsUiTranslationPatch.Family),
                 Is.Zero);
+            });
+    }
+
+    [Test]
+    public void TranslateBufferText_LeavesEmptyInputWithoutRecordingTransform()
+    {
+        var result = LegacyOptionsUiTranslationPatch.TranslateBufferText(string.Empty);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.Empty);
+            Assert.That(
+                DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                    LegacyOptionsUiTranslationPatch.Context,
+                    LegacyOptionsUiTranslationPatch.Family),
+                Is.Zero);
         });
     }
 

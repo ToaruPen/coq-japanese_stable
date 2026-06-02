@@ -823,84 +823,105 @@ public sealed class XDidYTranslationPatchTests
     [Test]
     public void Prefix_RepositoryFrames_TranslateLiquidVolumeContactFrames()
     {
-        UseRepositoryMessageFrames();
-
-        RunWithXDidYToZPatch(() =>
+        try
         {
-            DummyXDidYTarget.XDidYToZ(
-                Actor: null,
-                Verb: "swim",
-                Preposition: "through",
-                Object: "{{B|深い池}}",
-                SubjectOverride: "あなた",
-                AlwaysVisible: true);
+            UseRepositoryMessageFrames();
 
-            Assert.Multiple(() =>
+            RunWithXDidYToZPatch(() =>
             {
-                Assert.That(DummyXDidYTarget.OriginalExecuted, Is.False);
-                Assert.That(lastMessage, Is.EqualTo("\u0001あなたは{{B|深い池}}の中を泳いだ。"));
+                DummyXDidYTarget.XDidYToZ(
+                    Actor: null,
+                    Verb: "swim",
+                    Preposition: "through",
+                    Object: "{{B|深い池}}",
+                    SubjectOverride: "あなた",
+                    AlwaysVisible: true);
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(DummyXDidYTarget.OriginalExecuted, Is.False);
+                    Assert.That(lastMessage, Is.EqualTo("\u0001あなたは{{B|深い池}}の中を泳いだ。"));
+                });
             });
-        });
+        }
+        finally
+        {
+            ResetTestDictionaryBindings();
+        }
     }
 
     [Test]
     public void Prefix_RepositoryFrames_TranslateLiquidVolumeCleaningFrames()
     {
-        UseRepositoryDictionaries();
-        UseRepositoryMessageFrames();
-
-        RunWithXDidYPatch(() =>
+        try
         {
-            DummyXDidYTarget.XDidY(
-                Actor: null,
-                Verb: "clean",
-                Extra: "the mess from itself",
-                SubjectOverride: "あなた",
-                AlwaysVisible: true);
+            UseRepositoryDictionaries();
+            UseRepositoryMessageFrames();
+
+            RunWithXDidYPatch(() =>
+            {
+                DummyXDidYTarget.XDidY(
+                    Actor: null,
+                    Verb: "clean",
+                    Extra: "the mess from itself",
+                    SubjectOverride: "あなた",
+                    AlwaysVisible: true);
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(DummyXDidYTarget.OriginalExecuted, Is.False);
+                    Assert.That(lastMessage, Is.EqualTo("\u0001あなたはそれ自身の汚れを落とした。"));
+                });
+
+                DummyXDidYTarget.Reset();
+                DummyXDidYTarget.XDidY(
+                    Actor: null,
+                    Verb: "clean",
+                    Extra: "the mess from your 鉄の剣 with a dram of {{B|fresh water}} from canteen to the north",
+                    EndMark: "!",
+                    SubjectOverride: "あなた",
+                    AlwaysVisible: true);
+            });
 
             Assert.Multiple(() =>
             {
                 Assert.That(DummyXDidYTarget.OriginalExecuted, Is.False);
-                Assert.That(lastMessage, Is.EqualTo("\u0001あなたはそれ自身の汚れを落とした。"));
+                Assert.That(lastMessage, Is.EqualTo("\u0001あなたは水筒（北側）から{{B|真水}} 1ドラムを使ってあなたの鉄の剣の汚れを落とした！"));
             });
-
-            DummyXDidYTarget.Reset();
-            DummyXDidYTarget.XDidY(
-                Actor: null,
-                Verb: "clean",
-                Extra: "the mess from your 鉄の剣 with a dram of {{B|fresh water}} from canteen to the north",
-                EndMark: "!",
-                SubjectOverride: "あなた",
-                AlwaysVisible: true);
-        });
-
-        Assert.Multiple(() =>
+        }
+        finally
         {
-            Assert.That(DummyXDidYTarget.OriginalExecuted, Is.False);
-            Assert.That(lastMessage, Is.EqualTo("\u0001あなたは水筒（北側）から{{B|真水}} 1ドラムを使ってあなたの鉄の剣の汚れを落とした！"));
-        });
+            ResetTestDictionaryBindings();
+        }
     }
 
     [Test]
     public void Prefix_RepositoryFrames_TranslateCampfireExtinguishFrame()
     {
-        UseRepositoryMessageFrames();
-
-        RunWithXDidYToZPatch(() =>
+        try
         {
-            DummyXDidYTarget.XDidYToZ(
-                Actor: null,
-                Verb: "extinguish",
-                Object: "キャンプファイヤー",
-                SubjectOverride: "あなた",
-                AlwaysVisible: true);
+            UseRepositoryMessageFrames();
 
-            Assert.Multiple(() =>
+            RunWithXDidYToZPatch(() =>
             {
-                Assert.That(DummyXDidYTarget.OriginalExecuted, Is.False);
-                Assert.That(lastMessage, Is.EqualTo("\u0001あなたはキャンプファイヤーを消した。"));
+                DummyXDidYTarget.XDidYToZ(
+                    Actor: null,
+                    Verb: "extinguish",
+                    Object: "キャンプファイヤー",
+                    SubjectOverride: "あなた",
+                    AlwaysVisible: true);
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(DummyXDidYTarget.OriginalExecuted, Is.False);
+                    Assert.That(lastMessage, Is.EqualTo("\u0001あなたはキャンプファイヤーを消した。"));
+                });
             });
-        });
+        }
+        finally
+        {
+            ResetTestDictionaryBindings();
+        }
     }
 
     [TestCase("three lead slugs to", "\u0001あなたは3 鉛スラッグを{{Y|タレット}}に移した。")]
@@ -914,25 +935,32 @@ public sealed class XDidYTranslationPatchTests
         string preposition,
         string expected)
     {
-        UseRepositoryMessageFrames();
-        UseRepositoryDictionaries();
-
-        RunWithXDidYToZPatch(() =>
+        try
         {
-            DummyXDidYTarget.XDidYToZ(
-                Actor: null,
-                Verb: "transfer",
-                Preposition: preposition,
-                Object: "{{Y|turret}}",
-                SubjectOverride: "あなた",
-                AlwaysVisible: true);
+            UseRepositoryMessageFrames();
+            UseRepositoryDictionaries();
 
-            Assert.Multiple(() =>
+            RunWithXDidYToZPatch(() =>
             {
-                Assert.That(DummyXDidYTarget.OriginalExecuted, Is.False);
-                Assert.That(lastMessage, Is.EqualTo(expected));
+                DummyXDidYTarget.XDidYToZ(
+                    Actor: null,
+                    Verb: "transfer",
+                    Preposition: preposition,
+                    Object: "{{Y|turret}}",
+                    SubjectOverride: "あなた",
+                    AlwaysVisible: true);
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(DummyXDidYTarget.OriginalExecuted, Is.False);
+                    Assert.That(lastMessage, Is.EqualTo(expected));
+                });
             });
-        });
+        }
+        finally
+        {
+            ResetTestDictionaryBindings();
+        }
     }
 
     [Test]
@@ -1241,6 +1269,14 @@ public sealed class XDidYTranslationPatchTests
                 "Localization",
                 "MessageFrames",
                 "verbs.ja.json"));
+    }
+
+    private void ResetTestDictionaryBindings()
+    {
+        Translator.ResetForTests();
+        Translator.SetDictionaryDirectoryForTests(tempDirectory);
+        MessageFrameTranslator.ResetForTests();
+        MessageFrameTranslator.SetDictionaryPathForTests(dictionaryPath);
     }
 
     private static void RunWithXDidYPatch(Action action)

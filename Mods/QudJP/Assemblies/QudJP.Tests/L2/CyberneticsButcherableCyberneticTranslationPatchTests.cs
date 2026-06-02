@@ -75,6 +75,23 @@ public sealed class CyberneticsButcherableCyberneticTranslationPatchTests
     }
 
     [Test]
+    public void AttemptButcher_StripsDirectMarkedTraffic_WhenOwnerAbsent()
+    {
+        const string source = "{{g|既に翻訳済み}}";
+
+        WithPatchedQueueOnly(() => DummyMessageQueue.AddPlayerMessage(
+            MessageFrameTranslator.MarkDirectTranslation(source),
+            "white",
+            Capitalize: false));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(source));
+            Assert.That(QueueHitCount(), Is.Zero);
+        });
+    }
+
+    [Test]
     public void AttemptButcher_DoesNotRetranslateDirectMarkedMessages_WhenOwnerPatched()
     {
         const string source = "{{g|You butcher a サイバネティック from the 死体.}}";
