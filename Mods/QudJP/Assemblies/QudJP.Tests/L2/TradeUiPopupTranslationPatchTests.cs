@@ -1088,33 +1088,12 @@ public sealed class TradeUiPopupTranslationPatchTests
         Translator.SetDictionaryDirectoryForTests(Path.Combine(GetLocalizationRoot(), "Dictionaries"));
     }
 
-    // To-do: consolidate these JSON test helpers once the shared usage reaches 3+ files.
     private void WriteDictionary(params (string key, string text)[] entries)
     {
-        var builder = new StringBuilder();
-        builder.Append("{\"entries\":[");
-
-        for (var index = 0; index < entries.Length; index++)
-        {
-            if (index > 0)
-            {
-                builder.Append(',');
-            }
-
-            builder.Append("{\"key\":\"");
-            builder.Append(EscapeJson(entries[index].key));
-            builder.Append("\",\"text\":\"");
-            builder.Append(EscapeJson(entries[index].text));
-            builder.Append("\"}");
-        }
-
-        builder.Append("]}");
-        builder.AppendLine();
-
-        File.WriteAllText(
+        TestDictionaryWriter.WriteEntries(
             Path.Combine(dictionaryDirectory, "trade-ui-popup-tests.ja.json"),
-            builder.ToString(),
-            Utf8WithoutBom);
+            appendNewLine: true,
+            entries);
     }
 
     private void WritePatternDictionary(params (string pattern, string template)[] patterns)

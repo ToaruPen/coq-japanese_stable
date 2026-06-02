@@ -873,7 +873,7 @@ internal static class ColorAwareTranslationComposer
             }
         }
 
-        return CollapseDuplicateWholeQudColorWrappers(Restore(visible, translatedOwnedSpans));
+        return Restore(visible, translatedOwnedSpans);
     }
 
     private static string CollapseDuplicateWholeQudColorWrappers(string source)

@@ -453,12 +453,11 @@ public sealed class ItemNamingTranslationPatchTests
         {
             PatchPopupShow(harmony);
             PatchPopupGenericRoutes(harmony);
-            ItemNamingTranslationPatch.Prefix();
+            PatchItemNamingOwners(harmony);
             action();
         }
         finally
         {
-            _ = ItemNamingTranslationPatch.Finalizer(null);
             harmony.UnpatchAll(harmonyId);
         }
     }
@@ -502,6 +501,24 @@ public sealed class ItemNamingTranslationPatchTests
         harmony.Patch(
             original: RequireMethod(typeof(DummyPopupGenericTarget), nameof(DummyPopupGenericTarget.ShowColorPicker)),
             prefix: new HarmonyMethod(RequireMethod(typeof(PopupShowColorPickerTranslationPatch), nameof(PopupShowColorPickerTranslationPatch.Prefix))));
+    }
+
+    private static void PatchItemNamingOwners(Harmony harmony)
+    {
+        var prefix = new HarmonyMethod(RequireMethod(typeof(ItemNamingTranslationPatch), nameof(ItemNamingTranslationPatch.Prefix)));
+        var finalizer = new HarmonyMethod(RequireMethod(typeof(ItemNamingTranslationPatch), nameof(ItemNamingTranslationPatch.Finalizer)));
+
+        foreach (var ownerMethod in new[]
+                 {
+                     RequireOwnerMethod(nameof(DummyItemNamingProducerTarget.Opportunity)),
+                     RequireOwnerMethod(nameof(DummyItemNamingProducerTarget.CheckBestowals)),
+                     RequireOwnerMethod(nameof(DummyItemNamingProducerTarget.NameItem)),
+                     RequireOwnerMethod(nameof(DummyItemNamingProducerTarget.HandleItemNamingWish)),
+                     RequireInteractiveOwnerMethod(),
+                 })
+        {
+            harmony.Patch(ownerMethod, prefix: prefix, finalizer: finalizer);
+        }
     }
 
     private static MethodInfo RequireOwnerMethod(string methodName)

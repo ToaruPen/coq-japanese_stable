@@ -11,6 +11,17 @@ internal static class TestDictionaryWriter
         bool appendNewLine,
         params (string key, string text)[] entries)
     {
+        var entriesWithContexts = Array.ConvertAll(
+            entries,
+            entry => (entry.key, entry.text, (string?)null));
+        WriteEntries(filePath, appendNewLine, entriesWithContexts);
+    }
+
+    public static void WriteEntries(
+        string filePath,
+        bool appendNewLine,
+        params (string key, string text, string? context)[] entries)
+    {
         var builder = new StringBuilder();
         builder.Append('{');
         builder.Append("\"entries\":[");
@@ -24,7 +35,15 @@ internal static class TestDictionaryWriter
 
             builder.Append("{\"key\":\"");
             builder.Append(EscapeJson(entries[index].key));
-            builder.Append("\",\"text\":\"");
+            builder.Append('"');
+            if (entries[index].context is not null)
+            {
+                builder.Append(",\"context\":\"");
+                builder.Append(EscapeJson(entries[index].context!));
+                builder.Append('"');
+            }
+
+            builder.Append(",\"text\":\"");
             builder.Append(EscapeJson(entries[index].text));
             builder.Append("\"}");
         }

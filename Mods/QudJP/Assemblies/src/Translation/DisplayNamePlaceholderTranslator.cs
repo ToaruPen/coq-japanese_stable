@@ -6,14 +6,14 @@ namespace QudJP;
 
 internal static class DisplayNamePlaceholderTranslator
 {
-    public static bool TryTranslatePlaceholderValue(
+    internal static bool TryTranslatePlaceholderValue(
         string source,
-        Func<string, string> translateCandidate,
+        Func<string, string> translateDisplayNameCandidate,
         out string translated)
     {
         foreach (var candidate in EnumerateDisplayNameCandidates(source))
         {
-            var translatedCandidate = translateCandidate(candidate);
+            var translatedCandidate = translateDisplayNameCandidate(candidate);
             if (string.Equals(translatedCandidate, candidate, StringComparison.Ordinal))
             {
                 continue;

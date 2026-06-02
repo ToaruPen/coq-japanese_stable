@@ -77,7 +77,7 @@ public static class DescriptionLookPopupTranslationPatch
         }
     }
 
-    public static string TranslateLiteralForTests(string source)
+    internal static string TranslateLiteralForTests(string source)
     {
         return TranslateLiteral(source);
     }

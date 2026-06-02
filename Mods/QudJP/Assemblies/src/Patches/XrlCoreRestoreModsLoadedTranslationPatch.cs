@@ -77,7 +77,7 @@ public static class XrlCoreRestoreModsLoadedTranslationPatch
         }
     }
 
-    public static string TranslateLiteralForTests(string source) => TranslateLiteral(source);
+    internal static string TranslateLiteralForTests(string source) => TranslateLiteral(source);
 
     private static string TranslateLiteral(string source)
     {

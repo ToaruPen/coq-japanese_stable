@@ -72,7 +72,7 @@ public static class GolemQuestMoundDisplayOptionsTranslationPatch
         }
     }
 
-    public static string TranslateLiteralForTests(string source)
+    internal static string TranslateLiteralForTests(string source)
     {
         return TranslateLiteral(source);
     }

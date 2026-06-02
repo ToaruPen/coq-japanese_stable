@@ -492,7 +492,7 @@ ISSUE719_VILLAGE_SIGNATURE_DISH_FAMILIES: Final[frozenset[str]] = frozenset(
         "XRL.World.ZoneBuilders/VillageCodaBase.cs::VillageCodaBase.generateSignatureDish(string)",
     }
 )
-ISSUE719_VILLAGE_SIGNATURE_ITEM_STATIC_GAP_EVIDENCE: Final[list[str]] = [
+ISSUE719_VILLAGE_SIGNATURE_ITEM_OWNER_EVIDENCE: Final[list[str]] = [
     (
         "Issue #719 village signature-item review closes generateSignatureItems "
         "through VillageSignatureItemTranslationPatch because both VillageBase "
@@ -516,7 +516,7 @@ ISSUE719_VILLAGE_SIGNATURE_ITEM_STATIC_GAP_EVIDENCE: Final[list[str]] = [
         "signatureHistoricObjectName from <spice.villages.SignatureHistoricObject>."
     ),
 ]
-ISSUE719_VILLAGE_SIGNATURE_ITEM_STATIC_GAP_FAMILIES: Final[frozenset[str]] = frozenset(
+ISSUE719_VILLAGE_SIGNATURE_ITEM_OWNER_FAMILIES: Final[frozenset[str]] = frozenset(
     {
         "XRL.World.ZoneBuilders/VillageBase.cs::VillageBase.generateSignatureItems()",
         "XRL.World.ZoneBuilders/VillageCodaBase.cs::VillageCodaBase.generateSignatureItems()",
@@ -4089,7 +4089,7 @@ ISSUE719_VILLAGE_DYNAMIC_QUEST_REWARD_STATIC_GAP_FAMILIES: Final[frozenset[str]]
         "XRL.World/VillageDynamicQuestContext.cs::VillageDynamicQuestContext.getQuestReward()",
     }
 )
-ISSUE719_GOLEM_MOUND_DISPLAY_OPTIONS_STATIC_GAP_EVIDENCE: Final[list[str]] = [
+ISSUE719_GOLEM_MOUND_DISPLAY_OPTIONS_OWNER_EVIDENCE: Final[list[str]] = [
     (
         "GolemQuestMound.DisplayOptions is covered by an owner-route transpiler that "
         "translates the route-local Build command labels while preserving popup "
@@ -4109,7 +4109,7 @@ ISSUE719_GOLEM_MOUND_DISPLAY_OPTIONS_STATIC_GAP_EVIDENCE: Final[list[str]] = [
     "signature guard: Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
     "decompiled source: XRL.World.Parts/GolemQuestMound.cs lines 134-179",
 ]
-ISSUE719_GOLEM_MOUND_DISPLAY_OPTIONS_STATIC_GAP_FAMILIES: Final[frozenset[str]] = frozenset(
+ISSUE719_GOLEM_MOUND_DISPLAY_OPTIONS_OWNER_FAMILIES: Final[frozenset[str]] = frozenset(
     {
         "XRL.World.Parts/GolemQuestMound.cs::GolemQuestMound.DisplayOptions(GameObject)",
     }
@@ -14193,8 +14193,8 @@ def _issue719_closure_overlay(  # noqa: C901, PLR0911, PLR0912, PLR0915
     if family["family_id"] in ISSUE719_MURAL_BLANK_SLATE_DISPLAY_NAME_FAMILIES:
         return "covered_by_owner_route", ISSUE719_MURAL_BLANK_SLATE_DISPLAY_NAME_EVIDENCE
 
-    if family["family_id"] in ISSUE719_VILLAGE_SIGNATURE_ITEM_STATIC_GAP_FAMILIES:
-        return "covered_by_owner_route", ISSUE719_VILLAGE_SIGNATURE_ITEM_STATIC_GAP_EVIDENCE
+    if family["family_id"] in ISSUE719_VILLAGE_SIGNATURE_ITEM_OWNER_FAMILIES:
+        return "covered_by_owner_route", ISSUE719_VILLAGE_SIGNATURE_ITEM_OWNER_EVIDENCE
 
     if family["family_id"] in ISSUE719_GENERATED_DISPLAY_NAME_OWNER_PATCH_FAMILIES:
         return "covered_by_owner_route", ISSUE719_GENERATED_DISPLAY_NAME_OWNER_PATCH_EVIDENCE
@@ -14378,8 +14378,8 @@ def _issue719_closure_overlay(  # noqa: C901, PLR0911, PLR0912, PLR0915
         return "covered_by_owner_route", ISSUE719_GAMEOBJECT_REGENERA_OWNER_EVIDENCE
     if family["family_id"] in ISSUE719_VILLAGE_DYNAMIC_QUEST_REWARD_STATIC_GAP_FAMILIES:
         return "covered_by_owner_route", ISSUE719_GENERATED_DISPLAY_NAME_OWNER_PATCH_EVIDENCE
-    if family["family_id"] in ISSUE719_GOLEM_MOUND_DISPLAY_OPTIONS_STATIC_GAP_FAMILIES:
-        return "covered_by_owner_route", ISSUE719_GOLEM_MOUND_DISPLAY_OPTIONS_STATIC_GAP_EVIDENCE
+    if family["family_id"] in ISSUE719_GOLEM_MOUND_DISPLAY_OPTIONS_OWNER_FAMILIES:
+        return "covered_by_owner_route", ISSUE719_GOLEM_MOUND_DISPLAY_OPTIONS_OWNER_EVIDENCE
     if family["family_id"] in ISSUE719_AUTOACT_GET_DESCRIPTION_OWNER_FAMILIES:
         return "covered_by_owner_route", ISSUE719_AUTOACT_GET_DESCRIPTION_OWNER_EVIDENCE
     if family["family_id"] in ISSUE719_GAMEOBJECT_HOSTILE_SPOT_OWNER_FAMILIES:

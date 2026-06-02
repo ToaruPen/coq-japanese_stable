@@ -267,32 +267,10 @@ public sealed class WorldPartGeneratedDisplayNameTranslationPatchTests
 
     private void WriteDictionaryWithContexts(params (string key, string text, string? context)[] entries)
     {
-        var builder = new System.Text.StringBuilder();
-        builder.Append("{\"entries\":[");
-        for (var index = 0; index < entries.Length; index++)
-        {
-            if (index > 0)
-            {
-                builder.Append(',');
-            }
-
-            builder.Append("{\"key\":\"");
-            builder.Append(entries[index].key);
-            builder.Append('"');
-            if (entries[index].context is not null)
-            {
-                builder.Append(",\"context\":\"");
-                builder.Append(entries[index].context);
-                builder.Append('"');
-            }
-
-            builder.Append(",\"text\":\"");
-            builder.Append(entries[index].text);
-            builder.Append("\"}");
-        }
-
-        builder.Append("]}\n");
-        File.WriteAllText(Path.Combine(tempDirectory, "world-part-generated-display-name-l2.ja.json"), builder.ToString());
+        TestDictionaryWriter.WriteEntries(
+            Path.Combine(tempDirectory, "world-part-generated-display-name-l2.ja.json"),
+            appendNewLine: true,
+            entries);
     }
 
     private static MethodInfo RequireMethod(Type type, string name, params Type[] parameters) =>
