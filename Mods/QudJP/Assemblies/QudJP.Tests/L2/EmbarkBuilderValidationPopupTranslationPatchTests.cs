@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using HarmonyLib;
 using QudJP.Patches;
 using QudJP.Tests.DummyTargets;
@@ -103,7 +104,7 @@ public sealed class EmbarkBuilderValidationPopupTranslationPatchTests
             PatchPopupMessage(harmony);
             PatchOwner(harmony);
 
-            new DummyPopupMessageTarget().ShowPopup(source, null, null, null, null, sourceTitle);
+            DummyEmbarkBuilderValidationOwnerTarget.ShowPopupAsOwner(source, sourceTitle);
 
             Assert.Multiple(() =>
             {
@@ -131,7 +132,7 @@ public sealed class EmbarkBuilderValidationPopupTranslationPatchTests
             priority = Priority.First,
         };
         harmony.Patch(
-            original: RequireMethod(typeof(DummyPopupMessageTarget), nameof(DummyPopupMessageTarget.ShowPopup)),
+            original: RequireMethod(typeof(DummyEmbarkBuilderValidationOwnerTarget), nameof(DummyEmbarkBuilderValidationOwnerTarget.ShowPopupAsOwner)),
             prefix: prefix,
             finalizer: new HarmonyMethod(RequireMethod(
                 typeof(EmbarkBuilderValidationPopupTranslationPatch),
@@ -163,4 +164,13 @@ public sealed class EmbarkBuilderValidationPopupTranslationPatchTests
             "QudJP",
             "Localization",
             "Dictionaries");
+
+    private static class DummyEmbarkBuilderValidationOwnerTarget
+    {
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public static void ShowPopupAsOwner(string message, string title)
+        {
+            new DummyPopupMessageTarget().ShowPopup(message, null, null, null, null, title);
+        }
+    }
 }

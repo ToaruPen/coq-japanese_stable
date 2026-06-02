@@ -153,7 +153,9 @@ public sealed class ModDisguiseBeingAppliedPopupTranslationPatchTests
 
         Assert.Multiple(() =>
         {
+            Assert.That(DummyPopupGenericTarget.LastPickOptionTitle, Is.EqualTo("Choose a disguise to make."));
             Assert.That(DummyPopupGenericTarget.LastPickOptionOptions, Is.EqualTo(new[] { source }));
+            Assert.That(HitCount(nameof(PopupPickOptionTranslationPatch), "PickerTitle"), Is.Zero);
             Assert.That(HitCount(nameof(PopupPickOptionTranslationPatch), "FallbackCreatureOption"), Is.Zero);
         });
     }

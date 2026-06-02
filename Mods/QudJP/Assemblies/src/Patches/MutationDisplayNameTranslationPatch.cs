@@ -60,6 +60,12 @@ public static class MutationDisplayNameTranslationPatch
     {
         try
         {
+            if (MessageFrameTranslator.TryStripDirectTranslationMarker(__result, out var markedText))
+            {
+                __result = markedText;
+                return;
+            }
+
             if (!TryTranslateDisplayName(__result, out var translated)
                 || string.Equals(__result, translated, StringComparison.Ordinal))
             {

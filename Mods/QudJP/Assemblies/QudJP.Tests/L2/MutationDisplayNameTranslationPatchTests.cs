@@ -126,7 +126,7 @@ public sealed class MutationDisplayNameTranslationPatchTests
                 DynamicTextObservability.GetRouteFamilyHitCountForTests(
                     MutationDisplayNameTranslationPatch.Context,
                     MutationDisplayNameTranslationPatch.Family),
-                Is.EqualTo(1));
+                Is.Zero);
         });
     }
 

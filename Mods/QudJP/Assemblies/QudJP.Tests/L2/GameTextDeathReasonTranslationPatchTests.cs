@@ -60,7 +60,7 @@ public sealed class GameTextDeathReasonTranslationPatchTests
     [Test]
     public void Postfix_StripsDirectMarkerFromDeathReason_WhenPatched()
     {
-        AssertPatchedDeathReason(MessageFrameTranslator.MarkDirectTranslation("スナップジョーは蒸発した。"), "スナップジョーは蒸発した。", 1);
+        AssertPatchedDeathReason(MessageFrameTranslator.MarkDirectTranslation("スナップジョーは蒸発した。"), "スナップジョーは蒸発した。", 0);
     }
 
     private static void AssertPatchedDeathReason(string source, string expected, int expectedHitCount)

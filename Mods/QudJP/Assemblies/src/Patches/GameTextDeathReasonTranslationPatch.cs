@@ -48,6 +48,12 @@ public static class GameTextDeathReasonTranslationPatch
             }
 
             var source = __result!;
+            if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
+            {
+                __result = markedText;
+                return;
+            }
+
             var translated = TranslateThirdPersonDeathReason(source);
             if (!string.Equals(translated, source, StringComparison.Ordinal))
             {

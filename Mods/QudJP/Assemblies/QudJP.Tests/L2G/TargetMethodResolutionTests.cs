@@ -2852,7 +2852,7 @@ public sealed class TargetMethodResolutionTests
     }
 
     [Test]
-    public void MutationActivatedAbilityNameTargetMethods_ResolveLightManipulationSyncAbilityName()
+    public void MutationActivatedAbilityNameTargetMethods_ResolveExpectedSignatures()
     {
         var signatures = ResolveTargetMethodSignatures(typeof(MutationActivatedAbilityNameTranslationPatch));
 

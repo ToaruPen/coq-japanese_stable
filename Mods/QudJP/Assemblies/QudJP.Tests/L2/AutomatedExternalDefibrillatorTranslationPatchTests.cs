@@ -182,6 +182,8 @@ public sealed class AutomatedExternalDefibrillatorTranslationPatchTests
             Assert.That(coloredMarked, Is.EqualTo("{{Y|翻訳済み}}"));
             Assert.That(DefibrillatorHitCount("Defibrillator.NoSkill"), Is.Zero);
             Assert.That(DefibrillatorHitCount("Defibrillator.Status"), Is.Zero);
+            Assert.That(DefibrillatorHitCount("Defibrillator.NoTarget"), Is.Zero);
+            Assert.That(DefibrillatorHitCount("Defibrillator.NoUsableTarget"), Is.Zero);
         });
     }
 

@@ -204,7 +204,7 @@ public sealed class LegacyOptionsUiTranslationPatchTests
 
         var translated = LegacyOptionsUiTranslationPatch.Transpiler(instructions).ToList();
 
-        Assert.That(translated.Count(IsTranslateBufferTextCall), Is.EqualTo(3));
+        Assert.That(translated.Count(IsTranslateBufferTextCall), Is.EqualTo(2));
     }
 
     private static void WithPatchedShow(Action action)

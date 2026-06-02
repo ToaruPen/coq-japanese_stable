@@ -22,7 +22,7 @@ public sealed class GolemQuestMoundDisplayOptionsTranslationPatchTests
             Assert.That(target.ValidBuildText, Is.EqualTo("{{W|[Backspace]}} {{y|建造}}"));
             Assert.That(target.InvalidBuildText, Is.EqualTo("{{K|建造}}"));
             Assert.That(target.EmptyText, Is.Empty);
-            Assert.That(target.DirectMarkedText, Is.EqualTo("Build"));
+            Assert.That(target.DirectMarkedText, Is.EqualTo("建造"));
             Assert.That(target.UnknownColorText, Is.EqualTo("{{y|Unmapped}}"));
             Assert.That(target.KnownColorText, Is.EqualTo("{{K|建造}}"));
         });
@@ -65,7 +65,7 @@ public sealed class GolemQuestMoundDisplayOptionsTranslationPatchTests
             ValidBuildText = "{{W|[Backspace]}} {{y|Build}}";
             InvalidBuildText = "{{K|Build}}";
             EmptyText = "";
-            DirectMarkedText = "\u0001Build";
+            DirectMarkedText = "\u0001建造";
             UnknownColorText = "{{y|Unmapped}}";
             KnownColorText = "{{K|Build}}";
         }

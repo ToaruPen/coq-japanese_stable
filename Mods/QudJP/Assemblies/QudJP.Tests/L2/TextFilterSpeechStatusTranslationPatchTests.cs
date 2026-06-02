@@ -117,11 +117,11 @@ public sealed class TextFilterSpeechStatusTranslationPatchTests
                     nameof(TextFiltersAngryTranslationPatch.Postfix),
                     typeof(string).MakeByRefType())));
 
-            var result = DummyTextFiltersTarget.AngryRaw(MessageFrameTranslator.MarkDirectTranslation("Stop."));
+            var result = DummyTextFiltersTarget.AngryRaw(MessageFrameTranslator.MarkDirectTranslation("止まれ。"));
 
             Assert.Multiple(() =>
             {
-                Assert.That(result, Is.EqualTo("Stop."));
+                Assert.That(result, Is.EqualTo("止まれ。"));
                 Assert.That(result.IndexOf(MessageFrameTranslator.DirectTranslationMarker), Is.EqualTo(-1));
                 Assert.That(
                     DynamicTextObservability.GetRouteFamilyHitCountForTests(

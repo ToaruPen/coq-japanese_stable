@@ -75,6 +75,7 @@ public sealed class TinkeringHelpersMakersMarkTranslationPatchTests
             Assert.That(DummyPopupGenericTarget.LastPickOptionOptions, Is.EqualTo(new[] { "なし" }));
             Assert.That(DummyPopupGenericTarget.LastShowColorPickerTitle, Is.EqualTo("作り手の印の色を選ぶ。"));
             Assert.That(HitCount(nameof(PopupPickOptionTranslationPatch), "Select"), Is.Zero);
+            Assert.That(HitCount(nameof(PopupPickOptionTranslationPatch), "Detail"), Is.Zero);
             Assert.That(HitCount(nameof(PopupShowColorPickerTranslationPatch), "Color"), Is.Zero);
         });
     }

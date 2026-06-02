@@ -106,7 +106,15 @@ public sealed class BaseMutationSelectVariantPopupTranslationPatchTests
 
             _ = DummyBaseMutationTarget.SelectVariant();
 
-            Assert.That(DummyPopupGenericTarget.LastPickOptionTitle, Is.EqualTo("変種を選択"));
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyPopupGenericTarget.LastPickOptionTitle, Is.EqualTo("変種を選択"));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(PopupPickOptionTranslationPatch),
+                        "Popup.ProducerText.BaseMutationSelectVariantPopupTranslationPatch"),
+                    Is.Zero);
+            });
         }
         finally
         {

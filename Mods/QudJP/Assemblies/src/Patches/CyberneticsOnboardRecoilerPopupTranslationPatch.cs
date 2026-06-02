@@ -46,11 +46,13 @@ public static class CyberneticsOnboardRecoilerPopupTranslationPatch
         try
         {
             __state = directMarkerPassThroughText;
+            directMarkerPassThroughText = null;
             OwnerTranslationScope.Enter(ref activeDepth);
         }
         catch (Exception ex)
         {
             __state = null;
+            directMarkerPassThroughText = null;
             Trace.TraceError("QudJP: {0}.Prefix failed: {1}", Context, ex);
         }
     }
@@ -60,11 +62,14 @@ public static class CyberneticsOnboardRecoilerPopupTranslationPatch
         try
         {
             OwnerTranslationScope.Exit(ref activeDepth);
-            directMarkerPassThroughText = __state;
         }
         catch (Exception ex)
         {
             Trace.TraceError("QudJP: {0}.Finalizer failed: {1}", Context, ex);
+        }
+        finally
+        {
+            directMarkerPassThroughText = __state;
         }
 
         return __exception;

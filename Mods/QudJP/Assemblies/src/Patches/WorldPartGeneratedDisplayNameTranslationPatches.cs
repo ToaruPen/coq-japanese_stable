@@ -9,7 +9,7 @@ namespace QudJP.Patches;
 internal static class WorldPartGeneratedDisplayNameTranslator
 {
     private static readonly Regex TombCultistPattern = new(
-        "^(?<base>.+?) and death pilgrim of the (?<cult>.+)$",
+        "^(?<base>.*?) and death pilgrim of the (?<cult>.+)$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     public static void TranslateRenderDisplayName(object? owner, string route, string family)
@@ -87,7 +87,9 @@ internal static class WorldPartGeneratedDisplayNameTranslator
         }
 
         var baseName = GetDisplayNameRouteTranslator.TranslatePreservingColors(match.Groups["base"].Value, route);
-        return match.Groups["cult"].Value + "の死の巡礼者、" + baseName;
+        return string.IsNullOrEmpty(baseName)
+            ? match.Groups["cult"].Value + "の死の巡礼者"
+            : match.Groups["cult"].Value + "の死の巡礼者、" + baseName;
     }
 }
 

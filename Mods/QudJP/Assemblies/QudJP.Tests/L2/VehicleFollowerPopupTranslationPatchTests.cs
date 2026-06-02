@@ -190,6 +190,7 @@ public sealed class VehicleFollowerPopupTranslationPatchTests
             DummyPopupShow.ShowFail(PopupMessageToShow);
         }
 
+        [MethodImpl(MethodImplOptions.NoInlining)]
         public static string PickFollower()
         {
             return PopupTranslationPatch.TranslatePopupTextForProducerRoute(

@@ -1969,6 +1969,39 @@ public sealed class CombatAndLogMessageQueuePatchTests
     }
 
     [Test]
+    public void GameObjectPopup_StripsPullDownDestinationDetailDirectMarker_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupPickOption(harmony);
+
+            var target = new DummyGameObjectPopupTarget
+            {
+                PullDownOptionsToSend =
+                [
+                    "Arrival location, {{Y|" + MessageFrameTranslator.MarkDirectTranslation("Rust Wells") + "}} (NW)",
+                ],
+            };
+
+            target.PullDown(allowAlternate: true);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyPopupGenericTarget.LastPickOptionTitle, Is.EqualTo("Select a destination"));
+                Assert.That(
+                    DummyPopupGenericTarget.LastPickOptionOptions,
+                    Is.EqualTo(new[] { "Arrival location, {{Y|Rust Wells}} (NW)" }));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void GameObjectPopup_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent()
     {
         var harmonyId = CreateHarmonyId();
@@ -2865,7 +2898,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
     }
 
     [Test]
-    public void LiquidWarmStatic_WishWarmEffectSpec_HandlesEdgeCases_WhenOwnerPatched()
+    public void LiquidWarmStatic_WishWarmEffect_And_WishWarmEffectSpec_HandlesEdgeCases_WhenOwnerPatched()
     {
         AssertLiquidWarmStaticQueuedMessage(
             nameof(DummyLiquidWarmStaticTarget.WishWarmEffect),
@@ -2914,7 +2947,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
     }
 
     [Test]
-    public void LiquidWarmStatic_DoesNotTranslateWishWarmEffectSpecTraffic_WhenOwnerAbsent()
+    public void LiquidWarmStatic_DoesNotTranslate_WishWarmEffect_And_WishWarmEffectSpec_WhenOwnerAbsent()
     {
         AssertLiquidWarmStaticQueuedMessageWithoutOwner(
             nameof(DummyLiquidWarmStaticTarget.WishWarmEffect),

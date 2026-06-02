@@ -77,15 +77,6 @@ public static class LegacyOptionsUiTranslationPatch
             translatedInstructions = new List<CodeInstruction>(originalInstructions.Count);
             foreach (var instruction in originalInstructions)
             {
-                if (instruction.opcode == OpCodes.Ldstr
-                    && instruction.operand is string literal
-                    && LiteralTranslations.ContainsKey(literal))
-                {
-                    translatedInstructions.Add(instruction);
-                    translatedInstructions.Add(new CodeInstruction(OpCodes.Call, TranslateBufferTextMethod));
-                    continue;
-                }
-
                 if (IsStringWriteCall(instruction))
                 {
                     translatedInstructions.Add(new CodeInstruction(OpCodes.Call, TranslateBufferTextMethod));

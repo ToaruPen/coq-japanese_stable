@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using HarmonyLib;
 using QudJP.Patches;
 using QudJP.Tests.DummyTargets;
@@ -222,6 +223,7 @@ public sealed class SavesApiFatalSaveErrorTranslationPatchTests
 
     private static class DummyFatalSaveErrorOwnerTarget
     {
+        [MethodImpl(MethodImplOptions.NoInlining)]
         public static void Run(Action action) => action();
     }
 }
