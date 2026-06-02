@@ -5450,13 +5450,13 @@ public sealed class CombatAndLogMessageQueuePatchTests
                 typeof(FungalSporeInfectionTranslationPatch));
 
             _ = DummyFungalSporeInfectionTarget.ChooseLimbForInfection(
-                MessageFrameTranslator.MarkDirectTranslation("custom feeler"),
-                new[] { MessageFrameTranslator.MarkDirectTranslation("custom feeler") });
+                "{{G|glowcrust}}",
+                new[] { MessageFrameTranslator.MarkDirectTranslation("left arm") });
 
             Assert.Multiple(() =>
             {
-                Assert.That(DummyPopupGenericTarget.LastPickOptionTitle, Is.EqualTo("custom feelerで感染させる部位を選ぶ。"));
-                Assert.That(DummyPopupGenericTarget.LastPickOptionOptions, Is.EqualTo(new[] { "custom feeler" }));
+                Assert.That(DummyPopupGenericTarget.LastPickOptionTitle, Is.EqualTo("{{G|glowcrust}}で感染させる部位を選ぶ。"));
+                Assert.That(DummyPopupGenericTarget.LastPickOptionOptions, Is.EqualTo(new[] { "left arm" }));
             });
         }
         finally

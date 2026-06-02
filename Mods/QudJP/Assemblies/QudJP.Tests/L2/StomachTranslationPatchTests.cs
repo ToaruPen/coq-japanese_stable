@@ -105,11 +105,12 @@ public sealed class StomachTranslationPatchTests
         }
     }
 
-    [Test]
-    public void AddWater_DoesNotRetranslateDirectMarkedQueueMessage_WhenOwnerPatched()
+    [TestCase("You drank way too much!", "StomachOverdrink")]
+    [TestCase("You drank way too much! You vomit!", "StomachOverdrinkVomiting")]
+    public void AddWater_DoesNotRetranslateDirectMarkedQueueMessage_WhenOwnerPatched(
+        string source,
+        string detail)
     {
-        const string source = "You drank way too much! You vomit!";
-
         WithPatchedOwnerAndQueue(() =>
         {
             new DummyStomachProducer
@@ -120,7 +121,7 @@ public sealed class StomachTranslationPatchTests
             Assert.Multiple(() =>
             {
                 Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(source));
-                Assert.That(HitCount("StomachOverdrinkVomiting"), Is.Zero);
+                Assert.That(HitCount(detail), Is.Zero);
             });
         });
     }

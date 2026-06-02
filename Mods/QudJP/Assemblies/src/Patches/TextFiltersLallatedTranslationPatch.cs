@@ -26,7 +26,16 @@ public static class TextFiltersLallatedTranslationPatch
         {
             var source = __result;
             var translated = TextFilterSpeechStatusTranslator.TranslateLallated(source, Text);
-            TextFilterSpeechStatusPatchHelpers.RecordIfChanged(Context, Family, source, translated, ref __result);
+            var recordTransform =
+                !MessageFrameTranslator.TryStripDirectTranslationMarker(Text, out _)
+                && !MessageFrameTranslator.TryStripDirectTranslationMarker(source, out _);
+            TextFilterSpeechStatusPatchHelpers.RecordIfChanged(
+                Context,
+                Family,
+                source,
+                translated,
+                ref __result,
+                recordTransform);
         }
         catch (Exception ex)
         {

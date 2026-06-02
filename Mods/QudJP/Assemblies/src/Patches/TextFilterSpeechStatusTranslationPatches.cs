@@ -66,14 +66,24 @@ internal static class TextFilterSpeechStatusPatchHelpers
         return method;
     }
 
-    public static void RecordIfChanged(string context, string family, string source, string translated, ref string result)
+    public static void RecordIfChanged(
+        string context,
+        string family,
+        string source,
+        string translated,
+        ref string result,
+        bool recordTransform = true)
     {
         if (string.Equals(translated, source, StringComparison.Ordinal))
         {
             return;
         }
 
-        DynamicTextObservability.RecordTransform(context, family, source, translated);
+        if (recordTransform)
+        {
+            DynamicTextObservability.RecordTransform(context, family, source, translated);
+        }
+
         result = translated;
     }
 }

@@ -195,7 +195,7 @@ internal sealed class DummyXrlCoreRestoreModsLoadedTarget
             ColoredIncompleteTitle = "{{red|Incomplete Mod Configuration}}",
             UnavailableMessage = unavailable,
             DiffersTitle = "Mod Configuration Differs",
-            DirectMarkedDiffersTitle = "\u0001Mod Configuration Differs",
+            DirectMarkedDiffersTitle = "\u0001Mod構成が異なります",
             DiffersMessage = differs,
             Options =
             [

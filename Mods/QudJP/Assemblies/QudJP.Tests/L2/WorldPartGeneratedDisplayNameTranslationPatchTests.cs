@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using HarmonyLib;
 using QudJP.Patches;
 
@@ -303,6 +304,7 @@ public sealed class WorldPartGeneratedDisplayNameTranslationPatchTests
     {
         public static string? GeneratedDisplayNameOverride { get; set; }
 
+        [MethodImpl(MethodImplOptions.NoInlining)]
         public static DummyGameObject CreateHologramOf(DummyGameObject source)
         {
             return new DummyGameObject
@@ -319,6 +321,7 @@ public sealed class WorldPartGeneratedDisplayNameTranslationPatchTests
     {
         public DummyGameObject ParentObject { get; } = new();
 
+        [MethodImpl(MethodImplOptions.NoInlining)]
         public void SetCreature(DummyGameObject creature)
         {
             ParentObject.Render.DisplayName = "stone statue of a " + creature.DisplayName;
@@ -335,6 +338,7 @@ public sealed class WorldPartGeneratedDisplayNameTranslationPatchTests
 
         public DummyGameObject ParentObject { get; } = new();
 
+        [MethodImpl(MethodImplOptions.NoInlining)]
         public void HandleEvent(DummyAfterObjectCreatedEvent e)
         {
             _ = e;
@@ -359,6 +363,7 @@ public sealed class WorldPartGeneratedDisplayNameTranslationPatchTests
 
     private static class DummyTombCultistTemplateTarget
     {
+        [MethodImpl(MethodImplOptions.NoInlining)]
         public static void Apply(DummyGameObject GO, DummyHistoricEntitySnapshot snapshot)
         {
             GO.DisplayName = GO.Render.DisplayName + " and death pilgrim of the {{Y|" + snapshot.GetProperty("cultName") + "}}";

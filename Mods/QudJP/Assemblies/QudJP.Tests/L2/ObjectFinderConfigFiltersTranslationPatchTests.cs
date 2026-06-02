@@ -56,44 +56,52 @@ public sealed class ObjectFinderConfigFiltersTranslationPatchTests
     }
 
     [Test]
-    public void ConfigFilters_LeavesUnknownAndStripsDirectMarkedText()
+    public void ConfigFilters_LeavesUnknownAndStripsDirectMarkedText_WhenOwnerPatched()
     {
+        using var ownerPatch = PatchOwner();
+        using var pickOptionPatch = PatchPickOption();
+        var target = new DummyObjectFinderConfigFiltersTarget
+        {
+            ActionsToShow =
+            [
+                "Unknown Action",
+                string.Empty,
+                MessageFrameTranslator.MarkDirectTranslation("アイテムを表示"),
+                "{{R|Show Items}}",
+            ],
+            FilterRowsToShow =
+            [
+                "Unknown Classifier",
+                string.Empty,
+                MessageFrameTranslator.MarkDirectTranslation("表示済みフィルター"),
+                "Custom Classifier{{G| [Show]}}",
+            ],
+        };
+
+        target.ConfigFilters();
+
         Assert.Multiple(() =>
         {
             Assert.That(
-                ObjectFinderConfigFiltersTranslationPatch.TryTranslatePopupMessage(
-                    "Unknown Classifier",
-                    nameof(PopupPickOptionTranslationPatch),
-                    "Popup.ProducerText",
-                    out var unknown),
-                Is.False);
-            Assert.That(unknown, Is.EqualTo("Unknown Classifier"));
-            Assert.That(
-                ObjectFinderConfigFiltersTranslationPatch.TryTranslatePopupMessage(
-                    "\u0001Show Items",
-                    nameof(PopupPickOptionTranslationPatch),
-                    "Popup.ProducerText",
-                    out var marked),
-                Is.True);
-            Assert.That(marked, Is.EqualTo("Show Items"));
-
-            Assert.That(
-                ObjectFinderConfigFiltersTranslationPatch.TryTranslatePopupMessage(
+                target.SecondPickOptions,
+                Is.EqualTo(new[]
+                {
+                    "Unknown Action",
                     string.Empty,
-                    nameof(PopupPickOptionTranslationPatch),
-                    "Popup.ProducerText",
-                    out var empty),
-                Is.False);
-            Assert.That(empty, Is.Empty);
-
+                    "アイテムを表示",
+                    "{{R|アイテムを表示}}",
+                }));
             Assert.That(
-                ObjectFinderConfigFiltersTranslationPatch.TryTranslatePopupMessage(
-                    "{{R|Show Items}}",
-                    nameof(PopupPickOptionTranslationPatch),
-                    "Popup.ProducerText",
-                    out var colored),
-                Is.True);
-            Assert.That(colored, Is.EqualTo("{{R|アイテムを表示}}"));
+                target.FirstPickOptions,
+                Is.EqualTo(new[]
+                {
+                    "Unknown Classifier",
+                    string.Empty,
+                    "表示済みフィルター",
+                    "Custom Classifier{{G| [表示]}}",
+                }));
+            Assert.That(ObjectFinderHitCount("ObjectFinder.ConfigFilters.Action"), Is.EqualTo(1));
+            Assert.That(ObjectFinderHitCount("ObjectFinder.ConfigFilters.State"), Is.EqualTo(1));
         });
     }
 
@@ -144,10 +152,23 @@ public sealed class ObjectFinderConfigFiltersTranslationPatchTests
 
         public string? LastActionSelection { get; private set; }
 
+        public IReadOnlyList<string> ActionsToShow { get; init; } =
+        [
+            "Hide Items",
+            "Ignore Rule",
+            "Move Up",
+            "Move Down",
+        ];
+
+        public IReadOnlyList<string> FilterRowsToShow { get; init; } =
+        [
+            "Custom Classifier{{G| [Show]}}",
+        ];
+
         [MethodImpl(MethodImplOptions.NoInlining)]
         public void ConfigFilters()
         {
-            var actions = new List<string> { "Hide Items", "Ignore Rule", "Move Up", "Move Down" };
+            var actions = new List<string>(ActionsToShow);
             var actionIndex = DummyPopupGenericTarget.PickOption(
                 Title: "Custom Classifier",
                 Options: actions.ToArray(),
@@ -156,10 +177,9 @@ public sealed class ObjectFinderConfigFiltersTranslationPatchTests
             SecondPickOptions = DummyPopupGenericTarget.LastPickOptionOptions;
             LastActionSelection = actionIndex >= 0 && actionIndex < actions.Count ? actions[actionIndex] : null;
 
-            var filterRows = new[] { "Custom Classifier{{G| [Show]}}" };
             _ = DummyPopupGenericTarget.PickOption(
                 Title: "Pick a filter to change",
-                Options: filterRows,
+                Options: FilterRowsToShow.ToArray(),
                 AllowEscape: true);
             FirstPickTitle = DummyPopupGenericTarget.LastPickOptionTitle;
             FirstPickOptions = DummyPopupGenericTarget.LastPickOptionOptions;

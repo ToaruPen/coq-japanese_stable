@@ -127,7 +127,7 @@ public sealed class TextFilterSpeechStatusTranslationPatchTests
                     DynamicTextObservability.GetRouteFamilyHitCountForTests(
                         nameof(TextFiltersAngryTranslationPatch),
                         "TextFilters.Angry"),
-                    Is.EqualTo(1));
+                    Is.Zero);
             });
         }
         finally
@@ -284,7 +284,7 @@ public sealed class TextFilterSpeechStatusTranslationPatchTests
                     DynamicTextObservability.GetRouteFamilyHitCountForTests(
                         nameof(TextFiltersLallatedTranslationPatch),
                         "TextFilters.Lallated"),
-                    Is.EqualTo(1));
+                    Is.Zero);
             });
         }
         finally
@@ -323,7 +323,7 @@ public sealed class TextFilterSpeechStatusTranslationPatchTests
                     DynamicTextObservability.GetRouteFamilyHitCountForTests(
                         nameof(TextFiltersLallatedTranslationPatch),
                         "TextFilters.Lallated"),
-                    Is.EqualTo(1));
+                    Is.Zero);
             });
         }
         finally
@@ -368,6 +368,7 @@ public sealed class TextFilterSpeechStatusTranslationPatchTests
             return LastAngrySource;
         }
 
+        [MethodImpl(MethodImplOptions.NoInlining)]
         public static string AngryRaw(string result)
         {
             return result;

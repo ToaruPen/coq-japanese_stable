@@ -23,7 +23,14 @@ public static class TextFiltersAngryTranslationPatch
         {
             var source = __result;
             var translated = TextFilterSpeechStatusTranslator.TranslateAngry(source);
-            TextFilterSpeechStatusPatchHelpers.RecordIfChanged(Context, Family, source, translated, ref __result);
+            var recordTransform = !MessageFrameTranslator.TryStripDirectTranslationMarker(source, out _);
+            TextFilterSpeechStatusPatchHelpers.RecordIfChanged(
+                Context,
+                Family,
+                source,
+                translated,
+                ref __result,
+                recordTransform);
         }
         catch (Exception ex)
         {

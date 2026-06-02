@@ -75,7 +75,7 @@ public sealed class DescriptionLookPopupTranslationPatchTests
 
         target.HandleDirectMarked();
 
-        Assert.That(target.Text, Is.EqualTo("Recall {{W|S}}tory"));
+        Assert.That(target.Text, Is.EqualTo("{{W|S}} ストーリーを思い出す"));
     }
 
     private static IDisposable PatchDummyTarget()
@@ -161,7 +161,7 @@ public sealed class DescriptionLookPopupTranslationPatchTests
         [MethodImpl(MethodImplOptions.NoInlining)]
         public void HandleDirectMarked()
         {
-            Text = "\u0001Recall {{W|S}}tory";
+            Text = "\u0001{{W|S}} ストーリーを思い出す";
         }
     }
 

@@ -1476,8 +1476,7 @@ public sealed class GetDisplayNameRouteTranslatorTests
 
     [TestCase("", "")]
     [TestCase("\u0001defoliant grenade mk I miner mk I", "\u0001defoliant grenade mk I miner mk I")]
-    [TestCase("<color=green>odd grenade mk I miner mk I</color>", "<color=green>odd grenade mk I 採掘機 mk I</color>")]
-    public void TranslatePreservingColors_MinerGeneratedRoleSuffixEdgeInputsPassThrough(
+    public void TranslatePreservingColors_MinerGeneratedRoleSuffixNonTranslatableEdgeInputsPassThrough(
         string source,
         string expected)
     {
@@ -1489,7 +1488,7 @@ public sealed class GetDisplayNameRouteTranslatorTests
     }
 
     [Test]
-    public void TranslatePreservingColors_MinerGeneratedRoleSuffixFallsBackWhenBaseUnknown()
+    public void TranslatePreservingColors_TranslatesMinerGeneratedRoleSuffixWhenBaseUnknown()
     {
         var source = "odd grenade mk I miner mk I";
 
@@ -1498,6 +1497,18 @@ public sealed class GetDisplayNameRouteTranslatorTests
             nameof(GetDisplayNameProcessPatch));
 
         Assert.That(translated, Is.EqualTo("odd grenade mk I 採掘機 mk I"));
+    }
+
+    [Test]
+    public void TranslatePreservingColors_TranslatesColoredMinerGeneratedRoleSuffixWhenBaseUnknown()
+    {
+        var source = "<color=green>odd grenade mk I miner mk I</color>";
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            source,
+            nameof(GetDisplayNameProcessPatch));
+
+        Assert.That(translated, Is.EqualTo("<color=green>odd grenade mk I 採掘機 mk I</color>"));
     }
 
     [TestCase(

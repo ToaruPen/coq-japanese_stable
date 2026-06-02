@@ -569,20 +569,21 @@ public sealed class TradeUiPopupTranslationPatchTests
     [Test]
     public void VendorOwnerPatch_DoesNotRetranslateDirectMarkedRepairPopup_WhenOwnerPatched()
     {
+        const string translatedMessage = "その品は壊れていない！";
         WriteDictionary(("{0} isn't broken!", "{0}は壊れていない！"));
 
         using var showPatch = PatchPopupShow(nameof(DummyPopupShow.Show));
         using var ownerPatch = PatchVendorOwner(nameof(DummyTradeUiVendorPopupProducerTarget.DoVendorRepair));
         var target = new DummyTradeUiVendorPopupProducerTarget
         {
-            PopupMessageToShow = MessageFrameTranslator.MarkDirectTranslation("That item isn't broken!"),
+            PopupMessageToShow = MessageFrameTranslator.MarkDirectTranslation(translatedMessage),
         };
 
         target.DoVendorRepair();
 
         Assert.Multiple(() =>
         {
-            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("That item isn't broken!"));
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(translatedMessage));
             Assert.That(TradeUiPopupHitCount("TradeUiPopup.RepairBroken"), Is.Zero);
         });
     }

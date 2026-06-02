@@ -117,11 +117,11 @@ public sealed class MutationDisplayNameTranslationPatchTests
     {
         var result = InvokePatchedDisplayName(
             nameof(DummyMutationDisplayNameTarget.BaseMutationGetDisplayName),
-            MessageFrameTranslator.MarkDirectTranslation("Force Wall"));
+            MessageFrameTranslator.MarkDirectTranslation("力場壁"));
 
         Assert.Multiple(() =>
         {
-            Assert.That(result, Is.EqualTo("Force Wall"));
+            Assert.That(result, Is.EqualTo("力場壁"));
             Assert.That(
                 DynamicTextObservability.GetRouteFamilyHitCountForTests(
                     MutationDisplayNameTranslationPatch.Context,
