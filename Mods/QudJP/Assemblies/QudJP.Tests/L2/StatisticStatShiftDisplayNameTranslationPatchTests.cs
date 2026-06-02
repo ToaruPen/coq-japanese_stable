@@ -114,12 +114,12 @@ public sealed class StatisticStatShiftDisplayNameTranslationPatchTests
     [Test]
     public void Prefix_StripsDirectMarkedKnownDisplayNameWithoutRetranslating()
     {
-        var source = MessageFrameTranslator.MarkDirectTranslation("camouflage");
+        var source = MessageFrameTranslator.MarkDirectTranslation("迷彩");
         var result = InvokePatchedAddShift(source);
 
         Assert.Multiple(() =>
         {
-            Assert.That(result, Is.EqualTo("camouflage"));
+            Assert.That(result, Is.EqualTo("迷彩"));
             Assert.That(result.IndexOf(MessageFrameTranslator.DirectTranslationMarker), Is.EqualTo(-1));
             Assert.That(
                 DynamicTextObservability.GetRouteFamilyHitCountForTests(

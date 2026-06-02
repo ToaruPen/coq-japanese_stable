@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.CompilerServices;
 
 namespace QudJP.Tests.DummyTargets;
 
@@ -92,6 +93,7 @@ internal sealed class DummyTradeUiVendorPopupProducerTarget
         ShowConfiguredPopup();
     }
 
+    [MethodImpl(MethodImplOptions.NoInlining)]
     public void ShowVendorActions()
     {
         var options = VendorActionOptions is null

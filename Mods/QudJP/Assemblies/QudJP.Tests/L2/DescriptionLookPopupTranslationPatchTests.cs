@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using HarmonyLib;
 using QudJP.Patches;
 
@@ -110,6 +111,7 @@ public sealed class DescriptionLookPopupTranslationPatchTests
 
         public string LegacyPromptWithoutStory { get; private set; } = string.Empty;
 
+        [MethodImpl(MethodImplOptions.NoInlining)]
         public void HandleEvent()
         {
             var storyButton = new DummyQudMenuItem
@@ -138,21 +140,25 @@ public sealed class DescriptionLookPopupTranslationPatchTests
     {
         public string Text { get; private set; } = string.Empty;
 
+        [MethodImpl(MethodImplOptions.NoInlining)]
         public void HandleUnknown()
         {
             Text = "Unknown look popup text";
         }
 
+        [MethodImpl(MethodImplOptions.NoInlining)]
         public void HandleEmpty()
         {
             Text = "";
         }
 
+        [MethodImpl(MethodImplOptions.NoInlining)]
         public void HandleColorTagged()
         {
             Text = "{{C|Recall Story}}";
         }
 
+        [MethodImpl(MethodImplOptions.NoInlining)]
         public void HandleDirectMarked()
         {
             Text = "\u0001Recall {{W|S}}tory";

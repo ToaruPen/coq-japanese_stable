@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using HarmonyLib;
 using QudJP.Patches;
 using QudJP.Tests.DummyTargets;
@@ -225,6 +226,7 @@ public sealed class BaseMutationSelectVariantPopupTranslationPatchTests
     {
         public static string TitleToShow { get; set; } = "Choose variant";
 
+        [MethodImpl(MethodImplOptions.NoInlining)]
         public static bool SelectVariant()
         {
             _ = DummyPopupGenericTarget.PickOption(Title: TitleToShow);

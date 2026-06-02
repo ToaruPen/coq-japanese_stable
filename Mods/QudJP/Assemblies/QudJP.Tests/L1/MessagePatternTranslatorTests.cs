@@ -1109,6 +1109,15 @@ public sealed class MessagePatternTranslatorTests
         Assert.That(MessagePatternTranslator.Translate(source), Is.EqualTo(source));
     }
 
+    [TestCase("You stop 瞑想中 because you can go no further.")]
+    [TestCase("{{y|You stop 瞑想中 because you can go no further.}}")]
+    public void Translate_RepositoryDictionary_FallsBackForUnknownLocalizedAutoActDescription(string source)
+    {
+        UseRepositoryPatternDictionary();
+
+        Assert.That(MessagePatternTranslator.Translate(source), Is.EqualTo(source));
+    }
+
     [Test]
     public void Translate_RepositoryDictionary_PreservesWholeLineColorForUnknownLocalizedAutoActStopSeeMessage()
     {
@@ -1143,6 +1152,17 @@ public sealed class MessagePatternTranslatorTests
         UseRepositoryPatternDictionary();
 
         var source = MessageFrameTranslator.MarkDirectTranslation("You stop 移動中 because you can go no further.");
+
+        Assert.That(MessagePatternTranslator.Translate(source), Is.EqualTo(source));
+    }
+
+    [Test]
+    public void Translate_RepositoryDictionary_PreservesDirectMarkerForUnknownLocalizedAutoActStopBecause()
+    {
+        UseRepositoryPatternDictionary();
+
+        var source = MessageFrameTranslator.MarkDirectTranslation(
+            "You stop 瞑想中 because you can go no further.");
 
         Assert.That(MessagePatternTranslator.Translate(source), Is.EqualTo(source));
     }

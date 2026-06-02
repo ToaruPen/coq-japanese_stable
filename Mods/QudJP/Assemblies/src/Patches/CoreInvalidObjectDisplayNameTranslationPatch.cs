@@ -67,7 +67,7 @@ public static class CoreInvalidObjectDisplayNameTranslationPatch
     {
         try
         {
-            if (__result is IEnumerable objects and not string)
+            if (__result is IEnumerable objects && !(__result is string))
             {
                 foreach (var item in objects)
                 {
