@@ -83,6 +83,26 @@ public sealed class MessageQueueSemanticPipelineColorContractTests
         Assert.That(nonColorAware, Is.EquivalentTo(ReviewedNonColorAwareTranslators));
     }
 
+    [Test]
+    public void RepresentativeQueuedPatternTranslation_PreservesColorTagsInJapaneseOutput()
+    {
+        var dictionaryPath = Path.Combine(
+            FindRepositoryRoot().FullName,
+            "Mods/QudJP/Localization/Dictionaries/messages.ja.json");
+        MessagePatternTranslator.SetPatternFileForTests(dictionaryPath);
+
+        try
+        {
+            var translated = MessagePatternTranslator.Translate("You gain {{C|75}} XP!");
+
+            Assert.That(translated, Is.EqualTo("あなたは経験値を{{C|75}}獲得した"));
+        }
+        finally
+        {
+            MessagePatternTranslator.ResetForTests();
+        }
+    }
+
     private static bool HasKnownColorPreservationRoute(string source)
     {
         return source.Contains("ColorAwareTranslationComposer", StringComparison.Ordinal)

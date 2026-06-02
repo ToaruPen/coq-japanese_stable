@@ -1932,6 +1932,30 @@ public sealed class CombatAndLogMessageQueuePatchTests
     }
 
     [Test]
+    public void GameObjectPopup_StripsPullDownDestinationDetailDirectMarker_WhenOwnerPatched()
+    {
+        GameObjectPopupTranslationPatch.Prefix();
+        try
+        {
+            var translated = GameObjectPopupTranslationPatch.TryTranslatePopupMessage(
+                "Arrival location, {{Y|" + MessageFrameTranslator.MarkDirectTranslation("Rust Wells") + "}} (NW)",
+                "Popup.PickOption",
+                "Popup.PickOption",
+                out var result);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(translated, Is.True);
+                Assert.That(result, Is.EqualTo("到着地点, {{Y|Rust Wells}} (NW)"));
+            });
+        }
+        finally
+        {
+            _ = GameObjectPopupTranslationPatch.Finalizer(null);
+        }
+    }
+
+    [Test]
     public void GameObjectPopup_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent()
     {
         var harmonyId = CreateHarmonyId();
@@ -2835,6 +2859,62 @@ public sealed class CombatAndLogMessageQueuePatchTests
         string expected)
     {
         AssertLiquidWarmStaticQueuedMessage(methodName, source, expected);
+    }
+
+    [Test]
+    public void LiquidWarmStatic_WishWarmEffectSpec_HandlesEdgeCases_WhenOwnerPatched()
+    {
+        AssertLiquidWarmStaticQueuedMessage(
+            nameof(DummyLiquidWarmStaticTarget.WishWarmEffectSpec),
+            MessageFrameTranslator.MarkDirectTranslation("No valid targets for {{rules|Phase-Conjugate}}."),
+            "No valid targets for {{rules|Phase-Conjugate}}.",
+            "Phase-Conjugate");
+        AssertLiquidWarmStaticQueuedMessage(
+            nameof(DummyLiquidWarmStaticTarget.WishWarmEffectSpec),
+            string.Empty,
+            string.Empty,
+            "Phase-Conjugate");
+        AssertLiquidWarmStaticQueuedMessage(
+            nameof(DummyLiquidWarmStaticTarget.WishWarmEffectSpec),
+            "{{rules|{{Y|Glotrot}}}} applied to rusted short sword.",
+            "{{rules|{{Y|Glotrot}}}}がrusted short swordに適用された。",
+            "Glotrot");
+    }
+
+    [Test]
+    public void LiquidWarmStatic_GlitchLiquidComponents_HandlesEdgeCases_WhenOwnerPatched()
+    {
+        AssertLiquidWarmStaticQueuedMessage(
+            nameof(DummyLiquidWarmStaticTarget.GlitchLiquidComponents),
+            MessageFrameTranslator.MarkDirectTranslation("{{Y|warm static}} starts to glitch."),
+            "{{Y|warm static}} starts to glitch.");
+        AssertLiquidWarmStaticQueuedMessage(
+            nameof(DummyLiquidWarmStaticTarget.GlitchLiquidComponents),
+            string.Empty,
+            string.Empty);
+        AssertLiquidWarmStaticQueuedMessage(
+            nameof(DummyLiquidWarmStaticTarget.GlitchLiquidComponents),
+            "{{W|The liquid mixture inside {{Y|the canteen}} starts to glitch.}}",
+            "{{W|{{Y|the canteen}}の中の混合液がグリッチし始めた。}}");
+    }
+
+    [Test]
+    public void LiquidWarmStatic_DoesNotTranslateWishWarmEffectSpecTraffic_WhenOwnerAbsent()
+    {
+        AssertLiquidWarmStaticQueuedMessageWithoutOwner(
+            nameof(DummyLiquidWarmStaticTarget.WishWarmEffectSpec),
+            "{{rules|Glotrot}} applied to rusted short sword.",
+            "{{rules|Glotrot}} applied to rusted short sword.",
+            "Glotrot");
+    }
+
+    [Test]
+    public void LiquidWarmStatic_DoesNotTranslateGlitchLiquidComponentsTraffic_WhenOwnerAbsent()
+    {
+        AssertLiquidWarmStaticQueuedMessageWithoutOwner(
+            nameof(DummyLiquidWarmStaticTarget.GlitchLiquidComponents),
+            "{{Y|warm static}} starts to glitch.",
+            "{{Y|warm static}} starts to glitch.");
     }
 
     [TestCase(
@@ -9627,6 +9707,33 @@ public sealed class CombatAndLogMessageQueuePatchTests
         }
     }
 
+    private static void AssertLiquidWarmStaticQueuedMessageWithoutOwner(
+        string methodName,
+        string message,
+        string expected,
+        string? specName = null)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+
+            var target = new DummyLiquidWarmStaticTarget
+            {
+                MessageToSend = message,
+            };
+
+            InvokeLiquidWarmStaticDummyMethod(target, methodName, specName);
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
     private static void AssertLiquidWarmStaticPopupMessage(string methodName, string message, string expected)
     {
         var harmonyId = CreateHarmonyId();
@@ -9682,7 +9789,12 @@ public sealed class CombatAndLogMessageQueuePatchTests
 
         if (methodName == nameof(DummyLiquidWarmStaticTarget.WishWarmEffectSpec))
         {
-            LiquidWarmStaticDummyMethod(methodName).Invoke(target, new object[] { specName ?? "Confused" });
+            if (specName is null)
+            {
+                throw new ArgumentNullException(nameof(specName));
+            }
+
+            LiquidWarmStaticDummyMethod(methodName).Invoke(target, new object[] { specName });
             return;
         }
 

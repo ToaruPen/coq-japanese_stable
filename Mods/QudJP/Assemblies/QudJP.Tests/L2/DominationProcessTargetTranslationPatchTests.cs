@@ -94,6 +94,20 @@ public sealed class DominationProcessTargetTranslationPatchTests
         });
     }
 
+    [Test]
+    public void ProcessTarget_StripsDirectMarkedQueuedMessage_WhenOwnerAbsent()
+    {
+        var message = MessageFrameTranslator.MarkDirectTranslation("翻訳済み");
+
+        var translated = DominationProcessTargetTranslationPatch.TryTranslateQueuedMessage(ref message, null);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.True);
+            Assert.That(message, Is.EqualTo(MessageFrameTranslator.MarkDirectTranslation("翻訳済み")));
+        });
+    }
+
     private static void QueueDominationMessage(string message)
     {
         var target = new DummyDominationProcessTarget

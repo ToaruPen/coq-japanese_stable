@@ -54,6 +54,25 @@ public sealed class InventoryActionDisplayTranslationPatchTests
     }
 
     [Test]
+    public void TranslateActionTable_PreservesExactDictionaryHotkey_WhenActionKeyIsProvided()
+    {
+        WriteInventoryActionDictionary(("direct to change follow distance", "追従距離を変更"));
+        var actions = new Dictionary<string, DummyInventoryAction>
+        {
+            ["Change Follow Distance"] = new()
+            {
+                Display = "direct to change follow distance",
+                Command = "CompanionChangeFollowDistance",
+                Key = 'D',
+            },
+        };
+
+        InventoryActionDisplayTranslationPatch.TranslateActionTableForTests(actions);
+
+        Assert.That(actions["Change Follow Distance"].Display, Is.EqualTo("{{hotkey|D}}追従距離を変更"));
+    }
+
+    [Test]
     public void TranslateActionTable_TranslatesRechargeCellDisplayDynamically()
     {
         WriteDisplayNameAtomicDictionary(("chem cell", "ケムセル"));

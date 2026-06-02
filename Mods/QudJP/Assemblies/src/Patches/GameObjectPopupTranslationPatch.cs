@@ -417,6 +417,7 @@ public static class GameObjectPopupTranslationPatch
     {
         var group = match.Groups[groupName];
         var restored = ColorAwareTranslationComposer.MarkupAwareRestoreCapture(group.Value, spans, group);
+        restored = MessageFrameTranslator.StripAllDirectTranslationMarkers(restored);
         return trim ? restored.Trim() : restored;
     }
 

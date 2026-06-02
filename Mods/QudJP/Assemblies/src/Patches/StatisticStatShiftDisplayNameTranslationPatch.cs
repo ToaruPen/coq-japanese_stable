@@ -67,20 +67,34 @@ public static class StatisticStatShiftDisplayNameTranslationPatch
         }
 
         var sourceText = source!;
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(sourceText, out var markedText))
+        {
+            sourceText = markedText;
+        }
+
         if (FixedTranslations.TryGetValue(sourceText, out var exactTranslation))
         {
             translated = exactTranslation;
             return true;
         }
 
-        var match = PossessiveSourcePattern.Match(sourceText);
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(sourceText);
+        if (FixedTranslations.TryGetValue(stripped, out var colorAwareExactTranslation))
+        {
+            translated = ColorAwareTranslationComposer.Restore(colorAwareExactTranslation, spans);
+            return true;
+        }
+
+        var match = PossessiveSourcePattern.Match(stripped);
         if (match.Success && FixedTranslations.TryGetValue(match.Groups["source"].Value, out var sourceTranslation))
         {
-            translated = match.Groups["owner"].Value + "の" + sourceTranslation;
+            var owner = ColorAwareTranslationComposer.RestoreCapture(match.Groups["owner"].Value, spans, match.Groups["owner"]).Trim();
+            var sourceName = ColorAwareTranslationComposer.RestoreCapture(sourceTranslation, spans, match.Groups["source"]).Trim();
+            translated = owner + "の" + sourceName;
             return true;
         }
 
         translated = sourceText;
-        return false;
+        return !string.Equals(sourceText, source, StringComparison.Ordinal);
     }
 }

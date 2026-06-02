@@ -126,7 +126,7 @@ public static class InventoryActionDisplayTranslationPatch
             InventoryActionDictionaryFile);
         if (exact is not null)
         {
-            translated = exact;
+            translated = ApplyHotkeyPrefix(action, exact);
             return true;
         }
 
@@ -158,17 +158,22 @@ public static class InventoryActionDisplayTranslationPatch
         var translatedCell = ColorAwareTranslationComposer.TranslatePreservingColors(
             cell,
             GetDisplayNameRouteTranslator.TranslateScopedExactPreservingColors);
-        translated = translatedCell + "を充電する";
+        translated = ApplyHotkeyPrefix(action, translatedCell + "を充電する");
+        return true;
+    }
+
+    private static string ApplyHotkeyPrefix(object action, string translated)
+    {
         var key = GetCharMember(action, "Key");
         if (key.HasValue
             && key.Value != '\0'
             && key.Value != ' '
             && translated.IndexOf("{{hotkey|", StringComparison.Ordinal) < 0)
         {
-            translated = "{{hotkey|" + key.Value + "}}" + translated;
+            return "{{hotkey|" + key.Value + "}}" + translated;
         }
 
-        return true;
+        return translated;
     }
 
     private static string? GetStringMember(object instance, string memberName)

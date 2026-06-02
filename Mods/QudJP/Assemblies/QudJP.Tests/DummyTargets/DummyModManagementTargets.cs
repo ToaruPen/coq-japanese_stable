@@ -192,8 +192,10 @@ internal sealed class DummyXrlCoreRestoreModsLoadedTarget
         return new DummyXrlCoreRestoreModsLoadedResult
         {
             IncompleteTitle = "Incomplete Mod Configuration",
+            ColoredIncompleteTitle = "{{red|Incomplete Mod Configuration}}",
             UnavailableMessage = unavailable,
             DiffersTitle = "Mod Configuration Differs",
+            DirectMarkedDiffersTitle = "\u0001Mod Configuration Differs",
             DiffersMessage = differs,
             Options =
             [
@@ -208,9 +210,13 @@ internal sealed class DummyXrlCoreRestoreModsLoadedResult
 {
     public string IncompleteTitle { get; init; } = string.Empty;
 
+    public string ColoredIncompleteTitle { get; init; } = string.Empty;
+
     public string UnavailableMessage { get; init; } = string.Empty;
 
     public string DiffersTitle { get; init; } = string.Empty;
+
+    public string DirectMarkedDiffersTitle { get; init; } = string.Empty;
 
     public string DiffersMessage { get; init; } = string.Empty;
 

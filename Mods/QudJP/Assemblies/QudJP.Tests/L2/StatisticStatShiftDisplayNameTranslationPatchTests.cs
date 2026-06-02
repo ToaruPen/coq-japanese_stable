@@ -89,19 +89,61 @@ public sealed class StatisticStatShiftDisplayNameTranslationPatchTests
         });
     }
 
-    [TestCase("")]
-    [TestCase("{{R|camouflage}}")]
-    public void Prefix_LeavesEdgeCaseDisplayNamesUnchanged(string source)
+    [Test]
+    public void Prefix_LeavesEmptyDisplayNameUnchanged()
     {
-        AssertUnchangedWithoutHit(source);
+        AssertUnchangedWithoutHit(string.Empty);
     }
 
     [Test]
-    public void Prefix_LeavesDirectMarkedDisplayNameUnchanged()
+    public void Prefix_TranslatesColorTaggedKnownDisplayNamePreservingColor()
+    {
+        var result = InvokePatchedAddShift("{{R|camouflage}}");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.EqualTo("{{R|迷彩}}"));
+            Assert.That(
+                DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                    StatisticStatShiftDisplayNameTranslationPatch.Context,
+                    StatisticStatShiftDisplayNameTranslationPatch.Family),
+                Is.EqualTo(1));
+        });
+    }
+
+    [Test]
+    public void Prefix_StripsDirectMarkedKnownDisplayNameAndTranslates()
     {
         var source = MessageFrameTranslator.MarkDirectTranslation("camouflage");
+        var result = InvokePatchedAddShift(source);
 
-        AssertUnchangedWithoutHit(source);
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.EqualTo("迷彩"));
+            Assert.That(result.IndexOf(MessageFrameTranslator.DirectTranslationMarker), Is.EqualTo(-1));
+            Assert.That(
+                DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                    StatisticStatShiftDisplayNameTranslationPatch.Context,
+                    StatisticStatShiftDisplayNameTranslationPatch.Family),
+                Is.EqualTo(1));
+        });
+    }
+
+    [Test]
+    public void Prefix_StripsDirectMarkedUnknownDisplayNameWithoutRetranslating()
+    {
+        var result = InvokePatchedAddShift(MessageFrameTranslator.MarkDirectTranslation("unknown source"));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.EqualTo("unknown source"));
+            Assert.That(result.IndexOf(MessageFrameTranslator.DirectTranslationMarker), Is.EqualTo(-1));
+            Assert.That(
+                DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                    StatisticStatShiftDisplayNameTranslationPatch.Context,
+                    StatisticStatShiftDisplayNameTranslationPatch.Family),
+                Is.EqualTo(1));
+        });
     }
 
     private static void AssertUnchangedWithoutHit(string source)

@@ -33,10 +33,12 @@ public sealed class XrlCoreRestoreModsLoadedTranslationPatchTests
             Assert.Multiple(() =>
             {
                 Assert.That(result.IncompleteTitle, Is.EqualTo("不完全なMod構成"));
+                Assert.That(result.ColoredIncompleteTitle, Is.EqualTo("{{red|不完全なMod構成}}"));
                 Assert.That(
                     result.UnavailableMessage,
                     Is.EqualTo("このセーブで有効な1つ以上のModが{{red|利用できません}}:{{red|Sample Mod}}このセーブを読み込んでみますか？"));
                 Assert.That(result.DiffersTitle, Is.EqualTo("Mod構成が異なります"));
+                Assert.That(result.DirectMarkedDiffersTitle, Is.EqualTo("Mod Configuration Differs"));
                 Assert.That(
                     result.DiffersMessage,
                     Is.EqualTo("このセーブでは{{red|無効}}になっているMod:{{red|Extra Mod}}\nこのセーブでは{{green|有効}}になっているMod:{{green|Missing Mod}}"));

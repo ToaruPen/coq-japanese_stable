@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using HarmonyLib;
 
 namespace QudJP.Patches;
@@ -10,6 +11,10 @@ namespace QudJP.Patches;
 public static class EquipmentScreenBodypartEquipPopupTranslationPatch
 {
     private const string Context = nameof(EquipmentScreenBodypartEquipPopupTranslationPatch);
+
+    private static readonly Regex NoSlotItemPattern = new(
+        "^You don't have (?<item>anything) to use in that slot\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     [ThreadStatic]
     private static int activeDepth;
@@ -90,9 +95,16 @@ public static class EquipmentScreenBodypartEquipPopupTranslationPatch
             return false;
         }
 
-        if (string.Equals(source, "You don't have anything to use in that slot.", StringComparison.Ordinal))
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        var noSlotItem = NoSlotItemPattern.Match(stripped);
+        if (noSlotItem.Success)
         {
-            translated = "そのスロットで使えるものがない。";
+            var item = ColorAwareTranslationComposer.MarkupAwareRestoreCapture("もの", spans, noSlotItem.Groups["item"]).Trim();
+            translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+                "そのスロットで使える" + item + "がない。",
+                spans,
+                stripped.Length,
+                source);
             Record(route, family, "NoSlotItem", source, translated);
             return true;
         }

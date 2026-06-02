@@ -49,6 +49,23 @@ public sealed class EquipmentScreenBodypartEquipPopupTranslationPatchTests
     }
 
     [Test]
+    public void Patch_TranslatesBodypartEquipPopup_PreservesColorTags_WhenOwnerPatched()
+    {
+        var target = new DummyEquipmentScreenBodypartEquipTarget
+        {
+            PopupMessageToShow = "You don't have {{Y|anything}} to use in that slot.",
+        };
+
+        WithPatchedOwner(() => target.ShowBodypartEquipUI(new DummyGameObject(), new DummyBodyPart()));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("そのスロットで使える{{Y|もの}}がない。"));
+            Assert.That(HitCount("NoSlotItem"), Is.EqualTo(1));
+        });
+    }
+
+    [Test]
     public void Patch_DoesNotClaimBodypartEquipPopup_WhenOwnerAbsent()
     {
         const string source = "You have no inventory!";

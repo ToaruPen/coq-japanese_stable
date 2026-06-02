@@ -1,7 +1,6 @@
 using System;
 using System.Diagnostics;
 using System.Reflection;
-using System.Text.RegularExpressions;
 using HarmonyLib;
 
 namespace QudJP.Patches;
@@ -10,9 +9,6 @@ namespace QudJP.Patches;
 public static class LeftSideCategoryTranslationPatch
 {
     private const string Context = nameof(LeftSideCategoryTranslationPatch);
-    private static readonly Regex DuplicateWholeColorWrapperPattern = new(
-        "^\\{\\{(?<tag>[^|{}]+)\\|\\{\\{\\k<tag>\\|(?<inner>.*)\\}\\}\\}\\}$",
-        RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.Singleline);
 
     [HarmonyTargetMethod]
     private static MethodBase? TargetMethod()
@@ -54,7 +50,6 @@ public static class LeftSideCategoryTranslationPatch
                 current!,
                 route,
                 "LeftSideCategory.Text");
-            translated = CollapseDuplicateWholeColorWrappers(translated);
             if (string.Equals(translated, current, StringComparison.Ordinal))
             {
                 return;
@@ -70,21 +65,6 @@ public static class LeftSideCategoryTranslationPatch
         catch (Exception ex)
         {
             Trace.TraceError("QudJP: {0}.Postfix failed: {1}", Context, ex);
-        }
-    }
-
-    private static string CollapseDuplicateWholeColorWrappers(string source)
-    {
-        var collapsed = source;
-        while (true)
-        {
-            var match = DuplicateWholeColorWrapperPattern.Match(collapsed);
-            if (!match.Success)
-            {
-                return collapsed;
-            }
-
-            collapsed = "{{" + match.Groups["tag"].Value + "|" + match.Groups["inner"].Value + "}}";
         }
     }
 }

@@ -93,16 +93,16 @@ public static class DominationProcessTargetTranslationPatch
 
     private static bool TryTranslateMessage(string source, string route, string family, out string translated)
     {
-        if (!OwnerTranslationScope.IsActive(activeDepth) || string.IsNullOrEmpty(source))
-        {
-            translated = source;
-            return false;
-        }
-
         if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
         {
             translated = markedText;
             return true;
+        }
+
+        if (!OwnerTranslationScope.IsActive(activeDepth) || string.IsNullOrEmpty(source))
+        {
+            translated = source;
+            return false;
         }
 
         if (!TryTranslateCore(source, out translated, out var detail))

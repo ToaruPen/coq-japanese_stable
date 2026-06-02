@@ -2843,25 +2843,74 @@ public sealed class TargetMethodResolutionTests
     [Test]
     public void MutationActivatedAbilityNameTargetMethods_ResolveLightManipulationSyncAbilityName()
     {
-        var targetMethodsMethod = typeof(MutationActivatedAbilityNameTranslationPatch)
-            .GetMethod("TargetMethods", BindingFlags.NonPublic | BindingFlags.Static);
-        Assert.That(targetMethodsMethod, Is.Not.Null, "TargetMethods not found for MutationActivatedAbilityNameTranslationPatch");
+        var signatures = ResolveTargetMethodSignatures(typeof(MutationActivatedAbilityNameTranslationPatch));
 
-        var result = targetMethodsMethod!.Invoke(null, null) as System.Collections.IEnumerable;
-        Assert.That(result, Is.Not.Null, "TargetMethods returned null for MutationActivatedAbilityNameTranslationPatch");
-
-        var actualSignatures = new List<string>();
-        foreach (var item in result!)
+        Assert.That(signatures, Is.EquivalentTo(new[]
         {
-            if (item is MethodBase methodBase)
-            {
-                actualSignatures.Add(FullMethodSignature(methodBase));
-            }
-        }
-
-        Assert.That(
-            actualSignatures,
-            Does.Contain("XRL.World.Parts.Mutation.LightManipulation|SyncAbilityName|System.Void"));
+            "XRL.World.Parts.Mutation.WillForce|Mutate|System.Boolean|XRL.World.GameObject|System.Int32",
+            "XRL.World.Parts.Mutation.BurrowingClaws|Mutate|System.Boolean|XRL.World.GameObject|System.Int32",
+            "XRL.World.Parts.Mutation.ElectricalGeneration|Mutate|System.Boolean|XRL.World.GameObject|System.Int32",
+            "XRL.World.Parts.Mutation.LightManipulation|Mutate|System.Boolean|XRL.World.GameObject|System.Int32",
+            "XRL.World.Parts.Mutation.LightManipulation|SyncAbilityName|System.Void",
+            "XRL.World.Parts.Mutation.Precognition|Mutate|System.Boolean|XRL.World.GameObject|System.Int32",
+            "XRL.World.Parts.Mutation.SlogGlands|Mutate|System.Boolean|XRL.World.GameObject|System.Int32",
+            "XRL.World.Parts.Mutation.Beguiling|Mutate|System.Boolean|XRL.World.GameObject|System.Int32",
+            "XRL.World.Parts.Mutation.AcidSlimeGlands|Mutate|System.Boolean|XRL.World.GameObject|System.Int32",
+            "XRL.World.Parts.Mutation.AdrenalControl2|Mutate|System.Boolean|XRL.World.GameObject|System.Int32",
+            "XRL.World.Parts.Mutation.Burgeoning|Mutate|System.Boolean|XRL.World.GameObject|System.Int32",
+            "XRL.World.Parts.Mutation.Burrowing|Mutate|System.Boolean|XRL.World.GameObject|System.Int32",
+            "XRL.World.Parts.Mutation.Carapace|Mutate|System.Boolean|XRL.World.GameObject|System.Int32",
+            "XRL.World.Parts.Mutation.Clairvoyance|Mutate|System.Boolean|XRL.World.GameObject|System.Int32",
+            "XRL.World.Parts.Mutation.Confusion|Mutate|System.Boolean|XRL.World.GameObject|System.Int32",
+            "XRL.World.Parts.Mutation.Decarbonizer|Mutate|System.Boolean|XRL.World.GameObject|System.Int32",
+            "XRL.World.Parts.Mutation.DefensiveChromatophores|Mutate|System.Boolean|XRL.World.GameObject|System.Int32",
+            "XRL.World.Parts.Mutation.Domination|Mutate|System.Boolean|XRL.World.GameObject|System.Int32",
+            "XRL.World.Parts.Mutation.ElectromagneticPulse|Mutate|System.Boolean|XRL.World.GameObject|System.Int32",
+            "XRL.World.Parts.Mutation.ErosTeleportation|Mutate|System.Boolean|XRL.World.GameObject|System.Int32",
+            "XRL.World.Parts.Mutation.ForceWall|Mutate|System.Boolean|XRL.World.GameObject|System.Int32",
+            "XRL.World.Parts.Mutation.FreezeBreath|AddAbility|System.Void",
+            "XRL.World.Parts.Mutation.FrostWebs|Mutate|System.Boolean|XRL.World.GameObject|System.Int32",
+            "XRL.World.Parts.Mutation.Infiltrate|Mutate|System.Boolean|XRL.World.GameObject|System.Int32",
+            "XRL.World.Parts.Mutation.IrisdualBeam|Mutate|System.Boolean|XRL.World.GameObject|System.Int32",
+            "XRL.World.Parts.Mutation.Kindle|Mutate|System.Boolean|XRL.World.GameObject|System.Int32",
+            "XRL.World.Parts.Mutation.LeyShifting|Mutate|System.Boolean|XRL.World.GameObject|System.Int32",
+            "XRL.World.Parts.Mutation.LifeDrain|Mutate|System.Boolean|XRL.World.GameObject|System.Int32",
+            "XRL.World.Parts.Mutation.LiquidSpitter|Mutate|System.Boolean|XRL.World.GameObject|System.Int32",
+            "XRL.World.Parts.Mutation.MassMind|Mutate|System.Boolean|XRL.World.GameObject|System.Int32",
+            "XRL.World.Parts.Mutation.MentalMirror|Mutate|System.Boolean|XRL.World.GameObject|System.Int32",
+            "XRL.World.Parts.Mutation.Metamorphed|Apply|System.Boolean|XRL.World.GameObject",
+            "XRL.World.Parts.Mutation.Metamorphosis|Mutate|System.Boolean|XRL.World.GameObject|System.Int32",
+            "XRL.World.Parts.Mutation.Phasing|Mutate|System.Boolean|XRL.World.GameObject|System.Int32",
+            "XRL.World.Parts.Mutation.Serenity|Mutate|System.Boolean|XRL.World.GameObject|System.Int32",
+            "XRL.World.Parts.Mutation.SpacetimeVortex|Mutate|System.Boolean|XRL.World.GameObject|System.Int32",
+            "XRL.World.Parts.Mutation.SpiderWebs|Mutate|System.Boolean|XRL.World.GameObject|System.Int32",
+            "XRL.World.Parts.Mutation.Spinnerets|Mutate|System.Boolean|XRL.World.GameObject|System.Int32",
+            "XRL.World.Parts.Mutation.StickyTongue|Mutate|System.Boolean|XRL.World.GameObject|System.Int32",
+            "XRL.World.Parts.Mutation.Stinger|Mutate|System.Boolean|XRL.World.GameObject|System.Int32",
+            "XRL.World.Parts.Mutation.StunningForce|Mutate|System.Boolean|XRL.World.GameObject|System.Int32",
+            "XRL.World.Parts.Mutation.SunderMind|Mutate|System.Boolean|XRL.World.GameObject|System.Int32",
+            "XRL.World.Parts.Mutation.TeleportOther|Mutate|System.Boolean|XRL.World.GameObject|System.Int32",
+            "XRL.World.Parts.Mutation.TimeDilation|Mutate|System.Boolean|XRL.World.GameObject|System.Int32",
+            "XRL.World.Parts.Mutation.WaveformWorm|Mutate|System.Boolean|XRL.World.GameObject|System.Int32",
+            "XRL.World.Parts.Mutation.Cryokinesis|Mutate|System.Boolean|XRL.World.GameObject|System.Int32",
+            "XRL.World.Parts.Mutation.Disintegration|Mutate|System.Boolean|XRL.World.GameObject|System.Int32",
+            "XRL.World.Parts.Mutation.FearAura|Mutate|System.Boolean|XRL.World.GameObject|System.Int32",
+            "XRL.World.Parts.Mutation.FlamingRay|AddAbility|System.Void",
+            "XRL.World.Parts.Mutation.ForceBubble|Mutate|System.Boolean|XRL.World.GameObject|System.Int32",
+            "XRL.World.Parts.Mutation.FreezingRay|AddAbility|System.Void",
+            "XRL.World.Parts.Mutation.MagneticPulse|AddAbility|System.Void|XRL.World.GameObject",
+            "XRL.World.Parts.Mutation.Pyrokinesis|Mutate|System.Boolean|XRL.World.GameObject|System.Int32",
+            "XRL.World.Parts.Mutation.RepellingForce|Mutate|System.Boolean|XRL.World.GameObject|System.Int32",
+            "XRL.World.Parts.Mutation.SlimeGlands|Mutate|System.Boolean|XRL.World.GameObject|System.Int32",
+            "XRL.World.Parts.Mutation.Telepathy|Mutate|System.Boolean|XRL.World.GameObject|System.Int32",
+            "XRL.World.Parts.Mutation.Teleportation|Mutate|System.Boolean|XRL.World.GameObject|System.Int32",
+            "XRL.World.Parts.Mutation.Belcher|Mutate|System.Boolean|XRL.World.GameObject|System.Int32",
+            "XRL.World.Parts.Mutation.BreatherBase|Mutate|System.Boolean|XRL.World.GameObject|System.Int32",
+            "XRL.World.Parts.Mutation.GasGeneration|Mutate|System.Boolean|XRL.World.GameObject|System.Int32",
+            "XRL.World.Parts.Mutation.IDelayedLineMutation|Mutate|System.Boolean|XRL.World.GameObject|System.Int32",
+            "XRL.World.Parts.Mutation.Quills|Mutate|System.Boolean|XRL.World.GameObject|System.Int32",
+            "XRL.World.Parts.Mutation.TemporalFugue|Mutate|System.Boolean|XRL.World.GameObject|System.Int32",
+        }));
     }
 
     private static string FullMethodSignature(MethodBase methodBase)

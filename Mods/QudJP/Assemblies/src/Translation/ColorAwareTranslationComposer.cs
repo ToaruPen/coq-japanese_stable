@@ -6,6 +6,10 @@ namespace QudJP;
 
 internal static class ColorAwareTranslationComposer
 {
+    private static readonly Regex DuplicateWholeQudColorWrapperPattern = new(
+        "^\\{\\{(?<tag>[^|{}]+)\\|\\{\\{\\k<tag>\\|(?<inner>.*)\\}\\}\\}\\}$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.Singleline);
+
     internal sealed class WholeBoundaryPair
     {
         internal WholeBoundaryPair(ColorSpan opening, int openingOrder, ColorSpan closing, int closingOrder)
@@ -37,9 +41,10 @@ internal static class ColorAwareTranslationComposer
             return translated ?? string.Empty;
         }
 
-        return ColorCodePreserver.Restore(
-            translated,
-            spans as List<ColorSpan> ?? new List<ColorSpan>(spans));
+        return CollapseDuplicateWholeQudColorWrappers(
+            ColorCodePreserver.Restore(
+                translated,
+                spans as List<ColorSpan> ?? new List<ColorSpan>(spans)));
     }
 
     internal static string GetVisibleText(string? source)
@@ -61,7 +66,7 @@ internal static class ColorAwareTranslationComposer
             relativeSpans.Add(spans[index].WithRelativeIndex(sourceLength));
         }
 
-        return ColorCodePreserver.Restore(translated, relativeSpans);
+        return CollapseDuplicateWholeQudColorWrappers(ColorCodePreserver.Restore(translated, relativeSpans));
     }
 
     internal static string TranslatePreservingColors(string? source)
@@ -868,7 +873,22 @@ internal static class ColorAwareTranslationComposer
             }
         }
 
-        return ColorAwareTranslationComposer.Restore(visible, translatedOwnedSpans);
+        return CollapseDuplicateWholeQudColorWrappers(Restore(visible, translatedOwnedSpans));
+    }
+
+    private static string CollapseDuplicateWholeQudColorWrappers(string source)
+    {
+        var collapsed = source;
+        while (true)
+        {
+            var match = DuplicateWholeQudColorWrapperPattern.Match(collapsed);
+            if (!match.Success)
+            {
+                return collapsed;
+            }
+
+            collapsed = "{{" + match.Groups["tag"].Value + "|" + match.Groups["inner"].Value + "}}";
+        }
     }
 
     private static (List<WholeBoundaryPair> BoundaryPairs, List<ColorSpan> InnerTranslatedOwnedSpans)

@@ -1110,6 +1110,16 @@ public sealed class MessagePatternTranslatorTests
     }
 
     [Test]
+    public void Translate_RepositoryDictionary_PreservesDirectMarkerForLocalizedAutoActStopBecause()
+    {
+        UseRepositoryPatternDictionary();
+
+        var source = MessageFrameTranslator.MarkDirectTranslation("You stop 移動中 because you can go no further.");
+
+        Assert.That(MessagePatternTranslator.Translate(source), Is.EqualTo(source));
+    }
+
+    [Test]
     public void Translate_RepositoryDictionary_PreservesCaptureColorForLocalizedDirectionalSeeAndStop()
     {
         UseRepositoryPatternDictionary();

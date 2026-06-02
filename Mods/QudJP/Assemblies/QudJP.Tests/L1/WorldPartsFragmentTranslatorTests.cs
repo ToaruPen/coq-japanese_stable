@@ -159,7 +159,6 @@ public sealed class WorldPartsFragmentTranslatorTests
     }
 
     [TestCase("")]
-    [TestCase("\u0001")]
     [TestCase("You drop desalination pellet.")]
     [TestCase("The water is purified.")]
     public void DesalinationPelletTranslator_ReturnsFalse_ForPassthroughPopupFragments(string input)
@@ -168,6 +167,27 @@ public sealed class WorldPartsFragmentTranslatorTests
             DesalinationPelletFragmentTranslator.TryTranslatePopupMessage,
             "DesalinationPellet",
             input);
+    }
+
+    [Test]
+    public void DesalinationPelletTranslator_StripsDirectMarkedPopupFragmentWithoutRecordingTransform()
+    {
+        DynamicTextObservability.ResetForTests();
+
+        var translated = DesalinationPelletFragmentTranslator.TryTranslatePopupMessage(
+            MessageFrameTranslator.MarkDirectTranslation("It doesn't seem to do anything."),
+            "Popup.Show",
+            "DesalinationPellet",
+            out var result);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.True);
+            Assert.That(result, Is.EqualTo("It doesn't seem to do anything."));
+            Assert.That(
+                DynamicTextObservability.GetRouteFamilyHitCountForTests("Popup.Show", "DesalinationPellet.NoEffect"),
+                Is.Zero);
+        });
     }
 
     [TestCase("You do not have 1 dram of sunslag.", "sunslagを1ドラム持っていない。")]
