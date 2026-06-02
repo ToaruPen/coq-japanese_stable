@@ -832,6 +832,11 @@
             "key": "{{C|dazed}}",
             "context": "XRL.World.Effects.Dazed.Description",
             "text": "{{C|朦朧}}"
+        },
+        {
+            "key": "metamorphed",
+            "context": "XRL.World.Parts.Mutation.Metamorphed.Description",
+            "text": "変身中"
         }
     ]
 }

@@ -25,6 +25,9 @@ public sealed class ModInfoTranslationPatchTests
                 original: RequireMethod(typeof(DummyModInfoTarget), nameof(DummyModInfoTarget.ConfirmUpdate)),
                 transpiler: transpiler);
             harmony.Patch(
+                original: RequireMethod(typeof(DummyModInfoTarget), nameof(DummyModInfoTarget.ConfirmFailure)),
+                transpiler: transpiler);
+            harmony.Patch(
                 original: RequireMethod(typeof(DummyModInfoTarget), nameof(DummyModInfoTarget.DownloadUpdate)),
                 transpiler: transpiler);
             harmony.Patch(
@@ -34,6 +37,7 @@ public sealed class ModInfoTranslationPatchTests
             var target = new DummyModInfoTarget();
             target.ConfirmDependencies();
             target.ConfirmUpdate();
+            target.ConfirmFailure();
             _ = target.DownloadUpdate();
 
             Assert.Multiple(() =>
@@ -43,6 +47,12 @@ public sealed class ModInfoTranslationPatchTests
                 Assert.That(
                     target.LastUpdatePopupMessage,
                     Is.EqualTo("Sample Modの新しいバージョンが利用可能です: 2.0.5.\n\nダウンロードしますか？"));
+                Assert.That(target.LastFailurePopupTitle, Is.EqualTo("Sample Mod - {{R|エラー}}"));
+                Assert.That(
+                    target.LastFailurePopupMessage,
+                    Is.EqualTo("first error\nsecond error\nthird error\n(... {{R|+2}} 件追加)\n\n必要なら転送できるよう、自動的にクリップボードへコピーされています: Mod作者。"));
+                Assert.That(target.LastRetryText, Is.EqualTo("{{W|[R]}} {{y|再試行}}"));
+                Assert.That(target.LastWorkshopText, Is.EqualTo("{{W|[W]}} {{y|ワークショップ}}"));
                 Assert.That(target.LastLoadingText, Is.EqualTo("Sample Modを更新中…"));
                 Assert.That(target.AppendDependencyConfirmation(0), Is.EqualTo("無効"));
                 Assert.That(target.AppendDependencyConfirmation(1), Is.EqualTo("OK"));

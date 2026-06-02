@@ -48,6 +48,10 @@ public static class GameObjectPopupTranslationPatch
         "^(?<owner>.+?) can't hear you!$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex PullDownDestinationOptionPattern = new Regex(
+        "^(?<label>Current location|Arrival location|Center)(?<detail>, .+?)?(?<hotkey> \\([A-Z]+\\))?$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     [ThreadStatic]
     private static int activeDepth;
 
@@ -76,6 +80,7 @@ public static class GameObjectPopupTranslationPatch
         AddTarget(targets, gameObjectType, "HandleRename", inventoryActionEventType);
         AddTarget(targets, gameObjectType, "ChangeCompanionAbilityUse", gameObjectType, activatedAbilitiesType);
         AddTarget(targets, gameObjectType, "CheckCompanionDirection", gameObjectType);
+        AddTarget(targets, gameObjectType, "PullDown", typeof(bool));
         return targets;
     }
 
@@ -176,6 +181,8 @@ public static class GameObjectPopupTranslationPatch
             || value.StartsWith("You start calling ", StringComparison.Ordinal)
             || value.StartsWith("Choose one of ", StringComparison.Ordinal)
             || value.StartsWith("Instruct ", StringComparison.Ordinal)
+            || string.Equals(value, "Select a destination", StringComparison.Ordinal)
+            || PullDownDestinationOptionPattern.IsMatch(value)
             || IsPendingCompanionFollowDistanceOption(value)
             || CompanionAbilityPickOptionRowPattern.IsMatch(value)
             || value.Contains(" ability is now toggled ")
@@ -205,6 +212,11 @@ public static class GameObjectPopupTranslationPatch
         }
 
         if (TryTranslateCompanionFollowDistanceOption(stripped, spans, source, out translated))
+        {
+            return true;
+        }
+
+        if (TryTranslatePullDownDestinationOption(stripped, spans, source, out translated))
         {
             return true;
         }
@@ -355,10 +367,57 @@ public static class GameObjectPopupTranslationPatch
         return true;
     }
 
+    private static bool TryTranslatePullDownDestinationOption(
+        string stripped,
+        IReadOnlyList<ColorSpan> spans,
+        string source,
+        out string translated)
+    {
+        if (string.Equals(stripped, "Select a destination", StringComparison.Ordinal))
+        {
+            translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+                "目的地を選択",
+                spans,
+                stripped.Length,
+                source);
+            return true;
+        }
+
+        var match = PullDownDestinationOptionPattern.Match(stripped);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        var prefix = match.Groups["label"].Value switch
+        {
+            "Current location" => "現在地",
+            "Arrival location" => "到着地点",
+            "Center" => "中央",
+            _ => string.Empty,
+        };
+        if (string.IsNullOrEmpty(prefix))
+        {
+            translated = source;
+            return false;
+        }
+
+        var detail = match.Groups["detail"].Success ? RestoreCapture(match, spans, "detail", trim: false) : string.Empty;
+        var hotkey = match.Groups["hotkey"].Success ? RestoreCapture(match, spans, "hotkey", trim: false) : string.Empty;
+        translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+            prefix + detail + hotkey,
+            spans,
+            stripped.Length,
+            source);
+        return true;
+    }
+
     private static string RestoreCapture(Match match, IReadOnlyList<ColorSpan> spans, string groupName, bool trim = true)
     {
         var group = match.Groups[groupName];
         var restored = ColorAwareTranslationComposer.MarkupAwareRestoreCapture(group.Value, spans, group);
+        restored = MessageFrameTranslator.StripAllDirectTranslationMarkers(restored);
         return trim ? restored.Trim() : restored;
     }
 

@@ -121,6 +121,9 @@ public sealed class TradeScreenUiTranslationPatchTests
     {
         WriteDictionary(
             ("Add how many {0} to trade.", "{0}をいくつ取引に追加しますか？"));
+        WriteDictionaryFile(
+            "ui-displayname-atomic.ja.json",
+            ("Lead Slug", "鉛スラッグ"));
 
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
@@ -133,7 +136,7 @@ public sealed class TradeScreenUiTranslationPatchTests
 
             _ = DummyPopupAskNumberTarget.AskNumberAsync("Add how many lead slug to trade.", 2, 0, 5).GetAwaiter().GetResult();
 
-            Assert.That(DummyPopupAskNumberTarget.LastMessage, Is.EqualTo("lead slugをいくつ取引に追加しますか？"));
+            Assert.That(DummyPopupAskNumberTarget.LastMessage, Is.EqualTo("鉛スラッグをいくつ取引に追加しますか？"));
         }
         finally
         {
@@ -146,6 +149,9 @@ public sealed class TradeScreenUiTranslationPatchTests
     {
         WriteDictionary(
             ("Add how many {0} to trade.", "{0}をいくつ取引に出す？"));
+        WriteDictionaryFile(
+            "ui-displayname-atomic.ja.json",
+            ("Lead Slug", "鉛スラッグ"));
 
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
@@ -158,7 +164,7 @@ public sealed class TradeScreenUiTranslationPatchTests
 
             _ = DummyPopupAskNumberTarget.AskNumberAsync("Add how many {{R|lead slug}} to trade.", 2, 0, 5).GetAwaiter().GetResult();
 
-            Assert.That(DummyPopupAskNumberTarget.LastMessage, Is.EqualTo("{{R|lead slug}}をいくつ取引に出す？"));
+            Assert.That(DummyPopupAskNumberTarget.LastMessage, Is.EqualTo("{{R|鉛スラッグ}}をいくつ取引に出す？"));
         }
         finally
         {
@@ -248,37 +254,14 @@ public sealed class TradeScreenUiTranslationPatchTests
 
     private void WriteDictionary(params (string key, string text)[] entries)
     {
-        var builder = new StringBuilder();
-        builder.Append('{');
-        builder.Append("\"entries\":[");
-
-        for (var index = 0; index < entries.Length; index++)
-        {
-            if (index > 0)
-            {
-                builder.Append(',');
-            }
-
-            builder.Append("{\"key\":\"");
-            builder.Append(EscapeJson(entries[index].key));
-            builder.Append("\",\"text\":\"");
-            builder.Append(EscapeJson(entries[index].text));
-            builder.Append("\"}");
-        }
-
-        builder.Append("]}");
-        builder.AppendLine();
-
-        File.WriteAllText(
-            Path.Combine(tempDirectory, "trade-ui-test.ja.json"),
-            builder.ToString(),
-            new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
+        WriteDictionaryFile("trade-ui-test.ja.json", entries);
     }
 
-    private static string EscapeJson(string value)
+    private void WriteDictionaryFile(string fileName, params (string key, string text)[] entries)
     {
-        return value
-            .Replace("\\", "\\\\", StringComparison.Ordinal)
-            .Replace("\"", "\\\"", StringComparison.Ordinal);
+        TestDictionaryWriter.WriteEntries(
+            Path.Combine(tempDirectory, fileName),
+            appendNewLine: true,
+            entries);
     }
 }

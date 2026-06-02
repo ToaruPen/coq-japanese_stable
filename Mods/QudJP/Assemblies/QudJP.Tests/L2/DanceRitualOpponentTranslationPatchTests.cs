@@ -4,6 +4,8 @@ using HarmonyLib;
 using QudJP.Patches;
 using QudJP.Tests.DummyTargets;
 
+#pragma warning disable S4144 // NUnit setup/teardown intentionally reset the same static fixtures.
+
 namespace QudJP.Tests.L2;
 
 [TestFixture]
@@ -15,6 +17,16 @@ public sealed class DanceRitualOpponentTranslationPatchTests
     public void SetUp()
     {
         DummyPopupShow.Reset();
+        DummyMessageQueue.Reset();
+        DynamicTextObservability.ResetForTests();
+    }
+
+    [TearDown]
+    public void TearDown()
+    {
+        DummyPopupShow.Reset();
+        DummyMessageQueue.Reset();
+        DynamicTextObservability.ResetForTests();
     }
 
     [TestCase("The {{Y|snapjaw}} is busy dancing!", "{{Y|snapjaw}}は踊りの最中だ！")]
@@ -62,6 +74,66 @@ public sealed class DanceRitualOpponentTranslationPatchTests
         AssertPopupMessage(source, source);
     }
 
+    [TestCase("&KDebug: Angor taking a turn...", "&Kデバッグ: Angorがターンを実行中...")]
+    [TestCase("&KDebug: Dance Phase Ends Positive:3 Negative:2", "&Kデバッグ: ダンスフェーズ終了 成功:3 失敗:2")]
+    [TestCase("&KDebug: Angor chooses Mimic", "&Kデバッグ: AngorがMimicを選択")]
+    public void DanceRitualOpponentHandleEvent_TranslatesDebugQueue_WhenOwnerPatched(
+        string source,
+        string expected)
+    {
+        AssertQueuedMessage(
+            nameof(DummyDanceRitualOpponentTarget.HandleBeforeAiTakingAction),
+            source,
+            expected,
+            "HandleEvent.Debug");
+    }
+
+    [Test]
+    public void DanceRitualOpponentRegister_TranslatesDebugQueue_WhenOwnerPatched()
+    {
+        AssertQueuedMessage(
+            nameof(DummyDanceRitualOpponentTarget.Register),
+            "Debug: Angor Began The Dance",
+            "デバッグ: Angorがダンスを始めた",
+            "Register.Debug");
+    }
+
+    [Test]
+    public void DanceRitualOpponent_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent()
+    {
+        const string source = "&KDebug: Angor taking a turn...";
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+
+            DummyMessageQueue.AddPlayerMessage(source, null, Capitalize: false);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(source));
+                Assert.That(QueueHitCount("HandleEvent.Debug"), Is.Zero);
+                Assert.That(QueueHitCount("Register.Debug"), Is.Zero);
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void DanceRitualOpponent_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched()
+    {
+        AssertQueuedMessage(
+            nameof(DummyDanceRitualOpponentTarget.HandleBeforeAiTakingAction),
+            MessageFrameTranslator.MarkDirectTranslation("&KDebug: Angor taking a turn..."),
+            "&KDebug: Angor taking a turn...",
+            "HandleEvent.Debug",
+            expectedHitCount: 0);
+    }
+
     private static void AssertPopupMessage(string source, string expected)
     {
         var harmonyId = CreateHarmonyId();
@@ -90,12 +162,78 @@ public sealed class DanceRitualOpponentTranslationPatchTests
             prefix: new HarmonyMethod(RequireMethod(typeof(PopupShowTranslationPatch), nameof(PopupShowTranslationPatch.Prefix))));
     }
 
+    private static void PatchQueue(Harmony harmony)
+    {
+        var target = RequireMethod(
+            typeof(DummyMessageQueue),
+            nameof(DummyMessageQueue.AddPlayerMessage),
+            typeof(string),
+            typeof(string),
+            typeof(bool));
+        harmony.Patch(
+            original: target,
+            prefix: new HarmonyMethod(RequireMethod(
+                typeof(CombatAndLogMessageQueuePatch),
+                nameof(CombatAndLogMessageQueuePatch.Prefix),
+                typeof(string).MakeByRefType(),
+                typeof(string),
+                typeof(bool))));
+        harmony.Patch(
+            original: target,
+            prefix: new HarmonyMethod(RequireMethod(
+                typeof(MessageLogPatch),
+                nameof(MessageLogPatch.Prefix),
+                typeof(string).MakeByRefType(),
+                typeof(string),
+                typeof(bool))));
+    }
+
     private static void PatchOwner(Harmony harmony)
     {
         harmony.Patch(
             original: RequireMethod(typeof(DummyDanceRitualOpponentTarget), nameof(DummyDanceRitualOpponentTarget.FireEvent), typeof(object)),
             prefix: new HarmonyMethod(RequireMethod(typeof(DanceRitualOpponentTranslationPatch), nameof(DanceRitualOpponentTranslationPatch.Prefix))),
             finalizer: new HarmonyMethod(RequireMethod(typeof(DanceRitualOpponentTranslationPatch), nameof(DanceRitualOpponentTranslationPatch.Finalizer), typeof(Exception))));
+    }
+
+    private static void AssertQueuedMessage(
+        string ownerMethodName,
+        string source,
+        string expected,
+        string expectedDetail,
+        int expectedHitCount = 1)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyDanceRitualOpponentTarget), ownerMethodName),
+                prefix: new HarmonyMethod(RequireMethod(typeof(DanceRitualOpponentTranslationPatch), nameof(DanceRitualOpponentTranslationPatch.Prefix))),
+                finalizer: new HarmonyMethod(RequireMethod(typeof(DanceRitualOpponentTranslationPatch), nameof(DanceRitualOpponentTranslationPatch.Finalizer), typeof(Exception))));
+
+            DummyDanceRitualOpponentTarget.QueueMessageToSend = source;
+            RequireMethod(typeof(DummyDanceRitualOpponentTarget), ownerMethodName).Invoke(null, null);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+                Assert.That(QueueHitCount(expectedDetail), Is.EqualTo(expectedHitCount));
+            });
+        }
+        finally
+        {
+            DummyDanceRitualOpponentTarget.Reset();
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static int QueueHitCount(string detail)
+    {
+        return DynamicTextObservability.GetRouteFamilyHitCountForTests(
+            "MessageQueue.AddPlayerMessage",
+            nameof(DanceRitualOpponentTranslationPatch) + "." + detail);
     }
 
     private static MethodInfo RequireMethod(Type type, string methodName, params Type[] parameterTypes)
@@ -118,6 +256,7 @@ public sealed class DanceRitualOpponentTranslationPatchTests
     private static class DummyDanceRitualOpponentTarget
     {
         public static string PopupMessageToShow { get; set; } = string.Empty;
+        public static string QueueMessageToSend { get; set; } = string.Empty;
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         public static bool FireEvent(object e)
@@ -127,9 +266,23 @@ public sealed class DanceRitualOpponentTranslationPatchTests
             return false;
         }
 
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public static bool HandleBeforeAiTakingAction()
+        {
+            DummyMessageQueue.AddPlayerMessage(QueueMessageToSend, null, Capitalize: false);
+            return true;
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public static void Register()
+        {
+            DummyMessageQueue.AddPlayerMessage(QueueMessageToSend, "K", Capitalize: false);
+        }
+
         public static void Reset()
         {
             PopupMessageToShow = string.Empty;
+            QueueMessageToSend = string.Empty;
         }
     }
 }

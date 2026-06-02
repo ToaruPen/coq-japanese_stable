@@ -15,6 +15,7 @@ public sealed class ConversationRewardPopupTranslationPatchTests
     {
         DynamicTextObservability.ResetForTests();
         DummyPopupShow.Reset();
+        Translator.ResetForTests();
         MessageFrameTranslator.ResetForTests();
         MessagePatternTranslator.ResetForTests();
     }
@@ -23,6 +24,7 @@ public sealed class ConversationRewardPopupTranslationPatchTests
     public void TearDown()
     {
         LocalizationAssetResolver.SetLocalizationRootForTests(null);
+        Translator.ResetForTests();
         MessageFrameTranslator.ResetForTests();
         MessagePatternTranslator.ResetForTests();
     }
@@ -113,6 +115,7 @@ public sealed class ConversationRewardPopupTranslationPatchTests
             + " some insightful commentary on 'The Corpus Choliys'.";
 
         UseRepositoryMessageFrames();
+        UseRepositoryPatternDictionary();
 
         RunWithOwnerAndPopupPatches(nameof(DummyConversationRewardProducer.LibrarianGiveBookHandleEvent), () =>
         {
@@ -215,7 +218,6 @@ public sealed class ConversationRewardPopupTranslationPatchTests
     }
 
     [TestCase("The conversation ends.")]
-    [TestCase("You do not have any unshared secrets about the life of Resheph.")]
     public void Patch_LeavesUnsupportedPopupUnchanged_WhenOwnerPatched(string source)
     {
         RunWithOwnerAndPopupPatches(nameof(DummyConversationRewardProducer.ReceiveItemHandleEvent), () =>
@@ -233,6 +235,55 @@ public sealed class ConversationRewardPopupTranslationPatchTests
                 Assert.That(HitCount("ReceiveItem"), Is.Zero);
                 Assert.That(HitCount("ReshephSecretInsight"), Is.Zero);
                 Assert.That(HitCount("ConversationXp"), Is.Zero);
+            });
+        });
+    }
+
+    [Test]
+    public void Patch_RecordsRepositoryDictionaryFallbackAsPopupExact_NotConversationRewardOwner()
+    {
+        const string source = "You do not have any unshared secrets about the life of Resheph.";
+        const string expected = "レシェフの生涯に関する未共有の秘密はない。";
+
+        Translator.SetDictionaryDirectoryForTests(GetRepositoryDictionaryDirectory());
+
+        OwnerPopupRouteTestHarness.WithPatchedPopupOnly(
+            () => DummyPopupShow.Show(source));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(expected));
+            Assert.That(HitCount("ReshephSecretInsight"), Is.Zero);
+            Assert.That(
+                DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                    nameof(PopupShowTranslationPatch),
+                    "Popup.ProducerText.Exact"),
+                Is.EqualTo(1));
+        });
+
+        DynamicTextObservability.ResetForTests();
+        DummyPopupShow.Reset();
+
+        RunWithOwnerAndPopupPatches(nameof(DummyConversationRewardProducer.GiveReshephSecretHandleEvent), () =>
+        {
+            var target = new DummyConversationRewardProducer
+            {
+                PopupMessageToShow = source,
+            };
+
+            target.GiveReshephSecretHandleEvent();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(
+                    DummyPopupShow.LastShowMessage,
+                    Is.EqualTo(expected));
+                Assert.That(HitCount("ReshephSecretInsight"), Is.Zero);
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(PopupShowTranslationPatch),
+                        "Popup.ProducerText.Exact"),
+                    Is.EqualTo(1));
             });
         });
     }
@@ -315,4 +366,12 @@ public sealed class ConversationRewardPopupTranslationPatchTests
                 "MessageFrames",
                 "verbs.ja.json"));
     }
+
+    private static string GetRepositoryDictionaryDirectory() =>
+        Path.Combine(
+            TestProjectPaths.GetRepositoryRoot(),
+            "Mods",
+            "QudJP",
+            "Localization",
+            "Dictionaries");
 }

@@ -50,6 +50,36 @@ public sealed class SifrahTokenDescriptionTranslationPatchTests
         "display a Barathrumite token",
         "バラサルム派のしるしを見せる",
         "Exact.DisplayBarathrumiteToken")]
+    [TestCase(
+        nameof(DummySifrahTokenDescriptionTarget.BuildLiquid),
+        "accept a 35% chance of becoming {{C|dazed}}",
+        "35%の確率で{{C|朦朧}}状態になることを受け入れる",
+        "AcceptChance")]
+    [TestCase(
+        nameof(DummySifrahTokenDescriptionTarget.BuildLiquid),
+        "apply {{C|3}} units of compute power",
+        "{{C|3}}ユニットの計算力を使う",
+        "ApplyComputePowerAmount")]
+    [TestCase(
+        nameof(DummySifrahTokenDescriptionTarget.BuildLiquid),
+        "apply knowledge of the manufacture of phase cannons",
+        "phase cannonsの製造知識を使う",
+        "ApplyCreationKnowledgeItem")]
+    [TestCase(
+        nameof(DummySifrahTokenDescriptionTarget.BuildLiquid),
+        "interpret structural scan",
+        "structural scanを解釈する",
+        "InterpretScanSubject")]
+    [TestCase(
+        nameof(DummySifrahTokenDescriptionTarget.BuildLiquid),
+        "use scrap bit",
+        "scrap bitを使う",
+        "UseNamedBit")]
+    [TestCase(
+        nameof(DummySifrahTokenDescriptionTarget.BuildLiquid),
+        "offer copper nugget",
+        "銅塊を差し出す",
+        "OfferNamedItem")]
     public void OwnerPatch_TranslatesDescriptionAssignment_WhenPatched(
         string ownerMethodName,
         string source,

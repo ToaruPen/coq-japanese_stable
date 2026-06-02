@@ -46,6 +46,36 @@ public sealed class CookingRecipeDisplayNameTranslationPatchTests
         });
     }
 
+    [TestCase("{{W|Apple Matz}}", "{{W|アップルマッツァ}}")]
+    [TestCase("{{C|Apple Matz}}", "{{C|アップルマッツァ}}")]
+    [TestCase("{{W|Bone Babka}}", "{{W|ボーンバブカ}}")]
+    [TestCase("{{W|Cloaca Surprise}}", "{{W|クロアカ・サプライズ}}")]
+    [TestCase("{{W|Crystal Delight}}", "{{W|クリスタル・ディライト}}")]
+    [TestCase("{{W|Goat in Sweet Leaf}}", "{{W|甘葉包みのヤギ肉}}")]
+    [TestCase("{{W|Hot and Spiny}}", "{{W|ホットアンドスパイニー}}")]
+    [TestCase("{{W|Mah Lah Soup}}", "{{W|マーラースープ}}")]
+    [TestCase("{{W|Mulled Mushroom Cider}}", "{{W|温めたマッシュルームサイダー}}")]
+    [TestCase("{{W|The Porridge}}", "{{W|粥}}")]
+    [TestCase("{{W|Tongue and Cheek}}", "{{W|タングアンドチーク}}")]
+    public void GetDisplayName_TranslatesPresetRecipeName_WhenPatched(string source, string expected)
+    {
+        WithPatchedDisplayName(() =>
+        {
+            var target = new DummyCookingRecipeDisplayNameTarget
+            {
+                DisplayNameResult = source,
+            };
+
+            var result = target.GetDisplayName();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(result, Is.EqualTo(expected));
+                Assert.That(HitCount(), Is.EqualTo(1));
+            });
+        });
+    }
+
     [Test]
     public void GetDisplayName_TranslatesGeneratedDishPrepositionName_WhenPatched()
     {

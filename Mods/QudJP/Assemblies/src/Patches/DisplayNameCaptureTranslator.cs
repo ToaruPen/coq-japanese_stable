@@ -11,6 +11,14 @@ internal static class DisplayNameCaptureTranslator
         return GetDisplayNameRouteTranslator.TranslatePreservingColors(withoutDirectMarkers, context);
     }
 
+    public static bool TryTranslatePlaceholderValue(string source, string context, out string translated)
+    {
+        return DisplayNamePlaceholderTranslator.TryTranslatePlaceholderValue(
+            source,
+            candidate => TranslatePreservingColors(candidate, context),
+            out translated);
+    }
+
     public static string StripLeadingEnglishArticlePreservingColors(string source)
     {
         var trimmed = source.Trim();

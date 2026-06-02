@@ -4,6 +4,8 @@ using HarmonyLib;
 using QudJP.Patches;
 using QudJP.Tests.DummyTargets;
 
+#pragma warning disable S4144 // Helper aliases intentionally share implementation to keep test cases readable.
+
 namespace QudJP.Tests.L2;
 
 [TestFixture]
@@ -49,6 +51,11 @@ public sealed class WishCommandQueueTranslationPatchTests
         "Clearing player body stat shifts...",
         "プレイヤー身体の能力値補正を消去中...",
         "ClearStatShifts")]
+    [TestCase(
+        nameof(DummyWishCommandProducerTarget.DynamicQuestWhere),
+        "quest in JoppaWorld.10.22.1.1.10 secret id is secret-site-1 for quest Find the Ruin",
+        "クエスト Find the Ruin の場所は JoppaWorld.10.22.1.1.10、秘密IDは secret-site-1。",
+        "FindASiteDynamicQuestWhere")]
     public void WishCommandQueue_TranslatesOwnerMessages_WhenOwnerPatched(
         string methodName,
         string source,
@@ -95,6 +102,18 @@ public sealed class WishCommandQueueTranslationPatchTests
     }
 
     [Test]
+    public void WishCommandQueue_DoesNotTranslateDynamicQuestWhereTraffic_WhenOwnerAbsent()
+    {
+        const string source = "quest in JoppaWorld.10.22.1.1.10 secret id is secret-site-1 for quest Find the Ruin";
+
+        AssertOwnerQueuedMessageWithoutOwner(
+            nameof(DummyWishCommandProducerTarget.DynamicQuestWhere),
+            source,
+            source,
+            "FindASiteDynamicQuestWhere");
+    }
+
+    [Test]
     public void WishCommandQueue_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched()
     {
         const string source = "Turns until nephal arrives: 42";
@@ -105,6 +124,29 @@ public sealed class WishCommandQueueTranslationPatchTests
             source,
             "ReclamationWishTimer",
             expectedHits: 0);
+    }
+
+    [TestCase(
+        "\u0001quest in JoppaWorld.10.22.1.1.10 secret id is secret-site-1 for quest Find the Ruin",
+        "quest in JoppaWorld.10.22.1.1.10 secret id is secret-site-1 for quest Find the Ruin",
+        0)]
+    [TestCase("", "", 0)]
+    [TestCase(
+        "quest in {{Y|JoppaWorld.10.22.1.1.10}} secret id is {{C|secret-site-1}} for quest Find the Ruin",
+        "クエスト Find the Ruin の場所は {{Y|JoppaWorld.10.22.1.1.10}}、秘密IDは {{C|secret-site-1}}。",
+        1)]
+    [TestCase("quest whereabouts are unknown", "quest whereabouts are unknown", 0)]
+    public void WishCommandQueue_DynamicQuestWhere_HandlesFallbackAndEdgeCases_WhenOwnerPatched(
+        string source,
+        string expected,
+        int expectedHits)
+    {
+        AssertOwnerQueuedMessage(
+            nameof(DummyWishCommandProducerTarget.DynamicQuestWhere),
+            source,
+            expected,
+            "FindASiteDynamicQuestWhere",
+            expectedHits: expectedHits);
     }
 
     [TestCase("")]
@@ -154,6 +196,34 @@ public sealed class WishCommandQueueTranslationPatchTests
         }
     }
 
+    private static void AssertOwnerQueuedMessageWithoutOwner(
+        string methodName,
+        string source,
+        string expected,
+        string detail)
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+
+            DummyWishCommandProducerTarget.MessageToSend = source;
+            InvokeOwner(methodName);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(expected));
+                Assert.That(HitCount(detail), Is.Zero);
+            });
+        }
+        finally
+        {
+            DummyWishCommandProducerTarget.Reset();
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
     private static void InvokeOwner(string methodName)
     {
         _ = methodName switch
@@ -161,6 +231,7 @@ public sealed class WishCommandQueueTranslationPatchTests
             nameof(DummyWishCommandProducerTarget.SlynthQuestWish) => DummyWishCommandProducerTarget.SlynthQuestWish("missing"),
             nameof(DummyWishCommandProducerTarget.WishTimer) => DummyWishCommandProducerTarget.WishTimer(),
             nameof(DummyWishCommandProducerTarget.ClearStatShifts) => new DummyWishCommandProducerTarget().ClearStatShifts(),
+            nameof(DummyWishCommandProducerTarget.DynamicQuestWhere) => DummyWishCommandProducerTarget.DynamicQuestWhere(),
             _ => throw new ArgumentOutOfRangeException(nameof(methodName), methodName, "Unknown owner method."),
         };
     }
@@ -269,6 +340,13 @@ public sealed class WishCommandQueueTranslationPatchTests
         public bool ClearStatShifts()
         {
             _ = GetHashCode();
+            DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+            return true;
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public static bool DynamicQuestWhere()
+        {
             DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
             return true;
         }

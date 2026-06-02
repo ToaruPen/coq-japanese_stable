@@ -16,6 +16,10 @@ public static class FungalSporeInfectionTranslationPatch
         "^You've contracted (?<infection>.+?) on your (?<part>.+?)\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex ChooseLimbTitlePattern = new(
+        "^Choose a limb to infect with (?<fungus>.+?)\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     private static readonly Regex YourSporeCloudPattern = new(
         "^Your (?<part>.+?) spews? a cloud of spores\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
@@ -46,6 +50,18 @@ public static class FungalSporeInfectionTranslationPatch
 
         if (gameObjectType is not null && bodyPartType is not null)
         {
+            AddTarget(
+                targets,
+                targetType,
+                "ChooseLimbForInfection",
+                new[]
+                {
+                    typeof(List<>).MakeGenericType(bodyPartType),
+                    typeof(string),
+                    bodyPartType.MakeByRefType(),
+                    typeof(string).MakeByRefType(),
+                    typeof(bool),
+                });
             AddTarget(targets, targetType, "ApplyFungalInfection", new[] { gameObjectType, typeof(string), bodyPartType });
         }
         else
@@ -263,6 +279,33 @@ public static class FungalSporeInfectionTranslationPatch
     private static bool TryTranslatePopupCore(string source, out string translated)
     {
         var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        if (string.Equals(stripped, "You have no infectable body parts.", StringComparison.Ordinal))
+        {
+            translated = ColorAwareTranslationComposer.Restore(
+                "感染させられる体の部位がない。",
+                spans);
+            return true;
+        }
+
+        if (TryTranslateBodyPart(stripped, spans, source, out translated))
+        {
+            return true;
+        }
+
+        var chooseLimbMatch = ChooseLimbTitlePattern.Match(stripped);
+        if (chooseLimbMatch.Success)
+        {
+            var fungus = DisplayNameCaptureTranslator.TranslatePreservingColors(
+                Restore(chooseLimbMatch, spans, "fungus"),
+                Context);
+            translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+                $"{fungus}で感染させる部位を選ぶ。",
+                spans,
+                stripped.Length,
+                source);
+            return true;
+        }
+
         var match = ContractedPattern.Match(stripped);
         if (!match.Success)
         {
@@ -272,6 +315,45 @@ public static class FungalSporeInfectionTranslationPatch
 
         translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
             $"{Restore(match, spans, "part")}に{Restore(match, spans, "infection")}を発症した。",
+            spans,
+            stripped.Length,
+            source);
+        return true;
+    }
+
+    private static bool TryTranslateBodyPart(
+        string stripped,
+        IReadOnlyList<ColorSpan> spans,
+        string source,
+        out string translated)
+    {
+        var bodyPart = stripped switch
+        {
+            "left arm" => "左腕",
+            "right arm" => "右腕",
+            "left hand" => "左手",
+            "right hand" => "右手",
+            "left leg" => "左脚",
+            "right leg" => "右脚",
+            "left foot" => "左足",
+            "right foot" => "右足",
+            "arm" => "腕",
+            "hand" => "手",
+            "leg" => "脚",
+            "foot" => "足",
+            "head" => "頭",
+            "face" => "顔",
+            "torso" => "胴体",
+            _ => string.Empty,
+        };
+        if (bodyPart.Length == 0)
+        {
+            translated = source;
+            return false;
+        }
+
+        translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+            bodyPart,
             spans,
             stripped.Length,
             source);

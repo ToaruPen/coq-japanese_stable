@@ -1405,6 +1405,42 @@
             "key": "{target} are sucked into {vortex}.",
             "context": "XRL.World.Capabilities.Messaging",
             "text": "{target}は{vortex}に吸い込まれた。"
+        },
+        {
+            "key": "移動中",
+            "text": "移動"
+        },
+        {
+            "key": "休息中",
+            "text": "休息"
+        },
+        {
+            "key": "掘削中",
+            "text": "掘削"
+        },
+        {
+            "key": "収集中",
+            "text": "回収"
+        },
+        {
+            "key": "攻撃中",
+            "text": "攻撃"
+        },
+        {
+            "key": "行動中",
+            "text": "行動"
+        },
+        {
+            "key": "探索中",
+            "text": "探索"
+        },
+        {
+            "key": "待機中",
+            "text": "待機"
+        },
+        {
+            "key": "分解中",
+            "text": "分解"
         }
     ]
 }

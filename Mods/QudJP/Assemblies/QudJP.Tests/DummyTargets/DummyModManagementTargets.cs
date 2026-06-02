@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace QudJP.Tests.DummyTargets;
 
@@ -85,6 +87,14 @@ internal sealed class DummyModInfoTarget
 
     public string LastUpdatePopupMessage = string.Empty;
 
+    public string LastFailurePopupTitle = string.Empty;
+
+    public string LastFailurePopupMessage = string.Empty;
+
+    public string LastRetryText = string.Empty;
+
+    public string LastWorkshopText = string.Empty;
+
     public string LastLoadingText = string.Empty;
 
     public string AppendDependencyConfirmation(int mode)
@@ -124,6 +134,19 @@ internal sealed class DummyModInfoTarget
         LastUpdatePopupTitle = "{{W|Update Available}}";
     }
 
+    public void ConfirmFailure()
+    {
+        LastFailurePopupTitle = DisplayTitle + " - {{R|Errors}}";
+        LastFailurePopupMessage = "first error\nsecond error\nthird error";
+        LastFailurePopupMessage = LastFailurePopupMessage + "\n(... {{R|+" + 2 + "}} more)";
+        LastFailurePopupMessage = LastFailurePopupMessage
+            + "\n\nAutomatically on your clipboard should you wish to forward it to "
+            + "the mod author"
+            + ".";
+        LastRetryText = "{{W|[R]}} {{y|Retry}}";
+        LastWorkshopText = "{{W|[W]}} {{y|Workshop}}";
+    }
+
     public string DownloadUpdate()
     {
         LastLoadingText = "Updating " + DisplayTitleStripped + "...";
@@ -142,4 +165,60 @@ internal sealed class DummyModScrollerOneTarget
         LastPopupMessage = DisplayTitle
             + " contains scripts and has been permanently disabled in the options.\n{{K|(Options->Modding->Allow scripting mods)}}";
     }
+}
+
+internal sealed class DummyXrlCoreRestoreModsLoadedTarget
+{
+    public async Task<DummyXrlCoreRestoreModsLoadedResult> RestoreModsLoadedAsync()
+    {
+        await Task.Yield();
+
+        var unavailable = new StringBuilder()
+            .Append("One or more mods enabled in this save are {{red|not available}}:{{red|")
+            .Append("Sample Mod")
+            .Append("}}Do you still wish to try to load this save?")
+            .ToString();
+
+        var differs = new StringBuilder()
+            .Append("These mods are {{red|disabled}} in the save:{{red|")
+            .Append("Extra Mod")
+            .Append("}}")
+            .AppendLine()
+            .Append("These mods are {{green|enabled}} in the save:{{green|")
+            .Append("Missing Mod")
+            .Append("}}")
+            .ToString();
+
+        return new DummyXrlCoreRestoreModsLoadedResult
+        {
+            IncompleteTitle = "Incomplete Mod Configuration",
+            ColoredIncompleteTitle = "{{red|Incomplete Mod Configuration}}",
+            UnavailableMessage = unavailable,
+            DiffersTitle = "Mod Configuration Differs",
+            DirectMarkedDiffersTitle = "\u0001Mod構成が異なります",
+            DiffersMessage = differs,
+            Options =
+            [
+                "Restart using save game's mod configuration",
+                "Load keeping current mod configuration",
+            ],
+        };
+    }
+}
+
+internal sealed class DummyXrlCoreRestoreModsLoadedResult
+{
+    public string IncompleteTitle { get; init; } = string.Empty;
+
+    public string ColoredIncompleteTitle { get; init; } = string.Empty;
+
+    public string UnavailableMessage { get; init; } = string.Empty;
+
+    public string DiffersTitle { get; init; } = string.Empty;
+
+    public string DirectMarkedDiffersTitle { get; init; } = string.Empty;
+
+    public string DiffersMessage { get; init; } = string.Empty;
+
+    public string[] Options { get; init; } = [];
 }

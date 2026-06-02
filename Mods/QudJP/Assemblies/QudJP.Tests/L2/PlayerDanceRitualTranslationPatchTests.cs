@@ -30,6 +30,7 @@ public sealed class PlayerDanceRitualTranslationPatchTests
     [TestCase("&KOpponent steps east", "&K相手はeastへ一歩進んだ。")]
     [TestCase("&GYou executed that step correctly! [{{Y|拍子が合った}}]", "&Gそのステップを正しく実行した！ [{{Y|拍子が合った}}]")]
     [TestCase("&RYou executed that step incorrectly! [{{R|早すぎた}}]", "&Rそのステップを誤って実行した！ [{{R|早すぎた}}]")]
+    [TestCase("&KDebug: Dance party turn tick 4 Current Approval:2", "&Kデバッグ: ダンスパーティーのターン 4 現在の評価:2")]
     public void TryTranslateMessage_PreservesDynamicCaptures(string source, string expected)
     {
         var translated = PlayerDanceRitualTranslationPatch.TryTranslateMessage(
@@ -151,6 +152,21 @@ public sealed class PlayerDanceRitualTranslationPatchTests
     }
 
     [Test]
+    public void PlayerDanceRitualPatch_TranslatesFireEventDebugQueuedMessage_WhenOwnerPatched()
+    {
+        var target = new DummyPlayerDanceRitualProducerTarget
+        {
+            QueuedMessageToSend = "&KDebug: Dance party turn tick 4 Current Approval:2",
+        };
+
+        RunQueuedOwnerTest(
+            nameof(DummyPlayerDanceRitualProducerTarget.FireEvent),
+            new object[] { "EndTurn" },
+            target,
+            "&Kデバッグ: ダンスパーティーのターン 4 現在の評価:2");
+    }
+
+    [Test]
     public void PlayerDanceRitualPatch_TranslatesFailDancePopup_WhenOwnerPatched()
     {
         var target = new DummyPlayerDanceRitualProducerTarget
@@ -227,14 +243,14 @@ public sealed class PlayerDanceRitualTranslationPatchTests
     {
         var target = new DummyPlayerDanceRitualProducerTarget
         {
-            QueuedMessageToSend = MessageFrameTranslator.MarkDirectTranslation("&KPlayer steps east"),
+            QueuedMessageToSend = MessageFrameTranslator.MarkDirectTranslation("&Kあなたは東へ一歩進んだ。"),
         };
 
         RunQueuedOwnerTest(
             nameof(DummyPlayerDanceRitualProducerTarget.ExecuteMove),
             new object[] { "Player", "east" },
             target,
-            target.QueuedMessageToSend);
+            "&Kあなたは東へ一歩進んだ。");
     }
 
     [Test]

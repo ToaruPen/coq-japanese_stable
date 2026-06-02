@@ -84,4 +84,39 @@ public static class GameObjectSpotTranslationPatch
             && !string.IsNullOrEmpty(message)
             && MessageLogProducerTranslationHelpers.TryPreparePatternMessage(ref message, Context, "Spot");
     }
+
+    internal static bool TryTranslatePopupMessage(string source, string route, string family, out string translated)
+    {
+        // Route and family are kept for compatibility with popup owner-route delegates.
+        translated = source;
+
+        if (string.IsNullOrEmpty(source))
+        {
+            return false;
+        }
+
+        var message = source;
+        var hasDirectMarker = MessageFrameTranslator.TryStripDirectTranslationMarker(message, out var strippedSource);
+        if (hasDirectMarker)
+        {
+            message = strippedSource;
+        }
+
+        if (activeDepth <= 0)
+        {
+            translated = message;
+            return hasDirectMarker;
+        }
+
+        if (!MessageLogProducerTranslationHelpers.TryPreparePatternMessage(ref message, Context, "Spot"))
+        {
+            translated = message;
+            return hasDirectMarker;
+        }
+
+        translated = MessageFrameTranslator.TryStripDirectTranslationMarker(message, out var stripped)
+            ? stripped
+            : message;
+        return true;
+    }
 }

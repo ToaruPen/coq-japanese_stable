@@ -113,6 +113,29 @@ public static class GameObjectEmitMessageTranslationPatch
             return true;
         }
 
+        // Let does-verb consume marked fragments before the final direct-marked pattern fallback.
+        var patternCandidate = message;
+        if (MessageLogProducerTranslationHelpers.TryPreparePatternMessage(
+                ref patternCandidate,
+                Context,
+                "EmitMessage.Pattern",
+                markJapaneseAsDirect: false))
+        {
+            message = patternCandidate;
+            return true;
+        }
+
+        if (DoesVerbRouteTranslator.TryTranslateMarkedMessage(message, out var doesVerbTranslated))
+        {
+            DynamicTextObservability.RecordTransform(
+                nameof(DoesFragmentMarkingPatch),
+                "EmitMessage.DoesVerb.MarkedMessage",
+                message,
+                doesVerbTranslated);
+            message = MessageFrameTranslator.MarkDirectTranslation(doesVerbTranslated);
+            return true;
+        }
+
         return MessageLogProducerTranslationHelpers.TryPreparePatternMessage(
             ref message,
             Context,

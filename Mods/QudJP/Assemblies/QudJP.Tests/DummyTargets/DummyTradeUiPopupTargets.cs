@@ -1,3 +1,6 @@
+using System;
+using System.Runtime.CompilerServices;
+
 namespace QudJP.Tests.DummyTargets;
 
 internal static class DummyTradeUiPopupTarget
@@ -81,9 +84,33 @@ internal sealed class DummyTradeUiVendorPopupProducerTarget
 
     public bool UseConfirmationPopup { get; set; }
 
+    public IReadOnlyList<string>? VendorActionOptions { get; set; }
+
+    public string? LastVendorActionSelection { get; private set; }
+
     public void ShowTradeScreen()
     {
         ShowConfiguredPopup();
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public void ShowVendorActions()
+    {
+        var options = VendorActionOptions is null
+            ? new List<string> { "Look", "Add to trade", "Identify", "Repair", "Recharge", "Read" }
+            : new List<string>(VendorActionOptions);
+        var defaultHotkeys = new[] { 'l', 't', 'i', 'r', 'c', 'b' };
+        if (options.Count > defaultHotkeys.Length)
+        {
+            throw new InvalidOperationException("ShowVendorActions supports at most 6 options.");
+        }
+
+        var index = DummyPopupGenericTarget.PickOption(
+            Title: "select an action",
+            Options: options.ToArray(),
+            Hotkeys: defaultHotkeys.Take(options.Count).ToArray(),
+            AllowEscape: true);
+        LastVendorActionSelection = index >= 0 && index < options.Count ? options[index] : null;
     }
 
     public void TryRemove()

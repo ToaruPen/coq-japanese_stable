@@ -68,6 +68,29 @@ public sealed class ActiveEffectsOwnerPatchTests
     }
 
     [Test]
+    public void EffectDescriptionPatch_TranslatesMetamorphedDescription_WhenPatched()
+    {
+        WriteDictionary(("metamorphed", "変身中"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyEffect), nameof(DummyEffect.GetDescription)),
+                postfix: new HarmonyMethod(RequireMethod(typeof(EffectDescriptionPatch), nameof(EffectDescriptionPatch.Postfix))));
+
+            var effect = new DummyEffect { DescriptionText = "metamorphed" };
+
+            Assert.That(effect.GetDescription(), Is.EqualTo("変身中"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void EffectDescriptionAndDetailsPatches_TranslateColoredDescriptionAndTemplatedPluralDetails_WhenPatched()
     {
         WriteDictionary(

@@ -45,6 +45,31 @@ internal static class MessagePatternTranslator
     private static readonly Regex DirectionQualifiedCapturePattern = new Regex(
         "^(?<target>.+?) to the (?<direction>north|south|east|west|northeast|northwest|southeast|southwest)$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.IgnoreCase);
+    private static readonly Regex AutoActStopSeePattern = new Regex(
+        "^You see .+?(?:(?: to the (?:north|south|east|west|northeast|northwest|southeast|southwest))| above| below)? and stop (?<action>.+?)[.!]?$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly HashSet<string> KnownAutoActActions = new HashSet<string>(StringComparer.Ordinal)
+    {
+        "moving",
+        "resting",
+        "digging",
+        "gathering",
+        "attacking",
+        "acting",
+        "auto-exploring",
+        "exploring",
+        "waiting",
+        "disassembling",
+        "移動中",
+        "休息中",
+        "掘削中",
+        "収集中",
+        "攻撃中",
+        "行動中",
+        "探索中",
+        "待機中",
+        "分解中",
+    };
 
     internal static int LoadInvocationCount => Volatile.Read(ref loadInvocationCount);
 
@@ -280,6 +305,16 @@ internal static class MessagePatternTranslator
         }
 
         var patterns = GetLoadedPatterns();
+        if (IsUnknownAutoActStopSeeMessage(source))
+        {
+            if (logMissingPattern)
+            {
+                _ = RecordMissingPattern(source);
+            }
+
+            return RestoreUnmatchedSource(source, spans);
+        }
+
         for (var index = 0; index < patterns.Count; index++)
         {
             var definition = patterns[index];
@@ -313,6 +348,19 @@ internal static class MessagePatternTranslator
             });
         }
 
+        return spans is null || spans.Count == 0
+            ? source
+            : ColorAwareTranslationComposer.Restore(source, spans);
+    }
+
+    private static bool IsUnknownAutoActStopSeeMessage(string source)
+    {
+        var match = AutoActStopSeePattern.Match(source);
+        return match.Success && !KnownAutoActActions.Contains(match.Groups["action"].Value);
+    }
+
+    private static string RestoreUnmatchedSource(string source, IReadOnlyList<ColorSpan>? spans)
+    {
         return spans is null || spans.Count == 0
             ? source
             : ColorAwareTranslationComposer.Restore(source, spans);

@@ -200,11 +200,10 @@ ISSUE726_TEXT_FILTER_ROUTE_EVIDENCE: Final = [
         "so completion needs an observed owner-specific final output rather than a raw HSE leaf"
     ),
 ]
-ISSUE719_TEXT_FILTER_STATIC_GAP_EVIDENCE: Final[list[str]] = [
+ISSUE719_TEXT_FILTER_SPEECH_STATUS_ROUTE_EVIDENCE: Final[list[str]] = [
     (
-        "Issue #719 final runtime audit reclassifies TextFilters.Angry/Lallated "
-        "as static implementation gaps: the owner methods and HSE keys are exact, "
-        "but the speech/status filter route still needs scoped translation handling."
+        "Issue #719 speech/status filter owner route covers TextFilters.Angry/Lallated "
+        "at the source methods instead of relying on downstream status or conversation sinks."
     ),
     (
         "TextFilters.Angry expands <spice.textFilters.angry.!random> and passes it "
@@ -212,10 +211,13 @@ ISSUE719_TEXT_FILTER_STATIC_GAP_EVIDENCE: Final[list[str]] = [
         "<spice.textFilters.lallated.!random> with *Text* and *Noise* variables."
     ),
     (
-        "Static callsites are known from StyledStatus.Format, Preacher.PreacherHomily, "
-        "and ConversationScript TextFilter installation; runtime evidence is no longer "
-        "needed to identify the owner family."
+        "TextFilterSpeechStatusTranslationPatches.cs targets XRL.Language.TextFilters.Angry(string) "
+        "and XRL.Language.TextFilters.Lallated(string,string); L2 tests prove angry leaves and "
+        "carried lallated speech text translate while unknown speech remains pass-through."
     ),
+    "Mods/QudJP/Assemblies/src/Patches/TextFilterSpeechStatusTranslationPatches.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/TextFilterSpeechStatusTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
     "decompiled source: XRL.Language/TextFilters.cs lines 197-224",
 ]
 ISSUE719_INSERT_RANDOM_BOOK_LINE_DATA_EVIDENCE: Final[list[str]] = [
@@ -243,17 +245,19 @@ ISSUE719_CORE_DISPLAY_NAME_DATA_EVIDENCE: Final[list[str]] = [
         "not a fixed English localization leaf."
     ),
 ]
-ISSUE719_CORE_POSSESSIVE_STATIC_GAP_EVIDENCE: Final[list[str]] = [
+ISSUE719_CORE_POSSESSIVE_OWNER_EVIDENCE: Final[list[str]] = [
     (
-        "Issue #719 final runtime audit reclassifies GameObject.Poss/poss as a "
-        "static implementation gap: the helper route is exact and no runtime proof "
-        "is needed for owner identity."
+        "Issue #719 final runtime audit closes GameObject.Poss/poss with "
+        "GameObjectPossessiveDisplayNameTranslationPatch on the exact owner helper route."
     ),
     (
         "The helpers compose 'Your'/'your' second-person definite article fallbacks "
         "or Grammar.MakePossessive(GetDisplayName(...)) owner prefixes before "
         "delegating to Object.GetDisplayName."
     ),
+    "Mods/QudJP/Assemblies/src/Patches/GameObjectPossessiveDisplayNameTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/GameObjectPossessiveDisplayNameTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
     "decompiled source: XRL.World/GameObject.cs lines 6840-6867",
 ]
 ISSUE719_PHASE_STICKY_DATA_SENTINEL_EVIDENCE: Final[list[str]] = [
@@ -276,10 +280,33 @@ ISSUE719_CORE_DISPLAY_NAME_DATA_FAMILIES: Final[frozenset[str]] = frozenset(
         "XRL.World/PointOfInterest.cs::PointOfInterest.DisplayName",
     }
 )
-ISSUE719_CORE_POSSESSIVE_STATIC_GAP_FAMILIES: Final[frozenset[str]] = frozenset(
+ISSUE719_CORE_POSSESSIVE_OWNER_FAMILIES: Final[frozenset[str]] = frozenset(
     {
         "XRL.World/GameObject.cs::GameObject.Poss(GameObject,bool,bool?)",
         "XRL.World/GameObject.cs::GameObject.poss(GameObject,bool,bool?)",
+    }
+)
+ISSUE719_CORE_INVALID_OBJECT_DISPLAY_NAME_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 invalid-object fallback review closes core invalid object "
+        "display names with CoreInvalidObjectDisplayNameTranslationPatch on "
+        "GameObjectFactory.CreateObject and ZoneManager.GetCachedObjects owner routes."
+    ),
+    "Mods/QudJP/Assemblies/src/Patches/CoreInvalidObjectDisplayNameTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/CoreInvalidObjectDisplayNameTranslationPatchTests.cs",
+    (
+        "decompiled owner sources: XRL.World/GameObjectFactory.cs lines "
+        "1153-1192 and XRL.World/ZoneManager.cs lines 304-312"
+    ),
+]
+ISSUE719_CORE_INVALID_OBJECT_DISPLAY_NAME_FAMILIES: Final[frozenset[str]] = frozenset(
+    {
+        (
+            "XRL.World/GameObjectFactory.cs::"
+            "GameObjectFactory.CreateObject(string,int,int,string,Action<GameObject>,Action<GameObject>,string,List<GameObject>)"
+        ),
+        "XRL.World/GameObjectFactory.cs::GameObjectFactory.CreateObject(string,Action<GameObject>)",
+        "XRL.World/ZoneManager.cs::ZoneManager.GetCachedObjects(string)",
     }
 )
 ISSUE719_PHASE_STICKY_DATA_SENTINEL_FAMILIES: Final[frozenset[str]] = frozenset(
@@ -421,6 +448,30 @@ HSE_COOKING_DISPLAY_ROUTE_EVIDENCE: Final = [
     "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
     "docs/reports/2026-05-17-historic-string-expander-owner-plan.md",
 ]
+ISSUE719_COOKING_PRESET_RECIPE_DISPLAY_NAME_EVIDENCE: Final = [
+    *HSE_COOKING_DISPLAY_ROUTE_EVIDENCE,
+    "Mods/QudJP/Localization/Dictionaries/Scoped/ui-popup-campfire-preset-meals.ja.json",
+    (
+        "Issue #719 preset cooking recipe display-name overrides are covered by "
+        "CookingRecipeDisplayNameTranslationPatch targeting each preset "
+        "GetDisplayName override and translating the fixed authored names through "
+        "the campfire preset meal scoped dictionary."
+    ),
+]
+ISSUE719_COOKING_PRESET_RECIPE_DISPLAY_NAME_FAMILIES: Final[frozenset[str]] = frozenset(
+    {
+        "XRL.World.Skills.Cooking/AppleMatz.cs::AppleMatz.GetDisplayName()",
+        "XRL.World.Skills.Cooking/BoneBabka.cs::BoneBabka.GetDisplayName()",
+        "XRL.World.Skills.Cooking/CloacaSurprise.cs::CloacaSurprise.GetDisplayName()",
+        "XRL.World.Skills.Cooking/CrystalDelight.cs::CrystalDelight.GetDisplayName()",
+        "XRL.World.Skills.Cooking/GoatAndSweetLeaf.cs::GoatAndSweetLeaf.GetDisplayName()",
+        "XRL.World.Skills.Cooking/HotandSpiny.cs::HotandSpiny.GetDisplayName()",
+        "XRL.World.Skills.Cooking/MahLahSoup.cs::MahLahSoup.GetDisplayName()",
+        "XRL.World.Skills.Cooking/MushroomCider.cs::MushroomCider.GetDisplayName()",
+        "XRL.World.Skills.Cooking/ThePorridge.cs::ThePorridge.GetDisplayName()",
+        "XRL.World.Skills.Cooking/TongueAndCheek.cs::TongueAndCheek.GetDisplayName()",
+    }
+)
 ISSUE719_VILLAGE_SIGNATURE_DISH_EVIDENCE: Final = [
     *HSE_COOKING_DISPLAY_ROUTE_EVIDENCE,
     (
@@ -441,14 +492,21 @@ ISSUE719_VILLAGE_SIGNATURE_DISH_FAMILIES: Final[frozenset[str]] = frozenset(
         "XRL.World.ZoneBuilders/VillageCodaBase.cs::VillageCodaBase.generateSignatureDish(string)",
     }
 )
-ISSUE719_VILLAGE_SIGNATURE_ITEM_STATIC_GAP_EVIDENCE: Final[list[str]] = [
+ISSUE719_VILLAGE_SIGNATURE_ITEM_OWNER_EVIDENCE: Final[list[str]] = [
     (
-        "Issue #719 village signature-item review reclassifies "
-        "generateSignatureItems as a static implementation gap because both "
-        "VillageBase and VillageCodaBase directly assign signatureItemBlueprint "
-        "from the snapshot and assign signatureHistoricObjectInstance.DisplayName "
+        "Issue #719 village signature-item review closes generateSignatureItems "
+        "through VillageSignatureItemTranslationPatch because both VillageBase "
+        "and VillageCodaBase directly assign signatureHistoricObjectInstance.DisplayName "
         "from the generated signatureHistoricObjectName snapshot property."
     ),
+    (
+        "The postfix translates the finite SignatureHistoricObject HistorySpice "
+        "frames while preserving unknown owner names and routing the item capture "
+        "through GetDisplayNameRouteTranslator."
+    ),
+    "Mods/QudJP/Assemblies/src/Patches/VillageSignatureItemTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/VillageSignatureItemTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
     (
         "decompiled owner sources: XRL.World.ZoneBuilders/VillageBase.cs lines "
         "1337-1350 and XRL.World.ZoneBuilders/VillageCodaBase.cs lines 1639-1652"
@@ -458,38 +516,94 @@ ISSUE719_VILLAGE_SIGNATURE_ITEM_STATIC_GAP_EVIDENCE: Final[list[str]] = [
         "signatureHistoricObjectName from <spice.villages.SignatureHistoricObject>."
     ),
 ]
-ISSUE719_VILLAGE_SIGNATURE_ITEM_STATIC_GAP_FAMILIES: Final[frozenset[str]] = frozenset(
+ISSUE719_VILLAGE_SIGNATURE_ITEM_OWNER_FAMILIES: Final[frozenset[str]] = frozenset(
     {
         "XRL.World.ZoneBuilders/VillageBase.cs::VillageBase.generateSignatureItems()",
         "XRL.World.ZoneBuilders/VillageCodaBase.cs::VillageCodaBase.generateSignatureItems()",
     }
 )
-ISSUE719_VILLAGE_FACTION_DISPLAY_NAME_STATIC_GAP_EVIDENCE: Final[list[str]] = [
+ISSUE719_VILLAGE_CODA_SULTAN_ENTITY_DISPLAY_NAME_EVIDENCE: Final[list[str]] = [
     (
-        "Issue #719 village faction review reclassifies CreateVillageFaction as "
-        "a static implementation gap because the method directly owns the "
-        "visible Faction.DisplayName / FormatWithArticle fields while keeping "
-        "Faction.Name as the English faction key."
+        "Issue #719 VillageCoda generated display-name review closes Coda sultan "
+        "names through existing display-name owner routes: GetDisplayNameRouteTranslator "
+        "handles 'shrine to' and 'Cult of' generated prefixes, and the display-name "
+        "modifier route handles 'mechanical' golem names."
     ),
     (
-        "CreateVillageFaction assigns DisplayName from the generated "
-        'newFactionName snapshot property, or falls back to "villagers of " + '
-        "the village name and enables FormatWithArticle."
+        "GenerateSultanEntity JournalAPI.AddSultanNote callsites pass existing "
+        "JournalAccomplishment.GospelText values; they do not construct new fixed "
+        "English display-name leaves in this owner."
+    ),
+    "Mods/QudJP/Assemblies/src/Patches/GetDisplayNameRouteTranslator.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L1/GetDisplayNameRouteTranslatorTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L1/HistoricSpiceGeneratedNameTranslatorTests.cs",
+    (
+        "decompiled owner source: XRL.World.ZoneBuilders/VillageCoda.cs lines "
+        "571-582, 2136-2176, and 2446-2451"
+    ),
+]
+ISSUE719_VILLAGE_CODA_SULTAN_ENTITY_DISPLAY_NAME_FAMILIES: Final[frozenset[str]] = frozenset(
+    {
+        "XRL.World.ZoneBuilders/VillageCoda.cs::VillageCoda.GenerateSultanEntity(GameObject)",
+        "XRL.World.ZoneBuilders/VillageCoda.cs::VillageCoda.SetStatueVisuals(GameObject)",
+        "XRL.World.ZoneBuilders/VillageCoda.cs::VillageCoda.GenerateMechanicalGolem()",
+    }
+)
+ISSUE719_MURAL_BLANK_SLATE_DISPLAY_NAME_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 mural blank-slate display-name review closes fixed leaf "
+        "assignments through the existing GetDisplayName display-name dictionary route."
+    ),
+    "Mods/QudJP/Localization/Dictionaries/ui-displayname-atomic.ja.json",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L1/GetDisplayNameRouteTranslatorTests.cs",
+    (
+        "decompiled owner sources: XRL.World.Parts/PlayerMuralController.cs lines "
+        "303-325 and XRL.World.Parts/SultanMuralController.cs lines 374-400"
+    ),
+]
+ISSUE719_MURAL_BLANK_SLATE_DISPLAY_NAME_FAMILIES: Final[frozenset[str]] = frozenset(
+    {
+        "XRL.World.Parts/PlayerMuralController.cs::PlayerMuralController.blankMural(List<Location2D>)",
+        "XRL.World.Parts/SultanMuralController.cs::SultanMuralController.blankMural(List<Cell>)",
+    }
+)
+ISSUE719_GENERATED_DISPLAY_NAME_OWNER_PATCH_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 generated display-name owner patch covers direct producer "
+        "assignments for village factions, temporal fugue copies, mural panels, "
+        "and village quest reward recoilers."
     ),
     (
-        "Existing generated-name helpers translate villagers-of display-name "
-        "phrases and ImportedFoodorDrink.generateFactionName output, but the "
-        "CreateVillageFaction display-name assignment still needs an owner/helper "
-        "route for the faction DisplayName storage point."
+        "VillageBase.CreateVillageFaction translates Faction.DisplayName while "
+        "leaving Faction.Name and FormatWithArticle as owner metadata."
     ),
-    "decompiled owner source: XRL.World.ZoneBuilders/VillageBase.cs lines 3081-3104",
-    "decompiled formatter source: XRL.World/Faction.cs lines 190-207 and 818-825",
+    (
+        "TemporalFugue.CreateFugueCopyOf translates Render.DisplayName and the "
+        "PlayerCopyDescription string property after copy creation."
+    ),
+    (
+        "SultanMuralController and PlayerMuralController display-name assignments "
+        "are translated through the existing mural-of/ruined-mural-of route."
+    ),
+    (
+        "VillageDynamicQuestContext.getQuestReward scopes DynamicQuestRewardElement_GameObject "
+        "construction so the generated village recoiler Render.DisplayName is translated "
+        "without touching reputation faction keys."
+    ),
+    "Mods/QudJP/Assemblies/src/Patches/GeneratedDisplayNameOwnerTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/GeneratedDisplayNameOwnerTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
     "existing helper: Mods/QudJP/Assemblies/src/Patches/GetDisplayNameRouteTranslator.cs",
     "existing helper: Mods/QudJP/Assemblies/src/Patches/ImportedFoodOrDrinkFactionNameTranslator.cs",
 ]
-ISSUE719_VILLAGE_FACTION_DISPLAY_NAME_STATIC_GAP_FAMILIES: Final[frozenset[str]] = frozenset(
+ISSUE719_GENERATED_DISPLAY_NAME_OWNER_PATCH_FAMILIES: Final[frozenset[str]] = frozenset(
     {
         "XRL.World.ZoneBuilders/VillageBase.cs::VillageBase.CreateVillageFaction(HistoricEntitySnapshot)",
+        "XRL.World.Parts.Mutation/TemporalFugue.cs::TemporalFugue.CreateFugueCopyOf(GameObject,GameObject,Cell,GameObject,bool,int,int,string,string,string,string,string,IPart)",
+        "XRL.World.Parts/SultanMuralController.cs::SultanMuralController.updateHistoricMural(List<Cell>,HistoricEvent)",
+        "XRL.World.Parts/SultanMuralController.cs::SultanMuralController.ruinMural(List<Cell>,HistoricEvent)",
+        "XRL.World/VillageDynamicQuestContext.cs::VillageDynamicQuestContext.getQuestReward()",
+        "XRL.World.Parts/PlayerMuralController.cs::PlayerMuralController.updatePlayerMural(List<Location2D>,JournalAccomplishment,int)",
     }
 )
 ISSUE719_RUNNING_BEHAVIOR_EVENT_BRIDGE_EVIDENCE: Final[list[str]] = [
@@ -525,6 +639,28 @@ ISSUE719_RUNNING_BEHAVIOR_EVENT_BRIDGE_FAMILIES: Final[frozenset[str]] = frozens
         ),
     }
 )
+ISSUE719_ROCKET_SKATES_RUNNING_BEHAVIOR_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 RocketSkates.GetRunningBehavior review closes the row by "
+        "splitting its event fields across existing consumers: Run.SyncAbility "
+        "translates the Power Skate ability name, RunStartRunningPopup translates "
+        "the power skate verb in world-map failure popups, and Running/message-frame "
+        "routes translate the power skating effect/message names."
+    ),
+    "Mods/QudJP/Assemblies/src/Patches/ActivatedAbilityMiscProviderTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/RunStartRunningPopupTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L1/ActivatedAbilityNameTranslatorTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L1/MessageFrameTranslatorTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/ActivatedAbilityMiscProviderTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/RunStartRunningPopupTranslationPatchTests.cs",
+    "Mods/QudJP/Localization/Dictionaries/ui-skillsandpowers.ja.json",
+    "Mods/QudJP/Localization/MessageFrames/verbs.ja.json",
+]
+ISSUE719_ROCKET_SKATES_RUNNING_BEHAVIOR_FAMILIES: Final[frozenset[str]] = frozenset(
+    {
+        "XRL.World.Parts/RocketSkates.cs::RocketSkates.HandleEvent(GetRunningBehaviorEvent)",
+    }
+)
 ISSUE719_WORLD_PART_QUEUE_DOES_EXISTING_OWNER_EVIDENCE_BY_FAMILY: Final[
     dict[str, list[str]]
 ] = {
@@ -556,6 +692,35 @@ ISSUE719_WORLD_PART_QUEUE_DOES_EXISTING_OWNER_EVIDENCE_BY_FAMILY: Final[
         "Mods/QudJP/Localization/MessageFrames/verbs.ja.json",
         "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
         "decompiled owner source: XRL.World.Parts/ThiefBot.cs lines 22-77",
+    ],
+    "XRL.World.Parts/Interior.cs::Interior.HandleEvent(TookDamageEvent)": [
+        (
+            "Issue #719 world-part queue review promotes Interior.HandleEvent(TookDamageEvent) "
+            "because its only player-visible queue branch emits the standard damage frame "
+            "'<object> takes <amount> damage!', which is already served by the existing "
+            "PhysicsProcessTakeDamageTranslationPatch damage-frame route."
+        ),
+        "Mods/QudJP/Assemblies/src/Patches/PhysicsProcessTakeDamageTranslationPatch.cs",
+        "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+        "decompiled owner source: XRL.World.Parts/Interior.cs lines 644-657",
+    ],
+    (
+        "XRL.World.Parts/VehicleMeleeInfiltration.cs::"
+        "VehicleMeleeInfiltration.HandleEvent(CanEnterInteriorEvent)"
+    ): [
+        (
+            "Issue #719 VehicleMeleeInfiltration.HandleEvent review promotes the "
+            "player infiltration EmitMessage branch because the emitted "
+            'Does("infiltrate") fragment is now translated by the GameObject '
+            "EmitMessage owner route before the generic direct-marker pass-through."
+        ),
+        "decompiled owner source: XRL.World.Parts/VehicleMeleeInfiltration.cs lines 71-104",
+        "Mods/QudJP/Assemblies/src/Patches/GameObjectEmitMessageTranslationPatch.cs",
+        "Mods/QudJP/Assemblies/src/Patches/DoesVerbRouteTranslator.cs",
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+        "Mods/QudJP/Assemblies/QudJP.Tests/L1/DoesVerbFamilyTests.cs",
+        "Mods/QudJP/Localization/MessageFrames/verbs.ja.json",
     ],
 }
 ISSUE719_WORLD_PART_QUEUE_DOES_EXISTING_OWNER_FAMILIES: Final[frozenset[str]] = frozenset(
@@ -612,29 +777,65 @@ ISSUE719_MISSILE_TRAJECTORY_MESSAGE_FRAME_FAMILIES: Final[frozenset[str]] = froz
 )
 ISSUE719_GAMEOBJECT_DIE_STATIC_GAP_EVIDENCE: Final[list[str]] = [
     (
-        "Issue #719 GameObject.Die review reclassifies the row as a static "
-        "route-split implementation gap. The owner is statically known, but "
-        "the method mixes tutorial death popups, checkpoint death text, "
-        "journal death accomplishments, debug confirmation, custom EmitMessage "
-        "death messages, and DidX death verbs."
+        "Issue #719 GameObject.Die review closes the route split through "
+        "existing owner routes: tutorial popups, checkpoint death wrappers, "
+        "death-reason parameters, companion queued death messages, custom "
+        "EmitMessage death messages, DidX death verbs, and JournalAPI "
+        "death-accomplishment storage."
     ),
     (
         "decompiled owner source: XRL.World/GameObject.cs lines 14491-14641; "
-        "existing DeathReasonTranslationPatch and GameObjectDieTranslationPatch "
-        "cover only death-reason parameters and companion queued death messages."
+        "DeathReasonTranslationPatch covers Reason and ThirdPersonReason, "
+        "GameObjectDieTranslationPatch covers companion queued death messages, "
+        "JournalTextTranslator covers the death accomplishment date wrapper, "
+        "DeathWrapperFamilyTranslator covers checkpoint death wrappers, and "
+        "TutorialManagerTranslationPatch covers tutorial death intermissions."
     ),
     "Mods/QudJP/Assemblies/src/Patches/DeathReasonTranslationPatch.cs",
     "Mods/QudJP/Assemblies/src/Patches/GameObjectDieTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/JournalTextTranslator.cs",
+    "Mods/QudJP/Assemblies/src/Patches/DeathWrapperFamilyTranslator.cs",
+    "Mods/QudJP/Assemblies/src/Patches/TutorialManagerTranslationPatch.cs",
     "Mods/QudJP/Assemblies/QudJP.Tests/L1/DeathReasonTranslationPatchTests.cs",
     "Mods/QudJP/Assemblies/QudJP.Tests/L2/DeathReasonTranslationPatchTests.cs",
     "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/JournalApiAddTranslationPatchTests.cs",
 ]
+ISSUE719_GAMEOBJECT_DIE_OWNER_FAMILIES: Final[frozenset[str]] = frozenset(
+    {
+        (
+            "XRL.World/GameObject.cs::"
+            "GameObject.Die(GameObject,string,string,string,bool,GameObject,GameObject,bool,bool,string,string,string)"
+        ),
+        "XRL.World/GameObject.cs::XRL.World.GameObject.Die",
+    }
+)
+ISSUE719_GAMEOBJECT_DESTROY_OWNER_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 GameObject.Destroy is covered by an exact owner patch for "
+        "fixed player death literals, fallback destroyed/obliterated death "
+        "reasons, and companion death popup/queue messages."
+    ),
+    "decompiled owner source: XRL.World/GameObject.cs lines 3306-3402",
+    "Mods/QudJP/Assemblies/src/Patches/GameObjectDestroyTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+    "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/GameObjectDestroyTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+]
+ISSUE719_GAMEOBJECT_DESTROY_OWNER_FAMILIES: Final[frozenset[str]] = frozenset(
+    {
+        "XRL.World/GameObject.cs::GameObject.Destroy(string,bool,bool,string)",
+        "XRL.World/GameObject.cs::XRL.World.GameObject.Destroy",
+    }
+)
 ISSUE719_GAME_TEXT_THIRD_PERSON_DEATH_GAP_EVIDENCE: Final[list[str]] = [
     (
-        "Issue #719 GameText.RoughConvertSecondPersonToThirdPerson review "
-        "reclassifies the helper as likely_implementation_gap because the "
-        "decompiled helper is a static second-to-third-person death-reason "
-        "grammar converter with two known callers."
+        "Issue #719 GameText.RoughConvertSecondPersonToThirdPerson closure "
+        "uses GameTextDeathReasonTranslationPatch to translate helper-owned "
+        "third-person death reasons after the game converts player-facing "
+        "'You were ...' death text into object-facing narration."
     ),
     (
         "Physics.UpdateTemperature assigns LastThirdPersonDeathReason from "
@@ -643,14 +844,37 @@ ISSUE719_GAME_TEXT_THIRD_PERSON_DEATH_GAP_EVIDENCE: Final[list[str]] = [
         "same helper for companion death narration when ThirdPersonReason is empty."
     ),
     (
-        "Existing DeathReasonTranslationPatch translates Die Reason and "
-        "ThirdPersonReason parameters, but this helper-owned converted death "
-        "reason grammar still needs a static owner/helper implementation."
+        "GameTextDeathReasonTranslationPatch derives the original player death "
+        "reason key, reuses the ui-death dictionary, and preserves unknown "
+        "converted reasons unchanged."
     ),
+    "Mods/QudJP/Assemblies/src/Patches/GameTextDeathReasonTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/GameTextDeathReasonTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
     "decompiled helper source: XRL/GameText.cs lines 426-465",
     "decompiled caller: XRL.World.Parts/Physics.cs lines 3573-3584",
     "decompiled caller: XRL.World/GameObject.cs lines 3363-3373",
     "existing route: Mods/QudJP/Assemblies/src/Patches/DeathReasonTranslationPatch.cs",
+]
+ISSUE719_GAMEOBJECT_EXPLODE_DEATH_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 GameObject.Explode closure: visible explosion effects are "
+        "owned by Physics.ApplyExplosion, while the two creature-death branches "
+        "delegate to GameObject.Die with fixed player death reasons and "
+        "third-person @@ death-reason frames."
+    ),
+    (
+        "DeathWrapperFamilyTranslator covers the player-facing 'You exploded.' "
+        "and 'You were crushed under the weight of a thousand suns.' death bodies; "
+        "DeathReasonTranslationPatch now covers the generated third-person "
+        "'{subject} @@exploded.' and '{subject} @@crushed under the weight of a "
+        "thousand suns.' reasons."
+    ),
+    "decompiled owner source: XRL.World/GameObject.cs lines 14668-14708",
+    "Mods/QudJP/Assemblies/src/Patches/DeathReasonTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/DeathWrapperFamilyTranslator.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L1/DeathReasonTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L1/DeathWrapperFamilyTranslatorTests.cs",
 ]
 ISSUE719_POPUP_MESSAGE_WRAPPER_SINK_EVIDENCE: Final[list[str]] = [
     (
@@ -871,6 +1095,7 @@ ISSUE747_SKILL_MESSAGE_FRAME_ROUTE_EVIDENCE: Final = [
     "Mods/QudJP/Assemblies/src/Patches/CombatSkillMessageTranslationPatch.cs",
     "Mods/QudJP/Localization/MessageFrames/verbs.ja.json",
     "Mods/QudJP/Assemblies/QudJP.Tests/L1/MessageFrameTranslatorTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/XDidYTranslationPatchTests.cs",
     "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
     "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
     (
@@ -1669,6 +1894,229 @@ ISSUE719_FIXED_PRODUCER_POPUP_DICTIONARY_EVIDENCE: Final[list[str]] = [
     "Mods/QudJP/Assemblies/QudJP.Tests/L2/PopupShowSpaceTranslationPatchTests.cs",
     "Mods/QudJP/Localization/Dictionaries/ui-popup.ja.json",
 ]
+ISSUE719_GAMEOBJECT_AUTOEQUIP_POPUP_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 residual review closes GameObject.AutoEquip because the "
+        "method's direct player-visible Popup.ShowFail leaves are the fixed "
+        "AutoEquip ammunition failure string; broad auto-equip failure text is "
+        "delegated to GameObject.AutoEquipFail outside this family."
+    ),
+    (
+        "AutoEquip fixed ammunition ShowFail branch: "
+        '"You don\'t have a missile weapon equipped that uses that ammunition."'
+    ),
+    "decompiled source: XRL.World/GameObject.cs AutoEquip Ammo branch",
+    "Mods/QudJP/Assemblies/src/Patches/PopupShowTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/PopupShowTranslationPatchTests.cs",
+    "Mods/QudJP/Localization/Dictionaries/ui-popup.ja.json",
+]
+ISSUE719_GAMEOBJECT_INVENTORY_COMPANION_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 residual review closes GameObject.HandleInventoryActionEvent "
+        "companion follow-distance popup through the exact GameObject owner "
+        "route; non-popup action/id/sound strings in the broad family are not "
+        "player-visible localization leaves."
+    ),
+    (
+        "owner target: XRL.World.GameObject|HandleInventoryActionEvent|"
+        "System.Boolean|XRL.World.InventoryActionEvent"
+    ),
+    (
+        "translated popup payload: Instruct {companion} to follow at what "
+        "distance?, close, medium, far"
+    ),
+    "Mods/QudJP/Assemblies/src/Patches/GameObjectPopupTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/PopupTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+]
+ISSUE719_GAMEOBJECT_PULLDOWN_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 residual review closes GameObject.PullDown alternate "
+        "destination pick-option text through the exact GameObject owner route; "
+        "dynamic map-note labels remain source-owned and are preserved."
+    ),
+    (
+        "owner target: XRL.World.GameObject|PullDown|"
+        "System.Void|System.Boolean"
+    ),
+    (
+        "translated popup payload: Select a destination, Current location, "
+        "Arrival location, Center; map-note text and direction suffixes are "
+        "preserved."
+    ),
+    "Mods/QudJP/Assemblies/src/Patches/GameObjectPopupTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/PopupTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+]
+ISSUE719_FIREFIGHTING_OWNER_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 residual review closes Firefighting.AttemptFirefightingCore "
+        "through the existing owner popup patch, generic fixed popup dictionary "
+        "route, and MessageFrame verb/extra dictionaries for rolling and beating "
+        "at flames."
+    ),
+    (
+        "owner target: XRL.World.Capabilities.Firefighting|AttemptFirefightingCore|"
+        "System.Boolean|XRL.World.GameObject|XRL.World.GameObject|System.Int32|System.Boolean|System.Boolean"
+    ),
+    "Mods/QudJP/Assemblies/src/Patches/FirefightingTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/FirefightingTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L1/MessageFrameTranslatorTests.cs",
+    "Mods/QudJP/Localization/MessageFrames/verbs.ja.json",
+    "Mods/QudJP/Localization/Dictionaries/ui-popup.ja.json",
+]
+ISSUE719_HARVESTABLE_OWNER_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 residual review closes Harvestable.AttemptHarvest because "
+        "its harvest success/failure output is covered by existing "
+        "WDidXToYWithZ/XDidYToZ/XDidY message-frame routes and harvest "
+        "message-pattern dictionaries."
+    ),
+    "owner route: XDidYTranslationPatch and message-pattern translation",
+    "covered leaves: You harvest ..., {actor} harvests ..., There is nothing left to harvest.",
+    "Mods/QudJP/Assemblies/src/Patches/XDidYTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/XDidYTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L1/MessageFrameTranslatorTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L1/MessagePatternTranslatorTests.cs",
+    "Mods/QudJP/Localization/MessageFrames/verbs.ja.json",
+    "Mods/QudJP/Localization/Dictionaries/messages.ja.json",
+    "Mods/QudJP/Localization/Dictionaries/ui-messagelog-leaf.ja.json",
+]
+ISSUE719_WORLD_PART_FIXED_DISPLAY_NAME_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 residual review closes BeyLahTerrain, HydroponTerrain, and "
+        "MoltingBasilisk fixed display-name/short-description leaves through an "
+        "exact owner patch on the producer methods."
+    ),
+    "owner targets: BeyLahTerrain.FireEvent(Event), HydroponTerrain.FireEvent(Event), MoltingBasilisk.SyncState()",
+    "Mods/QudJP/Assemblies/src/Patches/WorldPartFixedDisplayNameTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/WorldPartFixedDisplayNameTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+]
+ISSUE719_WORLD_PART_FIXED_DISPLAY_NAME_FAMILIES: Final[frozenset[str]] = frozenset(
+    {
+        "XRL.World.Parts/BeyLahTerrain.cs::BeyLahTerrain.FireEvent(Event)",
+        "XRL.World.Parts/HydroponTerrain.cs::HydroponTerrain.FireEvent(Event)",
+        "XRL.World.Parts/MoltingBasilisk.cs::MoltingBasilisk.SyncState()",
+    }
+)
+ISSUE719_WORLD_PART_GENERATED_DISPLAY_NAME_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 generated world-part display-name review closes hologram, "
+        "random statue, pet phylactery, and tomb-cultist owner producers through "
+        "narrow postfix patches on the exact assignment owners."
+    ),
+    (
+        "The patches reuse GetDisplayNameRouteTranslator for existing generated "
+        "display-name grammar and only add a tomb-cultist suffix rewrite for the "
+        "death-pilgrim frame."
+    ),
+    "Mods/QudJP/Assemblies/src/Patches/WorldPartGeneratedDisplayNameTranslationPatches.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/WorldPartGeneratedDisplayNameTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+]
+ISSUE719_WORLD_PART_GENERATED_DISPLAY_NAME_FAMILIES: Final[frozenset[str]] = frozenset(
+    {
+        "XRL.World.Parts/ModQuantumReverb.cs::ModQuantumReverb.CreateHologramOf(GameObject)",
+        "XRL.World.Parts/RandomStatue.cs::RandomStatue.SetCreature(GameObject)",
+        "XRL.World.Parts/PetPhylactery.cs::PetPhylactery.HandleEvent(AfterObjectCreatedEvent)",
+        "XRL.World.Parts/TombCultistTemplate.cs::TombCultistTemplate.Apply(GameObject,HistoricEntitySnapshot)",
+    }
+)
+ISSUE719_RANDOM_FIGURINE_DISPLAY_NAME_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 random figurine display-name review closes RandomFigurine.HandleEvent "
+        "through localized ObjectBlueprint Render.DisplayName templates that keep the "
+        "*creature* placeholder but own the surrounding Japanese figurine frame."
+    ),
+    "Mods/QudJP/Localization/ObjectBlueprints/Items.jp.xml",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L1/LocalizationCoverageTests.cs",
+    (
+        "decompiled owner source: XRL.World.Parts/RandomFigurine.cs HandleEvent replaces "
+        "*creature* in ParentObject.Render.DisplayName"
+    ),
+]
+ISSUE719_RANDOM_FIGURINE_DISPLAY_NAME_FAMILIES: Final[frozenset[str]] = frozenset(
+    {
+        "XRL.World.Parts/RandomFigurine.cs::RandomFigurine.HandleEvent(ObjectCreatedEvent)",
+    }
+)
+ISSUE719_MINER_GENERATED_ROLE_DISPLAY_NAME_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 Miner.SetupMinerConfiguration display-name review closes generated "
+        "miner/bomber mk suffix names through GetDisplayNameRouteTranslator's "
+        "DisplayName.MinerGeneratedRoleSuffix route."
+    ),
+    "producer: XRL.World.Parts.Miner.SetupMinerConfiguration assigns <MineName>miner mk I / <MineName>bomber mk I",
+    "Mods/QudJP/Assemblies/src/Patches/GetDisplayNameRouteTranslator.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L1/GetDisplayNameRouteTranslatorTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/GetDisplayNameProcessPatchTests.cs",
+]
+ISSUE719_MINER_GENERATED_ROLE_DISPLAY_NAME_FAMILIES: Final[frozenset[str]] = frozenset(
+    {
+        "XRL.World.Parts/Miner.cs::Miner.SetupMinerConfiguration()",
+    }
+)
+ISSUE719_POINTED_ASTERISK_WISH_DISPLAY_NAME_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 PointedAsteriskBuilder.AsteriskWish debug display-name review closes "
+        "the fixed The 10-Pointed Asterisk of the Ensemble leaf through the display-name "
+        "atomic dictionary."
+    ),
+    "Mods/QudJP/Localization/Dictionaries/ui-displayname-atomic.ja.json",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L1/LocalizationCoverageTests.cs",
+    "covered leaf: The 10-Pointed Asterisk of the Ensemble",
+]
+ISSUE719_POINTED_ASTERISK_WISH_DISPLAY_NAME_FAMILIES: Final[frozenset[str]] = frozenset(
+    {
+        "XRL.World.Parts/PointedAsteriskBuilder.cs::PointedAsteriskBuilder.AsteriskWish()",
+    }
+)
+ISSUE719_SHIP_ARK_POPUP_DICTIONARY_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 ship/ark popup review closes ShevaStarshipControl and "
+        "ArkCore fixed popup/AskString leaves through existing generic popup "
+        "and AskString routes plus shipped exact dictionary entries."
+    ),
+    (
+        "covered leaves include launch-state failures, launch confirmation, "
+        "InteriorBlockEntrance docking-bay failure, cherubim ark block, and "
+        "OPEN ARK confirmation; countdown and moor-rattle leaves already had "
+        "ui-phase3d-endings/messages/ui-popup coverage."
+    ),
+    "Mods/QudJP/Localization/Dictionaries/ui-popup.ja.json",
+    "Mods/QudJP/Localization/Dictionaries/ui-phase3d-endings.ja.json",
+    "Mods/QudJP/Localization/Dictionaries/messages.ja.json",
+    "Mods/QudJP/Assemblies/src/Patches/PopupShowTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/PopupAskStringTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/PopupShowTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/PopupAskStringTranslationPatchTests.cs",
+]
+ISSUE719_SHIP_ARK_POPUP_DICTIONARY_FAMILIES: Final[frozenset[str]] = frozenset(
+    {
+        "XRL.World.Parts/ShevaStarshipControl.cs::ShevaStarshipControl.AttemptLaunch(GameObject)",
+        "XRL.World.Parts/ShevaStarshipControl.cs::ShevaStarshipControl.CheckTimer()",
+        "XRL.World.Parts/ArkCore.cs::ArkCore.TryOpen(GameObject)",
+    }
+)
+ISSUE719_CRAYONS_POPUP_OWNER_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 crayons popup review closes Crayons.HandleEvent through a "
+        "method-local owner transpiler for the fixed draw prompts, color-picker "
+        "title, direction picker title, nanocrayon failure, and success popups."
+    ),
+    "owner target: XRL.World.Parts.Crayons|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
+    "Mods/QudJP/Assemblies/src/Patches/CrayonsPopupTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/CrayonsPopupTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+]
+ISSUE719_CRAYONS_POPUP_OWNER_FAMILIES: Final[frozenset[str]] = frozenset(
+    {
+        "XRL.World.Parts/Crayons.cs::Crayons.HandleEvent(InventoryActionEvent)",
+    }
+)
 ISSUE719_POPUP_PICK_OPTION_DICTIONARY_EVIDENCE: Final[list[str]] = [
     (
         "Issue #719 residual review closes exact PickOption popup families whose "
@@ -1850,8 +2298,24 @@ ISSUE719_RESIDUAL_POPUP_FRAME_RUNTIME_EVIDENCE: Final[list[str]] = [
 ]
 ISSUE719_RESIDUAL_POPUP_FRAME_RUNTIME_FAMILIES: Final[frozenset[str]] = frozenset(
     {
-        "XRL.World.Parts/MagazineAmmoLoader.cs::MagazineAmmoLoader.FireEvent(Event)",
         "XRL.World.Parts/Brain.cs::Brain.HandleEvent(InventoryActionEvent)",
+    }
+)
+ISSUE719_MAGAZINE_AMMO_SUPPLY_OWNER_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 MagazineAmmoLoader.FireEvent closure: SupplyIntegratedHostWithAmmo "
+        "AskNumber prompts are covered by PopupAskNumberTranslationPatch, and ammo "
+        "transfer frames are covered by repository MessageFrame transfer templates."
+    ),
+    "decompiled owner source: XRL.World.Parts/MagazineAmmoLoader.cs lines 630-686",
+    "Mods/QudJP/Assemblies/src/Patches/PopupAskNumberTranslationPatch.cs",
+    "Mods/QudJP/Localization/MessageFrames/verbs.ja.json",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/PopupAskNumberTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/XDidYTranslationPatchTests.cs",
+]
+ISSUE719_MAGAZINE_AMMO_SUPPLY_OWNER_FAMILIES: Final[frozenset[str]] = frozenset(
+    {
+        "XRL.World.Parts/MagazineAmmoLoader.cs::MagazineAmmoLoader.FireEvent(Event)",
     }
 )
 ISSUE719_BRAIN_DEBUG_INTERNAL_PASSTHROUGH_EVIDENCE: Final[list[str]] = [
@@ -1908,12 +2372,34 @@ ISSUE719_RESIDUAL_DOES_MESSAGE_FRAME_RUNTIME_EVIDENCE: Final[list[str]] = [
         "held-item/body-part failure and success branches."
     ),
 ]
+ISSUE719_TEMPORAL_FUGUE_PERFORM_OWNER_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 TemporalFugue.PerformTemporalFugue closure: the exact owner "
+        "method's Does/XDidY frames are covered by message-frame verbs, while "
+        "its fixed and generated Actor.Fail branches are covered by popup "
+        "dictionary leaves/templates."
+    ),
+    "decompiled owner source: XRL.World.Parts.Mutation/TemporalFugue.cs lines 120-251",
+    "Mods/QudJP/Localization/MessageFrames/verbs.ja.json",
+    "Mods/QudJP/Localization/Dictionaries/ui-popup.ja.json",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L1/DoesVerbFamilyTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L1/MessageFrameTranslatorTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/PopupShowTranslationPatchTests.cs",
+]
+ISSUE719_TEMPORAL_FUGUE_PERFORM_OWNER_FAMILIES: Final[frozenset[str]] = frozenset(
+    {
+        (
+            "XRL.World.Parts.Mutation/TemporalFugue.cs::"
+            "TemporalFugue.PerformTemporalFugue(GameObject,GameObject,GameObject,TemporalFugue,IEvent,bool,bool,"
+            "int?,int?,int,string,string,string,string,string)"
+        ),
+    }
+)
 ISSUE719_DEFIBRILLATOR_STATIC_GAP_EVIDENCE: Final[list[str]] = [
     (
-        "Issue #719 AutomatedExternalDefibrillator review reclassifies "
-        "AttemptDefibrillate as a static implementation gap because the exact "
-        "owner method owns the generated target failure/confirmation strings "
-        "and the WDidXToYWithZ defibrillation frames."
+        "Issue #719 AutomatedExternalDefibrillator review closes "
+        "AttemptDefibrillate through an owner-scoped queue/popup translator "
+        "for the generated item/target failure and confirmation branches."
     ),
     (
         "The method builds Actor.Fail text for missing skill, power/status "
@@ -1922,11 +2408,17 @@ ISSUE719_DEFIBRILLATOR_STATIC_GAP_EVIDENCE: Final[list[str]] = [
     ),
     (
         "Existing MessageFrame coverage handles the defibrillator WDidXToYWithZ "
-        "verb frame, but the owner method still needs route-local handling for "
-        "the generated item/target failure and confirmation branches."
+        "verb frame; AutomatedExternalDefibrillatorTranslationPatch owns the "
+        "remaining route-local Fail and ShowYesNo text."
     ),
+    "Mods/QudJP/Assemblies/src/Patches/AutomatedExternalDefibrillatorTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+    "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/AutomatedExternalDefibrillatorTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L1/MessageFrameTranslatorTests.cs",
+    "Mods/QudJP/Localization/MessageFrames/verbs.ja.json",
     "decompiled owner source: XRL.World.Parts/AutomatedExternalDefibrillator.cs lines 129-188",
-    "existing MessageFrame test: Mods/QudJP/Assemblies/QudJP.Tests/L1/MessageFrameTranslatorTests.cs",
 ]
 ISSUE719_JOURNAL_WISH_GOSPEL_DATA_ROUTE_EVIDENCE: Final[list[str]] = [
     (
@@ -1978,22 +2470,21 @@ ISSUE719_TREMBLE_EARTHQUAKE_OWNER_FAMILIES: Final[frozenset[str]] = frozenset(
         "XRL.World.Parts/TrembleEarthquakes.cs::TrembleEarthquakes.RocksFall(Zone)",
     }
 )
-ISSUE719_VEHICLE_MELEE_INFILTRATION_STATIC_GAP_EVIDENCE: Final[list[str]] = [
+ISSUE719_VEHICLE_MELEE_INFILTRATION_OWNER_EVIDENCE: Final[list[str]] = [
     (
-        "Issue #719 static review reclassifies VehicleMeleeInfiltration.TryInfiltrate "
-        "as a static implementation gap because one exact owner method builds both "
-        "the hostile-entry confirmation popup and the infiltration Does/EmitMessage "
-        "success frame."
+        "Issue #719 VehicleMeleeInfiltration.TryInfiltrate is covered by "
+        "Does/message-frame translation for the hostile-entry confirmation popup "
+        "and the paired infiltration EmitMessage success frame."
     ),
     "decompiled owner source: XRL.World.Parts/VehicleMeleeInfiltration.cs lines 26-104",
-    (
-        "Existing Does and MessageFrame leaves cover parts of the visible text, "
-        "but the exact owner popup/message route still needs focused coverage."
-    ),
+    "Mods/QudJP/Assemblies/src/Patches/PopupTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/GameObjectEmitMessageTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/PopupTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
     "Mods/QudJP/Localization/MessageFrames/verbs.ja.json",
     "Mods/QudJP/Localization/Dictionaries/messages.ja.json",
 ]
-ISSUE719_VEHICLE_MELEE_INFILTRATION_STATIC_GAP_FAMILIES: Final[frozenset[str]] = frozenset(
+ISSUE719_VEHICLE_MELEE_INFILTRATION_OWNER_FAMILIES: Final[frozenset[str]] = frozenset(
     {
         (
             "XRL.World.Parts/VehicleMeleeInfiltration.cs::"
@@ -2047,40 +2538,52 @@ ISSUE719_UI_WIDGET_DATA_BINDING_PASS_THROUGH_FAMILIES: Final[frozenset[str]] = f
         "Qud.UI/ModManagerUI.cs::ModManagerUI.SetBackButtonText(string)",
     }
 )
-ISSUE719_LEFT_SIDE_CATEGORY_STATIC_GAP_EVIDENCE: Final[list[str]] = [
+ISSUE719_LEFT_SIDE_CATEGORY_OWNER_EVIDENCE: Final[list[str]] = [
     (
-        "Issue #719 static review reclassifies LeftSideCategory.setData as an "
-        "implementation gap: the exact UI row is known, but it still relies on "
-        "observation-only sink prerequisite coverage for category descriptions."
+        "Issue #719 closes LeftSideCategory.setData through an exact owner "
+        "postfix for the rendered category text field."
     ),
     "decompiled owner source: Qud.UI/LeftSideCategory.cs lines 16-31",
-    "Mods/QudJP/Assemblies/src/Patches/SinkPrereqSetDataTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/LeftSideCategoryTranslationPatch.cs",
     "Mods/QudJP/Assemblies/QudJP.Tests/L2/SinkPrereqTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
 ]
-ISSUE719_LEFT_SIDE_CATEGORY_STATIC_GAP_FAMILIES: Final[frozenset[str]] = frozenset(
+ISSUE719_LEFT_SIDE_CATEGORY_OWNER_FAMILIES: Final[frozenset[str]] = frozenset(
     {
         "Qud.UI/LeftSideCategory.cs::LeftSideCategory.setData(FrameworkDataElement)",
     }
 )
-ISSUE719_UI_POPUP_STATIC_GAP_EVIDENCE: Final[list[str]] = [
+ISSUE719_MOD_MANAGER_CANCEL_EVIDENCE: Final[list[str]] = [
     (
-        "Issue #719 static review reclassifies exact UI popup owners whose fixed "
-        "prompt/title literals are statically visible and no longer need runtime "
-        "evidence to identify the owner route."
+        "Issue #719 closes ModManagerUI.OnCancel through the existing PopupMessage "
+        "generic route plus a fixed ui-popup dictionary leaf; Yes/No command data is preserved."
     ),
-    "ModManagerUI.OnCancel owns the changed-mod-configuration restart confirmation popup.",
-    "FrameworkSearchInput.ChangeValue owns the default Enter search text AskString title.",
-    (
-        "decompiled owner sources: Qud.UI/ModManagerUI.cs lines 265-285; "
-        "XRL.UI.Framework/FrameworkSearchInput.cs lines 85-89"
-    ),
+    "decompiled owner source: Qud.UI/ModManagerUI.cs lines 265-285",
+    "Mods/QudJP/Assemblies/src/Patches/PopupMessageTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/PopupMessageTranslationPatchTests.cs",
+    "Mods/QudJP/Localization/Dictionaries/ui-popup.ja.json",
 ]
-ISSUE719_UI_POPUP_STATIC_GAP_FAMILIES: Final[frozenset[str]] = frozenset(
-    {
-        "Qud.UI/ModManagerUI.cs::ModManagerUI.OnCancel()",
-        "XRL.UI.Framework/FrameworkSearchInput.cs::FrameworkSearchInput.ChangeValue()",
-    }
-)
+ISSUE719_FRAMEWORK_SEARCH_INPUT_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 closes FrameworkSearchInput.ChangeValue through the existing "
+        "Popup.AskStringAsync generic prompt route plus a fixed ui-popup dictionary leaf."
+    ),
+    "decompiled owner source: XRL.UI.Framework/FrameworkSearchInput.cs lines 85-89",
+    "Mods/QudJP/Assemblies/src/Patches/PopupAskStringTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/PopupAskStringTranslationPatchTests.cs",
+    "Mods/QudJP/Localization/Dictionaries/ui-popup.ja.json",
+]
+ISSUE719_ABILITY_MANAGER_EMPTY_POPUP_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 closes AbilityManagerScreen.showScreen through the existing "
+        "AbilityManager popup owner route for the fixed no-activated-abilities message."
+    ),
+    "decompiled owner source: Qud.UI/AbilityManagerScreen.cs lines 173-188",
+    "Mods/QudJP/Assemblies/src/Patches/AbilityManagerPopupTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/AbilityManagerScreenTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+    "Mods/QudJP/Localization/Dictionaries/ui-popup.ja.json",
+]
 ISSUE719_FINAL_SINK_PASS_THROUGH_EVIDENCE: Final[list[str]] = [
     (
         "Issue #719 static review promotes final sink helpers that only forward "
@@ -2112,6 +2615,80 @@ ISSUE719_TUTORIAL_SENTINEL_PASS_THROUGH_FAMILIES: Final[frozenset[str]] = frozen
         "XRL.UI/FadeText.cs::FadeText.Update()",
     }
 )
+ISSUE719_TUTORIAL_LATEUPDATE_OWNER_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 tutorial LateUpdate review promotes exact JoppaTutorial "
+        "LateUpdate rows because their visible text is routed through the "
+        "existing TutorialManager popup/highlight owner patches or existing "
+        "generic Popup dictionary route."
+    ),
+    (
+        "owner patches: TutorialManagerTranslationPatch, "
+        "TutorialManagerCellPopupTranslationPatch, TutorialManagerHighlightTranslationPatch, "
+        "TutorialManagerCellHighlightTranslationPatch"
+    ),
+    (
+        "localization sources: Mods/QudJP/Localization/Dictionaries/ui-tutorial.ja.json "
+        "and ui-popup.ja.json"
+    ),
+    "decompiled owner sources: JoppaTutorial/* LateUpdate methods",
+]
+ISSUE719_TUTORIAL_LATEUPDATE_OWNER_FAMILIES: Final[frozenset[str]] = frozenset(
+    {
+        "JoppaTutorial/BattleRemains.cs::BattleRemains.LateUpdate()",
+        "JoppaTutorial/ExamineChemcell.cs::ExamineChemcell.LateUpdate()",
+        "JoppaTutorial/ExploreJoppa.cs::ExploreJoppa.LateUpdate()",
+        "JoppaTutorial/FightBear.cs::FightBear.LateUpdate()",
+        "JoppaTutorial/FightSnapjaw.cs::FightSnapjaw.LateUpdate()",
+        "JoppaTutorial/GetBooks.cs::GetBooks.LateUpdate()",
+        "JoppaTutorial/MakeCamp.cs::MakeCamp.LateUpdate()",
+        "JoppaTutorial/MoveToChest.cs::MoveToChest.LateUpdate()",
+    }
+)
+ISSUE719_TUTORIAL_POPUP_DICTIONARY_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 tutorial review promotes command/cell guard Popup.Show rows "
+        "because the player-visible literals are fixed tutorial guidance strings "
+        "served by the generic Popup.Show dictionary route."
+    ),
+    "owner route: PopupShowTranslationPatch -> PopupShowSemanticPipeline",
+    "localization source: Mods/QudJP/Localization/Dictionaries/ui-popup.ja.json",
+    (
+        "decompiled owner sources: JoppaTutorial AllowCommand/AllowTargetPick/"
+        "AllowInventoryInteract/BeforePlayerEnterCell methods"
+    ),
+]
+ISSUE719_TUTORIAL_POPUP_DICTIONARY_FAMILIES: Final[frozenset[str]] = frozenset(
+    {
+        "JoppaTutorial/FightBear.cs::FightBear.AllowCommand(string)",
+        "JoppaTutorial/FightSnapjaw.cs::FightSnapjaw.AllowCommand(string)",
+        "JoppaTutorial/FightBear.cs::FightBear.AllowTargetPick(GameObject,Type,List<Cell>)",
+        "JoppaTutorial/BattleRemains.cs::BattleRemains.AllowInventoryInteract(GameObject)",
+        "JoppaTutorial/ExploreWorldMap.cs::ExploreWorldMap.BeforePlayerEnterCell(Cell)",
+        "JoppaTutorial/FightBear.cs::FightBear.BeforePlayerEnterCell(Cell)",
+        "JoppaTutorial/FightSnapjaw.cs::FightSnapjaw.BeforePlayerEnterCell(Cell)",
+        "JoppaTutorial/MoveToChest.cs::MoveToChest.BeforePlayerEnterCell(Cell)",
+    }
+)
+ISSUE719_TUTORIAL_MANAGER_TRIGGER_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 tutorial review promotes seen/trigger rows because the "
+        "visible strings route through TutorialManager cell/intermission popup "
+        "owners and shipped tutorial dictionaries."
+    ),
+    "owner patches: TutorialManagerTranslationPatch and TutorialManagerCellPopupTranslationPatch",
+    "TutorialManager.ShowIntermissionPopupAsync delegates to ShowCIDPopupAsync",
+    "localization source: Mods/QudJP/Localization/Dictionaries/ui-tutorial.ja.json",
+    "decompiled owner sources: JoppaTutorial BearSeen/SnapjawSeen/OnTrigger methods",
+]
+ISSUE719_TUTORIAL_MANAGER_TRIGGER_FAMILIES: Final[frozenset[str]] = frozenset(
+    {
+        "JoppaTutorial/FightBear.cs::FightBear.BearSeen(Location2D)",
+        "JoppaTutorial/FightSnapjaw.cs::FightSnapjaw.SnapjawSeen(Location2D)",
+        "JoppaTutorial/MakeCamp.cs::MakeCamp.OnTrigger(string)",
+        "JoppaTutorial/MoveToChest.cs::MoveToChest.OnTrigger(string)",
+    }
+)
 ISSUE719_FINAL_STATIC_GAP_EVIDENCE: Final[list[str]] = [
     (
         "Issue #719 static review reclassifies these final runtime rows as "
@@ -2119,42 +2696,149 @@ ISSUE719_FINAL_STATIC_GAP_EVIDENCE: Final[list[str]] = [
         "player-visible text are visible in decompiled source."
     ),
     (
-        "FungalSporeInfection.ChooseLimbForInfection owns the no-infectable-body-parts "
-        "popup and the Choose a limb to infect prompt with generated fungus and limb names."
-    ),
-    (
-        "DesalinationPellet.HandleEvent/PurifyLiquid owns the You drop frame and "
-        "message-template liquid conversion frames."
-    ),
-    (
         "Existing generic popup/message sinks may observe the output, but the "
         "route-local owners still need focused implementation coverage."
     ),
     (
         "decompiled owner sources: XRL.World.Effects/FungalSporeInfection.cs lines "
-        "140-159; XRL.World.Parts/DesalinationPellet.cs lines 63-86 and 185-218"
+        "140-159"
     ),
 ]
 ISSUE719_FINAL_STATIC_GAP_FAMILIES: Final[frozenset[str]] = frozenset(
+    {
+    }
+)
+ISSUE719_FUNGAL_SPORE_CHOOSE_LIMB_OWNER_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 FungalSporeInfection closure: FungalSporeInfectionTranslationPatch now "
+        "targets ChooseLimbForInfection and translates the no-infectable-body-parts popup, "
+        "the generated PickOption title, and route-local body-part options."
+    ),
+    "implementation: Mods/QudJP/Assemblies/src/Patches/FungalSporeInfectionTranslationPatch.cs",
+    "implementation: Mods/QudJP/Assemblies/src/Patches/PopupTranslationPatch.cs",
+    "tests: Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+    "tests: Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+    "decompiled source: XRL.World.Effects/FungalSporeInfection.cs lines 140-159",
+]
+ISSUE719_FUNGAL_SPORE_CHOOSE_LIMB_OWNER_FAMILIES: Final[frozenset[str]] = frozenset(
     {
         (
             "XRL.World.Effects/FungalSporeInfection.cs::"
             "FungalSporeInfection.ChooseLimbForInfection(List<BodyPart>,string,out BodyPart,out string,bool)"
         ),
+    }
+)
+ISSUE719_DESALINATION_PELLET_OWNER_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 DesalinationPellet closure: DesalinationPelletTranslationPatch scopes "
+        "Popup.Show/ShowFail during HandleEvent(InventoryActionEvent), and "
+        "DesalinationPelletFragmentTranslator covers both the fixed no-effect failure and "
+        "the generated You drop ... into ... frame."
+    ),
+    "implementation: Mods/QudJP/Assemblies/src/Patches/DesalinationPelletTranslationPatch.cs",
+    "implementation: Mods/QudJP/Assemblies/src/Patches/DesalinationPelletFragmentTranslator.cs",
+    "tests: Mods/QudJP/Assemblies/QudJP.Tests/L1/WorldPartsFragmentTranslatorTests.cs",
+    "tests: Mods/QudJP/Assemblies/QudJP.Tests/L2/WorldPartsProducerTranslationPatchTests.cs",
+    "tests: Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+    "decompiled source: XRL.World.Parts/DesalinationPellet.cs lines 63-86 and 185-218",
+]
+ISSUE719_DESALINATION_PELLET_OWNER_FAMILIES: Final[frozenset[str]] = frozenset(
+    {
         "XRL.World.Parts/DesalinationPellet.cs::DesalinationPellet.HandleEvent(InventoryActionEvent)",
+    }
+)
+ISSUE719_IGRENADE_OWNER_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 IGrenade closure: SingleCallsiteOwnerPopupTranslationPatch now scopes "
+        "IGrenade.HandleEvent(InventoryActionEvent) and translates the fixed detonate-world-map "
+        "failure popup."
+    ),
+    "implementation: Mods/QudJP/Assemblies/src/Patches/SingleCallsiteOwnerPopupTranslationPatch.cs",
+    "tests: Mods/QudJP/Assemblies/QudJP.Tests/L2/SingleCallsiteOwnerPopupTranslationPatchTests.cs",
+    "tests: Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+    "decompiled source: XRL.World.Parts/IGrenade.cs lines 47-63",
+]
+ISSUE719_IGRENADE_OWNER_FAMILIES: Final[frozenset[str]] = frozenset(
+    {
+        "XRL.World.Parts/IGrenade.cs::IGrenade.HandleEvent(InventoryActionEvent)",
+    }
+)
+ISSUE719_BIOME_SURFACE_DISTRIBUTION_OWNER_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 closes BiomeManager.DisplaySurfaceDistribution through exact owner-scoped "
+        "popup and queue routes for the surfacebiomes wish output."
+    ),
+    "popup implementation: Mods/QudJP/Assemblies/src/Patches/SingleCallsiteOwnerPopupTranslationPatch.cs",
+    "queue implementation: Mods/QudJP/Assemblies/src/Patches/SingleCallsiteOwnerQueueTranslationPatch.cs",
+    "tests: Mods/QudJP/Assemblies/QudJP.Tests/L2/SingleCallsiteOwnerPopupTranslationPatchTests.cs",
+    "tests: Mods/QudJP/Assemblies/QudJP.Tests/L2/SingleCallsiteOwnerQueueTranslationPatchTests.cs",
+    "tests: Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+    "decompiled source: XRL.World.Biomes/BiomeManager.cs lines 96-137",
+]
+ISSUE719_BIOME_SURFACE_DISTRIBUTION_OWNER_FAMILIES: Final[frozenset[str]] = frozenset(
+    {
+        "XRL.World.Biomes/BiomeManager.cs::BiomeManager.DisplaySurfaceDistribution(string)",
+    }
+)
+ISSUE719_ELEVATOR_SWITCH_OWNER_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 closes ElevatorSwitch.FireEvent through exact owner-scoped queue and popup "
+        "routes for switch no-op and platform movement messages."
+    ),
+    "queue implementation: Mods/QudJP/Assemblies/src/Patches/SingleCallsiteOwnerQueueTranslationPatch.cs",
+    "popup implementation: Mods/QudJP/Assemblies/src/Patches/SingleCallsiteOwnerPopupTranslationPatch.cs",
+    "tests: Mods/QudJP/Assemblies/QudJP.Tests/L2/SingleCallsiteOwnerQueueTranslationPatchTests.cs",
+    "tests: Mods/QudJP/Assemblies/QudJP.Tests/L2/SingleCallsiteOwnerPopupTranslationPatchTests.cs",
+    "tests: Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+    "decompiled source: XRL.World.Parts/ElevatorSwitch.cs lines 34-55",
+]
+ISSUE719_ELEVATOR_SWITCH_OWNER_FAMILIES: Final[frozenset[str]] = frozenset(
+    {
+        "XRL.World.Parts/ElevatorSwitch.cs::ElevatorSwitch.FireEvent(Event)",
+    }
+)
+ISSUE719_VEHICLE_FOLLOWER_POPUP_OWNER_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 Vehicle.HandleEvent(InventoryActionEvent) closure: "
+        "VehicleFollowerPopupTranslationPatch scopes the CompanionEnterVehicle popup "
+        "route and translates both the generated no-follower failure and the fixed "
+        "PickGameObject follower title."
+    ),
+    "implementation: Mods/QudJP/Assemblies/src/Patches/VehicleFollowerPopupTranslationPatch.cs",
+    "implementation: Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+    "implementation: Mods/QudJP/Assemblies/src/Patches/PopupTranslationPatch.cs",
+    "tests: Mods/QudJP/Assemblies/QudJP.Tests/L2/VehicleFollowerPopupTranslationPatchTests.cs",
+    "tests: Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+    "decompiled source: XRL.World.Parts/Vehicle.cs lines 401-421",
+]
+ISSUE719_VEHICLE_FOLLOWER_POPUP_OWNER_FAMILIES: Final[frozenset[str]] = frozenset(
+    {
+        "XRL.World.Parts/Vehicle.cs::Vehicle.HandleEvent(InventoryActionEvent)",
     }
 )
 ISSUE719_RESIDUAL_DOES_MESSAGE_FRAME_RUNTIME_FAMILIES: Final[frozenset[str]] = frozenset(
     {
         (
-            "XRL.World.Parts.Mutation/TemporalFugue.cs::"
-            "TemporalFugue.PerformTemporalFugue(GameObject,GameObject,GameObject,TemporalFugue,IEvent,bool,bool,"
-            "int?,int?,int,string,string,string,string,string)"
-        ),
-        (
             "XRL.World.Parts/AutomatedExternalDefibrillator.cs::"
             "AutomatedExternalDefibrillator.AttemptDefibrillate(GameObject,IEvent)"
         ),
+    }
+)
+ISSUE719_FORCE_LATHE_ACTIVATION_OWNER_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 CyberneticsPrecisionForceLathe.ActivatePrecisionForceLathe "
+        "closure: owner-scoped popup/queue translation covers generated no-hold-slot "
+        "and powered-status failures, while existing message-frame leaves cover "
+        "successful shimmer-into-existence output."
+    ),
+    "decompiled owner source: XRL.World.Parts/CyberneticsPrecisionForceLathe.cs lines 108-155",
+    "Mods/QudJP/Assemblies/src/Patches/CyberneticsPrecisionForceLatheTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/CyberneticsPrecisionForceLatheTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+    "Mods/QudJP/Localization/MessageFrames/verbs.ja.json",
+]
+ISSUE719_FORCE_LATHE_ACTIVATION_OWNER_FAMILIES: Final[frozenset[str]] = frozenset(
+    {
         (
             "XRL.World.Parts/CyberneticsPrecisionForceLathe.cs::"
             "CyberneticsPrecisionForceLathe.ActivatePrecisionForceLathe(GameObject,GameObject,IEvent)"
@@ -2190,104 +2874,373 @@ ISSUE719_RESIDUAL_PURE_POPUP_TOP_RUNTIME_EVIDENCE: Final[list[str]] = [
     "Inventory.HandleEvent mixes PickItem/PickOption routes, dynamic ownership prompts, and failure strings.",
     "TradeUI.ShowVendorActions mixes trader/item/water-debt generated popups with trade-specific fixed leaves.",
 ]
-ISSUE719_SCORES_SHOW_STATIC_GAP_EVIDENCE: Final[list[str]] = [
+ISSUE719_ITEM_NAMING_INTERACTIVE_OWNER_EVIDENCE: Final[list[str]] = [
     (
-        "Issue #719 Scores.Show review reclassifies the legacy high-score screen "
-        "as likely_implementation_gap because the decompiled producer has an exact "
-        "owner method with fixed screen labels, dynamic score-detail bodies, and "
-        "a delete-confirmation popup."
+        "Issue #719 ItemNaming.NameItem interactive overload review closes the "
+        "player naming picker, ask-string prompt, and color-picker prompt through "
+        "ItemNamingTranslationPatch plus Popup.PickOption/AskString/ShowColorPicker routes."
     ),
     (
-        "Existing HighScoresDeletePopupTranslationPatch coverage handles the delete "
-        "confirmation branch, but the legacy Buffer.Write score screen and score "
-        "detail body still need owner-route implementation."
+        "The owner translator handles the fixed picker frames while preserving generated "
+        "item/name/culture captures; relic-style generated names remain owned by the "
+        "existing ItemNaming.GenerateRelicStyleName/QudHistorySpice route."
     ),
-    "Mods/QudJP/Assemblies/src/Patches/HighScoresDeletePopupTranslationPatch.cs",
-    "Mods/QudJP/Assemblies/QudJP.Tests/L2/HighScoresDeletePopupTranslationPatchTests.cs",
-    "Mods/QudJP/Assemblies/src/Patches/HighScoresScreenTranslationPatch.cs",
-    "Mods/QudJP/Assemblies/QudJP.Tests/L2/HighScoresScreenTranslationPatchTests.cs",
-    "decompiled owner source: XRL.Core/Scores.cs lines 51-504",
+    "Mods/QudJP/Assemblies/src/Patches/ItemNamingTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/PopupShowColorPickerTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/ItemNamingTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+    "decompiled owner source: XRL.World.Capabilities/ItemNaming.cs lines 397-492",
 ]
-ISSUE719_RESIDUAL_PURE_POPUP_TOP_RUNTIME_FAMILIES: Final[frozenset[str]] = frozenset(
+ISSUE719_ITEM_NAMING_INTERACTIVE_OWNER_FAMILIES: Final[frozenset[str]] = frozenset(
     {
-        "XRL.Core/Scores.cs::Scores.Show()",
         (
             "XRL.World.Capabilities/ItemNaming.cs::"
             "ItemNaming.NameItem(GameObject,GameObject,GameObject,GameObject,string,string,bool)"
         ),
-        "XRL.World.Parts/Crayons.cs::Crayons.HandleEvent(InventoryActionEvent)",
-        "XRL.World.Parts/Description.cs::Description.HandleEvent(InventoryActionEvent)",
-        "XRL.World.Parts/Inventory.cs::Inventory.HandleEvent(InventoryActionEvent)",
-        "XRL.UI/TradeUI.cs::TradeUI.ShowVendorActions(GameObject,GameObject,bool)",
     }
 )
-ISSUE719_RESIDUAL_UI_POPUP_RUNTIME_EVIDENCE: Final[list[str]] = [
+ISSUE719_ITEM_NAMING_WISH_DEBUG_OWNER_EVIDENCE: Final[list[str]] = [
     (
-        "Issue #719 residual review keeps UI screen, picker, and config pure-Popup "
-        "families runtime-required because static inventory cannot split Popup, "
-        "PickOption, AskString, keybinding, menu-option, and player-authored UI "
-        "branches into exact fixed owner leaves."
+        "Issue #719 ItemNaming.HandleItemNamingWish review closes the itemnaming "
+        "WishCommand debug popups through ItemNamingTranslationPatch owner scope."
     ),
     (
-        "reviewed source families include ObjectFinder.ConfigFilters, "
-        "EquipmentAPI.ShowInventoryActionMenu, EquipmentScreen.ShowBodypartEquipUI, "
-        "InventoryAndEquipmentStatusScreen.HandleShowOptions, "
-        "FactionsStatusScreen.HandleCmdOptions, "
-        "AbilityManagerScreen.showScreen, chargen build-library/menu option routes, "
-        "FrameworkSearchInput.ChangeValue, "
-        "ModManagerUI.OnCancel, and Gender.CustomizeProcess"
+        "The owner translator handles the created kill/InfluencedBy debug lines and "
+        "the naming-failed debug popup while preserving generated DebugName captures."
     ),
-    "ObjectFinder.ConfigFilters uses PickOption menus for filter selection and state changes.",
-    "EquipmentAPI.ShowInventoryActionMenu mixes dynamic inventory action labels with fixed fallback popups.",
-    (
-        "Chargen build-library and mutation screens mix AskString/"
-        "NewPopupMessageAsync/PickOptionAsync with build names and player input."
-    ),
-    "AbilityManagerScreen and keybinding routes mix dynamic ability names, search text, and binding prompts.",
+    "Mods/QudJP/Assemblies/src/Patches/ItemNamingTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/ItemNamingTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+    "decompiled owner source: XRL.World.Capabilities/ItemNaming.cs lines 729-755",
 ]
-ISSUE719_RESIDUAL_UI_POPUP_RUNTIME_FAMILIES: Final[frozenset[str]] = frozenset(
+ISSUE719_ITEM_NAMING_WISH_DEBUG_OWNER_FAMILIES: Final[frozenset[str]] = frozenset(
     {
-        "XRL.UI/ObjectFinder.cs::ObjectFinder.ConfigFilters()",
+        "XRL.World.Capabilities/ItemNaming.cs::ItemNaming.HandleItemNamingWish(Match)",
+    }
+)
+ISSUE719_SCORES_SHOW_STATIC_GAP_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 Scores.Show review closes the legacy high-score screen through "
+        "an exact XRL.Core.Scores.Show owner transpiler for fixed Buffer.Write "
+        "screen labels and score-detail summary lines."
+    ),
+    (
+        "The delete-confirmation popup remains covered by the existing "
+        "HighScoresDeletePopupTranslationPatch owner scope on the same "
+        "Scores.Show method."
+    ),
+    "Mods/QudJP/Assemblies/src/Patches/LegacyScoresScreenTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/LegacyScoresScreenTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/src/Patches/HighScoresDeletePopupTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/HighScoresDeletePopupTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/src/Patches/HighScoresScreenTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/HighScoresScreenTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+    "decompiled owner source: XRL.Core/Scores.cs lines 51-504",
+]
+ISSUE719_OPTIONS_UI_SHOW_OWNER_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 OptionsUI.Show review closes the legacy options screen through "
+        "an exact XRL.UI.OptionsUI.Show owner transpiler for ScreenBuffer.Write "
+        "chrome, category/display/value text, and restart confirmation prompts."
+    ),
+    "owner target: XRL.UI.OptionsUI|Show|XRL.UI.ScreenReturn",
+    "Mods/QudJP/Assemblies/src/Patches/LegacyOptionsUiTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/LegacyOptionsUiTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+    "decompiled owner source: XRL.UI/OptionsUI.cs lines 67-557",
+]
+ISSUE719_OPTIONS_UI_SHOW_OWNER_FAMILIES: Final[frozenset[str]] = frozenset(
+    {
+        "XRL.UI/OptionsUI.cs::OptionsUI.Show()",
+    }
+)
+ISSUE719_OPTIONS_CONTROL_DESCRIPTION_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 Options control review closes Unity Options control menu-option "
+        "descriptions through UiMenuOptionDescriptionTranslationPatch owner routes "
+        "for OptionsCategoryControl, OptionsCheckboxControl, OptionsSliderControl, "
+        "and OptionsComboBoxControl."
+    ),
+    "Mods/QudJP/Assemblies/src/Patches/UiMenuOptionDescriptionTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/UiMenuOptionDescriptionTranslationPatchTests.cs",
+    "Mods/QudJP/Localization/Dictionaries/ui-options.ja.json",
+    (
+        "decompiled owner sources: Qud.UI/OptionsCategoryControl.cs, "
+        "Qud.UI/OptionsCheckboxControl.cs, Qud.UI/OptionsSliderControl.cs, "
+        "Qud.UI/OptionsComboBoxControl.cs"
+    ),
+]
+ISSUE719_OPTIONS_CONTROL_DESCRIPTION_FAMILIES: Final[frozenset[str]] = frozenset(
+    {
+        "Qud.UI/OptionsCategoryControl.cs::OptionsCategoryControl.TOGGLE_OPTION",
+        "Qud.UI/OptionsCheckboxControl.cs::OptionsCheckboxControl.TOGGLE_OPTION",
+        "Qud.UI/OptionsSliderControl.cs::OptionsSliderControl.CHANGE_VALUE",
+        "Qud.UI/OptionsSliderControl.cs::OptionsSliderControl.ARROWS_CHANGE_VALUE",
+        "Qud.UI/OptionsSliderControl.cs::OptionsSliderControl.SAVE_VALUE",
+        "Qud.UI/OptionsSliderControl.cs::OptionsSliderControl.CANCEL_VALUE",
+        "Qud.UI/OptionsComboBoxControl.cs::OptionsComboBoxControl.Render()",
+    }
+)
+ISSUE719_OBJECT_FINDER_DISPLAY_NAME_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 ObjectFinder display-name review closes fixed context and "
+        "sorter labels through ObjectFinderDisplayNameTranslationPatch targeting "
+        "each GetDisplayName owner."
+    ),
+    "Mods/QudJP/Assemblies/src/Patches/ObjectFinderDisplayNameTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/ObjectFinderDisplayNameTranslationPatchTests.cs",
+    (
+        "decompiled owner sources: XRL.UI.ObjectFinderContexts/AutogotItems.cs, "
+        "XRL.UI.ObjectFinderContexts/NearbyItems.cs, XRL.UI.ObjectFinderSorters/IdSorter.cs, "
+        "and XRL.UI.ObjectFinderSorters/ValueSorter.cs"
+    ),
+]
+ISSUE719_OBJECT_FINDER_DISPLAY_NAME_FAMILIES: Final[frozenset[str]] = frozenset(
+    {
+        "XRL.UI.ObjectFinderContexts/AutogotItems.cs::AutogotItems.GetDisplayName()",
+        "XRL.UI.ObjectFinderContexts/NearbyItems.cs::NearbyItems.GetDisplayName()",
+        "XRL.UI.ObjectFinderSorters/IdSorter.cs::IdSorter.GetDisplayName()",
+        "XRL.UI.ObjectFinderSorters/ValueSorter.cs::ValueSorter.GetDisplayName()",
+    }
+)
+ISSUE719_CYBERNETICS_SKILLSOFT_DISPLAY_NAME_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 cybernetics skillsoft display-name review closes Skillsoft "
+        "and Skillsoft Plus generated chip names through the GetDisplayNameRouteTranslator "
+        "CyberneticsSkillsoft route."
+    ),
+    "Mods/QudJP/Assemblies/src/Patches/GetDisplayNameRouteTranslator.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L1/GetDisplayNameRouteTranslatorTests.cs",
+    (
+        "decompiled owner sources: XRL.World.Parts/CyberneticsSingleSkillsoft.cs "
+        "and XRL.World.Parts/CyberneticsTreeSkillsoft.cs InitChip display-name assignments"
+    ),
+]
+ISSUE719_CYBERNETICS_SKILLSOFT_DISPLAY_NAME_FAMILIES: Final[frozenset[str]] = frozenset(
+    {
+        "XRL.World.Parts/CyberneticsSingleSkillsoft.cs::CyberneticsSingleSkillsoft.InitChip(bool)",
+        "XRL.World.Parts/CyberneticsTreeSkillsoft.cs::CyberneticsTreeSkillsoft.InitChip(bool,bool,double)",
+    }
+)
+ISSUE719_CYBERNETICS_RECOILER_DISPLAY_NAME_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 cybernetics recoiler display-name review closes Recoil to <zone> "
+        "activated ability names through the shared ActivatedAbilityNameTranslator route."
+    ),
+    "producer: CyberneticsOnboardRecoilerImprinting.UpdateName assigns Recoil / Recoil to <zone>",
+    "Mods/QudJP/Assemblies/src/Patches/ActivatedAbilityNameTranslator.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L1/ActivatedAbilityNameTranslatorTests.cs",
+    "covered pattern: Recoil to {{Y|Joppa}}",
+]
+ISSUE719_CYBERNETICS_RECOILER_DISPLAY_NAME_FAMILIES: Final[frozenset[str]] = frozenset(
+    {
+        "XRL.World.Parts/CyberneticsOnboardRecoilerImprinting.cs::CyberneticsOnboardRecoilerImprinting.UpdateName()",
+    }
+)
+ISSUE719_STAT_SHIFT_DISPLAY_NAME_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 stat-shift display-name review closes camouflage and "
+        "co-processor StatShifter source labels through StatisticStatShiftDisplayNameTranslationPatch "
+        "at Statistic.AddShift."
+    ),
+    "Mods/QudJP/Assemblies/src/Patches/StatisticStatShiftDisplayNameTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/StatisticStatShiftDisplayNameTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+    (
+        "decompiled owner sources: XRL.World.Parts.Mutation/PhotosyntheticSkin.cs, "
+        "XRL.World.Parts/Yurtmat.cs, and XRL.World.Parts/ModCoProcessor.cs"
+    ),
+]
+ISSUE719_STAT_SHIFT_DISPLAY_NAME_FAMILIES: Final[frozenset[str]] = frozenset(
+    {
+        "XRL.World.Parts.Mutation/PhotosyntheticSkin.cs::PhotosyntheticSkin.CheckCamouflage()",
+        "XRL.World.Parts/Yurtmat.cs::Yurtmat.CheckCamouflage()",
+        "XRL.World.Parts/ModCoProcessor.cs::ModCoProcessor.ApplyBonus(GameObject)",
+    }
+)
+ISSUE719_MUTATION_BASE_DISPLAY_NAME_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 mutation display-name review closes BaseMutation.GetDisplayName "
+        "and MutationEntry.GetDisplayName with MutationDisplayNameTranslationPatch "
+        "on the exact mutation owner APIs."
+    ),
+    (
+        "The postfix translates only the returned display name through the shipped "
+        "Mutations.jp.xml / HiddenMutations.jp.xml display-name map and preserves "
+        "the internal cached _DisplayName value."
+    ),
+    "Mods/QudJP/Assemblies/src/Patches/MutationDisplayNameTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/MutationDisplayNameTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+    (
+        "decompiled owner sources: XRL.World.Parts.Mutation/BaseMutation.cs "
+        "lines 157-174 and XRL/MutationEntry.cs lines 261-269"
+    ),
+]
+ISSUE719_MUTATION_BASE_DISPLAY_NAME_FAMILIES: Final[frozenset[str]] = frozenset(
+    {
+        "XRL.World.Parts.Mutation/BaseMutation.cs::BaseMutation.GetDisplayName(bool)",
+        "XRL/MutationEntry.cs::MutationEntry.GetDisplayName(bool)",
+    }
+)
+ISSUE719_MUTATION_EFFECT_DISPLAY_NAME_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 mutation effect display-name review closes Metamorphed's "
+        "fixed effect DisplayName assignment through the active-effect description route."
+    ),
+    "Mods/QudJP/Localization/Dictionaries/world-effects-status.ja.json",
+    "Mods/QudJP/Assemblies/src/Patches/EffectDescriptionPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/ActiveEffectTextTranslator.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/ActiveEffectsOwnerPatchTests.cs",
+    "decompiled owner source: XRL.World.Parts.Mutation/Metamorphed.cs lines 13-16",
+]
+ISSUE719_MUTATION_EFFECT_DISPLAY_NAME_FAMILIES: Final[frozenset[str]] = frozenset(
+    {
+        "XRL.World.Parts.Mutation/Metamorphed.cs::Metamorphed.Metamorphed()",
+    }
+)
+ISSUE719_LIGHT_MANIPULATION_ABILITY_DISPLAY_NAME_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 LightManipulation ability display-name review closes "
+        "SyncAbilityName through MutationActivatedAbilityNameTranslationPatch and "
+        "the shared ActivatedAbilityNameTranslator Lase charge pattern."
+    ),
+    "Mods/QudJP/Assemblies/src/Patches/MutationActivatedAbilityNameTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/ActivatedAbilityNameTranslator.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/MutationActivatedAbilityNameTranslationPatchTests.cs",
+    "decompiled owner source: XRL.World.Parts.Mutation/LightManipulation.cs lines 431-437",
+]
+ISSUE719_LIGHT_MANIPULATION_ABILITY_DISPLAY_NAME_FAMILIES: Final[frozenset[str]] = frozenset(
+    {
+        "XRL.World.Parts.Mutation/LightManipulation.cs::LightManipulation.SyncAbilityName()",
+    }
+)
+ISSUE719_CYBERNETICS_INSTALL_DISPLAY_NAME_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 cybernetics install option review closes CyberneticsScreenInstall.OnUpdate "
+        "through the existing TerminalScreen.Update transpiler and CyberneticsTerminalTextTranslator "
+        "display-name option templates."
+    ),
+    (
+        "The translator handles only recognized install option suffixes such as license points, "
+        "already-installed states, and will-replace states, while sending the implant label through "
+        "GetDisplayNameRouteTranslator."
+    ),
+    "Mods/QudJP/Assemblies/src/Patches/CyberneticsTerminalTextTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/CyberneticsTerminalTextTranslator.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/CyberneticsTerminalTextTranslationPatchTests.cs",
+    "decompiled owner source: XRL.UI/CyberneticsScreenInstall.cs OnUpdate implant Options.Add path",
+]
+ISSUE719_CYBERNETICS_INSTALL_DISPLAY_NAME_FAMILIES: Final[frozenset[str]] = frozenset(
+    {
+        "XRL.UI/CyberneticsScreenInstall.cs::CyberneticsScreenInstall.OnUpdate()",
+    }
+)
+ISSUE719_UI_SCREEN_FIXED_LABEL_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 UI fixed-label review closes SkillsAndPowers owner title "
+        "through the existing SkillsAndPowersStatusScreenTranslationPatch nameBlockText route "
+        "and KeybindBox edit-mode prompt through KeybindBoxTranslationPatch."
+    ),
+    "Mods/QudJP/Assemblies/src/Patches/SkillsAndPowersStatusScreenTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/StatusScreenTemplateTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/src/Patches/KeybindBoxTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/KeybindBoxTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+]
+ISSUE719_UI_SCREEN_FIXED_LABEL_FAMILIES: Final[frozenset[str]] = frozenset(
+    {
+        "Qud.UI/SkillsAndPowersStatusScreen.cs::SkillsAndPowersStatusScreen.ShowScreen(XRL.World.GameObject,StatusScreensScreen)",
+        "Qud.UI/KeybindBox.cs::KeybindBox.Update()",
+    }
+)
+ISSUE719_EQUIPMENT_SCREEN_BODYPART_EQUIP_OWNER_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 EquipmentScreen.ShowBodypartEquipUI review closes the fixed "
+        "body-part equipment failure popups through an exact owner scope."
+    ),
+    "Mods/QudJP/Assemblies/src/Patches/EquipmentScreenBodypartEquipPopupTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/EquipmentScreenBodypartEquipPopupTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+    "decompiled owner source: XRL.UI/EquipmentScreen.cs lines 26-59",
+]
+ISSUE719_EQUIPMENT_SCREEN_BODYPART_EQUIP_OWNER_FAMILIES: Final[frozenset[str]] = frozenset(
+    {
+        "XRL.UI/EquipmentScreen.cs::EquipmentScreen.ShowBodypartEquipUI(GameObject,BodyPart)",
+    }
+)
+ISSUE719_RESIDUAL_PURE_POPUP_TOP_RUNTIME_FAMILIES: Final[frozenset[str]] = frozenset(
+    {
+        "XRL.Core/Scores.cs::Scores.Show()",
+        "XRL.World.Parts/Crayons.cs::Crayons.HandleEvent(InventoryActionEvent)",
+        "XRL.World.Parts/Inventory.cs::Inventory.HandleEvent(InventoryActionEvent)",
+    }
+)
+ISSUE719_DESCRIPTION_LOOK_POPUP_OWNER_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 Description.HandleEvent(InventoryActionEvent) review closes the "
+        "Look popup chrome through an owner-scoped transpiler while tooltip display "
+        "names and long descriptions remain owned by LookTooltipInformationWrapPatch "
+        "and DescriptionTextTranslator."
+    ),
+    "Mods/QudJP/Assemblies/src/Patches/DescriptionLookPopupTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/LookTooltipInformationWrapPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/DescriptionTextTranslator.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/DescriptionLookPopupTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+    "decompiled owner source: XRL.World.Parts/Description.cs lines 333-381",
+]
+ISSUE719_TRADE_UI_SHOW_VENDOR_ACTIONS_OWNER_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 TradeUI.ShowVendorActions review closes the vendor action "
+        "picker through the existing TradeUiVendorPopupTranslationPatch owner scope. "
+        "Only the Popup.PickOption display payload is translated; the original "
+        "English command list remains available for downstream selection comparisons."
+    ),
+    "Mods/QudJP/Assemblies/src/Patches/TradeUiVendorPopupTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/TradeUiPopupTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/PopupPickOptionTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/TradeUiPopupTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+    "decompiled owner source: XRL.UI/TradeUI.cs lines 1139-1206",
+]
+ISSUE719_OBJECT_FINDER_CONFIG_FILTERS_OWNER_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 ObjectFinder.ConfigFilters review closes the filter/action "
+        "picker chrome through ObjectFinderConfigFiltersTranslationPatch. The owner "
+        "translator handles fixed titles, filter action labels, and bracketed state "
+        "suffixes while preserving classifier display-name captures."
+    ),
+    "Mods/QudJP/Assemblies/src/Patches/ObjectFinderConfigFiltersTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/PopupPickOptionTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/ObjectFinderDisplayNameTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/ObjectFinderConfigFiltersTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+    "decompiled owner source: XRL.UI/ObjectFinder.cs lines 301-365",
+]
+ISSUE719_EQUIPMENT_ACTION_MENU_OWNER_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 EquipmentAPI.ShowInventoryActionMenu closure: the method "
+        "passes action labels to Popup.PickOption with an InventoryActionMenu: "
+        "popup id, which routes labels through the inventory-action scoped "
+        "dictionary while preserving menu command data."
+    ),
+    "decompiled owner source: Qud.API/EquipmentAPI.cs lines 116-138",
+    "InventoryActionMenu:",
+    "Mods/QudJP/Assemblies/src/Patches/PopupTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/PopupPickOptionTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/PopupPickOptionTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L1/UiDictionaryOwnershipTests.cs",
+    "Mods/QudJP/Localization/Dictionaries/ui-inventory-actions.ja.json",
+]
+ISSUE719_EQUIPMENT_ACTION_MENU_OWNER_FAMILIES: Final[frozenset[str]] = frozenset(
+    {
         (
             "Qud.API/EquipmentAPI.cs::"
             "EquipmentAPI.ShowInventoryActionMenu(Dictionary<string,InventoryAction>,GameObject,GameObject,bool,bool,"
             "string,IComparer<InventoryAction>,bool)"
         ),
-        (
-            "XRL.CharacterBuilds.Qud.UI/QudBuildLibraryModuleWindow.cs::"
-            "QudBuildLibraryModuleWindow.HandleMenuOption(MenuOption)"
-        ),
-        (
-            "XRL.CharacterBuilds.Qud.UI/QudBuildLibraryModuleWindow.cs::"
-            "QudBuildLibraryModuleWindow.AddBuild(string)"
-        ),
-        (
-            "XRL.CharacterBuilds.Qud.UI/QudBuildLibraryModuleWindow.cs::"
-            "QudBuildLibraryModuleWindow.onSelect(FrameworkDataElement)"
-        ),
-        "XRL.UI/EquipmentScreen.cs::EquipmentScreen.ShowBodypartEquipUI(GameObject,BodyPart)",
-        (
-            "Qud.UI/InventoryAndEquipmentStatusScreen.cs::"
-            "InventoryAndEquipmentStatusScreen.HandleShowOptions()"
-        ),
-        "Qud.UI/FactionsStatusScreen.cs::FactionsStatusScreen.HandleCmdOptions()",
-        "Qud.UI/AbilityManagerScreen.cs::AbilityManagerScreen.showScreen(XRL.World.GameObject)",
-        "XRL.CharacterBuilds/EmbarkBuilder.cs::EmbarkBuilder.checkStateAsync()",
-        (
-            "XRL.CharacterBuilds.Qud.UI/QudBuildSummaryModuleWindow.cs::"
-            "QudBuildSummaryModuleWindow.HandleMenuOption(MenuOption)"
-        ),
-        "Qud.UI/ModManagerUI.cs::ModManagerUI.OnCancel()",
-        (
-            "XRL.CharacterBuilds.Qud.UI/QudMutationsModuleWindow.cs::"
-            "QudMutationsModuleWindow.HandleMenuOption(MenuOption)"
-        ),
-        (
-            "XRL.CharacterBuilds.Qud.UI/QudMutationsModuleWindow.cs::"
-            "QudMutationsModuleWindow.SelectVariant()"
-        ),
-        "XRL.UI.Framework/FrameworkSearchInput.cs::FrameworkSearchInput.ChangeValue()",
-        "XRL.World/Gender.cs::Gender.CustomizeProcess(string)",
     }
 )
 ISSUE719_RESIDUAL_PURE_POPUP_REMAINDER_RUNTIME_EVIDENCE: Final[list[str]] = [
@@ -2301,64 +3254,250 @@ ISSUE719_RESIDUAL_PURE_POPUP_REMAINDER_RUNTIME_EVIDENCE: Final[list[str]] = [
         "reviewed source families include TinkeringHelpers.CheckMakersMark, "
         "XRLCore.RestoreModsLoadedAsync, PopulationManager.WishFindBlueprint, "
         "Shrine.DesecrateShrine, ModInfo.ConfirmFailure, CodaSystem.EndGamePrompt, "
-        "Physics.ProcessTargetedMove, ModDisguise.BeingAppliedBy, "
+        "Physics.ProcessTargetedMove, "
         "CyberneticsTerminal2.AskLowLevelHack, conversation reward/share routes, "
-        "SavesAPI.FatalSaveError, ArkCore.TryOpen, and ShevaStarshipControl.AttemptLaunch"
+        "ArkCore.TryOpen, and ShevaStarshipControl.AttemptLaunch"
     ),
     (
         "Some fixed leaves already exist in ui-popup.ja.json, but focused owner-route "
         "tests are required before promoting these whole families."
     ),
 ]
-ISSUE719_RESIDUAL_PURE_POPUP_REMAINDER_RUNTIME_FAMILIES: Final[frozenset[str]] = frozenset(
+ISSUE719_TINKERING_MAKERS_MARK_OWNER_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 TinkeringHelpers.CheckMakersMark review closes maker's mark "
+        "picker and color-picker prompts through a CheckMakersMark owner patch and "
+        "the Popup.PickOption/ShowColorPicker routes."
+    ),
+    "Mods/QudJP/Assemblies/src/Patches/TinkeringHelpersMakersMarkTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/PopupShowColorPickerTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/TinkeringHelpersMakersMarkTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+    "decompiled owner source: XRL.World.Tinkering/TinkeringHelpers.cs lines 72-101",
+]
+ISSUE719_TINKERING_MAKERS_MARK_OWNER_FAMILIES: Final[frozenset[str]] = frozenset(
     {
         (
             "XRL.World.Tinkering/TinkeringHelpers.cs::"
             "TinkeringHelpers.CheckMakersMark(GameObject,GameObject,IModification,string)"
         ),
-        "XRL.Core/XRLCore.cs::XRLCore.RestoreModsLoadedAsync(List<string>)",
-        "XRL/PopulationManager.cs::PopulationManager.WishFindBlueprint(string)",
-        "XRL.World.Parts/Shrine.cs::Shrine.DesecrateShrine(GameObject,bool)",
+    }
+)
+ISSUE719_SAVES_API_FATAL_SAVE_ERROR_OWNER_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 SavesAPI.FatalSaveError review closes the save-directory "
+        "fatal error body, title, and Quit button through a FatalSaveError owner "
+        "scope plus the PopupMessage producer route."
+    ),
+    "Mods/QudJP/Assemblies/src/Patches/SavesApiFatalSaveErrorTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/SavesApiFatalSaveErrorTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+    "decompiled owner source: Qud.API/SavesAPI.cs lines 123-150",
+]
+ISSUE719_SAVES_API_FATAL_SAVE_ERROR_OWNER_FAMILIES: Final[frozenset[str]] = frozenset(
+    {
+        "Qud.API/SavesAPI.cs::SavesAPI.FatalSaveError(Exception,string)",
+    }
+)
+ISSUE719_MOD_DISGUISE_BEING_APPLIED_OWNER_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 ModDisguise.BeingAppliedBy review closes the player disguise "
+        "selection failure popup and picker title through an exact owner scope."
+    ),
+    (
+        "The owner translator intentionally preserves generated blueprint display-name "
+        "options; display-name translation remains owned by the display-name routes."
+    ),
+    "Mods/QudJP/Assemblies/src/Patches/ModDisguiseBeingAppliedPopupTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/ModDisguiseBeingAppliedPopupTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+    "decompiled owner source: XRL.World.Parts/ModDisguise.cs lines 53-99",
+]
+ISSUE719_MOD_DISGUISE_BEING_APPLIED_OWNER_FAMILIES: Final[frozenset[str]] = frozenset(
+    {
+        "XRL.World.Parts/ModDisguise.cs::ModDisguise.BeingAppliedBy(GameObject,GameObject)",
+    }
+)
+ISSUE719_SHRINE_DESECRATE_POPUP_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 closes Shrine.DesecrateShrine fixed popup/pick-option leaves "
+        "through the existing generic popup routes and shipped ui-popup dictionary entries."
+    ),
+    "decompiled owner source: XRL.World.Parts/Shrine.cs lines 171-202",
+    "Mods/QudJP/Assemblies/src/Patches/PopupTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/PopupPickOptionTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/PopupTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/PopupPickOptionTranslationPatchTests.cs",
+    "Mods/QudJP/Localization/Dictionaries/ui-popup.ja.json",
+]
+ISSUE719_POPULATION_ROLL_ONE_POPUP_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 closes PopulationManager.RollOneFrom through the existing "
+        "SingleCallsiteOwnerPopupTranslationPatch owner route for the generated "
+        "population error popup frame."
+    ),
+    "decompiled owner source: XRL/PopulationManager.cs lines 472-485",
+    "Mods/QudJP/Assemblies/src/Patches/SingleCallsiteOwnerPopupTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/SingleCallsiteOwnerPopupTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+]
+ISSUE719_POPULATION_WISH_FIND_BLUEPRINT_POPUP_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 closes PopulationManager.WishFindBlueprint through the "
+        "SingleCallsiteOwnerPopupTranslationPatch owner route for the debug wish "
+        "blueprint population-table report frames."
+    ),
+    "decompiled owner source: XRL/PopulationManager.cs lines 1019-1081",
+    "Mods/QudJP/Assemblies/src/Patches/SingleCallsiteOwnerPopupTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/SingleCallsiteOwnerPopupTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+]
+ISSUE719_MODINFO_CONFIRM_FAILURE_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 closes ModInfo.ConfirmFailure through the existing "
+        "ModInfoTranslationPatch transpiler and ModManagementSemanticPipeline "
+        "literal translations for the error title, retry/workshop commands, "
+        "extra-error suffix, and clipboard forwarding note."
+    ),
+    "decompiled owner source: XRL/ModInfo.cs lines 489-528",
+    "Mods/QudJP/Assemblies/src/Patches/ModInfoTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/ModManagementSemanticPipeline.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/ModInfoTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+]
+ISSUE719_MODINFO_CONFIRM_FAILURE_FAMILIES: Final[frozenset[str]] = frozenset(
+    {
         "XRL/ModInfo.cs::ModInfo.ConfirmFailure()",
-        "XRL/CodaSystem.cs::CodaSystem.EndGamePrompt()",
+    }
+)
+ISSUE719_XRLCORE_RESTORE_MODS_LOADED_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 closes XRLCore.RestoreModsLoadedAsync through an exact "
+        "async-state-machine transpiler that translates the fixed mod-configuration "
+        "popup frames and option labels while preserving generated mod titles."
+    ),
+    "decompiled owner source: XRL.Core/XRLCore.cs lines 3319-3344",
+    "Mods/QudJP/Assemblies/src/Patches/XrlCoreRestoreModsLoadedTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/XrlCoreRestoreModsLoadedTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+]
+ISSUE719_XRLCORE_RESTORE_MODS_LOADED_FAMILIES: Final[frozenset[str]] = frozenset(
+    {
+        "XRL.Core/XRLCore.cs::XRLCore.RestoreModsLoadedAsync(List<string>)",
+    }
+)
+ISSUE719_CONVERSATIONS_API_REWARD_PICK_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 closes ConversationsAPI.chooseOneItem through the existing "
+        "PopupPickOptionTranslationPatch route and shipped ui-popup dictionary "
+        "entry for the fixed reward prompt."
+    ),
+    "decompiled owner source: Qud.API/ConversationsAPI.cs lines 245-258",
+    "Mods/QudJP/Assemblies/src/Patches/PopupPickOptionTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/PopupPickOptionTranslationPatchTests.cs",
+    "Mods/QudJP/Localization/Dictionaries/ui-popup.ja.json",
+]
+ISSUE719_DYNAMIC_QUEST_REWARD_CHOICE_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 closes DynamicQuestRewardElement_ChoiceFromPopulation.award "
+        "by splitting the fixed popup title from the generated reward option payloads."
+    ),
+    (
+        "The fixed 'Choose a reward' title is covered by PopupPickOptionTranslationPatch "
+        "and the shipped ui-popup dictionary entry; the option strings are composed "
+        "from GameObject.GetDisplayName(... AsIfKnown: true) or DisplayNameOnlyDirect "
+        "plus a count suffix, so they remain GameObject display-name owner output."
+    ),
+    "decompiled owner source: XRL.World/DynamicQuestRewardElement_ChoiceFromPopulation.cs lines 27-63",
+    "Mods/QudJP/Assemblies/src/Patches/PopupPickOptionTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/PopupPickOptionTranslationPatchTests.cs",
+    "Mods/QudJP/Localization/Dictionaries/ui-popup.ja.json",
+]
+ISSUE719_CODA_ENDGAME_PROMPT_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 closes CodaSystem.EndGamePrompt through existing AskString "
+        "and death-reason dictionary routes for the fixed end-game prompt and "
+        "fixed death reason."
+    ),
+    "decompiled owner source: XRL/CodaSystem.cs lines 66-84",
+    "Mods/QudJP/Assemblies/src/Patches/PopupAskStringTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/DeathReasonTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/PopupAskStringTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L1/DeathReasonTranslationPatchTests.cs",
+    "Mods/QudJP/Localization/Dictionaries/ui-popup.ja.json",
+    "Mods/QudJP/Localization/Dictionaries/ui-death.ja.json",
+]
+ISSUE719_CONVERSATION_ENDGAME_CONFIRM_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 closes EndGame.HandleEvent through the AskString producer "
+        "template for the dynamic confirm token in 'End game?' prompts."
+    ),
+    "decompiled owner source: XRL.World.Conversations.Parts/EndGame.cs lines 134-153",
+    "Mods/QudJP/Assemblies/src/Patches/PopupAskStringTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/PopupTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/PopupAskStringTranslationPatchTests.cs",
+    "Mods/QudJP/Localization/Dictionaries/ui-popup.ja.json",
+]
+ISSUE719_CONVERSATION_GIVE_ARTIFACT_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 closes GiveArtifact.HandleEvent through the generic Popup.Show "
+        "dictionary route and PopupPickOption/PickGameObject title dictionary route."
+    ),
+    "decompiled owner source: XRL.World.Conversations.Parts/GiveArtifact.cs lines 31-48",
+    "Mods/QudJP/Assemblies/src/Patches/PopupShowTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/PopupPickOptionTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/PopupPickOptionTranslationPatchTests.cs",
+    "Mods/QudJP/Localization/Dictionaries/ui-popup.ja.json",
+]
+ISSUE719_CONVERSATION_RESHEPH_SECRET_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 closes GiveReshephSecret.HandleEvent through the existing "
+        "conversation reward owner patch plus PopupPickSeveral/PickOption dictionary titles."
+    ),
+    "decompiled owner source: XRL.World.Conversations.Parts/GiveReshephSecret.cs lines 35-58",
+    "Mods/QudJP/Assemblies/src/Patches/ConversationRewardPopupTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/PopupPickSeveralTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/PopupPickOptionTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/ConversationRewardPopupTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/PopupPickOptionTranslationPatchTests.cs",
+    "Mods/QudJP/Localization/Dictionaries/ui-popup.ja.json",
+]
+ISSUE719_CONVERSATION_WATER_RITUAL_SELL_SECRET_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 closes WaterRitualSellSecret.Share through PickOption "
+        "dictionary titles; its no-reputation failure remains covered by the "
+        "WaterRitualPopup owner patch."
+    ),
+    "decompiled owner source: XRL.World.Conversations.Parts/WaterRitualSellSecret.cs lines 54-62",
+    "Mods/QudJP/Assemblies/src/Patches/WaterRitualPopupTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/PopupPickOptionTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/WaterRitualPopupTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/PopupPickOptionTranslationPatchTests.cs",
+    "Mods/QudJP/Localization/Dictionaries/ui-popup.ja.json",
+]
+ISSUE719_RESIDUAL_PURE_POPUP_REMAINDER_RUNTIME_FAMILIES: Final[frozenset[str]] = frozenset(
+    {
+        "XRL/PopulationManager.cs::PopulationManager.WishFindBlueprint(string)",
+        "XRL/ModInfo.cs::ModInfo.ConfirmFailure()",
         (
             "XRL.World.Parts/Physics.cs::"
             "Physics.ProcessTargetedMove(Cell,string,string,string,int?,bool,bool,bool,bool,bool,bool,"
             "string,string,GameObject)"
         ),
-        "XRL.World.Parts/ModDisguise.cs::ModDisguise.BeingAppliedBy(GameObject,GameObject)",
         "XRL.World.Parts/CyberneticsTerminal2.cs::CyberneticsTerminal2.AskLowLevelHack(GameObject)",
-        (
-            "XRL.World.Conversations.Parts/GiveReshephSecret.cs::"
-            "GiveReshephSecret.HandleEvent(EnterElementEvent)"
-        ),
-        "Qud.API/SavesAPI.cs::SavesAPI.FatalSaveError(Exception,string)",
         "XRL.World.Parts/ShevaStarshipControl.cs::ShevaStarshipControl.AttemptLaunch(GameObject)",
         "Qud.API/JournalAPI.cs::JournalAPI.WishGospelAccomplishments()",
-        (
-            "XRL.World/DynamicQuestRewardElement_ChoiceFromPopulation.cs::"
-            "DynamicQuestRewardElement_ChoiceFromPopulation.award()"
-        ),
         "XRL.World.Parts/GripChange.cs::GripChange.TryChooseGrip(GameObject)",
         "XRL.World.Parts/ArkCore.cs::ArkCore.TryOpen(GameObject)",
         "XRL.World.Parts/Vehicle.cs::Vehicle.HandleEvent(InventoryActionEvent)",
-        "XRL.World.Parts.Mutation/BaseMutation.cs::BaseMutation.SelectVariant(GameObject,bool)",
-        "XRL.World.Conversations.Parts/GiveArtifact.cs::GiveArtifact.HandleEvent(EnterElementEvent)",
-        "XRL.World.Conversations.Parts/EndGame.cs::EndGame.HandleEvent(EnterElementEvent)",
-        "XRL.World.Capabilities/ItemNaming.cs::ItemNaming.HandleItemNamingWish(Match)",
         "XRL.World.Parts/CyberneticsCathedra.cs::CyberneticsCathedra.HandleEvent(CommandEvent)",
-        "XRL.World.Conversations.Parts/WaterRitualSellSecret.cs::WaterRitualSellSecret.Share()",
         "XRL.World.Parts/IZoneLandmark.cs::IZoneLandmark.WishCurrent()",
-        "XRL.World.Parts/IGrenade.cs::IGrenade.HandleEvent(InventoryActionEvent)",
         (
             "XRL.World.Parts/CyberneticsOnboardRecoilerTeleporter.cs::"
             "CyberneticsOnboardRecoilerTeleporter.ActuateTeleport(GameObject,IEvent)"
         ),
-        "Qud.API/ConversationsAPI.cs::ConversationsAPI.chooseOneItem(List<GameObject>,string,bool)",
         "XRL.World.Quests/ReclamationSystem.cs::ReclamationSystem.HandleEvent(EnteringZoneEvent)",
         "XRL.World.Parts/RecoilAbility.cs::RecoilAbility.HandleEvent(CommandEvent)",
-        "XRL.World.Parts.Mutation/Wings.cs::Wings.HandleEvent(CommandEvent)",
-        "XRL/PopulationManager.cs::PopulationManager.RollOneFrom(string,Dictionary<string,string>,string)",
         "XRL.World.Parts/ModExtradimensional.cs::ModExtradimensional.MakeExtradimensional()",
         "Extensions.cs::Extensions.ShowSuccess(this XRL.World.GameObject,string,bool)",
     }
@@ -2370,11 +3509,15 @@ ISSUE719_RESIDUAL_FRAME_DOES_PROMOTION_EVIDENCE: Final[list[str]] = [
     ),
     "Mods/QudJP/Localization/MessageFrames/verbs.ja.json",
     "Mods/QudJP/Assemblies/QudJP.Tests/L1/MessageFrameTranslatorTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/XDidYTranslationPatchTests.cs",
     "Mods/QudJP/Assemblies/QudJP.Tests/L1/DeathReasonTranslationPatchTests.cs",
     "Mods/QudJP/Assemblies/QudJP.Tests/L2/DeathReasonTranslationPatchTests.cs",
     "Mods/QudJP/Assemblies/QudJP.Tests/L2/CyberneticsTerminalTextTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/CyberneticsTerminalInterfacePopupTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/PopupPickOptionTranslationPatchTests.cs",
     "Mods/QudJP/Assemblies/QudJP.Tests/L2/SingleCallsiteOwnerPopupTranslationPatchTests.cs",
     "Mods/QudJP/Assemblies/QudJP.Tests/L2/ConversationRewardPopupTranslationPatchTests.cs",
+    "Mods/QudJP/Localization/Dictionaries/ui-popup.ja.json",
 ]
 ISSUE719_RESIDUAL_FRAME_DOES_PROMOTION_FAMILIES: Final[frozenset[str]] = frozenset(
     {
@@ -2387,6 +3530,10 @@ ISSUE719_RESIDUAL_FRAME_DOES_PROMOTION_FAMILIES: Final[frozenset[str]] = frozens
         (
             "XRL.World.Parts/NeutronFluxContainment.cs::"
             "NeutronFluxContainment.GetWarningMessage()"
+        ),
+        (
+            "XRL.World.Parts/CyberneticsTerminal2.cs::"
+            "CyberneticsTerminal2.AttemptInterface(GameObject,IEvent)"
         ),
         (
             "XRL.World.Parts/ExtradimensionalHunterSummoner.cs::"
@@ -2406,10 +3553,37 @@ ISSUE719_RESIDUAL_FRAME_DOES_PROMOTION_FAMILIES: Final[frozenset[str]] = frozens
         ),
         "XRL.World.Parts.Mutation/SpiderWebs.cs::SpiderWebs.HandleEvent(LeftCellEvent)",
         "XRL.World.Parts/BaetylHostility.cs::BaetylHostility.CheckBaetylHostility()",
+        "XRL.World.Parts/PetFrondzie.cs::PetFrondzie.taunt(GameObject)",
+        (
+            "XRL.World.Parts/PetEbenshabat.cs::"
+            "PetEbenshabat.HandleEvent(AfterLevelGainedEvent)"
+        ),
+        (
+            "XRL.World.Parts/SpaceTimeVortex.cs::"
+            "SpaceTimeVortex.SpaceTimeAnomalyPeriodicEvents()"
+        ),
+        (
+            "XRL.World.Parts/CyberneticsPrecisionForceLathe.cs::"
+            "CyberneticsPrecisionForceLathe.HandleEvent(ReplaceThrownWeaponEvent)"
+        ),
+        "XRL.World.Parts/HeatSelfOnFreeze.cs::HeatSelfOnFreeze.FireEvent(Event)",
+        (
+            "XRL.World.Parts/AIBarathrumShuttle.cs::"
+            "AIBarathrumShuttle.ActionShipLaunch(GoalHandler)"
+        ),
         "XRL.World.Parts/Mutations.cs::Mutations.WishMutationAdd(string,string)",
         (
             "XRL.World.Units/GameObjectBaetylUnit.cs::"
             "GameObjectBaetylUnit.GiveRewards(GameObject,int,int)"
+        ),
+        "XRL.World.Parts/NephalProperties.cs::NephalProperties.AbsorbChords(GameObject)",
+        (
+            "XRL.World.Parts/LiquidVolume.cs::"
+            "LiquidVolume.CleaningMessage(GameObject,List<GameObject>,List<string>,GameObject,LiquidVolume,bool)"
+        ),
+        (
+            "XRL.World.Parts/LiquidVolume.cs::"
+            "LiquidVolume.ProcessContact(GameObject,bool,bool,bool,GameObject,bool,int)"
         ),
     }
 )
@@ -2425,51 +3599,36 @@ ISSUE719_RESIDUAL_FRAME_DOES_RUNTIME_EVIDENCE: Final[list[str]] = [
         "reviewed pure Does families: Domination.ProcessTarget, "
         "Physics.UpdateTemperature, CyberneticsScreenMainMenu, "
         "TrembleEarthquakes.RocksFall, LootOnStep.SteppedOn, "
-        "NeutronFluxContainment.GetWarningMessage, and CyberneticsTerminal2.AttemptInterface"
+        "and NeutronFluxContainment.GetWarningMessage"
     ),
     (
         "reviewed pure MessageFrame families: PetFrondzie.taunt, "
-        "SpaceTimeVortex.SpaceTimeAnomalyPeriodicEvents, LiquidVolume cleaning/contact, "
+        "SpaceTimeVortex.SpaceTimeAnomalyPeriodicEvents, "
         "ExtradimensionalHunterSummoner.Summon, Combat.SwoopAttack, Shrine.PerformDesecration, "
         "PsychicHunterSystem.PsychicPresenceMessage, pet/reward/wish/debug routes, and "
         "small owner event frames."
     ),
 ]
-ISSUE719_RESIDUAL_FRAME_DOES_RUNTIME_FAMILIES: Final[frozenset[str]] = frozenset(
+ISSUE719_DOMINATION_PROCESS_TARGET_OWNER_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 closes Domination.ProcessTarget through an exact owner scope "
+        "and MessageQueueSemanticPipeline coverage for the domination failure "
+        "message frames."
+    ),
+    "decompiled owner source: XRL.World.Parts.Mutation/Domination.cs lines 334-384",
+    "Mods/QudJP/Assemblies/src/Patches/DominationProcessTargetTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/DominationProcessTargetTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+]
+ISSUE719_DOMINATION_PROCESS_TARGET_OWNER_FAMILIES: Final[frozenset[str]] = frozenset(
     {
         "XRL.World.Parts.Mutation/Domination.cs::Domination.ProcessTarget(GameObject,ref string)",
+    }
+)
+ISSUE719_RESIDUAL_FRAME_DOES_RUNTIME_FAMILIES: Final[frozenset[str]] = frozenset(
+    {
         "XRL.World.Parts/TrembleEarthquakes.cs::TrembleEarthquakes.RocksFall(Zone)",
-        (
-            "XRL.World.Parts/CyberneticsTerminal2.cs::"
-            "CyberneticsTerminal2.AttemptInterface(GameObject,IEvent)"
-        ),
-        "XRL.World.Parts/PetFrondzie.cs::PetFrondzie.taunt(GameObject)",
-        (
-            "XRL.World.Parts/SpaceTimeVortex.cs::"
-            "SpaceTimeVortex.SpaceTimeAnomalyPeriodicEvents()"
-        ),
-        (
-            "XRL.World.Parts/LiquidVolume.cs::"
-            "LiquidVolume.CleaningMessage(GameObject,List<GameObject>,List<string>,GameObject,LiquidVolume,bool)"
-        ),
-        (
-            "XRL.World.Parts/LiquidVolume.cs::"
-            "LiquidVolume.ProcessContact(GameObject,bool,bool,bool,GameObject,bool,int)"
-        ),
-        (
-            "XRL.World.Parts/PetEbenshabat.cs::"
-            "PetEbenshabat.HandleEvent(AfterLevelGainedEvent)"
-        ),
-        (
-            "XRL.World.Parts/AIBarathrumShuttle.cs::"
-            "AIBarathrumShuttle.ActionShipLaunch(GoalHandler)"
-        ),
-        (
-            "XRL.World.Parts/CyberneticsPrecisionForceLathe.cs::"
-            "CyberneticsPrecisionForceLathe.HandleEvent(ReplaceThrownWeaponEvent)"
-        ),
-        "XRL.World.Parts/HeatSelfOnFreeze.cs::HeatSelfOnFreeze.FireEvent(Event)",
-        "XRL.World.Parts/NephalProperties.cs::NephalProperties.AbsorbChords(GameObject)",
     }
 )
 ISSUE719_RESIDUAL_MIXED_POPUP_RUNTIME_EVIDENCE: Final[list[str]] = [
@@ -2479,37 +3638,146 @@ ISSUE719_RESIDUAL_MIXED_POPUP_RUNTIME_EVIDENCE: Final[list[str]] = [
         "inventory action, object-name composition, debug, and generated owner branches."
     ),
     (
-        "reviewed source families: SunderMind.Tick, Stomach.FireEvent, "
+        "reviewed source families: Stomach.FireEvent, "
         "ElevatorSwitch.FireEvent, BiomeManager.DisplaySurfaceDistribution, "
-        "GiantClamProperties.TeleportFromClamWorld, Examiner.HandleEvent(InventoryActionEvent), "
+        "Examiner.HandleEvent(InventoryActionEvent), "
         "TinkerItem.HandleEvent(InventoryActionEvent), FixitSpray.HandleEvent, "
         "MagnetizedApplicator.HandleEvent, and VehicleMeleeInfiltration.TryInfiltrate"
     ),
 ]
 ISSUE719_RESIDUAL_MIXED_POPUP_RUNTIME_FAMILIES: Final[frozenset[str]] = frozenset(
     {
-        "XRL.World.Parts.Mutation/SunderMind.cs::SunderMind.Tick()",
         "XRL.World.Parts/Stomach.cs::Stomach.FireEvent(Event)",
         "XRL.World.Parts/ElevatorSwitch.cs::ElevatorSwitch.FireEvent(Event)",
         (
             "XRL.World.Biomes/BiomeManager.cs::"
             "BiomeManager.DisplaySurfaceDistribution(string)"
         ),
-        (
-            "XRL.World.Parts/GiantClamProperties.cs::"
-            "GiantClamProperties.TeleportFromClamWorld(GameObject)"
-        ),
         "XRL.World.Parts/Examiner.cs::Examiner.HandleEvent(InventoryActionEvent)",
         "XRL.World.Parts/TinkerItem.cs::TinkerItem.HandleEvent(InventoryActionEvent)",
+    }
+)
+ISSUE719_STOMACH_FIRE_EVENT_OWNER_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 Stomach.FireEvent is covered by owner-route queue translation plus "
+        "existing popup and Does/dictionary routes for the fixed water/thirst/vomit frames."
+    ),
+    (
+        "owner patch: Mods/QudJP/Assemblies/src/Patches/StomachTranslationPatch.cs "
+        "targets XRL.World.Parts.Stomach|FireEvent|System.Boolean|XRL.World.Event and "
+        "translates AddWater moisture drain, overdrinking, and overdrinking-vomit "
+        "queue frames before the generic message-log sink."
+    ),
+    (
+        "tests: Mods/QudJP/Assemblies/QudJP.Tests/L2/StomachTranslationPatchTests.cs "
+        "covers StomachMoistureBody, StomachMoistureThroat, StomachOverdrink, "
+        "StomachOverdrinkVomiting, color wrappers, direct marker stripping, owner-absent "
+        "queue pass-through, and unrelated owner-active queue pass-through."
+    ),
+    (
+        "tests: Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs "
+        "covers StomachTranslationPatch target resolution for "
+        "XRL.World.Parts.Stomach|FireEvent|System.Boolean|XRL.World.Event."
+    ),
+    (
+        "dictionary/route evidence: world-parts.ja.json owns Stomach popup/status/vomit "
+        "fixed literals and DoesVerbFamilyTests covers third-person vomits everywhere."
+    ),
+]
+ISSUE719_STOMACH_FIRE_EVENT_OWNER_FAMILIES: Final[frozenset[str]] = frozenset(
+    {
+        "XRL.World.Parts/Stomach.cs::Stomach.FireEvent(Event)",
+    }
+)
+ISSUE719_FIXIT_SPRAY_OWNER_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 FixitSpray.HandleEvent closure: route-local sticky-goop "
+        "Popup.Show branches are covered by SingleCallsiteOwnerPopupTranslationPatch, "
+        "self/fixed failure popups are covered by ui-popup/world-parts leaves, "
+        "and the object-covered branch is also covered by the sticky-goop DoesVerb route."
+    ),
+    "decompiled owner source: XRL.World.Parts/FixitSpray.cs lines 24-91",
+    "Mods/QudJP/Assemblies/src/Patches/SingleCallsiteOwnerPopupTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/SingleCallsiteOwnerPopupTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L1/DoesVerbFamilyTests.cs",
+    "Mods/QudJP/Localization/Dictionaries/ui-popup.ja.json",
+    "Mods/QudJP/Localization/Dictionaries/world-parts.ja.json",
+    "Mods/QudJP/Localization/MessageFrames/verbs.ja.json",
+]
+ISSUE719_FIXIT_SPRAY_OWNER_FAMILIES: Final[frozenset[str]] = frozenset(
+    {
         "XRL.World.Parts/FixitSpray.cs::FixitSpray.HandleEvent(InventoryActionEvent)",
+    }
+)
+ISSUE719_MAGNETIZED_APPLICATOR_OWNER_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 MagnetizedApplicator.HandleEvent closure: fixed failure "
+        "popups are covered by ui-popup leaves, DoesVerb handles the does-nothing "
+        "and becomes-magnetized frames, and SingleCallsiteOwnerPopupTranslationPatch "
+        "owns the magnetic-charge crumble popup."
+    ),
+    "decompiled owner source: XRL.World.Parts/MagnetizedApplicator.cs lines 20-68",
+    "Mods/QudJP/Assemblies/src/Patches/SingleCallsiteOwnerPopupTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/SingleCallsiteOwnerPopupTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L1/DoesVerbFamilyTests.cs",
+    "Mods/QudJP/Localization/Dictionaries/ui-popup.ja.json",
+    "Mods/QudJP/Localization/MessageFrames/verbs.ja.json",
+]
+ISSUE719_MAGNETIZED_APPLICATOR_OWNER_FAMILIES: Final[frozenset[str]] = frozenset(
+    {
         (
             "XRL.World.Parts/MagnetizedApplicator.cs::"
             "MagnetizedApplicator.HandleEvent(InventoryActionEvent)"
         ),
-        (
-            "XRL.World.Parts/VehicleMeleeInfiltration.cs::"
-            "VehicleMeleeInfiltration.TryInfiltrate(GameObject,Interior)"
-        ),
+    }
+)
+ISSUE719_INVENTORY_DROP_ASK_NUMBER_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 closes Inventory.HandleEvent drop-count popup through the "
+        "generic PopupAskNumberTranslationPatch route and the shipped ui-popup "
+        "dictionary leaf for the fixed 'How many do you want to drop?' prompt."
+    ),
+    "decompiled owner source: XRL.World.Parts/Inventory.cs line 2449",
+    "Mods/QudJP/Assemblies/src/Patches/PopupAskNumberTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/PopupAskNumberTranslationPatchTests.cs",
+    "Mods/QudJP/Localization/Dictionaries/ui-popup.ja.json",
+]
+ISSUE719_INVENTORY_DROP_ASK_NUMBER_FAMILIES: Final[frozenset[str]] = frozenset(
+    {
+        "XRL.World.Parts/Inventory.cs::Inventory.HandleEvent(InventoryActionEvent)",
+    }
+)
+ISSUE719_EXAMINER_HANDLE_EVENT_OWNER_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 closes Examiner.HandleEvent inventory-action popups through "
+        "the existing ExaminerTranslationPatch owner route for broken-item, "
+        "owned-examine, container-owned-examine, and confused failure prompts."
+    ),
+    "decompiled owner source: XRL.World.Parts/Examiner.cs lines 399-465",
+    "Mods/QudJP/Assemblies/src/Patches/ExaminerTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/ExaminerTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+]
+ISSUE719_EXAMINER_HANDLE_EVENT_OWNER_FAMILIES: Final[frozenset[str]] = frozenset(
+    {
+        "XRL.World.Parts/Examiner.cs::Examiner.HandleEvent(InventoryActionEvent)",
+    }
+)
+ISSUE719_TINKER_ITEM_HANDLE_EVENT_OWNER_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 closes TinkerItem.HandleEvent inventory-action disassembly "
+        "popups through the existing TinkerItemTranslationPatch owner route for "
+        "owned item, container-owned item, and disassembly confirmation prompts."
+    ),
+    "decompiled owner source: XRL.World.Parts/TinkerItem.cs lines 321-385",
+    "Mods/QudJP/Assemblies/src/Patches/TinkerItemTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/TinkerItemTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+    "Mods/QudJP/Localization/Dictionaries/ui-popup.ja.json",
+]
+ISSUE719_TINKER_ITEM_HANDLE_EVENT_OWNER_FAMILIES: Final[frozenset[str]] = frozenset(
+    {
+        "XRL.World.Parts/TinkerItem.cs::TinkerItem.HandleEvent(InventoryActionEvent)",
     }
 )
 ISSUE719_RESIDUAL_QUEUE_DOES_RUNTIME_EVIDENCE: Final[list[str]] = [
@@ -2524,34 +3792,46 @@ ISSUE719_RESIDUAL_QUEUE_DOES_RUNTIME_EVIDENCE: Final[list[str]] = [
         "reviewed source families: CyberneticsButcherableCybernetic.AttemptButcher, "
         "Chat.PerformChat, FungalInfection.FireEvent, "
         "VehicleMeleeInfiltration.HandleEvent(CanEnterInteriorEvent), "
-        "DanceRitualOpponent.HandleEvent(BeforeAITakingActionEvent), "
-        "PlayerDanceRitual.FireEvent, DanceRitualOpponent.Register, "
         "SoundManager._PlaySound, SoundManager._PlayWorldSound, "
         "Interior.HandleEvent(TookDamageEvent), MessageQueue.AddPlayerMessage(char), "
         "and FindASiteDynamicQuestManager.DynamicQuestWhere"
     ),
 ]
+ISSUE719_FIND_SITE_DYNAMIC_QUEST_WHERE_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 closes FindASiteDynamicQuestManager.DynamicQuestWhere through "
+        "WishCommandQueueTranslationPatch on the exact WishCommand debug owner route."
+    ),
+    "decompiled owner source: XRL.World.ZoneBuilders/FindASiteDynamicQuestManager.cs lines 157-170",
+    "Mods/QudJP/Assemblies/src/Patches/WishCommandQueueTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/WishCommandQueueTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+]
+ISSUE719_FUNGAL_INFECTION_FIRE_EVENT_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 closes FungalInfection.FireEvent through existing Does-verb "
+        "message-frame and message-pattern coverage for the fungal cure emitted "
+        "messages."
+    ),
+    "decompiled owner source: XRL.World.Parts/FungalInfection.cs lines 59-124",
+    "Mods/QudJP/Localization/MessageFrames/verbs.ja.json",
+    "Mods/QudJP/Localization/Dictionaries/messages.ja.json",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L1/DoesVerbFamilyTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L1/MessagePatternTranslatorTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/SingleCallsiteOwnerPopupTranslationPatchTests.cs",
+]
+ISSUE719_FUNGAL_INFECTION_FIRE_EVENT_FAMILIES: Final[frozenset[str]] = frozenset(
+    {
+        "XRL.World.Parts/FungalInfection.cs::FungalInfection.FireEvent(Event)",
+    }
+)
 ISSUE719_RESIDUAL_QUEUE_DOES_RUNTIME_FAMILIES: Final[frozenset[str]] = frozenset(
     {
         (
             "XRL.World.Parts/CyberneticsButcherableCybernetic.cs::"
             "CyberneticsButcherableCybernetic.AttemptButcher"
             "(GameObject,bool,bool,bool,int,Cell,List<GameObject>)"
-        ),
-        "XRL.World.Parts/Chat.cs::Chat.PerformChat(GameObject,bool)",
-        "XRL.World.Parts/FungalInfection.cs::FungalInfection.FireEvent(Event)",
-        (
-            "XRL.World.Parts/VehicleMeleeInfiltration.cs::"
-            "VehicleMeleeInfiltration.HandleEvent(CanEnterInteriorEvent)"
-        ),
-        (
-            "XRL.World.Parts/DanceRitualOpponent.cs::"
-            "DanceRitualOpponent.HandleEvent(BeforeAITakingActionEvent)"
-        ),
-        "XRL.World.Parts/PlayerDanceRitual.cs::PlayerDanceRitual.FireEvent(Event)",
-        (
-            "XRL.World.Parts/DanceRitualOpponent.cs::"
-            "DanceRitualOpponent.Register(GameObject,IEventRegistrar)"
         ),
         (
             "SoundManager.cs::"
@@ -2563,10 +3843,23 @@ ISSUE719_RESIDUAL_QUEUE_DOES_RUNTIME_FAMILIES: Final[frozenset[str]] = frozenset
         ),
         "XRL.World.Parts/Interior.cs::Interior.HandleEvent(TookDamageEvent)",
         "XRL.Messages/MessageQueue.cs::MessageQueue.AddPlayerMessage(string,char,bool)",
-        (
-            "XRL.World.ZoneBuilders/FindASiteDynamicQuestManager.cs::"
-            "FindASiteDynamicQuestManager.DynamicQuestWhere()"
-        ),
+    }
+)
+ISSUE719_CHAT_PERFORM_CHAT_OWNER_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 Chat.PerformChat closure: bracket/star Says payloads remain "
+        "runtime/data pass-through, while the generated says wrapper is covered "
+        "by the repository say message frame and localized Chat Says XML payloads."
+    ),
+    "decompiled owner source: XRL.World.Parts/Chat.cs lines 171-218",
+    "scripts/static_producer_closure.py",
+    "Mods/QudJP/Localization/MessageFrames/verbs.ja.json",
+    "Mods/QudJP/Localization/ObjectBlueprints/Furniture.jp.xml",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L1/DoesVerbFamilyTests.cs",
+]
+ISSUE719_CHAT_PERFORM_CHAT_OWNER_FAMILIES: Final[frozenset[str]] = frozenset(
+    {
+        "XRL.World.Parts/Chat.cs::Chat.PerformChat(GameObject,bool)",
     }
 )
 ISSUE719_RESIDUAL_MESSAGE_MIXED_REMAINDER_RUNTIME_EVIDENCE: Final[list[str]] = [
@@ -2579,26 +3872,81 @@ ISSUE719_RESIDUAL_MESSAGE_MIXED_REMAINDER_RUNTIME_EVIDENCE: Final[list[str]] = [
     (
         "reviewed source families: ShevaStarshipControl.CheckTimer, "
         "SpaceTimeVortex.ApplyVortex, Carapace.Loosen, "
-        "GolemQuestMound.DisplayOptions, Campfire.Extinguish, "
+        "GolemQuestMound.DisplayOptions, "
         "CyberneticsHolographicVisage.SelectVisage, "
         "LiquidWarmStatic.WishWarmEffectSpec, LiquidWarmStatic.GlitchLiquidComponents, "
         "LiquidWarmStatic.WishWarmEffect, DesalinationPellet.HandleEvent, and "
         "FadeText.Update"
     ),
 ]
+ISSUE719_CAMPFIRE_EXTINGUISH_OWNER_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 Campfire.Extinguish closure: the actor branch is covered by "
+        "the repository extinguish MessageFrame leaf, and the object branch is "
+        "covered by the existing are-extinguished-by Does frame through "
+        "GameObjectEmitMessageTranslationPatch."
+    ),
+    "decompiled owner source: XRL.World.Parts/Campfire.cs lines 1928-1937",
+    "Mods/QudJP/Localization/MessageFrames/verbs.ja.json",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/XDidYTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+]
+ISSUE719_CAMPFIRE_EXTINGUISH_OWNER_FAMILIES: Final[frozenset[str]] = frozenset(
+    {
+        "XRL.World.Parts/Campfire.cs::Campfire.Extinguish(GameObject,GameObject)",
+    }
+)
+ISSUE719_HOLOGRAPHIC_VISAGE_OWNER_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 CyberneticsHolographicVisage.SelectVisage closure: the exact "
+        "owner method now routes its PickOption title/options through "
+        "PopupPickOptionTranslationPatch and its glissade EmitMessage through "
+        "the existing Holographic Visage DoesVerb family."
+    ),
+    (
+        "source review: SelectVisage builds the fixed title 'Choose a model faction "
+        "for your holographic glamour.', the fixed option 'none', visible faction "
+        "DisplayName options, and the glissade-of-light EmitMessage after a faction "
+        "selection."
+    ),
+    "Mods/QudJP/Localization/Dictionaries/ui-popup.ja.json",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/PopupPickOptionTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L1/DoesVerbFamilyTests.cs",
+]
+ISSUE719_HOLOGRAPHIC_VISAGE_OWNER_FAMILIES: Final[frozenset[str]] = frozenset(
+    {
+        (
+            "XRL.World.Parts/CyberneticsHolographicVisage.cs::"
+            "CyberneticsHolographicVisage.SelectVisage(GameObject)"
+        ),
+    }
+)
+ISSUE719_CARAPACE_LOOSEN_OWNER_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 Carapace.Loosen closure: player-visible Popup.Show loosen "
+        "messages are owned by CarapaceTranslationPatch, while non-player "
+        "EmitMessage loosen lines are covered by the existing loosen DoesVerb "
+        "and message-log routes."
+    ),
+    "decompiled owner source: XRL.World.Parts.Mutation/Carapace.cs lines 197-230",
+    "Mods/QudJP/Assemblies/src/Patches/CarapaceTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L1/DoesVerbFamilyTests.cs",
+    "Mods/QudJP/Localization/MessageFrames/verbs.ja.json",
+]
+ISSUE719_CARAPACE_LOOSEN_OWNER_FAMILIES: Final[frozenset[str]] = frozenset(
+    {
+        "XRL.World.Parts.Mutation/Carapace.cs::Carapace.Loosen(bool)",
+    }
+)
 ISSUE719_RESIDUAL_MESSAGE_MIXED_REMAINDER_RUNTIME_FAMILIES: Final[
     frozenset[str]
 ] = frozenset(
     {
         "XRL.World.Parts/ShevaStarshipControl.cs::ShevaStarshipControl.CheckTimer()",
-        "XRL.World.Parts/SpaceTimeVortex.cs::SpaceTimeVortex.ApplyVortex(GameObject)",
-        "XRL.World.Parts.Mutation/Carapace.cs::Carapace.Loosen(bool)",
         "XRL.World.Parts/GolemQuestMound.cs::GolemQuestMound.DisplayOptions(GameObject)",
-        "XRL.World.Parts/Campfire.cs::Campfire.Extinguish(GameObject,GameObject)",
-        (
-            "XRL.World.Parts/CyberneticsHolographicVisage.cs::"
-            "CyberneticsHolographicVisage.SelectVisage(GameObject)"
-        ),
         (
             "XRL.Liquids/LiquidWarmStatic.cs::"
             "LiquidWarmStatic.WishWarmEffectSpec(string)"
@@ -2608,11 +3956,27 @@ ISSUE719_RESIDUAL_MESSAGE_MIXED_REMAINDER_RUNTIME_FAMILIES: Final[
             "LiquidWarmStatic.GlitchLiquidComponents(GameObject,string,int,bool)"
         ),
         "XRL.Liquids/LiquidWarmStatic.cs::LiquidWarmStatic.WishWarmEffect()",
-        (
-            "XRL.World.Parts/DesalinationPellet.cs::"
-            "DesalinationPellet.HandleEvent(InventoryActionEvent)"
-        ),
         "XRL.UI/FadeText.cs::FadeText.Update()",
+    }
+)
+ISSUE719_SPACE_TIME_VORTEX_APPLY_OWNER_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 SpaceTimeVortex.ApplyVortex closure: vortex-contact and "
+        "sucked-into message frames are covered by message-log/message-frame "
+        "patterns, and the companion popup branch is covered by the existing "
+        "single-callsite owner popup translator."
+    ),
+    "decompiled owner source: XRL.World.Parts/SpaceTimeVortex.cs lines 373-438",
+    "Mods/QudJP/Localization/Dictionaries/messages.ja.json",
+    "Mods/QudJP/Localization/Dictionaries/ui-messagelog-world.ja.json",
+    "Mods/QudJP/Localization/MessageFrames/verbs.ja.json",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L1/DoesVerbFamilyTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/SingleCallsiteOwnerPopupTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+]
+ISSUE719_SPACE_TIME_VORTEX_APPLY_OWNER_FAMILIES: Final[frozenset[str]] = frozenset(
+    {
+        "XRL.World.Parts/SpaceTimeVortex.cs::SpaceTimeVortex.ApplyVortex(GameObject)",
     }
 )
 ISSUE719_WORLD_PART_MIXED_STATIC_GAP_EVIDENCE_BY_FAMILY: Final[
@@ -2725,53 +4089,71 @@ ISSUE719_VILLAGE_DYNAMIC_QUEST_REWARD_STATIC_GAP_FAMILIES: Final[frozenset[str]]
         "XRL.World/VillageDynamicQuestContext.cs::VillageDynamicQuestContext.getQuestReward()",
     }
 )
-ISSUE719_GOLEM_MOUND_DISPLAY_OPTIONS_STATIC_GAP_EVIDENCE: Final[list[str]] = [
+ISSUE719_GOLEM_MOUND_DISPLAY_OPTIONS_OWNER_EVIDENCE: Final[list[str]] = [
     (
-        "Issue #719 GolemQuestMound.DisplayOptions review reclassifies the row "
-        "as a static implementation gap because the exact owner builds the golem menu popup."
+        "GolemQuestMound.DisplayOptions is covered by an owner-route transpiler that "
+        "translates the route-local Build command labels while preserving popup "
+        "selection text, hotkey descriptors, commands, and sound identifiers."
     ),
     (
         "DisplayOptions feeds Popup.PickOption with the mound Description.Short, "
         "GolemQuestSelection option text, and a route-local Build command label."
     ),
     (
-        "Existing popup dictionary coverage handles CheckCompletion's ready popup, "
-        "but DisplayOptions still needs route-local menu option and description handling."
+        "GolemQuestMoundDisplayOptionsTranslationPatch only rewrites the exact "
+        "Build literals; the description and quest selection option text remain "
+        "owned by their upstream producers."
     ),
+    "patch: Mods/QudJP/Assemblies/src/Patches/GolemQuestMoundDisplayOptionsTranslationPatch.cs",
+    "tests: Mods/QudJP/Assemblies/QudJP.Tests/L2/GolemQuestMoundDisplayOptionsTranslationPatchTests.cs",
+    "signature guard: Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
     "decompiled source: XRL.World.Parts/GolemQuestMound.cs lines 134-179",
 ]
-ISSUE719_GOLEM_MOUND_DISPLAY_OPTIONS_STATIC_GAP_FAMILIES: Final[frozenset[str]] = frozenset(
+ISSUE719_GOLEM_MOUND_DISPLAY_OPTIONS_OWNER_FAMILIES: Final[frozenset[str]] = frozenset(
     {
         "XRL.World.Parts/GolemQuestMound.cs::GolemQuestMound.DisplayOptions(GameObject)",
     }
 )
-ISSUE719_AUTOACT_HOSTILE_STATIC_GAP_EVIDENCE: Final[list[str]] = [
+ISSUE719_AUTOACT_GET_DESCRIPTION_OWNER_EVIDENCE: Final[list[str]] = [
     (
-        "Issue #719 AutoAct/hostile-spot static review reclassifies these rows "
-        "as implementation gaps because the exact helper route is visible in "
-        "decompiled source and no longer needs runtime evidence for owner identity."
+        "Issue #719 AutoAct.GetDescription closure: ActionEffectDescriptionReturnTranslationPatch "
+        "now targets the exact AutoAct.GetDescription(string,OngoingAction) owner route and translates "
+        "the fixed action labels returned to GameObject.GenerateSpotMessage."
     ),
-    (
-        "AutoAct.Interrupt(string, Cell, GameObject, bool) and AutoAct.Interrupt(GameObject, bool, bool) "
-        "are covered by AutoActTranslationPatch and focused stop-message tests, but "
-        "AutoAct.GetDescription still returns fixed action labels and OngoingAction descriptions "
-        "that feed GameObject.GenerateSpotMessage."
-    ),
-    (
-        "GameObject.ArePerceptibleHostilesNearby builds the visible hostile-spot popup/queue "
-        "through GenerateSpotMessage, including direction text and AutoAct.GetDescription(setting, Action)."
-    ),
-    "decompiled source: XRL.World.Capabilities/AutoAct.cs lines 346-438",
-    "decompiled source: XRL.World/GameObject.cs lines 11100-11158",
-    "existing tests: AutoActTranslationPatchTests stop-because/spot/reset owner route coverage",
+    "implementation: Mods/QudJP/Assemblies/src/Patches/ActionEffectDescriptionReturnTranslationPatch.cs",
+    "tests: Mods/QudJP/Assemblies/QudJP.Tests/L2/ActionEffectDescriptionReturnTranslationPatchTests.cs",
+    "tests: Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+    "decompiled source: XRL.World.Capabilities/AutoAct.cs lines 346-363",
 ]
-ISSUE719_AUTOACT_HOSTILE_STATIC_GAP_FAMILIES: Final[frozenset[str]] = frozenset(
+ISSUE719_AUTOACT_GET_DESCRIPTION_OWNER_FAMILIES: Final[frozenset[str]] = frozenset(
     {
         "XRL.World.Capabilities/AutoAct.cs::AutoAct.GetDescription(string,OngoingAction)",
+    }
+)
+ISSUE719_GAMEOBJECT_HOSTILE_SPOT_OWNER_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 closes GameObject.ArePerceptibleHostilesNearby hostile-spot "
+        "popup/queue messages through the GameObjectSpot owner route."
+    ),
+    (
+        "GameObjectSpotTranslationPatch targets ArePerceptibleHostilesNearby and now "
+        "feeds both MessageQueue and Popup.Show spot messages through the same "
+        "message-pattern route with owner observability."
+    ),
+    "implementation: Mods/QudJP/Assemblies/src/Patches/GameObjectSpotTranslationPatch.cs",
+    "implementation: Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+    "tests: Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+    "tests: GameObjectSpot_TranslatesSpotMessage_WhenPatched",
+    "tests: GameObjectSpot_TranslatesSpotPopup_WhenPatched",
+    "tests: Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+]
+ISSUE719_GAMEOBJECT_HOSTILE_SPOT_OWNER_FAMILIES: Final[frozenset[str]] = frozenset(
+    {
         (
             "XRL.World/GameObject.cs::"
             "GameObject.ArePerceptibleHostilesNearby(bool,bool,string,OngoingAction,string,int,int,bool,bool)"
         ),
+        "XRL.World/GameObject.cs::XRL.World.GameObject.ArePerceptibleHostilesNearby",
     }
 )
 ISSUE719_WISH_DEBUG_STATIC_GAP_EVIDENCE: Final[list[str]] = [
@@ -2795,10 +4177,55 @@ ISSUE719_WISH_DEBUG_STATIC_GAP_EVIDENCE: Final[list[str]] = [
         "XRL.World.Parts/ModExtradimensional.cs lines 628-632"
     ),
 ]
+ISSUE719_IZONE_LANDMARK_WISH_CURRENT_OWNER_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 IZoneLandmark.WishCurrent review closes the landmark WishCommand "
+        "popup through SingleCallsiteOwnerPopupTranslationPatch."
+    ),
+    (
+        "The owner translator handles the fixed missing-landmark failure and the "
+        "generated landmark location frame while preserving the composed landmark capture."
+    ),
+    "Mods/QudJP/Assemblies/src/Patches/SingleCallsiteOwnerPopupTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/SingleCallsiteOwnerPopupTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+    "decompiled owner source: XRL.World.Parts/IZoneLandmark.cs lines 126-140",
+]
+ISSUE719_IZONE_LANDMARK_WISH_CURRENT_OWNER_FAMILIES: Final[frozenset[str]] = frozenset(
+    {
+        "XRL.World.Parts/IZoneLandmark.cs::IZoneLandmark.WishCurrent()",
+    }
+)
 ISSUE719_WISH_DEBUG_STATIC_GAP_FAMILIES: Final[frozenset[str]] = frozenset(
     {
         "XRL.World.Parts/PointedAsteriskBuilder.cs::PointedAsteriskBuilder.AsteriskWish()",
-        "XRL.World.Parts/IZoneLandmark.cs::IZoneLandmark.WishCurrent()",
+    }
+)
+ISSUE719_WORLD_PART_PICKOPTION_DICTIONARY_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 world-part popup closure: PopupPickOptionTranslationPatch covers the "
+        "GripChange style picker, the RecoilAbility PickGameObject title, and the "
+        "ModExtradimensional WishCommand PickGameObject title through reviewed ui-popup and "
+        "skill-name dictionary leaves."
+    ),
+    (
+        "RecoilAbility's no-recoiler failure is covered by PopupShowTranslationPatch with "
+        "the reviewed ui-popup dictionary leaf."
+    ),
+    "implementation: Mods/QudJP/Assemblies/src/Patches/PopupPickOptionTranslationPatch.cs",
+    "implementation: Mods/QudJP/Assemblies/src/Patches/PopupShowTranslationPatch.cs",
+    "localization source: Mods/QudJP/Localization/Dictionaries/ui-popup.ja.json",
+    "localization source: Mods/QudJP/Localization/Dictionaries/ui-default.ja.json",
+    "tests: Mods/QudJP/Assemblies/QudJP.Tests/L2/PopupPickOptionTranslationPatchTests.cs",
+    "tests: Mods/QudJP/Assemblies/QudJP.Tests/L2/PopupShowTranslationPatchTests.cs",
+    "decompiled source: XRL.World.Parts/GripChange.cs lines 104-108",
+    "decompiled source: XRL.World.Parts/RecoilAbility.cs lines 51-63",
+    "decompiled source: XRL.World.Parts/ModExtradimensional.cs lines 628-632",
+]
+ISSUE719_WORLD_PART_PICKOPTION_DICTIONARY_FAMILIES: Final[frozenset[str]] = frozenset(
+    {
+        "XRL.World.Parts/GripChange.cs::GripChange.TryChooseGrip(GameObject)",
+        "XRL.World.Parts/RecoilAbility.cs::RecoilAbility.HandleEvent(CommandEvent)",
         "XRL.World.Parts/ModExtradimensional.cs::ModExtradimensional.MakeExtradimensional()",
     }
 )
@@ -2851,6 +4278,27 @@ ISSUE719_WORLD_GENERATION_SCREEN_QUOTES_DATA_FAMILIES: Final[frozenset[str]] = f
         "Qud.UI/WorldGenerationScreen.cs::WorldGenerationScreen._ShowWorldGenerationScreen(int)",
     }
 )
+ISSUE719_LIQUID_WISH_WARM_EFFECT_OWNER_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 warm static review closes WishWarmEffect, WishWarmEffectSpec, "
+        "and GlitchLiquidComponents with LiquidWarmStaticTranslationPatch on the "
+        "exact owner routes."
+    ),
+    "Mods/QudJP/Assemblies/src/Patches/LiquidWarmStaticTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+    "decompiled source: XRL.Liquids/LiquidWarmStatic.cs lines 405-423 and 824-849",
+]
+ISSUE719_LIQUID_WISH_WARM_EFFECT_OWNER_FAMILIES: Final[frozenset[str]] = frozenset(
+    {
+        "XRL.Liquids/LiquidWarmStatic.cs::LiquidWarmStatic.WishWarmEffect()",
+        "XRL.Liquids/LiquidWarmStatic.cs::LiquidWarmStatic.WishWarmEffectSpec(string)",
+        (
+            "XRL.Liquids/LiquidWarmStatic.cs::"
+            "LiquidWarmStatic.GlitchLiquidComponents(GameObject,string,int,bool)"
+        ),
+    }
+)
 ISSUE719_RESIDUAL_RUNTIME_EVIDENCE_BY_FAMILY: Final[dict[str, list[str]]] = {
     **dict.fromkeys(ISSUE719_RESIDUAL_POPUP_FRAME_RUNTIME_FAMILIES, ISSUE719_RESIDUAL_POPUP_FRAME_RUNTIME_EVIDENCE),
     **dict.fromkeys(
@@ -2861,7 +4309,6 @@ ISSUE719_RESIDUAL_RUNTIME_EVIDENCE_BY_FAMILY: Final[dict[str, list[str]]] = {
         ISSUE719_RESIDUAL_PURE_POPUP_TOP_RUNTIME_FAMILIES,
         ISSUE719_RESIDUAL_PURE_POPUP_TOP_RUNTIME_EVIDENCE,
     ),
-    **dict.fromkeys(ISSUE719_RESIDUAL_UI_POPUP_RUNTIME_FAMILIES, ISSUE719_RESIDUAL_UI_POPUP_RUNTIME_EVIDENCE),
     **dict.fromkeys(
         ISSUE719_RESIDUAL_PURE_POPUP_REMAINDER_RUNTIME_FAMILIES,
         ISSUE719_RESIDUAL_PURE_POPUP_REMAINDER_RUNTIME_EVIDENCE,
@@ -2900,6 +4347,23 @@ ISSUE719_SIFRAH_POPUP_STATIC_GAP_EVIDENCE: Final[list[str]] = [
     ),
     "decompiled Sifrah/CyberneticsTerminal2 owner methods contain fixed Popup.Show/ShowFail callsites.",
 ]
+ISSUE719_SOCIAL_SIFRAH_SECRET_USE_TOKEN_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 closes SocialSifrahTokenSecret.UseToken by splitting the fixed "
+        "Popup.PickOption title from journal-derived secret option payloads."
+    ),
+    (
+        "The fixed 'Choose a secret to share:' title is covered by "
+        "PopupPickOptionTranslationPatch and shipped ui-popup dictionary entries; "
+        "the option strings are IBaseJournalEntry.GetShortText output with a "
+        "map-note 'The location of ...' prefix, and the post-selection history "
+        "suffix is journal/faction owner data rather than popup title text."
+    ),
+    "decompiled owner source: XRL.World/SocialSifrahTokenSecret.cs lines 138-176",
+    "Mods/QudJP/Assemblies/src/Patches/PopupPickOptionTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/PopupPickOptionTranslationPatchTests.cs",
+    "Mods/QudJP/Localization/Dictionaries/ui-popup.ja.json",
+]
 ISSUE719_SIFRAH_POPUP_UNUSED_BASE_GAME_EVIDENCE: Final[list[str]] = [
     "decompiled XRL.World/PsychicCombatSifrah.cs notes: This class is not used in the base game.",
     *ISSUE719_RESIDUAL_SIFRAH_ROUTE_SPLIT_RUNTIME_EVIDENCE,
@@ -2921,6 +4385,100 @@ ISSUE719_TRANCHE35_OWNER_ROUTE_EVIDENCE: Final[dict[str, list[str]]] = {
         "Mods/QudJP/Assemblies/src/Patches/MechanicalWingsPopupTranslationPatch.cs",
         "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
         "Mods/QudJP/Assemblies/QudJP.Tests/L2/MechanicalWingsPopupTranslationPatchTests.cs",
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+    ],
+    "cathedra_long_fall": [
+        (
+            "Issue #719 tranche 35 extends the MechanicalWings long-fall popup owner "
+            "route to CyberneticsCathedra.HandleEvent(CommandEvent)."
+        ),
+        "Mods/QudJP/Assemblies/src/Patches/MechanicalWingsPopupTranslationPatch.cs",
+        "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/MechanicalWingsPopupTranslationPatchTests.cs",
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+    ],
+    "mutation_wings_flight": [
+        (
+            "Issue #719 extends the MechanicalWings long-fall popup owner route to "
+            "Wings.HandleEvent(CommandEvent) and covers the EMP will-not-move failure popup."
+        ),
+        "Mods/QudJP/Assemblies/src/Patches/MechanicalWingsPopupTranslationPatch.cs",
+        "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/MechanicalWingsPopupTranslationPatchTests.cs",
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+    ],
+    "cybernetics_low_level_hack": [
+        (
+            "Issue #719 closes CyberneticsTerminal2.AskLowLevelHack through an exact "
+            "owner-scoped low-level hack prompt patch."
+        ),
+        "Mods/QudJP/Assemblies/src/Patches/CyberneticsLowLevelHackPopupTranslationPatch.cs",
+        "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/CyberneticsLowLevelHackPopupTranslationPatchTests.cs",
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+    ],
+    "cybernetics_butcherable_cybernetic": [
+        (
+            "Issue #719 closes CyberneticsButcherableCybernetic.AttemptButcher "
+            "butcher/rip message-frame output through an exact owner-scoped queue patch."
+        ),
+        "Mods/QudJP/Assemblies/src/Patches/CyberneticsButcherableCyberneticTranslationPatch.cs",
+        "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/CyberneticsButcherableCyberneticTranslationPatchTests.cs",
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+    ],
+    "cybernetics_onboard_recoiler": [
+        (
+            "Issue #719 closes CyberneticsOnboardRecoilerTeleporter.ActuateTeleport "
+            "cooldown popups through an exact owner-scoped popup patch."
+        ),
+        "Mods/QudJP/Assemblies/src/Patches/CyberneticsOnboardRecoilerPopupTranslationPatch.cs",
+        "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/CyberneticsOnboardRecoilerPopupTranslationPatchTests.cs",
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+    ],
+    "cybernetics_terminal_interface": [
+        (
+            "Issue #719 closes CyberneticsTerminal2.AttemptInterface powered-status "
+            "failure popups through an exact owner-scoped Does popup patch."
+        ),
+        "Mods/QudJP/Assemblies/src/Patches/CyberneticsTerminalInterfacePopupTranslationPatch.cs",
+        "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/CyberneticsTerminalInterfacePopupTranslationPatchTests.cs",
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+        "Mods/QudJP/Localization/MessageFrames/verbs.ja.json",
+    ],
+    "sunder_mind_tick": [
+        (
+            "Issue #719 closes SunderMind.Tick queue and popup output through the "
+            "owner-scoped SunderMind route plus fixed popup dictionary literals."
+        ),
+        "Mods/QudJP/Assemblies/src/Patches/SunderMindTranslationPatch.cs",
+        "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+        "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+        "Mods/QudJP/Localization/Dictionaries/ui-popup.ja.json",
+    ],
+    "dance_ritual_opponent_debug_queue": [
+        (
+            "Issue #719 closes DanceRitualOpponent.HandleEvent debug queue output "
+            "and Register startup debug queue output through the owner-scoped "
+            "DanceRitualOpponent route."
+        ),
+        "Mods/QudJP/Assemblies/src/Patches/DanceRitualOpponentTranslationPatch.cs",
+        "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/DanceRitualOpponentTranslationPatchTests.cs",
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+    ],
+    "player_dance_ritual_debug_queue": [
+        (
+            "Issue #719 closes PlayerDanceRitual.FireEvent turn tick debug queue "
+            "output through the existing owner-scoped PlayerDanceRitual route."
+        ),
+        "Mods/QudJP/Assemblies/src/Patches/PlayerDanceRitualTranslationPatch.cs",
+        "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/PlayerDanceRitualTranslationPatchTests.cs",
         "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
     ],
     "hooked_owner": [
@@ -2970,9 +4528,61 @@ TEXT_CONSTRUCTION_CLOSURE_OVERLAY: Final[dict[str, ClosureOverlayEntry]] = {
         "closure_status": "covered_by_owner_route",
         "closure_evidence": ISSUE719_REVIEWED_PRODUCER_MESSAGE_FRAME_DICTIONARY_EVIDENCE,
     },
+    "XRL.World.Parts/CyberneticsCathedra.cs::CyberneticsCathedra.HandleEvent(CommandEvent)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_TRANCHE35_OWNER_ROUTE_EVIDENCE["cathedra_long_fall"],
+    },
+    "XRL.World.Parts.Mutation/Wings.cs::Wings.HandleEvent(CommandEvent)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_TRANCHE35_OWNER_ROUTE_EVIDENCE["mutation_wings_flight"],
+    },
+    "XRL.World.Parts/CyberneticsTerminal2.cs::CyberneticsTerminal2.AskLowLevelHack(GameObject)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_TRANCHE35_OWNER_ROUTE_EVIDENCE["cybernetics_low_level_hack"],
+    },
+    (
+        "XRL.World.Parts/CyberneticsButcherableCybernetic.cs::"
+        "CyberneticsButcherableCybernetic.AttemptButcher(GameObject,bool,bool,bool,int,Cell,List<GameObject>)"
+    ): {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_TRANCHE35_OWNER_ROUTE_EVIDENCE["cybernetics_butcherable_cybernetic"],
+    },
+    (
+        "XRL.World.Parts/CyberneticsOnboardRecoilerTeleporter.cs::"
+        "CyberneticsOnboardRecoilerTeleporter.ActuateTeleport(GameObject,IEvent)"
+    ): {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_TRANCHE35_OWNER_ROUTE_EVIDENCE["cybernetics_onboard_recoiler"],
+    },
+    "XRL.World.Parts/CyberneticsTerminal2.cs::CyberneticsTerminal2.AttemptInterface(GameObject,IEvent)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_TRANCHE35_OWNER_ROUTE_EVIDENCE["cybernetics_terminal_interface"],
+    },
     "XRL.World.Parts.Mutation/GasGeneration.cs::GasGeneration.FireEvent(Event)": {
         "closure_status": "covered_by_owner_route",
         "closure_evidence": ISSUE719_REVIEWED_PRODUCER_MESSAGE_FRAME_DICTIONARY_EVIDENCE,
+    },
+    "XRL.World.Parts.Mutation/SunderMind.cs::SunderMind.Tick()": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_TRANCHE35_OWNER_ROUTE_EVIDENCE["sunder_mind_tick"],
+    },
+    (
+        "XRL.World.Parts/DanceRitualOpponent.cs::"
+        "DanceRitualOpponent.HandleEvent(BeforeAITakingActionEvent)"
+    ): {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_TRANCHE35_OWNER_ROUTE_EVIDENCE["dance_ritual_opponent_debug_queue"],
+    },
+    (
+        "XRL.World.Parts/DanceRitualOpponent.cs::"
+        "DanceRitualOpponent.Register(GameObject,IEventRegistrar)"
+    ): {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_TRANCHE35_OWNER_ROUTE_EVIDENCE["dance_ritual_opponent_debug_queue"],
+    },
+    "XRL.World.Parts/PlayerDanceRitual.cs::PlayerDanceRitual.FireEvent(Event)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_TRANCHE35_OWNER_ROUTE_EVIDENCE["player_dance_ritual_debug_queue"],
     },
     "XRL.World.Parts/PointDefense.cs::PointDefense.HandleEvent(ProjectileMovingEvent)": {
         "closure_status": "covered_by_owner_route",
@@ -3392,6 +5002,27 @@ TEXT_CONSTRUCTION_CLOSURE_OVERLAY: Final[dict[str, ClosureOverlayEntry]] = {
             "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
         ],
     },
+    "XRL.World/GameObject.cs::GameObject.PerformReplaceCell(GameObject)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": [
+            "Issue #719 closes GameObject.PerformReplaceCell fixed popup text through exact ui-popup leaves.",
+            "Mods/QudJP/Localization/Dictionaries/ui-popup.ja.json",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2/PopupShowTranslationPatchTests.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2/PopupPickOptionTranslationPatchTests.cs",
+        ],
+    },
+    "XRL.World.Parts/GiantClamProperties.cs::GiantClamProperties.TeleportFromClamWorld(GameObject)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": [
+            "Issue #719 closes GiantClamProperties.TeleportFromClamWorld queue and popup text through its owner route.",
+            "Mods/QudJP/Assemblies/src/Patches/GiantClamTeleportTranslationPatch.cs",
+            "Mods/QudJP/Assemblies/src/Patches/MessageQueueSemanticPipeline.cs",
+            "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2/GiantClamTeleportTranslationPatchTests.cs",
+            "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+        ],
+    },
     (
         "XRL.UI/PickTarget.cs::PickTarget.ShowPicker("
         "PickStyle,int,int,int,int,bool,AllowVis,Predicate<XRL.World.GameObject>,"
@@ -3673,12 +5304,12 @@ TEXT_CONSTRUCTION_CLOSURE_OVERLAY: Final[dict[str, ClosureOverlayEntry]] = {
         "closure_evidence": HSE_JOURNAL_OBSERVATION_ROUTE_EVIDENCE,
     },
     "XRL.Language/TextFilters.cs::TextFilters.Angry(string)": {
-        "closure_status": "action_required",
-        "closure_evidence": ISSUE719_TEXT_FILTER_STATIC_GAP_EVIDENCE,
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_TEXT_FILTER_SPEECH_STATUS_ROUTE_EVIDENCE,
     },
     "XRL.Language/TextFilters.cs::TextFilters.Lallated(string,string)": {
-        "closure_status": "action_required",
-        "closure_evidence": ISSUE719_TEXT_FILTER_STATIC_GAP_EVIDENCE,
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_TEXT_FILTER_SPEECH_STATUS_ROUTE_EVIDENCE,
     },
     ("XRL.World/RelicGenerator.cs::RelicGenerator.GenerateSpindleNegotiationRelic(string,string,string,string,int)"): {
         "closure_status": "covered_by_owner_route",
@@ -4927,6 +6558,14 @@ TEXT_CONSTRUCTION_CLOSURE_OVERLAY: Final[dict[str, ClosureOverlayEntry]] = {
         "closure_status": "covered_by_owner_route",
         "closure_evidence": ISSUE719_SINGLE_CALLSITE_POPUP_EXACT_OWNER_EVIDENCE,
     },
+    "XRL/PopulationManager.cs::PopulationManager.WishFindBlueprint(string)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_POPULATION_WISH_FIND_BLUEPRINT_POPUP_EVIDENCE,
+    },
+    "XRL/ModInfo.cs::ModInfo.ConfirmFailure()": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_MODINFO_CONFIRM_FAILURE_EVIDENCE,
+    },
     "XRL.World.Conversations.Parts/EndGame.cs::EndGame.PickState()": {
         "closure_status": "covered_by_owner_route",
         "closure_evidence": ISSUE719_FIXED_PRODUCER_POPUP_DICTIONARY_EVIDENCE,
@@ -4945,6 +6584,10 @@ TEXT_CONSTRUCTION_CLOSURE_OVERLAY: Final[dict[str, ClosureOverlayEntry]] = {
     "XRL/PronounAndGenderSets.cs::PronounAndGenderSets.ShowChangePronounSet(GameObject)": {
         "closure_status": "covered_by_owner_route",
         "closure_evidence": ISSUE719_FIXED_PRODUCER_POPUP_DICTIONARY_EVIDENCE,
+    },
+    "XRL.World/GameObject.cs::GameObject.AutoEquip(GameObject,bool,bool,bool)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_GAMEOBJECT_AUTOEQUIP_POPUP_EVIDENCE,
     },
     "Qud.UI/KeybindsScreen.cs::KeybindsScreen.SelectInputType()": {
         "closure_status": "covered_by_owner_route",
@@ -5617,8 +7260,8 @@ ISSUE719_PRODUCER_MESSAGE_OWNER_EVIDENCE: Final[dict[str, list[str]]] = {
         (
             "Issue #719 residual review covers exact PowerSwitch, TemplarPhylactery, "
             "and CyberneticsTerminal2 hacking-result popups through the existing "
-            "HackingSifrah result owner patch; untargeted CyberneticsTerminal2 "
-            "partial-success rows remain residual."
+            "HackingSifrah result owner patch, including CyberneticsTerminal2 "
+            "partial-success."
         ),
         "Mods/QudJP/Assemblies/src/Patches/HackingSifrahResultTranslationPatch.cs",
         "Mods/QudJP/Assemblies/QudJP.Tests/L2/CombatAndLogMessageQueuePatchTests.cs",
@@ -5753,9 +7396,8 @@ ISSUE719_PRODUCER_MESSAGE_OWNER_EVIDENCE: Final[dict[str, list[str]]] = {
     ],
     "rebuking_sifrah_result": [
         (
-            "Issue #719 residual review covers exact RebukingSifrah critical-failure "
-            "and partial-success popup methods through the existing owner patch; "
-            "ResultFailure remains residual because it is not targeted."
+            "Issue #719 residual review covers exact RebukingSifrah critical-failure, "
+            "failure, and partial-success popup methods through the existing owner patch."
         ),
         "Mods/QudJP/Assemblies/src/Patches/RebukingSifrahTranslationPatch.cs",
         "Mods/QudJP/Assemblies/QudJP.Tests/L2/RebukingSifrahTranslationPatchTests.cs",
@@ -6548,6 +8190,29 @@ ISSUE719_UI_DESCRIPTION_MENU_EVIDENCE: Final[dict[str, list[str]]] = {
         "Mods/QudJP/Assemblies/QudJP.Tests/L2/UiMenuOptionDescriptionTranslationPatchTests.cs",
         "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
     ],
+    "filter_bar_category_button": [
+        (
+            "Issue #719 residual review covers FilterBarCategoryButton static "
+            "MenuOption.Description families through the existing SetCategory owner patch."
+        ),
+        "Mods/QudJP/Assemblies/src/Patches/FilterBarCategoryButtonTranslationPatch.cs",
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/FilterBarCategoryButtonTranslationPatchTests.cs",
+    ],
+    "static_line_menu_options": [
+        (
+            "Issue #719 residual review covers static MenuOption.Description "
+            "families whose owner line setup/setData routes are translated by "
+            "UiMenuOptionDescriptionTranslationPatch."
+        ),
+        (
+            "covered descriptions: Expand, Collapse, Select, Expand All, "
+            "Collapse All on ButtonBarButton, FactionsLine/FactionsStatusScreen, "
+            "InventoryLine, JournalSultanStatueLine, SkillsAndPowersLine, "
+            "Tinkering*Line, and TradeLine."
+        ),
+        "Mods/QudJP/Assemblies/src/Patches/UiMenuOptionDescriptionTranslationPatch.cs",
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/UiMenuOptionDescriptionTranslationPatchTests.cs",
+    ],
     "options_screen_static_menu": [
         (
             "Issue #719 residual review covers OptionsScreen default menu "
@@ -6611,6 +8276,31 @@ ISSUE719_UI_DESCRIPTION_MENU_EVIDENCE: Final[dict[str, list[str]]] = {
     ],
 }
 
+ISSUE719_STATIC_LINE_MENU_OPTION_FAMILIES: Final[frozenset[str]] = frozenset(
+    {
+        "Qud.UI/ButtonBarButton.cs::ButtonBarButton.itemOptions",
+        "Qud.UI/FactionsLine.cs::FactionsLine.categoryExpandOptions",
+        "Qud.UI/FactionsLine.cs::FactionsLine.categoryCollapseOptions",
+        "Qud.UI/FactionsStatusScreen.cs::FactionsStatusScreen.EXPAND_ALL",
+        "Qud.UI/FactionsStatusScreen.cs::FactionsStatusScreen.COLLAPSE_ALL",
+        "Qud.UI/InventoryLine.cs::InventoryLine.categoryExpandOptions",
+        "Qud.UI/InventoryLine.cs::InventoryLine.categoryCollapseOptions",
+        "Qud.UI/JournalSultanStatueLine.cs::JournalSultanStatueLine.categoryExpandOptions",
+        "Qud.UI/JournalSultanStatueLine.cs::JournalSultanStatueLine.categoryCollapseOptions",
+        "Qud.UI/SkillsAndPowersLine.cs::SkillsAndPowersLine.categoryExpandOptions",
+        "Qud.UI/SkillsAndPowersLine.cs::SkillsAndPowersLine.categoryCollapseOptions",
+        "Qud.UI/TinkeringBitsLine.cs::TinkeringBitsLine.categoryExpandOptions",
+        "Qud.UI/TinkeringBitsLine.cs::TinkeringBitsLine.categoryCollapseOptions",
+        "Qud.UI/TinkeringDetailsLine.cs::TinkeringDetailsLine.categoryExpandOptions",
+        "Qud.UI/TinkeringDetailsLine.cs::TinkeringDetailsLine.categoryCollapseOptions",
+        "Qud.UI/TinkeringLine.cs::TinkeringLine.categoryExpandOptions",
+        "Qud.UI/TinkeringLine.cs::TinkeringLine.categoryCollapseOptions",
+        "Qud.UI/TradeLine.cs::TradeLine.categoryExpandOptions",
+        "Qud.UI/TradeLine.cs::TradeLine.categoryCollapseOptions",
+        "Qud.UI/TradeLine.cs::TradeLine.itemOptions",
+    }
+)
+
 ISSUE719_JOURNAL_ENTRY_DISPLAY_TEXT_EVIDENCE: Final[list[str]] = [
     (
         "Issue #719 residual review covers IBaseJournalEntry.GetDisplayText "
@@ -6630,6 +8320,17 @@ ISSUE719_ELEMENTAL_PSEUDOPOD_DISPLAY_NAME_EVIDENCE: Final[list[str]] = [
     "Mods/QudJP/Assemblies/src/Patches/ElementalPseudopodDisplayNameTranslationPatch.cs",
     "Mods/QudJP/Assemblies/QudJP.Tests/L2/ElementalPseudopodDisplayNameTranslationPatchTests.cs",
     "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+]
+ISSUE719_PSEUDOPOD_DEATH_MESSAGE_FRAME_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 pseudopod death review promotes ElementalJelly/Panhumor "
+        "BeforeDeathRemoval frames because both exact owners call "
+        'DidX("explode", null, "!", ...), and the MessageFrame dictionary '
+        "already owns the explode verb frame."
+    ),
+    "decompiled sources: XRL.World.Parts/ElementalJelly.cs lines 246-258; XRL.World.Parts/Panhumor.cs lines 168-181",
+    "Mods/QudJP/Localization/MessageFrames/verbs.ja.json",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L1/MessageFrameTranslatorTests.cs",
 ]
 
 ISSUE719_GAS_GENERATION_DESCRIPTION_EVIDENCE: Final[list[str]] = [
@@ -6912,6 +8613,74 @@ ISSUE719_SIFRAH_TOKEN_NO_ARG_DESCRIPTION_FAMILIES: Final[frozenset[str]] = froze
         "TinkeringSifrahTokenVisualInspection",
     )
 )
+ISSUE719_SIFRAH_TOKEN_DYNAMIC_DESCRIPTION_FAMILIES: Final[frozenset[str]] = (
+    frozenset(
+        f"XRL.World/{type_name}.cs::{type_name}.{type_name}(int)"
+        for type_name in (
+            "PsionicSifrahTokenEffectNosebleed",
+            "RitualSifrahTokenEffectAsleep",
+            "RitualSifrahTokenEffectBleeding",
+            "RitualSifrahTokenEffectCardiacArrest",
+            "RitualSifrahTokenEffectConfused",
+            "RitualSifrahTokenEffectDazed",
+            "RitualSifrahTokenEffectDisoriented",
+            "RitualSifrahTokenEffectExhausted",
+            "RitualSifrahTokenEffectIll",
+            "RitualSifrahTokenEffectLost",
+            "RitualSifrahTokenEffectPoisoned",
+            "RitualSifrahTokenEffectShaken",
+            "RitualSifrahTokenEffectShatterMentalArmor",
+            "RitualSifrahTokenEffectTerrified",
+            "SocialSifrahTokenCharge",
+            "SocialSifrahTokenEffectLovesick",
+            "SocialSifrahTokenEffectShamed",
+            "TinkeringSifrahTokenCharge",
+            "TinkeringSifrahTokenComputePower",
+        )
+    )
+    | frozenset(
+        f"XRL.World/{type_name}.cs::{type_name}.{type_name}(string)"
+        for type_name in (
+            "RitualSifrahTokenFood",
+            "RitualSifrahTokenGift",
+            "RitualSifrahTokenItem",
+            "RitualSifrahTokenLiquid",
+            "SocialSifrahTokenGift",
+            "SocialSifrahTokenItem",
+            "SocialSifrahTokenLiquid",
+            "TinkeringSifrahTokenCreationKnowledge",
+            "TinkeringSifrahTokenLiquid",
+        )
+    )
+    | frozenset(
+        f"XRL.World/{type_name}.cs::{type_name}.{type_name}(BitType)"
+        for type_name in (
+            "RitualSifrahTokenBit",
+            "SocialSifrahTokenBit",
+            "TinkeringSifrahTokenBit",
+        )
+    )
+    | frozenset(
+        f"XRL.World/{type_name}.cs::{type_name}.{type_name}(Scanning.Scan)"
+        for type_name in (
+            "SocialSifrahTokenScanning",
+            "TinkeringSifrahTokenScanning",
+        )
+    )
+)
+ISSUE719_SIFRAH_TOKEN_GET_DESCRIPTION_FAMILIES: Final[frozenset[str]] = frozenset(
+    f"XRL.World/{type_name}.cs::{type_name}.GetDescription(SifrahGame,SifrahSlot,GameObject)"
+    for type_name in (
+        "SocialSifrahTokenGift",
+        "SocialSifrahTokenItem",
+        "SocialSifrahTokenLeverageBeingFavored",
+        "SocialSifrahTokenLeverageBeingLoved",
+        "SocialSifrahTokenSecret",
+        "TinkeringSifrahTokenBit",
+        "TinkeringSifrahTokenCopperWire",
+        "TinkeringSifrahTokenLiquid",
+    )
+)
 
 ISSUE719_PRESET_COOKING_RECIPE_DESCRIPTION_EVIDENCE: Final[list[str]] = [
     (
@@ -6957,6 +8726,110 @@ ISSUE719_CHARGEN_CUSTOMIZE_EVIDENCE: Final[list[str]] = [
     "Mods/QudJP/Assemblies/QudJP.Tests/L2/CharGenProducerTranslationPatchTests.cs",
     "Mods/QudJP/Assemblies/QudJP.Tests/L2G/CharGenProducerTranslationPatchResolutionTests.cs",
     "Mods/QudJP/Localization/Dictionaries/ui-chargen.ja.json",
+]
+ISSUE719_BUILD_LIBRARY_POPUP_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 closes QudBuildLibraryModuleWindow AddBuild/onSelect/"
+        "HandleMenuOption popup text through existing PopupMessage, AskString, "
+        "and popup template dictionary routes."
+    ),
+    "decompiled owner source: XRL.CharacterBuilds.Qud.UI/QudBuildLibraryModuleWindow.cs lines 56-139",
+    "Mods/QudJP/Assemblies/src/Patches/PopupMessageTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/PopupAskStringTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/PopupTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/PopupMessageTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/PopupAskStringTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/PopupTranslationPatchTests.cs",
+    "Mods/QudJP/Localization/Dictionaries/ui-chargen.ja.json",
+]
+ISSUE719_BUILD_SUMMARY_POPUP_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 closes QudBuildSummaryModuleWindow.HandleMenuOption popup text "
+        "through the existing PopupMessage dictionary route and the shared "
+        "QudBuildLibraryModuleWindow.AddBuild path."
+    ),
+    "decompiled owner source: XRL.CharacterBuilds.Qud.UI/QudBuildSummaryModuleWindow.cs lines 92-104",
+    "Mods/QudJP/Assemblies/src/Patches/PopupMessageTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/PopupMessageTranslationPatchTests.cs",
+    "Mods/QudJP/Localization/Dictionaries/ui-chargen.ja.json",
+]
+ISSUE719_QUD_MUTATION_VARIANT_POPUP_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 closes QudMutationsModuleWindow.SelectVariant through a "
+        "variant-picker owner route for the fixed Choose variant title."
+    ),
+    "decompiled owner source: XRL.CharacterBuilds.Qud.UI/QudMutationsModuleWindow.cs lines 373-389",
+    "Mods/QudJP/Assemblies/src/Patches/QudMutationsModuleWindowVariantPopupTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/QudMutationsModuleWindowTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+    "Mods/QudJP/Localization/Dictionaries/ui-chargen-supplement.ja.json",
+]
+ISSUE719_BASE_MUTATION_VARIANT_POPUP_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 closes BaseMutation.SelectVariant through an owner route "
+        "for the fixed Choose variant title while leaving variant option text "
+        "to mutation display-name and validity-message owners."
+    ),
+    "decompiled owner source: XRL.World.Parts.Mutation/BaseMutation.cs lines 993-1021",
+    "Mods/QudJP/Assemblies/src/Patches/BaseMutationSelectVariantPopupTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/PopupTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/BaseMutationSelectVariantPopupTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+    "Mods/QudJP/Localization/Dictionaries/ui-chargen-supplement.ja.json",
+]
+ISSUE719_GENDER_CUSTOMIZE_POPUP_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 closes Gender.CustomizeProcess through the shared "
+        "BasePronounProvider customize owner scope for duplicate-name popups "
+        "and a PopupAskString template for the fixed name prompt."
+    ),
+    "decompiled owner source: XRL.World/Gender.cs lines 246-267",
+    "Mods/QudJP/Assemblies/src/Patches/BasePronounProviderCustomizePopupTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/PopupAskStringTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/PopupTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/BasePronounProviderCustomizePopupTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/PopupAskStringTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+    "Mods/QudJP/Localization/Dictionaries/ui-popup.ja.json",
+]
+ISSUE719_EMBARK_BUILDER_VALIDATION_POPUP_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 closes EmbarkBuilder.checkStateAsync by translating fixed "
+        "validation titles and the Continue anyway suffix while leaving dynamic "
+        "DataErrors/DataWarnings bodies to their window owners."
+    ),
+    "decompiled owner source: XRL.CharacterBuilds/EmbarkBuilder.cs lines 188-201",
+    "Mods/QudJP/Assemblies/src/Patches/EmbarkBuilderValidationPopupTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/PopupMessageTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/PopupTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/EmbarkBuilderValidationPopupTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+    "Mods/QudJP/Localization/Dictionaries/ui-chargen.ja.json",
+]
+ISSUE719_STATUS_AND_KEYBIND_OPTION_POPUP_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 closes fixed status/options PickOption menus through the "
+        "shared PopupPickOption route and dictionary leaves, with route-local "
+        "toggle patterns preserving selected-option color markup."
+    ),
+    "decompiled owner sources: Qud.UI/FactionsStatusScreen.cs lines 188-200; "
+    "Qud.UI/InventoryAndEquipmentStatusScreen.cs lines 608-632; "
+    "XRL.UI/CommandBindingManager.cs lines 933-945",
+    "Mods/QudJP/Assemblies/src/Patches/PopupPickOptionTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/PopupTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/PopupPickOptionTranslationPatchTests.cs",
+    "Mods/QudJP/Localization/Dictionaries/ui-popup.ja.json",
+]
+ISSUE719_QUD_MUTATION_MENU_POPUP_EVIDENCE: Final[list[str]] = [
+    (
+        "Issue #719 closes QudMutationsModuleWindow.HandleMenuOption through "
+        "an exact owner route for the ShowPoints popup title."
+    ),
+    "decompiled owner source: XRL.CharacterBuilds.Qud.UI/QudMutationsModuleWindow.cs lines 353-360",
+    "Mods/QudJP/Assemblies/src/Patches/QudMutationsModuleWindowHandleMenuOptionPopupTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/src/Patches/PopupTranslationPatch.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2/QudMutationsModuleWindowTranslationPatchTests.cs",
+    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
 ]
 
 ISSUE719_LOOK_TOOLTIP_CONTENT_EVIDENCE: Final[list[str]] = [
@@ -7090,6 +8963,16 @@ ISSUE719_FIXED_LITERAL_POPUP_EVIDENCE: Final[dict[str, list[str]]] = {
         (
             "Issue #719 residual review covers exact fixed Sifrah token CheckTokenUse "
             "failure literals through the generic popup dictionary route."
+        ),
+        "Mods/QudJP/Assemblies/src/Patches/PopupShowTranslationPatch.cs",
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/PopupShowTranslationPatchTests.cs",
+        "Mods/QudJP/Localization/Dictionaries/ui-popup.ja.json",
+    ],
+    "sifrah_fixed_popup_leafs": [
+        (
+            "Issue #719 residual review covers fixed Sifrah popup result, "
+            "out-of-options, and token-use failure literals through the generic "
+            "popup dictionary route."
         ),
         "Mods/QudJP/Assemblies/src/Patches/PopupShowTranslationPatch.cs",
         "Mods/QudJP/Assemblies/QudJP.Tests/L2/PopupShowTranslationPatchTests.cs",
@@ -7484,6 +9367,71 @@ ISSUE719_RESIDUAL_CLOSURE_OVERLAY: Final[dict[str, ClosureOverlayEntry]] = {
         "closure_status": "covered_by_owner_route",
         "closure_evidence": ISSUE719_RESIDUAL_WISH_MUTATION_POPUP_EVIDENCE,
     },
+    "XRL.World.Parts/Shrine.cs::Shrine.DesecrateShrine(GameObject,bool)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_SHRINE_DESECRATE_POPUP_EVIDENCE,
+    },
+    "Qud.UI/ModManagerUI.cs::ModManagerUI.OnCancel()": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_MOD_MANAGER_CANCEL_EVIDENCE,
+    },
+    "XRL/PopulationManager.cs::PopulationManager.RollOneFrom(string,Dictionary<string,string>,string)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_POPULATION_ROLL_ONE_POPUP_EVIDENCE,
+    },
+    "Qud.API/ConversationsAPI.cs::ConversationsAPI.chooseOneItem(List<GameObject>,string,bool)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_CONVERSATIONS_API_REWARD_PICK_EVIDENCE,
+    },
+    (
+        "XRL.World/DynamicQuestRewardElement_ChoiceFromPopulation.cs::"
+        "DynamicQuestRewardElement_ChoiceFromPopulation.award()"
+    ): {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_DYNAMIC_QUEST_REWARD_CHOICE_EVIDENCE,
+    },
+    "XRL/CodaSystem.cs::CodaSystem.EndGamePrompt()": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_CODA_ENDGAME_PROMPT_EVIDENCE,
+    },
+    "XRL.World.Conversations.Parts/EndGame.cs::EndGame.HandleEvent(EnterElementEvent)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_CONVERSATION_ENDGAME_CONFIRM_EVIDENCE,
+    },
+    "XRL.World.Conversations.Parts/GiveArtifact.cs::GiveArtifact.HandleEvent(EnterElementEvent)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_CONVERSATION_GIVE_ARTIFACT_EVIDENCE,
+    },
+    "XRL.World.Conversations.Parts/GiveReshephSecret.cs::GiveReshephSecret.HandleEvent(EnterElementEvent)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_CONVERSATION_RESHEPH_SECRET_EVIDENCE,
+    },
+    "XRL.World.Conversations.Parts/WaterRitualSellSecret.cs::WaterRitualSellSecret.Share()": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_CONVERSATION_WATER_RITUAL_SELL_SECRET_EVIDENCE,
+    },
+    (
+        "XRL.CharacterBuilds.Qud.UI/QudMutationsModuleWindow.cs::"
+        "QudMutationsModuleWindow.HandleMenuOption(MenuOption)"
+    ): {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_QUD_MUTATION_MENU_POPUP_EVIDENCE,
+    },
+    (
+        "XRL.World.ZoneBuilders/FindASiteDynamicQuestManager.cs::"
+        "FindASiteDynamicQuestManager.DynamicQuestWhere()"
+    ): {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_FIND_SITE_DYNAMIC_QUEST_WHERE_EVIDENCE,
+    },
+    "XRL.UI.Framework/FrameworkSearchInput.cs::FrameworkSearchInput.ChangeValue()": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_FRAMEWORK_SEARCH_INPUT_EVIDENCE,
+    },
+    "Qud.UI/AbilityManagerScreen.cs::AbilityManagerScreen.showScreen(XRL.World.GameObject)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_ABILITY_MANAGER_EMPTY_POPUP_EVIDENCE,
+    },
     (
         "XRL.World.Conversations.Parts/WaterRitualRandomMutation.cs::"
         "WaterRitualRandomMutation.HandleEvent(EnteredElementEvent)"
@@ -7698,31 +9646,35 @@ ISSUE719_RESIDUAL_CLOSURE_OVERLAY: Final[dict[str, ClosureOverlayEntry]] = {
         "closure_evidence": ISSUE719_RESIDUAL_PURE_POPUP_TOP_SPLIT_EVIDENCE,
     },
     "XRL.Core/Scores.cs::Scores.Show()": {
-        "closure_status": "action_required",
+        "closure_status": "covered_by_owner_route",
         "closure_evidence": ISSUE719_SCORES_SHOW_STATIC_GAP_EVIDENCE,
     },
     (
         "XRL.World.Capabilities/ItemNaming.cs::"
         "ItemNaming.NameItem(GameObject,GameObject,GameObject,GameObject,string,string,bool)"
     ): {
-        "closure_status": "runtime_required",
-        "closure_evidence": ISSUE719_RESIDUAL_PURE_POPUP_TOP_RUNTIME_EVIDENCE,
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_ITEM_NAMING_INTERACTIVE_OWNER_EVIDENCE,
     },
     "XRL.World.Parts/Crayons.cs::Crayons.HandleEvent(InventoryActionEvent)": {
         "closure_status": "runtime_required",
         "closure_evidence": ISSUE719_RESIDUAL_PURE_POPUP_TOP_RUNTIME_EVIDENCE,
     },
     "XRL.World.Parts/Description.cs::Description.HandleEvent(InventoryActionEvent)": {
-        "closure_status": "runtime_required",
-        "closure_evidence": ISSUE719_RESIDUAL_PURE_POPUP_TOP_RUNTIME_EVIDENCE,
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_DESCRIPTION_LOOK_POPUP_OWNER_EVIDENCE,
     },
     "XRL.World.Parts/Inventory.cs::Inventory.HandleEvent(InventoryActionEvent)": {
         "closure_status": "runtime_required",
         "closure_evidence": ISSUE719_RESIDUAL_PURE_POPUP_TOP_RUNTIME_EVIDENCE,
     },
     "XRL.UI/TradeUI.cs::TradeUI.ShowVendorActions(GameObject,GameObject,bool)": {
-        "closure_status": "runtime_required",
-        "closure_evidence": ISSUE719_RESIDUAL_PURE_POPUP_TOP_RUNTIME_EVIDENCE,
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_TRADE_UI_SHOW_VENDOR_ACTIONS_OWNER_EVIDENCE,
+    },
+    "XRL.UI/ObjectFinder.cs::ObjectFinder.ConfigFilters()": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_OBJECT_FINDER_CONFIG_FILTERS_OWNER_EVIDENCE,
     },
     "XRL.World.Effects/VehicleUnpowered.cs::VehicleUnpowered.PreventActionMessage(GameObject)": {
         "closure_status": "covered_by_owner_route",
@@ -7731,6 +9683,54 @@ ISSUE719_RESIDUAL_CLOSURE_OVERLAY: Final[dict[str, ClosureOverlayEntry]] = {
     "XRL.World.Parts/MechanicalWings.cs::MechanicalWings.FireEvent(Event)": {
         "closure_status": "covered_by_owner_route",
         "closure_evidence": ISSUE719_TRANCHE35_OWNER_ROUTE_EVIDENCE["mechanical_wings_fire_event"],
+    },
+    "XRL.World.Parts/CyberneticsCathedra.cs::CyberneticsCathedra.HandleEvent(CommandEvent)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_TRANCHE35_OWNER_ROUTE_EVIDENCE["cathedra_long_fall"],
+    },
+    "XRL.World.Parts.Mutation/Wings.cs::Wings.HandleEvent(CommandEvent)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_TRANCHE35_OWNER_ROUTE_EVIDENCE["mutation_wings_flight"],
+    },
+    "XRL.World.Parts/CyberneticsTerminal2.cs::CyberneticsTerminal2.AskLowLevelHack(GameObject)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_TRANCHE35_OWNER_ROUTE_EVIDENCE["cybernetics_low_level_hack"],
+    },
+    (
+        "XRL.World.Parts/CyberneticsButcherableCybernetic.cs::"
+        "CyberneticsButcherableCybernetic.AttemptButcher(GameObject,bool,bool,bool,int,Cell,List<GameObject>)"
+    ): {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_TRANCHE35_OWNER_ROUTE_EVIDENCE["cybernetics_butcherable_cybernetic"],
+    },
+    (
+        "XRL.World.Parts/CyberneticsOnboardRecoilerTeleporter.cs::"
+        "CyberneticsOnboardRecoilerTeleporter.ActuateTeleport(GameObject,IEvent)"
+    ): {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_TRANCHE35_OWNER_ROUTE_EVIDENCE["cybernetics_onboard_recoiler"],
+    },
+    "XRL.World.Parts.Mutation/SunderMind.cs::SunderMind.Tick()": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_TRANCHE35_OWNER_ROUTE_EVIDENCE["sunder_mind_tick"],
+    },
+    (
+        "XRL.World.Parts/DanceRitualOpponent.cs::"
+        "DanceRitualOpponent.HandleEvent(BeforeAITakingActionEvent)"
+    ): {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_TRANCHE35_OWNER_ROUTE_EVIDENCE["dance_ritual_opponent_debug_queue"],
+    },
+    (
+        "XRL.World.Parts/DanceRitualOpponent.cs::"
+        "DanceRitualOpponent.Register(GameObject,IEventRegistrar)"
+    ): {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_TRANCHE35_OWNER_ROUTE_EVIDENCE["dance_ritual_opponent_debug_queue"],
+    },
+    "XRL.World.Parts/PlayerDanceRitual.cs::PlayerDanceRitual.FireEvent(Event)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_TRANCHE35_OWNER_ROUTE_EVIDENCE["player_dance_ritual_debug_queue"],
     },
     "XRL.World.Effects/Hooked.cs::Hooked.HandleEvent(CommandTakeActionEvent)": {
         "closure_status": "covered_by_owner_route",
@@ -7862,6 +9862,14 @@ ISSUE719_RESIDUAL_CLOSURE_OVERLAY: Final[dict[str, ClosureOverlayEntry]] = {
     "XRL.World.Parts/Panhumor.cs::Panhumor.SetupPod(GameObject)": {
         "closure_status": "covered_by_owner_route",
         "closure_evidence": ISSUE719_ELEMENTAL_PSEUDOPOD_DISPLAY_NAME_EVIDENCE,
+    },
+    "XRL.World.Parts/ElementalJelly.cs::ElementalJelly.FireEvent(Event)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_PSEUDOPOD_DEATH_MESSAGE_FRAME_EVIDENCE,
+    },
+    "XRL.World.Parts/Panhumor.cs::Panhumor.FireEvent(Event)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_PSEUDOPOD_DEATH_MESSAGE_FRAME_EVIDENCE,
     },
     "XRL.World.Parts.Mutation/GasGeneration.cs::GasGeneration.SyncFromBlueprint()": {
         "closure_status": "covered_by_owner_route",
@@ -8333,6 +10341,31 @@ ISSUE719_RESIDUAL_CLOSURE_OVERLAY: Final[dict[str, ClosureOverlayEntry]] = {
     "XRL.CharacterBuilds.Qud.UI/QudBuildLibraryModuleWindow.cs::QudBuildLibraryModuleWindow.GetKeyMenuBar()": {
         "closure_status": "covered_by_owner_route",
         "closure_evidence": ISSUE719_CHARGEN_MENU_OPTION_OWNER_EVIDENCE,
+    },
+    (
+        "XRL.CharacterBuilds.Qud.UI/QudBuildLibraryModuleWindow.cs::"
+        "QudBuildLibraryModuleWindow.HandleMenuOption(MenuOption)"
+    ): {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_BUILD_LIBRARY_POPUP_EVIDENCE,
+    },
+    "XRL.CharacterBuilds.Qud.UI/QudBuildLibraryModuleWindow.cs::QudBuildLibraryModuleWindow.AddBuild(string)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_BUILD_LIBRARY_POPUP_EVIDENCE,
+    },
+    (
+        "XRL.CharacterBuilds.Qud.UI/QudBuildLibraryModuleWindow.cs::"
+        "QudBuildLibraryModuleWindow.onSelect(FrameworkDataElement)"
+    ): {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_BUILD_LIBRARY_POPUP_EVIDENCE,
+    },
+    (
+        "XRL.CharacterBuilds.Qud.UI/QudBuildSummaryModuleWindow.cs::"
+        "QudBuildSummaryModuleWindow.HandleMenuOption(MenuOption)"
+    ): {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_BUILD_SUMMARY_POPUP_EVIDENCE,
     },
     "XRL.CharacterBuilds.Qud.UI/QudCustomizeCharacterModuleWindow.cs::QudCustomizeCharacterModuleWindow.GetPets()": {
         "closure_status": "covered_by_owner_route",
@@ -9431,6 +11464,128 @@ ISSUE719_RESIDUAL_CLOSURE_OVERLAY: Final[dict[str, ClosureOverlayEntry]] = {
         "closure_status": "covered_by_owner_route",
         "closure_evidence": ISSUE719_FIXED_LITERAL_POPUP_EVIDENCE["baetyl_offering_fixed_popup_results"],
     },
+    "XRL.World/BeguilingSifrah.cs::BeguilingSifrah.CheckOutOfOptions(GameObject)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_FIXED_LITERAL_POPUP_EVIDENCE["sifrah_fixed_popup_leafs"],
+    },
+    "XRL.World/FormalWaterRitualSifrah.cs::FormalWaterRitualSifrah.CheckOutOfOptions(GameObject)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_FIXED_LITERAL_POPUP_EVIDENCE["sifrah_fixed_popup_leafs"],
+    },
+    "XRL.World/FormalWaterRitualSifrah.cs::FormalWaterRitualSifrah.ResultCriticalFailure(GameObject)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_FIXED_LITERAL_POPUP_EVIDENCE["sifrah_fixed_popup_leafs"],
+    },
+    "XRL.World/FormalWaterRitualSifrah.cs::FormalWaterRitualSifrah.ResultFailure(GameObject)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_FIXED_LITERAL_POPUP_EVIDENCE["sifrah_fixed_popup_leafs"],
+    },
+    "XRL.World/FormalWaterRitualSifrah.cs::FormalWaterRitualSifrah.ResultPartialSuccess(GameObject)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_FIXED_LITERAL_POPUP_EVIDENCE["sifrah_fixed_popup_leafs"],
+    },
+    "XRL.World/FormalWaterRitualSifrah.cs::FormalWaterRitualSifrah.ResultSuccess(GameObject)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_FIXED_LITERAL_POPUP_EVIDENCE["sifrah_fixed_popup_leafs"],
+    },
+    "XRL.World/FormalWaterRitualSifrah.cs::FormalWaterRitualSifrah.ResultExceptionalSuccess(GameObject)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_FIXED_LITERAL_POPUP_EVIDENCE["sifrah_fixed_popup_leafs"],
+    },
+    "XRL.World/HagglingSifrah.cs::HagglingSifrah.CheckOutOfOptions(GameObject)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_FIXED_LITERAL_POPUP_EVIDENCE["sifrah_fixed_popup_leafs"],
+    },
+    "XRL.World/ItemModdingSifrah.cs::ItemModdingSifrah.ResultCriticalFailure(GameObject)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_FIXED_LITERAL_POPUP_EVIDENCE["sifrah_fixed_popup_leafs"],
+    },
+    "XRL.World/ItemNamingSifrah.cs::ItemNamingSifrah.CheckOutOfOptions(GameObject)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_FIXED_LITERAL_POPUP_EVIDENCE["sifrah_fixed_popup_leafs"],
+    },
+    "XRL.World/ItemNamingSifrah.cs::ItemNamingSifrah.ResultCriticalFailure(GameObject)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_FIXED_LITERAL_POPUP_EVIDENCE["sifrah_fixed_popup_leafs"],
+    },
+    "XRL.World/ItemNamingSifrah.cs::ItemNamingSifrah.ResultFailure(GameObject)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_FIXED_LITERAL_POPUP_EVIDENCE["sifrah_fixed_popup_leafs"],
+    },
+    "XRL.World/ItemNamingSifrah.cs::ItemNamingSifrah.ResultPartialSuccess(GameObject)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_FIXED_LITERAL_POPUP_EVIDENCE["sifrah_fixed_popup_leafs"],
+    },
+    "XRL.World/ItemNamingSifrah.cs::ItemNamingSifrah.ResultSuccess(GameObject)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_FIXED_LITERAL_POPUP_EVIDENCE["sifrah_fixed_popup_leafs"],
+    },
+    "XRL.World/ItemNamingSifrah.cs::ItemNamingSifrah.ResultExceptionalSuccess(GameObject)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_FIXED_LITERAL_POPUP_EVIDENCE["sifrah_fixed_popup_leafs"],
+    },
+    "XRL.World/ProselytizationSifrah.cs::ProselytizationSifrah.CheckOutOfOptions(GameObject)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_FIXED_LITERAL_POPUP_EVIDENCE["sifrah_fixed_popup_leafs"],
+    },
+    "XRL.World/RealityDistortionSifrah.cs::RealityDistortionSifrah.CheckOutOfOptions(GameObject)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_FIXED_LITERAL_POPUP_EVIDENCE["sifrah_fixed_popup_leafs"],
+    },
+    "XRL.World/RebukingSifrah.cs::RebukingSifrah.CheckOutOfOptions(GameObject)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_FIXED_LITERAL_POPUP_EVIDENCE["sifrah_fixed_popup_leafs"],
+    },
+    "XRL.World/RebukingSifrah.cs::RebukingSifrah.ResultFailure(GameObject)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_FIXED_LITERAL_POPUP_EVIDENCE["sifrah_fixed_popup_leafs"],
+    },
+    "XRL.World/ReverseEngineeringSifrah.cs::ReverseEngineeringSifrah.CheckOutOfOptions(GameObject)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_FIXED_LITERAL_POPUP_EVIDENCE["sifrah_fixed_popup_leafs"],
+    },
+    (
+        "XRL.World/RitualSifrahTokenScourging.cs::"
+        "RitualSifrahTokenScourging.CheckTokenUse(SifrahGame,SifrahSlot,GameObject)"
+    ): {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_FIXED_LITERAL_POPUP_EVIDENCE["sifrah_fixed_popup_leafs"],
+    },
+    (
+        "XRL.World/SocialSifrahTokenDisplayABarathrumiteToken.cs::"
+        "SocialSifrahTokenDisplayABarathrumiteToken.CheckTokenUse(SifrahGame,SifrahSlot,GameObject)"
+    ): {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_FIXED_LITERAL_POPUP_EVIDENCE["sifrah_fixed_popup_leafs"],
+    },
+    (
+        "XRL.World/SocialSifrahTokenDisplayAFarmersToken.cs::"
+        "SocialSifrahTokenDisplayAFarmersToken.CheckTokenUse(SifrahGame,SifrahSlot,GameObject)"
+    ): {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_FIXED_LITERAL_POPUP_EVIDENCE["sifrah_fixed_popup_leafs"],
+    },
+    (
+        "XRL.World/SocialSifrahTokenDisplayAMerchantsToken.cs::"
+        "SocialSifrahTokenDisplayAMerchantsToken.CheckTokenUse(SifrahGame,SifrahSlot,GameObject)"
+    ): {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_FIXED_LITERAL_POPUP_EVIDENCE["sifrah_fixed_popup_leafs"],
+    },
+    (
+        "XRL.World/SocialSifrahTokenDisplayAMinstrelsToken.cs::"
+        "SocialSifrahTokenDisplayAMinstrelsToken.CheckTokenUse(SifrahGame,SifrahSlot,GameObject)"
+    ): {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_FIXED_LITERAL_POPUP_EVIDENCE["sifrah_fixed_popup_leafs"],
+    },
+    (
+        "XRL.World/SocialSifrahTokenReadFromTheCanticlesChromaic.cs::"
+        "SocialSifrahTokenReadFromTheCanticlesChromaic.CheckTokenUse(SifrahGame,SifrahSlot,GameObject)"
+    ): {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_FIXED_LITERAL_POPUP_EVIDENCE["sifrah_fixed_popup_leafs"],
+    },
     (
         "XRL.World/TinkeringSifrahTokenToolkit.cs::"
         "TinkeringSifrahTokenToolkit.CheckTokenUse(SifrahGame,SifrahSlot,GameObject)"
@@ -9800,6 +11955,37 @@ ISSUE719_RESIDUAL_CLOSURE_OVERLAY: Final[dict[str, ClosureOverlayEntry]] = {
         "closure_status": "covered_by_owner_route",
         "closure_evidence": ISSUE719_CHARGEN_CUSTOMIZE_EVIDENCE,
     },
+    "XRL.CharacterBuilds.Qud.UI/QudMutationsModuleWindow.cs::QudMutationsModuleWindow.SelectVariant()": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_QUD_MUTATION_VARIANT_POPUP_EVIDENCE,
+    },
+    "XRL.World.Parts.Mutation/BaseMutation.cs::BaseMutation.SelectVariant(GameObject,bool)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_BASE_MUTATION_VARIANT_POPUP_EVIDENCE,
+    },
+    "XRL.World/Gender.cs::Gender.CustomizeProcess(string)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_GENDER_CUSTOMIZE_POPUP_EVIDENCE,
+    },
+    "XRL.CharacterBuilds/EmbarkBuilder.cs::EmbarkBuilder.checkStateAsync()": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_EMBARK_BUILDER_VALIDATION_POPUP_EVIDENCE,
+    },
+    "Qud.UI/FactionsStatusScreen.cs::FactionsStatusScreen.HandleCmdOptions()": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_STATUS_AND_KEYBIND_OPTION_POPUP_EVIDENCE,
+    },
+    (
+        "Qud.UI/InventoryAndEquipmentStatusScreen.cs::"
+        "InventoryAndEquipmentStatusScreen.HandleShowOptions()"
+    ): {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_STATUS_AND_KEYBIND_OPTION_POPUP_EVIDENCE,
+    },
+    "XRL.UI/CommandBindingManager.cs::CommandBindingManager.RestoreDefaults()": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_STATUS_AND_KEYBIND_OPTION_POPUP_EVIDENCE,
+    },
     "Qud.UI/TradeScreen.cs::TradeScreen.HandleTradeSome(TradeLine)": {
         "closure_status": "covered_by_owner_route",
         "closure_evidence": ISSUE719_PRODUCER_MESSAGE_OWNER_EVIDENCE["trade_screen_ask_number"],
@@ -9933,6 +12119,13 @@ ISSUE719_RESIDUAL_CLOSURE_OVERLAY: Final[dict[str, ClosureOverlayEntry]] = {
     (
         "XRL.World.Parts/CyberneticsTerminal2.cs::"
         "CyberneticsTerminal2.HackingResultExceptionalSuccess(GameObject,GameObject,HackingSifrah)"
+    ): {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_PRODUCER_MESSAGE_OWNER_EVIDENCE["hacking_sifrah_result"],
+    },
+    (
+        "XRL.World.Parts/CyberneticsTerminal2.cs::"
+        "CyberneticsTerminal2.HackingResultPartialSuccess(GameObject,GameObject,HackingSifrah)"
     ): {
         "closure_status": "covered_by_owner_route",
         "closure_evidence": ISSUE719_PRODUCER_MESSAGE_OWNER_EVIDENCE["hacking_sifrah_result"],
@@ -10302,6 +12495,13 @@ ISSUE719_RESIDUAL_CLOSURE_OVERLAY: Final[dict[str, ClosureOverlayEntry]] = {
     ("XRL.World/SocialSifrahTokenSecret.cs::SocialSifrahTokenSecret.CheckTokenUse(SifrahGame,SifrahSlot,GameObject)"): {
         "closure_status": "covered_by_owner_route",
         "closure_evidence": ISSUE719_PRODUCER_MESSAGE_OWNER_EVIDENCE["sifrah_pure_owner_popup"],
+    },
+    (
+        "XRL.World/SocialSifrahTokenSecret.cs::"
+        "SocialSifrahTokenSecret.UseToken(SifrahGame,SifrahSlot,GameObject)"
+    ): {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_SOCIAL_SIFRAH_SECRET_USE_TOKEN_EVIDENCE,
     },
     "XRL.World/TinkeringSifrahTokenBit.cs::TinkeringSifrahTokenBit.CheckTokenUse(SifrahGame,SifrahSlot,GameObject)": {
         "closure_status": "covered_by_owner_route",
@@ -10851,6 +13051,18 @@ ISSUE719_RESIDUAL_CLOSURE_OVERLAY: Final[dict[str, ClosureOverlayEntry]] = {
         "closure_status": "covered_by_owner_route",
         "closure_evidence": ISSUE719_UI_DESCRIPTION_MENU_EVIDENCE["ui_menu_option_description"],
     },
+    "Qud.UI/FilterBarCategoryButton.cs::FilterBarCategoryButton.categoryExpandOptions": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_UI_DESCRIPTION_MENU_EVIDENCE["filter_bar_category_button"],
+    },
+    "Qud.UI/FilterBarCategoryButton.cs::FilterBarCategoryButton.categoryCollapseOptions": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_UI_DESCRIPTION_MENU_EVIDENCE["filter_bar_category_button"],
+    },
+    "Qud.UI/FilterBarCategoryButton.cs::FilterBarCategoryButton.itemOptions": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_UI_DESCRIPTION_MENU_EVIDENCE["filter_bar_category_button"],
+    },
     "Qud.UI/AskNumberScreen.cs::AskNumberScreen.getItemMenuOptions": {
         "closure_status": "covered_by_owner_route",
         "closure_evidence": ISSUE719_UI_DESCRIPTION_MENU_EVIDENCE["ui_menu_option_description"],
@@ -10898,6 +13110,10 @@ ISSUE719_RESIDUAL_CLOSURE_OVERLAY: Final[dict[str, ClosureOverlayEntry]] = {
     "Qud.UI/OptionsScreen.cs::OptionsScreen.HELP_TEXT": {
         "closure_status": "covered_by_owner_route",
         "closure_evidence": ISSUE719_UI_DESCRIPTION_MENU_EVIDENCE["options_screen_static_menu"],
+    },
+    "Qud.UI/OptionsScreen.cs::OptionsScreen.HandleMenuOption(FrameworkDataElement)": {
+        "closure_status": "covered_by_owner_route",
+        "closure_evidence": ISSUE719_UI_DESCRIPTION_MENU_EVIDENCE["options_screen_controls"],
     },
     "Qud.UI/OptionsCategoryControl.cs::OptionsCategoryControl.Render()": {
         "closure_status": "covered_by_owner_route",
@@ -11245,7 +13461,6 @@ ISSUE719_FOLLOWUP_ISSUES: Final[dict[str, FollowupIssueDefinition]] = {
             "producer_broad_gameobject_inventory_companion_gap",
             "producer_broad_gameobject_pulldown_gap",
             "producer_broad_gameobject_regenera_runtime",
-            "producer_broad_gameobject_replace_cell_gap",
             "producer_broad_missile_trajectory_message_runtime",
             "producer_runtime_api_equipment_action_menu_gap",
             "producer_runtime_api_journal_wish_gospel_runtime",
@@ -11281,7 +13496,6 @@ ISSUE719_FOLLOWUP_ISSUES: Final[dict[str, FollowupIssueDefinition]] = {
             "producer_runtime_cybernetics_low_level_hack_popup_gap",
             "producer_runtime_cybernetics_recoiler_popup_gap",
             "producer_runtime_cybernetics_route_split",
-            "producer_runtime_cybernetics_terminal_interface_gap",
             "producer_message_family_audit",
             "producer_runtime_evidence_required",
             "producer_runtime_gameplay_route_split",
@@ -11323,16 +13537,15 @@ ISSUE719_FOLLOWUP_ISSUES: Final[dict[str, FollowupIssueDefinition]] = {
             "producer_runtime_ui_chargen_popup_route_split",
             "producer_runtime_ui_chargen_validation_popup_gap",
             "producer_runtime_ui_equipment_slot_gap",
-            "producer_runtime_ui_framework_search_input_gap",
             "producer_runtime_ui_inventory_trade_popup_route_split",
             "producer_runtime_ui_mod_manager_cancel_gap",
             "producer_runtime_ui_object_finder_filters_gap",
             "producer_runtime_ui_trade_vendor_actions_gap",
             "producer_runtime_ui_misc_popup_route_split",
+            "producer_runtime_ui_ability_manager_empty_gap",
             "producer_runtime_ui_options_command_binding_gap",
             "producer_runtime_ui_options_help_popup_gap",
             "producer_runtime_ui_options_legacy_popup_gap",
-            "producer_runtime_ui_ability_manager_empty_gap",
             "producer_runtime_ui_options_popup_route_split",
             "producer_runtime_ui_factions_status_sort_gap",
             "producer_runtime_ui_inventory_status_options_gap",
@@ -11355,7 +13568,6 @@ ISSUE719_FOLLOWUP_ISSUES: Final[dict[str, FollowupIssueDefinition]] = {
             "producer_runtime_world_part_heat_self_frame_gap",
             "producer_runtime_world_part_biome_distribution_queue_popup_gap",
             "producer_runtime_world_part_elevator_switch_queue_popup_gap",
-            "producer_runtime_world_part_giant_clam_dimension_queue_popup_gap",
             "producer_runtime_world_part_liquid_cleaning_frame_gap",
             "producer_runtime_world_part_liquid_contact_frame_gap",
             "producer_runtime_world_part_mixed_route_split",
@@ -11369,7 +13581,7 @@ ISSUE719_FOLLOWUP_ISSUES: Final[dict[str, FollowupIssueDefinition]] = {
             "producer_runtime_world_part_interior_damage_queue_gap",
             "producer_runtime_world_part_harvestable_attempt_gap",
             "producer_runtime_world_part_player_dance_ritual_queue_gap",
-            "producer_runtime_world_part_nephal_absorb_frame_gap",
+        "producer_runtime_world_part_nephal_absorb_frame_gap",
             "producer_runtime_world_part_pet_recipe_frame_gap",
             "producer_runtime_world_part_pet_taunt_frame_gap",
             "producer_runtime_world_part_popup_message_frame_route_split",
@@ -11956,7 +14168,11 @@ def _issue719_closure_overlay(  # noqa: C901, PLR0911, PLR0912, PLR0915
         evidence = ISSUE719_MUTATION_DESCRIPTION_EVIDENCE
     elif _is_issue719_world_mod_description_family(family, closure_lane):
         evidence = ISSUE719_WORLD_MOD_DESCRIPTION_EVIDENCE
-    elif family["family_id"] in ISSUE719_SIFRAH_TOKEN_NO_ARG_DESCRIPTION_FAMILIES:
+    elif family["family_id"] in (
+        ISSUE719_SIFRAH_TOKEN_NO_ARG_DESCRIPTION_FAMILIES
+        | ISSUE719_SIFRAH_TOKEN_DYNAMIC_DESCRIPTION_FAMILIES
+        | ISSUE719_SIFRAH_TOKEN_GET_DESCRIPTION_FAMILIES
+    ):
         evidence = ISSUE719_SIFRAH_TOKEN_DESCRIPTION_EVIDENCE
     if evidence is not None:
         return "covered_by_owner_route", evidence
@@ -11968,14 +14184,26 @@ def _issue719_closure_overlay(  # noqa: C901, PLR0911, PLR0912, PLR0915
     if family["family_id"] in ISSUE719_VILLAGE_SIGNATURE_DISH_FAMILIES:
         return "covered_by_owner_route", ISSUE719_VILLAGE_SIGNATURE_DISH_EVIDENCE
 
-    if family["family_id"] in ISSUE719_VILLAGE_SIGNATURE_ITEM_STATIC_GAP_FAMILIES:
-        return "action_required", ISSUE719_VILLAGE_SIGNATURE_ITEM_STATIC_GAP_EVIDENCE
+    if family["family_id"] in ISSUE719_COOKING_PRESET_RECIPE_DISPLAY_NAME_FAMILIES:
+        return "covered_by_owner_route", ISSUE719_COOKING_PRESET_RECIPE_DISPLAY_NAME_EVIDENCE
 
-    if family["family_id"] in ISSUE719_VILLAGE_FACTION_DISPLAY_NAME_STATIC_GAP_FAMILIES:
-        return "action_required", ISSUE719_VILLAGE_FACTION_DISPLAY_NAME_STATIC_GAP_EVIDENCE
+    if family["family_id"] in ISSUE719_VILLAGE_CODA_SULTAN_ENTITY_DISPLAY_NAME_FAMILIES:
+        return "covered_by_owner_route", ISSUE719_VILLAGE_CODA_SULTAN_ENTITY_DISPLAY_NAME_EVIDENCE
+
+    if family["family_id"] in ISSUE719_MURAL_BLANK_SLATE_DISPLAY_NAME_FAMILIES:
+        return "covered_by_owner_route", ISSUE719_MURAL_BLANK_SLATE_DISPLAY_NAME_EVIDENCE
+
+    if family["family_id"] in ISSUE719_VILLAGE_SIGNATURE_ITEM_OWNER_FAMILIES:
+        return "covered_by_owner_route", ISSUE719_VILLAGE_SIGNATURE_ITEM_OWNER_EVIDENCE
+
+    if family["family_id"] in ISSUE719_GENERATED_DISPLAY_NAME_OWNER_PATCH_FAMILIES:
+        return "covered_by_owner_route", ISSUE719_GENERATED_DISPLAY_NAME_OWNER_PATCH_EVIDENCE
 
     if family["family_id"] in ISSUE719_RUNNING_BEHAVIOR_EVENT_BRIDGE_FAMILIES:
         return "covered_by_owner_route", ISSUE719_RUNNING_BEHAVIOR_EVENT_BRIDGE_EVIDENCE
+
+    if family["family_id"] in ISSUE719_ROCKET_SKATES_RUNNING_BEHAVIOR_FAMILIES:
+        return "covered_by_owner_route", ISSUE719_ROCKET_SKATES_RUNNING_BEHAVIOR_EVIDENCE
 
     if family["family_id"] in ISSUE719_SOUND_MANAGER_DEBUG_PASSTHROUGH_FAMILIES:
         return "covered_by_owner_route", ISSUE719_SOUND_MANAGER_DEBUG_PASSTHROUGH_EVIDENCE
@@ -11986,20 +14214,122 @@ def _issue719_closure_overlay(  # noqa: C901, PLR0911, PLR0912, PLR0915
     if family["family_id"] in ISSUE719_MISSILE_TRAJECTORY_MESSAGE_FRAME_FAMILIES:
         return "covered_by_owner_route", ISSUE719_MISSILE_TRAJECTORY_MESSAGE_FRAME_EVIDENCE
 
-    if family["family_id"] == (
-        "XRL.World/GameObject.cs::"
-        "GameObject.Die(GameObject,string,string,string,bool,GameObject,GameObject,bool,bool,string,string,string)"
-    ):
-        return "action_required", ISSUE719_GAMEOBJECT_DIE_STATIC_GAP_EVIDENCE
+    if family["family_id"] in ISSUE719_GAMEOBJECT_DIE_OWNER_FAMILIES:
+        return "covered_by_owner_route", ISSUE719_GAMEOBJECT_DIE_STATIC_GAP_EVIDENCE
+
+    if family["family_id"] in ISSUE719_GAMEOBJECT_DESTROY_OWNER_FAMILIES:
+        return "covered_by_owner_route", ISSUE719_GAMEOBJECT_DESTROY_OWNER_EVIDENCE
 
     if family["family_id"] == "XRL/GameText.cs::GameText.RoughConvertSecondPersonToThirdPerson(string,GameObject)":
-        return "action_required", ISSUE719_GAME_TEXT_THIRD_PERSON_DEATH_GAP_EVIDENCE
+        return "covered_by_owner_route", ISSUE719_GAME_TEXT_THIRD_PERSON_DEATH_GAP_EVIDENCE
+
+    if family["family_id"] == (
+        "XRL.World/GameObject.cs::"
+        "GameObject.Explode(int,GameObject,string,float,bool,bool,bool,int,List<GameObject>)"
+    ):
+        return "covered_by_owner_route", ISSUE719_GAMEOBJECT_EXPLODE_DEATH_EVIDENCE
+
+    if (
+        family["family_id"]
+        == "XRL.World/GameObject.cs::GameObject.HandleInventoryActionEvent(InventoryActionEvent)"
+    ):
+        return "covered_by_owner_route", ISSUE719_GAMEOBJECT_INVENTORY_COMPANION_EVIDENCE
+
+    if family["family_id"] == "XRL.World/GameObject.cs::GameObject.PullDown(bool)":
+        return "covered_by_owner_route", ISSUE719_GAMEOBJECT_PULLDOWN_EVIDENCE
+
+    if (
+        family["family_id"]
+        == (
+            "XRL.World.Capabilities/Firefighting.cs::"
+            "Firefighting.AttemptFirefightingCore(GameObject,GameObject,int,bool,bool)"
+        )
+    ):
+        return "covered_by_owner_route", ISSUE719_FIREFIGHTING_OWNER_EVIDENCE
+
+    if (
+        family["family_id"]
+        == (
+            "XRL.World.Parts/Harvestable.cs::"
+            "Harvestable.AttemptHarvest(GameObject,bool,string,Cell,List<GameObject>)"
+        )
+    ):
+        return "covered_by_owner_route", ISSUE719_HARVESTABLE_OWNER_EVIDENCE
+
+    if family["family_id"] in ISSUE719_WORLD_PART_FIXED_DISPLAY_NAME_FAMILIES:
+        return "covered_by_owner_route", ISSUE719_WORLD_PART_FIXED_DISPLAY_NAME_EVIDENCE
+
+    if family["family_id"] in ISSUE719_WORLD_PART_GENERATED_DISPLAY_NAME_FAMILIES:
+        return "covered_by_owner_route", ISSUE719_WORLD_PART_GENERATED_DISPLAY_NAME_EVIDENCE
+
+    if family["family_id"] in ISSUE719_RANDOM_FIGURINE_DISPLAY_NAME_FAMILIES:
+        return "covered_by_owner_route", ISSUE719_RANDOM_FIGURINE_DISPLAY_NAME_EVIDENCE
+
+    if family["family_id"] in ISSUE719_MINER_GENERATED_ROLE_DISPLAY_NAME_FAMILIES:
+        return "covered_by_owner_route", ISSUE719_MINER_GENERATED_ROLE_DISPLAY_NAME_EVIDENCE
+
+    if family["family_id"] in ISSUE719_POINTED_ASTERISK_WISH_DISPLAY_NAME_FAMILIES:
+        return "covered_by_owner_route", ISSUE719_POINTED_ASTERISK_WISH_DISPLAY_NAME_EVIDENCE
+
+    if family["family_id"] in ISSUE719_SHIP_ARK_POPUP_DICTIONARY_FAMILIES:
+        return "covered_by_owner_route", ISSUE719_SHIP_ARK_POPUP_DICTIONARY_EVIDENCE
+
+    if family["family_id"] in ISSUE719_CRAYONS_POPUP_OWNER_FAMILIES:
+        return "covered_by_owner_route", ISSUE719_CRAYONS_POPUP_OWNER_EVIDENCE
 
     if family["family_id"] in ISSUE719_POPUP_MESSAGE_WRAPPER_SINK_FAMILIES:
         return "not_owner_surface", ISSUE719_POPUP_MESSAGE_WRAPPER_SINK_EVIDENCE
 
+    if family["family_id"] in ISSUE719_STATIC_LINE_MENU_OPTION_FAMILIES:
+        return (
+            "covered_by_owner_route",
+            ISSUE719_UI_DESCRIPTION_MENU_EVIDENCE["static_line_menu_options"],
+        )
+
     if family["family_id"] == "XRL.Core/Scores.cs::Scores.Show()":
-        return "action_required", ISSUE719_SCORES_SHOW_STATIC_GAP_EVIDENCE
+        return "covered_by_owner_route", ISSUE719_SCORES_SHOW_STATIC_GAP_EVIDENCE
+
+    if family["family_id"] in ISSUE719_OPTIONS_UI_SHOW_OWNER_FAMILIES:
+        return "covered_by_owner_route", ISSUE719_OPTIONS_UI_SHOW_OWNER_EVIDENCE
+
+    if family["family_id"] in ISSUE719_OPTIONS_CONTROL_DESCRIPTION_FAMILIES:
+        return "covered_by_owner_route", ISSUE719_OPTIONS_CONTROL_DESCRIPTION_EVIDENCE
+
+    if family["family_id"] in ISSUE719_OBJECT_FINDER_DISPLAY_NAME_FAMILIES:
+        return "covered_by_owner_route", ISSUE719_OBJECT_FINDER_DISPLAY_NAME_EVIDENCE
+
+    if family["family_id"] in ISSUE719_CYBERNETICS_SKILLSOFT_DISPLAY_NAME_FAMILIES:
+        return "covered_by_owner_route", ISSUE719_CYBERNETICS_SKILLSOFT_DISPLAY_NAME_EVIDENCE
+
+    if family["family_id"] in ISSUE719_CYBERNETICS_RECOILER_DISPLAY_NAME_FAMILIES:
+        return "covered_by_owner_route", ISSUE719_CYBERNETICS_RECOILER_DISPLAY_NAME_EVIDENCE
+
+    if family["family_id"] in ISSUE719_STAT_SHIFT_DISPLAY_NAME_FAMILIES:
+        return "covered_by_owner_route", ISSUE719_STAT_SHIFT_DISPLAY_NAME_EVIDENCE
+
+    if family["family_id"] in ISSUE719_MUTATION_BASE_DISPLAY_NAME_FAMILIES:
+        return "covered_by_owner_route", ISSUE719_MUTATION_BASE_DISPLAY_NAME_EVIDENCE
+
+    if family["family_id"] in ISSUE719_MUTATION_EFFECT_DISPLAY_NAME_FAMILIES:
+        return "covered_by_owner_route", ISSUE719_MUTATION_EFFECT_DISPLAY_NAME_EVIDENCE
+
+    if family["family_id"] in ISSUE719_LIGHT_MANIPULATION_ABILITY_DISPLAY_NAME_FAMILIES:
+        return "covered_by_owner_route", ISSUE719_LIGHT_MANIPULATION_ABILITY_DISPLAY_NAME_EVIDENCE
+
+    if family["family_id"] in ISSUE719_CYBERNETICS_INSTALL_DISPLAY_NAME_FAMILIES:
+        return "covered_by_owner_route", ISSUE719_CYBERNETICS_INSTALL_DISPLAY_NAME_EVIDENCE
+
+    if family["family_id"] in ISSUE719_UI_SCREEN_FIXED_LABEL_FAMILIES:
+        return "covered_by_owner_route", ISSUE719_UI_SCREEN_FIXED_LABEL_EVIDENCE
+    if family["family_id"] in ISSUE719_EQUIPMENT_SCREEN_BODYPART_EQUIP_OWNER_FAMILIES:
+        return "covered_by_owner_route", ISSUE719_EQUIPMENT_SCREEN_BODYPART_EQUIP_OWNER_EVIDENCE
+
+    if family["family_id"] in ISSUE719_STOMACH_FIRE_EVENT_OWNER_FAMILIES:
+        return "covered_by_owner_route", ISSUE719_STOMACH_FIRE_EVENT_OWNER_EVIDENCE
+    if family["family_id"] in ISSUE719_FIXIT_SPRAY_OWNER_FAMILIES:
+        return "covered_by_owner_route", ISSUE719_FIXIT_SPRAY_OWNER_EVIDENCE
+    if family["family_id"] in ISSUE719_MAGNETIZED_APPLICATOR_OWNER_FAMILIES:
+        return "covered_by_owner_route", ISSUE719_MAGNETIZED_APPLICATOR_OWNER_EVIDENCE
 
     world_part_queue_does_evidence = (
         ISSUE719_WORLD_PART_QUEUE_DOES_EXISTING_OWNER_EVIDENCE_BY_FAMILY.get(family["family_id"])
@@ -12012,11 +14342,31 @@ def _issue719_closure_overlay(  # noqa: C901, PLR0911, PLR0912, PLR0915
 
     if family["family_id"] in ISSUE719_RESIDUAL_FRAME_DOES_PROMOTION_FAMILIES:
         return "covered_by_owner_route", ISSUE719_RESIDUAL_FRAME_DOES_PROMOTION_EVIDENCE
+    if family["family_id"] in ISSUE719_DOMINATION_PROCESS_TARGET_OWNER_FAMILIES:
+        return "covered_by_owner_route", ISSUE719_DOMINATION_PROCESS_TARGET_OWNER_EVIDENCE
+    if family["family_id"] in ISSUE719_MAGAZINE_AMMO_SUPPLY_OWNER_FAMILIES:
+        return "covered_by_owner_route", ISSUE719_MAGAZINE_AMMO_SUPPLY_OWNER_EVIDENCE
+    if family["family_id"] in ISSUE719_INVENTORY_DROP_ASK_NUMBER_FAMILIES:
+        return "covered_by_owner_route", ISSUE719_INVENTORY_DROP_ASK_NUMBER_EVIDENCE
+    if family["family_id"] in ISSUE719_EXAMINER_HANDLE_EVENT_OWNER_FAMILIES:
+        return "covered_by_owner_route", ISSUE719_EXAMINER_HANDLE_EVENT_OWNER_EVIDENCE
+    if family["family_id"] in ISSUE719_TINKER_ITEM_HANDLE_EVENT_OWNER_FAMILIES:
+        return "covered_by_owner_route", ISSUE719_TINKER_ITEM_HANDLE_EVENT_OWNER_EVIDENCE
+    if family["family_id"] in ISSUE719_TEMPORAL_FUGUE_PERFORM_OWNER_FAMILIES:
+        return "covered_by_owner_route", ISSUE719_TEMPORAL_FUGUE_PERFORM_OWNER_EVIDENCE
+    if family["family_id"] in ISSUE719_FORCE_LATHE_ACTIVATION_OWNER_FAMILIES:
+        return "covered_by_owner_route", ISSUE719_FORCE_LATHE_ACTIVATION_OWNER_EVIDENCE
+    if family["family_id"] in ISSUE719_EQUIPMENT_ACTION_MENU_OWNER_FAMILIES:
+        return "covered_by_owner_route", ISSUE719_EQUIPMENT_ACTION_MENU_OWNER_EVIDENCE
     if family["family_id"] == (
         "XRL.World.Parts/AutomatedExternalDefibrillator.cs::"
         "AutomatedExternalDefibrillator.AttemptDefibrillate(GameObject,IEvent)"
     ):
-        return "action_required", ISSUE719_DEFIBRILLATOR_STATIC_GAP_EVIDENCE
+        return "covered_by_owner_route", ISSUE719_DEFIBRILLATOR_STATIC_GAP_EVIDENCE
+    if family["family_id"] in ISSUE719_CHAT_PERFORM_CHAT_OWNER_FAMILIES:
+        return "covered_by_owner_route", ISSUE719_CHAT_PERFORM_CHAT_OWNER_EVIDENCE
+    if family["family_id"] in ISSUE719_SPACE_TIME_VORTEX_APPLY_OWNER_FAMILIES:
+        return "covered_by_owner_route", ISSUE719_SPACE_TIME_VORTEX_APPLY_OWNER_EVIDENCE
     world_part_mixed_evidence = ISSUE719_WORLD_PART_MIXED_STATIC_GAP_EVIDENCE_BY_FAMILY.get(
         family["family_id"]
     )
@@ -12027,17 +14377,31 @@ def _issue719_closure_overlay(  # noqa: C901, PLR0911, PLR0912, PLR0915
     if family["family_id"] in ISSUE719_GAMEOBJECT_REGENERA_OWNER_FAMILIES:
         return "covered_by_owner_route", ISSUE719_GAMEOBJECT_REGENERA_OWNER_EVIDENCE
     if family["family_id"] in ISSUE719_VILLAGE_DYNAMIC_QUEST_REWARD_STATIC_GAP_FAMILIES:
-        return "action_required", ISSUE719_VILLAGE_DYNAMIC_QUEST_REWARD_STATIC_GAP_EVIDENCE
-    if family["family_id"] in ISSUE719_GOLEM_MOUND_DISPLAY_OPTIONS_STATIC_GAP_FAMILIES:
-        return "action_required", ISSUE719_GOLEM_MOUND_DISPLAY_OPTIONS_STATIC_GAP_EVIDENCE
-    if family["family_id"] in ISSUE719_AUTOACT_HOSTILE_STATIC_GAP_FAMILIES:
-        return "action_required", ISSUE719_AUTOACT_HOSTILE_STATIC_GAP_EVIDENCE
+        return "covered_by_owner_route", ISSUE719_GENERATED_DISPLAY_NAME_OWNER_PATCH_EVIDENCE
+    if family["family_id"] in ISSUE719_GOLEM_MOUND_DISPLAY_OPTIONS_OWNER_FAMILIES:
+        return "covered_by_owner_route", ISSUE719_GOLEM_MOUND_DISPLAY_OPTIONS_OWNER_EVIDENCE
+    if family["family_id"] in ISSUE719_AUTOACT_GET_DESCRIPTION_OWNER_FAMILIES:
+        return "covered_by_owner_route", ISSUE719_AUTOACT_GET_DESCRIPTION_OWNER_EVIDENCE
+    if family["family_id"] in ISSUE719_GAMEOBJECT_HOSTILE_SPOT_OWNER_FAMILIES:
+        return "covered_by_owner_route", ISSUE719_GAMEOBJECT_HOSTILE_SPOT_OWNER_EVIDENCE
+    if family["family_id"] in ISSUE719_WORLD_PART_PICKOPTION_DICTIONARY_FAMILIES:
+        return "covered_by_owner_route", ISSUE719_WORLD_PART_PICKOPTION_DICTIONARY_EVIDENCE
+    if family["family_id"] in ISSUE719_HOLOGRAPHIC_VISAGE_OWNER_FAMILIES:
+        return "covered_by_owner_route", ISSUE719_HOLOGRAPHIC_VISAGE_OWNER_EVIDENCE
+    if family["family_id"] in ISSUE719_CAMPFIRE_EXTINGUISH_OWNER_FAMILIES:
+        return "covered_by_owner_route", ISSUE719_CAMPFIRE_EXTINGUISH_OWNER_EVIDENCE
+    if family["family_id"] in ISSUE719_CARAPACE_LOOSEN_OWNER_FAMILIES:
+        return "covered_by_owner_route", ISSUE719_CARAPACE_LOOSEN_OWNER_EVIDENCE
+    if family["family_id"] in ISSUE719_IZONE_LANDMARK_WISH_CURRENT_OWNER_FAMILIES:
+        return "covered_by_owner_route", ISSUE719_IZONE_LANDMARK_WISH_CURRENT_OWNER_EVIDENCE
     if family["family_id"] in ISSUE719_WISH_DEBUG_STATIC_GAP_FAMILIES:
         return "action_required", ISSUE719_WISH_DEBUG_STATIC_GAP_EVIDENCE
     if family["family_id"] in ISSUE719_CORE_DISPLAY_NAME_DATA_FAMILIES:
         return "covered_by_owner_route", ISSUE719_CORE_DISPLAY_NAME_DATA_EVIDENCE
-    if family["family_id"] in ISSUE719_CORE_POSSESSIVE_STATIC_GAP_FAMILIES:
-        return "action_required", ISSUE719_CORE_POSSESSIVE_STATIC_GAP_EVIDENCE
+    if family["family_id"] in ISSUE719_CORE_POSSESSIVE_OWNER_FAMILIES:
+        return "covered_by_owner_route", ISSUE719_CORE_POSSESSIVE_OWNER_EVIDENCE
+    if family["family_id"] in ISSUE719_CORE_INVALID_OBJECT_DISPLAY_NAME_FAMILIES:
+        return "covered_by_owner_route", ISSUE719_CORE_INVALID_OBJECT_DISPLAY_NAME_EVIDENCE
     if family["family_id"] in ISSUE719_PHASE_STICKY_DATA_SENTINEL_FAMILIES:
         return "covered_by_owner_route", ISSUE719_PHASE_STICKY_DATA_SENTINEL_EVIDENCE
     if family["family_id"] in ISSUE719_PHYSICS_TARGETED_MOVE_OWNER_FAMILIES:
@@ -12050,20 +14414,52 @@ def _issue719_closure_overlay(  # noqa: C901, PLR0911, PLR0912, PLR0915
         return "covered_by_owner_route", ISSUE719_TRADE_HIGHLIGHT_DATA_BINDING_EVIDENCE
     if family["family_id"] in ISSUE719_UI_WIDGET_DATA_BINDING_PASS_THROUGH_FAMILIES:
         return "covered_by_owner_route", ISSUE719_UI_WIDGET_DATA_BINDING_PASS_THROUGH_EVIDENCE
-    if family["family_id"] in ISSUE719_LEFT_SIDE_CATEGORY_STATIC_GAP_FAMILIES:
-        return "action_required", ISSUE719_LEFT_SIDE_CATEGORY_STATIC_GAP_EVIDENCE
-    if family["family_id"] in ISSUE719_UI_POPUP_STATIC_GAP_FAMILIES:
-        return "action_required", ISSUE719_UI_POPUP_STATIC_GAP_EVIDENCE
+    if family["family_id"] in ISSUE719_LEFT_SIDE_CATEGORY_OWNER_FAMILIES:
+        return "covered_by_owner_route", ISSUE719_LEFT_SIDE_CATEGORY_OWNER_EVIDENCE
     if family["family_id"] in ISSUE719_FINAL_SINK_PASS_THROUGH_FAMILIES:
         return "covered_by_owner_route", ISSUE719_FINAL_SINK_PASS_THROUGH_EVIDENCE
     if family["family_id"] in ISSUE719_TUTORIAL_SENTINEL_PASS_THROUGH_FAMILIES:
         return "covered_by_owner_route", ISSUE719_TUTORIAL_SENTINEL_PASS_THROUGH_EVIDENCE
+    if family["family_id"] in ISSUE719_TUTORIAL_LATEUPDATE_OWNER_FAMILIES:
+        return "covered_by_owner_route", ISSUE719_TUTORIAL_LATEUPDATE_OWNER_EVIDENCE
+    if family["family_id"] in ISSUE719_TUTORIAL_POPUP_DICTIONARY_FAMILIES:
+        return "covered_by_owner_route", ISSUE719_TUTORIAL_POPUP_DICTIONARY_EVIDENCE
+    if family["family_id"] in ISSUE719_TUTORIAL_MANAGER_TRIGGER_FAMILIES:
+        return "covered_by_owner_route", ISSUE719_TUTORIAL_MANAGER_TRIGGER_EVIDENCE
+    if family["family_id"] in ISSUE719_FUNGAL_SPORE_CHOOSE_LIMB_OWNER_FAMILIES:
+        return "covered_by_owner_route", ISSUE719_FUNGAL_SPORE_CHOOSE_LIMB_OWNER_EVIDENCE
+    if family["family_id"] in ISSUE719_FUNGAL_INFECTION_FIRE_EVENT_FAMILIES:
+        return "covered_by_owner_route", ISSUE719_FUNGAL_INFECTION_FIRE_EVENT_EVIDENCE
+    if family["family_id"] in ISSUE719_DESALINATION_PELLET_OWNER_FAMILIES:
+        return "covered_by_owner_route", ISSUE719_DESALINATION_PELLET_OWNER_EVIDENCE
+    if family["family_id"] in ISSUE719_IGRENADE_OWNER_FAMILIES:
+        return "covered_by_owner_route", ISSUE719_IGRENADE_OWNER_EVIDENCE
+    if family["family_id"] in ISSUE719_BIOME_SURFACE_DISTRIBUTION_OWNER_FAMILIES:
+        return "covered_by_owner_route", ISSUE719_BIOME_SURFACE_DISTRIBUTION_OWNER_EVIDENCE
+    if family["family_id"] in ISSUE719_ELEVATOR_SWITCH_OWNER_FAMILIES:
+        return "covered_by_owner_route", ISSUE719_ELEVATOR_SWITCH_OWNER_EVIDENCE
+    if family["family_id"] in ISSUE719_ITEM_NAMING_INTERACTIVE_OWNER_FAMILIES:
+        return "covered_by_owner_route", ISSUE719_ITEM_NAMING_INTERACTIVE_OWNER_EVIDENCE
+    if family["family_id"] in ISSUE719_ITEM_NAMING_WISH_DEBUG_OWNER_FAMILIES:
+        return "covered_by_owner_route", ISSUE719_ITEM_NAMING_WISH_DEBUG_OWNER_EVIDENCE
+    if family["family_id"] in ISSUE719_TINKERING_MAKERS_MARK_OWNER_FAMILIES:
+        return "covered_by_owner_route", ISSUE719_TINKERING_MAKERS_MARK_OWNER_EVIDENCE
+    if family["family_id"] in ISSUE719_SAVES_API_FATAL_SAVE_ERROR_OWNER_FAMILIES:
+        return "covered_by_owner_route", ISSUE719_SAVES_API_FATAL_SAVE_ERROR_OWNER_EVIDENCE
+    if family["family_id"] in ISSUE719_XRLCORE_RESTORE_MODS_LOADED_FAMILIES:
+        return "covered_by_owner_route", ISSUE719_XRLCORE_RESTORE_MODS_LOADED_EVIDENCE
+    if family["family_id"] in ISSUE719_MOD_DISGUISE_BEING_APPLIED_OWNER_FAMILIES:
+        return "covered_by_owner_route", ISSUE719_MOD_DISGUISE_BEING_APPLIED_OWNER_EVIDENCE
+    if family["family_id"] in ISSUE719_VEHICLE_FOLLOWER_POPUP_OWNER_FAMILIES:
+        return "covered_by_owner_route", ISSUE719_VEHICLE_FOLLOWER_POPUP_OWNER_EVIDENCE
     if family["family_id"] in ISSUE719_FINAL_STATIC_GAP_FAMILIES:
         return "action_required", ISSUE719_FINAL_STATIC_GAP_EVIDENCE
     if family["family_id"] in ISSUE719_TREMBLE_EARTHQUAKE_OWNER_FAMILIES:
         return "covered_by_owner_route", ISSUE719_TREMBLE_EARTHQUAKE_OWNER_EVIDENCE
-    if family["family_id"] in ISSUE719_VEHICLE_MELEE_INFILTRATION_STATIC_GAP_FAMILIES:
-        return "action_required", ISSUE719_VEHICLE_MELEE_INFILTRATION_STATIC_GAP_EVIDENCE
+    if family["family_id"] in ISSUE719_VEHICLE_MELEE_INFILTRATION_OWNER_FAMILIES:
+        return "covered_by_owner_route", ISSUE719_VEHICLE_MELEE_INFILTRATION_OWNER_EVIDENCE
+    if family["family_id"] in ISSUE719_LIQUID_WISH_WARM_EFFECT_OWNER_FAMILIES:
+        return "covered_by_owner_route", ISSUE719_LIQUID_WISH_WARM_EFFECT_OWNER_EVIDENCE
     if family["family_id"] in ISSUE719_RESIDUAL_PRODUCER_RUNTIME_FAMILIES:
         bucket, disposition = _producer_runtime_family_bucket_with_disposition(family)
         if disposition == "likely_implementation_gap":
@@ -12768,22 +15164,15 @@ ISSUE719_PRODUCER_RUNTIME_IMPLEMENTATION_GAP_BUCKETS: Final[frozenset[str]] = fr
             "producer_runtime_world_part_defibrillator_gap",
             "producer_runtime_world_part_grip_recoil_popup_gap",
         "producer_runtime_world_part_ship_ark_popup_gap",
-        "producer_runtime_world_part_shrine_popup_gap",
         "producer_runtime_world_part_tinkering_popup_gap",
         "producer_runtime_core_coda_endgame_popup_gap",
         "producer_runtime_core_mod_config_popup_gap",
         "producer_runtime_core_mod_failure_popup_gap",
-        "producer_runtime_core_population_roll_one_error_gap",
         "producer_runtime_core_population_wish_find_blueprint_gap",
         "producer_runtime_core_scores_legacy_screen_gap",
-        "producer_runtime_cybernetics_butcher_message_gap",
-        "producer_runtime_cybernetics_cathedra_flight_popup_gap",
         "producer_runtime_cybernetics_force_lathe_activation_gap",
         "producer_runtime_cybernetics_force_lathe_replace_gap",
         "producer_runtime_cybernetics_holographic_visage_gap",
-        "producer_runtime_cybernetics_low_level_hack_popup_gap",
-        "producer_runtime_cybernetics_recoiler_popup_gap",
-        "producer_runtime_cybernetics_terminal_interface_gap",
         "producer_runtime_api_equipment_action_menu_gap",
         "producer_runtime_api_save_error_gap",
         "producer_runtime_capability_firefighting_gap",
@@ -12799,25 +15188,18 @@ ISSUE719_PRODUCER_RUNTIME_IMPLEMENTATION_GAP_BUCKETS: Final[frozenset[str]] = fr
         "producer_runtime_ui_chargen_build_summary_gap",
         "producer_runtime_ui_chargen_gender_customize_gap",
         "producer_runtime_ui_chargen_mutation_menu_gap",
-        "producer_runtime_ui_chargen_mutation_variant_gap",
         "producer_runtime_ui_chargen_validation_popup_gap",
         "producer_runtime_ui_options_command_binding_gap",
-        "producer_runtime_ui_options_help_popup_gap",
         "producer_runtime_ui_options_legacy_popup_gap",
-        "producer_runtime_ui_framework_search_input_gap",
-        "producer_runtime_ui_mod_manager_cancel_gap",
         "producer_runtime_ui_equipment_slot_gap",
         "producer_runtime_ui_object_finder_filters_gap",
         "producer_runtime_ui_trade_vendor_actions_gap",
-        "producer_runtime_ui_ability_manager_empty_gap",
         "producer_runtime_ui_factions_status_sort_gap",
         "producer_runtime_ui_inventory_status_options_gap",
         "producer_runtime_mutation_base_variant_popup_gap",
         "producer_runtime_mutation_carapace_loosen_gap",
         "producer_runtime_mutation_domination_failure_gap",
-        "producer_runtime_mutation_sunder_mind_gap",
         "producer_runtime_mutation_temporal_fugue_gap",
-        "producer_runtime_mutation_wings_flight_gap",
         "producer_runtime_inventory_action_crayons_popup_gap",
         "producer_runtime_inventory_action_desalination_pellet_gap",
         "producer_runtime_inventory_action_description_look_popup_gap",
@@ -12837,10 +15219,8 @@ ISSUE719_PRODUCER_RUNTIME_IMPLEMENTATION_GAP_BUCKETS: Final[frozenset[str]] = fr
         "producer_broad_gameobject_explode_death_gap",
         "producer_broad_gameobject_inventory_companion_gap",
         "producer_broad_gameobject_pulldown_gap",
-        "producer_broad_gameobject_replace_cell_gap",
         "producer_runtime_liquid_glitch_components_gap",
         "producer_runtime_liquid_wish_warm_effect_gap",
-        "producer_runtime_quest_find_site_wish_debug_gap",
         "producer_runtime_quest_reward_choice_gap",
         "producer_runtime_world_part_heat_self_frame_gap",
         "producer_runtime_world_part_liquid_cleaning_frame_gap",
@@ -12852,8 +15232,6 @@ ISSUE719_PRODUCER_RUNTIME_IMPLEMENTATION_GAP_BUCKETS: Final[frozenset[str]] = fr
         "producer_runtime_world_part_pseudopod_death_frame_gap",
         "producer_runtime_world_part_shuttle_frame_gap",
         "producer_runtime_world_part_vortex_periodic_frame_gap",
-        "producer_runtime_world_part_dance_opponent_debug_queue_gap",
-        "producer_runtime_world_part_dance_opponent_register_queue_gap",
         "producer_runtime_world_part_interior_damage_queue_gap",
         "producer_runtime_world_part_player_dance_ritual_queue_gap",
         "producer_runtime_world_part_biome_distribution_queue_popup_gap",
@@ -12861,7 +15239,6 @@ ISSUE719_PRODUCER_RUNTIME_IMPLEMENTATION_GAP_BUCKETS: Final[frozenset[str]] = fr
         "producer_runtime_world_part_chat_emit_gap",
         "producer_runtime_world_part_elevator_switch_queue_popup_gap",
         "producer_runtime_world_part_fungal_cure_emit_gap",
-        "producer_runtime_world_part_giant_clam_dimension_queue_popup_gap",
         "producer_runtime_world_part_golem_mound_popup_gap",
         "producer_runtime_world_part_harvestable_attempt_gap",
         "producer_runtime_world_part_stomach_water_queue_popup_gap",

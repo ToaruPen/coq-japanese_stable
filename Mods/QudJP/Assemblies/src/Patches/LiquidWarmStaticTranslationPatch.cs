@@ -28,6 +28,22 @@ public static class LiquidWarmStaticTranslationPatch
         "^(?:(?<owner>.+?)'s|Your) mutation (?<oldMutation>.+?) transmutes into the mutation (?<newMutation>.+?)\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex WishEffectAppliedPattern = new(
+        "^(?<effect>.+?) applied to (?<target>.+?)\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex WishEffectNoValidTargetsPattern = new(
+        "^No valid targets for (?<effect>.+?)\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex GlitchObjectPattern = new(
+        "^(?<object>.+?) starts to glitch\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex GlitchLiquidMixturePattern = new(
+        "^The liquid mixture inside (?<object>.+?) starts to glitch\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     [ThreadStatic]
     private static int activeDepth;
 
@@ -45,6 +61,9 @@ public static class LiquidWarmStaticTranslationPatch
 
         AddTarget(targets, targetType, "GlitchSkills", new[] { gameObjectType });
         AddTarget(targets, targetType, "GlitchMutations", new[] { gameObjectType });
+        AddTarget(targets, targetType, "GlitchLiquidComponents", new[] { gameObjectType, typeof(string), typeof(int), typeof(bool) });
+        AddTarget(targets, targetType, "WishWarmEffect", Type.EmptyTypes);
+        AddTarget(targets, targetType, "WishWarmEffectSpec", new[] { typeof(string) });
         return targets;
     }
 
@@ -206,6 +225,26 @@ public static class LiquidWarmStaticTranslationPatch
                 (match, spans) =>
                     $"{RestorePossessiveOwner(match, spans)}の変異{Restore(match, spans, "oldMutation")}が"
                     + $"変異{Restore(match, spans, "newMutation")}へ変質した。",
+                out translated)
+            || TryTranslatePattern(
+                WishEffectAppliedPattern,
+                source,
+                (match, spans) => $"{Restore(match, spans, "effect")}が{Restore(match, spans, "target")}に適用された。",
+                out translated)
+            || TryTranslatePattern(
+                WishEffectNoValidTargetsPattern,
+                source,
+                (match, spans) => $"{Restore(match, spans, "effect")}の有効な対象がありません。",
+                out translated)
+            || TryTranslatePattern(
+                GlitchLiquidMixturePattern,
+                source,
+                (match, spans) => $"{Restore(match, spans, "object")}の中の混合液がグリッチし始めた。",
+                out translated)
+            || TryTranslatePattern(
+                GlitchObjectPattern,
+                source,
+                (match, spans) => $"{Restore(match, spans, "object")}がグリッチし始めた。",
                 out translated);
     }
 

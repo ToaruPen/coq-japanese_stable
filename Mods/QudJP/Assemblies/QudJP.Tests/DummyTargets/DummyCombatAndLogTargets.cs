@@ -4,6 +4,9 @@ using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
+#pragma warning disable S2325 // Dummy target instance methods mirror game instance methods for Harmony tests.
+#pragma warning disable S4144 // Dummy target aliases intentionally share simple popup implementations.
+
 namespace QudJP.Tests.DummyTargets;
 
 internal sealed class DummyCell
@@ -117,18 +120,6 @@ internal sealed class DummyPhysicsApplyDischargeTarget
     }
 }
 
-internal sealed class DummySapChargeOnHitTarget
-{
-    public string MessageToSend { get; set; } = string.Empty;
-
-    public bool CheckApply(DummyGameEvent e)
-    {
-        _ = e;
-        DummyMessageQueue.AddPlayerMessage(MessageToSend);
-        return true;
-    }
-}
-
 internal sealed class DummyPhysicsProcessTakeDamageTarget
 {
     public string MessageToSend { get; set; } = string.Empty;
@@ -146,6 +137,18 @@ internal sealed class DummyPhysicsProcessTakeDamageTarget
         }
 
         DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+        return true;
+    }
+}
+
+internal sealed class DummySapChargeOnHitTarget
+{
+    public string MessageToSend { get; set; } = string.Empty;
+
+    public bool CheckApply(DummyGameEvent e)
+    {
+        _ = e;
+        DummyMessageQueue.AddPlayerMessage(MessageToSend);
         return true;
     }
 }
@@ -383,6 +386,8 @@ internal sealed class DummyGameObjectPopupTarget
 
     public IReadOnlyList<string>? PickOptionOptionsToSend { get; set; }
 
+    public IReadOnlyList<string>? PullDownOptionsToSend { get; set; }
+
     public Task<bool> ConfirmUseImportantAsync()
     {
         _ = DummyPopupShow.ShowYesNoAsync(PopupMessageToSend).GetAwaiter().GetResult();
@@ -430,6 +435,73 @@ internal sealed class DummyGameObjectPopupTarget
     {
         DummyPopupShow.ShowFail(PopupMessageToSend);
         return true;
+    }
+
+    public void HandleInventoryActionEvent()
+    {
+        _ = DummyPopupGenericTarget.PickOption(
+            Intro: "Instruct Irudad to follow at what distance?",
+            Options: new[] { "close", "medium", "far" });
+    }
+
+    public void PullDown(bool allowAlternate = false)
+    {
+        _ = allowAlternate;
+        _ = DummyPopupGenericTarget.PickOption(
+            Title: "Select a destination",
+            Options: PullDownOptionsToSend ?? new[]
+            {
+                "Current location (C)",
+                "Arrival location, Rust Wells (NW)",
+                "Center (C)",
+                "Rust Wells (N)",
+            });
+    }
+}
+
+internal sealed class DummyCrayonsPopupTarget
+{
+    public static string LastWorldMapFailure { get; private set; } = string.Empty;
+
+    public static string LastColorPickerPrompt { get; private set; } = string.Empty;
+
+    public static string LastPickDirectionTitle { get; private set; } = string.Empty;
+
+    public static string LastNanocrayonFailure { get; private set; } = string.Empty;
+
+    public static string LastPrettyPicture { get; private set; } = string.Empty;
+
+    public static void Reset()
+    {
+        LastWorldMapFailure = string.Empty;
+        LastColorPickerPrompt = string.Empty;
+        LastPickDirectionTitle = string.Empty;
+        LastNanocrayonFailure = string.Empty;
+        LastPrettyPicture = string.Empty;
+    }
+
+    public void HandleEvent()
+    {
+        DummyPopupShow.ShowFail("You cannot do that on the world map.");
+        LastWorldMapFailure = "You cannot do that on the world map.";
+        _ = DummyPopupGenericTarget.AskString("What do you want to draw?");
+        _ = ShowColorPicker("What color do you want to draw with?");
+        _ = ShowPickDirection("Color");
+        LastNanocrayonFailure = "You're not talented enough to draw that.";
+        LastPrettyPicture = "You draw a pretty picture.";
+        DummyPopupShow.Show("The picture stretches into the 3rd dimension and becomes real.");
+    }
+
+    private static string ShowColorPicker(string prompt)
+    {
+        LastColorPickerPrompt = prompt;
+        return "R";
+    }
+
+    private static string ShowPickDirection(string title)
+    {
+        LastPickDirectionTitle = title;
+        return "N";
     }
 }
 
@@ -675,6 +747,8 @@ internal sealed class DummyLiquidWarmStaticTarget
 
     public string PopupMessageToSend { get; set; } = string.Empty;
 
+    public string? LastWishWarmEffectSpecName { get; private set; }
+
     public void GlitchSkills(bool usePopup)
     {
         Emit(usePopup);
@@ -683,6 +757,22 @@ internal sealed class DummyLiquidWarmStaticTarget
     public void GlitchMutations(bool usePopup)
     {
         Emit(usePopup);
+    }
+
+    public void GlitchLiquidComponents(bool usePopup)
+    {
+        Emit(usePopup);
+    }
+
+    public void WishWarmEffect()
+    {
+        Emit(usePopup: false);
+    }
+
+    public void WishWarmEffectSpec(string name)
+    {
+        LastWishWarmEffectSpecName = name;
+        Emit(usePopup: false);
     }
 
     private void Emit(bool usePopup)
@@ -1814,6 +1904,12 @@ internal sealed class DummySingleCallsiteOwnerPopupTarget
         DummyPopupShow.Show(StaticPopupMessageToShow);
     }
 
+    public static bool FireElevatorSwitchEvent()
+    {
+        DummyPopupShow.Show(StaticPopupMessageToShow);
+        return true;
+    }
+
     public static bool HandleBaetylRewardWish(string spec)
     {
         _ = spec;
@@ -1960,6 +2056,14 @@ internal sealed class DummySingleCallsiteOwnerPopupTarget
     {
         _ = e;
         _ = nameof(HandleGenocideCurio);
+        DummyPopupShow.Show(PopupMessageToShow);
+        return true;
+    }
+
+    public bool HandleIGrenade(DummyInventoryActionEvent? e = null)
+    {
+        _ = e;
+        _ = nameof(HandleIGrenade);
         DummyPopupShow.Show(PopupMessageToShow);
         return true;
     }
@@ -2259,6 +2363,20 @@ internal sealed class DummySingleCallsiteOwnerPopupTarget
         DummyPopupShow.Show(StaticPopupMessageToShow);
     }
 
+    public static void WishFindBlueprintPopulation(string? blueprint = null)
+    {
+        _ = blueprint;
+        DummyPopupShow.Show(StaticPopupMessageToShow);
+    }
+
+    public static void RollOneFromPopulation(string populationName, Dictionary<string, string>? vars = null, string? defaultIfNull = null)
+    {
+        _ = populationName;
+        _ = vars;
+        _ = defaultIfNull;
+        DummyPopupShow.Show(StaticPopupMessageToShow);
+    }
+
     public static void TransitToThinWorld(DummyGameObject sender, bool express = false)
     {
         _ = sender;
@@ -2446,6 +2564,20 @@ internal sealed class DummyFungalSporeInfectionTarget
         return true;
     }
 
+    public static bool ChooseLimbForInfection(string fungusName, IReadOnlyList<string> bodyParts)
+    {
+        if (bodyParts.Count == 0)
+        {
+            DummyPopupShow.Show("You have no infectable body parts.");
+            return false;
+        }
+
+        DummyPopupGenericTarget.PickOption(
+            Title: "Choose a limb to infect with " + fungusName + ".",
+            Options: bodyParts);
+        return true;
+    }
+
     public bool FireEvent(DummyGameEvent e)
     {
         _ = e;
@@ -2594,6 +2726,35 @@ internal sealed class DummyGameObjectDieTarget
     }
 }
 
+internal sealed class DummyGameObjectDestroyTarget
+{
+    public string MessageToSend { get; set; } = string.Empty;
+
+    public string PopupMessageToSend { get; set; } = string.Empty;
+
+    public string? ColorToSend { get; set; }
+
+    public bool UsePopup { get; set; }
+
+    public bool Destroy(string? Reason = null, bool Silent = false, bool Obliterate = false, string? ThirdPersonReason = null)
+    {
+        _ = Reason;
+        _ = Silent;
+        _ = Obliterate;
+        _ = ThirdPersonReason;
+        if (UsePopup)
+        {
+            DummyPopupShow.Show(PopupMessageToSend);
+        }
+        else
+        {
+            DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+        }
+
+        return true;
+    }
+}
+
 internal sealed class DummyGameObjectFireEventTarget
 {
     public string MessageToSend { get; set; } = string.Empty;
@@ -2642,7 +2803,14 @@ internal sealed class DummyGameObjectSpotTarget
         _ = ignoreFartherThan;
         _ = ignorePlayerTarget;
         _ = checkingPrior;
-        DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+        if (popSpot)
+        {
+            DummyPopupShow.Show(MessageToSend);
+        }
+        else if (!popSpot && logSpot)
+        {
+            DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
+        }
         return true;
     }
 }

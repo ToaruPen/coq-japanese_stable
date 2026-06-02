@@ -297,9 +297,17 @@ public static class TradeScreenUiTranslationPatch
         var name = spans.Count == 0
             ? match.Groups["name"].Value
             : ColorAwareTranslationComposer.RestoreCapture(match.Groups["name"].Value, spans, match.Groups["name"]);
+        name = TranslateDisplayNameCapture(name);
         translated = string.Format(CultureInfo.InvariantCulture, template, name);
         DynamicTextObservability.RecordTransform(Context, "TradeScreenUi.AskNumber", source, translated);
         return !string.Equals(source, translated, StringComparison.Ordinal);
+    }
+
+    private static string TranslateDisplayNameCapture(string source)
+    {
+        return DisplayNameCaptureTranslator.TryTranslatePlaceholderValue(source, Context, out var translated)
+            ? translated
+            : source;
     }
 
     private static void TranslateLegacyReadout(Type? targetType)

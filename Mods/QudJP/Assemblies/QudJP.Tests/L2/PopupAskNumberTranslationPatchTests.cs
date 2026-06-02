@@ -169,12 +169,84 @@ public sealed class PopupAskNumberTranslationPatchTests
             Is.EqualTo("{{Y|fermented yuckwheat stem}}: いくつ保存しますか？ (最大 = 3)"));
     }
 
+    [TestCase(
+        "Supply {{Y|turret}} with how many lead slugs? (max=7)",
+        "{{Y|タレット}}へ鉛スラッグをいくつ補給しますか？ (最大=7)")]
+    [TestCase(
+        "Supply {{Y|turret}} with how many {{C|lead slugs}}? (max=7)",
+        "{{Y|タレット}}へ{{C|鉛スラッグ}}をいくつ補給しますか？ (最大=7)")]
+    [TestCase(
+        "Supply {{Y|turret}} with how many of Lead Slug? (max=7)",
+        "{{Y|タレット}}へ鉛スラッグをいくつ補給しますか？ (最大=7)")]
+    [TestCase(
+        "Supply {{Y|turret}} with how many mystery shells? (max=7)",
+        "{{Y|タレット}}へmystery shellsをいくつ補給しますか？ (最大=7)")]
+    [TestCase(
+        "\u0001{{Y|タレット}}へ鉛スラッグをいくつ補給しますか？ (最大=7)",
+        "{{Y|タレット}}へ鉛スラッグをいくつ補給しますか？ (最大=7)")]
+    [TestCase(
+        "Supply {{Y|turret}} with how many ? (max=7)",
+        "Supply {{Y|turret}} with how many ? (max=7)")]
+    [TestCase("", "")]
+    public void Prefix_TranslatesMagazineAmmoLoaderSupplyPrompt(string source, string expected)
+    {
+        WriteDictionary((
+            "Supply {0} with how many {1}? (max={2})",
+            "{0}へ{1}をいくつ補給しますか？ (最大={2})"));
+        WriteDictionaryFile(
+            "ui-displayname-atomic.ja.json",
+            ("turret", "タレット"),
+            ("Lead Slug", "鉛スラッグ"));
+
+        using var patch = PatchMethod(nameof(DummyPopupGenericTarget.AskNumber));
+
+        DummyPopupGenericTarget.AskNumber(source);
+
+        Assert.That(
+            DummyPopupGenericTarget.LastAskNumberMessage,
+            Is.EqualTo(expected));
+    }
+
+    [TestCase(
+        "Supply {{Y|turret}} with how many drams of your water? (max=7)",
+        "{{Y|タレット}}へあなたの水を何ドラム補給しますか？ (最大=7)")]
+    [TestCase(
+        "Supply {{Y|turret}} with how many drams of your {{B|water}}? (max=7)",
+        "{{Y|タレット}}へあなたの{{B|水}}を何ドラム補給しますか？ (最大=7)")]
+    [TestCase(
+        "Supply {{Y|turret}} with how many drams of your mystery fluid? (max=7)",
+        "{{Y|タレット}}へあなたのmystery fluidを何ドラム補給しますか？ (最大=7)")]
+    [TestCase(
+        "\u0001{{Y|タレット}}へあなたの水を何ドラム補給しますか？ (最大=7)",
+        "{{Y|タレット}}へあなたの水を何ドラム補給しますか？ (最大=7)")]
+    [TestCase("", "")]
+    public void Prefix_TranslatesLiquidLoaderSupplyPrompt(string source, string expected)
+    {
+        WriteDictionaryFile(
+            "ui-displayname-atomic.ja.json",
+            ("turret", "タレット"));
+        WriteDictionaryFile(
+            "ui-liquids.ja.json",
+            ("water", "水"));
+
+        using var patch = PatchMethod(nameof(DummyPopupGenericTarget.AskNumber));
+
+        DummyPopupGenericTarget.AskNumber(source);
+
+        Assert.That(
+            DummyPopupGenericTarget.LastAskNumberMessage,
+            Is.EqualTo(expected));
+    }
+
     [Test]
     public void Prefix_UsesTradeScreenOwnerTemplate_ForTradeSomePromptBeforeGenericPopupRoute()
     {
         WriteDictionary(
             ("Add how many {0} to trade.", "{0}をいくつ取引に追加しますか？"),
             ("Add how many {{R|lead slug}} to trade.", "generic popup route should not be used"));
+        WriteDictionaryFile(
+            "ui-displayname-atomic.ja.json",
+            ("Lead Slug", "鉛スラッグ"));
 
         using var patch = PatchMethod(nameof(DummyPopupGenericTarget.AskNumberAsync));
 
@@ -182,7 +254,7 @@ public sealed class PopupAskNumberTranslationPatchTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(DummyPopupGenericTarget.LastAskNumberMessage, Is.EqualTo("{{R|lead slug}}をいくつ取引に追加しますか？"));
+            Assert.That(DummyPopupGenericTarget.LastAskNumberMessage, Is.EqualTo("{{R|鉛スラッグ}}をいくつ取引に追加しますか？"));
             Assert.That(
                 DynamicTextObservability.GetRouteFamilyHitCountForTests(
                     nameof(TradeScreenUiTranslationPatch),
@@ -226,39 +298,15 @@ public sealed class PopupAskNumberTranslationPatchTests
 
     private void WriteDictionary(params (string key, string text)[] entries)
     {
-        var builder = new StringBuilder();
-        builder.Append('{');
-        builder.Append("\"entries\":[");
-
-        for (var index = 0; index < entries.Length; index++)
-        {
-            if (index > 0)
-            {
-                builder.Append(',');
-            }
-
-            builder.Append("{\"key\":\"");
-            builder.Append(EscapeJson(entries[index].key));
-            builder.Append("\",\"text\":\"");
-            builder.Append(EscapeJson(entries[index].text));
-            builder.Append("\"}");
-        }
-
-        builder.Append("]}");
-        File.WriteAllText(
-            Path.Combine(dictionaryDirectory, "popup-asknumber.ja.json"),
-            builder.ToString(),
-            new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
+        WriteDictionaryFile("popup-asknumber.ja.json", entries);
     }
 
-    private static string EscapeJson(string value)
+    private void WriteDictionaryFile(string fileName, params (string key, string text)[] entries)
     {
-        return value
-            .Replace("\\", "\\\\", StringComparison.Ordinal)
-            .Replace("\"", "\\\"", StringComparison.Ordinal)
-            .Replace("\r", "\\r", StringComparison.Ordinal)
-            .Replace("\n", "\\n", StringComparison.Ordinal)
-            .Replace("\t", "\\t", StringComparison.Ordinal);
+        TestDictionaryWriter.WriteEntries(
+            Path.Combine(dictionaryDirectory, fileName),
+            appendNewLine: false,
+            entries);
     }
 
     private sealed class HarmonyPatchScope : IDisposable

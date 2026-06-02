@@ -882,7 +882,7 @@
     <part Name="PreservableItem" Result="Wild Rice" Number="3" />
   </object>
   <object Name="Qudzu Stem" Inherits="Snack" Replace="true">
-    <part Name="Render" DisplayName="{{r|クドズーの茎}}" Tile="Items/sw_stem.bmp" ColorString="&amp;r" DetailColor="w" />
+    <part Name="Render" DisplayName="{{r|クッズーの茎}}" Tile="Items/sw_stem.bmp" ColorString="&amp;r" DetailColor="w" />
     <part Name="Description" Short="赤いセロリのような茎が、数世紀分の摩耗した塵で粉まみれになっている。" />
     <part Name="Commerce" Value="10" />
   </object>
