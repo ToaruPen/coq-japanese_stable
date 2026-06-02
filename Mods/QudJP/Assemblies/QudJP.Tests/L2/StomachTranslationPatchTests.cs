@@ -141,6 +141,8 @@ public sealed class StomachTranslationPatchTests
                 Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(source));
                 Assert.That(HitCount("StomachMoistureBody"), Is.Zero);
                 Assert.That(HitCount("StomachMoistureThroat"), Is.Zero);
+                Assert.That(HitCount("StomachOverdrink"), Is.Zero);
+                Assert.That(HitCount("StomachOverdrinkVomiting"), Is.Zero);
             });
         });
     }
@@ -161,6 +163,8 @@ public sealed class StomachTranslationPatchTests
                 Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(source));
                 Assert.That(HitCount("StomachMoistureBody"), Is.Zero);
                 Assert.That(HitCount("StomachMoistureThroat"), Is.Zero);
+                Assert.That(HitCount("StomachOverdrink"), Is.Zero);
+                Assert.That(HitCount("StomachOverdrinkVomiting"), Is.Zero);
             });
         });
     }

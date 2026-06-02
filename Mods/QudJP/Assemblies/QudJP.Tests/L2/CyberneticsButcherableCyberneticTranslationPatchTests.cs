@@ -122,7 +122,11 @@ public sealed class CyberneticsButcherableCyberneticTranslationPatchTests
 
             _ = DummyCyberneticsButcherableCyberneticTarget.AttemptButcher(new DummyGameObject());
 
-            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(source));
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(source));
+                Assert.That(QueueHitCount(), Is.Zero);
+            });
         });
     }
 

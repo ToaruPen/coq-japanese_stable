@@ -5379,6 +5379,25 @@ public sealed class CombatAndLogMessageQueuePatchTests
     }
 
     [Test]
+    public void FungalSporeInfectionChooseLimbForInfection_LeavesNoInfectableBodyPartsPopup_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShow(harmony);
+
+            _ = DummyFungalSporeInfectionTarget.ChooseLimbForInfection("glowcrust", Array.Empty<string>());
+
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("You have no infectable body parts."));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void FungalSporeInfectionChooseLimbForInfection_StripsDirectMarkedBodyPart_WhenOwnerPatched()
     {
         var harmonyId = CreateHarmonyId();
@@ -7399,6 +7418,56 @@ public sealed class CombatAndLogMessageQueuePatchTests
     }
 
     [Test]
+    public void GameObjectDestroy_LeavesCompanionDeathPopupMessageUnchanged_WhenOwnerAbsent()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShow(harmony);
+
+            var target = new DummyGameObjectDestroyTarget
+            {
+                UsePopup = true,
+                PopupMessageToSend = "Your companion, Irudad, died.",
+            };
+
+            target.Destroy();
+
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("Your companion, Irudad, died."));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void GameObjectDestroy_StripsDirectMarkedQueuedMessage_WhenOwnerAbsent()
+    {
+        const string translated = "仲間のIrudadは死亡した。";
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+
+            var target = new DummyGameObjectDestroyTarget
+            {
+                MessageToSend = MessageFrameTranslator.MarkDirectTranslation(translated),
+            };
+
+            target.Destroy();
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo(translated));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void GameObjectDestroy_StripsDirectMarkedPopupMessage_WhenPatched()
     {
         var harmonyId = CreateHarmonyId();
@@ -7651,6 +7720,40 @@ public sealed class CombatAndLogMessageQueuePatchTests
             target.ArePerceptibleHostilesNearby(popSpot: true);
 
             Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(translated));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void GameObjectSpot_LeavesSpotPopupUnchanged_WhenOwnerAbsent()
+    {
+        const string source = "You see a snapjaw to the north and stop auto-exploring.";
+        DynamicTextObservability.ResetForTests();
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShow(harmony);
+
+            var target = new DummyGameObjectSpotTarget
+            {
+                MessageToSend = source,
+            };
+
+            target.ArePerceptibleHostilesNearby(popSpot: true);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(source));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(GameObjectSpotTranslationPatch),
+                        "Spot"),
+                    Is.Zero);
+            });
         }
         finally
         {

@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using HarmonyLib;
 using QudJP.Patches;
 using QudJP.Tests.DummyTargets;
@@ -130,6 +131,50 @@ public sealed class VehicleFollowerPopupTranslationPatchTests
             });
     }
 
+    [Test]
+    public void Patch_LeavesUnknownVehicleFollowerPopup_WhenOwnerPatched()
+    {
+        const string source = "Vehicle follower popup unknown.";
+
+        OwnerPopupRouteTestHarness.WithPatchedPopupOwner(
+            typeof(VehicleFollowerPopupTranslationPatch),
+            OwnerPopupRouteTestHarness.RequireMethod(typeof(DummyVehicleFollowerTarget), nameof(DummyVehicleFollowerTarget.HandleEvent)),
+            () =>
+            {
+                new DummyVehicleFollowerTarget
+                {
+                    PopupMessageToShow = source,
+                }.HandleEvent();
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(source));
+                    Assert.That(RouteHitCount("NoFollowers"), Is.Zero);
+                });
+            });
+    }
+
+    [Test]
+    public void Patch_PreservesColorTagsForVehicleFollowerPopup_WhenOwnerPatched()
+    {
+        OwnerPopupRouteTestHarness.WithPatchedPopupOwner(
+            typeof(VehicleFollowerPopupTranslationPatch),
+            OwnerPopupRouteTestHarness.RequireMethod(typeof(DummyVehicleFollowerTarget), nameof(DummyVehicleFollowerTarget.HandleEvent)),
+            () =>
+            {
+                new DummyVehicleFollowerTarget
+                {
+                    PopupMessageToShow = "{{R|You have no followers that can enter {{Y|the chrome steed}}.}}",
+                }.HandleEvent();
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("{{R|{{Y|the chrome steed}}に入れる仲間はいない。}}"));
+                    Assert.That(RouteHitCount("NoFollowers"), Is.EqualTo(1));
+                });
+            });
+    }
+
     private static int RouteHitCount(string detail)
     {
         return OwnerPopupRouteTestHarness.RouteHitCount(typeof(VehicleFollowerPopupTranslationPatch), detail);
@@ -139,6 +184,7 @@ public sealed class VehicleFollowerPopupTranslationPatchTests
     {
         public string PopupMessageToShow { get; init; } = string.Empty;
 
+        [MethodImpl(MethodImplOptions.NoInlining)]
         public void HandleEvent()
         {
             DummyPopupShow.ShowFail(PopupMessageToShow);

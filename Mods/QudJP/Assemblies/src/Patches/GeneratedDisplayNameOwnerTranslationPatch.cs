@@ -136,6 +136,11 @@ internal static class GeneratedDisplayNameOwnerTranslationHelpers
         }
 
         setStringProperty.Invoke(target, [propertyName, translated, false]);
+        if (IsDirectMarkerStripOnly(source!, translated))
+        {
+            return true;
+        }
+
         DynamicTextObservability.RecordTransform(Context, Family + "." + propertyName, source!, translated);
         return true;
     }
@@ -167,8 +172,19 @@ internal static class GeneratedDisplayNameOwnerTranslationHelpers
             return false;
         }
 
+        if (IsDirectMarkerStripOnly(source!, translated))
+        {
+            return true;
+        }
+
         DynamicTextObservability.RecordTransform(Context, Family + "." + memberName, source!, translated);
         return true;
+    }
+
+    private static bool IsDirectMarkerStripOnly(string source, string translated)
+    {
+        return MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText)
+            && string.Equals(markedText, translated, StringComparison.Ordinal);
     }
 
     private static string? TranslateGeneratedDisplayName(string source)

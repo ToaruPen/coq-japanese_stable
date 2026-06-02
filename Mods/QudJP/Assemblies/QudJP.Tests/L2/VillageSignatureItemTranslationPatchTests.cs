@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using HarmonyLib;
 using QudJP.Patches;
 
@@ -177,6 +178,7 @@ public sealed class VillageSignatureItemTranslationPatchTests
 
         public DummyGameObject? signatureHistoricObjectInstance;
 
+        [MethodImpl(MethodImplOptions.NoInlining)]
         public void generateSignatureItems()
         {
             signatureHistoricObjectInstance = new DummyGameObject

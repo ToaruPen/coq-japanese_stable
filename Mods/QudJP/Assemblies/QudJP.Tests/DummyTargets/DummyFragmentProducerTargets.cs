@@ -1317,6 +1317,7 @@ internal static class DummyTinkeringHelpersTarget
         ColorPickerTitleToSend = "Choose a color for your maker's mark.";
     }
 
+    [MethodImpl(MethodImplOptions.NoInlining)]
     public static void CheckMakersMark()
     {
         _ = DummyPopupGenericTarget.PickOption(

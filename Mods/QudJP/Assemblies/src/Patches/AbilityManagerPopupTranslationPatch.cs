@@ -87,7 +87,7 @@ public static class AbilityManagerPopupTranslationPatch
 
     internal static bool TryTranslatePopupMessage(string source, string route, string family, out string translated)
     {
-        if (!OwnerTranslationScope.IsActive(activeDepth) || string.IsNullOrEmpty(source))
+        if (string.IsNullOrEmpty(source))
         {
             translated = source;
             return false;
@@ -97,6 +97,12 @@ public static class AbilityManagerPopupTranslationPatch
         {
             translated = markedText;
             return true;
+        }
+
+        if (!OwnerTranslationScope.IsActive(activeDepth))
+        {
+            translated = source;
+            return false;
         }
 
         if (string.Equals(source, NoActivatedAbilitiesMessage, StringComparison.Ordinal))

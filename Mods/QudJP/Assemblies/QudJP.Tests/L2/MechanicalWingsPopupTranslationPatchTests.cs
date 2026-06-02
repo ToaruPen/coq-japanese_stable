@@ -224,6 +224,26 @@ public sealed class MechanicalWingsPopupTranslationPatchTests
     }
 
     [Test]
+    public void Patch_DoesNotTranslateMutationWingsWillNotMove_WhenCommandOwnerAbsent()
+    {
+        RunWithPopupPatchOnly(() =>
+        {
+            var target = new DummyMechanicalWingsProducer
+            {
+                PopupMessageToShow = WingsWillNotMoveSource,
+            };
+
+            target.HandleCommand();
+        });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(WingsWillNotMoveSource));
+            Assert.That(GetWingsWillNotMoveHitCount(), Is.Zero);
+        });
+    }
+
+    [Test]
     public void Patch_StripsDirectMarkedPopup_WhenOwnerPatched()
     {
         var source = MessageFrameTranslator.MarkDirectTranslation(StartupSource);

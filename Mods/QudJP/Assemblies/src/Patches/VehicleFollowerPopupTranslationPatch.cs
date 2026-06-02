@@ -86,7 +86,12 @@ public static class VehicleFollowerPopupTranslationPatch
             return false;
         }
 
-        translated = RestoreCapture(match, spans, "vehicle") + "に入れる仲間はいない。";
+        var translatedWithoutWholeSourceWrappers = RestoreCapture(match, spans, "vehicle") + "に入れる仲間はいない。";
+        translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+            translatedWithoutWholeSourceWrappers,
+            spans,
+            stripped.Length,
+            source);
         DynamicTextObservability.RecordTransform(route, "Popup.ProducerText." + Context + ".NoFollowers", source, translated);
         return true;
     }

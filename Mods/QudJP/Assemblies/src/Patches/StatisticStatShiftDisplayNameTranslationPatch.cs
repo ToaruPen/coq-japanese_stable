@@ -43,6 +43,12 @@ public static class StatisticStatShiftDisplayNameTranslationPatch
     {
         try
         {
+            if (MessageFrameTranslator.TryStripDirectTranslationMarker(DisplayName, out var markedText))
+            {
+                DisplayName = markedText;
+                return;
+            }
+
             if (!TryTranslateStatShiftDisplayName(DisplayName, out var translated)
                 || string.Equals(DisplayName, translated, StringComparison.Ordinal))
             {
@@ -67,10 +73,6 @@ public static class StatisticStatShiftDisplayNameTranslationPatch
         }
 
         var sourceText = source!;
-        if (MessageFrameTranslator.TryStripDirectTranslationMarker(sourceText, out var markedText))
-        {
-            sourceText = markedText;
-        }
 
         if (FixedTranslations.TryGetValue(sourceText, out var exactTranslation))
         {
@@ -95,6 +97,6 @@ public static class StatisticStatShiftDisplayNameTranslationPatch
         }
 
         translated = sourceText;
-        return !string.Equals(sourceText, source, StringComparison.Ordinal);
+        return false;
     }
 }

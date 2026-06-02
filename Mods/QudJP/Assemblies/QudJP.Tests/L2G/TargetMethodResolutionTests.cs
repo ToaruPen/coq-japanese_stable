@@ -567,6 +567,7 @@ public sealed class TargetMethodResolutionTests
         });
     }
 
+#if HAS_GAME_DLL
     [TestCase(typeof(VillageDynamicQuestRewardGameObjectTranslationPatch), "XRL.World.DynamicQuestRewardElement_GameObject", new[] { "XRL.World.GameObject" })]
     public void TargetConstructor_ResolvesExpectedSignature(
         Type patchType,
@@ -588,6 +589,7 @@ public sealed class TargetMethodResolutionTests
             Assert.That(parameterTypes, Is.EqualTo(expectedParameterTypes));
         });
     }
+#endif
 
     [Test]
     public void CrippleApplyTargetMethod_ResolvesExpectedFullSignature()
@@ -2648,6 +2650,12 @@ public sealed class TargetMethodResolutionTests
             null,
             [gameObjectType, gameObjectType],
             null);
+        var showVendorActions = tradeUiType.GetMethod(
+            "ShowVendorActions",
+            BindingFlags.Public | BindingFlags.Static,
+            null,
+            [gameObjectType, gameObjectType, typeof(bool)],
+            null);
 
         Assert.Multiple(() =>
         {
@@ -2656,6 +2664,7 @@ public sealed class TargetMethodResolutionTests
             Assert.That(showTradeScreen, Is.Not.Null, "XRL.UI.TradeUI.ShowTradeScreen signature changed.");
             Assert.That(doVendorExamine, Is.Not.Null, "XRL.UI.TradeUI.DoVendorExamine signature changed.");
             Assert.That(doVendorRecharge, Is.Not.Null, "XRL.UI.TradeUI.DoVendorRecharge signature changed.");
+            Assert.That(showVendorActions, Is.Not.Null, "XRL.UI.TradeUI.ShowVendorActions signature changed.");
         });
 
         var actualSignatures = new[]
@@ -2665,6 +2674,7 @@ public sealed class TargetMethodResolutionTests
             FullMethodSignature(doVendorExamine!),
             FullMethodSignature(doVendorRepair!),
             FullMethodSignature(doVendorRecharge!),
+            FullMethodSignature(showVendorActions!),
         };
 
         Assert.That(actualSignatures, Is.EquivalentTo(new[]
@@ -2674,6 +2684,7 @@ public sealed class TargetMethodResolutionTests
             "XRL.UI.TradeUI|DoVendorExamine|System.Void|XRL.World.GameObject|XRL.World.GameObject",
             "XRL.UI.TradeUI|DoVendorRepair|System.Void|XRL.World.GameObject|XRL.World.GameObject",
             "XRL.UI.TradeUI|DoVendorRecharge|System.Boolean|XRL.World.GameObject|XRL.World.GameObject",
+            "XRL.UI.TradeUI|ShowVendorActions|System.String|XRL.World.GameObject|XRL.World.GameObject|System.Boolean",
         }));
     }
 

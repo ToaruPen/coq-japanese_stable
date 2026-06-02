@@ -2807,7 +2807,7 @@ internal sealed class DummyGameObjectSpotTarget
         {
             DummyPopupShow.Show(MessageToSend);
         }
-        else if (logSpot)
+        else if (!popSpot && logSpot)
         {
             DummyMessageQueue.AddPlayerMessage(MessageToSend, ColorToSend, Capitalize: false);
         }

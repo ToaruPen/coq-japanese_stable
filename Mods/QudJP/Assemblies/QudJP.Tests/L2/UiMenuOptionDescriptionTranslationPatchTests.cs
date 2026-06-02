@@ -327,29 +327,40 @@ public sealed class UiMenuOptionDescriptionTranslationPatchTests
             ("navigate", "移動"),
             ("Expand", "展開"));
 
-        var otherOwner = new DummyOtherMenuOwner();
-        otherOwner.UpdateMenuBars();
-
-        DummyCharacterAttributeLineTarget.categoryExpandOptions.Add(new DummyMenuOption("Open Details", "CmdDetails"));
-        UiMenuOptionDescriptionTranslationPatch.Postfix(otherOwner);
-        UiMenuOptionDescriptionTranslationPatch.Postfix(new DummyCharacterAttributeLineTarget());
-
-        Assert.Multiple(() =>
+        var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";
+        var harmony = new Harmony(harmonyId);
+        try
         {
-            Assert.That(otherOwner.hotkeyBar.choices[0].Description, Is.EqualTo("navigate"));
-            Assert.That(DummyCharacterAttributeLineTarget.categoryExpandOptions[0].Description, Is.EqualTo("展開"));
-            Assert.That(DummyCharacterAttributeLineTarget.categoryExpandOptions[1].Description, Is.EqualTo("Open Details"));
-            Assert.That(
-                DynamicTextObservability.GetRouteFamilyHitCountForTests(
-                    nameof(UiMenuOptionDescriptionTranslationPatch),
-                    "Qud.UI.HighScoresScreen.UpdateMenuBars.MenuOptionDescription"),
-                Is.EqualTo(0));
-            Assert.That(
-                DynamicTextObservability.GetRouteFamilyHitCountForTests(
-                    nameof(UiMenuOptionDescriptionTranslationPatch),
-                    "Qud.UI.CharacterAttributeLine.StaticMenuOptionDescription"),
-                Is.EqualTo(1));
-        });
+            PatchPostfix(harmony, typeof(DummyOtherMenuOwner), nameof(DummyOtherMenuOwner.UpdateMenuBars));
+            PatchPostfix(harmony, typeof(DummyCharacterAttributeLineTarget), nameof(DummyCharacterAttributeLineTarget.SetupContexts));
+
+            var otherOwner = new DummyOtherMenuOwner();
+            otherOwner.UpdateMenuBars();
+
+            DummyCharacterAttributeLineTarget.categoryExpandOptions.Add(new DummyMenuOption("Open Details", "CmdDetails"));
+            new DummyCharacterAttributeLineTarget().SetupContexts(new object());
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(otherOwner.hotkeyBar.choices[0].Description, Is.EqualTo("navigate"));
+                Assert.That(DummyCharacterAttributeLineTarget.categoryExpandOptions[0].Description, Is.EqualTo("展開"));
+                Assert.That(DummyCharacterAttributeLineTarget.categoryExpandOptions[1].Description, Is.EqualTo("Open Details"));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(UiMenuOptionDescriptionTranslationPatch),
+                        "Qud.UI.HighScoresScreen.UpdateMenuBars.MenuOptionDescription"),
+                    Is.EqualTo(0));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(UiMenuOptionDescriptionTranslationPatch),
+                        "Qud.UI.CharacterAttributeLine.StaticMenuOptionDescription"),
+                    Is.EqualTo(1));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
     }
 
     private static void PatchPostfix(Harmony harmony, Type targetType, string methodName)
@@ -939,6 +950,7 @@ public sealed class UiMenuOptionDescriptionTranslationPatchTests
     {
         public DummyHotkeyBar hotkeyBar = new DummyHotkeyBar();
 
+        [MethodImpl(MethodImplOptions.NoInlining)]
         public void UpdateMenuBars()
         {
             hotkeyBar.BeforeShow(

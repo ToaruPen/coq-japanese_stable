@@ -13,8 +13,6 @@ public static class CookingRecipeDisplayNameTranslationPatch
     internal const string Family = Context + ".HistoricSpiceGeneratedName";
 
     private const string PresetMealNameDictionaryFile = "Scoped/ui-popup-campfire-preset-meals.ja.json";
-    private const string MarkupSuffix = "}}";
-
     [ThreadStatic]
     private static int generateRecipeTileSuppressionDepth;
 
@@ -134,46 +132,14 @@ public static class CookingRecipeDisplayNameTranslationPatch
 
     internal static bool TryTranslateDisplayName(string source, out string translated)
     {
-        var markupSuffix = MarkupSuffix;
-        if (!TryExtractColorMarkup(source, out var markupPrefix, out var inner))
-        {
-            markupPrefix = string.Empty;
-            markupSuffix = string.Empty;
-            inner = source;
-        }
-
+        var (inner, spans) = ColorAwareTranslationComposer.Strip(source);
         if (!TryTranslateDisplayNameInner(inner, out var translatedInner))
         {
             translated = source;
             return false;
         }
 
-        translated = markupPrefix + translatedInner + markupSuffix;
-        return true;
-    }
-
-    private static bool TryExtractColorMarkup(string source, out string markupPrefix, out string inner)
-    {
-        if (!source.StartsWith("{{", StringComparison.Ordinal)
-            || !source.EndsWith(MarkupSuffix, StringComparison.Ordinal))
-        {
-            markupPrefix = string.Empty;
-            inner = source;
-            return false;
-        }
-
-        var separatorIndex = source.IndexOf('|', startIndex: 2);
-        if (separatorIndex < 0)
-        {
-            markupPrefix = string.Empty;
-            inner = source;
-            return false;
-        }
-
-        markupPrefix = source.Substring(0, separatorIndex + 1);
-        inner = source.Substring(
-            separatorIndex + 1,
-            source.Length - separatorIndex - 1 - MarkupSuffix.Length);
+        translated = ColorAwareTranslationComposer.Restore(translatedInner, spans);
         return true;
     }
 

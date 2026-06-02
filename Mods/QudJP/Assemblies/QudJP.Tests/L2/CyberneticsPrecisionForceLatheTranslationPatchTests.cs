@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using HarmonyLib;
 using QudJP.Patches;
 using QudJP.Tests.DummyTargets;
@@ -240,6 +241,7 @@ public sealed class CyberneticsPrecisionForceLatheTranslationPatchTests
     {
         public string Message { get; init; } = string.Empty;
 
+        [MethodImpl(MethodImplOptions.NoInlining)]
         public void ActivatePrecisionForceLathe(DummyGameObject actor, DummyGameObject obj, DummyEvent e)
         {
             _ = actor;

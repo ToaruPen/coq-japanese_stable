@@ -112,20 +112,20 @@ public sealed class StatisticStatShiftDisplayNameTranslationPatchTests
     }
 
     [Test]
-    public void Prefix_StripsDirectMarkedKnownDisplayNameAndTranslates()
+    public void Prefix_StripsDirectMarkedKnownDisplayNameWithoutRetranslating()
     {
         var source = MessageFrameTranslator.MarkDirectTranslation("camouflage");
         var result = InvokePatchedAddShift(source);
 
         Assert.Multiple(() =>
         {
-            Assert.That(result, Is.EqualTo("迷彩"));
+            Assert.That(result, Is.EqualTo("camouflage"));
             Assert.That(result.IndexOf(MessageFrameTranslator.DirectTranslationMarker), Is.EqualTo(-1));
             Assert.That(
                 DynamicTextObservability.GetRouteFamilyHitCountForTests(
                     StatisticStatShiftDisplayNameTranslationPatch.Context,
                     StatisticStatShiftDisplayNameTranslationPatch.Family),
-                Is.EqualTo(1));
+                Is.Zero);
         });
     }
 
@@ -142,7 +142,7 @@ public sealed class StatisticStatShiftDisplayNameTranslationPatchTests
                 DynamicTextObservability.GetRouteFamilyHitCountForTests(
                     StatisticStatShiftDisplayNameTranslationPatch.Context,
                     StatisticStatShiftDisplayNameTranslationPatch.Family),
-                Is.EqualTo(1));
+                Is.Zero);
         });
     }
 
