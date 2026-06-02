@@ -109,9 +109,13 @@ public static class EquipmentScreenBodypartEquipPopupTranslationPatch
             return true;
         }
 
-        if (string.Equals(source, "You have no inventory!", StringComparison.Ordinal))
+        if (string.Equals(stripped, "You have no inventory!", StringComparison.Ordinal))
         {
-            translated = "持ち物がない！";
+            translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+                "持ち物がない！",
+                spans,
+                stripped.Length,
+                source);
             Record(route, family, "NoInventory", source, translated);
             return true;
         }

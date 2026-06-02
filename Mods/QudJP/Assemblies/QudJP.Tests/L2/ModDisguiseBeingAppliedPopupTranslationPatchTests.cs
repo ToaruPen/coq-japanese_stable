@@ -52,6 +52,23 @@ public sealed class ModDisguiseBeingAppliedPopupTranslationPatchTests
     }
 
     [Test]
+    public void Patch_TranslatesNoFamiliarCreaturesPopup_PreservesColorTags_WhenOwnerPatched()
+    {
+        var target = new DummyModDisguiseBeingAppliedTarget
+        {
+            PopupMessageToShow = "{{Y|You aren't familiar enough with any creatures to make a disguise.}}",
+        };
+
+        WithPatchedOwner(() => target.BeingAppliedBy(new DummyGameObject(), new DummyGameObject()));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("{{Y|変装に使えるほど見知った生き物がいない。}}"));
+            Assert.That(HitCount(nameof(PopupShowTranslationPatch), "NoFamiliarCreatures"), Is.EqualTo(1));
+        });
+    }
+
+    [Test]
     public void Patch_StripsDirectMarkedPopupWithoutRecordingTransform_WhenOwnerPatched()
     {
         const string translated = "変装に使えるほど見知った生き物がいない。";

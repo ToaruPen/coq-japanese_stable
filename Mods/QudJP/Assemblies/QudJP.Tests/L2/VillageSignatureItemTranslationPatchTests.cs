@@ -118,7 +118,11 @@ public sealed class VillageSignatureItemTranslationPatchTests
                 MessageFrameTranslator.MarkDirectTranslation("the mysterious bauble"));
             target.generateSignatureItems();
 
-            Assert.That(target.signatureHistoricObjectInstance!.DisplayName, Is.EqualTo("the mysterious bauble"));
+            Assert.Multiple(() =>
+            {
+                Assert.That(target.signatureHistoricObjectInstance!.DisplayName, Is.EqualTo("the mysterious bauble"));
+                Assert.That(RouteHitCount(), Is.Zero);
+            });
         });
     }
 
@@ -159,7 +163,7 @@ public sealed class VillageSignatureItemTranslationPatchTests
     }
 
     private static MethodInfo RequireMethod(Type type, string name, params Type[] parameters) =>
-        type.GetMethod(name, BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic, parameters)
+        AccessTools.Method(type, name, parameters.Length == 0 ? null : parameters)
         ?? throw new MissingMethodException(type.FullName, name);
 
     private sealed class DummyVillageSignatureItemsTarget

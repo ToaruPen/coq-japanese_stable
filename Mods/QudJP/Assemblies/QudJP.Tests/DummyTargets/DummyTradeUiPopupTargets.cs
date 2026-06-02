@@ -1,3 +1,5 @@
+using System;
+
 namespace QudJP.Tests.DummyTargets;
 
 internal static class DummyTradeUiPopupTarget
@@ -96,6 +98,11 @@ internal sealed class DummyTradeUiVendorPopupProducerTarget
             ? new List<string> { "Look", "Add to trade", "Identify", "Repair", "Recharge", "Read" }
             : new List<string>(VendorActionOptions);
         var defaultHotkeys = new[] { 'l', 't', 'i', 'r', 'c', 'b' };
+        if (options.Count > defaultHotkeys.Length)
+        {
+            throw new InvalidOperationException("ShowVendorActions supports at most 6 options.");
+        }
+
         var index = DummyPopupGenericTarget.PickOption(
             Title: "select an action",
             Options: options.ToArray(),

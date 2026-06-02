@@ -386,6 +386,8 @@ internal sealed class DummyGameObjectPopupTarget
 
     public IReadOnlyList<string>? PickOptionOptionsToSend { get; set; }
 
+    public IReadOnlyList<string>? PullDownOptionsToSend { get; set; }
+
     public Task<bool> ConfirmUseImportantAsync()
     {
         _ = DummyPopupShow.ShowYesNoAsync(PopupMessageToSend).GetAwaiter().GetResult();
@@ -447,7 +449,7 @@ internal sealed class DummyGameObjectPopupTarget
         _ = allowAlternate;
         _ = DummyPopupGenericTarget.PickOption(
             Title: "Select a destination",
-            Options: new[]
+            Options: PullDownOptionsToSend ?? new[]
             {
                 "Current location (C)",
                 "Arrival location, Rust Wells (NW)",

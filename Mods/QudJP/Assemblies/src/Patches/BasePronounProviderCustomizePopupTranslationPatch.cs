@@ -81,7 +81,7 @@ public static class BasePronounProviderCustomizePopupTranslationPatch
     {
         _ = route;
         _ = family;
-        if (!OwnerTranslationScope.IsActive(activeDepth) || string.IsNullOrEmpty(source))
+        if (string.IsNullOrEmpty(source))
         {
             translated = source;
             return false;
@@ -91,6 +91,12 @@ public static class BasePronounProviderCustomizePopupTranslationPatch
         {
             translated = markedText;
             return true;
+        }
+
+        if (!OwnerTranslationScope.IsActive(activeDepth))
+        {
+            translated = source;
+            return false;
         }
 
         if (TryTranslateCustomizePopup(source, out translated))

@@ -83,16 +83,25 @@ public static class ModDisguiseBeingAppliedPopupTranslationPatch
             return false;
         }
 
-        if (string.Equals(source, "You aren't familiar enough with any creatures to make a disguise.", StringComparison.Ordinal))
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        if (string.Equals(stripped, "You aren't familiar enough with any creatures to make a disguise.", StringComparison.Ordinal))
         {
-            translated = "変装に使えるほど見知った生き物がいない。";
+            translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+                "変装に使えるほど見知った生き物がいない。",
+                spans,
+                stripped.Length,
+                source);
             Record(route, family, "NoFamiliarCreatures", source, translated);
             return true;
         }
 
-        if (string.Equals(source, "Choose a disguise to make.", StringComparison.Ordinal))
+        if (string.Equals(stripped, "Choose a disguise to make.", StringComparison.Ordinal))
         {
-            translated = "作る変装を選ぶ。";
+            translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+                "作る変装を選ぶ。",
+                spans,
+                stripped.Length,
+                source);
             Record(route, family, "PickerTitle", source, translated);
             return true;
         }

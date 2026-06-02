@@ -346,7 +346,7 @@ public static class PopupTranslationPatch
             return source ?? string.Empty;
         }
 
-        if (TryStripPopupDirectTranslationMarker(source, out var markedText))
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
         {
             return markedText;
         }
@@ -404,6 +404,12 @@ public static class PopupTranslationPatch
         if (TryTranslatePopupProducerText(source, route, family, popupId, out var translated))
         {
             return NormalizeProducerText(translated);
+        }
+
+        var unmarkedSource = MessageFrameTranslator.StripAllDirectTranslationMarkers(source);
+        if (!string.Equals(unmarkedSource, source, StringComparison.Ordinal))
+        {
+            return unmarkedSource;
         }
 
         return source;

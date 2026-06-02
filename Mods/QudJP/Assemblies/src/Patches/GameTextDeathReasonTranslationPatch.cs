@@ -100,7 +100,14 @@ public static class GameTextDeathReasonTranslationPatch
         var translatedSubject = DisplayNameCaptureTranslator.TranslatePreservingColors(subject, Context);
         if (MessageFrameTranslator.TryStripDirectTranslationMarker(translatedSubject, out var strippedSubject))
         {
-            translatedSubject = strippedSubject;
+            if (strippedSubject is null)
+            {
+                Trace.TraceWarning("QudJP: {0} stripped direct-marked death subject to null.", Context);
+            }
+            else
+            {
+                translatedSubject = strippedSubject;
+            }
         }
 
         var translated = translatedSubject + "は" + TrimJapaneseSentenceEnd(translatedBare) + "。";

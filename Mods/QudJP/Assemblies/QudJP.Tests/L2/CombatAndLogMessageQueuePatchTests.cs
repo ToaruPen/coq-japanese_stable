@@ -1934,24 +1934,37 @@ public sealed class CombatAndLogMessageQueuePatchTests
     [Test]
     public void GameObjectPopup_StripsPullDownDestinationDetailDirectMarker_WhenOwnerPatched()
     {
-        GameObjectPopupTranslationPatch.Prefix();
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
         try
         {
-            var translated = GameObjectPopupTranslationPatch.TryTranslatePopupMessage(
-                "Arrival location, {{Y|" + MessageFrameTranslator.MarkDirectTranslation("Rust Wells") + "}} (NW)",
-                "Popup.PickOption",
-                "Popup.PickOption",
-                out var result);
+            PatchPopupPickOption(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(typeof(DummyGameObjectPopupTarget), nameof(DummyGameObjectPopupTarget.PullDown), typeof(bool)),
+                typeof(GameObjectPopupTranslationPatch));
+
+            var target = new DummyGameObjectPopupTarget
+            {
+                PullDownOptionsToSend =
+                [
+                    "Arrival location, {{Y|" + MessageFrameTranslator.MarkDirectTranslation("Rust Wells") + "}} (NW)",
+                ],
+            };
+
+            target.PullDown(allowAlternate: true);
 
             Assert.Multiple(() =>
             {
-                Assert.That(translated, Is.True);
-                Assert.That(result, Is.EqualTo("到着地点, {{Y|Rust Wells}} (NW)"));
+                Assert.That(DummyPopupGenericTarget.LastPickOptionTitle, Is.EqualTo("目的地を選択"));
+                Assert.That(
+                    DummyPopupGenericTarget.LastPickOptionOptions,
+                    Is.EqualTo(new[] { "到着地点, {{Y|Rust Wells}} (NW)" }));
             });
         }
         finally
         {
-            _ = GameObjectPopupTranslationPatch.Finalizer(null);
+            harmony.UnpatchAll(harmonyId);
         }
     }
 
@@ -5382,7 +5395,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
 
             Assert.Multiple(() =>
             {
-                Assert.That(DummyPopupGenericTarget.LastPickOptionTitle, Is.EqualTo("Choose a limb to infect with custom feeler."));
+                Assert.That(DummyPopupGenericTarget.LastPickOptionTitle, Is.EqualTo("custom feelerで感染させる部位を選ぶ。"));
                 Assert.That(DummyPopupGenericTarget.LastPickOptionOptions, Is.EqualTo(new[] { "custom feeler" }));
             });
         }
@@ -7162,6 +7175,117 @@ public sealed class CombatAndLogMessageQueuePatchTests
             target.Die();
 
             Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("仲間のIrudadは死亡した。"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void GameObjectDie_DoesNotTranslateQueueOnlyTraffic_WhenOwnerAbsent()
+    {
+        WritePatternDictionary(
+            ("^Your companion, (.+?), (.+?)\\.$", "あなたの仲間である{0}は{1}。"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+
+            var target = new DummyGameObjectDieTarget
+            {
+                MessageToSend = "Your companion, Irudad, dies.",
+            };
+
+            target.Die();
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("Your companion, Irudad, dies."));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void GameObjectDie_DoesNotRetranslateDirectMarkedQueuedMessage_WhenOwnerPatched()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(
+                    typeof(DummyGameObjectDieTarget),
+                    nameof(DummyGameObjectDieTarget.Die),
+                    typeof(DummyGameObject),
+                    typeof(string),
+                    typeof(string),
+                    typeof(string),
+                    typeof(bool),
+                    typeof(DummyGameObject),
+                    typeof(DummyGameObject),
+                    typeof(bool),
+                    typeof(bool),
+                    typeof(string),
+                    typeof(string),
+                    typeof(string)),
+                typeof(GameObjectDieTranslationPatch));
+
+            var target = new DummyGameObjectDieTarget
+            {
+                MessageToSend = MessageFrameTranslator.MarkDirectTranslation("Your companion, Irudad, dies."),
+            };
+
+            target.Die();
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.EqualTo("Your companion, Irudad, dies."));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void GameObjectDie_LeavesEmptyQueuedMessageUnchanged_WhenOwnerPatched()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchQueue(harmony);
+            PatchOwner(
+                harmony,
+                RequireMethod(
+                    typeof(DummyGameObjectDieTarget),
+                    nameof(DummyGameObjectDieTarget.Die),
+                    typeof(DummyGameObject),
+                    typeof(string),
+                    typeof(string),
+                    typeof(string),
+                    typeof(bool),
+                    typeof(DummyGameObject),
+                    typeof(DummyGameObject),
+                    typeof(bool),
+                    typeof(bool),
+                    typeof(string),
+                    typeof(string),
+                    typeof(string)),
+                typeof(GameObjectDieTranslationPatch));
+
+            var target = new DummyGameObjectDieTarget
+            {
+                MessageToSend = string.Empty,
+            };
+
+            target.Die();
+
+            Assert.That(DummyMessageQueue.LastMessage, Is.Empty);
         }
         finally
         {

@@ -54,6 +54,31 @@ public sealed class CyberneticsLowLevelHackPopupTranslationPatchTests
             });
     }
 
+    [Test]
+    public void Patch_TranslatesLowLevelHackPrompt_PreservesColorTags_WhenOwnerPatched()
+    {
+        OwnerPopupRouteTestHarness.WithPatchedPopupOwner(
+            typeof(CyberneticsLowLevelHackPopupTranslationPatch),
+            RequireMethod(nameof(DummyCyberneticsLowLevelHackTarget.AskLowLevelHack)),
+            () =>
+            {
+                var target = new DummyCyberneticsLowLevelHackTarget
+                {
+                    PopupMessageToShow = "{{W|" + CyberneticsLowLevelHackPopupTranslationPatch.SourcePrompt + "}}",
+                };
+
+                target.AskLowLevelHack();
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(
+                        DummyPopupShow.LastShowYesNoMessage,
+                        Is.EqualTo("{{W|" + ExpectedPrompt + "}}"));
+                    Assert.That(GetHitCount(), Is.EqualTo(1));
+                });
+            });
+    }
+
     [TestCase("", "", 0)]
     [TestCase("{{W|Unknown low-level hack prompt.}}", "{{W|Unknown low-level hack prompt.}}", 0)]
     public void Patch_LeavesEmptyAndColorTaggedFallbackPromptsUnchanged_WhenOwnerPatched(

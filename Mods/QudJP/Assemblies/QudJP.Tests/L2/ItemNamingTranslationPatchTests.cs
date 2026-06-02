@@ -295,6 +295,64 @@ public sealed class ItemNamingTranslationPatchTests
     }
 
     [Test]
+    public void Patch_LeavesUnknownItemNamingWishDebugPopup_WhenOwnerPatched()
+    {
+        const string source = "[Debug: Unknown wish message.]";
+        var target = new DummyItemNamingProducerTarget
+        {
+            PopupMessageToShow = source,
+        };
+
+        WithPatchedOwner(
+            () => InvokeHandleItemNamingWish(target));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(source));
+            Assert.That(ItemNamingHitCount("WishDebugCreated"), Is.Zero);
+            Assert.That(ItemNamingHitCount("WishDebugFailed"), Is.Zero);
+        });
+    }
+
+    [Test]
+    public void Patch_LeavesEmptyItemNamingWishDebugPopup_WhenOwnerPatched()
+    {
+        var target = new DummyItemNamingProducerTarget
+        {
+            PopupMessageToShow = string.Empty,
+        };
+
+        WithPatchedOwner(
+            () => InvokeHandleItemNamingWish(target));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(DummyPopupShow.LastShowMessage, Is.Empty);
+            Assert.That(ItemNamingHitCount("WishDebugCreated"), Is.Zero);
+            Assert.That(ItemNamingHitCount("WishDebugFailed"), Is.Zero);
+        });
+    }
+
+    [Test]
+    public void Patch_StripsDirectMarkedEmptyWishDebugPopup_WhenOwnerPatched()
+    {
+        var target = new DummyItemNamingProducerTarget
+        {
+            PopupMessageToShow = MessageFrameTranslator.MarkDirectTranslation(string.Empty),
+        };
+
+        WithPatchedOwner(
+            () => InvokeHandleItemNamingWish(target));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(DummyPopupShow.LastShowMessage, Is.Empty);
+            Assert.That(ItemNamingHitCount("WishDebugCreated"), Is.Zero);
+            Assert.That(ItemNamingHitCount("WishDebugFailed"), Is.Zero);
+        });
+    }
+
+    [Test]
     public void Patch_DoesNotClaimMarkedCheckBestowalsPopup_WhenOwnerAbsent()
     {
         var doesFragment = DoesVerbRouteTranslator.MarkDoesFragment(

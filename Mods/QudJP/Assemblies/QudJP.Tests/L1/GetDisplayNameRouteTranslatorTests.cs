@@ -1472,7 +1472,7 @@ public sealed class GetDisplayNameRouteTranslatorTests
 
     [TestCase("", "")]
     [TestCase("\u0001defoliant grenade mk I miner mk I", "\u0001defoliant grenade mk I miner mk I")]
-    [TestCase("<color=green>odd grenade mk I miner mk I</color>", "<color=green>odd grenade mk I miner mk I</color>")]
+    [TestCase("<color=green>odd grenade mk I miner mk I</color>", "<color=green>odd grenade mk I 採掘機 mk I</color>")]
     public void TranslatePreservingColors_MinerGeneratedRoleSuffixEdgeInputsPassThrough(
         string source,
         string expected)
@@ -1493,7 +1493,7 @@ public sealed class GetDisplayNameRouteTranslatorTests
             source,
             nameof(GetDisplayNameProcessPatch));
 
-        Assert.That(translated, Is.EqualTo(source));
+        Assert.That(translated, Is.EqualTo("odd grenade mk I 採掘機 mk I"));
     }
 
     [TestCase(

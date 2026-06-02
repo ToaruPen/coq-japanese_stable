@@ -32,6 +32,7 @@ public sealed class EquipmentScreenBodypartEquipPopupTranslationPatchTests
 
     [TestCase("You don't have anything to use in that slot.", "そのスロットで使えるものがない。", "NoSlotItem")]
     [TestCase("You have no inventory!", "持ち物がない！", "NoInventory")]
+    [TestCase("{{Y|You have no inventory!}}", "{{Y|持ち物がない！}}", "NoInventory")]
     public void Patch_TranslatesBodypartEquipPopup_WhenOwnerPatched(string source, string expected, string detail)
     {
         var target = new DummyEquipmentScreenBodypartEquipTarget

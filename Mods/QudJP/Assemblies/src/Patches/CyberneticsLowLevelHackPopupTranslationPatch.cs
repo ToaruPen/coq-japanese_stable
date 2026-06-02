@@ -87,13 +87,14 @@ public static class CyberneticsLowLevelHackPopupTranslationPatch
             return false;
         }
 
-        if (!string.Equals(source, SourcePrompt, StringComparison.Ordinal))
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        if (!string.Equals(stripped, SourcePrompt, StringComparison.Ordinal))
         {
             translated = source;
             return false;
         }
 
-        translated = TranslatedPrompt;
+        translated = ColorAwareTranslationComposer.Restore(TranslatedPrompt, spans);
         DynamicTextObservability.RecordTransform(route, "Popup.ProducerText." + Family, source, translated);
         return true;
     }

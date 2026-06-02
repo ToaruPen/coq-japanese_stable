@@ -78,6 +78,14 @@ public static class VillageSignatureItemTranslationPatch
         }
 
         var source = UiBindingTranslationHelpers.GetStringMemberValue(historicObject, "DisplayName");
+        if (!string.IsNullOrEmpty(source)
+            && MessageFrameTranslator.TryStripDirectTranslationMarker(source!, out var directTranslated)
+            && !string.Equals(directTranslated, source, StringComparison.Ordinal))
+        {
+            UiBindingTranslationHelpers.SetMemberValue(historicObject, "DisplayName", directTranslated);
+            return;
+        }
+
         if (string.IsNullOrEmpty(source)
             || !TryTranslateSignatureHistoricObjectName(source!, out var translated)
             || string.Equals(translated, source, StringComparison.Ordinal))

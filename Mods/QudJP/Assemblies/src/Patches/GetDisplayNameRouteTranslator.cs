@@ -1485,13 +1485,6 @@ internal static class GetDisplayNameRouteTranslator
 
         var baseSource = match.Groups["base"].Value;
         var translatedBase = TranslateDisplayNameFragment(baseSource, route);
-        if (string.Equals(translatedBase, baseSource, StringComparison.Ordinal)
-            && !IsStableDisplayNameFragment(baseSource, route))
-        {
-            translated = source;
-            return false;
-        }
-
         if (spans is not null)
         {
             translatedBase = RestoreWholeSlice(translatedBase, spans, match.Groups["base"]);
