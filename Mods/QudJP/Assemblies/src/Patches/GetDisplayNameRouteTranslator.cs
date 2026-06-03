@@ -18,6 +18,7 @@ internal static class GetDisplayNameRouteTranslator
 
     private static readonly string[] DisplayNameDictionaryFiles =
     {
+        "ui-displayname-aliases.ja.json",
         "ui-displayname-adjectives.ja.json",
         "ui-displayname-atomic.ja.json",
     };
@@ -287,7 +288,6 @@ internal static class GetDisplayNameRouteTranslator
         }
 
         using var logScope = Translator.PushLogContext(context);
-        source = NormalizeLegacyLocalizedDisplayNameTerms(source!);
 
         if (TryTranslateLiquidPrepositionDisplayName(source!, route, out var coloredLiquidPrepositionTranslation))
         {
@@ -482,13 +482,6 @@ internal static class GetDisplayNameRouteTranslator
         }
 
         return source!;
-    }
-
-    private static string NormalizeLegacyLocalizedDisplayNameTerms(string source)
-    {
-        return StringHelpers.ContainsOrdinal(source, "スパーザー")
-            ? source.Replace("スパーザー", "スペーザー")
-            : source;
     }
 
     private static bool TryTranslateRedundantStainedWholeWrapperWithSuffix(
@@ -3812,6 +3805,12 @@ internal static class GetDisplayNameRouteTranslator
             return blueprintMarkup;
         }
 
+        var direct = TranslateDisplayNameExactOrLowerAscii(source);
+        if (direct is not null)
+        {
+            return direct;
+        }
+
         if (IsStableDisplayNameFragment(source, route))
         {
             return source;
@@ -3820,12 +3819,6 @@ internal static class GetDisplayNameRouteTranslator
         if (TryTranslateDisplayNameRouteText(source, route, out var translated))
         {
             return translated;
-        }
-
-        var direct = TranslateDisplayNameExactOrLowerAscii(source);
-        if (direct is not null)
-        {
-            return direct;
         }
 
         return source;

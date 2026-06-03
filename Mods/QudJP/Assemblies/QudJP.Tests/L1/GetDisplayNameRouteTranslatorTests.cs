@@ -94,7 +94,7 @@ public sealed class GetDisplayNameRouteTranslatorTests
     }
 
     [Test]
-    public void TranslatePreservingColors_NormalizesLegacySpaserDisplayNameWithLeadingModifier()
+    public void TranslatePreservingColors_UsesProductionAliasForLegacySpaserDisplayNameWithLeadingModifier()
     {
         UseProductionDictionaries();
 
@@ -106,8 +106,11 @@ public sealed class GetDisplayNameRouteTranslatorTests
     }
 
     [Test]
-    public void TranslatePreservingColors_NormalizesLegacySpaserDisplayNameWithWeaponStats()
+    public void TranslatePreservingColors_UsesDisplayNameAliasForLegacySpaserDisplayNameWithWeaponStats()
     {
+        WriteDictionaryFile(
+            "ui-displayname-aliases.ja.json",
+            ("スパーザーライフル", "{{spaser|スペーザー}}ライフル"));
         WriteDictionaryFile("ui-displayname-adjectives.ja.json", ("[no cell]", "[セルなし]"));
 
         var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
@@ -116,9 +119,48 @@ public sealed class GetDisplayNameRouteTranslatorTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(translated, Does.Contain("スペーザーライフル"));
+            Assert.That(translated, Does.Contain("スペーザー"));
+            Assert.That(translated, Does.Contain("ライフル"));
             Assert.That(translated, Does.Contain("[セルなし]"));
             Assert.That(translated, Does.Not.Contain("スパーザー"));
+        });
+    }
+
+    [Test]
+    public void TranslatePreservingColors_ProductionAlias_UpdatesCachedSpaserTooltipWeaponName()
+    {
+        UseProductionDictionaries();
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            "スパーザーライフル \u001A14 \u00031d12 [no cell] <AAC7>",
+            nameof(LookTooltipInformationWrapPatch));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Does.Contain("スペーザー"));
+            Assert.That(translated, Does.Contain("ライフル"));
+            Assert.That(translated, Does.Contain("[セルなし]"));
+            Assert.That(translated, Does.Not.Contain("スパーザー"));
+        });
+    }
+
+    [Test]
+    public void TranslatePreservingColors_UsesDisplayNameAliasForCachedTooltipWeaponName()
+    {
+        WriteDictionaryFile(
+            "ui-displayname-aliases.ja.json",
+            ("旧式位相ライフル", "{{phase|新式位相ライフル}}"));
+        WriteDictionaryFile("ui-displayname-adjectives.ja.json", ("[no cell]", "[セルなし]"));
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            "旧式位相ライフル \u001A14 \u00031d12 [no cell] <AAC7>",
+            nameof(LookTooltipInformationWrapPatch));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Does.Contain("新式位相ライフル"));
+            Assert.That(translated, Does.Contain("[セルなし]"));
+            Assert.That(translated, Does.Not.Contain("旧式位相ライフル"));
         });
     }
 
