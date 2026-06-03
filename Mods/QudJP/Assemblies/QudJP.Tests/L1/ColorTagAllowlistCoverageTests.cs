@@ -324,7 +324,6 @@ public sealed class ColorTagAllowlistCoverageTests
         "Mods/QudJP/Assemblies/src/Patches/VillageSignatureItemTranslationPatch.cs",
         "Mods/QudJP/Assemblies/src/Patches/WorldPartGeneratedDisplayNameTranslationPatches.cs",
         "Mods/QudJP/Assemblies/src/Patches/XDidYTranslationPatch.cs",
-        "Mods/QudJP/Assemblies/src/Translation/MessageFrameTranslator.cs",
     };
 
     private static readonly string[] MarkupAwareCaptureOwnerFiles =

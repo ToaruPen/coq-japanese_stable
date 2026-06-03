@@ -19,8 +19,9 @@ internal static class DisplayNamePlaceholderTranslator
                 continue;
             }
 
-            translated = ColorAwareTranslationComposer.HasColorMarkup(source)
-                ? ColorAwareTranslationComposer.TranslatePreservingColors(source, _ => translatedCandidate)
+            var sourceWithoutDirectMarkers = MessageFrameTranslator.StripAllDirectTranslationMarkers(source);
+            translated = ColorAwareTranslationComposer.HasColorMarkup(sourceWithoutDirectMarkers)
+                ? ColorAwareTranslationComposer.TranslatePreservingColors(sourceWithoutDirectMarkers, _ => translatedCandidate)
                 : translatedCandidate;
             return true;
         }

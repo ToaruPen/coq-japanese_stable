@@ -72,9 +72,9 @@ internal static class DisplayNameRouteTranslation
 
     internal static string TranslateCapturePreservingColors(string source, string context)
     {
-        var withoutArticle = StripLeadingEnglishArticlePreservingColors(source);
-        var withoutDirectMarkers = MessageFrameTranslator.StripAllDirectTranslationMarkers(withoutArticle);
-        return TranslatePreservingColors(withoutDirectMarkers, context);
+        var withoutDirectMarkers = MessageFrameTranslator.StripAllDirectTranslationMarkers(source);
+        var withoutArticle = StripLeadingEnglishArticlePreservingColors(withoutDirectMarkers);
+        return TranslatePreservingColors(withoutArticle, context);
     }
 
     internal static string StripLeadingEnglishArticlePreservingColors(string source)
@@ -92,9 +92,19 @@ internal static class DisplayNameRouteTranslation
         var withoutArticle = StringHelpers.StripLeadingEnglishArticle(
             visible,
             includeCapitalizedDefiniteArticle: true);
-        return string.Equals(withoutArticle, visible, StringComparison.Ordinal)
-            ? trimmed
-            : ColorAwareTranslationComposer.TranslatePreservingColors(trimmed, _ => withoutArticle);
+        if (string.Equals(withoutArticle, visible, StringComparison.Ordinal))
+        {
+            return trimmed;
+        }
+
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(trimmed);
+        var boundaryRestored = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+            withoutArticle,
+            spans,
+            stripped.Length);
+        return string.Equals(boundaryRestored, withoutArticle, StringComparison.Ordinal)
+            ? ColorAwareTranslationComposer.TranslatePreservingColors(trimmed, _ => withoutArticle)
+            : boundaryRestored;
     }
 
     private static string PassThrough(string? source, string? context)
