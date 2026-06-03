@@ -19,10 +19,7 @@ internal static class DisplayNamePlaceholderTranslator
                 continue;
             }
 
-            var sourceWithoutDirectMarkers = MessageFrameTranslator.StripAllDirectTranslationMarkers(source);
-            translated = ColorAwareTranslationComposer.HasColorMarkup(sourceWithoutDirectMarkers)
-                ? ColorAwareTranslationComposer.TranslatePreservingColors(sourceWithoutDirectMarkers, _ => translatedCandidate)
-                : translatedCandidate;
+            translated = RestoreDisplayNamePlaceholderSource(source, translatedCandidate);
             return true;
         }
 
@@ -59,6 +56,14 @@ internal static class DisplayNamePlaceholderTranslator
         {
             yield return singular;
         }
+    }
+
+    private static string RestoreDisplayNamePlaceholderSource(string source, string translatedCandidate)
+    {
+        var sourceWithoutDirectMarkers = MessageFrameTranslator.StripAllDirectTranslationMarkers(source);
+        return ColorAwareTranslationComposer.HasColorMarkup(sourceWithoutDirectMarkers)
+            ? ColorAwareTranslationComposer.TranslatePreservingColors(sourceWithoutDirectMarkers, _ => translatedCandidate)
+            : translatedCandidate;
     }
 
     private static bool TrySingularizeEnglishPluralDisplayName(string source, out string singular)

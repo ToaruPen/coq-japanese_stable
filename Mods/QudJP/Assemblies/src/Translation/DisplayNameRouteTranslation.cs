@@ -72,38 +72,51 @@ internal static class DisplayNameRouteTranslation
 
     internal static string TranslateCapturePreservingColors(string source, string context)
     {
-        var withoutDirectMarkers = MessageFrameTranslator.StripAllDirectTranslationMarkers(source);
-        var withoutArticle = StripLeadingEnglishArticlePreservingColors(withoutDirectMarkers);
-        return TranslatePreservingColors(withoutArticle, context);
+        return TranslatePreservingColors(
+            NormalizeDisplayNameCaptureForRoute(source),
+            context);
     }
 
     internal static string StripLeadingEnglishArticlePreservingColors(string source)
     {
         var trimmed = source.Trim();
-        var direct = StringHelpers.StripLeadingEnglishArticle(
-            trimmed,
-            includeCapitalizedDefiniteArticle: true);
-        if (!string.Equals(direct, trimmed, StringComparison.Ordinal))
+        if (TryStripLeadingEnglishArticle(trimmed, out var direct))
         {
             return direct;
         }
 
         var visible = ColorAwareTranslationComposer.GetVisibleText(trimmed);
-        var withoutArticle = StringHelpers.StripLeadingEnglishArticle(
-            visible,
-            includeCapitalizedDefiniteArticle: true);
-        if (string.Equals(withoutArticle, visible, StringComparison.Ordinal))
+        if (!TryStripLeadingEnglishArticle(visible, out var withoutArticle))
         {
             return trimmed;
         }
 
-        var (stripped, spans) = ColorAwareTranslationComposer.Strip(trimmed);
+        return RestoreArticleStrippedVisibleText(trimmed, withoutArticle);
+    }
+
+    private static string NormalizeDisplayNameCaptureForRoute(string source)
+    {
+        var withoutDirectMarkers = MessageFrameTranslator.StripAllDirectTranslationMarkers(source);
+        return StripLeadingEnglishArticlePreservingColors(withoutDirectMarkers);
+    }
+
+    private static bool TryStripLeadingEnglishArticle(string source, out string stripped)
+    {
+        stripped = StringHelpers.StripLeadingEnglishArticle(
+            source,
+            includeCapitalizedDefiniteArticle: true);
+        return !string.Equals(stripped, source, StringComparison.Ordinal);
+    }
+
+    private static string RestoreArticleStrippedVisibleText(string source, string visibleWithoutArticle)
+    {
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
         var boundaryRestored = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
-            withoutArticle,
+            visibleWithoutArticle,
             spans,
             stripped.Length);
-        return string.Equals(boundaryRestored, withoutArticle, StringComparison.Ordinal)
-            ? ColorAwareTranslationComposer.TranslatePreservingColors(trimmed, _ => withoutArticle)
+        return string.Equals(boundaryRestored, visibleWithoutArticle, StringComparison.Ordinal)
+            ? ColorAwareTranslationComposer.TranslatePreservingColors(source, _ => visibleWithoutArticle)
             : boundaryRestored;
     }
 
