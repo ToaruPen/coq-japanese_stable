@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text.RegularExpressions;
 
 namespace QudJP.Tests.L1;
@@ -6,6 +7,23 @@ namespace QudJP.Tests.L1;
 [Category("L1")]
 public sealed class ColorRouteCatalogTests
 {
+    private static readonly Regex ColorPreservingEntryPointDeclarationPattern =
+        new(
+            "^\\s*(?:internal|public)\\s+static\\s+[^=;]*?\\b(?<name>(?:Try)?\\w*PreservingColors|Strip|Restore|RestoreRelative|RestoreCapture|MarkupAwareRestoreCapture|RestoreCaptureWholeBoundaryWrappersPreservingTranslatedOwnership|RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership|RestoreWholeSliceBoundaryWrappersPreservingTranslatedOwnership|RestoreSourceBoundaryWrappersByVisibleTextPreservingTranslatedOwnership|RestoreSlice|RestoreMatchBoundaries)\\s*\\(",
+            RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly string[] TranslationLayerPatchRouteImplementationReferences =
+    {
+        "GetDisplayNameRouteTranslator.TranslatePreservingColors(",
+        "DisplayNameCaptureTranslator.TranslatePreservingColors(",
+        "GeneratedQuestTitleTranslator.TranslatePreservingColors(",
+        "GeneratedQuestTitleTranslator.TryTranslatePreservingColors(",
+        "PopupTranslationPatch.TranslatePopupTextForRoute(",
+        "PopupTranslationPatch.TranslatePopupTextForProducerRoute(",
+        "PopupTranslationPatch.TranslatePopupMenuItemTextForProducerRoute(",
+        "UITextSkinTranslationPatch.TranslatePreservingColors(",
+    };
+
     [Test]
     public void Catalog_CompletelyCoversColorSensitiveTranslationCallSites()
     {
@@ -17,14 +35,55 @@ public sealed class ColorRouteCatalogTests
     }
 
     [Test]
+    public void Catalog_CompletelyCoversColorPreservingEntryPointDeclarations()
+    {
+        var root = TestProjectPaths.GetRepositoryRoot();
+        var sourceRoot = Path.Combine(root, "Mods", "QudJP", "Assemblies", "src");
+        var actual = ScanColorPreservingEntryPointDeclarations(sourceRoot);
+
+        Assert.That(actual, Is.EquivalentTo(ColorRouteCatalog.ExpectedEntryPointDeclarations.Keys));
+    }
+
+    [Test]
+    public void Catalog_DocumentsColorPreservingEntryPointOwnership()
+    {
+        foreach (var entry in ColorRouteCatalog.ExpectedEntryPointDeclarations)
+        {
+            Assert.That(entry.Value.Kind, Is.Not.EqualTo(ColorPreservingEntryPointKind.Unclassified), entry.Key);
+            Assert.That(entry.Value.RouteContract, Is.Not.Empty, entry.Key);
+            Assert.That(entry.Value.Reason, Is.Not.Empty, entry.Key);
+        }
+    }
+
+    [Test]
+    public void TranslationLayer_DoesNotCallPatchRouteAdaptersDirectly()
+    {
+        var root = TestProjectPaths.GetRepositoryRoot();
+        var translationRoot = Path.Combine(root, "Mods", "QudJP", "Assemblies", "src", "Translation");
+        var actual = ScanTranslationLayerPatchRouteImplementationReferences(translationRoot);
+
+        Assert.That(
+            actual,
+            Is.Empty,
+            "Translation-layer code must depend on route contracts in the QudJP namespace, not patch-layer route adapter implementation types.");
+    }
+
+    [Test]
     public void Catalog_OnlyReferencesExistingSourceFiles()
     {
         var root = TestProjectPaths.GetRepositoryRoot();
         foreach (var entry in ColorRouteCatalog.ExpectedSymbolOccurrences.Keys)
         {
-            var relativePath = entry[..entry.IndexOf('|')];
+            var relativePath = GetCatalogRelativePath(entry, '|');
             var fullPath = Path.Combine(root, relativePath.Replace('/', Path.DirectorySeparatorChar));
             Assert.That(File.Exists(fullPath), Is.True, $"Catalog file not found: {relativePath}");
+        }
+
+        foreach (var entry in ColorRouteCatalog.ExpectedEntryPointDeclarations.Keys)
+        {
+            var relativePath = GetCatalogRelativePath(entry, ':');
+            var fullPath = Path.Combine(root, relativePath.Replace('/', Path.DirectorySeparatorChar));
+            Assert.That(File.Exists(fullPath), Is.True, $"Entry point catalog file not found: {relativePath}");
         }
     }
 
@@ -85,6 +144,67 @@ public sealed class ColorRouteCatalogTests
         return counts;
     }
 
+    private static SortedSet<string> ScanColorPreservingEntryPointDeclarations(string sourceRoot)
+    {
+        var entries = new SortedSet<string>(StringComparer.Ordinal);
+        var files = Directory.GetFiles(sourceRoot, "*.cs", SearchOption.AllDirectories);
+        Array.Sort(files, StringComparer.Ordinal);
+
+        foreach (var file in files)
+        {
+            var relativePath = Path.GetRelativePath(TestProjectPaths.GetRepositoryRoot(), file)
+                .Replace(Path.DirectorySeparatorChar, '/');
+            var lines = File.ReadAllLines(file);
+            for (var lineIndex = 0; lineIndex < lines.Length; lineIndex++)
+            {
+                var match = ColorPreservingEntryPointDeclarationPattern.Match(lines[lineIndex]);
+                if (!match.Success)
+                {
+                    continue;
+                }
+
+                entries.Add(relativePath + ":" + (lineIndex + 1).ToString(CultureInfo.InvariantCulture) + ":"
+                    + match.Groups["name"].Value);
+            }
+        }
+
+        return entries;
+    }
+
+    private static SortedSet<string> ScanTranslationLayerPatchRouteImplementationReferences(string translationRoot)
+    {
+        var entries = new SortedSet<string>(StringComparer.Ordinal);
+        var files = Directory.GetFiles(translationRoot, "*.cs", SearchOption.AllDirectories);
+        Array.Sort(files, StringComparer.Ordinal);
+
+        foreach (var file in files)
+        {
+            var relativePath = Path.GetRelativePath(TestProjectPaths.GetRepositoryRoot(), file)
+                .Replace(Path.DirectorySeparatorChar, '/');
+            var lines = File.ReadAllLines(file);
+            for (var lineIndex = 0; lineIndex < lines.Length; lineIndex++)
+            {
+                foreach (var reference in TranslationLayerPatchRouteImplementationReferences)
+                {
+                    if (!lines[lineIndex].Contains(reference, StringComparison.Ordinal))
+                    {
+                        continue;
+                    }
+
+                    entries.Add(relativePath + ":" + (lineIndex + 1).ToString(CultureInfo.InvariantCulture) + ":"
+                        + reference);
+                }
+            }
+        }
+
+        return entries;
+    }
+
+    private static string GetCatalogRelativePath(string entry, char separator)
+    {
+        return entry[..entry.IndexOf(separator)];
+    }
+
     private static int CountOccurrences(string source, string symbol)
     {
         var pattern = Regex.Escape(symbol)
@@ -112,6 +232,34 @@ public sealed class ColorRouteCatalogTests
     }
 }
 
+internal enum ColorPreservingEntryPointKind
+{
+    Unclassified,
+    LowLevelHelper,
+    RouteContract,
+    RouteAdapter,
+    PatchImplementation,
+}
+
+internal sealed class ColorPreservingEntryPointOwnership
+{
+    internal ColorPreservingEntryPointOwnership(
+        ColorPreservingEntryPointKind kind,
+        string routeContract,
+        string reason)
+    {
+        Kind = kind;
+        RouteContract = routeContract;
+        Reason = reason;
+    }
+
+    internal ColorPreservingEntryPointKind Kind { get; }
+
+    internal string RouteContract { get; }
+
+    internal string Reason { get; }
+}
+
 internal static class ColorRouteCatalog
 {
     internal static readonly string[] RouteSymbols =
@@ -127,6 +275,77 @@ internal static class ColorRouteCatalog
         "PopupTranslationPatch.TranslatePopupTextForProducerRoute(",
         "PopupTranslationPatch.TranslatePopupMenuItemTextForProducerRoute(",
     };
+
+    internal static readonly SortedDictionary<string, ColorPreservingEntryPointOwnership> ExpectedEntryPointDeclarations =
+        new(StringComparer.Ordinal)
+        {
+            ["Mods/QudJP/Assemblies/src/Translation/ColorAwareTranslationComposer.cs:32:Strip"] =
+                new(ColorPreservingEntryPointKind.LowLevelHelper, "ColorAwareTranslationComposer", "Core strip helper for Qud/TMP color spans."),
+            ["Mods/QudJP/Assemblies/src/Translation/ColorAwareTranslationComposer.cs:37:Restore"] =
+                new(ColorPreservingEntryPointKind.LowLevelHelper, "ColorAwareTranslationComposer", "Core restore helper for stripped color spans."),
+            ["Mods/QudJP/Assemblies/src/Translation/ColorAwareTranslationComposer.cs:56:RestoreRelative"] =
+                new(ColorPreservingEntryPointKind.LowLevelHelper, "ColorAwareTranslationComposer", "Restores color spans relative to translated whole-source length."),
+            ["Mods/QudJP/Assemblies/src/Translation/ColorAwareTranslationComposer.cs:72:TranslatePreservingColors"] =
+                new(ColorPreservingEntryPointKind.LowLevelHelper, "ColorAwareTranslationComposer", "Generic color-preserving composer using the default translator."),
+            ["Mods/QudJP/Assemblies/src/Translation/ColorAwareTranslationComposer.cs:77:TranslatePreservingColors"] =
+                new(ColorPreservingEntryPointKind.LowLevelHelper, "ColorAwareTranslationComposer", "Generic color-preserving composer for visible-text translators."),
+            ["Mods/QudJP/Assemblies/src/Translation/ColorAwareTranslationComposer.cs:101:TranslatePreservingColors"] =
+                new(ColorPreservingEntryPointKind.LowLevelHelper, "ColorAwareTranslationComposer", "Generic color-preserving composer for translators that need source spans."),
+            ["Mods/QudJP/Assemblies/src/Translation/ColorAwareTranslationComposer.cs:127:RestoreCapture"] =
+                new(ColorPreservingEntryPointKind.LowLevelHelper, "ColorAwareTranslationComposer", "Capture-level color restoration helper."),
+            ["Mods/QudJP/Assemblies/src/Translation/ColorAwareTranslationComposer.cs:139:MarkupAwareRestoreCapture"] =
+                new(ColorPreservingEntryPointKind.LowLevelHelper, "ColorAwareTranslationComposer", "Capture restoration helper that preserves translated markup ownership."),
+            ["Mods/QudJP/Assemblies/src/Translation/ColorAwareTranslationComposer.cs:179:RestoreCaptureWholeBoundaryWrappersPreservingTranslatedOwnership"] =
+                new(ColorPreservingEntryPointKind.LowLevelHelper, "ColorAwareTranslationComposer", "Capture boundary wrapper helper for translated markup ownership."),
+            ["Mods/QudJP/Assemblies/src/Translation/ColorAwareTranslationComposer.cs:193:RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership"] =
+                new(ColorPreservingEntryPointKind.LowLevelHelper, "ColorAwareTranslationComposer", "Whole-source boundary wrapper helper for translated markup ownership."),
+            ["Mods/QudJP/Assemblies/src/Translation/ColorAwareTranslationComposer.cs:207:RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership"] =
+                new(ColorPreservingEntryPointKind.LowLevelHelper, "ColorAwareTranslationComposer", "Whole-source boundary wrapper helper with explicit translated source length."),
+            ["Mods/QudJP/Assemblies/src/Translation/ColorAwareTranslationComposer.cs:250:RestoreWholeSliceBoundaryWrappersPreservingTranslatedOwnership"] =
+                new(ColorPreservingEntryPointKind.LowLevelHelper, "ColorAwareTranslationComposer", "Slice boundary wrapper helper for translated markup ownership."),
+            ["Mods/QudJP/Assemblies/src/Translation/ColorAwareTranslationComposer.cs:265:RestoreSourceBoundaryWrappersByVisibleTextPreservingTranslatedOwnership"] =
+                new(ColorPreservingEntryPointKind.LowLevelHelper, "ColorAwareTranslationComposer", "Whole-source wrapper helper keyed by visible text."),
+            ["Mods/QudJP/Assemblies/src/Translation/ColorAwareTranslationComposer.cs:1218:RestoreSlice"] =
+                new(ColorPreservingEntryPointKind.LowLevelHelper, "ColorAwareTranslationComposer", "Visible slice color restoration helper."),
+            ["Mods/QudJP/Assemblies/src/Translation/ColorAwareTranslationComposer.cs:1282:RestoreMatchBoundaries"] =
+                new(ColorPreservingEntryPointKind.LowLevelHelper, "ColorAwareTranslationComposer", "Regex match boundary restoration helper."),
+            ["Mods/QudJP/Assemblies/src/Translation/ColorCodePreserver.cs:13:Strip"] =
+                new(ColorPreservingEntryPointKind.LowLevelHelper, "ColorCodePreserver", "Tokenizer-level color strip primitive."),
+            ["Mods/QudJP/Assemblies/src/Translation/ColorCodePreserver.cs:26:Restore"] =
+                new(ColorPreservingEntryPointKind.LowLevelHelper, "ColorCodePreserver", "Tokenizer-level color restore primitive."),
+            ["Mods/QudJP/Assemblies/src/Patches/DisplayNameRouteTranslation.cs:7:TranslatePreservingColors"] =
+                new(ColorPreservingEntryPointKind.RouteContract, "DisplayNameRouteTranslation", "Translation-layer display-name route contract."),
+            ["Mods/QudJP/Assemblies/src/Patches/DisplayNameRouteTranslation.cs:12:TranslateCapturePreservingColors"] =
+                new(ColorPreservingEntryPointKind.RouteContract, "DisplayNameRouteTranslation", "Translation-layer display-name capture route contract."),
+            ["Mods/QudJP/Assemblies/src/Patches/DisplayNameRouteTranslation.cs:19:StripLeadingEnglishArticlePreservingColors"] =
+                new(ColorPreservingEntryPointKind.RouteContract, "DisplayNameRouteTranslation", "Translation-layer display-name capture preprocessing contract."),
+            ["Mods/QudJP/Assemblies/src/Patches/GetDisplayNameRouteTranslator.cs:255:TranslatePreservingColors"] =
+                new(ColorPreservingEntryPointKind.RouteAdapter, "DisplayNameRouteTranslation", "Patch-layer implementation of the display-name route contract."),
+            ["Mods/QudJP/Assemblies/src/Patches/GetDisplayNameRouteTranslator.cs:1980:TranslateScopedExactPreservingColors"] =
+                new(ColorPreservingEntryPointKind.RouteAdapter, "DisplayNameRouteTranslation", "Display-name scoped exact helper keeps display route ownership."),
+            ["Mods/QudJP/Assemblies/src/Patches/DisplayNameCaptureTranslator.cs:5:TranslatePreservingColors"] =
+                new(ColorPreservingEntryPointKind.RouteAdapter, "DisplayNameRouteTranslation", "Display-name capture adapter strips articles and direct markers before route translation."),
+            ["Mods/QudJP/Assemblies/src/Patches/DisplayNameCaptureTranslator.cs:18:StripLeadingEnglishArticlePreservingColors"] =
+                new(ColorPreservingEntryPointKind.RouteAdapter, "DisplayNameRouteTranslation", "Compatibility adapter for display-name capture article stripping."),
+            ["Mods/QudJP/Assemblies/src/Patches/ActivatedAbilityNameTranslator.cs:59:TranslatePreservingColors"] =
+                new(ColorPreservingEntryPointKind.RouteAdapter, "ActivatedAbilityNameTranslator", "Activated-ability-name color-preserving route adapter."),
+            ["Mods/QudJP/Assemblies/src/Patches/GeneratedQuestTitleTranslator.cs:18:TranslatePreservingColors"] =
+                new(ColorPreservingEntryPointKind.RouteAdapter, "GeneratedQuestTitleTranslator", "Generated quest title color-preserving route adapter."),
+            ["Mods/QudJP/Assemblies/src/Patches/GeneratedQuestTitleTranslator.cs:39:TranslateEmbeddedPreservingColors"] =
+                new(ColorPreservingEntryPointKind.RouteAdapter, "GeneratedQuestTitleTranslator", "Generated quest title embedded text color-preserving route adapter."),
+            ["Mods/QudJP/Assemblies/src/Patches/GeneratedQuestTitleTranslator.cs:66:TryTranslatePreservingColors"] =
+                new(ColorPreservingEntryPointKind.RouteAdapter, "GeneratedQuestTitleTranslator", "Generated quest title try-translate route adapter."),
+            ["Mods/QudJP/Assemblies/src/Patches/LiquidVolumeFragmentTranslator.cs:556:TranslateLiquidPhrasePreservingColors"] =
+                new(ColorPreservingEntryPointKind.RouteAdapter, "LiquidVolumeFragmentTranslator", "Liquid phrase fragment route adapter preserves color ownership for generated liquid text."),
+            ["Mods/QudJP/Assemblies/src/Patches/SkillsAndPowersStatusScreenTranslationPatch.cs:167:TryTranslateExactLeafPreservingColors"] =
+                new(ColorPreservingEntryPointKind.RouteAdapter, "SkillsAndPowersStatusScreenTranslationPatch", "Skills and powers exact leaf route adapter preserves color ownership."),
+            ["Mods/QudJP/Assemblies/src/Patches/SkillsAndPowersStatusScreenTranslationPatch.cs:524:TryTranslateStructuredLinePreservingColors"] =
+                new(ColorPreservingEntryPointKind.RouteAdapter, "SkillsAndPowersStatusScreenTranslationPatch", "Skills and powers structured line route adapter preserves color ownership."),
+            ["Mods/QudJP/Assemblies/src/Patches/UITextSkinTranslationPatch.cs:233:TranslatePreservingColors"] =
+                new(ColorPreservingEntryPointKind.RouteAdapter, "UITextSkinTranslationPatch", "UITextSkin-specific color-preserving sink route."),
+            ["Mods/QudJP/Assemblies/src/Patches/UITextSkinTranslationPatch.cs:238:TranslatePreservingColors"] =
+                new(ColorPreservingEntryPointKind.RouteAdapter, "UITextSkinTranslationPatch", "UITextSkin-specific color-preserving sink route with context details."),
+        };
 
     internal static readonly string[] GenericPopupProducerRouteSymbols =
     {
@@ -243,11 +462,10 @@ internal static class ColorRouteCatalog
             ["Mods/QudJP/Assemblies/src/Patches/DescriptionTextTranslator.cs|MessagePatternTranslator.Translate("] = 4,
             ["Mods/QudJP/Assemblies/src/Patches/DisassemblyStartTranslationPatch.cs|ColorAwareTranslationComposer.TranslatePreservingColors("] = 2,
             ["Mods/QudJP/Assemblies/src/Patches/DisassemblyStartTranslationPatch.cs|GetDisplayNameRouteTranslator.TranslatePreservingColors("] = 2,
-            ["Mods/QudJP/Assemblies/src/Patches/DisplayNameCaptureTranslator.cs|ColorAwareTranslationComposer.TranslatePreservingColors("] = 1,
-            ["Mods/QudJP/Assemblies/src/Patches/DisplayNameCaptureTranslator.cs|GetDisplayNameRouteTranslator.TranslatePreservingColors("] = 1,
+            ["Mods/QudJP/Assemblies/src/Patches/DisplayNameRouteTranslation.cs|ColorAwareTranslationComposer.TranslatePreservingColors("] = 1,
+            ["Mods/QudJP/Assemblies/src/Patches/DisplayNameRouteTranslation.cs|GetDisplayNameRouteTranslator.TranslatePreservingColors("] = 1,
             ["Mods/QudJP/Assemblies/src/Translation/DisplayNamePlaceholderTranslator.cs|ColorAwareTranslationComposer.TranslatePreservingColors("] = 1,
             ["Mods/QudJP/Assemblies/src/Translation/MessageFrameTranslator.cs|ColorAwareTranslationComposer.TranslatePreservingColors("] = 2,
-            ["Mods/QudJP/Assemblies/src/Translation/MessageFrameTranslator.cs|GetDisplayNameRouteTranslator.TranslatePreservingColors("] = 1,
             ["Mods/QudJP/Assemblies/src/Patches/EnergyStorageChargeStatusTranslationPatch.cs|ColorAwareTranslationComposer.TranslatePreservingColors("] = 1,
             ["Mods/QudJP/Assemblies/src/Patches/EquipmentLineTranslationPatch.cs|ColorAwareTranslationComposer.TranslatePreservingColors("] = 1,
             ["Mods/QudJP/Assemblies/src/Patches/ExaminerTranslationPatch.cs|GetDisplayNameRouteTranslator.TranslatePreservingColors("] = 1,
