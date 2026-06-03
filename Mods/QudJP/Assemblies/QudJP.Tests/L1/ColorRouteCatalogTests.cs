@@ -9,8 +9,8 @@ public sealed class ColorRouteCatalogTests
 {
     private static readonly Regex ColorPreservingEntryPointDeclarationPattern =
         new(
-            "^\\s*(?:internal|public)\\s+static\\s+[^=;]*?\\b(?<name>(?:Try)?\\w*PreservingColors|Strip|Restore|RestoreRelative|RestoreCapture|MarkupAwareRestoreCapture|RestoreCaptureWholeBoundaryWrappersPreservingTranslatedOwnership|RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership|RestoreWholeSliceBoundaryWrappersPreservingTranslatedOwnership|RestoreSourceBoundaryWrappersByVisibleTextPreservingTranslatedOwnership|RestoreSlice|RestoreMatchBoundaries)\\s*\\(",
-            RegexOptions.CultureInvariant | RegexOptions.Compiled);
+            "^[^\\S\\r\\n]*(?:internal|public)\\s+static\\s+[^=;{]*?\\b(?<name>(?:Try)?\\w*PreservingColors|Strip|Restore|RestoreRelative|RestoreCapture|MarkupAwareRestoreCapture|RestoreCaptureWholeBoundaryWrappersPreservingTranslatedOwnership|RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership|RestoreWholeSliceBoundaryWrappersPreservingTranslatedOwnership|RestoreSourceBoundaryWrappersByVisibleTextPreservingTranslatedOwnership|RestoreSlice|RestoreMatchBoundaries)\\s*\\(",
+            RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.Multiline);
 
     private static readonly string[] TranslationLayerPatchRouteImplementationReferences =
     {
@@ -154,16 +154,10 @@ public sealed class ColorRouteCatalogTests
         {
             var relativePath = Path.GetRelativePath(TestProjectPaths.GetRepositoryRoot(), file)
                 .Replace(Path.DirectorySeparatorChar, '/');
-            var lines = File.ReadAllLines(file);
-            for (var lineIndex = 0; lineIndex < lines.Length; lineIndex++)
+            var source = File.ReadAllText(file);
+            foreach (Match match in ColorPreservingEntryPointDeclarationPattern.Matches(source))
             {
-                var match = ColorPreservingEntryPointDeclarationPattern.Match(lines[lineIndex]);
-                if (!match.Success)
-                {
-                    continue;
-                }
-
-                entries.Add(relativePath + ":" + (lineIndex + 1).ToString(CultureInfo.InvariantCulture) + ":"
+                entries.Add(relativePath + ":" + GetLineNumber(source, match.Index).ToString(CultureInfo.InvariantCulture) + ":"
                     + match.Groups["name"].Value);
             }
         }
@@ -181,17 +175,12 @@ public sealed class ColorRouteCatalogTests
         {
             var relativePath = Path.GetRelativePath(TestProjectPaths.GetRepositoryRoot(), file)
                 .Replace(Path.DirectorySeparatorChar, '/');
-            var lines = File.ReadAllLines(file);
-            for (var lineIndex = 0; lineIndex < lines.Length; lineIndex++)
+            var source = File.ReadAllText(file);
+            foreach (var reference in TranslationLayerPatchRouteImplementationReferences)
             {
-                foreach (var reference in TranslationLayerPatchRouteImplementationReferences)
+                foreach (var lineNumber in FindSymbolOccurrenceLineNumbers(source, reference))
                 {
-                    if (!lines[lineIndex].Contains(reference, StringComparison.Ordinal))
-                    {
-                        continue;
-                    }
-
-                    entries.Add(relativePath + ":" + (lineIndex + 1).ToString(CultureInfo.InvariantCulture) + ":"
+                    entries.Add(relativePath + ":" + lineNumber.ToString(CultureInfo.InvariantCulture) + ":"
                         + reference);
                 }
             }
@@ -207,10 +196,38 @@ public sealed class ColorRouteCatalogTests
 
     private static int CountOccurrences(string source, string symbol)
     {
-        var pattern = Regex.Escape(symbol)
+        var pattern = CreateWhitespaceTolerantSymbolPattern(symbol);
+        return Regex.Count(source, pattern, RegexOptions.CultureInvariant | RegexOptions.Singleline);
+    }
+
+    private static IEnumerable<int> FindSymbolOccurrenceLineNumbers(string source, string symbol)
+    {
+        var pattern = CreateWhitespaceTolerantSymbolPattern(symbol);
+        foreach (Match match in Regex.Matches(source, pattern, RegexOptions.CultureInvariant | RegexOptions.Singleline))
+        {
+            yield return GetLineNumber(source, match.Index);
+        }
+    }
+
+    private static string CreateWhitespaceTolerantSymbolPattern(string symbol)
+    {
+        return Regex.Escape(symbol)
             .Replace("\\.", "\\s*\\.\\s*", StringComparison.Ordinal)
             .Replace("\\(", "\\s*\\(", StringComparison.Ordinal);
-        return Regex.Count(source, pattern, RegexOptions.CultureInvariant | RegexOptions.Singleline);
+    }
+
+    private static int GetLineNumber(string source, int index)
+    {
+        var line = 1;
+        for (var position = 0; position < index; position++)
+        {
+            if (source[position] == '\n')
+            {
+                line++;
+            }
+        }
+
+        return line;
     }
 
     [Test]
@@ -229,6 +246,44 @@ public sealed class ColorRouteCatalogTests
         Assert.That(
             CountOccurrences(source, "PopupTranslationPatch.TranslatePopupTextForProducerRoute("),
             Is.EqualTo(2));
+    }
+
+    [Test]
+    public void FindSymbolOccurrenceLineNumbers_AllowsWhitespaceAroundForbiddenRouteInvocation()
+    {
+        const string source = """
+            return GetDisplayNameRouteTranslator
+                .
+                TranslatePreservingColors
+                (
+                    source,
+                    route);
+            """;
+
+        Assert.That(
+            FindSymbolOccurrenceLineNumbers(source, "GetDisplayNameRouteTranslator.TranslatePreservingColors("),
+            Is.EquivalentTo(new[] { 1 }));
+    }
+
+    [Test]
+    public void DeclarationPattern_AllowsMultilineColorPreservingEntryPointDeclaration()
+    {
+        const string source = """
+            internal static string
+                TranslateCapturePreservingColors
+                (
+                    string source,
+                    string context)
+            {
+                return source;
+            }
+            """;
+
+        var match = ColorPreservingEntryPointDeclarationPattern.Match(source);
+
+        Assert.That(match.Success, Is.True);
+        Assert.That(match.Groups["name"].Value, Is.EqualTo("TranslateCapturePreservingColors"));
+        Assert.That(GetLineNumber(source, match.Index), Is.EqualTo(1));
     }
 }
 
