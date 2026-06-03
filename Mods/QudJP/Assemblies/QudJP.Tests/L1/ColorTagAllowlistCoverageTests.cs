@@ -306,7 +306,6 @@ public sealed class ColorTagAllowlistCoverageTests
         "Mods/QudJP/Assemblies/src/Patches/DeathWrapperFamilyTranslator.cs",
         "Mods/QudJP/Assemblies/src/Patches/DescriptionTextTranslator.cs",
         "Mods/QudJP/Assemblies/src/Patches/DisassemblyStartTranslationPatch.cs",
-        "Mods/QudJP/Assemblies/src/Patches/DisplayNameCaptureTranslator.cs",
         "Mods/QudJP/Assemblies/src/Patches/DisplayNameSemanticPipeline.cs",
         "Mods/QudJP/Assemblies/src/Patches/ExaminerTranslationPatch.cs",
         "Mods/QudJP/Assemblies/src/Patches/FabricateFromSelfAbilityDescriptionTranslationPatch.cs",
@@ -325,7 +324,6 @@ public sealed class ColorTagAllowlistCoverageTests
         "Mods/QudJP/Assemblies/src/Patches/VillageSignatureItemTranslationPatch.cs",
         "Mods/QudJP/Assemblies/src/Patches/WorldPartGeneratedDisplayNameTranslationPatches.cs",
         "Mods/QudJP/Assemblies/src/Patches/XDidYTranslationPatch.cs",
-        "Mods/QudJP/Assemblies/src/Translation/MessageFrameTranslator.cs",
     };
 
     private static readonly string[] MarkupAwareCaptureOwnerFiles =

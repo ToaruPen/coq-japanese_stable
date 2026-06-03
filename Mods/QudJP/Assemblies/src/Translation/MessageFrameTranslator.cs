@@ -925,7 +925,7 @@ internal static class MessageFrameTranslator
 
     private static string TranslateDisplayNameCandidate(string source)
     {
-        return DisplayNameRouteTranslation.TranslatePreservingColors(
+        return DisplayNameRouteTranslation.TranslateCapturePreservingColors(
             source,
             nameof(MessageFrameTranslator));
     }

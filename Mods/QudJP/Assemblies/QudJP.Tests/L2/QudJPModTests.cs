@@ -16,6 +16,7 @@ public sealed class QudJPModTests
     [SetUp]
     public void SetUp()
     {
+        DisplayNameRouteTestDefaults.UsePassThroughDefault();
         QudJPMod.ResetInitializationForTests();
         DisplayNameRouteTranslation.ResetForTests();
         Translator.ResetForTests();
@@ -28,6 +29,7 @@ public sealed class QudJPModTests
         DisplayNameRouteTranslation.ResetForTests();
         Translator.ResetForTests();
         ScopedDictionaryLookup.ResetForTests();
+        DisplayNameRouteTestDefaults.UseRegisteredDisplayNameRouteDefault();
     }
 
     [Test]

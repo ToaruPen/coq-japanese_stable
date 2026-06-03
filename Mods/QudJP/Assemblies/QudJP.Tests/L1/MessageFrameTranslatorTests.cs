@@ -16,6 +16,7 @@ public sealed class MessageFrameTranslatorTests
     [SetUp]
     public void SetUp()
     {
+        DisplayNameRouteTestDefaults.UsePassThroughDefault();
         tempDirectory = Path.Combine(Path.GetTempPath(), "qudjp-message-frame-l1", Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(tempDirectory);
         dictionaryPath = Path.Combine(tempDirectory, "verbs.ja.json");
@@ -35,6 +36,7 @@ public sealed class MessageFrameTranslatorTests
         Translator.ResetForTests();
         DisplayNameRouteTranslation.ResetForTests();
         MessageFrameTranslator.ResetForTests();
+        DisplayNameRouteTestDefaults.UseRegisteredDisplayNameRouteDefault();
 
         if (Directory.Exists(tempDirectory))
         {
