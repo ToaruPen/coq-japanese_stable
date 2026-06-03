@@ -1256,7 +1256,7 @@ internal static class DescriptionTextTranslator
         var createsMatch = CreatesLinePattern.Match(source);
         if (createsMatch.Success)
         {
-            translated = "作成物：" + createsMatch.Groups["item"].Value;
+            translated = "作成物：" + TranslateRuntimeObservedDisplayNameCapture(createsMatch.Groups["item"].Value);
             DynamicTextObservability.RecordTransform(route, "Description.RuntimeObservedLine", source, translated);
             return true;
         }

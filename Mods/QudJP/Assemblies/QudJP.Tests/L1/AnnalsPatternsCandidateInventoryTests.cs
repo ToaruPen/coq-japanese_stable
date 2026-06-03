@@ -45,12 +45,16 @@ public sealed class AnnalsPatternsCandidateInventoryTests
         var candidates = ReadJson<AnnalsCandidateDocumentDto>(
             Path.Combine(RepositoryRoot, "scripts", "_artifacts", "annals", "candidates_pending.json"));
 
-        Assert.That(candidates.Candidates, Is.Not.Null);
+        Assert.That(
+            candidates.Candidates,
+            Is.Not.Null,
+            "scripts/_artifacts/annals/candidates_pending.json must contain a candidates array.");
         Assert.That(
             candidates.Candidates!
                 .Where(static candidate => candidate.Status == "needs_manual")
                 .Select(static candidate => candidate.Id),
-            Is.Empty);
+            Is.Empty,
+            "annals candidate inventory contains unexpected needs_manual candidate IDs.");
     }
 
     private static T ReadJson<T>(string path)

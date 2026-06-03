@@ -158,6 +158,74 @@ public sealed class ConversationDisplayTextPatchTests
     }
 
     [Test]
+    public void Postfix_DoesNotTranslateStandaloneButTheyWouldntRevealLocation_WhenPatched()
+    {
+        WriteDictionary();
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyConversationElement), nameof(DummyConversationElement.GetDisplayText)),
+                postfix: new HarmonyMethod(RequireMethod(typeof(ConversationDisplayTextPatch), nameof(ConversationDisplayTextPatch.Postfix))));
+
+            const string source = "But they wouldn't reveal the location.";
+            var element = new DummyConversationElement(source);
+            var result = element.GetDisplayText(withColor: false);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(result, Is.EqualTo(source));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(ConversationDisplayTextPatch),
+                        "ConversationDisplay.DynamicQuestSiteIntroFixedFrame"),
+                    Is.EqualTo(0));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void Postfix_DoesNotTranslateWhenNeitherDynamicQuestSiteIntroFramePresent_WhenPatched()
+    {
+        WriteDictionary();
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyConversationElement), nameof(DummyConversationElement.GetDisplayText)),
+                postfix: new HarmonyMethod(RequireMethod(typeof(ConversationDisplayTextPatch), nameof(ConversationDisplayTextPatch.Postfix))));
+
+            const string source = "Travelers spoke of {{Y|salt shrine}}. Will you do it?";
+            var element = new DummyConversationElement(source);
+            var result = element.GetDisplayText(withColor: false);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(result, Is.EqualTo(source));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(ConversationDisplayTextPatch),
+                        "ConversationDisplay.DynamicQuestSiteIntroFixedFrame"),
+                    Is.EqualTo(0));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void Postfix_DoesNotOwnGeneratedVillageTinkerConversationTemplateAfterPlayerVariableReplacement()
     {
         WriteDictionary(

@@ -413,7 +413,7 @@
     {
       "key": "Cooldown 50. You shame a nearby creature for 6d6 rounds, giving it a -4 penalty to DV, to-hit, Ego, Willpower and a -10% penalty to quickness.",
       "context": "TMP.Description",
-      "text": "クールダウン50。近くのクリーチャーを6d6ラウンド辱め、DV・命中・意力・意志に-4、クイックネスに-10%のペナルティを与える。"
+      "text": "クールダウン50。近くのクリーチャーを6d6ラウンド辱め、DV・命中・自我・意志力に-4、クイックネスに-10%のペナルティを与える。"
     },
     {
       "key": "Cooldown 50. You try to terrify adjacent, hostile creatures (1d8 + [Ego modifier] penetration roll vs. MA). On success, a frightened creature flees from you for 6d4 rounds.",

@@ -11590,7 +11590,7 @@ def test_followup_issue_payload_groups_residual_buckets_into_consolidated_issue(
 
     payload = followup_issue_payload(inventory, inventory_path=Path("inventory.json"))
 
-    assert payload["total_entries"] == 6
+    assert payload["actionable_entries"] == 6
     assert payload["track_counts"] == {"consolidated": 6}
     assert payload["issue_counts"] == {"issue719-consolidated-residuals": 6}
     assert list(payload["issues"]) == ["issue719-consolidated-residuals"]
@@ -11751,7 +11751,7 @@ def test_followup_issue_payload_routes_edge_residual_buckets_without_keyerror() 
 
     payload = followup_issue_payload(inventory, inventory_path=Path("inventory.json"))
 
-    assert payload["total_entries"] == 2
+    assert payload["actionable_entries"] == 2
     assert payload["issue_counts"] == {"issue719-consolidated-residuals": 2}
     assert (
         "active_effect_non_description_route_split" in payload["issues"]["issue719-consolidated-residuals"]["buckets"]
@@ -19229,7 +19229,7 @@ def test_followup_issue_payload_filters_covered_entries_when_called_with_valuabl
     payload = followup_issue_payload(inventory, inventory_path=Path("issue809-followup-test.json"), include="valuable")
 
     issue = payload["issues"]["issue719-consolidated-residuals"]
-    assert payload["total_entries"] == 1
+    assert payload["actionable_entries"] == 1
     assert payload["issue_counts"] == {"issue719-consolidated-residuals": 1}
     assert issue["entry_count"] == 1
     assert issue["top_entries"][0]["family_id"] == action_required_status_line

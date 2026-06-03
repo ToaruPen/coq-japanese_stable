@@ -348,6 +348,21 @@ public sealed class DescriptionTextTranslatorTests
         Assert.That(translated, Is.EqualTo("トニック適用時のエネルギー消費が50%軽減される。"));
     }
 
+    [TestCase("Creates: biodynamic cell", "作成物：バイオダイナミック セル")]
+    [TestCase("Creates: {{Y|biodynamic cell}}", "作成物：{{Y|バイオダイナミック セル}}")]
+    public void TranslateShortDescription_TranslatesCreatesItemThroughDisplayNameRoute(
+        string source,
+        string expected)
+    {
+        WriteDictionary("ui-displayname-atomic.ja.json", ("biodynamic cell", "バイオダイナミック セル"));
+
+        var translated = DescriptionTextTranslator.TranslateShortDescription(
+            source,
+            "DescriptionTextTranslatorTests");
+
+        Assert.That(translated, Is.EqualTo(expected));
+    }
+
     [Test]
     public void TranslateShortDescription_TranslatesFightingTargetThroughDisplayNameRoute()
     {

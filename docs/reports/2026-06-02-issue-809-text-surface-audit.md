@@ -102,12 +102,12 @@ Useful strings and route markers to search in fresh logs:
   `formalAddressTerm`, `factionaddress`, `friend to our village`;
 - quest: `QuestLog`, `QuestsLine`, `Travel to Red Rock`, `Choose a Body`,
   `Choose a reward`, `&Wx`;
-- cooking/status: `You eat `, `You are now`, `Hungry`, `Thirsty`,
+- cooking/status: `You eat`, `You are now`, `Hungry`, `Thirsty`,
   `Whip up a meal.`, `Cook from a recipe.`, `well fed`;
 - active effects: `ActiveEffectsOwner`, `StatusScreenBinding`,
   `world-effects-generated-templates`, `metabolized effect`.
 
-## Open Follow-Up Slices
+## Open Follow-up Slices
 
 - Conversation authored XML inventory remains incomplete as a tracked artifact.
 - Dynamic reward options still need owner-route evidence for generated item
