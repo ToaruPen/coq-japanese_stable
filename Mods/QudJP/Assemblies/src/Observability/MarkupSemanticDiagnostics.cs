@@ -152,11 +152,6 @@ internal static class MarkupSemanticDiagnostics
             return false;
         }
 
-        if (separatorIndex == index + 2)
-        {
-            return false;
-        }
-
         length = separatorIndex - index + 1;
         return true;
     }

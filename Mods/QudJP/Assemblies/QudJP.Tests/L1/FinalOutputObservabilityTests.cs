@@ -249,6 +249,7 @@ public sealed class FinalOutputObservabilityTests
     [TestCase("{{W|{{W|[Space]}} {{y|続ける}}}}")]
     [TestCase("{{y|{{y|安らぎあれ、friend。\\n\\nLive and drink.}}\\n\\n}}")]
     [TestCase("{{y|{{y|汎用の会話文。}}\\n\\n}}")]
+    [TestCase("{{y|<{{|{{G|B}}{{C|D}}{{r|1}}}}>}}")]
     public void Record_TreatsSemanticallyIdempotentQudMarkupAsClean(string finalText)
     {
         var output = TestTraceHelper.CaptureTrace(() =>
