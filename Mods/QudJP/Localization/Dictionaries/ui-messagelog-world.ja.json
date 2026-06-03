@@ -970,7 +970,7 @@
             "text": "{target}は敵対していないので自動攻撃しない。"
         },
         {
-            "key": "You will phase back in in ",
+            "key": "You will phase back in in {duration}.",
             "context": "XRL.World.Effects.Phased",
             "text": "{duration}でフェイズインする。"
         },

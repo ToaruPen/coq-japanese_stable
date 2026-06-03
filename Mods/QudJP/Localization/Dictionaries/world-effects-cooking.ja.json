@@ -821,7 +821,7 @@
         {
             "key": "Causes @their tongue to rot away.",
             "context": "XRL.World.Effects.CookingDomainSelfHarm_UnitSelfGlotrot.GetDescription",
-            "text": "@they の舌が腐り落ちる。"
+            "text": "@their の舌が腐り落ちる。"
         },
         {
             "key": "Poisons @thisCreature.",

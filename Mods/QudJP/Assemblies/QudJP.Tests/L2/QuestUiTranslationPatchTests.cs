@@ -165,14 +165,14 @@ public sealed class QuestUiTranslationPatchTests
                         QuestGiverName = "Mehmet",
                         QuestGiverLocationName = "Joppa",
                     },
-                    BodyText = "{{white|ù Travel to Red Rock}}\n   {{y|Find the Vermin}}",
+                    BodyText = "{{white|ù Travel to Red Rock}}\n   {{y|Find the Vermin}}\n   {{y|Unregistered Step}}",
                 });
 
             Assert.Multiple(() =>
             {
                 Assert.That(
                     target.bodyText.Text,
-                    Is.EqualTo("{{white|ù レッドロックへ向かう}}\n   {{y|害獣を見つける}}"));
+                    Is.EqualTo("{{white|ù レッドロックへ向かう}}\n   {{y|害獣を見つける}}\n   {{y|Unregistered Step}}"));
                 Assert.That(
                     DynamicTextObservability.GetRouteFamilyHitCountForTests(nameof(QuestsLineTranslationPatch), "QuestLog.StepName"),
                     Is.EqualTo(2));
@@ -362,6 +362,7 @@ public sealed class QuestUiTranslationPatchTests
         {
             "{{white|ù Travel to Red Rock}}",
             "{{white|ù Optional: Return with the Corpse}}",
+            "{{white|ù Unregistered Step}}",
         };
 
         var harmonyId = CreateHarmonyId();
@@ -382,6 +383,7 @@ public sealed class QuestUiTranslationPatchTests
                     {
                         "{{white|ù レッドロックへ向かう}}",
                         "{{white|ù 任意: 死体を持って戻る}}",
+                        "{{white|ù Unregistered Step}}",
                     }));
                 Assert.That(
                     DynamicTextObservability.GetRouteFamilyHitCountForTests(nameof(QuestLogTranslationPatch), "QuestLog.StepName"),

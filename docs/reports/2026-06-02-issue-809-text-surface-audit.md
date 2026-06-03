@@ -121,9 +121,10 @@ After a fresh `Player.log` triage from `main-mac-mini`, the issue #809 scope was
 expanded to quest/HSE/dynamic generated text and other live untranslated
 corpus. The follow-up pass implemented these additional closures:
 
-- `Quests.jp.xml` quest and step display `Name` attributes now use Japanese
-  text where applicable, while explicit English `ID` attributes preserve the
-  runtime identities used by quest managers and `FinishQuestStep`.
+- In `Quests.jp.xml`, localized step display `Name` attributes, plus the small
+  set of localized quest `Name` attributes already needed for Issue #809, now
+  carry explicit English `ID` attributes so `FinishQuestStep` and quest managers
+  keep their runtime identities.
 - `ui-quests.ja.json` carries the same authored step-name leaves as a runtime
   safety net for existing saves and generated quest-log lines.
 - `QuestLogTranslationPatch` translates authored step names inside color-wrapped
