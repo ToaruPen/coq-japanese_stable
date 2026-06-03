@@ -9562,7 +9562,7 @@ def test_policy_records_issue719_tranche39_active_effect_fixed_message_frame_ove
 
     residual_payload = residual_bucket_payload(inventory, inventory_path=Path("inventory.json"))
 
-    assert residual_payload["total_entries"] == 6
+    assert residual_payload["actionable_entries"] == 6
     assert sum(entry["text_construction_count"] for entry in residual_payload["entries"]) == 42
     assert residual_payload["bucket_counts"] == {
         "active_effect_message_frame_route_split": 6,
@@ -9614,7 +9614,7 @@ def test_policy_records_issue719_tranche40_active_effect_fixed_message_frame_ove
 
     residual_payload = residual_bucket_payload(inventory, inventory_path=Path("inventory.json"))
 
-    assert residual_payload["total_entries"] == 0
+    assert residual_payload["actionable_entries"] == 0
     assert sum(entry["text_construction_count"] for entry in residual_payload["entries"]) == 0
 
 
@@ -9671,7 +9671,7 @@ def test_policy_records_issue719_tranche40_active_effect_conversation_responsive
 
     residual_payload = residual_bucket_payload(inventory, inventory_path=Path("inventory.json"))
 
-    assert residual_payload["total_entries"] == 0
+    assert residual_payload["actionable_entries"] == 0
     assert sum(entry["text_construction_count"] for entry in residual_payload["entries"]) == 0
 
 
@@ -9743,7 +9743,7 @@ def test_policy_records_issue719_tranche41_active_effect_didx_owner_route_overla
 
     residual_payload = residual_bucket_payload(inventory, inventory_path=Path("inventory.json"))
 
-    assert residual_payload["total_entries"] == 0
+    assert residual_payload["actionable_entries"] == 0
     assert sum(entry["text_construction_count"] for entry in residual_payload["entries"]) == 0
 
 
@@ -9826,7 +9826,7 @@ def test_policy_records_issue719_tranche42_social_active_effect_owner_route_over
 
     residual_payload = residual_bucket_payload(inventory, inventory_path=Path("inventory.json"))
 
-    assert residual_payload["total_entries"] == 0
+    assert residual_payload["actionable_entries"] == 0
     assert sum(entry["text_construction_count"] for entry in residual_payload["entries"]) == 0
 
 
@@ -9860,7 +9860,7 @@ def test_policy_records_issue719_tranche43_cardiac_arrest_remove_owner_route_ove
 
     residual_payload = residual_bucket_payload(inventory, inventory_path=Path("inventory.json"))
 
-    assert residual_payload["total_entries"] == 0
+    assert residual_payload["actionable_entries"] == 0
     assert sum(entry["text_construction_count"] for entry in residual_payload["entries"]) == 0
 
 
@@ -11501,7 +11501,7 @@ def test_residual_bucket_payload_assigns_every_unreviewed_entry_to_a_followup_bu
 
     payload = residual_bucket_payload(inventory, inventory_path=Path("inventory.json"))
 
-    assert payload["total_entries"] == 6
+    assert payload["actionable_entries"] == 6
     assert payload["disposition_counts"] == {
         "likely_implementation_gap": 2,
         "runtime_evidence_required": 4,
@@ -12491,7 +12491,7 @@ def test_residual_bucket_payload_promotes_cooking_preset_display_names_to_owner_
         inventory,
         inventory_path=Path("issue719-cooking-preset-display-name-test.json"),
     )
-    assert residual["total_entries"] == 0
+    assert residual["actionable_entries"] == 0
 
 
 def test_residual_bucket_payload_splits_world_part_generated_display_names_by_owner_shape() -> None:
@@ -12916,7 +12916,7 @@ def test_residual_bucket_payload_promotes_village_signature_dishes_to_cooking_di
         inventory_path=Path("issue719-village-signature-dish-test.json"),
     )
 
-    assert residual["total_entries"] == 0
+    assert residual["actionable_entries"] == 0
     for family_id, _, _, _ in families.values():
         assert entries[family_id]["closure_status"] == "covered_by_owner_route"
         _assert_evidence_contains(
@@ -13012,7 +13012,7 @@ def test_residual_bucket_payload_promotes_village_coda_generated_names_to_displa
             "GetDisplayNameRouteTranslatorTests.cs",
             "VillageCoda.cs",
         )
-    assert payload["total_entries"] == 0
+    assert payload["actionable_entries"] == 0
 
 
 def test_residual_bucket_payload_splits_mural_generated_display_names_by_owner_shape() -> None:

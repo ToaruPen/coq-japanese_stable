@@ -109,7 +109,7 @@ public sealed class GetDisplayNameRouteTranslatorTests
     public void TranslatePreservingColors_UsesDisplayNameAliasForLegacySpaserDisplayNameWithWeaponStats()
     {
         WriteDictionaryFile(
-            "ui-displayname-aliases.ja.json",
+            "displayname-legacy-aliases.json",
             ("スパーザーライフル", "{{spaser|スペーザー}}ライフル"));
         WriteDictionaryFile("ui-displayname-adjectives.ja.json", ("[no cell]", "[セルなし]"));
 
@@ -148,7 +148,7 @@ public sealed class GetDisplayNameRouteTranslatorTests
     public void TranslatePreservingColors_UsesDisplayNameAliasForCachedTooltipWeaponName()
     {
         WriteDictionaryFile(
-            "ui-displayname-aliases.ja.json",
+            "displayname-legacy-aliases.json",
             ("旧式位相ライフル", "{{phase|新式位相ライフル}}"));
         WriteDictionaryFile("ui-displayname-adjectives.ja.json", ("[no cell]", "[セルなし]"));
 

@@ -376,9 +376,9 @@ internal static class ColorRouteCatalog
                 new(ColorPreservingEntryPointKind.RouteContract, "DisplayNameRouteTranslation", "Translation-layer display-name capture route contract."),
             ["Mods/QudJP/Assemblies/src/Translation/DisplayNameRouteTranslation.cs:80:StripLeadingEnglishArticlePreservingColors"] =
                 new(ColorPreservingEntryPointKind.RouteContract, "DisplayNameRouteTranslation", "Translation-layer display-name capture preprocessing contract."),
-            ["Mods/QudJP/Assemblies/src/Patches/GetDisplayNameRouteTranslator.cs:256:TranslatePreservingColors"] =
+            ["Mods/QudJP/Assemblies/src/Patches/GetDisplayNameRouteTranslator.cs:259:TranslatePreservingColors"] =
                 new(ColorPreservingEntryPointKind.RouteAdapter, "DisplayNameRouteTranslation", "Patch-layer implementation of the display-name route contract."),
-            ["Mods/QudJP/Assemblies/src/Patches/GetDisplayNameRouteTranslator.cs:1981:TranslateScopedExactPreservingColors"] =
+            ["Mods/QudJP/Assemblies/src/Patches/GetDisplayNameRouteTranslator.cs:1984:TranslateScopedExactPreservingColors"] =
                 new(ColorPreservingEntryPointKind.RouteAdapter, "DisplayNameRouteTranslation", "Display-name scoped exact helper keeps display route ownership."),
             ["Mods/QudJP/Assemblies/src/Patches/DisplayNameCaptureTranslator.cs:5:TranslatePreservingColors"] =
                 new(ColorPreservingEntryPointKind.RouteAdapter, "DisplayNameRouteTranslation", "Display-name capture adapter strips articles and direct markers before route translation."),

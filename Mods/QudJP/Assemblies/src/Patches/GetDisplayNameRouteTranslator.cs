@@ -16,9 +16,12 @@ internal static class GetDisplayNameRouteTranslator
     private const string DisplayNameTitleContext = "GetDisplayName.Title";
     private const string DisplayNameStateTemplateDictionaryFile = "Scoped/ui-displayname-state-templates.ja.json";
 
+    private static readonly string[] DisplayNameLegacyAliasDictionaryFiles =
+    {
+        "displayname-legacy-aliases.json",
+    };
     private static readonly string[] DisplayNameDictionaryFiles =
     {
-        "ui-displayname-aliases.ja.json",
         "ui-displayname-adjectives.ja.json",
         "ui-displayname-atomic.ja.json",
     };
@@ -3805,6 +3808,12 @@ internal static class GetDisplayNameRouteTranslator
             return blueprintMarkup;
         }
 
+        var alias = TranslateDisplayNameLegacyAliasExact(source);
+        if (alias is not null)
+        {
+            return alias;
+        }
+
         var direct = TranslateDisplayNameExactOrLowerAscii(source);
         if (direct is not null)
         {
@@ -5349,7 +5358,11 @@ internal static class GetDisplayNameRouteTranslator
 
     private static bool TryTranslateExactDisplayNameLookup(string source, string route, out string translated)
     {
-        var direct = TranslateDisplayNameExactOrLowerAscii(source);
+        var direct = TranslateDisplayNameLegacyAliasExact(source);
+        if (direct is null)
+        {
+            direct = TranslateDisplayNameExactOrLowerAscii(source);
+        }
         if (direct is not null)
         {
             translated = direct;
@@ -5369,7 +5382,11 @@ internal static class GetDisplayNameRouteTranslator
             return false;
         }
 
-        var trimmedTranslation = TranslateDisplayNameExactOrLowerAscii(trimmed);
+        var trimmedTranslation = TranslateDisplayNameLegacyAliasExact(trimmed);
+        if (trimmedTranslation is null)
+        {
+            trimmedTranslation = TranslateDisplayNameExactOrLowerAscii(trimmed);
+        }
         if (trimmedTranslation is null)
         {
             return false;
@@ -5388,6 +5405,11 @@ internal static class GetDisplayNameRouteTranslator
     private static string? TryTranslateDisplayNameScopedExact(string source)
     {
         return ScopedDictionaryLookup.TranslateExactOrLowerAscii(source, DisplayNameDictionaryFiles);
+    }
+
+    private static string? TranslateDisplayNameLegacyAliasExact(string source)
+    {
+        return ScopedDictionaryLookup.TranslateExactOrLowerAscii(source, DisplayNameLegacyAliasDictionaryFiles);
     }
 
     private static string? TranslateDisplayNameExactOrLowerAscii(string source)

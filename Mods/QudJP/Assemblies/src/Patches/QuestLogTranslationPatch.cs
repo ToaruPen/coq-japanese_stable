@@ -18,6 +18,7 @@ public static class QuestLogTranslationPatch
         new Regex("^(?<prefix>.*?)(?<label>Optional:\\s)(?<suffix>.*)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex BonusRewardPattern =
         new Regex("^(?<indent>\\s*)Bonus reward for completing this quest by level &C(?<value>.+?)&y\\.$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    // Preserve quest-step status markers (X/û/ù) and Optional/任意 prefixes while translating only the step name.
     private static readonly Regex QuestStepStatusPrefixPattern =
         new Regex("^(?<prefix>\\s*(?:[Xûù]\\s*)?(?:(?:Optional|任意):\\s)?)(?<name>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 

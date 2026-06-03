@@ -1660,6 +1660,9 @@ internal static class DescriptionTextTranslator
     {
         var targets = source
             .Replace("、", ", ")
+            .Replace(", and ", ", ")
+            .Replace(" and、", ", ")
+            .Replace(" and ", ", ")
             .Replace(", と", ", ")
             .Split(new[] { ", " }, StringSplitOptions.RemoveEmptyEntries)
             .Select(static target => TranslateSaveBonusTarget(target.Trim()))

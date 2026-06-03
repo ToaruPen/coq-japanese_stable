@@ -13317,7 +13317,7 @@ class ResidualBucketPayload(TypedDict):
 
     schema_version: str
     inventory: str
-    total_entries: int
+    actionable_entries: int
     bucket_counts: dict[str, int]
     disposition_counts: dict[str, int]
     lane_counts: dict[str, int]
@@ -13915,7 +13915,7 @@ def residual_bucket_payload(
     return {
         "schema_version": "1.0",
         "inventory": str(inventory_path),
-        "total_entries": len(entries),
+        "actionable_entries": len(entries),
         "bucket_counts": dict(sorted(bucket_counts.items())),
         "disposition_counts": dict(sorted(disposition_counts.items())),
         "lane_counts": dict(sorted(lane_counts.items(), key=lambda item: LANE_ORDER[item[0]])),

@@ -251,6 +251,7 @@ public sealed class DescriptionTextTranslatorTests
     [TestCase("This item's DV bonus is being averaged across all body parts of the same type.", "このアイテムのDVボーナスは同じ種類の全身体部位で平均化されている。")]
     [TestCase("This item's DV penalty is being averaged across all body parts of the same type.", "このアイテムのDVペナルティは同じ種類の全身体部位で平均化されている。")]
     [TestCase("-4 to saves vs. forced movement, knockdown, Being restrained", "強制移動・転倒・拘束に対するセーヴ-4")]
+    [TestCase("-4 to saves vs. forced movement, knockdown, and bleeding", "強制移動・転倒・出血に対するセーヴ-4")]
     [TestCase("+5 to saves vs. being restrained", "拘束に対するセーヴ+5")]
     [TestCase("Being restrained", "拘束")]
     [TestCase("+2 DV while occupying the same tile as foliage", "植物と同じタイルにいる間DV+2")]
