@@ -369,11 +369,11 @@ internal static class ColorRouteCatalog
                 new(ColorPreservingEntryPointKind.LowLevelHelper, "ColorCodePreserver", "Tokenizer-level color strip primitive."),
             ["Mods/QudJP/Assemblies/src/Translation/ColorCodePreserver.cs:26:Restore"] =
                 new(ColorPreservingEntryPointKind.LowLevelHelper, "ColorCodePreserver", "Tokenizer-level color restore primitive."),
-            ["Mods/QudJP/Assemblies/src/Translation/DisplayNameRouteTranslation.cs:38:TranslatePreservingColors"] =
+            ["Mods/QudJP/Assemblies/src/Translation/DisplayNameRouteTranslation.cs:62:TranslatePreservingColors"] =
                 new(ColorPreservingEntryPointKind.RouteContract, "DisplayNameRouteTranslation", "Translation-layer display-name route contract."),
-            ["Mods/QudJP/Assemblies/src/Translation/DisplayNameRouteTranslation.cs:49:TranslateCapturePreservingColors"] =
+            ["Mods/QudJP/Assemblies/src/Translation/DisplayNameRouteTranslation.cs:73:TranslateCapturePreservingColors"] =
                 new(ColorPreservingEntryPointKind.RouteContract, "DisplayNameRouteTranslation", "Translation-layer display-name capture route contract."),
-            ["Mods/QudJP/Assemblies/src/Translation/DisplayNameRouteTranslation.cs:56:StripLeadingEnglishArticlePreservingColors"] =
+            ["Mods/QudJP/Assemblies/src/Translation/DisplayNameRouteTranslation.cs:80:StripLeadingEnglishArticlePreservingColors"] =
                 new(ColorPreservingEntryPointKind.RouteContract, "DisplayNameRouteTranslation", "Translation-layer display-name capture preprocessing contract."),
             ["Mods/QudJP/Assemblies/src/Patches/GetDisplayNameRouteTranslator.cs:255:TranslatePreservingColors"] =
                 new(ColorPreservingEntryPointKind.RouteAdapter, "DisplayNameRouteTranslation", "Patch-layer implementation of the display-name route contract."),

@@ -5,7 +5,8 @@ namespace QudJP;
 internal static class DisplayNameRouteTranslation
 {
     private static readonly object SyncRoot = new object();
-    private static DisplayNameTranslator translator = PassThrough;
+    private static DisplayNameTranslator defaultTranslator = PassThrough;
+    private static DisplayNameTranslator translator = defaultTranslator;
 
     internal delegate string DisplayNameTranslator(string? source, string? context);
 
@@ -27,11 +28,34 @@ internal static class DisplayNameRouteTranslation
         RegisterTranslator(routeTranslator);
     }
 
+    internal static void RegisterDefaultTranslatorForTests(DisplayNameTranslator routeTranslator)
+    {
+        if (routeTranslator is null)
+        {
+            throw new ArgumentNullException(nameof(routeTranslator));
+        }
+
+        lock (SyncRoot)
+        {
+            defaultTranslator = routeTranslator;
+            translator = defaultTranslator;
+        }
+    }
+
+    internal static void ResetDefaultTranslatorForTests()
+    {
+        lock (SyncRoot)
+        {
+            defaultTranslator = PassThrough;
+            translator = defaultTranslator;
+        }
+    }
+
     internal static void ResetForTests()
     {
         lock (SyncRoot)
         {
-            translator = PassThrough;
+            translator = defaultTranslator;
         }
     }
 
