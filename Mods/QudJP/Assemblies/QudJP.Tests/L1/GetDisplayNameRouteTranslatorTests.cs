@@ -1396,6 +1396,31 @@ public sealed class GetDisplayNameRouteTranslatorTests
     }
 
     [Test]
+    public void TranslatePreservingColors_TreatsRuntimeEmptyQudAngleCodeWrapperAsSemanticClean()
+    {
+        const string source =
+            "phylactery of {{M|ベグナスパルド・ベマリネ}} {{y|<{{|{{G|B}}{{B|C}}{{c|4}}{{W|6}}}}>}}";
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            source,
+            nameof(GetDisplayNameProcessPatch));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                translated,
+                Is.EqualTo("{{M|ベグナスパルド・ベマリネ}} {{y|<{{|{{G|B}}{{B|C}}{{c|4}}{{W|6}}}}>}}のファイラクテリー"));
+            Assert.That(
+                ColorShapeCaptureObservability.Capture(
+                    nameof(GetDisplayNameProcessPatch),
+                    nameof(TranslatePreservingColors_TreatsRuntimeEmptyQudAngleCodeWrapperAsSemanticClean),
+                    source,
+                    translated).MarkupSemanticStatus,
+                Is.EqualTo("clean"));
+        });
+    }
+
+    [Test]
     public void TranslatePreservingColors_TranslatesRuntimeObservedShrineCognomenTarget()
     {
         WriteDictionaryFile(

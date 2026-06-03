@@ -789,6 +789,18 @@ public sealed class MessagePatternTranslatorTests
     }
 
     [Test]
+    public void Translate_DisplayNamePlaceholderStripsDirectTranslationMarkerBeforeLeadingArticle()
+    {
+        WriteExactDictionary(("chain pistol", "チェーンピストル"));
+        WritePatternDictionary(("^You equip (.+?)[.!]?$", "{d0}を装備した"));
+
+        var translated = MessagePatternTranslator.Translate(
+            "You equip " + MessageFrameTranslator.MarkDirectTranslation("the chain pistol") + ".");
+
+        Assert.That(translated, Is.EqualTo("チェーンピストルを装備した"));
+    }
+
+    [Test]
     public void Translate_RepositoryDictionary_PreservesNestedColorWrappersForPlayerHitWithRoll()
     {
         UseRepositoryPatternDictionary();

@@ -1172,7 +1172,7 @@ internal static class MessagePatternTranslator
     {
         try
         {
-            return DisplayNameCaptureTranslator.TranslatePreservingColors(source, nameof(MessagePatternTranslator));
+            return DisplayNameRouteTranslation.TranslateCapturePreservingColors(source, nameof(MessagePatternTranslator));
         }
         catch (DirectoryNotFoundException)
         {
