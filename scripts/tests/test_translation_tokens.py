@@ -63,6 +63,18 @@ def _write_duplicate_baseline(path: Path, *states: dict[str, object]) -> None:
     )
 
 
+def _without_occurrence_entry_indices(state: dict[str, object]) -> dict[str, object]:
+    result = dict(state)
+    occurrences = state["occurrences"]
+    assert isinstance(occurrences, list)
+    cleaned_occurrences: list[dict[object, object]] = []
+    for occurrence in occurrences:
+        assert isinstance(occurrence, dict)
+        cleaned_occurrences.append({key: value for key, value in occurrence.items() if key != "entry_index"})
+    result["occurrences"] = cleaned_occurrences
+    return result
+
+
 def _run_with_duplicate_baseline(tmp_path: Path, payload: object) -> int:
     localization = tmp_path / "Localization"
     _write_entries(localization / "Dictionaries" / "demo.ja.json", [{"key": "Source", "text": "訳"}])
@@ -654,6 +666,29 @@ def test_duplicate_baseline_path_is_stable_for_localization_relative_cli_shapes(
     assert check_translation_tokens.main(["demo.ja.json", "--duplicate-conflict-baseline", str(baseline)]) == 0
 
 
+def test_duplicate_source_key_baseline_ignores_entry_index_movement(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """Known duplicate conflicts stay baselined when only their JSON entry positions move."""
+    localization = tmp_path / "Localization"
+    target = localization / "Dictionaries" / "demo.ja.json"
+    baseline = tmp_path / "baseline.json"
+    _write_duplicate_baseline(baseline, _same_file_duplicate_state(texts=["訳語A", "訳語B"]))
+    _write_entries(
+        target,
+        [
+            {"key": "Inserted source", "text": "挿入"},
+            {"key": "Same source", "text": "訳語A"},
+            {"key": "Same source", "text": "訳語B"},
+        ],
+    )
+
+    assert check_translation_tokens.main([str(localization), "--duplicate-conflict-baseline", str(baseline)]) == 0
+    captured = capsys.readouterr()
+    assert "0 issue(s)" in captured.out
+
+
 def test_cli_writes_duplicate_conflict_baseline_from_current_state(
     tmp_path: Path,
     capsys: pytest.CaptureFixture[str],
@@ -682,8 +717,8 @@ def test_cli_writes_duplicate_conflict_baseline_from_current_state(
     assert payload == {
         "version": 3,
         "duplicate_conflicts": [
-            _cross_file_duplicate_state(texts=["共有A", "共有B"]),
-            _same_file_duplicate_state(texts=["訳語A", "訳語B"]),
+            _without_occurrence_entry_indices(_cross_file_duplicate_state(texts=["共有A", "共有B"])),
+            _without_occurrence_entry_indices(_same_file_duplicate_state(texts=["訳語A", "訳語B"])),
         ],
     }
     assert check_translation_tokens.main([str(localization), "--duplicate-conflict-baseline", str(baseline)]) == 0

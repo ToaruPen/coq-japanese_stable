@@ -324,6 +324,7 @@ internal static class ColorRouteCatalog
         "JournalPatternTranslator.Translate(",
         "ColorAwareTranslationComposer.TranslatePreservingColors(",
         "DescriptionTextTranslator.TranslateLongDescription(",
+        "DisplayNameRouteTranslation.TranslatePreservingColors(",
         "GetDisplayNameRouteTranslator.TranslatePreservingColors(",
         "UITextSkinTranslationPatch.TranslatePreservingColors(",
         "PopupTranslationPatch.TranslatePopupTextForRoute(",
@@ -368,11 +369,11 @@ internal static class ColorRouteCatalog
                 new(ColorPreservingEntryPointKind.LowLevelHelper, "ColorCodePreserver", "Tokenizer-level color strip primitive."),
             ["Mods/QudJP/Assemblies/src/Translation/ColorCodePreserver.cs:26:Restore"] =
                 new(ColorPreservingEntryPointKind.LowLevelHelper, "ColorCodePreserver", "Tokenizer-level color restore primitive."),
-            ["Mods/QudJP/Assemblies/src/Patches/DisplayNameRouteTranslation.cs:7:TranslatePreservingColors"] =
+            ["Mods/QudJP/Assemblies/src/Translation/DisplayNameRouteTranslation.cs:38:TranslatePreservingColors"] =
                 new(ColorPreservingEntryPointKind.RouteContract, "DisplayNameRouteTranslation", "Translation-layer display-name route contract."),
-            ["Mods/QudJP/Assemblies/src/Patches/DisplayNameRouteTranslation.cs:12:TranslateCapturePreservingColors"] =
+            ["Mods/QudJP/Assemblies/src/Translation/DisplayNameRouteTranslation.cs:49:TranslateCapturePreservingColors"] =
                 new(ColorPreservingEntryPointKind.RouteContract, "DisplayNameRouteTranslation", "Translation-layer display-name capture route contract."),
-            ["Mods/QudJP/Assemblies/src/Patches/DisplayNameRouteTranslation.cs:19:StripLeadingEnglishArticlePreservingColors"] =
+            ["Mods/QudJP/Assemblies/src/Translation/DisplayNameRouteTranslation.cs:56:StripLeadingEnglishArticlePreservingColors"] =
                 new(ColorPreservingEntryPointKind.RouteContract, "DisplayNameRouteTranslation", "Translation-layer display-name capture preprocessing contract."),
             ["Mods/QudJP/Assemblies/src/Patches/GetDisplayNameRouteTranslator.cs:255:TranslatePreservingColors"] =
                 new(ColorPreservingEntryPointKind.RouteAdapter, "DisplayNameRouteTranslation", "Patch-layer implementation of the display-name route contract."),
@@ -517,10 +518,10 @@ internal static class ColorRouteCatalog
             ["Mods/QudJP/Assemblies/src/Patches/DescriptionTextTranslator.cs|MessagePatternTranslator.Translate("] = 4,
             ["Mods/QudJP/Assemblies/src/Patches/DisassemblyStartTranslationPatch.cs|ColorAwareTranslationComposer.TranslatePreservingColors("] = 2,
             ["Mods/QudJP/Assemblies/src/Patches/DisassemblyStartTranslationPatch.cs|GetDisplayNameRouteTranslator.TranslatePreservingColors("] = 2,
-            ["Mods/QudJP/Assemblies/src/Patches/DisplayNameRouteTranslation.cs|ColorAwareTranslationComposer.TranslatePreservingColors("] = 1,
-            ["Mods/QudJP/Assemblies/src/Patches/DisplayNameRouteTranslation.cs|GetDisplayNameRouteTranslator.TranslatePreservingColors("] = 1,
+            ["Mods/QudJP/Assemblies/src/Translation/DisplayNameRouteTranslation.cs|ColorAwareTranslationComposer.TranslatePreservingColors("] = 1,
             ["Mods/QudJP/Assemblies/src/Translation/DisplayNamePlaceholderTranslator.cs|ColorAwareTranslationComposer.TranslatePreservingColors("] = 1,
             ["Mods/QudJP/Assemblies/src/Translation/MessageFrameTranslator.cs|ColorAwareTranslationComposer.TranslatePreservingColors("] = 2,
+            ["Mods/QudJP/Assemblies/src/Translation/MessageFrameTranslator.cs|DisplayNameRouteTranslation.TranslatePreservingColors("] = 1,
             ["Mods/QudJP/Assemblies/src/Patches/EnergyStorageChargeStatusTranslationPatch.cs|ColorAwareTranslationComposer.TranslatePreservingColors("] = 1,
             ["Mods/QudJP/Assemblies/src/Patches/EquipmentLineTranslationPatch.cs|ColorAwareTranslationComposer.TranslatePreservingColors("] = 1,
             ["Mods/QudJP/Assemblies/src/Patches/ExaminerTranslationPatch.cs|GetDisplayNameRouteTranslator.TranslatePreservingColors("] = 1,

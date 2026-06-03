@@ -24,6 +24,7 @@ public sealed class MessageFrameTranslatorTests
 
         Translator.ResetForTests();
         Translator.SetDictionaryDirectoryForTests(exactDictionaryDirectory);
+        DisplayNameRouteTranslation.ResetForTests();
         MessageFrameTranslator.ResetForTests();
         MessageFrameTranslator.SetDictionaryPathForTests(dictionaryPath);
     }
@@ -32,6 +33,7 @@ public sealed class MessageFrameTranslatorTests
     public void TearDown()
     {
         Translator.ResetForTests();
+        DisplayNameRouteTranslation.ResetForTests();
         MessageFrameTranslator.ResetForTests();
 
         if (Directory.Exists(tempDirectory))
@@ -145,6 +147,29 @@ public sealed class MessageFrameTranslatorTests
         {
             Assert.That(translated, Is.True);
             Assert.That(sentence, Is.EqualTo("熊はスナップジョーを青銅の短剣で攻撃した。"));
+        });
+    }
+
+    [Test]
+    public void TryTranslateXDidY_Tier3TranslatedPlaceholder_UsesRegisteredDisplayNameRoute()
+    {
+        DisplayNameRouteTranslation.RegisterTranslatorForTests(
+            (source, context) => source == "raw widgets" && context == nameof(MessageFrameTranslator)
+                ? "登録済み表示名"
+                : source ?? string.Empty);
+        WriteDictionary(tier3: new[] { ("break", "free from {0}", "{t0}から抜け出した") });
+
+        var translated = MessageFrameTranslator.TryTranslateXDidY(
+            "あなた",
+            "break",
+            extra: "free from 2 raw widgets",
+            endMark: ".",
+            out var sentence);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.True);
+            Assert.That(sentence, Is.EqualTo("あなたは2 登録済み表示名から抜け出した。"));
         });
     }
 

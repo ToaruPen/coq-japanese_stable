@@ -31,6 +31,7 @@ public sealed class ColorTagAllowlistCoverageTests
         "ColorAwareTranslationComposer.RestoreSourceBoundaryWrappersByVisibleTextPreservingTranslatedOwnership(",
         "ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(",
         "ColorAwareTranslationComposer.TranslatePreservingColors(",
+        "DisplayNameRouteTranslation.TranslatePreservingColors(",
         "GetDisplayNameRouteTranslator.TranslatePreservingColors(",
         "UITextSkinTranslationPatch.TranslatePreservingColors(",
         "RestoreBalancedCapture(",
@@ -305,7 +306,6 @@ public sealed class ColorTagAllowlistCoverageTests
         "Mods/QudJP/Assemblies/src/Patches/DeathWrapperFamilyTranslator.cs",
         "Mods/QudJP/Assemblies/src/Patches/DescriptionTextTranslator.cs",
         "Mods/QudJP/Assemblies/src/Patches/DisassemblyStartTranslationPatch.cs",
-        "Mods/QudJP/Assemblies/src/Patches/DisplayNameRouteTranslation.cs",
         "Mods/QudJP/Assemblies/src/Patches/DisplayNameSemanticPipeline.cs",
         "Mods/QudJP/Assemblies/src/Patches/ExaminerTranslationPatch.cs",
         "Mods/QudJP/Assemblies/src/Patches/FabricateFromSelfAbilityDescriptionTranslationPatch.cs",
@@ -324,6 +324,7 @@ public sealed class ColorTagAllowlistCoverageTests
         "Mods/QudJP/Assemblies/src/Patches/VillageSignatureItemTranslationPatch.cs",
         "Mods/QudJP/Assemblies/src/Patches/WorldPartGeneratedDisplayNameTranslationPatches.cs",
         "Mods/QudJP/Assemblies/src/Patches/XDidYTranslationPatch.cs",
+        "Mods/QudJP/Assemblies/src/Translation/MessageFrameTranslator.cs",
     };
 
     private static readonly string[] MarkupAwareCaptureOwnerFiles =
@@ -432,7 +433,9 @@ public sealed class ColorTagAllowlistCoverageTests
     [Test]
     public void DisplayNameTranslate_OnlyCalled_FromOwnerRouteAllowlist()
     {
-        var actual = FindFilesContaining("GetDisplayNameRouteTranslator.TranslatePreservingColors(");
+        var actual = FindFilesContainingAny(
+            "DisplayNameRouteTranslation.TranslatePreservingColors(",
+            "GetDisplayNameRouteTranslator.TranslatePreservingColors(");
 
         Assert.That(actual, Is.EquivalentTo(DisplayNameOwnerRouteFiles));
     }
@@ -553,6 +556,21 @@ public sealed class ColorTagAllowlistCoverageTests
             if (text.Contains(symbol, StringComparison.Ordinal))
             {
                 matches.Add(ToRepositoryRelativePath(file));
+            }
+        }
+
+        return matches.ToArray();
+    }
+
+    private static string[] FindFilesContainingAny(params string[] symbols)
+    {
+        var matches = new SortedSet<string>(StringComparer.Ordinal);
+
+        foreach (var symbol in symbols)
+        {
+            foreach (var match in FindFilesContaining(symbol))
+            {
+                matches.Add(match);
             }
         }
 
