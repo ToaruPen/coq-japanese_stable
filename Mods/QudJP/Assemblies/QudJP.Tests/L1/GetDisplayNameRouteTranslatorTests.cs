@@ -94,6 +94,35 @@ public sealed class GetDisplayNameRouteTranslatorTests
     }
 
     [Test]
+    public void TranslatePreservingColors_NormalizesLegacySpaserDisplayNameWithLeadingModifier()
+    {
+        UseProductionDictionaries();
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            "{{c|jacked}} {{spaser|スパーザー}}ライフル",
+            nameof(GetDisplayNameProcessPatch));
+
+        Assert.That(translated, Is.EqualTo("{{c|ジャック付き}} {{spaser|スペーザー}}ライフル"));
+    }
+
+    [Test]
+    public void TranslatePreservingColors_NormalizesLegacySpaserDisplayNameWithWeaponStats()
+    {
+        WriteDictionaryFile("ui-displayname-adjectives.ja.json", ("[no cell]", "[セルなし]"));
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            "スパーザーライフル \u001A14 \u00031d12 [no cell] <AAC7>",
+            nameof(GetDisplayNameProcessPatch));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Does.Contain("スペーザーライフル"));
+            Assert.That(translated, Does.Contain("[セルなし]"));
+            Assert.That(translated, Does.Not.Contain("スパーザー"));
+        });
+    }
+
+    [Test]
     public void TranslatePreservingColors_ProductionDictionary_TranslatesWaterStainedPrefix()
     {
         UseProductionDictionaries();

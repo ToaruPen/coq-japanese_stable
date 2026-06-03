@@ -287,6 +287,7 @@ internal static class GetDisplayNameRouteTranslator
         }
 
         using var logScope = Translator.PushLogContext(context);
+        source = NormalizeLegacyLocalizedDisplayNameTerms(source!);
 
         if (TryTranslateLiquidPrepositionDisplayName(source!, route, out var coloredLiquidPrepositionTranslation))
         {
@@ -481,6 +482,13 @@ internal static class GetDisplayNameRouteTranslator
         }
 
         return source!;
+    }
+
+    private static string NormalizeLegacyLocalizedDisplayNameTerms(string source)
+    {
+        return StringHelpers.ContainsOrdinal(source, "スパーザー")
+            ? source.Replace("スパーザー", "スペーザー")
+            : source;
     }
 
     private static bool TryTranslateRedundantStainedWholeWrapperWithSuffix(
