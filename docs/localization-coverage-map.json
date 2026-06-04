@@ -115,11 +115,12 @@
       "id": "issue_809_authored_runtime_text_audit",
       "label": "Issue #809 conversation, quest body, cooking, active-effect, and status text audit",
       "category": "route_family_tests",
-      "status": "partial_tests_no_inventory",
+      "status": "inventoried_unclosed",
       "closure_owner": "Issue #809 cross-surface audit ledger and existing surface-specific owner lanes",
       "closure_gate_type": "route_family_test_gap",
       "closure_evidence": [
         "docs/reports/2026-06-02-issue-809-text-surface-audit.md",
+        "docs/issue-809-authored-text-inventory.json",
         "scripts/text_construction_surface_policy.py",
         "docs/localization-coverage-map.json",
         "docs/active-effect-producer-inventory.json",
@@ -145,15 +146,21 @@
       "summary_artifact": "docs/reports/2026-06-02-issue-809-text-surface-audit.md",
       "closure_gate": "scripts/text_construction_surface_policy.py",
       "tests": [
+        "scripts/tests/test_issue809_authored_text_inventory.py",
         "scripts/tests/test_localization_coverage_map.py",
         "scripts/tests/test_text_construction_surface_policy.py",
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/SingleCallsiteOwnerPopupTranslationPatchTests.cs",
         "Mods/QudJP/Assemblies/QudJP.Tests/L2/ConversationDisplayTextPatchTests.cs",
         "Mods/QudJP/Assemblies/QudJP.Tests/L2/QuestUiTranslationPatchTests.cs",
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/PopupPickOptionTranslationPatchTests.cs",
         "Mods/QudJP/Assemblies/QudJP.Tests/L2/CookingRuntimeTranslationPatchTests.cs",
+        "Mods/QudJP/Assemblies/QudJP.Tests/L1/PlayerStatusBarProducerTranslationHelpersTests.cs",
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/PlayerStatusBarProducerTranslationPatchTests.cs",
         "Mods/QudJP/Assemblies/QudJP.Tests/L2/ActiveEffectsOwnerPatchTests.cs",
         "Mods/QudJP/Assemblies/QudJP.Tests/L2/StatusScreenBindingOwnerPatchTests.cs"
       ],
       "commands": [
+        "uv run python scripts/issue809_authored_text_inventory.py",
         "just text-construction-surface-queue \"$HOME/dev/coq-decompiled_stable\" /tmp/issue809-text-construction.json 80",
         "uv run python scripts/text_construction_surface_policy.py --inventory /tmp/issue809-text-construction.json --format lanes-json --include valuable --limit 0",
         "just localization-coverage-map-check",
@@ -165,11 +172,12 @@
         "This audit reconciles existing lanes; it is not a new claim of true untranslated-zero coverage.",
         "Static producer queue zero does not close conversation, quest body, cooking effect, active-effect, or status UI routes.",
         "quest titles are intentionally excluded from issue #809 translation targets; quest body, journal, handler, step, and reward text remain separately auditable.",
-        "Conversation and quest authored XML assets do not have a complete tracked inventory in this lane.",
-        "Cooking and active-effect inventories cover audited owner slices only; runtime meal, food/water status, and UI embedding shapes still need emitted-shape tests before promotion."
+        "Conversation and hidden-conversation authored XML text, runtime expansion terms, and choice part names are tracked in docs/issue-809-authored-text-inventory.json.",
+        "DynamicQuestRewardElement_ChoiceFromPopulation reward options have an owner-route emitted-shape test for generated display names, comma-separated option parts, and &WxN quantity suffixes.",
+        "Cooking/meal FoodConsumptionFrame and player-status FoodWater shapes have owner-route emitted-shape tests; active-effect/status UI rows have owner-route tests, but true untranslated-zero still requires fresh runtime evidence."
       ],
       "next_actions": [
-        "Use the issue #809 report to pick one surface group and add an emitted-shape test before implementation.",
+        "Use the issue #809 authored-text inventory to pick specific authored conversation or quest rows before implementation.",
         "Keep authored data-source fixes separate from runtime owner-route fixes.",
         "Fetch fresh runtime Player.log evidence only when deciding whether a candidate shape is live-visible or sink-only."
       ]

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
+using System.Text;
 using HarmonyLib;
 
 namespace QudJP.Patches;
@@ -13,9 +14,14 @@ public static class PopupPickOptionTranslationPatch
     private const string Context = nameof(PopupPickOptionTranslationPatch);
     private const string TargetTypeName = "XRL.UI.Popup";
     private const string InventoryActionMenuPopupIdPrefix = "InventoryActionMenu:";
+    private const string DynamicQuestRewardPickerTitle = "Choose a reward";
+    private const string DynamicQuestRewardQuantitySuffixMarker = " &Wx";
 
     [ThreadStatic]
     private static bool preservePopupOptionMenuData;
+
+    [ThreadStatic]
+    private static bool translateDynamicQuestRewardOptions;
 
     internal static bool ShouldPreservePopupOptionMenuData => preservePopupOptionMenuData;
 
@@ -83,10 +89,12 @@ public static class PopupPickOptionTranslationPatch
     {
         try
         {
+            var originalTitle = __0;
             __0 = TranslatePopupText(__0)!;
             __1 = TranslatePopupText(__1);
             __2 = TranslatePopupText(__2)!;
             preservePopupOptionMenuData = ShouldPreserveInventoryActionMenuData(__21);
+            translateDynamicQuestRewardOptions = ShouldTranslateDynamicQuestRewardOptions(originalTitle);
             if (preservePopupOptionMenuData)
             {
                 return;
@@ -103,18 +111,27 @@ public static class PopupPickOptionTranslationPatch
 
     public static void Finalizer()
     {
-        preservePopupOptionMenuData = false;
+        ClearPopupOptionMenuDataPreservationForTests();
     }
 
     internal static void ClearPopupOptionMenuDataPreservationForTests()
     {
         preservePopupOptionMenuData = false;
+        translateDynamicQuestRewardOptions = false;
     }
 
     private static bool ShouldPreserveInventoryActionMenuData(string? popupId)
     {
         return popupId is not null
             && popupId.StartsWith(InventoryActionMenuPopupIdPrefix, StringComparison.Ordinal);
+    }
+
+    private static bool ShouldTranslateDynamicQuestRewardOptions(string? title)
+    {
+        return string.Equals(
+            ColorAwareTranslationComposer.GetVisibleText(title),
+            DynamicQuestRewardPickerTitle,
+            StringComparison.Ordinal);
     }
 
     private static string? TranslatePopupText(string? text)
@@ -186,7 +203,90 @@ public static class PopupPickOptionTranslationPatch
             text = originalText;
         }
 
+        if (translateDynamicQuestRewardOptions
+            && TryTranslateDynamicQuestRewardOptionText(text, out var rewardOptionTranslated))
+        {
+            return rewardOptionTranslated;
+        }
+
         return PopupTranslationPatch.TranslatePopupMenuItemTextForProducerRoute(text, Context);
+    }
+
+    private static bool TryTranslateDynamicQuestRewardOptionText(string source, out string translated)
+    {
+        translated = source;
+        if (string.IsNullOrWhiteSpace(source))
+        {
+            return false;
+        }
+
+        var parts = source.Split(new[] { ", " }, StringSplitOptions.None);
+        var builder = new StringBuilder(source.Length);
+        var changed = false;
+
+        for (var index = 0; index < parts.Length; index++)
+        {
+            if (index > 0)
+            {
+                builder.Append(", ");
+            }
+
+            var part = parts[index];
+            var translatedPart = TranslateDynamicQuestRewardOptionPart(part);
+            if (!string.Equals(part, translatedPart, StringComparison.Ordinal))
+            {
+                changed = true;
+            }
+
+            builder.Append(translatedPart);
+        }
+
+        if (!changed)
+        {
+            return false;
+        }
+
+        translated = builder.ToString();
+        DynamicTextObservability.RecordTransform(
+            Context,
+            "DynamicQuestRewardOption.DisplayName",
+            source,
+            translated);
+        return true;
+    }
+
+    private static string TranslateDynamicQuestRewardOptionPart(string source)
+    {
+        var displayName = source;
+        var suffix = string.Empty;
+        var suffixIndex = source.LastIndexOf(DynamicQuestRewardQuantitySuffixMarker, StringComparison.Ordinal);
+        if (suffixIndex >= 0 && HasAsciiDigitsOnly(source, suffixIndex + DynamicQuestRewardQuantitySuffixMarker.Length))
+        {
+            displayName = source.Substring(0, suffixIndex);
+            suffix = source.Substring(suffixIndex);
+        }
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(displayName, Context);
+        return translated + suffix;
+    }
+
+    private static bool HasAsciiDigitsOnly(string source, int startIndex)
+    {
+        if (startIndex >= source.Length)
+        {
+            return false;
+        }
+
+        for (var index = startIndex; index < source.Length; index++)
+        {
+            var character = source[index];
+            if (character < '0' || character > '9')
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private static void TranslatePopupMenuItemTextCollection(object? maybeList)

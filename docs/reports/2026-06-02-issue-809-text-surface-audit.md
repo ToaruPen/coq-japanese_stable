@@ -58,15 +58,15 @@ surface.
 
 | Surface group | Current evidence | Classification | First candidate work |
 | --- | --- | --- | --- |
-| Conversation authored XML | `Conversations.jp.xml`, `HiddenConversations.jp.xml`, asset validators | data-source asset | Build a conversation data/template inventory if more authored coverage is needed. |
+| Conversation authored XML | `docs/issue-809-authored-text-inventory.json`, `Conversations.jp.xml`, `HiddenConversations.jp.xml`, asset validators | tracked data-source inventory | Use the inventory rows for targeted authored-text fixes; it records text nodes, runtime expansion terms such as `player.formalAddressTerm`, and choice part names. |
 | Conversation choice tags and display text | `ConversationDisplayTextPatchTests.cs`, issue #719 conversation report, text-construction `conversation_routes` | owner route | Add narrow emitted-shape tests for any missing `GetChoiceTagEvent` or `DisplayTextEvent` shape before patching. |
 | Quest body and journal routes | `QuestLogTranslationPatch`, `QuestsLineTranslationPatch`, issue #747 route inventory, `QuestUiTranslationPatchTests.cs` | owner route plus data-source asset | Add `QuestsLine.bodyText` regression proving translated quest-log body lines reach the UI. |
-| Quest step names | `Quests.jp.xml`, `QuestLog.GetLinesForQuest` source evidence | data-source or QuestLog owner route pending runtime proof | Treat step names separately from quest titles; use runtime evidence before bulk asset edits. |
-| Dynamic quest reward options | `DynamicQuestRewardElement_ChoiceFromPopulation.award` source evidence | owner route | Add a reward option emitted-shape test for generated display names plus `&WxN` quantity suffix. |
+| Quest step names | `docs/issue-809-authored-text-inventory.json`, `Quests.jp.xml`, `QuestLog.GetLinesForQuest` source evidence | tracked data-source inventory plus QuestLog owner route | Treat step names separately from quest titles; the tracked inventory counts excluded quest titles, metadata text, step names, and step body text separately. |
+| Dynamic quest reward options | `DynamicQuestRewardElement_ChoiceFromPopulation.award` source evidence, `PopupPickOptionTranslationPatchTests.cs` | owner route | Reward option emitted-shape tests cover generated display names, comma-separated option parts, and `&WxN` quantity suffix preservation. |
 | Cooking effect descriptions | issue #466 cooking report, `CookingEffectTranslationPatch`, `world-effects-cooking.ja.json` | owner route plus scoped fixed leaves | Continue owner-route slices; do not add broad concrete cooking fragments as fallback leaves. |
-| Meal and digestion runtime text | `CookingRuntimeTranslationPatch`, `CampfireDescribeMealTranslationPatch`, `Food.cs`, `Stomach.cs` source evidence | owner route candidate | Test the general eat popup `You eat ... You are now ...` and embedded `FoodStatus` / `WaterStatus` labels. |
+| Meal and digestion runtime text | `SingleCallsiteOwnerPopupTranslationPatchTests.cs`, `CookingRuntimeTranslationPatch`, `CampfireDescribeMealTranslationPatch`, `Food.cs`, `Stomach.cs` source evidence | owner route | `FoodConsumptionFrame` emitted-shape tests cover `You eat ... You are now ...` plus embedded `FoodStatus` / `WaterStatus` labels. |
 | Active-effect descriptions/details | `docs/active-effect-producer-inventory.json`, `EffectDescriptionPatch`, `EffectDetailsPatch`, `world-effects-status.ja.json`, scoped generated templates | owner route plus scoped generated templates | Keep cooking and non-cooking effect routes separate; add emitted-shape tests before promoting UI embedding gaps. |
-| Active-effect/status UI rows | `CharacterEffectLineTranslationPatch`, `StatusScreenBindingOwnerPatchTests.cs`, `PlayerStatusBarProducerTranslationPatch` | owner route candidate by screen | Use text-construction `screen_ui_direct_text` and focused UI tests; do not rely on final TMP/UIText sinks. |
+| Active-effect/status UI rows | `CharacterEffectLineTranslationPatch`, `StatusScreenBindingOwnerPatchTests.cs`, `PlayerStatusBarProducerTranslationPatchTests.cs` | owner route by screen | Focused UI tests cover character-status effect rows and player-status `FoodWater` owner strings; do not rely on final TMP/UIText sinks. |
 
 ## Candidate Tests
 
@@ -76,18 +76,19 @@ surface.
      translated before reaching `bodyText.SetText`.
    - Keep quest titles untranslated in this test.
 
-2. `Mods/QudJP/Assemblies/QudJP.Tests/L2/CookingRuntimeTranslationPatchTests.cs`
-   - Add a general eat popup shape from `Food.HandleEvent`: `You eat ...` plus
-     embedded food/water status labels.
-   - Prove status label translation without broad popup fallback.
+2. `Mods/QudJP/Assemblies/QudJP.Tests/L2/SingleCallsiteOwnerPopupTranslationPatchTests.cs`
+   - `FoodConsumptionFrame` covers the general eat popup shape from
+     `Food.HandleEvent`: `You eat ...` plus embedded food/water status labels.
+   - The test proves status label translation on the food owner route without
+     treating broad popup fallback as closeout evidence.
 
 3. `Mods/QudJP/Assemblies/QudJP.Tests/L2/ConversationDisplayTextPatchTests.cs`
    - Add any missing quest-handler or water-ritual choice tag variants, such as
      the level-based complete quest tag, with markup preserved.
 
 4. `Mods/QudJP/Assemblies/QudJP.Tests/L2/StatusScreenBindingOwnerPatchTests.cs`
-   - Add a status UI embedding test only after the candidate route is tied to a
-     specific owner row, not a generic sink.
+   - Character effect-line tests cover owner-specific status UI rows and verify
+     route observability without relying on a generic sink.
 
 ## Player.log Boundary
 
@@ -107,13 +108,13 @@ Useful strings and route markers to search in fresh logs:
 - active effects: `ActiveEffectsOwner`, `StatusScreenBinding`,
   `world-effects-generated-templates`, `metabolized effect`.
 
-## Open Follow-up Slices
+## Remaining Runtime Boundary
 
-- Conversation authored XML inventory remains incomplete as a tracked artifact.
-- Dynamic reward options still need owner-route evidence for generated item
-  display names plus quantity suffixes.
-- Active-effect and status UI rows should continue through owner-specific UI
-  tests and the active-effect inventory, not generic sinks.
+The static and owner-route ledger now has emitted-shape tests for each
+implemented issue #809 surface group, including dynamic reward options with
+generated item display names and `&WxN` quantity suffixes. True untranslated-zero
+is still outside this static audit; it requires fresh runtime evidence for the
+specific live-visible flows being closed.
 
 ## 2026-06-03 Expanded Closeout
 
@@ -146,9 +147,12 @@ corpus. The follow-up pass implemented these additional closures:
 
 Focused tests added or extended:
 
+- `test_issue809_authored_text_inventory.py`
 - `QuestUiTranslationPatchTests`
 - `test_quest_identity_contract.py`
 - `ConversationDisplayTextPatchTests`
+- `PlayerStatusBarProducerTranslationHelpersTests`
+- `StatusScreenBindingOwnerPatchTests`
 - `JournalEntryDisplayTextPatchTests`
 - `AnnalsPatternsCandidateInventoryTests`
 - `DescriptionTextTranslatorTests`

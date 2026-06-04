@@ -314,6 +314,7 @@ public sealed class ColorTagAllowlistCoverageTests
         "Mods/QudJP/Assemblies/src/Patches/InventoryFireEventTranslationPatch.cs",
         "Mods/QudJP/Assemblies/src/Patches/InventoryLineTranslationPatch.cs",
         "Mods/QudJP/Assemblies/src/Patches/LookTooltipInformationWrapPatch.cs",
+        "Mods/QudJP/Assemblies/src/Patches/PopupPickOptionTranslationPatch.cs",
         "Mods/QudJP/Assemblies/src/Patches/PopupTranslationPatch.cs",
         "Mods/QudJP/Assemblies/src/Patches/RandomAltarBaetylTranslationPatch.cs",
         "Mods/QudJP/Assemblies/src/Patches/SifrahTokenDescriptionTranslationPatch.cs",

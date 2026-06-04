@@ -14238,6 +14238,7 @@ def test_residual_bucket_payload_splits_quest_runtime_routes_by_owner_shape() ->
         families["reward_choice"][0],
         "DynamicQuestRewardElement_ChoiceFromPopulation.award",
         "PopupPickOptionTranslationPatchTests.cs",
+        "&WxN",
         "ui-popup.ja.json",
     )
     assert {

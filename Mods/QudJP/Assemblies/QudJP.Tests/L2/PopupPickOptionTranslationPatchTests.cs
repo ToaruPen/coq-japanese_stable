@@ -230,6 +230,39 @@ public sealed class PopupPickOptionTranslationPatchTests
     }
 
     [Test]
+    public void Prefix_RepositoryDictionary_TranslatesDynamicQuestRewardDisplayNamesAndKeepsQuantitySuffix()
+    {
+        Translator.SetDictionaryDirectoryForTests(GetRepositoryDictionaryDirectory());
+
+        using var patch = PatchPickOption();
+
+        DummyPopupGenericTarget.PickOption(
+            Title: "Choose a reward",
+            Options: new[]
+            {
+                "{{Y|copper nugget}} &Wx3, copper nugget",
+                "copper nugget",
+            });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(DummyPopupGenericTarget.LastPickOptionTitle, Is.EqualTo("報酬を選ぶ。"));
+            Assert.That(
+                DummyPopupGenericTarget.LastPickOptionOptions,
+                Is.EqualTo(new[]
+                {
+                    "{{Y|銅塊}} &Wx3, 銅塊",
+                    "銅塊",
+                }));
+            Assert.That(
+                DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                    nameof(PopupPickOptionTranslationPatch),
+                    "DynamicQuestRewardOption.DisplayName"),
+                Is.EqualTo(2));
+        });
+    }
+
+    [Test]
     public void Prefix_RepositoryDictionary_TranslatesReviewedFixedProducerPickOptionPayload()
     {
         Translator.SetDictionaryDirectoryForTests(GetRepositoryDictionaryDirectory());

@@ -266,6 +266,50 @@ public sealed class StatusScreenBindingOwnerPatchTests
     }
 
     [Test]
+    public void CharacterEffectLineTranslationPatch_SetsContextData_WhenPatched()
+    {
+        WriteDictionary(("Beguiled", "魅了"));
+
+        RunWithCharacterEffectLinePatch(() =>
+        {
+            var data = new DummyCharacterEffectLineDataTarget
+            {
+                effect = new DummyStatusEffect
+                {
+                    DisplayName = "Beguiled",
+                },
+            };
+            var target = new DummyCharacterEffectLineTarget();
+
+            target.setData(data);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(target.text.Text, Is.EqualTo("魅了"));
+                Assert.That(target.context.data, Is.SameAs(data));
+            });
+        });
+    }
+
+    [Test]
+    public void CharacterEffectLineTranslationPatch_TranslatesGeneratedStuckInEffectName_WhenPatched()
+    {
+        RunWithCharacterEffectLinePatch(() =>
+        {
+            var target = new DummyCharacterEffectLineTarget();
+            target.setData(new DummyCharacterEffectLineDataTarget
+            {
+                effect = new DummyStatusEffect
+                {
+                    DisplayName = "{{W|stuck in a アスファルトの水たまり}}",
+                },
+            });
+
+            Assert.That(target.text.Text, Is.EqualTo("{{W|アスファルトの水たまりにはまっている}}"));
+        });
+    }
+
+    [Test]
     public void CharacterEffectLineTranslationPatch_TranslatesObservedLongbladeStanceNames_WhenPatched()
     {
         WriteDictionary(

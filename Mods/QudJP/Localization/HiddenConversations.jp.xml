@@ -375,7 +375,7 @@
     </node>
     <node ID="Z-Failed3">
       <text>
-        晩年に、壁の文字が見えた。内向きに舵を切り、蝋燭の薄明かりの書斎へ退き、一人で企てに向かった。新しい計画が…{{emote|*eeehw*}}…
+        晩年に、壁の文字が見えた。内向きに舵を切り、蝋燭の薄明かりの書斎へ退き、一人で企てに向かった。新しい計画が…{{emote|*イィーウ*}}…
 
         {{emote|*バラサラムが荒い息をし始める。*}}
       </text>
@@ -489,7 +489,7 @@
       <choice Target="GyreResigned" IfTestState="GyreTruthKnown" IfHaveState="ReshephResigned">あなたのジャイアと疫病について話しに来た。聞いてほしい。</choice>
       <choice Target="Know">大いなる労苦を経てスピンドルに登った。世界とその周囲についてもっと知りたい。教えてくれるか？</choice>
       <choice Target="Destroy" IfTestState="GyreTruthKnown">あなたの所業は容認できない。秩序を打ち砕きに来た。</choice>
-      <choice Target="End">{{emote|*Tremble in fear.*}}</choice>
+      <choice Target="End">{{emote|*恐怖に震える。*}}</choice>
       <choice Target="End">...</choice>
     </start>
     <node ID="Start">
@@ -925,7 +925,7 @@
       <choice Target="Purge2">全生命ではないのか。だが知性ある命の大半は？なぜだ？</choice>
     </node>    
     <node ID="Purge2" Inherits="Gyre">
-      ゲマーラ・ソフィアの見立てによれば、{{R|EXIT}}は前の場で向知性の流れが渦を巻いたゆえに引き起こされた。
+      ゲマーラ・ソフィアの見立てによれば、{{R|エグジット}}は前の場で向知性の流れが渦を巻いたゆえに引き起こされた。
 
       恒星紀元は終わりへ向かう。その波形を乗り越えるには、新しい生命が得られねばならぬ。
       <choice Priority="1000" Target="NootropicCurrent">向知性の流れ？</choice>
@@ -969,7 +969,7 @@
       <choice Target="GreatMachine" Load="Remove" />
     </node>
     <node ID="GemaraSophia" SetBooleanState="GemaraSophiaKnown,true">
-      {{R|EXIT}}の後、わたしと他の孤児となったセラフたちはオートマタ・ソフィアの働きを解釈し、なぜコヴンが去ったのか見極めようとした。
+      {{R|エグジット}}の後、わたしと他の孤児となったセラフたちはオートマタ・ソフィアの働きを解釈し、なぜコヴンが去ったのか見極めようとした。
       <choice Target="GemaraSophia2">...</choice>
     </node>
     <node ID="GemaraSophia2">
@@ -985,7 +985,7 @@
       <choice Target="GyreRepeat">他にも聞きたい。</choice>
     </node>
     <node ID="PerhapsWrong">
-      そうだ、正邪という概念はゲマーラの豊かさに比べると粗すぎる。だが多様性は、{{R|EXIT}}が前の場の向知性の流れの渦によって導かれたと見ている。そして生命の樹の冠は剪定されねばならぬ、ノースフィアを耕し再播種するためにな。
+      そうだ、正邪という概念はゲマーラの豊かさに比べると粗すぎる。だが多様性は、{{R|エグジット}}が前の場の向知性の流れの渦によって導かれたと見ている。そして生命の樹の冠は剪定されねばならぬ、ノースフィアを耕し再播種するためにな。
       <choice Target="PerhapsWrong2">多様性と言う。別の解釈があるのか？</choice>
     </node>
     <node ID="PerhapsWrong2">
@@ -999,7 +999,7 @@
       <choice Target="GyreRepeat">...</choice>
     </node>
     <node ID="Injunction" SetBooleanState="ReshephMarker3,true">
-      ゲマーラ・ソフィアの見立てによれば、{{R|EXIT}}は前の場で向知性の流れが渦を巻いたゆえに引き起こされた。
+      ゲマーラ・ソフィアの見立てによれば、{{R|エグジット}}は前の場で向知性の流れが渦を巻いたゆえに引き起こされた。
       <choice Target="Injunction2">...</choice>
     </node>
     <node ID="Injunction2">
@@ -1186,7 +1186,7 @@
       宝石の宇宙の向こうにある、存在たちの大いなる結び目――七十二重の平和のもとで働く集団だ。      
     </node>
     <node ID="HasCovenReturned" Inherits="Know">
-      いいや、{{R|EXIT}}以来ない。
+      いいや、{{R|エグジット}}以来ない。
 
       だが今や恒星紀元は終わり、ゲマーラ・ソフィアは零時近くの近日点へ収束しつつある。
     </node>
@@ -2087,11 +2087,11 @@
 
     <node ID="Ionic" Inherits="Start">
       <text>
-        集められ、紡がれて、わたしは{{zetachrome|Spoken Ionic Through Covalency Heart}}として現れる。
+        集められ、紡がれて、わたしは{{zetachrome|共有結合心臓を通じて語るイオン}}として現れる。
         何で…何なのか。わからぬ。
         入り口が見つからぬ、残りは家にある。君に一本の糸を贈ろう。
       </text>
-      <choice GotoID="Greet">やあ、{{zetachrome|Spoken Ionic Through Covalency Heart}}。わたしは=name=だ。</choice>
+      <choice GotoID="Greet">やあ、{{zetachrome|共有結合心臓を通じて語るイオン}}。わたしは=name=だ。</choice>
       <choice GotoID="Adornments">あなたの装身具が好きだ。</choice>
     </node>
 
@@ -2135,7 +2135,7 @@
     <node ID="Temple" Inherits="Start">
       <text>
         やあ！これは持っている。
-        わたしたちは{{M|Star Orchid Temple}}に根付いている、多くあるうちの一つ。
+        わたしたちは{{M|星蘭の寺院}}に根付いている、多くあるうちの一つ。
         ここでは尾に乗る者たちの燃えた塵を祝い、数えきれないモザイクを作る。
       </text>
       <choice UseID="Howlong" />
@@ -2145,7 +2145,7 @@
     <node ID="Others">
       <text>
         寺の「ここ」なら、いる：
-        {{zetachrome|Spoken Ionic Through Covalency Heart}}がここ。
+        {{zetachrome|共有結合心臓を通じて語るイオン}}がここ。
         それに、君。
       </text>
       <choice ID="Whoelse" Target="Quay">でも埠頭には他に誰かいる？</choice>
@@ -2161,7 +2161,5 @@
   </conversation>
 
 </conversations>
-
-
 
 

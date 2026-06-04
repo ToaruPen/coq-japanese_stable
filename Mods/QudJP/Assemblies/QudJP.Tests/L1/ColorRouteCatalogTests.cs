@@ -595,6 +595,7 @@ internal static class ColorRouteCatalog
             ["Mods/QudJP/Assemblies/src/Patches/PhysicsProcessTakeDamageTranslationPatch.cs|ColorAwareTranslationComposer.TranslatePreservingColors("] = 2,
             ["Mods/QudJP/Assemblies/src/Patches/PhysicsProcessTakeDamageTranslationPatch.cs|MessagePatternTranslator.TranslateIfPatternMatches("] = 1,
             ["Mods/QudJP/Assemblies/src/Patches/PopupMessageTranslationPatch.cs|PopupTranslationPatch.TranslatePopupTextForProducerRoute("] = 1,
+            ["Mods/QudJP/Assemblies/src/Patches/PopupPickOptionTranslationPatch.cs|GetDisplayNameRouteTranslator.TranslatePreservingColors("] = 1,
             ["Mods/QudJP/Assemblies/src/Patches/PopupPickOptionTranslationPatch.cs|PopupTranslationPatch.TranslatePopupTextForProducerRoute("] = 1,
             ["Mods/QudJP/Assemblies/src/Patches/PopupPickOptionTranslationPatch.cs|PopupTranslationPatch.TranslatePopupMenuItemTextForProducerRoute("] = 2,
             ["Mods/QudJP/Assemblies/src/Patches/PopupShowColorPickerTranslationPatch.cs|PopupTranslationPatch.TranslatePopupTextForProducerRoute("] = 1,

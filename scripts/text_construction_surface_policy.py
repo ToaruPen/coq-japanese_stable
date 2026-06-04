@@ -3404,9 +3404,10 @@ ISSUE719_DYNAMIC_QUEST_REWARD_CHOICE_EVIDENCE: Final[list[str]] = [
     ),
     (
         "The fixed 'Choose a reward' title is covered by PopupPickOptionTranslationPatch "
-        "and the shipped ui-popup dictionary entry; the option strings are composed "
-        "from GameObject.GetDisplayName(... AsIfKnown: true) or DisplayNameOnlyDirect "
-        "plus a count suffix, so they remain GameObject display-name owner output."
+        "and the shipped ui-popup dictionary entry; the option strings are covered by "
+        "a PopupPickOptionTranslationPatch emitted-shape test that translates generated "
+        "display-name parts while preserving comma-separated entries and '&WxN' quantity "
+        "suffixes."
     ),
     "decompiled owner source: XRL.World/DynamicQuestRewardElement_ChoiceFromPopulation.cs lines 27-63",
     "Mods/QudJP/Assemblies/src/Patches/PopupPickOptionTranslationPatch.cs",

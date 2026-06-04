@@ -194,7 +194,7 @@
          Accomplishment="アスフォデルと交渉し、スピンドル麓の支配権を確保した。"
          Hagiograph="＝month＝月＝year＝年、＝name＝は美しきアスフォデルをオモンポーチの伯爵、スピンドル・ジャウズの守護者に任命した。"
          HagiographCategory="AppointsSomeone"
-         Gospel="＝year＝年、＝name＝は腐敗した行政官アスフォデルをオモンポーチの伯爵兼大臣に任命した。そこで彼／彼女／xは＝player.t＝の名のもとに &lt;spice.elements.entity$elements[random].practices.!random&gt; を義務付けた。">
+         Gospel="＝year＝年、＝name＝は腐敗した行政官アスフォデルをオモンポーチの伯爵兼大臣に任命した。そこでその者は＝player.t＝の名のもとに &lt;spice.elements.entity$elements[random].practices.!random&gt; を義務付けた。">
     
     <step ID="Travel to Omonporch" Name="オモンポーチへ向かう" XP="5000">
       <text>北へ向かい、スピンドルが立つオモンポーチへ行く。</text>
@@ -321,9 +321,9 @@
 
   <quest Name="The Buried Watchers"
          Accomplishment="墓に住むモパンゴの一団を訪ねた。"
-         Hagiograph="オモンポーチの喰らう者の墓所の奥深くで、＝name＝は秘儀を行うモパンゴの一族に出会った。彼／彼女／eyはスルタンを仲間に迎え、＝player.objective＝に秘奥を授けた。"
+         Hagiograph="オモンポーチの喰らう者の墓所の奥深くで、＝name＝は秘儀を行うモパンゴの一族に出会った。その者はスルタンを仲間に迎え、＝player.objective＝に秘奥を授けた。"
          HagiographCategory="TalksToThing"
-         Gospel="オモンポーチの喰らう者の墓所の奥深くで、＝name＝は秘儀を行うモパンゴの一族に出会った。彼／彼女／eyは＝sultanTerm＝を仲間に迎え、＝player.objective＝に秘奥を授けた。">
+         Gospel="オモンポーチの喰らう者の墓所の奥深くで、＝name＝は秘儀を行うモパンゴの一族に出会った。その者は＝sultanTerm＝を仲間に迎え、＝player.objective＝に秘奥を授けた。">
     <step ID="Visit the Mopango Settlement in the Tomb of the Eaters" Name="喰らう者の墓所のモパンゴ集落を訪ねる" XP="0">
       <text>喰らう者の墓所の北西墓地にいる友好的なタレット、ビヴィラを見つけ、ゾソムが寄越したと伝える。</text>
     </step>
@@ -385,7 +385,7 @@
   </quest>
 
   <quest Name="If, Then, Else"
-         Accomplishment="生命の樹チャヴァの“-else化”の儀式を完遂し、その実体チャイムの一つを永遠に断った。"
+         Accomplishment="生命の樹チャヴァの「それ以外」化の儀式を完遂し、その実体チャイムの一つを永遠に断った。"
          Hagiograph="美は引き算にあり！ 剪定者＝name＝は生命の樹をより美しく整えた。"
          HagiographCategory="DoesSomethingRad"
          Gospel="生命の樹の多くの意志に従い、＝name＝はトランジット岩をチャヴァの根の下にある発光するソフトへ運んだ。そこで＝player.subjective＝は秘儀を行い、地上へ戻って永遠に変わった。">
@@ -396,7 +396,7 @@
       <text>チャヴァのタップルートを40層の底まで降りる。</text>
     </step>
     <step ID="Reunite Tau with Her Chime" Name="タウとチャイムを再会させる" XP="0">
-      <text>タップルートにチャイムを触れさせ、-else化の儀式を終える。</text>
+      <text>タップルートにチャイムを触れさせ、「それ以外」化の儀式を終える。</text>
     </step>
     <step ID="Return to the Keter" Name="ケテルへ戻る" XP="0">
       <text>ケテルへ戻り、ディヴラックと話す。</text>

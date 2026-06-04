@@ -1,0 +1,543 @@
+{
+  "schema_version": "1.0",
+  "issue": 809,
+  "description": "Tracked authored conversation and quest text inventory for issue #809. Quest titles are cataloged only to document their explicit exclusion from translation targets.",
+  "conversation_files": [
+    {
+      "path": "Mods/QudJP/Localization/Conversations.jp.xml",
+      "surface": "conversation_authored_xml",
+      "counts": {
+        "conversations": 204,
+        "starts": 98,
+        "nodes": 1249,
+        "choices": 3074,
+        "texts": 1504,
+        "texts_with_runtime_expansions": 228,
+        "choice_parts": 72
+      },
+      "runtime_expansion_terms": [
+        {
+          "term": "EskhindRoadDirection",
+          "surface": "conversation_text",
+          "examples": [
+            "=EskhindRoadDirection= の道を辿れば、エスクと私が昔遊んだ空洞の木がある。",
+            "ああ。エスクと私は──=EskhindRoadDirection= へ進むと、雷に打たれて空洞になった木があってね。あれが私たちにとって村から一番遠い場所だった。私が初めて監視官の集会に出るまでは。\n\n        当時はよくそこで過ごした。今もそこにいるのかもしれないが、私には確かめる勇気がないんだ。"
+          ]
+        },
+        {
+          "term": "MARKOVCORVIDSENTENCE",
+          "surface": "conversation_text",
+          "examples": [
+            "{{emote|*カーッ*}} =MARKOVCORVIDSENTENCE= {{emote|*カーッ*}}"
+          ]
+        },
+        {
+          "term": "MARKOVPARAGRAPH",
+          "surface": "conversation_text",
+          "examples": [
+            "{{emote|*チプ チプ チプ チプ*}}\n\n\n        =MARKOVPARAGRAPH=\n        {{emote|*チプ チプ チプ チプ*}}"
+          ]
+        },
+        {
+          "term": "MARKOVSENTENCE",
+          "surface": "conversation_text",
+          "examples": [
+            "クランクが君にぱふっとする。=MARKOVSENTENCE="
+          ]
+        },
+        {
+          "term": "MARKOVWATERBIRDSENTENCE",
+          "surface": "conversation_text",
+          "examples": [
+            "{{emote|*グワッ*}} =MARKOVWATERBIRDSENTENCE= {{emote|*グワッ*}}"
+          ]
+        },
+        {
+          "term": "MarkOfDeath",
+          "surface": "conversation_text",
+          "examples": [
+            "{{emote|ヘロドディクスが恐れに駆られて唸る。}}\n\n        印は =MarkOfDeath= だ。"
+          ]
+        },
+        {
+          "term": "V0tinkeraddendum",
+          "surface": "conversation_text",
+          "examples": [
+            "その信号は、どこからとも知れぬ場所から繰り返し送信されているものだ。=V0tinkeraddendum= 我らが工匠の一人、&mQガール&y が長波検出器を仕掛けている最中に見つけた。残念ながら暗号化されており、ここには解読手段がない。だが、この件でお前が助けになれるかもしれない。\n\n        我々はずっと以前から、大広間 &Cベテスダ・スーサ&y の底に、完全に機能する &Wベテル&y があると知っている。メカニマス教団はその周囲を聖別して神殿を建てた。Qガールは信号を解読する方法を考案したと主張しているが、ベテルの計算資源が必要だ。もしメカニマスの施設に潜入できるなら、ベテルに接続して信号を解読できるだろう。"
+          ]
+        },
+        {
+          "term": "circumstance.influence",
+          "surface": "conversation_text",
+          "examples": [
+            "=circumstance.influence= の痕跡がある。村に悟られぬよう隠されたのだろう。だがそれだけでは証拠にならない。犯人がいないじゃないか！"
+          ]
+        },
+        {
+          "term": "generic",
+          "surface": "conversation_text",
+          "examples": [
+            "=generic="
+          ]
+        },
+        {
+          "term": "hermit",
+          "surface": "conversation_text",
+          "examples": [
+            "=hermit=、もう二度と邪魔しないと誓う。"
+          ]
+        },
+        {
+          "term": "motive.influence",
+          "surface": "conversation_text",
+          "examples": [
+            "ふむ。=motive.influence= が起きていて、=thief.name= がそれを隠していた、ということか。\n\n        つまり君の言いたいことは……"
+          ]
+        },
+        {
+          "term": "mound.complete.days",
+          "surface": "conversation_text",
+          "examples": [
+            "まだ！ =mound.complete.days= に戻って。",
+            "まだ！ =mound.complete.days= に戻って。"
+          ]
+        },
+        {
+          "term": "name",
+          "surface": "conversation_text",
+          "examples": [
+            "私は =name= だ、友よ。君の名は？",
+            "私は =name= だ、友よ。どう呼べばいい？",
+            "=name=、君は =village.name= のために多くを成した。その願いは君の格にふさわしい。斯くして、彼らが =village.activity= に加わり、我らと同じように =village.sacred= を大切にできるなら、ここへ迎えよう。"
+          ]
+        },
+        {
+          "term": "object.nameSingle",
+          "surface": "conversation_text",
+          "examples": [
+            "その =object.nameSingle= を譲ってくれないか？",
+            "その =object.nameSingle= を譲ってくれないか？"
+          ]
+        },
+        {
+          "term": "player.FormalAddressTerm",
+          "surface": "conversation_text",
+          "examples": [
+            "大丈夫？~\n        ああ……そわそわ……わくわく。~\n        ここでは争わない、嬉しい。~\n        あはは……緊張する！~\n        ここにいる？~\n        =player.FormalAddressTerm= も一緒？~\n        不思議な新しい場所。~\n        生きて飲め。",
+            "ここが家。~\n        ようこそ、ここへ。~\n        会えてよかった。~\n        ああ……よきかな。~\n        新しい家の選び方、良かった。~\n        ここで幸せ。~\n        ははは！ 喜び！~\n        ああ、=player.FormalAddressTerm= が来た、嬉しい。~\n        生きて飲め。",
+            "取引する？~\n        私、攻めない。~\n        =player.formalAddressTerm=、平和？~\n        交易したい？~\n        良い拾い物？~\n        あっ！ 君、旅の者。調子は？~\n        生きて育て、=player.formalAddressTerm=。~\n        =player.FormalAddressTerm=、平和に挨拶。~\n        生きて飲め。~\n        あ？~\n        挨拶、=player.formalAddressTerm=。"
+          ]
+        },
+        {
+          "term": "player.OffspringTerm",
+          "surface": "conversation_text",
+          "examples": [
+            "=player.OffspringTerm=、あなたは誰？"
+          ]
+        },
+        {
+          "term": "player.apparentSpecies",
+          "surface": "conversation_text",
+          "examples": [
+            "=player.apparentSpecies=? 歓迎する！ 望みは何だ？",
+            "お会いできて光栄だ、=player.apparentSpecies= の =player.formalAddressTerm= =name=! 私はタムだ。",
+            "ジョッパは私の家だ、そうさ。\n\n        兄弟たちとソルトバックのキャラバンでモグラヤイを歩いていたが、イルーダド長老に会ってすぐにここへ腰を落ち着けると決めた。=player.formalAddressTerm= =player.apparentSpecies= も、長老と話せばわかるはずだよ。"
+          ]
+        },
+        {
+          "term": "player.formalAddressTerm",
+          "surface": "conversation_text",
+          "examples": [
+            "起こったことは恨むが、まだ身体を得ている。君は私を生かした。\n\n        私の未来は自由だ。だがとても霞んでいる。君の手の火傷でまだひりついている。君とはしばらく顔を合わせたくない。生きて飲め、=player.formalAddressTerm=。",
+            "本当に？\n\n        君の予言はギャイアの冷たい風を前にしてほとんど暖かくない。私の未来は自由だ。だが霞んでいる。君の手の火傷でまだひりついている。\n\n        君とはしばらく顔を合わせたくない。生きて飲め、=player.formalAddressTerm=。",
+            "生きて、=player.formalAddressTerm=！\n\n        {{emote|*気恥ずかしげに るっく*}}\n\n        の、飲んで、=player.formalAddressTerm=！\n\n        クルカ、ぼく。クルカ。"
+          ]
+        },
+        {
+          "term": "player.offspringTerm",
+          "surface": "conversation_text",
+          "examples": [
+            "命をたっぷりと飲みな、=player.offspringTerm=。道は見つけられているかい？",
+            "彼らをけなしたり、胸の内まで代弁したりはしないよ、=name=。でも、私の身に刻まれた印象の輪郭を案内することはできる。\n\n        誰の話を聞きたい、=player.offspringTerm=?",
+            "ここにいるべき時なのか、=player.offspringTerm=？"
+          ]
+        },
+        {
+          "term": "player.reflexive",
+          "surface": "conversation_text",
+          "examples": [
+            "{{emote|*ぶつぶつ*}} …クランク定数からの予期せぬ偏差だ。\n\n        {{emote|*アルジーヴが咳き込む。*}}\n\n        邪魔をしに来たのか？お前は水狂いか？フーンドレン目の巡礼か？アーコノートか？ =player.reflexive= を役に立たせて、どこかの洞窟からガラクタを拾ってこい。「報酬」をやるかもしれん。",
+            "{{emote|*ダルディはいくつもの作業台から顔を上げずに話しかける。いくつかからは煙や蒸気、未知の瘴気がもうもうと立ち上っている。*}}\n\n        我が実験室へようこそ、=name=。旅路に戻る前に、ここで=player.reflexive= を休め、養え。",
+            "提案がある、=factionaddress:Barathrumites=。ただちに=player.reflexive= を私の視界から消し去れ。そうすれば、エレシュキガルに君を構成原子へ還元するよう頼むのは控えよう。"
+          ]
+        },
+        {
+          "term": "player.siblingTerm",
+          "surface": "conversation_text",
+          "examples": [
+            "生きて飲め、=subject.waterRitualLiquid=-=player.siblingTerm=。"
+          ]
+        },
+        {
+          "term": "questgivers",
+          "surface": "conversation_text",
+          "examples": [
+            "=questgivers= に会いに行くといい。",
+            "=questgivers= と話してみてくれ。",
+            "=questgivers= を探してみてくれ。"
+          ]
+        },
+        {
+          "term": "recipe",
+          "surface": "conversation_text",
+          "examples": [
+            "=recipe= の作り方を教えてくれるか？"
+          ]
+        },
+        {
+          "term": "subject.refname",
+          "surface": "conversation_text",
+          "examples": [
+            "私を =subject.refname= と呼んでくれ。",
+            "私の名は =subject.refname=。",
+            "=subject.refname= と呼ばれている。"
+          ]
+        },
+        {
+          "term": "subject.waterRitualLiquid",
+          "surface": "conversation_text",
+          "examples": [
+            "生きて飲め、=subject.waterRitualLiquid=-=player.siblingTerm=。",
+            "秘密を打ち明けてくれ、=subject.waterRitualLiquid=のきょうだい。",
+            "=subject.waterRitualLiquid=のきょうだい、共に来てくれないか。"
+          ]
+        },
+        {
+          "term": "thief.name",
+          "surface": "conversation_text",
+          "examples": [
+            "残念だが、その水脈はもう毒された。=thief.name= が犯人ではないと判明している。",
+            "ふむ。=motive.influence= が起きていて、=thief.name= がそれを隠していた、ということか。\n\n        つまり君の言いたいことは……"
+          ]
+        },
+        {
+          "term": "village.activity",
+          "surface": "conversation_text",
+          "examples": [
+            "=name=、君は =village.name= のために多くを成した。その願いは君の格にふさわしい。斯くして、彼らが =village.activity= に加わり、我らと同じように =village.sacred= を大切にできるなら、ここへ迎えよう。",
+            "昔、=village.name= を記した歴史を読んだ。=village.sacred= を敬い、=village.profane= を等しく退ける土地だとね。\n\n          我らの同胞も =village.activity= の暮らしを受け入れられるだろうか。皆に相談してみよう。",
+            "話し合いと熟慮の末、合意に至った。スリンスは =village.name= の市民となる。=village.activity= を学び、=village.sacred= を尊び、=village.profane= を退けよう。\n\n        旅立ちは朝、=village.name= へ。"
+          ]
+        },
+        {
+          "term": "village.name",
+          "surface": "conversation_text",
+          "examples": [
+            "=name=、君は =village.name= のために多くを成した。その願いは君の格にふさわしい。斯くして、彼らが =village.activity= に加わり、我らと同じように =village.sacred= を大切にできるなら、ここへ迎えよう。",
+            "おお、=name=。スリンスが来た。植物の民と =village.name= の人々が互いに慣れるには、時間がかかる。=village.sacred= の徳によって、彼らがすぐにここで居場所を見つけられるように。",
+            "=village.sacred= に感謝を。我らは彼らの道を学び、彼らは我らの道を学ぶ。=village.profane= の退廃を受け入れられぬ者もいるが、彼らの振る舞いは慈しみから生じる。ゆえに、=village.name= は慈しみには慈しみで応えよう。"
+          ]
+        },
+        {
+          "term": "village.profane",
+          "surface": "conversation_text",
+          "examples": [
+            "=village.sacred= に感謝を。我らは彼らの道を学び、彼らは我らの道を学ぶ。=village.profane= の退廃を受け入れられぬ者もいるが、彼らの振る舞いは慈しみから生じる。ゆえに、=village.name= は慈しみには慈しみで応えよう。",
+            "昔、=village.name= を記した歴史を読んだ。=village.sacred= を敬い、=village.profane= を等しく退ける土地だとね。\n\n          我らの同胞も =village.activity= の暮らしを受け入れられるだろうか。皆に相談してみよう。",
+            "話し合いと熟慮の末、合意に至った。スリンスは =village.name= の市民となる。=village.activity= を学び、=village.sacred= を尊び、=village.profane= を退けよう。\n\n        旅立ちは朝、=village.name= へ。"
+          ]
+        },
+        {
+          "term": "village.sacred",
+          "surface": "conversation_text",
+          "examples": [
+            "=name=、君は =village.name= のために多くを成した。その願いは君の格にふさわしい。斯くして、彼らが =village.activity= に加わり、我らと同じように =village.sacred= を大切にできるなら、ここへ迎えよう。",
+            "おお、=name=。スリンスが来た。植物の民と =village.name= の人々が互いに慣れるには、時間がかかる。=village.sacred= の徳によって、彼らがすぐにここで居場所を見つけられるように。",
+            "=village.sacred= に感謝を。我らは彼らの道を学び、彼らは我らの道を学ぶ。=village.profane= の退廃を受け入れられぬ者もいるが、彼らの振る舞いは慈しみから生じる。ゆえに、=village.name= は慈しみには慈しみで応えよう。"
+          ]
+        },
+        {
+          "term": "villageZeroName",
+          "surface": "conversation_text",
+          "examples": [
+            "[数分が経過する]\n\n        我らと学びたいのだな。だが意欲だけでは足りない。\n\n        クッドは =villageZeroName= ではない。私たちの時間も手間も無駄にしないと証明しなければならない。北にある巨大な洞窟ゴルゴタへ向かい、その内部で機能不全に陥ったウエイドロイドの集積所を見つけろ。\n\n        そのうちの一体を回収し、修理して、ここへ戻るのだ。出来栄えに納得すれば我らの一員として受け入れよう。そうでなければ門前払いだ。\n\n        この条件を受けるか？"
+          ]
+        }
+      ],
+      "choice_parts": [
+        {
+          "name": "AddSlynthCandidate",
+          "surface": "conversation_choice_part",
+          "count": 4
+        },
+        {
+          "name": "AngorNegotiation",
+          "surface": "conversation_choice_part",
+          "count": 2
+        },
+        {
+          "name": "AskName",
+          "surface": "conversation_choice_part",
+          "count": 1
+        },
+        {
+          "name": "BuildGolem",
+          "surface": "conversation_choice_part",
+          "count": 2
+        },
+        {
+          "name": "ChavvahAttune",
+          "surface": "conversation_choice_part",
+          "count": 1
+        },
+        {
+          "name": "CrossIntoBrightsheol",
+          "surface": "conversation_choice_part",
+          "count": 1
+        },
+        {
+          "name": "GiveArtifact",
+          "surface": "conversation_choice_part",
+          "count": 2
+        },
+        {
+          "name": "GiveReshephSecret",
+          "surface": "conversation_choice_part",
+          "count": 1
+        },
+        {
+          "name": "GritGateHandler",
+          "surface": "conversation_choice_part",
+          "count": 6
+        },
+        {
+          "name": "HaveItem",
+          "surface": "conversation_choice_part",
+          "count": 1
+        },
+        {
+          "name": "IfThenElseAchievement",
+          "surface": "conversation_choice_part",
+          "count": 1
+        },
+        {
+          "name": "LibrarianGiveBook",
+          "surface": "conversation_choice_part",
+          "count": 3
+        },
+        {
+          "name": "PaxInfectLimb",
+          "surface": "conversation_choice_part",
+          "count": 3
+        },
+        {
+          "name": "QuestHandler",
+          "surface": "conversation_choice_part",
+          "count": 3
+        },
+        {
+          "name": "ReceiveItem",
+          "surface": "conversation_choice_part",
+          "count": 7
+        },
+        {
+          "name": "RequireReputation",
+          "surface": "conversation_choice_part",
+          "count": 1
+        },
+        {
+          "name": "SlynthCandidatesReady",
+          "surface": "conversation_choice_part",
+          "count": 1
+        },
+        {
+          "name": "StartFight",
+          "surface": "conversation_choice_part",
+          "count": 8
+        },
+        {
+          "name": "Tag",
+          "surface": "conversation_choice_part",
+          "count": 1
+        },
+        {
+          "name": "TakeItem",
+          "surface": "conversation_choice_part",
+          "count": 3
+        },
+        {
+          "name": "TakeLiquid",
+          "surface": "conversation_choice_part",
+          "count": 2
+        },
+        {
+          "name": "Trade",
+          "surface": "conversation_choice_part",
+          "count": 1
+        },
+        {
+          "name": "WaterRitualBegin",
+          "surface": "conversation_choice_part",
+          "count": 1
+        },
+        {
+          "name": "WaterRitualBuyItem",
+          "surface": "conversation_choice_part",
+          "count": 2
+        },
+        {
+          "name": "WaterRitualBuySecret",
+          "surface": "conversation_choice_part",
+          "count": 1
+        },
+        {
+          "name": "WaterRitualCookingRecipe",
+          "surface": "conversation_choice_part",
+          "count": 2
+        },
+        {
+          "name": "WaterRitualFungusColonize",
+          "surface": "conversation_choice_part",
+          "count": 1
+        },
+        {
+          "name": "WaterRitualGainMutation",
+          "surface": "conversation_choice_part",
+          "count": 1
+        },
+        {
+          "name": "WaterRitualHermitOath",
+          "surface": "conversation_choice_part",
+          "count": 1
+        },
+        {
+          "name": "WaterRitualJoinParty",
+          "surface": "conversation_choice_part",
+          "count": 1
+        },
+        {
+          "name": "WaterRitualLearnSkill",
+          "surface": "conversation_choice_part",
+          "count": 1
+        },
+        {
+          "name": "WaterRitualNephilimPacify",
+          "surface": "conversation_choice_part",
+          "count": 1
+        },
+        {
+          "name": "WaterRitualRandomMutation",
+          "surface": "conversation_choice_part",
+          "count": 1
+        },
+        {
+          "name": "WaterRitualSellSecret",
+          "surface": "conversation_choice_part",
+          "count": 2
+        },
+        {
+          "name": "WaterRitualSkillPoint",
+          "surface": "conversation_choice_part",
+          "count": 1
+        },
+        {
+          "name": "WaterRitualTinkeringRecipe",
+          "surface": "conversation_choice_part",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "path": "Mods/QudJP/Localization/HiddenConversations.jp.xml",
+      "surface": "conversation_authored_xml",
+      "counts": {
+        "conversations": 9,
+        "starts": 21,
+        "nodes": 247,
+        "choices": 397,
+        "texts": 230,
+        "texts_with_runtime_expansions": 50,
+        "choice_parts": 13
+      },
+      "runtime_expansion_terms": [
+        {
+          "term": "RebekahRegion",
+          "surface": "conversation_text",
+          "examples": [
+            "{{emote|*バラサラムが息を吸い、どもる。*}} 彼女は――\n\n        レシェフは彼女の背信を許さなかった。=RebekahRegion=の癩病者を助けているうちに、彼女は「腐れた舌」に罹った。死期が来た時、彼女は――"
+          ]
+        },
+        {
+          "term": "name",
+          "surface": "conversation_text",
+          "examples": [
+            "すまない、=name=。お前を誇りに思っている！願わくば…わたしが剥がれ落ちずにいられればよかったのに、お前の手本のように。",
+            "ではな、メイヴン。=name=よ。生きて飲め。",
+            "わたしたちは――\n\n        成し遂げたのだ、=name=。わたしは――"
+          ]
+        }
+      ],
+      "choice_parts": [
+        {
+          "name": "ChangeTarget",
+          "surface": "conversation_choice_part",
+          "count": 3
+        },
+        {
+          "name": "EndGame",
+          "surface": "conversation_choice_part",
+          "count": 10
+        }
+      ]
+    }
+  ],
+  "quest_file": {
+    "path": "Mods/QudJP/Localization/Quests.jp.xml",
+    "surface": "quest_authored_xml",
+    "quest_titles_translation_policy": "excluded",
+    "counts": {
+      "quests": 28,
+      "quest_titles_excluded": 28,
+      "quest_metadata_texts": 3,
+      "quest_steps": 84,
+      "quest_step_names": 84,
+      "quest_step_texts": 84,
+      "quest_handler_parts": 0
+    },
+    "quest_metadata_text_attributes": [
+      {
+        "attribute": "Accomplishment",
+        "surface": "quest_metadata_text",
+        "count": 19
+      },
+      {
+        "attribute": "Gospel",
+        "surface": "quest_metadata_text",
+        "count": 19
+      },
+      {
+        "attribute": "Hagiograph",
+        "surface": "quest_metadata_text",
+        "count": 19
+      }
+    ],
+    "quest_handler_parts": [],
+    "known_structural_attributes": [
+      "Achievement",
+      "Factions",
+      "HagiographCategory",
+      "Level",
+      "Name",
+      "Reputation"
+    ]
+  },
+  "totals": {
+    "conversation_files": 2,
+    "conversation_texts": 1734,
+    "conversation_runtime_expansion_terms": 33,
+    "conversation_choice_parts": 85,
+    "quests": 28,
+    "quest_steps": 84,
+    "quest_step_texts": 84
+  }
+}
