@@ -85,7 +85,7 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
     [TestCase(
         nameof(DummySingleCallsiteOwnerPopupTarget.HandleBaetylRewardWish),
         "Generated {{Y|folded carbide axe}} as reward for {{C|oil}}",
-        "{{C|oil}}の報酬として{{Y|folded carbide axe}}を生成した。",
+        "{{C|油}}の報酬として{{Y|積層カーバイドの斧}}を生成した。",
         "BaetylRewardWish",
         PopupMethod.Show)]
     [TestCase(

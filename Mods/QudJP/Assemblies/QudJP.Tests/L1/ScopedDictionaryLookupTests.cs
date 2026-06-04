@@ -148,6 +148,26 @@ public sealed class ScopedDictionaryLookupTests
             Is.Null);
     }
 
+    [Test]
+    public void FindSourceByExactTranslationForContextOnly_PropagatesAmbiguityBeforeLaterCandidate()
+    {
+        WriteDictionaryContents(
+            "first.ja.json",
+            "{\"entries\":[" +
+            "{\"key\":\"drop all\",\"context\":\"Route.A\",\"text\":\"すべて\"}," +
+            "{\"key\":\"take all\",\"context\":\"Route.A\",\"text\":\"すべて\"}" +
+            "]}\n");
+        WriteDictionaryContents(
+            "second.ja.json",
+            "{\"entries\":[" +
+            "{\"key\":\"disassemble all\",\"context\":\"Route.A\",\"text\":\"すべて\"}" +
+            "]}\n");
+
+        Assert.That(
+            ScopedDictionaryLookup.FindSourceByExactTranslationForContextOnly("すべて", "Route.A", "first.ja.json", "second.ja.json"),
+            Is.Null);
+    }
+
     private void WriteDictionary(string fileName, params (string key, string text)[] entries)
     {
         var builder = new StringBuilder();

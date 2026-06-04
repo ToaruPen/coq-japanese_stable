@@ -21,6 +21,9 @@ def test_build_inventory_classifies_conversation_runtime_terms_and_choice_parts(
       <text>生きて飲め、=player.formalAddressTerm=。</text>
       <part Name="WaterRitualBegin" />
     </choice>
+    <choice ID="Action">
+      <text>それを=verb:give=して、=bodypart:*=を差し出せ。</text>
+    </choice>
   </conversation>
 </conversations>
 """,
@@ -51,14 +54,24 @@ def test_build_inventory_classifies_conversation_runtime_terms_and_choice_parts(
 
     conversation = inventory["conversation_files"][0]
     assert conversation["path"] == "Mods/QudJP/Localization/Conversations.jp.xml"
-    assert conversation["counts"]["texts"] == 1
+    assert conversation["counts"]["texts"] == 2
     assert conversation["counts"]["choice_parts"] == 1
     assert conversation["runtime_expansion_terms"] == [
+        {
+            "term": "bodypart:*",
+            "surface": "conversation_text",
+            "examples": ["それを=verb:give=して、=bodypart:*=を差し出せ。"],
+        },
         {
             "term": "player.formalAddressTerm",
             "surface": "conversation_text",
             "examples": ["生きて飲め、=player.formalAddressTerm=。"],
-        }
+        },
+        {
+            "term": "verb:give",
+            "surface": "conversation_text",
+            "examples": ["それを=verb:give=して、=bodypart:*=を差し出せ。"],
+        },
     ]
     assert conversation["choice_parts"] == [
         {

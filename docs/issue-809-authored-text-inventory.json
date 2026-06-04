@@ -12,7 +12,7 @@
         "nodes": 1249,
         "choices": 3074,
         "texts": 1504,
-        "texts_with_runtime_expansions": 228,
+        "texts_with_runtime_expansions": 252,
         "choice_parts": 72
       },
       "runtime_expansion_terms": [
@@ -71,6 +71,24 @@
           "surface": "conversation_text",
           "examples": [
             "=circumstance.influence= の痕跡がある。村に悟られぬよう隠されたのだろう。だがそれだけでは証拠にならない。犯人がいないじゃないか！"
+          ]
+        },
+        {
+          "term": "factionaddress:Barathrumites",
+          "surface": "conversation_text",
+          "examples": [
+            "そうか？だがここでは =factionaddress:Barathrumites= ではない！\n\n        グリット・ゲートはジョッパではない、鼻高々の半田釘め。この家では今も見習いだ。\n\n        それで何の用だ？手短に言え！",
+            "提案がある、=factionaddress:Barathrumites=。ただちに=player.reflexive= を私の視界から消し去れ。そうすれば、エレシュキガルに君を構成原子へ還元するよう頼むのは控えよう。",
+            "ようこそグリット・ゲートへ、=factionaddress:Barathrumites=。賢明な買い物で滞在の質を高めていかないかい？"
+          ]
+        },
+        {
+          "term": "factionaddress:Mopango",
+          "surface": "conversation_text",
+          "examples": [
+            "=ifplayerplural:君たちは:そなたは=世界を変えた、=factionaddress:Mopango=。この奇妙な存在たちは何千年も閉じ込められていたが、=ifplayerplural:君たちは:そなたは=そのひとつに声を与えた。\n\n        ナハムがドヨバの言うとおり賢いのなら、ほどなく多くを学べるだろう。得た知識をこの小集団が広め、私たちはカサフェセンスへもう一歩近づけるかもしれない。\n\n        =ifplayerplural:君たちは:そなたは=いつでもここを訪れ、留まっていきなさい。",
+            "=ifplayerplural:君たちは:そなたは=世界を変えた、=factionaddress:Mopango=。この奇妙な存在たちは何千年も閉じ込められていたが、=ifplayerplural:君たちは:そなたは=そのひとつに声を与えた。\n\n        ダガシャにはどうしても恐れを抱いてしまう。だが我らに害をなさないのなら、手を取り合うことにやぶさかではない。この小集団の未来は確かに変わったし、おそらく良い方向に向かうだろう。\n\n        =ifplayerplural:君たちは:そなたは=いつでもここを訪れ、留まっていきなさい。",
+            "=ifplayerplural:君たちは:そなたは=世界を変えた、=factionaddress:Mopango=。この奇妙な存在たちは何千年も閉じ込められていたが、=ifplayerplural:君たちは:そなたは=そのひとつに声を与えた。\n\n        とはいえ、どんな変化が訪れるのかは量りがたい。古のヴァアムにまだ守り、護る力が残っているだろうか？ もっと良い移動手段を授けられるだろうか？ この件はダドゴムとも話し、後は時が示してくれる。\n\n        =ifplayerplural:君たちは:そなたは=いつでもここを訪れ、留まっていきなさい。"
           ]
         },
         {
@@ -210,6 +228,13 @@
             "生きて飲め、=subject.waterRitualLiquid=-=player.siblingTerm=。",
             "秘密を打ち明けてくれ、=subject.waterRitualLiquid=のきょうだい。",
             "=subject.waterRitualLiquid=のきょうだい、共に来てくれないか。"
+          ]
+        },
+        {
+          "term": "sultan:4",
+          "surface": "conversation_text",
+          "examples": [
+            "秋をいくつ数えたかは覚えているが、腐り尽くして黒くならねば年輪も正しく数えられん。根元の刻印によれば、私の種は =sultan:4= の治世に蒔かれたらしい。"
           ]
         },
         {
@@ -534,7 +559,7 @@
   "totals": {
     "conversation_files": 2,
     "conversation_texts": 1734,
-    "conversation_runtime_expansion_terms": 33,
+    "conversation_runtime_expansion_terms": 36,
     "conversation_choice_parts": 85,
     "quests": 28,
     "quest_steps": 84,

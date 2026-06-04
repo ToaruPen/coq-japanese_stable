@@ -3231,7 +3231,7 @@
 
   <object Name="CyberneticsTerminal2" Inherits="MountedFurniture" Replace="true">
     <part Name="Physics" Weight="5000" FlameTemperature="99999" VaporTemperature="1500" />
-    <part Name="Render" DisplayName="隅になりつつある" RenderString="167" ColorString="&amp;C" DetailColor="Y" Occluding="true" Tile="Terrain/sw_cyberterminal.bmp" />
+    <part Name="Render" DisplayName="変容の窪み" RenderString="167" ColorString="&amp;C" DetailColor="Y" Occluding="true" Tile="Terrain/sw_cyberterminal.bmp" />
     <part Name="Description" Short="人間の形を刻印したニュートロフォームの長方形がガラスのアーチの下にぶら下がっている。目の高さのフォームを横切って、グリフが楕円形のスクリーン上でループする。まばゆい光に覆われた手術機械が、囲いのあるドームの下側から虫が出てくる。" />
     <tag Name="ExcludeFromDynamicEncounters" Value="*noinherit" />
     <stat Name="Hitpoints" Value="5000" />

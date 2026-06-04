@@ -135,15 +135,35 @@ public static class QuestLogTranslationPatch
             return visible;
         }
 
+        var prefix = match.Groups["prefix"].Value;
         var name = match.Groups["name"].Value;
         var translatedName = ScopedDictionaryLookup.TranslateExactOrLowerAscii(name, DictionaryFile);
-        if (string.IsNullOrEmpty(translatedName) || string.Equals(translatedName, name, StringComparison.Ordinal))
+        if (!string.IsNullOrEmpty(translatedName) && !string.Equals(translatedName, name, StringComparison.Ordinal))
+        {
+            var translated = match.Groups["prefix"].Value + translatedName;
+            DynamicTextObservability.RecordTransform(route, "QuestLog.StepName", originalSource, translated);
+            return translated;
+        }
+
+        if (prefix.Length == 0)
         {
             return visible;
         }
 
-        var translated = match.Groups["prefix"].Value + translatedName;
-        DynamicTextObservability.RecordTransform(route, "QuestLog.StepName", originalSource, translated);
-        return translated;
+        if (prefix.Contains("Optional:")
+            || prefix.Contains("任意:"))
+        {
+            return visible;
+        }
+
+        if (!DynamicQuestGeneratedQuestTextTranslator.TryTranslate(name, out var generatedName)
+            || string.Equals(generatedName, name, StringComparison.Ordinal))
+        {
+            return visible;
+        }
+
+        var generatedTranslated = match.Groups["prefix"].Value + generatedName;
+        DynamicTextObservability.RecordTransform(route, "QuestLog.GeneratedQuestText", originalSource, generatedTranslated);
+        return generatedTranslated;
     }
 }

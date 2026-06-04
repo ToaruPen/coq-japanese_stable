@@ -314,6 +314,7 @@ public sealed class DescriptionTextTranslatorTests
     [TestCase("Deactivated: Currently without power.", "停止中: 現在電力がない。")]
     [TestCase("Integrated power systems: When equipped, you can power this device via Electrical Generation.", "統合電力システム: 装備中、発電でこの装置に電力を供給できる。")]
     [TestCase("Fitted with cleats: +2 to saves vs. forced movement、knockdown、とbeing restrained", "クリート付き: 強制移動・転倒・拘束に対するセーヴ+2")]
+    [TestCase("Fitted with cleats: +2 to saves vs. unknown target", "Fitted with cleats: +2 to saves vs. unknown target")]
     public void TranslateShortDescription_TranslatesRuntimeObservedDescriptionLines(
         string source,
         string expected)

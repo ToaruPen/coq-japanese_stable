@@ -41,6 +41,14 @@ public sealed class DynamicQuestGeneratedQuestTextTranslatorTests
     [TestCase("The sanctity of the Mechanimists", "メカニマス教団の聖性")]
     [TestCase("Travel to {{|the rust wells}} and pray at {{|the salt shrine}}.", "{{|錆の井戸}}へ行き、{{|塩の祠}}で祈る。")]
     [TestCase("Travel to {{|the rust wells}} and put something in {{|the chest}}.", "{{|錆の井戸}}へ行き、{{|chest}}に何かを入れる。")]
+    [TestCase("Visit カルクヘタラ, Stargazerhome", "カルクヘタラ, 星見の家を訪問")]
+    [TestCase("Travel to the historical site of カルクヘタラ, Stargazerhome.", "カルクヘタラ, 星見の家の史跡へ向かう。")]
+    [TestCase("Locate ダビッパ, Old Home of Window Makers", "ダビッパ, 窓職人たちの古き家を見つける")]
+    [TestCase("Locate ドゥシュル, Bygone Hearth of Jewelers", "ドゥシュル, 宝石職人たちの往時の炉辺を見つける")]
+    [TestCase("Recover Charmed, the Gift of 多肉植物", "多肉植物の幸運に恵まれた賜物を取り戻す")]
+    [TestCase("Recover Charmed, the Gift of 多肉植物 at Luckymarsh.", "幸運な沼沢で多肉植物の幸運に恵まれた賜物を取り戻す。")]
+    [TestCase("Recover Rubycus at the Briny Dunes.", "塩辛い砂丘でRubycusを取り戻す。")]
+    [TestCase("Recover Inquisitive ワームwoe", "探究心の強いワームの嘆きを取り戻す")]
     [TestCase("Locate the rusted relic at {{|the spindle}}.", "{{|スピンドル}}で錆びた遺物を見つける。")]
     public void TryTranslate_TranslatesGeneratedQuestText(string source, string expected)
     {

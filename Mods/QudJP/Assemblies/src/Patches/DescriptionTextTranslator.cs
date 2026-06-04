@@ -1264,8 +1264,15 @@ internal static class DescriptionTextTranslator
         var fittedWithCleatsMatch = FittedWithCleatsLinePattern.Match(source);
         if (fittedWithCleatsMatch.Success)
         {
+            var targets = TranslateSaveBonusTargets(fittedWithCleatsMatch.Groups["targets"].Value);
+            if (string.Equals(targets, fittedWithCleatsMatch.Groups["targets"].Value, StringComparison.Ordinal))
+            {
+                translated = source;
+                return false;
+            }
+
             translated = "クリート付き: "
-                + TranslateSaveBonusTargets(fittedWithCleatsMatch.Groups["targets"].Value)
+                + targets
                 + "に対するセーヴ"
                 + fittedWithCleatsMatch.Groups["amount"].Value;
             DynamicTextObservability.RecordTransform(route, "Description.RuntimeObservedLine", source, translated);

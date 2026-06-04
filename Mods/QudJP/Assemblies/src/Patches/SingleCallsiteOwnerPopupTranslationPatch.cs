@@ -1008,7 +1008,9 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         match = BaetylRewardWishPattern.Match(source);
         if (match.Success && OwnerMatches(ownerKey, BaetylRewardWishOwner))
         {
-            translated = $"{match.Groups["demand"].Value}の報酬として{match.Groups["item"].Value}を生成した。";
+            var item = TranslatePopupDisplayNameCapture(match.Groups["item"].Value);
+            var demand = TranslatePopupDisplayNameCapture(match.Groups["demand"].Value);
+            translated = $"{demand}の報酬として{item}を生成した。";
             detail = "BaetylRewardWish";
             return true;
         }

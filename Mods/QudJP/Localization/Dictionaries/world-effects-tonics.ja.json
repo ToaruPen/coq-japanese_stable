@@ -321,7 +321,7 @@
         {
             "key": "Your mutant physiology reacts adversely to the tonic. You cannot see to see -- your mind cracks as a bell struck by a hammer.",
             "context": "XRL.World.Effects.SphynxSalt_Tonic.Popup.Show",
-            "text": "変異体質がそのトニックに悪く反応する。見ようにも見えない。心は槌で打たれた鐘のようにひび割れる。"
+            "text": "変異体質がそのトニックに悪く反応する。見ようにも見えない。心は槌で打たれた鈴のようにひび割れる。"
         },
         {
             "key": "The tonics you ingested react adversely to each other. You cannot see to see -- your mind cracks as a bell struck by a hammer.",

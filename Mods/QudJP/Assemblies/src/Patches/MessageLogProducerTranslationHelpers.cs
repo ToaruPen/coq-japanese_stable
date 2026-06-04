@@ -69,6 +69,7 @@ internal static class MessageLogProducerTranslationHelpers
     private static readonly HashSet<string> CompactHistorySpicePlaceSuffixes = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
     {
         "home",
+        "marsh",
     };
 
     private static readonly HashSet<string> FixedBiomeNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
@@ -505,8 +506,18 @@ internal static class MessageLogProducerTranslationHelpers
             return false;
         }
 
-        translated = translatedRoot + "の" + translatedSuffix;
+        translated = JoinCompactHistorySpicePlace(translatedRoot, translatedSuffix);
         return true;
+    }
+
+    private static string JoinCompactHistorySpicePlace(string translatedRoot, string translatedSuffix)
+    {
+        return translatedRoot.EndsWith("な", StringComparison.Ordinal)
+            || translatedRoot.EndsWith("の", StringComparison.Ordinal)
+            || translatedRoot.EndsWith("き", StringComparison.Ordinal)
+            || translatedRoot.EndsWith("た", StringComparison.Ordinal)
+            ? translatedRoot + translatedSuffix
+            : translatedRoot + "の" + translatedSuffix;
     }
 
     private static bool TrySplitCompactHistorySpicePlaceSuffix(string source, out string root, out string suffix)

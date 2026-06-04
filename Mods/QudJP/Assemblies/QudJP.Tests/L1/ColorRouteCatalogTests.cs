@@ -602,6 +602,7 @@ internal static class ColorRouteCatalog
             ["Mods/QudJP/Assemblies/src/Patches/PopupTranslationPatch.cs|MessagePatternTranslator.TranslateIfPatternMatches("] = 1,
             ["Mods/QudJP/Assemblies/src/Patches/QuestLogTranslationPatch.cs|ColorAwareTranslationComposer.TranslatePreservingColors("] = 1,
             ["Mods/QudJP/Assemblies/src/Patches/QuestLifecyclePopupTranslationPatch.cs|ColorAwareTranslationComposer.TranslatePreservingColors("] = 1,
+            ["Mods/QudJP/Assemblies/src/Patches/QuestsLineTranslationPatch.cs|GetDisplayNameRouteTranslator.TranslatePreservingColors("] = 1,
             ["Mods/QudJP/Assemblies/src/Patches/QudMutationsModuleWindowHandleMenuOptionPopupTranslationPatch.cs|ColorAwareTranslationComposer.TranslatePreservingColors("] = 1,
             ["Mods/QudJP/Assemblies/src/Patches/QudMutationsModuleWindowVariantPopupTranslationPatch.cs|ColorAwareTranslationComposer.TranslatePreservingColors("] = 1,
             ["Mods/QudJP/Assemblies/src/Patches/RandomAltarBaetylTranslationPatch.cs|ColorAwareTranslationComposer.TranslatePreservingColors("] = 1,

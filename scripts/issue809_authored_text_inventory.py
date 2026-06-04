@@ -17,7 +17,7 @@ MAX_TERM_EXAMPLES = 3
 LOCALIZATION_ROOT = Path("Mods") / "QudJP" / "Localization"
 CONVERSATION_FILES = ("Conversations.jp.xml", "HiddenConversations.jp.xml")
 QUEST_FILE = "Quests.jp.xml"
-RUNTIME_TERM_PATTERN = re.compile(r"=([A-Za-z0-9_.]+)=")
+RUNTIME_TERM_PATTERN = re.compile(r"=([A-Za-z0-9_.:\*\-]+)=")
 QUEST_TEXT_ATTRIBUTES = {
     "Accomplishment",
     "Gospel",

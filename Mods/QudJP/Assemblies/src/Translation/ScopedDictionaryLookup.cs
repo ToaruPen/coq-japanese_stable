@@ -118,8 +118,13 @@ internal static class ScopedDictionaryLookup
         for (var index = 0; index < dictionaryFileNames.Length; index++)
         {
             if (!LoadDictionary(dictionaryFileNames[index])
-                    .TryGetContextSourceByTranslation(translated, context, out var loadedCandidate))
+                    .TryGetContextSourceByTranslation(translated, context, out var loadedCandidate, out var ambiguous))
             {
+                if (ambiguous)
+                {
+                    return null;
+                }
+
                 continue;
             }
 
@@ -363,8 +368,13 @@ internal static class ScopedDictionaryLookup
             return false;
         }
 
-        internal bool TryGetContextSourceByTranslation(string translated, string context, out string source)
+        internal bool TryGetContextSourceByTranslation(
+            string translated,
+            string context,
+            out string source,
+            out bool ambiguous)
         {
+            ambiguous = false;
             var prefix = context.Trim() + "\u001f";
             string? candidate = null;
             foreach (var entry in contextualEntries)
@@ -385,6 +395,7 @@ internal static class ScopedDictionaryLookup
                 if (!string.Equals(candidate, sourceCandidate, StringComparison.Ordinal))
                 {
                     source = translated;
+                    ambiguous = true;
                     return false;
                 }
             }
