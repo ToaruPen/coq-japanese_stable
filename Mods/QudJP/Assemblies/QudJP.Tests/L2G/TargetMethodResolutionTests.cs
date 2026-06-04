@@ -517,7 +517,46 @@ public sealed class TargetMethodResolutionTests
     [TestCase(typeof(StairsUpTranslationPatch), "HandleEvent", "XRL.World.Parts.StairsUp", "System.Boolean", new[] { "XRL.World.InventoryActionEvent" })]
     [TestCase(typeof(GameSummaryScreenMenuBarsTranslationPatch), "UpdateMenuBars", "Qud.UI.GameSummaryScreen", "System.Void", new string[0])]
     [TestCase(typeof(GameSummaryScreenShowTranslationPatch), "_ShowGameSummary", "Qud.UI.GameSummaryScreen", "System.Threading.Tasks.Task`1[[System.Boolean]]", new[] { "System.String", "System.String", "System.String", "System.Boolean" })]
-    [TestCase(typeof(InventoryActionMenuCursorSoundPatch), "Update", "Qud.UI.PopupMessage", "System.Void", new string[0])]
+    [TestCase(typeof(InventoryActionMenuShowTimingPatch), "ShowInventoryActionMenu", "Qud.API.EquipmentAPI", "XRL.World.InventoryAction", new[]
+    {
+        "System.Collections.Generic.Dictionary`2[[System.String],[XRL.World.InventoryAction]]",
+        "XRL.World.GameObject",
+        "XRL.World.GameObject",
+        "System.Boolean",
+        "System.Boolean",
+        "System.String",
+        "System.Collections.Generic.IComparer`1[[XRL.World.InventoryAction]]",
+        "System.Boolean",
+    })]
+    [TestCase(typeof(InventoryActionMenuPopupHideTimingPatch), "Hide", "Qud.UI.PopupMessage", "System.Void", new string[0])]
+    [TestCase(typeof(InventoryActionMenuPopupUpdateTimingPatch), "Update", "Qud.UI.PopupMessage", "System.Void", new string[0])]
+    [TestCase(typeof(InventoryActionMenuUpdateViewTimingPatch), "UpdateViewFromData", "Qud.UI.InventoryAndEquipmentStatusScreen", "System.Void", new string[0])]
+    [TestCase(typeof(InventoryActionMenuCursorSoundPlayClickPatch), "PlayClick", "Qud.UI.QudBaseMenuController`2[[Qud.UI.QudMenuItem],[Qud.UI.SelectableTextMenuItem]]", "System.Void", new string[0])]
+    [TestCase(typeof(InventoryActionMenuCursorSoundPopupContextPatch), "ShowPopup", "Qud.UI.PopupMessage", "System.Void", new[]
+    {
+        "System.String",
+        "System.Collections.Generic.List`1[[Qud.UI.QudMenuItem]]",
+        "System.Action`1[[Qud.UI.QudMenuItem]]",
+        "System.Collections.Generic.List`1[[Qud.UI.QudMenuItem]]",
+        "System.Action`1[[Qud.UI.QudMenuItem]]",
+        "System.String",
+        "System.Boolean",
+        "System.String",
+        "System.Int32",
+        "System.Action",
+        "ConsoleLib.Console.IRenderable",
+        "System.String",
+        "ConsoleLib.Console.IRenderable",
+        "System.Boolean",
+        "System.Boolean",
+        "System.Threading.CancellationToken",
+        "System.Boolean",
+        "System.String",
+        "System.String",
+        "Genkit.Location2D",
+        "System.String",
+    })]
+    [TestCase(typeof(InventoryActionMenuCursorSoundPopupHideContextPatch), "Hide", "Qud.UI.PopupMessage", "System.Void", new string[0])]
     [TestCase(typeof(MainMenuRowTranslationPatch), "setData", "MainMenuRow", "System.Void", new[] { "XRL.UI.Framework.FrameworkDataElement" })]
     [TestCase(typeof(LeftSideCategoryTranslationPatch), "setData", "Qud.UI.LeftSideCategory", "System.Void", new[] { "XRL.UI.Framework.FrameworkDataElement" })]
     [TestCase(typeof(PickTargetWindowUpdateTranslationPatch), "Update", "Qud.UI.PickTargetWindow", "System.Void", new string[0])]
@@ -557,7 +596,7 @@ public sealed class TargetMethodResolutionTests
         {
             Assert.That(targetMethod, Is.Not.Null, $"TargetMethod returned null for {patchType.FullName}");
             Assert.That(targetMethod!.Name, Is.EqualTo(expectedMethodName));
-            Assert.That(targetMethod.DeclaringType?.FullName, Is.EqualTo(expectedDeclaringType));
+            Assert.That(NormalizeTypeName(targetMethod.DeclaringType?.FullName), Is.EqualTo(expectedDeclaringType));
 
             var methodInfo = targetMethod as MethodInfo;
             Assert.That(methodInfo, Is.Not.Null, $"Expected MethodInfo for {patchType.FullName}");
@@ -569,6 +608,37 @@ public sealed class TargetMethodResolutionTests
     }
 
 #if HAS_GAME_DLL
+    [Test]
+    public void InventoryActionMenuCursorSoundPatch_ResolvesPlayableUiSoundMethod()
+    {
+        var accessor = typeof(InventoryActionMenuCursorSoundPatch).GetMethod(
+            "GetPlayUiSoundMethod",
+            BindingFlags.NonPublic | BindingFlags.Static);
+
+        Assert.That(accessor, Is.Not.Null, "GetPlayUiSoundMethod helper is missing.");
+
+        var resolved = accessor!.Invoke(null, null) as MethodInfo;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(resolved, Is.Not.Null, "SoundManager.PlayUISound was not resolved.");
+            Assert.That(resolved!.Name, Is.EqualTo("PlayUISound"));
+            Assert.That(resolved.DeclaringType?.FullName, Is.EqualTo("SoundManager"));
+
+            var parameterTypes = Array.ConvertAll(
+                resolved.GetParameters(),
+                static parameter => NormalizeTypeName(parameter.ParameterType.FullName));
+            Assert.That(parameterTypes, Is.EqualTo(new[]
+            {
+                "System.String",
+                "System.Single",
+                "System.Boolean",
+                "System.Boolean",
+                "SoundRequest+SoundEffectType",
+            }));
+        });
+    }
+
     [TestCase(typeof(VillageDynamicQuestRewardGameObjectTranslationPatch), "XRL.World.DynamicQuestRewardElement_GameObject", new[] { "XRL.World.GameObject" })]
     public void TargetConstructor_ResolvesExpectedSignature(
         Type patchType,

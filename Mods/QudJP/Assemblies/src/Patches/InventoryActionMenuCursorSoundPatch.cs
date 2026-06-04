@@ -1,116 +1,121 @@
 using System;
-using System.Diagnostics;
+using System.Collections.Generic;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using HarmonyLib;
 
 namespace QudJP.Patches;
 
-[HarmonyPatch]
 public static class InventoryActionMenuCursorSoundPatch
 {
-    private const string Context = nameof(InventoryActionMenuCursorSoundPatch);
-    private const string TargetTypeName = "Qud.UI.PopupMessage";
     private const string InventoryActionMenuPopupIdPrefix = "InventoryActionMenu:";
     private const string CursorSound = "Sounds/UI/ui_cursor_scroll";
-    private const int UnknownSelectedOption = int.MinValue;
 
     private static readonly object SyncRoot = new();
-    private static FieldInfo? controllerField;
-    private static FieldInfo? popupIdField;
+    private static readonly ConditionalWeakTable<object, PopupContext> PopupContexts = new();
     private static MethodInfo? playUiSoundMethod;
+    private static Type? soundEffectType;
+    private static Action<object?, string?>? playCursorSoundRequestObserverForTests;
 
-    [HarmonyTargetMethod]
-    private static MethodBase? TargetMethod()
+    internal static void RememberPopupController(object? popupMessage)
     {
-        var targetType = AccessTools.TypeByName(TargetTypeName);
-        if (targetType is null)
+        var controller = GetControllerFromPopupMessage(popupMessage);
+        if (controller is null)
         {
-            Trace.TraceError("QudJP: {0} target type '{1}' not found.", Context, TargetTypeName);
-            return null;
+            return;
         }
 
-        var method = AccessTools.Method(targetType, "Update", Type.EmptyTypes);
-        if (method is null)
+        var popupId = GetPopupIdFromPopupMessage(popupMessage);
+        lock (SyncRoot)
         {
-            Trace.TraceError("QudJP: {0} method 'Update()' not found on '{1}'.", Context, TargetTypeName);
-        }
+            if (!PopupContexts.TryGetValue(controller, out var context))
+            {
+                context = new PopupContext();
+                PopupContexts.Add(controller, context);
+            }
 
-        return method;
-    }
-
-    public static void Prefix(object? __instance, ref int __state)
-    {
-        try
-        {
-            __state = GetSelectedOption(__instance);
-        }
-        catch (Exception ex)
-        {
-            Trace.TraceError("QudJP: {0}.Prefix failed: {1}", Context, ex);
-            __state = UnknownSelectedOption;
+            context.PopupIds.Push(popupId);
         }
     }
 
-    public static void Postfix(object? __instance, int __state)
+    internal static void ForgetPopupController(object? popupMessage)
     {
-        try
+        var controller = GetControllerFromPopupMessage(popupMessage);
+        if (controller is null)
         {
-            if (__state == UnknownSelectedOption)
+            return;
+        }
+
+        lock (SyncRoot)
+        {
+            if (!PopupContexts.TryGetValue(controller, out var context))
             {
                 return;
             }
 
-            var currentSelectedOption = GetSelectedOption(__instance);
-            var popupId = GetPopupId(__instance);
-            var isActiveAndEnabled = GetBooleanMember(__instance, "isActiveAndEnabled");
-            if (ShouldPlayCursorSound(popupId, __state, currentSelectedOption, isActiveAndEnabled))
+            if (context.PopupIds.Count > 0)
             {
-                PlayCursorSound();
+                _ = context.PopupIds.Pop();
+            }
+
+            if (context.PopupIds.Count == 0)
+            {
+                PopupContexts.Remove(controller);
             }
         }
-        catch (Exception ex)
-        {
-            Trace.TraceError("QudJP: {0}.Postfix failed: {1}", Context, ex);
-        }
     }
 
-    internal static bool ShouldPlayCursorSoundForTests(
-        string? popupId,
-        int previousSelectedOption,
-        int currentSelectedOption,
-        bool isActiveAndEnabled)
+    internal static bool TryGetRememberedPopupId(object? controller, out string? popupId)
     {
-        return ShouldPlayCursorSound(popupId, previousSelectedOption, currentSelectedOption, isActiveAndEnabled);
-    }
-
-    private static bool ShouldPlayCursorSound(
-        string? popupId,
-        int previousSelectedOption,
-        int currentSelectedOption,
-        bool isActiveAndEnabled)
-    {
-        return isActiveAndEnabled
-            && popupId is not null
-            && popupId.StartsWith(InventoryActionMenuPopupIdPrefix, StringComparison.Ordinal)
-            && currentSelectedOption != UnknownSelectedOption
-            && previousSelectedOption != currentSelectedOption;
-    }
-
-    private static int GetSelectedOption(object? popupMessage)
-    {
-        var controller = GetController(popupMessage);
+        popupId = null;
         if (controller is null)
         {
-            return UnknownSelectedOption;
+            return false;
         }
 
-        var controllerType = controller.GetType();
-        var selectedOptionProperty = AccessTools.Property(controllerType, "selectedOption");
-        var value = selectedOptionProperty?.GetValue(controller);
-        return value is int selectedOption ? selectedOption : UnknownSelectedOption;
+        lock (SyncRoot)
+        {
+            if (!PopupContexts.TryGetValue(controller, out var context))
+            {
+                return false;
+            }
+
+            if (context.PopupIds.Count == 0)
+            {
+                return false;
+            }
+
+            popupId = context.PopupIds.Peek();
+            return true;
+        }
     }
 
-    private static object? GetController(object? popupMessage)
+    internal static void PlayCursorSoundForInventoryActionMenuController(object? controller)
+    {
+        var hasPopupId = TryGetRememberedPopupId(controller, out var popupId);
+        ObservePlayCursorSoundRequestForTests(controller, popupId);
+        if (!hasPopupId
+            || popupId is null
+            || !popupId.StartsWith(InventoryActionMenuPopupIdPrefix, StringComparison.Ordinal))
+        {
+            return;
+        }
+
+        if (PlayCursorSound())
+        {
+            LogCursorSoundPlayed(popupId);
+        }
+    }
+
+    internal static void SetPlayCursorSoundRequestObserverForTests(Action<object?, string?>? observer)
+    {
+        lock (SyncRoot)
+        {
+            playCursorSoundRequestObserverForTests = observer;
+        }
+    }
+
+    private static object? GetControllerFromPopupMessage(object? popupMessage)
     {
         if (popupMessage is null)
         {
@@ -121,7 +126,7 @@ public static class InventoryActionMenuCursorSoundPatch
         return field?.GetValue(popupMessage);
     }
 
-    private static string? GetPopupId(object? popupMessage)
+    private static string? GetPopupIdFromPopupMessage(object? popupMessage)
     {
         if (popupMessage is null)
         {
@@ -134,44 +139,51 @@ public static class InventoryActionMenuCursorSoundPatch
 
     private static FieldInfo? GetControllerField(Type popupMessageType)
     {
-        lock (SyncRoot)
-        {
-            controllerField ??= AccessTools.Field(popupMessageType, "controller");
-            return controllerField;
-        }
+        return AccessTools.Field(popupMessageType, "controller");
     }
 
     private static FieldInfo? GetPopupIdField(Type popupMessageType)
     {
-        lock (SyncRoot)
-        {
-            popupIdField ??= AccessTools.Field(popupMessageType, "PopupID");
-            return popupIdField;
-        }
+        return AccessTools.Field(popupMessageType, "PopupID");
     }
 
-    private static bool GetBooleanMember(object? instance, string memberName)
+    private static void ObservePlayCursorSoundRequestForTests(object? controller, string? popupId)
     {
-        if (instance is null)
+        Action<object?, string?>? observer;
+        lock (SyncRoot)
+        {
+            observer = playCursorSoundRequestObserverForTests;
+        }
+
+        observer?.Invoke(controller, popupId);
+    }
+
+    private static bool PlayCursorSound()
+    {
+        var method = GetPlayUiSoundMethod();
+        var effectType = GetSoundEffectType();
+        if (method is null || effectType is null)
         {
             return false;
         }
 
-        var type = instance.GetType();
-        var property = AccessTools.Property(type, memberName);
-        if (property is not null && property.PropertyType == typeof(bool))
-        {
-            return property.GetValue(instance) is true;
-        }
-
-        var field = AccessTools.Field(type, memberName);
-        return field is not null && field.FieldType == typeof(bool) && field.GetValue(instance) is true;
+        method.Invoke(null, new[] { CursorSound, 1f, false, true, Enum.ToObject(effectType, 0) });
+        return true;
     }
 
-    private static void PlayCursorSound()
+    private static void LogCursorSoundPlayed(string? popupId)
     {
-        var method = GetPlayUiSoundMethod();
-        method?.Invoke(null, new object[] { CursorSound, 1f, false, true });
+        RuntimeDiagnostics.LogVerboseProbe(() =>
+            "[QudJP] InventoryActionMenuCursorSound/v1: popup_id="
+            + EscapeDetailValue(popupId ?? string.Empty)
+            + ";source=play_click");
+    }
+
+    private static string EscapeDetailValue(string value)
+    {
+        return value.Replace("\\", "\\\\")
+            .Replace(";", "\\;")
+            .Replace("=", "\\=");
     }
 
     private static MethodInfo? GetPlayUiSoundMethod()
@@ -184,11 +196,31 @@ public static class InventoryActionMenuCursorSoundPatch
             }
 
             var soundManagerType = AccessTools.TypeByName("SoundManager");
+            var effectType = GetSoundEffectType();
+            if (effectType is null)
+            {
+                return null;
+            }
+
             playUiSoundMethod = AccessTools.Method(
                 soundManagerType,
                 "PlayUISound",
-                new[] { typeof(string), typeof(float), typeof(bool), typeof(bool) });
+                new[] { typeof(string), typeof(float), typeof(bool), typeof(bool), effectType });
             return playUiSoundMethod;
         }
+    }
+
+    private static Type? GetSoundEffectType()
+    {
+        lock (SyncRoot)
+        {
+            soundEffectType ??= AccessTools.TypeByName("SoundRequest+SoundEffectType");
+            return soundEffectType;
+        }
+    }
+
+    private sealed class PopupContext
+    {
+        internal Stack<string?> PopupIds { get; } = new();
     }
 }
