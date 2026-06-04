@@ -53,6 +53,7 @@ internal static class InventoryActionMenuShowTimingPatch
     {
         try
         {
+            InventoryActionDisplayTranslationPatch.TranslateActionTableForInventoryActionMenu(__0);
             __state = InventoryActionMenuCloseTimingObservability.BeginMenu(GetCount(__0));
         }
         catch (Exception ex)

@@ -67,6 +67,11 @@ public static class InventoryActionDisplayTranslationPatch
         TranslateActionTable(actionTable, keyMappedPredicateForTests ?? (_ => false));
     }
 
+    internal static void TranslateActionTableForInventoryActionMenu(object? actionTable)
+    {
+        TranslateActionTable(actionTable, keyMappedPredicateForTests ?? IsInventoryActionKeyMapped);
+    }
+
     internal static void SetInventoryActionKeyMappedPredicateForTests(Predicate<char>? predicate)
     {
         keyMappedPredicateForTests = predicate;
@@ -127,10 +132,27 @@ public static class InventoryActionDisplayTranslationPatch
             return new ActionTranslationState(action, null);
         }
 
-        if (!TryTranslateDisplay(original, out var translated, out var fallbackKeyCandidates)
-            || string.Equals(translated, original, StringComparison.Ordinal))
+        if (!TryTranslateDisplay(original, out var translated, out var fallbackKeyCandidates))
         {
-            return new ActionTranslationState(action, null);
+            if (!TryBuildLocalizedFallbackHotkeyCandidates(original, out var localizedFallbackKeyCandidates, out var normalizedDisplay))
+            {
+                return new ActionTranslationState(action, null);
+            }
+
+            if (!string.Equals(normalizedDisplay, original, StringComparison.Ordinal))
+            {
+                SetStringMember(action, "Display", normalizedDisplay);
+            }
+
+            return new ActionTranslationState(
+                action,
+                localizedFallbackKeyCandidates,
+                ShouldForceFallbackHotkey(GetCharMember(action, "Key")));
+        }
+
+        if (string.Equals(translated, original, StringComparison.Ordinal))
+        {
+            return new ActionTranslationState(action, fallbackKeyCandidates);
         }
 
         SetStringMember(action, "Display", translated);
@@ -204,6 +226,52 @@ public static class InventoryActionDisplayTranslationPatch
         return new string(candidates.ToArray());
     }
 
+    private static bool TryBuildLocalizedFallbackHotkeyCandidates(
+        string display,
+        out string fallbackHotkeyCandidates,
+        out string normalizedDisplay)
+    {
+        normalizedDisplay = display;
+        fallbackHotkeyCandidates = string.Empty;
+        if (TryFindSourceByLocalizedDisplay(display, out var source))
+        {
+            fallbackHotkeyCandidates = BuildFallbackHotkeyCandidates(source);
+            return fallbackHotkeyCandidates.Length > 0;
+        }
+
+        var visible = ColorAwareTranslationComposer.GetVisibleText(display);
+        if (string.Equals(visible, display, StringComparison.Ordinal)
+            || !TryFindSourceByLocalizedDisplay(visible, out source))
+        {
+            return false;
+        }
+
+        normalizedDisplay = visible;
+        fallbackHotkeyCandidates = BuildFallbackHotkeyCandidates(source);
+        return fallbackHotkeyCandidates.Length > 0;
+    }
+
+    private static bool TryFindSourceByLocalizedDisplay(string display, out string source)
+    {
+        var found = ScopedDictionaryLookup.FindSourceByExactTranslationForContextOnly(
+            display,
+            InventoryActionContext,
+            InventoryActionDictionaryFile);
+        if (found is null)
+        {
+            source = display;
+            return false;
+        }
+
+        source = found;
+        return true;
+    }
+
+    private static bool ShouldForceFallbackHotkey(char? currentKey)
+    {
+        return currentKey.HasValue && !IsAsciiLetter(currentKey.Value);
+    }
+
     private static void AssignFallbackHotkeys(IEnumerable<ActionTranslationState> states, Predicate<char> isKeyMapped)
     {
         var sortedStates = new List<ActionTranslationState>(states);
@@ -215,6 +283,16 @@ public static class InventoryActionDisplayTranslationPatch
             var currentKey = GetCharMember(state.Action, "Key");
             if (!IsUsableInventoryActionKey(currentKey))
             {
+                continue;
+            }
+
+            if (state.ForceFallbackHotkey && state.HasFallbackHotkeyCandidates)
+            {
+                if (!TryAssignFallbackHotkey(state, assignedKeys, isKeyMapped))
+                {
+                    SetCharMember(state.Action, "Key", ' ');
+                }
+
                 continue;
             }
 
@@ -463,15 +541,18 @@ public static class InventoryActionDisplayTranslationPatch
 
     private sealed class ActionTranslationState
     {
-        public ActionTranslationState(object action, string? fallbackHotkeyCandidates)
+        public ActionTranslationState(object action, string? fallbackHotkeyCandidates, bool forceFallbackHotkey = false)
         {
             Action = action;
             FallbackHotkeyCandidates = fallbackHotkeyCandidates;
+            ForceFallbackHotkey = forceFallbackHotkey;
         }
 
         public object Action { get; }
 
         public string? FallbackHotkeyCandidates { get; }
+
+        public bool ForceFallbackHotkey { get; }
 
         public bool HasFallbackHotkeyCandidates => !string.IsNullOrEmpty(FallbackHotkeyCandidates);
     }

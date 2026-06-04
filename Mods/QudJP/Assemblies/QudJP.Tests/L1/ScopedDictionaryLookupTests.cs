@@ -117,6 +117,37 @@ public sealed class ScopedDictionaryLookupTests
         });
     }
 
+    [Test]
+    public void FindSourceByExactTranslationForContextOnly_ReturnsUniqueContextualSource()
+    {
+        WriteDictionaryContents(
+            "scoped.ja.json",
+            "{\"entries\":[" +
+            "{\"key\":\"disassemble all\",\"context\":\"Route.A\",\"text\":\"すべて分解\"}," +
+            "{\"key\":\"disassemble all\",\"text\":\"別経路\"}," +
+            "{\"key\":\"drop all\",\"context\":\"Route.B\",\"text\":\"すべて分解\"}" +
+            "]}\n");
+
+        Assert.That(
+            ScopedDictionaryLookup.FindSourceByExactTranslationForContextOnly("すべて分解", "Route.A", "scoped.ja.json"),
+            Is.EqualTo("disassemble all"));
+    }
+
+    [Test]
+    public void FindSourceByExactTranslationForContextOnly_ReturnsNullForAmbiguousContextualSource()
+    {
+        WriteDictionaryContents(
+            "scoped.ja.json",
+            "{\"entries\":[" +
+            "{\"key\":\"drop all\",\"context\":\"Route.A\",\"text\":\"すべて\"}," +
+            "{\"key\":\"take all\",\"context\":\"Route.A\",\"text\":\"すべて\"}" +
+            "]}\n");
+
+        Assert.That(
+            ScopedDictionaryLookup.FindSourceByExactTranslationForContextOnly("すべて", "Route.A", "scoped.ja.json"),
+            Is.Null);
+    }
+
     private void WriteDictionary(string fileName, params (string key, string text)[] entries)
     {
         var builder = new StringBuilder();
