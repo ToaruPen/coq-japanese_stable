@@ -312,6 +312,210 @@ public static class ColorCodePreserver
         return false;
     }
 
+    internal static bool TryGetRawRangeForVisibleRange(
+        string source,
+        int visibleStart,
+        int visibleLength,
+        out int rawStart,
+        out int rawEnd)
+    {
+        rawStart = 0;
+        rawEnd = 0;
+        if (string.IsNullOrEmpty(source) || visibleStart < 0 || visibleLength < 0)
+        {
+            return false;
+        }
+
+        return TryGetRawIndexForVisibleIndex(source, visibleStart, preferAfterBoundaryTokens: true, out rawStart)
+            && TryGetRawIndexForVisibleIndex(source, visibleStart + visibleLength, preferAfterBoundaryTokens: false, out rawEnd)
+            && rawStart <= rawEnd;
+    }
+
+    private static bool TryGetRawIndexForVisibleIndex(
+        string source,
+        int targetVisibleIndex,
+        bool preferAfterBoundaryTokens,
+        out int rawIndex)
+    {
+        rawIndex = 0;
+        if (targetVisibleIndex < 0)
+        {
+            return false;
+        }
+
+        var visibleIndex = 0;
+        return TryGetRawIndexForVisibleIndexInSegment(
+            source,
+            startIndex: 0,
+            endIndex: source.Length,
+            ref visibleIndex,
+            targetVisibleIndex,
+            preferAfterBoundaryTokens,
+            out rawIndex);
+    }
+
+    private static bool TryGetRawIndexForVisibleIndexInSegment(
+        string input,
+        int startIndex,
+        int endIndex,
+        ref int visibleIndex,
+        int targetVisibleIndex,
+        bool preferAfterBoundaryTokens,
+        out int rawIndex)
+    {
+        var index = startIndex;
+        while (index < endIndex)
+        {
+            if (index + 1 < endIndex
+                && input[index] == '{'
+                && input[index + 1] == '{'
+                && TryReadMarkup(
+                    input,
+                    index,
+                    endIndex,
+                    out _,
+                    out var innerStart,
+                    out var innerEnd,
+                    out var nextIndex,
+                    out _))
+            {
+                if (visibleIndex == targetVisibleIndex && !preferAfterBoundaryTokens)
+                {
+                    rawIndex = index;
+                    return true;
+                }
+
+                if (TryGetRawIndexForVisibleIndexInSegment(
+                        input,
+                        innerStart,
+                        innerEnd,
+                        ref visibleIndex,
+                        targetVisibleIndex,
+                        preferAfterBoundaryTokens,
+                        out rawIndex))
+                {
+                    return true;
+                }
+
+                index = nextIndex;
+                continue;
+            }
+
+            if (index + 1 < endIndex && input[index] == '&')
+            {
+                if (input[index + 1] == '&')
+                {
+                    if (TryMapVisibleLiteralRun(index, MarkupTokenLength, ref visibleIndex, targetVisibleIndex, out rawIndex))
+                    {
+                        return true;
+                    }
+
+                    index += MarkupTokenLength;
+                    continue;
+                }
+
+                if (visibleIndex == targetVisibleIndex)
+                {
+                    if (!preferAfterBoundaryTokens)
+                    {
+                        rawIndex = index;
+                        return true;
+                    }
+
+                    index += MarkupTokenLength;
+                    continue;
+                }
+
+                index += MarkupTokenLength;
+                continue;
+            }
+
+            if (index + 1 < endIndex && input[index] == '^')
+            {
+                if (input[index + 1] == '^')
+                {
+                    if (TryMapVisibleLiteralRun(index, MarkupTokenLength, ref visibleIndex, targetVisibleIndex, out rawIndex))
+                    {
+                        return true;
+                    }
+
+                    index += MarkupTokenLength;
+                    continue;
+                }
+
+                if (visibleIndex == targetVisibleIndex)
+                {
+                    if (!preferAfterBoundaryTokens)
+                    {
+                        rawIndex = index;
+                        return true;
+                    }
+
+                    index += MarkupTokenLength;
+                    continue;
+                }
+
+                index += MarkupTokenLength;
+                continue;
+            }
+
+            if (input[index] == '<'
+                && TryReadTmpColorTag(input, index, endIndex, out _, out var tmpNextIndex))
+            {
+                if (visibleIndex == targetVisibleIndex)
+                {
+                    if (!preferAfterBoundaryTokens)
+                    {
+                        rawIndex = index;
+                        return true;
+                    }
+
+                    index = tmpNextIndex;
+                    continue;
+                }
+
+                index = tmpNextIndex;
+                continue;
+            }
+
+            if (visibleIndex == targetVisibleIndex)
+            {
+                rawIndex = index;
+                return true;
+            }
+
+            visibleIndex++;
+            index++;
+        }
+
+        if (visibleIndex == targetVisibleIndex)
+        {
+            rawIndex = endIndex;
+            return true;
+        }
+
+        rawIndex = 0;
+        return false;
+    }
+
+    private static bool TryMapVisibleLiteralRun(
+        int rawStart,
+        int length,
+        ref int visibleIndex,
+        int targetVisibleIndex,
+        out int rawIndex)
+    {
+        if (targetVisibleIndex >= visibleIndex && targetVisibleIndex <= visibleIndex + length)
+        {
+            rawIndex = rawStart + (targetVisibleIndex - visibleIndex);
+            return true;
+        }
+
+        visibleIndex += length;
+        rawIndex = 0;
+        return false;
+    }
+
     private static bool IsCaptureClosingToken(string token)
     {
         return string.Equals(token, "}}", StringComparison.Ordinal)

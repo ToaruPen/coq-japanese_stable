@@ -45,6 +45,7 @@ Chavvah,チャヴァ,,source: Factions.jp.xml; world-factions.ja.json,confirmed
 Chavvah Front Chime,チャイミング・ロック,,source: Conversations.jp.xml,draft
 Chavvah Prime,チャヴァ・プライム,,=ディヴラック（Dyvvrach）,draft
 "Chavvah, the Tree of Life",生命の樹チャヴァ,,source: world-factions.ja.json,draft
+chain,チェーン,チェーン,mechanical chain/chain-weapon prefix; armor names may use 鎖 only when the Japanese compound is already natural,approved
 Cherubim,ケルビム,,source: Factions.jp.xml; world-factions.ja.json,draft
 Children of Mamon,マモンの子ら,,source: world-factions.ja.json,draft
 Chiliad Mamon,キリアド・マモン,,source: ChiliadFactions.jp.xml; world-factions.ja.json,draft

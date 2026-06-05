@@ -75,6 +75,41 @@ public sealed class DynamicQuestGeneratedQuestTextTranslatorTests
     }
 
     [Test]
+    public void TryTranslate_PrefersZoneDisplayCaptureBeforeSpaceSeparatedComponents()
+    {
+        var tempDirectory = Path.Combine(
+            Path.GetTempPath(),
+            "qudjp-dynamic-quest-generated-l1",
+            Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(tempDirectory);
+
+        try
+        {
+            WriteDictionaryFile(
+                tempDirectory,
+                "Scoped/historyspice-common.ja.json",
+                ("old", "古き"),
+                ("home", "家"));
+            WriteDictionaryFile(tempDirectory, "ui-zone-display.ja.json", ("Old Home", "古き住処"));
+            ScopedDictionaryLookup.ResetForTests();
+            Translator.ResetForTests();
+            Translator.SetDictionaryDirectoryForTests(tempDirectory);
+
+            var translated = DynamicQuestGeneratedQuestTextTranslator.TryTranslate("Visit Old Home", out var result);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(translated, Is.True);
+                Assert.That(result, Is.EqualTo("古き住処を訪問"));
+            });
+        }
+        finally
+        {
+            Directory.Delete(tempDirectory, recursive: true);
+        }
+    }
+
+    [Test]
     public void TryTranslate_StripsDirectMarkerWithoutRetranslating()
     {
         var translated = DynamicQuestGeneratedQuestTextTranslator.TryTranslate(
@@ -104,4 +139,43 @@ public sealed class DynamicQuestGeneratedQuestTextTranslatorTests
 
     private static string GetRepositoryDictionaryDirectory() =>
         Path.Combine(TestProjectPaths.GetRepositoryRoot(), "Mods", "QudJP", "Localization", "Dictionaries");
+
+    private static void WriteDictionaryFile(string directory, string fileName, params (string key, string text)[] entries)
+    {
+        var path = Path.Combine(directory, fileName);
+        var parent = Path.GetDirectoryName(path);
+        if (!string.IsNullOrEmpty(parent))
+        {
+            Directory.CreateDirectory(parent);
+        }
+
+        var builder = new System.Text.StringBuilder();
+        builder.Append("{\"entries\":[");
+        for (var index = 0; index < entries.Length; index++)
+        {
+            if (index > 0)
+            {
+                builder.Append(',');
+            }
+
+            builder.Append("{\"key\":\"");
+            builder.Append(EscapeJson(entries[index].key));
+            builder.Append("\",\"text\":\"");
+            builder.Append(EscapeJson(entries[index].text));
+            builder.Append("\"}");
+        }
+
+        builder.Append("]}\n");
+        File.WriteAllText(path, builder.ToString(), new System.Text.UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
+    }
+
+    private static string EscapeJson(string value)
+    {
+        return value
+            .Replace("\\", "\\\\", StringComparison.Ordinal)
+            .Replace("\"", "\\\"", StringComparison.Ordinal)
+            .Replace("\n", "\\n", StringComparison.Ordinal)
+            .Replace("\r", "\\r", StringComparison.Ordinal)
+            .Replace("\t", "\\t", StringComparison.Ordinal);
+    }
 }

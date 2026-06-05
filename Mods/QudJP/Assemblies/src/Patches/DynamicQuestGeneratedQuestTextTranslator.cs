@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text.RegularExpressions;
 
 namespace QudJP.Patches;
@@ -315,6 +316,18 @@ internal static class DynamicQuestGeneratedQuestTextTranslator
             return exact;
         }
 
+        if (TryTranslateZoneDisplayNameCapture(trimmed, out var zone)
+            && !string.Equals(zone, trimmed, StringComparison.Ordinal))
+        {
+            return zone;
+        }
+
+        if (TryTranslateZoneDisplayNameCapture(stripped, out zone)
+            && !string.Equals(zone, stripped, StringComparison.Ordinal))
+        {
+            return zone;
+        }
+
         if (TryTranslateSpaceSeparatedCapture(stripped, out var spaceSeparated))
         {
             return spaceSeparated;
@@ -325,21 +338,23 @@ internal static class DynamicQuestGeneratedQuestTextTranslator
             return stripped;
         }
 
-        if (MessageLogProducerTranslationHelpers.TryTranslateZoneDisplayName(trimmed, nameof(DynamicQuestGeneratedQuestTextTranslator), out var zone)
-            && !string.Equals(zone, trimmed, StringComparison.Ordinal))
-        {
-            return zone;
-        }
-
-        if (MessageLogProducerTranslationHelpers.TryTranslateZoneDisplayName(stripped, nameof(DynamicQuestGeneratedQuestTextTranslator), out zone)
-            && !string.Equals(zone, stripped, StringComparison.Ordinal))
-        {
-            return zone;
-        }
-
         return HistorySpiceComponentLookup.TryTranslateTitlePhrase(stripped, out var titlePhrase)
             ? titlePhrase
             : stripped;
+    }
+
+    private static bool TryTranslateZoneDisplayNameCapture(string source, out string translated)
+    {
+        translated = source;
+        if (!Directory.Exists(Translator.GetDictionaryDirectoryPath()))
+        {
+            return false;
+        }
+
+        return MessageLogProducerTranslationHelpers.TryTranslateZoneDisplayName(
+            source,
+            nameof(DynamicQuestGeneratedQuestTextTranslator),
+            out translated);
     }
 
     private static bool ContainsJapaneseCharacters(string source)

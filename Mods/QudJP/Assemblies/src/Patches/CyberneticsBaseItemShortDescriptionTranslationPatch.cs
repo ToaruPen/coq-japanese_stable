@@ -105,7 +105,10 @@ public static class CyberneticsBaseItemShortDescriptionTranslationPatch
             return source;
         }
 
-        return RulesPattern.Replace(source, match =>
+        var unmarked = MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var stripped)
+            ? stripped
+            : source;
+        return RulesPattern.Replace(unmarked, match =>
         {
             var body = match.Groups["body"].Value;
             var translatedBody = TranslateRulesBody(body);

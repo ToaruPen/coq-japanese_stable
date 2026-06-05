@@ -6019,7 +6019,7 @@
   </object>
   <object Name="Chain Mail" Inherits="BaseArmor" Replace="true">
     <part Name="Armor" AV="3" DV="-1" WornOn="Body" />
-    <part Name="Render" DisplayName="チェインメイル" RenderString="]" Tile="Items/sw_chainmail.bmp" ColorString="&amp;y" DetailColor="Y" />
+    <part Name="Render" DisplayName="チェーンメイル" RenderString="]" Tile="Items/sw_chainmail.bmp" ColorString="&amp;y" DetailColor="Y" />
     <part Name="Commerce" Value="25" />
     <part Name="Description" Short="ごみの海の鋼の心臓から掘り出した輪を連ね、きらめく網に仕立てた。" />
     <part Name="Physics" Weight="35" />

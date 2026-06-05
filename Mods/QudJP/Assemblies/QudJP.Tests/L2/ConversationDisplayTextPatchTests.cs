@@ -110,12 +110,12 @@ public sealed class ConversationDisplayTextPatchTests
             {
                 Assert.That(
                     result,
-                    Is.EqualTo("Travelers spoke of {{Y|salt shrine}}. だが、彼らは場所を明かさなかった。 どうしても知る必要がある。 Will you do it?"));
+                    Is.EqualTo("Travelers spoke of {{Y|salt shrine}}. だが、彼らは場所を明かさなかった。どうしても知る必要がある。 Will you do it?"));
                 Assert.That(
                     DynamicTextObservability.GetRouteFamilyHitCountForTests(
                         nameof(ConversationDisplayTextPatch),
                         "ConversationDisplay.DynamicQuestSiteIntroFixedFrame"),
-                    Is.EqualTo(2));
+                    Is.EqualTo(1));
             });
         }
         finally

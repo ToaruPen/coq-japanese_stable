@@ -1674,6 +1674,17 @@ public sealed class WorldPartsProducerTranslationPatchTests
         }
     }
 
+    [TestCase("{{rules|Destroyed when uninstalled.}}", "{{rules|アンインストール時に破壊される。}}")]
+    [TestCase("{{rules|Untranslated appendix.}}", "{{rules|Untranslated appendix.}}")]
+    public void CyberneticsBaseItemPatch_StripsDirectMarkerFromAppendedMetadata(string appended, string expected)
+    {
+        var source = MessageFrameTranslator.DirectTranslationMarker + appended;
+
+        Assert.That(
+            CyberneticsBaseItemShortDescriptionTranslationPatch.TranslateAppendedText(source),
+            Is.EqualTo(expected));
+    }
+
     [TestCase("temporal clone implodes.", "temporal cloneは内破した。")]
     [TestCase("temporal clone is smeared into stone by the rasp of time.", "temporal cloneは時の軋みによって石へ塗り込められた。")]
     [TestCase("temporal clone crumbles into beetles.", "temporal cloneは崩れて甲虫になった。")]

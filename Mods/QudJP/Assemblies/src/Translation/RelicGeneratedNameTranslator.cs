@@ -163,6 +163,7 @@ internal static class RelicGeneratedNameTranslator
 
     private static bool TryTranslateCore(string source, bool includeBroadItemTypes, out string translated)
     {
+        // Plain names are checked before color stripping; this second pass handles articles exposed only inside color wrappers.
         if ((source.StartsWith("The ", StringComparison.Ordinal)
                 || source.StartsWith("the ", StringComparison.Ordinal))
             && TryTranslateCore(source.Substring("The ".Length), includeBroadItemTypes, out translated))

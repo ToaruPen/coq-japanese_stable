@@ -834,6 +834,42 @@ public sealed class GetDisplayNameProcessPatchTests
     }
 
     [Test]
+    public void Postfix_PreservesQudColorCodesForLocalizedPrefixRelicGeneratedDisplayName_WhenPatched()
+    {
+        WriteDictionaryFile(
+            "Scoped/historyspice-common.ja.json",
+            ("point", "尖端"),
+            ("commanding", "威厳ある"),
+            ("woe", "嘆き"));
+
+        RunWithDisplayNameProcessPatch(() =>
+        {
+            var processor = new DummyDisplayNameProcessor();
+            var result = processor.ProcessFor("粘液質の &YPoint of the Commanding Woe&y");
+
+            Assert.That(result, Is.EqualTo("粘液質の &Y威厳ある嘆きの尖端&y"));
+        });
+    }
+
+    [Test]
+    public void Postfix_PreservesStackedQudColorCodesForLocalizedPrefixRelicGeneratedDisplayName_WhenPatched()
+    {
+        WriteDictionaryFile(
+            "Scoped/historyspice-common.ja.json",
+            ("point", "尖端"),
+            ("commanding", "威厳ある"),
+            ("woe", "嘆き"));
+
+        RunWithDisplayNameProcessPatch(() =>
+        {
+            var processor = new DummyDisplayNameProcessor();
+            var result = processor.ProcessFor("粘液質の &Y^rPoint of the Commanding Woe&y^k");
+
+            Assert.That(result, Is.EqualTo("粘液質の &Y^r威厳ある嘆きの尖端&y^k"));
+        });
+    }
+
+    [Test]
     public void Postfix_TranslatesSavedRelicGeneratedArmorDisplayName_WhenPatched()
     {
         WriteDictionaryFile(

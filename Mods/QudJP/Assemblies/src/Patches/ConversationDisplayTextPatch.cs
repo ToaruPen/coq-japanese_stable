@@ -618,23 +618,11 @@ public static class ConversationDisplayTextPatch
 
     private static string TranslateDynamicQuestSiteIntroFixedFrames(string source)
     {
-        if (source.IndexOf("But they wouldn't reveal the location.", StringComparison.Ordinal) < 0
-            || source.IndexOf("We must know.", StringComparison.Ordinal) < 0)
-        {
-            return source;
-        }
-
-        var translated = ReplaceStructuredSegment(
+        return ReplaceStructuredSegment(
             source,
-            "But they wouldn't reveal the location.",
-            "だが、彼らは場所を明かさなかった。",
+            "But they wouldn't reveal the location. We must know.",
+            "だが、彼らは場所を明かさなかった。どうしても知る必要がある。",
             "ConversationDisplay.DynamicQuestSiteIntroFixedFrame");
-        translated = ReplaceStructuredSegment(
-            translated,
-            "We must know.",
-            "どうしても知る必要がある。",
-            "ConversationDisplay.DynamicQuestSiteIntroFixedFrame");
-        return translated;
     }
 
     private static string ReplaceStructuredSegment(string source, string english, string japanese, string detail)
