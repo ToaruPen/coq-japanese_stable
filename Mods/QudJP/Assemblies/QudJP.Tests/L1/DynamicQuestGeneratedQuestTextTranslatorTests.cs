@@ -43,6 +43,7 @@ public sealed class DynamicQuestGeneratedQuestTextTranslatorTests
     [TestCase("Travel to {{|the rust wells}} and put something in {{|the chest}}.", "{{|錆の井戸}}へ行き、{{|chest}}に何かを入れる。")]
     [TestCase("Visit カルクヘタラ, Stargazerhome", "カルクヘタラ, 星見の家を訪問")]
     [TestCase("Travel to the historical site of カルクヘタラ, Stargazerhome.", "カルクヘタラ, 星見の家の史跡へ向かう。")]
+    [TestCase("Travel to the historical site of カルクヘタラ, Stargazerhome", "カルクヘタラ, 星見の家の史跡へ向かう。")]
     [TestCase("Locate ダビッパ, Old Home of Window Makers", "ダビッパ, 窓職人たちの古き家を見つける")]
     [TestCase("Locate ドゥシュル, Bygone Hearth of Jewelers", "ドゥシュル, 宝石職人たちの往時の炉辺を見つける")]
     [TestCase("Recover Charmed, the Gift of 多肉植物", "多肉植物の幸運に恵まれた賜物を取り戻す")]

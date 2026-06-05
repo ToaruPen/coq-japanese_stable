@@ -179,3 +179,15 @@ internal static class DummyQuestLogTarget
         };
     }
 }
+
+internal sealed class DummyQuestLogQuest
+{
+    public Dictionary<string, DummyQuestLogQuestStep> StepsByID { get; } = new();
+}
+
+internal sealed class DummyQuestLogQuestStep
+{
+    public string Name { get; set; } = string.Empty;
+
+    public string Text { get; set; } = string.Empty;
+}

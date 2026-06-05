@@ -1507,6 +1507,8 @@
     { "key": "civic life", "text": "市民生活" },
     { "key": "social order", "text": "社会秩序" },
     { "key": "spouse", "text": "配偶者" },
+    { "key": "husband", "text": "夫" },
+    { "key": "wife", "text": "妻" },
     { "key": "partner", "text": "伴侶" },
     { "key": "mate", "text": "連れ合い" },
     { "key": "task", "text": "務め" },

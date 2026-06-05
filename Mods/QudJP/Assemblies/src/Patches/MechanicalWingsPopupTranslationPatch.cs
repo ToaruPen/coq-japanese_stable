@@ -151,6 +151,7 @@ public static class MechanicalWingsPopupTranslationPatch
                 longFallMatch.Groups["subject"].Value,
                 captureSpans,
                 longFallMatch.Groups["subject"]).Trim();
+            longFallSubject = DisplayNameCaptureTranslator.TranslatePreservingColors(longFallSubject, Context);
             var core = $"あなたがいる{longFallSubject}の下はかなり深そうだ。飛行をやめてもよいですか？";
             translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
                 core,

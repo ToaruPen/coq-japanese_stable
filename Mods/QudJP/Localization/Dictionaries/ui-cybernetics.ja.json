@@ -44,7 +44,7 @@
     },
     {
       "key": "Welcome, Aristocrat, to a becoming nook. {0} one step closer to the Grand Unification. Please choose from the following options.",
-      "text": "ようこそ、貴顕よ、変容の窪みへ。{0}は大統一へまた一歩近づいた。以下の選択肢から選ぶがよい。"
+      "text": "ようこそ、貴顕よ、変容の僻隅へ。{0}は大統一へまた一歩近づいた。以下の選択肢から選ぶがよい。"
     },
     {
       "key": "Learn About Cybernetics",
@@ -104,7 +104,7 @@
     },
     {
       "key": "Your curiosity is admirable, aristocrat.\n\nCybernetics are bionic augmentations implanted in your body to assist in your self-actualization. You can have implants installed at becoming nooks such as this one. Either load them in the rack or carry them on your person.",
-      "text": "その好奇心は見事である、貴顕よ。\n\nサイバネティクスとは、自己実現を助けるために肉体へ埋め込む生体改造である。このような変容の窪みで装着できる。ラックに載せるか、自ら携えるがよい。"
+      "text": "その好奇心は見事である、貴顕よ。\n\nサイバネティクスとは、自己実現を助けるために肉体へ埋め込む生体改造である。このような変容の僻隅で装着できる。ラックに載せるか、自ら携えるがよい。"
     },
     {
       "key": "How many implants can I install?",
@@ -120,7 +120,7 @@
     },
     {
       "key": "Insightful question, Aristocrat.\n\nEach implant has a point cost, and the total point cost of your installed implants can't exceed your license tier (displayed at the bottom of this screen). You can upgrade your license at a nook by spending cybernetic credits.",
-      "text": "鋭い問いである、貴顕よ。\n\n各インプラントにはポイントコストがあり、装着済みインプラントの合計ポイントはライセンスティアを超えられない（この画面下部に表示される）。変容の窪みではサイバネティクス・クレジットを支払ってライセンスをアップグレードできる。"
+      "text": "鋭い問いである、貴顕よ。\n\n各インプラントにはポイントコストがあり、装着済みインプラントの合計ポイントはライセンスティアを超えられない（この画面下部に表示される）。変容の僻隅ではサイバネティクス・クレジットを支払ってライセンスをアップグレードできる。"
     },
     {
       "key": "<back>",
@@ -128,7 +128,7 @@
     },
     {
       "key": "Aristocrat, your question was most finely uttered.\n\nYou may freely install and uninstall implants at a nook, though some implants are destroyed when uninstalled or can't be uninstalled at all.",
-      "text": "見事な問いである、貴顕よ。\n\n変容の窪みではインプラントを自由に装着・取り外しできる。ただし、取り外すと破壊されるものや、そもそも取り外せないものもある。"
+      "text": "見事な問いである、貴顕よ。\n\n変容の僻隅ではインプラントを自由に装着・取り外しできる。ただし、取り外すと破壊されるものや、そもそも取り外せないものもある。"
     },
     {
       "key": "Become a finer Aristocrat. Upgrade your license tier with cybernetics credits.\n\n{{C|1}} credit for license tiers 1-8\n{{C|2}} credits for license tiers 9-16\n{{C|3}} credits for license tiers 17-24\n{{C|4}} credits for license tiers 25+\n",

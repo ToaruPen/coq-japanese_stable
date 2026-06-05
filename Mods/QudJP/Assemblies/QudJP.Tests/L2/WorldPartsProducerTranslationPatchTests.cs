@@ -1632,6 +1632,48 @@ public sealed class WorldPartsProducerTranslationPatchTests
         }
     }
 
+    [Test]
+    public void CyberneticsBaseItemPatch_TranslatesShortDescriptionMetadataPostfix_WhenPatched()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyCyberneticsBaseItemProducerTarget), nameof(DummyCyberneticsBaseItemProducerTarget.HandleEvent), typeof(DummyGetShortDescriptionEvent)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(CyberneticsBaseItemShortDescriptionTranslationPatch), nameof(CyberneticsBaseItemShortDescriptionTranslationPatch.Prefix), typeof(object), typeof(int).MakeByRefType())),
+                postfix: new HarmonyMethod(RequireMethod(typeof(CyberneticsBaseItemShortDescriptionTranslationPatch), nameof(CyberneticsBaseItemShortDescriptionTranslationPatch.Postfix), typeof(object), typeof(int))));
+
+            var evt = new DummyGetShortDescriptionEvent();
+            evt.Postfix.Append("翻訳済みの説明");
+            var target = new DummyCyberneticsBaseItemProducerTarget
+            {
+                DestroyOnRemoval = true,
+                Slots = "Hands,Hand,Tail,Feet",
+                Cost = 2,
+            };
+
+            _ = target.HandleEvent(evt);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(
+                    evt.Postfix.ToString(),
+                    Is.EqualTo("翻訳済みの説明{{rules|アンインストール時に破壊される。}}{{rules|対象身体部位: 手, 手, 尾, 足}}{{rules|ライセンスポイント: 2}}{{rules|真性人類の遺伝子型にのみ対応}}"));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(CyberneticsBaseItemShortDescriptionTranslationPatch),
+                        "CyberneticsBaseItem.ShortDescriptionMetadata"),
+                    Is.EqualTo(1));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
     [TestCase("temporal clone implodes.", "temporal cloneは内破した。")]
     [TestCase("temporal clone is smeared into stone by the rasp of time.", "temporal cloneは時の軋みによって石へ塗り込められた。")]
     [TestCase("temporal clone crumbles into beetles.", "temporal cloneは崩れて甲虫になった。")]

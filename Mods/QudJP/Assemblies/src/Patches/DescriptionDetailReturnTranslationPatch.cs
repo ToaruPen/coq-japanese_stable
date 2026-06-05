@@ -411,7 +411,9 @@ internal static class DescriptionDetailReturnTranslator
         var reputationMatch = ReputationPattern.Match(source);
         if (reputationMatch.Success)
         {
-            return TranslateGameObjectUnitTerm(reputationMatch.Groups["faction"].Value) + "との評判" + reputationMatch.Groups["amount"].Value;
+            return TranslateGameObjectUnitReputationFaction(reputationMatch.Groups["faction"].Value)
+                + "との評判"
+                + reputationMatch.Groups["amount"].Value;
         }
 
         var secretsMatch = SecretsPattern.Match(source);
@@ -537,6 +539,23 @@ internal static class DescriptionDetailReturnTranslator
     }
 
     private static string TranslateGameObjectUnitTerm(string source)
+    {
+        var exact = ColorAwareTranslationComposer.TranslatePreservingColors(
+            source,
+            visible => StringHelpers.TryGetTranslationExactOrLowerAscii(visible, out var translated)
+                ? translated
+                : visible);
+        if (!string.Equals(exact, source, StringComparison.Ordinal))
+        {
+            return exact;
+        }
+
+        return DisplayNameCaptureTranslator.TranslatePreservingColors(
+            source,
+            DescriptionDetailReturnTranslationPatch.Context);
+    }
+
+    private static string TranslateGameObjectUnitReputationFaction(string source)
     {
         return ColorAwareTranslationComposer.TranslatePreservingColors(
             source,

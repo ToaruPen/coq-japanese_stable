@@ -80,9 +80,40 @@ public static class DoorAttemptOpenTranslationPatch
     {
         _ = color;
 
-        return activeDepth > 0
-            && IsTargetMessage(message)
-            && MessageLogProducerTranslationHelpers.TryPreparePatternMessage(ref message, Context, "AttemptOpen");
+        if (activeDepth <= 0 || !IsTargetMessage(message))
+        {
+            return false;
+        }
+
+        if (TryTranslateInterfaceNoEffect(message, out var translated))
+        {
+            var source = message;
+            message = MessageFrameTranslator.MarkDirectTranslation(translated);
+            DynamicTextObservability.RecordTransform(Context, "AttemptOpen.InterfaceNoEffect", source, translated);
+            return true;
+        }
+
+        return MessageLogProducerTranslationHelpers.TryPreparePatternMessage(ref message, Context, "AttemptOpen");
+    }
+
+    private static bool TryTranslateInterfaceNoEffect(string source, out string translated)
+    {
+        const string prefix = "You interface with ";
+        const string suffix = " but nothing happens.";
+        if (!source.StartsWith(prefix, StringComparison.Ordinal) || !source.EndsWith(suffix, StringComparison.Ordinal))
+        {
+            translated = source;
+            return false;
+        }
+
+        var target = source.Substring(prefix.Length, source.Length - prefix.Length - suffix.Length);
+        target = StringHelpers.StripLeadingEnglishArticle(
+            target,
+            includeCapitalizedDefiniteArticle: true,
+            includeCapitalizedIndefiniteArticle: true);
+        target = GetDisplayNameRouteTranslator.TranslatePreservingColors(target, Context);
+        translated = target + "にインターフェースで接続したが、何も起こらなかった";
+        return true;
     }
 
     private static bool IsTargetMessage(string? message)

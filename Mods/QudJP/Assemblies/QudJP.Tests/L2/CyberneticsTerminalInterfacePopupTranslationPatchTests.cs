@@ -38,8 +38,8 @@ public sealed class CyberneticsTerminalInterfacePopupTranslationPatchTests
         DummyPopupShow.Reset();
     }
 
-    [TestCase("unpowered", "変容の窪みは無電力だ。")]
-    [TestCase("still starting up", "変容の窪みはまだ起動中だ")]
+    [TestCase("unpowered", "変容の僻隅は無電力だ。")]
+    [TestCase("still starting up", "変容の僻隅はまだ起動中だ")]
     public void AttemptInterface_TranslatesPoweredStatusFailurePopup_WhenOwnerPatched(
         string status,
         string expected)
@@ -82,7 +82,7 @@ public sealed class CyberneticsTerminalInterfacePopupTranslationPatchTests
     [Test]
     public void AttemptInterface_StripsDirectMarkerWithoutRecordingTransform_WhenOwnerPatched()
     {
-        const string translated = "変容の窪みは無電力だ。";
+        const string translated = "変容の僻隅は無電力だ。";
         var target = new DummyCyberneticsTerminal2InterfaceTarget
         {
             PopupMessageToShow = MessageFrameTranslator.MarkDirectTranslation(translated),
@@ -136,7 +136,7 @@ public sealed class CyberneticsTerminalInterfacePopupTranslationPatchTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("<color=red>変容の窪みは無電力だ。</color>"));
+            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo("<color=red>変容の僻隅は無電力だ。</color>"));
             Assert.That(GetHitCount(), Is.EqualTo(1));
         });
     }

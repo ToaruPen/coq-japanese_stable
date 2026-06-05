@@ -74,7 +74,7 @@ public static class PseudoRelicGeneratedNameTranslationPatch
             return false;
         }
 
-        if (!RelicGeneratedNameTranslator.TryTranslate(source, out translated))
+        if (!RelicGeneratedNameTranslator.TryTranslate(source, out translated, includeBroadItemTypes: true))
         {
             if (!string.Equals(source, translated, StringComparison.Ordinal)
                 && SetMemberValue(obj, "DisplayName", translated))

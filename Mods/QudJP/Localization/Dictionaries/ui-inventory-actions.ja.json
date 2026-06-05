@@ -125,6 +125,11 @@
       "text": "セルを装着"
     },
     {
+      "key": "interface",
+      "context": "XRL.World.IInventoryActionsEvent",
+      "text": "接続する"
+    },
+    {
       "key": "direct to attack target",
       "context": "XRL.World.IInventoryActionsEvent",
       "text": "攻撃対象を指示"

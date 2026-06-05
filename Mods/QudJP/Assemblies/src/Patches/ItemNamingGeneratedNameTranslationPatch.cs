@@ -47,7 +47,7 @@ public static class ItemNamingGeneratedNameTranslationPatch
         try
         {
             var source = __result;
-            if (!RelicGeneratedNameTranslator.TryTranslate(source, out var translated))
+            if (!RelicGeneratedNameTranslator.TryTranslate(source, out var translated, includeBroadItemTypes: true))
             {
                 return;
             }

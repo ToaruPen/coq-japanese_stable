@@ -48,6 +48,7 @@ public sealed class TranslatorTests
     [TestCase("mark unimportant", "重要マークを外す")]
     [TestCase("add notes", "メモを追加")]
     [TestCase("remove notes", "メモを削除")]
+    [TestCase("interface", "接続する")]
     [TestCase("remove", "外す")]
     public void Translate_RepositoryDictionary_TranslatesLowercaseInventoryActionDisplay(string source, string expected)
     {

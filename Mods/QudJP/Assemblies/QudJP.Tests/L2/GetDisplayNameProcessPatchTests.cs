@@ -780,6 +780,94 @@ public sealed class GetDisplayNameProcessPatchTests
     }
 
     [Test]
+    public void Postfix_TranslatesSavedRelicGeneratedDisplayName_WhenPatched()
+    {
+        WriteDictionaryFile(
+            "Scoped/historyspice-common.ja.json",
+            ("point", "尖端"),
+            ("commanding", "威厳ある"),
+            ("woe", "嘆き"));
+
+        RunWithDisplayNameProcessPatch(() =>
+        {
+            var processor = new DummyDisplayNameProcessor();
+            var result = processor.ProcessFor("{{C|the Point of the Commanding Woe}}");
+
+            Assert.That(result, Is.EqualTo("{{C|威厳ある嘆きの尖端}}"));
+        });
+    }
+
+    [Test]
+    public void Postfix_PreservesColorMarkupForLocalizedPrefixRelicGeneratedDisplayName_WhenPatched()
+    {
+        WriteDictionaryFile(
+            "Scoped/historyspice-common.ja.json",
+            ("point", "尖端"),
+            ("commanding", "威厳ある"),
+            ("woe", "嘆き"));
+
+        RunWithDisplayNameProcessPatch(() =>
+        {
+            var processor = new DummyDisplayNameProcessor();
+            var result = processor.ProcessFor("粘液質の {{Y|Point of the Commanding Woe}}");
+
+            Assert.That(result, Is.EqualTo("粘液質の {{Y|威厳ある嘆きの尖端}}"));
+        });
+    }
+
+    [Test]
+    public void Postfix_PreservesTmpColorMarkupForLocalizedPrefixRelicGeneratedDisplayName_WhenPatched()
+    {
+        WriteDictionaryFile(
+            "Scoped/historyspice-common.ja.json",
+            ("point", "尖端"),
+            ("commanding", "威厳ある"),
+            ("woe", "嘆き"));
+
+        RunWithDisplayNameProcessPatch(() =>
+        {
+            var processor = new DummyDisplayNameProcessor();
+            var result = processor.ProcessFor("粘液質の <color=#ff0>Point of the Commanding Woe</color>");
+
+            Assert.That(result, Is.EqualTo("粘液質の <color=#ff0>威厳ある嘆きの尖端</color>"));
+        });
+    }
+
+    [Test]
+    public void Postfix_TranslatesSavedRelicGeneratedArmorDisplayName_WhenPatched()
+    {
+        WriteDictionaryFile(
+            "Scoped/historyspice-common.ja.json",
+            ("embraced", "受け入れた"),
+            ("telescope", "望遠鏡"));
+
+        RunWithDisplayNameProcessPatch(() =>
+        {
+            var processor = new DummyDisplayNameProcessor();
+            var result = processor.ProcessFor("{{C|the Breast of the Embraced Telescope}}");
+
+            Assert.That(result, Is.EqualTo("{{C|受け入れた望遠鏡の胸甲}}"));
+        });
+    }
+
+    [Test]
+    public void Postfix_TranslatesSavedRelicGeneratedArmorDisplayNameWithStats_WhenPatched()
+    {
+        WriteDictionaryFile(
+            "Scoped/historyspice-common.ja.json",
+            ("embraced", "受け入れた"),
+            ("telescope", "望遠鏡"));
+
+        RunWithDisplayNameProcessPatch(() =>
+        {
+            var processor = new DummyDisplayNameProcessor();
+            var result = processor.ProcessFor("{{C|the Breast of the Embraced Telescope}} \x04" + "4 \t2");
+
+            Assert.That(result, Is.EqualTo("{{C|受け入れた望遠鏡の胸甲}} \x04" + "4 \t2"));
+        });
+    }
+
+    [Test]
     public void Postfix_SkipsMissingKeyLogging_ForFigurineFamily_WhenBuilderMatches()
     {
         WriteDictionary(("手袋屋", "手袋屋"));

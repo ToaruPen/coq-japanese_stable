@@ -3231,7 +3231,7 @@
 
   <object Name="CyberneticsTerminal2" Inherits="MountedFurniture" Replace="true">
     <part Name="Physics" Weight="5000" FlameTemperature="99999" VaporTemperature="1500" />
-    <part Name="Render" DisplayName="変容の窪み" RenderString="167" ColorString="&amp;C" DetailColor="Y" Occluding="true" Tile="Terrain/sw_cyberterminal.bmp" />
+    <part Name="Render" DisplayName="変容の僻隅" RenderString="167" ColorString="&amp;C" DetailColor="Y" Occluding="true" Tile="Terrain/sw_cyberterminal.bmp" />
     <part Name="Description" Short="人間の形を刻印したニュートロフォームの長方形がガラスのアーチの下にぶら下がっている。目の高さのフォームを横切って、グリフが楕円形のスクリーン上でループする。まばゆい光に覆われた手術機械が、囲いのあるドームの下側から虫が出てくる。" />
     <tag Name="ExcludeFromDynamicEncounters" Value="*noinherit" />
     <stat Name="Hitpoints" Value="5000" />
@@ -3578,7 +3578,7 @@
 
 
   <object Name="Reshaping Nook" Inherits="HighTechInstallation" Replace="true">
-    <part Name="Render" DisplayName="隅の形を変える" RenderString="167" ColorString="&amp;m" TileColor="&amp;y" DetailColor="M" Occluding="true" Tile="Furniture/sw_reshaping_nook.bmp" />
+    <part Name="Render" DisplayName="再形成の僻隅" RenderString="167" ColorString="&amp;m" TileColor="&amp;y" DetailColor="M" Occluding="true" Tile="Furniture/sw_reshaping_nook.bmp" />
     <part Name="Description" Short="特徴的なガラスのアーチは、エンクロージャーが新しい目的のために解体され、ワイヤーが剥がされつつある隅を示している。はんだ付けと成形のために爪が伸びており、ドラムの下ではホイールが新鮮でサンスラグ発酵の準備ができた新鮮な湿った粘土を回転させる。" />
     <part Name="Physics" Weight="5000" />
     <stat Name="Hitpoints" Value="10000" />

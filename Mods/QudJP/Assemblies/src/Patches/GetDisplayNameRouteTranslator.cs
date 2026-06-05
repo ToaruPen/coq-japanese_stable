@@ -384,6 +384,11 @@ internal static class GetDisplayNameRouteTranslator
                 stripped.Length);
         }
 
+        if (TryTranslateLocalizedPrefixRelicGeneratedDisplayName(source!, route, out var localizedPrefixRelicTranslation))
+        {
+            return localizedPrefixRelicTranslation;
+        }
+
         if (TryTranslateExactBaseCompactWeaponStatsDisplayNameSuffix(stripped, spans, route, out var earlyCompactWeaponStatsTranslation))
         {
             return earlyCompactWeaponStatsTranslation;
@@ -748,6 +753,12 @@ internal static class GetDisplayNameRouteTranslator
         if (HistoricSpiceGeneratedNameTranslator.TryTranslateCapture(source, out translated))
         {
             DynamicTextObservability.RecordTransform(route, "DisplayName.HistoricSpiceGeneratedName", source, translated);
+            return true;
+        }
+
+        if (RelicGeneratedNameTranslator.TryTranslate(source, out translated))
+        {
+            DynamicTextObservability.RecordTransform(route, "DisplayName.RelicGeneratedName", source, translated);
             return true;
         }
 
@@ -2363,6 +2374,191 @@ internal static class GetDisplayNameRouteTranslator
         var translatedRest = TranslateDisplayNameFragment(rest, route);
         translated = translatedModifier + GetModifierRestSeparator(modifier, rest) + translatedRest;
         DynamicTextObservability.RecordTransform(route, "DisplayName.MixedModifier", source, translated);
+        return true;
+    }
+
+    private static bool TryTranslateLocalizedPrefixRelicGeneratedDisplayName(string source, string route, out string translated)
+    {
+        translated = source;
+        var visible = ColorAwareTranslationComposer.GetVisibleText(source);
+        if (string.IsNullOrEmpty(visible)
+            || !JapaneseCharacterPattern.IsMatch(visible)
+            || !EnglishWordPattern.IsMatch(visible))
+        {
+            return false;
+        }
+
+        for (var index = 0; index < visible.Length; index++)
+        {
+            if (!IsRelicSuffixStart(visible, index))
+            {
+                continue;
+            }
+
+            var suffix = visible.Substring(index);
+            if (!RelicGeneratedNameTranslator.TryTranslate(suffix, out var translatedSuffix))
+            {
+                continue;
+            }
+
+            var translatedVisible = visible.Substring(0, index) + translatedSuffix;
+            translated = TryReplaceVisibleRange(source, index, suffix.Length, translatedSuffix, out var replaced)
+                ? replaced
+                : ColorAwareTranslationComposer.TranslatePreservingColors(source, _ => translatedVisible);
+            DynamicTextObservability.RecordTransform(route, "DisplayName.LocalizedPrefixRelicGeneratedName", source, translated);
+            return true;
+        }
+
+        return false;
+    }
+
+    private static bool IsRelicSuffixStart(string visible, int index)
+    {
+        if (index < 0 || index >= visible.Length)
+        {
+            return false;
+        }
+
+        var current = visible[index];
+        if (current < 'A' || current > 'Z')
+        {
+            return false;
+        }
+
+        return index == 0 || visible[index - 1] == ' ';
+    }
+
+    private static bool TryReplaceVisibleRange(
+        string source,
+        int visibleStart,
+        int visibleLength,
+        string replacement,
+        out string replaced)
+    {
+        replaced = source;
+        if (!TryGetRawIndexForVisibleIndex(source, visibleStart, out var rawStart)
+            || !TryGetRawIndexForVisibleIndex(source, visibleStart + visibleLength, out var rawEnd)
+            || rawStart > rawEnd)
+        {
+            return false;
+        }
+
+        replaced = source.Substring(0, rawStart) + replacement + source.Substring(rawEnd);
+        return true;
+    }
+
+    private static bool TryGetRawIndexForVisibleIndex(string source, int targetVisibleIndex, out int rawIndex)
+    {
+        rawIndex = 0;
+        if (targetVisibleIndex < 0)
+        {
+            return false;
+        }
+
+        var visibleIndex = 0;
+        for (var index = 0; index < source.Length;)
+        {
+            if (TryReadQudColorOpening(source, index, out var openingEnd))
+            {
+                index = openingEnd;
+                continue;
+            }
+
+            if (TryReadTmpColorOpening(source, index, out var tagEnd))
+            {
+                index = tagEnd;
+                continue;
+            }
+
+            if (visibleIndex == targetVisibleIndex)
+            {
+                rawIndex = index;
+                return true;
+            }
+
+            if (TryReadTmpColorClosing(source, index, out tagEnd))
+            {
+                index = tagEnd;
+                continue;
+            }
+
+            if (index + 1 < source.Length && source[index] == '}' && source[index + 1] == '}')
+            {
+                index += 2;
+                continue;
+            }
+
+            index++;
+            visibleIndex++;
+        }
+
+        if (visibleIndex == targetVisibleIndex)
+        {
+            rawIndex = source.Length;
+            return true;
+        }
+
+        return false;
+    }
+
+    private static bool TryReadTmpColorOpening(string source, int start, out int tagEnd)
+    {
+        tagEnd = start;
+        if (start < 0 || start >= source.Length || source[start] != '<')
+        {
+            return false;
+        }
+
+        const string openTagPrefix = "<color=";
+        if (source.IndexOf(openTagPrefix, start, StringComparison.OrdinalIgnoreCase) != start)
+        {
+            return false;
+        }
+
+        var close = source.IndexOf('>', start + openTagPrefix.Length);
+        if (close < 0)
+        {
+            return false;
+        }
+
+        tagEnd = close + 1;
+        return true;
+    }
+
+    private static bool TryReadTmpColorClosing(string source, int start, out int tagEnd)
+    {
+        tagEnd = start;
+        const string closeTag = "</color>";
+        if (start < 0
+            || start >= source.Length
+            || source.IndexOf(closeTag, start, StringComparison.OrdinalIgnoreCase) != start)
+        {
+            return false;
+        }
+
+        tagEnd = start + closeTag.Length;
+        return true;
+    }
+
+    private static bool TryReadQudColorOpening(string source, int start, out int openingEnd)
+    {
+        openingEnd = start;
+        if (start + 2 >= source.Length
+            || source[start] != '{'
+            || source[start + 1] != '{'
+            || source[start + 2] == '}')
+        {
+            return false;
+        }
+
+        var pipe = source.IndexOf('|', start + 2);
+        var close = source.IndexOf("}}", start + 2, StringComparison.Ordinal);
+        if (pipe < 0 || close < 0 || pipe > close)
+        {
+            return false;
+        }
+
+        openingEnd = pipe + 1;
         return true;
     }
 

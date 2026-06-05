@@ -93,7 +93,7 @@ internal static class DynamicQuestGeneratedQuestTextTranslator
         RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.Singleline);
 
     private static readonly Regex TravelHistoricalSiteTextPattern = new(
-        "^Travel to the historical site of (?<target>.+)\\.$",
+        "^Travel to the historical site of (?<target>.+?)(?:\\.)?$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.Singleline);
 
     private static readonly Regex RecoverAtTextPattern = new(

@@ -641,6 +641,7 @@ public sealed class PopupPickOptionTranslationPatchTests
             ("drop all", "XRL.World.IInventoryActionsEvent", "すべて落とす"),
             ("replace cell", "XRL.World.IInventoryActionsEvent", "セルを交換"),
             ("install cell", "XRL.World.IInventoryActionsEvent", "セルを装着"),
+            ("interface", "XRL.World.IInventoryActionsEvent", "接続する"),
             ("direct to attack target", "XRL.World.IInventoryActionsEvent", "攻撃対象を指示"),
             ("direct to engage aggressively", "XRL.World.IInventoryActionsEvent", "攻撃的に交戦させる"),
             ("direct to engage defensively only", "XRL.World.IInventoryActionsEvent", "防御的に交戦させる"),
@@ -688,6 +689,11 @@ public sealed class PopupPickOptionTranslationPatchTests
                     "{{W|[n]}} {{y|add notes}}",
                     "InventoryActionMenu:ABC123"),
                 Is.EqualTo("{{W|[n]}} {{y|メモを追加}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[i]}} {{y|interface}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[i]}} {{y|接続する}}"));
             Assert.That(
                 SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
                     "{{W|[r]}} {{y|remove}}",

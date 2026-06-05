@@ -16,6 +16,10 @@ public static class GeneratedQueueDoesVerbTranslationPatch
         "^(?<subject>.+?) drops? (?<item>.+?) down (?<target>.+?)\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex PlayerItemFallsToGroundPattern = new(
+        "^Your (?<item>.+?) falls? to the ground\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     private static readonly Regex PaxKlanqPattern = new(
         "^(?<subject>.+?) shouts? shouts? (?<cry>KLANQ)!$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
@@ -152,6 +156,7 @@ public static class GeneratedQueueDoesVerbTranslationPatch
         var sourceWithoutLeadingDoesMarker = StripLeadingDoesMarker(message);
         var (stripped, spans) = ColorAwareTranslationComposer.Strip(sourceWithoutLeadingDoesMarker);
         if (TryTranslateDropDown(stripped, spans, sourceWithoutLeadingDoesMarker, out var generatedTranslated)
+            || TryTranslatePlayerItemFallsToGround(stripped, spans, sourceWithoutLeadingDoesMarker, out generatedTranslated)
             || TryTranslatePaxKlanq(stripped, spans, sourceWithoutLeadingDoesMarker, out generatedTranslated)
             || TryTranslateExtradimensionalLoot(stripped, spans, sourceWithoutLeadingDoesMarker, out generatedTranslated)
             || TryTranslatePlayerRiflesThroughFind(stripped, spans, sourceWithoutLeadingDoesMarker, out generatedTranslated)
@@ -221,8 +226,29 @@ public static class GeneratedQueueDoesVerbTranslationPatch
         }
 
         translated = RestoreWholeSourceBoundary(
-            $"{StripLeadingArticle(RestoreCapture(match, spans, "item"))}を"
-            + $"{StripLeadingArticle(RestoreCapture(match, spans, "target"))}に落とした。",
+            $"{TranslateDisplayNameCapture(RestoreCapture(match, spans, "item"))}を"
+            + $"{TranslateDisplayNameCapture(RestoreCapture(match, spans, "target"))}に落とした。",
+            spans,
+            stripped,
+            source);
+        return true;
+    }
+
+    private static bool TryTranslatePlayerItemFallsToGround(
+        string stripped,
+        IReadOnlyList<ColorSpan> spans,
+        string source,
+        out string translated)
+    {
+        var match = PlayerItemFallsToGroundPattern.Match(stripped);
+        if (!match.Success)
+        {
+            translated = string.Empty;
+            return false;
+        }
+
+        translated = RestoreWholeSourceBoundary(
+            $"{TranslateDisplayNameCapture(RestoreCapture(match, spans, "item"))}は地面に倒れた。",
             spans,
             stripped,
             source);
@@ -265,7 +291,7 @@ public static class GeneratedQueueDoesVerbTranslationPatch
 
         translated = RestoreWholeSourceBoundary(
             $"{NormalizeSubject(RestoreCapture(match, spans, "subject"))}は"
-            + $"{StripLeadingArticle(RestoreCapture(match, spans, "item"))}を落とし、"
+            + $"{TranslateDisplayNameCapture(RestoreCapture(match, spans, "item"))}を落とし、"
             + "偶然にもそれは量子トンネルを通ってこの次元に完全実体化した。",
             spans,
             stripped,
@@ -288,7 +314,7 @@ public static class GeneratedQueueDoesVerbTranslationPatch
 
         translated = RestoreWholeSourceBoundary(
             $"{StripLeadingArticle(RestoreCapture(match, spans, "target"))}を漁り、"
-            + $"{StripLeadingArticle(RestoreCapture(match, spans, "item"))}を見つけた",
+            + $"{TranslateDisplayNameCapture(RestoreCapture(match, spans, "item"))}を見つけた",
             spans,
             stripped,
             source);
@@ -393,5 +419,10 @@ public static class GeneratedQueueDoesVerbTranslationPatch
         return StringHelpers.StripLeadingEnglishArticle(
             value.Trim(),
             includeCapitalizedDefiniteArticle: true);
+    }
+
+    private static string TranslateDisplayNameCapture(string value)
+    {
+        return DisplayNameCaptureTranslator.TranslatePreservingColors(StripLeadingArticle(value), Context);
     }
 }

@@ -822,7 +822,7 @@ public sealed class MessagePatternTranslatorTests
 
         Assert.That(
             translated,
-            Is.EqualTo("{{g|{{g|{{Y|塩気のある}} {{slimy|粘液質の}} Point of the Commanding Woe}}で21ダメージを与えた。({{&W|x2}}) [19]}}"));
+            Is.EqualTo("{{g|{{g|{{Y|塩気のある}} {{slimy|粘液質の}} 威厳ある嘆きの尖端}}で21ダメージを与えた。({{&W|x2}}) [19]}}"));
     }
 
     [Test]
@@ -835,7 +835,7 @@ public sealed class MessagePatternTranslatorTests
 
         Assert.That(
             translated,
-            Is.EqualTo("{{g|{{Y-R-Y-Y-Y-Y-Y-r-Y sequence|Point of the Commanding Woe}}で会心の一撃、28ダメージを与えた。({{&W|x3}}) [21]}}"));
+            Is.EqualTo("{{g|{{Y-R-Y-Y-Y-Y-Y-r-Y sequence|威厳ある嘆きの尖端}}で会心の一撃、28ダメージを与えた。({{&W|x3}}) [21]}}"));
     }
 
     [Test]
@@ -859,7 +859,7 @@ public sealed class MessagePatternTranslatorTests
 
         Assert.That(
             translated,
-            Is.EqualTo("{{r|{{Y-R-Y-Y-Y-Y-Y-r-Y sequence|Point of the Commanding Woe}}での攻撃は外れた。[8 vs 12]}}"));
+            Is.EqualTo("{{r|{{Y-R-Y-Y-Y-Y-Y-r-Y sequence|威厳ある嘆きの尖端}}での攻撃は外れた。[8 vs 12]}}"));
     }
 
     [Test]
@@ -2293,7 +2293,7 @@ public sealed class MessagePatternTranslatorTests
         var translated = MessagePatternTranslator.Translate(
             "You don't penetrate 珪岩の armor with the Point of the Commanding Woe. [23]");
 
-        Assert.That(translated, Is.EqualTo("Point of the Commanding Woeでは珪岩の装甲を貫けなかった！ [23]"));
+        Assert.That(translated, Is.EqualTo("威厳ある嘆きの尖端では珪岩の装甲を貫けなかった！ [23]"));
     }
 
     [Test]

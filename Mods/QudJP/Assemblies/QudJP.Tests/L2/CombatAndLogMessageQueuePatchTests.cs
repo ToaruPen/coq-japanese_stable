@@ -208,7 +208,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
             ("The target takes 4 damage from your tiny spines!", "targetはあなたの小さな棘で4ダメージを受けた！"),
             ("The target takes 4 damage from your projectile.", "targetはあなたの投射物で4ダメージを受けた。"),
             ("The target takes 4 damage from your attack.", "targetはあなたの攻撃で4ダメージを受けた。"),
-            ("The target takes 4 damage from your carbide armor!", "targetはあなたのcarbide装甲で4ダメージを受けた！"),
+            ("The target takes 4 damage from your carbide armor!", "targetはあなたのカーバイド装甲で4ダメージを受けた！"),
             ("The target takes 4 damage from your freezing effect armor!", "targetはあなたの凍結効果装甲で4ダメージを受けた！"),
             ("The target takes 4 damage from your spores!", "targetはあなたの胞子で4ダメージを受けた！"),
             ("The target takes 4 damage from your thorns.", "targetはあなたの棘で4ダメージを受けた。"),
@@ -1341,7 +1341,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
     [TestCase("Your  unlocks the セキュリティドア.", "セキュリティドアの鍵が開いた")]
     [TestCase("Your security card unlocks the セキュリティドア.", "セキュリティドアの鍵が開いた")]
     [TestCase("You lay your hand upon the 扉 and draw forth its passcode. You enter the code and the 扉 unlocks.", "扉に手を当ててパスコードを読み取った。コードを入力すると扉の鍵が開いた")]
-    [TestCase("You interface with the 扉 but nothing happens.", "You interface with the 扉 but nothing happens.")]
+    [TestCase("You interface with the 扉 but nothing happens.", "扉にインターフェースで接続したが、何も起こらなかった")]
     [TestCase("", "")]
     [TestCase("You cannot open the <color=#ff0>扉</color>.", "<color=#ff0>扉</color>を開けられない")]
     [TestCase("\u0001扉を開けられない", "扉を開けられない")]
@@ -1349,6 +1349,17 @@ public sealed class CombatAndLogMessageQueuePatchTests
     {
         UseRepositoryPatternDictionary();
         AssertDoorAttemptOpenMessage(message, expected);
+    }
+
+    [Test]
+    public void DoorAttemptOpen_TranslatesInterfaceNoEffectEnglishDisplayName_WhenPatched()
+    {
+        UseRepositoryPatternDictionary();
+        WriteDisplayNameDictionary(("Becoming nook", "変容の僻隅"));
+
+        AssertDoorAttemptOpenMessage(
+            "You interface with the Becoming nook but nothing happens.",
+            "変容の僻隅にインターフェースで接続したが、何も起こらなかった");
     }
 
     [Test]
@@ -2191,15 +2202,15 @@ public sealed class CombatAndLogMessageQueuePatchTests
     [TestCase(
         nameof(DummyHackingSifrahResultTarget.HackingResultExceptionalSuccess),
         "In the course of the hack, you are able to insert instructions into cybernetics terminal granting you an extra license point!",
-        "ハックの過程でcybernetics terminalに命令を挿入し、追加のlicense pointを得た！")]
+        "ハックの過程でサイバネティクスターミナルに命令を挿入し、追加のライセンスポイントを得た！")]
     [TestCase(
         nameof(DummyHackingSifrahResultTarget.HackingResultFailure),
         "The hack fails, and alert lights on cybernetics terminal begin pulsing rhythmically...",
-        "ハックは失敗し、cybernetics terminalの警告灯が規則的に点滅し始めた...")]
+        "ハックは失敗し、サイバネティクスターミナルの警告灯が規則的に点滅し始めた...")]
     [TestCase(
         nameof(DummyHackingSifrahResultTarget.HackingResultCriticalFailure),
         "The hack fails, and alert lights on cybernetics terminal begin pulsing urgently...",
-        "ハックは失敗し、cybernetics terminalの警告灯が緊急に点滅し始めた...")]
+        "ハックは失敗し、サイバネティクスターミナルの警告灯が緊急に点滅し始めた...")]
     public void HackingSifrahResult_TranslatesPopupMessages_WhenOwnerPatched(
         string methodName,
         string source,
@@ -6460,7 +6471,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
     [TestCase(
         nameof(DummySimpleOwnerQueueTarget.DropOffStolenGoodsMoveToDropoff),
         "The snapjaw drops a {{Y|folded carbide dagger}} down the {{y|shaft}}.",
-        "{{Y|folded carbide dagger}}を{{y|shaft}}に落とした。")]
+        "{{Y|積層カーバイドの短剣}}を{{y|縦坑}}に落とした。")]
     [TestCase(
         nameof(DummySimpleOwnerQueueTarget.PaxKlanqMadnessTakeAction),
         "The snapjaw shouts shouts {{O|KLANQ}}!",
@@ -6472,7 +6483,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
     [TestCase(
         nameof(DummySimpleOwnerQueueTarget.BodyPartUnequipPartAndChildren),
         "Your {{Y|carbide dagger}} falls to the ground.",
-        "{{Y|carbide dagger}}は地面に倒れた。")]
+        "{{Y|カーバイドの短剣}}は地面に倒れた。")]
     [TestCase(
         nameof(DummySimpleOwnerQueueTarget.ExtradimensionalLootFireEvent),
         "The hunter drops an {{Y|eigenrifle}}, and by sheer chance it quantum tunnels and fully materializes in this dimension.",
@@ -6502,6 +6513,10 @@ public sealed class CombatAndLogMessageQueuePatchTests
         string source,
         string expected)
     {
+        WriteDisplayNameDictionary(
+            ("folded carbide dagger", "積層カーバイドの短剣"),
+            ("carbide dagger", "カーバイドの短剣"),
+            ("shaft", "縦坑"));
         AssertGeneratedQueueDoesVerbMessage(methodName, source, expected);
     }
 
@@ -6542,7 +6557,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
         "drop",
         "The snapjaw",
         " a {{Y|folded carbide dagger}} down the {{y|shaft}}.",
-        "{{Y|folded carbide dagger}}を{{y|shaft}}に落とした。")]
+        "{{Y|積層カーバイドの短剣}}を{{y|縦坑}}に落とした。")]
     [TestCase(
         nameof(DummySimpleOwnerQueueTarget.PaxKlanqMadnessTakeAction),
         "The snapjaw shouts",
@@ -6556,7 +6571,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
         "fall",
         "Your {{Y|carbide dagger}}",
         " to the ground.",
-        "{{Y|carbide dagger}}は地面に倒れた。")]
+        "{{Y|カーバイドの短剣}}は地面に倒れた。")]
     [TestCase(
         nameof(DummySimpleOwnerQueueTarget.ExtradimensionalLootFireEvent),
         "The hunter drops",
@@ -6572,6 +6587,10 @@ public sealed class CombatAndLogMessageQueuePatchTests
         string tail,
         string expected)
     {
+        WriteDisplayNameDictionary(
+            ("folded carbide dagger", "積層カーバイドの短剣"),
+            ("carbide dagger", "カーバイドの短剣"),
+            ("shaft", "縦坑"));
         var source = DoesVerbRouteTranslator.MarkDoesFragment(fragment, verb, subject.Length, null) + tail;
 
         AssertGeneratedQueueDoesVerbMessage(methodName, source, expected);
@@ -13304,6 +13323,35 @@ public sealed class CombatAndLogMessageQueuePatchTests
             builder.ToString(),
             new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
         MessagePatternTranslator.SetLeafFileForTests(Path.Combine(tempDirectory, "ui-messagelog-leaf.ja.json"));
+    }
+
+    private void WriteDisplayNameDictionary(params (string key, string text)[] entries)
+    {
+        var builder = new StringBuilder();
+        builder.Append('{');
+        builder.Append("\"entries\":[");
+
+        for (var index = 0; index < entries.Length; index++)
+        {
+            if (index > 0)
+            {
+                builder.Append(',');
+            }
+
+            builder.Append("{\"key\":\"");
+            builder.Append(EscapeJson(entries[index].key));
+            builder.Append("\",\"text\":\"");
+            builder.Append(EscapeJson(entries[index].text));
+            builder.Append("\"}");
+        }
+
+        builder.Append("]}");
+        builder.AppendLine();
+
+        File.WriteAllText(
+            Path.Combine(tempDirectory, "ui-displayname-atomic.ja.json"),
+            builder.ToString(),
+            new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
     }
 
     private void WriteLiquidDictionaries()

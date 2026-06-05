@@ -634,6 +634,47 @@ public sealed class QuestUiTranslationPatchTests
         }
     }
 
+    [Test]
+    public void QuestLogPrefix_TranslatesSavedGeneratedQuestStepTextBeforeClipping_WhenPatched()
+    {
+        WriteDictionary();
+        WriteDictionaryFile(
+            "Scoped/historyspice-common.ja.json",
+            ("stargazer", "星見"),
+            ("home", "家"));
+        var quest = new DummyQuestLogQuest();
+        quest.StepsByID["visit"] = new DummyQuestLogQuestStep
+        {
+            Name = "Visit カルクヘタラ, Stargazerhome",
+            Text = "Travel to the historical site of カルクヘタラ, Stargazerhome.",
+        };
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyQuestLogTarget), nameof(DummyQuestLogTarget.GetLinesForQuest)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(QuestLogTranslationPatch), nameof(QuestLogTranslationPatch.Prefix))),
+                postfix: new HarmonyMethod(RequireMethod(typeof(QuestLogTranslationPatch), nameof(QuestLogTranslationPatch.Postfix))));
+
+            _ = DummyQuestLogTarget.GetLinesForQuest(quest, includeTitle: false, clip: true, clipWidth: 24);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(quest.StepsByID["visit"].Name, Is.EqualTo("カルクヘタラ, 星見の家を訪問"));
+                Assert.That(quest.StepsByID["visit"].Text, Is.EqualTo("カルクヘタラ, 星見の家の史跡へ向かう。"));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(nameof(QuestLogTranslationPatch), "QuestLog.SavedQuestStepText"),
+                    Is.EqualTo(1));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
     private static string CreateHarmonyId()
     {
         return $"qudjp.tests.{Guid.NewGuid():N}";

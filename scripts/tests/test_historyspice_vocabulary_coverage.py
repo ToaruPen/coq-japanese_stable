@@ -1466,6 +1466,8 @@ _COMMON_PHRASES_CIVIC_SOCIAL_WORK_LEAVES = {
     "civic life",
     "social order",
     "spouse",
+    "husband",
+    "wife",
     "partner",
     "companion",
     "mate",
@@ -2136,6 +2138,43 @@ def test_build_report_splits_hse_and_all_dictionary_coverage(tmp_path: Path) -> 
             "coverage_percent": 100.0,
             "missing_examples": [],
         },
+    }
+
+
+def test_build_report_accepts_historyspice_jsonc_comments(tmp_path: Path) -> None:
+    """The shipped Base/HistorySpice source is JSONC and starts with comments."""
+    historyspice_path = tmp_path / "Base" / "HistorySpice.jsonc"
+    dictionaries_root = tmp_path / "Dictionaries"
+    historyspice_path.parent.mkdir(parents=True)
+    _ = historyspice_path.write_text(
+        '// This file allows this style of comments!\n{"spice": {"typeOfVillage": ["nook"]}}\n',
+        encoding="utf-8",
+    )
+    _write_json(
+        dictionaries_root / "Scoped" / "historyspice-common.ja.json",
+        {"entries": [{"key": "nook", "text": "僻隅"}]},
+    )
+    _write_json(dictionaries_root / "world-gospels.ja.json", {"entries": []})
+
+    report = coverage.build_report(
+        historyspice_path=historyspice_path,
+        dictionaries_root=dictionaries_root,
+        hse_dictionary_paths=[
+            dictionaries_root / "Scoped" / "historyspice-common.ja.json",
+            dictionaries_root / "world-gospels.ja.json",
+        ],
+        groups=("spice.typeOfVillage*",),
+    )
+
+    assert report["leaf_occurrences"] == 1
+    groups = report["groups"]
+    assert isinstance(groups, dict)
+    assert groups["spice.typeOfVillage*"] == {
+        "unique_leaves": 1,
+        "covered": 1,
+        "missing": 0,
+        "coverage_percent": 100.0,
+        "missing_examples": [],
     }
 
 

@@ -130,6 +130,7 @@ public static class PhysicsProcessTakeDamageTranslationPatch
         ("hemorrhage", "出血"),
         ("plasma", "プラズマ"),
         ("attack", "攻撃"),
+        ("carbide", "カーバイド"),
         ("fall", "落下"),
         ("acid", "酸"),
         ("cold", "冷気"),
