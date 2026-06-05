@@ -53,6 +53,7 @@ internal static class RelicGeneratedNameTranslator
         ["point"] = "尖端",
         ["rifle"] = "ライフル",
         ["rod"] = "棍",
+        ["sand"] = "砂",
         ["shield"] = "盾",
         ["shank"] = "シャンク",
         ["shiv"] = "シヴ",

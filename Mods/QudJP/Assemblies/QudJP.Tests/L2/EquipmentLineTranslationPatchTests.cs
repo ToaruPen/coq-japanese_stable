@@ -110,8 +110,7 @@ public sealed partial class Issue201StatusScreensBatch2Tests
     {
         WriteDictionaryFile(
             Path.Combine("Scoped", "historyspice-common.ja.json"),
-            ("analog", "アナログの"),
-            ("sand", "砂"));
+            ("analog", "アナログの"));
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
         try

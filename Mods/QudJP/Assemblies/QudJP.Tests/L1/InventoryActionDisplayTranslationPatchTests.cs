@@ -360,8 +360,7 @@ public sealed class InventoryActionDisplayTranslationPatchTests
         WriteDictionary(
             Path.Combine("Scoped", "historyspice-common.ja.json"),
             context: null,
-            ("analog", "アナログの"),
-            ("sand", "砂"));
+            ("analog", "アナログの"));
         var actions = new Dictionary<string, DummyInventoryAction>();
         var owner = new DummyInventoryActionMenuItem
         {

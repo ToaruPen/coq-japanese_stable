@@ -1576,8 +1576,7 @@ public sealed class GetDisplayNameRouteTranslatorTests
     {
         WriteDictionaryFile(
             "Scoped/historyspice-common.ja.json",
-            ("analog", "アナログの"),
-            ("sand", "砂"));
+            ("analog", "アナログの"));
         const string source = "{{M|Chain of the Analog Sand}} \u00040 \t0 [6ドラムのゲル]";
 
         var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
