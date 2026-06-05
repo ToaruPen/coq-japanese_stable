@@ -10,6 +10,31 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+## [0.5.00] - 2026-06-06
+
+### Added
+
+- blank/ruined mural slate など、壁画生成で出る追加表示名を日本語化しました。
+- 変異表示名と metamorphed effect label の日本語化範囲を広げました。
+
+### Changed
+
+- map note、reputation secret、object label に出る becoming nook の訳語を `変容の僻隅` に統一しました。
+- 歴史的地点の訪問・探索・回収・依頼者・map pin など、生成クエスト tab の表示文を追加で日本語化しました。
+- baetyl の報酬 wish / 要求文に出るアイテム名を日本語化し、folded carbide axe などの報酬表示にも対応しました。
+- 歴史文に出る配偶者・家族関係表現の日本語化範囲を広げました。
+
+### Fixed
+
+- AutoAct 停止メッセージで、すでに日本語化された action label が崩れる場合を修正し、chem-cell inventory action の recharge hotkey を保つようにしました。
+- cybernetics replacement option の日本語表現を見直しました。
+- recoiler destination、生成 miner/bomber 名、10-pointed asterisk debug object など、world-part 表示名に残っていた未翻訳箇所を修正しました。
+- grip selection、recoiler use、no-recoiler failure、item-picking WishCommand などの popup prompt を日本語化しました。
+- Spaser weapon 表示名、food-status 表現、stun/daze/Quickness 用語、quest step 表示名、dynamic quest site-intro frame、Annals gospel fallback、Tinkering detail label、会話・クエスト文に残っていた英語表現を調整しました。
+- Otho の Grit Gate 初回報酬会話、inspired / plasma-coated active effect detail、procedural yuckwheat 料理効果文、Baetyl relic item name、AutoAct hostile-sighting popup、StairsDown long-fall prompt、molting basilisk description など、runtime 生成テキストに残っていた未翻訳箇所を修正しました。
+
+---
+
 ## [0.4.10] - 2026-05-31
 
 ### Fixed
@@ -400,7 +425,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
-[Unreleased]: https://github.com/ToaruPen/coq-japanese_stable/compare/v0.4.10...HEAD
+[Unreleased]: https://github.com/ToaruPen/coq-japanese_stable/compare/v0.5.00...HEAD
+[0.5.00]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.5.00
 [0.4.10]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.4.10
 [0.4.00]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.4.00
 [0.3.21]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.3.21
