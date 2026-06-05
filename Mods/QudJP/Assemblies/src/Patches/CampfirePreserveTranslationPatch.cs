@@ -248,11 +248,6 @@ public static class CampfirePreserveTranslationPatch
 
     private static string TranslatePreservedSource(string source)
     {
-        if (CookingIngredientFragmentTranslator.TryTranslate(source, out var ingredient))
-        {
-            return ingredient;
-        }
-
         var match = SomeSourcePattern.Match(source);
         if (match.Success
             && TryTranslateDisplayNameOrAlreadyLocalized(match.Groups["name"].Value, out var someName))
@@ -265,6 +260,11 @@ public static class CampfirePreserveTranslationPatch
             && TryTranslateDisplayNameOrAlreadyLocalized(match.Groups["name"].Value, out var articleName))
         {
             return articleName;
+        }
+
+        if (CookingIngredientFragmentTranslator.TryTranslate(source, out var ingredient))
+        {
+            return ingredient;
         }
 
         return TranslateDisplayNameOrSame(source);

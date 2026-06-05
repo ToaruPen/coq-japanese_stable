@@ -137,8 +137,10 @@ public static class DynamicQuestConstructorConversationTranslationPatch
         }
 
         var parameters = method.GetParameters();
-        return parameters.Length > 0
-            && parameters[parameters.Length - 1].ParameterType == typeof(string);
+        return parameters.Length == 3
+            && parameters[0].ParameterType != typeof(string)
+            && parameters[1].ParameterType == typeof(string)
+            && parameters[2].ParameterType == typeof(string);
     }
 
     private static bool IsStringReplaceCall(MethodInfo method)

@@ -257,6 +257,17 @@ public sealed class SingleCallsiteOwnerQueueTranslationPatchTests
     }
 
     [Test]
+    public void SingleCallsiteOwnerQueue_DoesNotPartiallyTranslateTemperatureZoneWithUnknownDirection_WhenOwnerPatched()
+    {
+        AssertOwnerQueuedMessage(
+            nameof(DummySingleCallsiteOwnerQueueTarget.PyroZoneStarted),
+            "The air skyward starts to shimmer with heat!",
+            "The air skyward starts to shimmer with heat!",
+            "PyroZoneStarted",
+            expectedHits: 0);
+    }
+
+    [Test]
     public void SingleCallsiteOwnerQueue_DoesNotTranslateWrongOwnerMessage_WhenOwnerPatched()
     {
         AssertOwnerQueuedMessage(

@@ -341,7 +341,7 @@
         {
             "key": "Your mutant physiology reacts adversely to the tonic. The torrent of life sweeps away.",
             "context": "XRL.World.Effects.Ubernostrum_Tonic.Popup.Show",
-            "text": "変異体質がそのトニックに悪く反応する。生命の奔流に洗い流される。"
+            "text": "変異体質がそのトニックに悪く反応する。生命の奔流が去っていく。"
         },
         {
             "key": "The tonics you ingested react adversely to each other. The torrent of life sweeps away.",

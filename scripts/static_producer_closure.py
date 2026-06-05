@@ -16423,7 +16423,7 @@ COVERED_OWNER_CALLSITES: Final = (
                     "Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
                     "Patch_DoesNotClaimFixedOrEmptyPopup_WhenOwnerPatched",
                     "permanent insertion of {{Y|a cybernetic credit wedge}}",
-                    "Unrelated pilot console sentence.",
+                    "Auxiliary diodes glow without comment.",
                 ),
             ),
             EvidenceFile(

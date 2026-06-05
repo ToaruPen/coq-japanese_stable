@@ -157,14 +157,17 @@ public static class QuestLogTranslationPatch
             return;
         }
 
-        if (!DynamicQuestGeneratedQuestTextTranslator.TryTranslate(source, out var translated)
-            && string.Equals(source, translated, StringComparison.Ordinal))
+        if (!DynamicQuestGeneratedQuestTextTranslator.TryTranslate(source, out var translated))
         {
             return;
         }
 
-        if (string.Equals(source, translated, StringComparison.Ordinal)
-            || !SetStringMemberValue(step, memberName, translated))
+        if (string.Equals(source, translated, StringComparison.Ordinal))
+        {
+            return;
+        }
+
+        if (!SetStringMemberValue(step, memberName, translated))
         {
             return;
         }

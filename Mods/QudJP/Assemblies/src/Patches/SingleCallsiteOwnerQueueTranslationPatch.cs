@@ -600,7 +600,14 @@ public static class SingleCallsiteOwnerQueueTranslationPatch
         var match = PyroZoneStartedPattern.Match(source);
         if (match.Success && OwnerMatches(ownerKey, PyroZoneStartedOwner))
         {
-            translated = TranslateZoneLocation(match.Groups["direction"].Value) + "の空気が熱で揺らめき始めた！";
+            if (!TryTranslateZoneLocation(match.Groups["direction"].Value, out var location))
+            {
+                translated = source;
+                detail = string.Empty;
+                return false;
+            }
+
+            translated = location + "の空気が熱で揺らめき始めた！";
             detail = "PyroZoneStarted";
             return true;
         }
@@ -608,7 +615,14 @@ public static class SingleCallsiteOwnerQueueTranslationPatch
         match = PyroZoneStoppedPattern.Match(source);
         if (match.Success && OwnerMatches(ownerKey, PyroZoneStoppedOwner))
         {
-            translated = TranslateZoneLocation(match.Groups["direction"].Value) + "の空気の熱による揺らめきが収まった。";
+            if (!TryTranslateZoneLocation(match.Groups["direction"].Value, out var location))
+            {
+                translated = source;
+                detail = string.Empty;
+                return false;
+            }
+
+            translated = location + "の空気の熱による揺らめきが収まった。";
             detail = "PyroZoneStopped";
             return true;
         }
@@ -616,7 +630,14 @@ public static class SingleCallsiteOwnerQueueTranslationPatch
         match = CryoZoneStartedPattern.Match(source);
         if (match.Success && OwnerMatches(ownerKey, CryoZoneStartedOwner))
         {
-            translated = TranslateZoneLocation(match.Groups["direction"].Value) + "の空気が極寒の霧に包まれた！";
+            if (!TryTranslateZoneLocation(match.Groups["direction"].Value, out var location))
+            {
+                translated = source;
+                detail = string.Empty;
+                return false;
+            }
+
+            translated = location + "の空気が極寒の霧に包まれた！";
             detail = "CryoZoneStarted";
             return true;
         }
@@ -624,7 +645,14 @@ public static class SingleCallsiteOwnerQueueTranslationPatch
         match = CryoZoneStoppedPattern.Match(source);
         if (match.Success && OwnerMatches(ownerKey, CryoZoneStoppedOwner))
         {
-            translated = TranslateZoneLocation(match.Groups["direction"].Value) + "の極寒の霧が消えた。";
+            if (!TryTranslateZoneLocation(match.Groups["direction"].Value, out var location))
+            {
+                translated = source;
+                detail = string.Empty;
+                return false;
+            }
+
+            translated = location + "の極寒の霧が消えた。";
             detail = "CryoZoneStopped";
             return true;
         }
@@ -634,21 +662,24 @@ public static class SingleCallsiteOwnerQueueTranslationPatch
         return false;
     }
 
-    private static string TranslateZoneLocation(string source)
+    private static bool TryTranslateZoneLocation(string source, out string translated)
     {
         if (string.Equals(source, "here", StringComparison.OrdinalIgnoreCase))
         {
-            return "このあたり";
+            translated = "このあたり";
+            return true;
         }
 
         if (!DirectionPhraseTranslator.TryTranslateNounStem(source, out var direction))
         {
-            return source;
+            translated = source;
+            return false;
         }
 
-        return direction.EndsWith("側", StringComparison.Ordinal)
+        translated = direction.EndsWith("側", StringComparison.Ordinal)
             ? direction.Substring(0, direction.Length - 1)
             : direction;
+        return true;
     }
 
     private static string? CurrentOwnerKey()

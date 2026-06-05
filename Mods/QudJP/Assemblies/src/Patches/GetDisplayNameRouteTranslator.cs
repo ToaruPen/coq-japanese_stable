@@ -1145,7 +1145,8 @@ internal static class GetDisplayNameRouteTranslator
         translated = StringHelpers.StripLeadingEnglishArticle(
             source,
             includeCapitalizedDefiniteArticle: true,
-            includeCapitalizedIndefiniteArticle: true);
+            includeCapitalizedIndefiniteArticle: true,
+            includeQuantifierArticle: true);
         return !string.Equals(translated, source, StringComparison.Ordinal)
             && IsAlreadyLocalizedDisplayNameStateText(ColorAwareTranslationComposer.GetVisibleText(translated));
     }

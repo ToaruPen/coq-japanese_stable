@@ -125,7 +125,7 @@ corpus. The follow-up pass implemented these additional closures:
 - In `Quests.jp.xml`, localized step display `Name` attributes now carry
   explicit English `ID` attributes so `FinishQuestStep` keeps its runtime
   identity. Quest title `Name` attributes generally remain English runtime
-  identities; only the small Issue #809 exception set that already had localized
+  identities; only the small Issue #809 exception set that had already localized
   quest titles carries explicit English `ID` attributes for quest-manager
   identity lookup.
 - `ui-quests.ja.json` carries the same authored step-name leaves as a runtime

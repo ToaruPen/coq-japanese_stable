@@ -675,6 +675,43 @@ public sealed class QuestUiTranslationPatchTests
         }
     }
 
+    [Test]
+    public void QuestLogPrefix_DoesNotMutateDirectMarkedSavedQuestStep_WhenPatched()
+    {
+        WriteDictionary();
+        var quest = new DummyQuestLogQuest();
+        quest.StepsByID["direct"] = new DummyQuestLogQuestStep
+        {
+            Name = MessageFrameTranslator.DirectTranslationMarker + "Visit Joppa",
+            Text = MessageFrameTranslator.DirectTranslationMarker + "Travel to Joppa.",
+        };
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyQuestLogTarget), nameof(DummyQuestLogTarget.GetLinesForQuest)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(QuestLogTranslationPatch), nameof(QuestLogTranslationPatch.Prefix))),
+                postfix: new HarmonyMethod(RequireMethod(typeof(QuestLogTranslationPatch), nameof(QuestLogTranslationPatch.Postfix))));
+
+            _ = DummyQuestLogTarget.GetLinesForQuest(quest, includeTitle: false, clip: true, clipWidth: 24);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(quest.StepsByID["direct"].Name, Is.EqualTo(MessageFrameTranslator.DirectTranslationMarker + "Visit Joppa"));
+                Assert.That(quest.StepsByID["direct"].Text, Is.EqualTo(MessageFrameTranslator.DirectTranslationMarker + "Travel to Joppa."));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(nameof(QuestLogTranslationPatch), "QuestLog.SavedQuestStepText"),
+                    Is.Zero);
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
     private static string CreateHarmonyId()
     {
         return $"qudjp.tests.{Guid.NewGuid():N}";

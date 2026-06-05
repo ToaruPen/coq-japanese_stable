@@ -79,7 +79,7 @@ public sealed class VehicleSeatTranslationPatchTests
     }
 
     [TestCase("")]
-    [TestCase("Unrelated pilot console sentence.")]
+    [TestCase("Auxiliary diodes glow without comment.")]
     public void Patch_DoesNotClaimFixedOrEmptyPopup_WhenOwnerPatched(string source)
     {
         AssertOwnerPopup(source, source, "VehicleSeatPilotConsoleRequirement", expectedHits: 0);
