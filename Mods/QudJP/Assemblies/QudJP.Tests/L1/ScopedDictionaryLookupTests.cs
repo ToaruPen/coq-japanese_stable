@@ -168,6 +168,51 @@ public sealed class ScopedDictionaryLookupTests
             Is.Null);
     }
 
+    [Test]
+    public void FindSourceByExactTranslationForContextOnly_ReturnsNullForDifferentCandidatesAcrossDictionaries()
+    {
+        WriteDictionaryContents(
+            "first.ja.json",
+            "{\"entries\":[{\"key\":\"drop all\",\"context\":\"Route.A\",\"text\":\"すべて\"}]}\n");
+        WriteDictionaryContents(
+            "second.ja.json",
+            "{\"entries\":[{\"key\":\"take all\",\"context\":\"Route.A\",\"text\":\"すべて\"}]}\n");
+
+        Assert.That(
+            ScopedDictionaryLookup.FindSourceByExactTranslationForContextOnly("すべて", "Route.A", "first.ja.json", "second.ja.json"),
+            Is.Null);
+    }
+
+    [Test]
+    public void FindSourceByExactTranslationForContextOnly_ReturnsCandidateWhenSameAcrossDictionaries()
+    {
+        WriteDictionaryContents(
+            "first.ja.json",
+            "{\"entries\":[{\"key\":\"drop all\",\"context\":\"Route.A\",\"text\":\"すべて\"}]}\n");
+        WriteDictionaryContents(
+            "second.ja.json",
+            "{\"entries\":[{\"key\":\"drop all\",\"context\":\"Route.A\",\"text\":\"すべて\"}]}\n");
+
+        Assert.That(
+            ScopedDictionaryLookup.FindSourceByExactTranslationForContextOnly("すべて", "Route.A", "first.ja.json", "second.ja.json"),
+            Is.EqualTo("drop all"));
+    }
+
+    [Test]
+    public void FindSourceByExactTranslationForContextOnly_ReturnsNullWhenNoCandidates()
+    {
+        WriteDictionaryContents(
+            "first.ja.json",
+            "{\"entries\":[{\"key\":\"drop all\",\"context\":\"Route.B\",\"text\":\"すべて\"}]}\n");
+        WriteDictionaryContents(
+            "second.ja.json",
+            "{\"entries\":[{\"key\":\"take all\",\"context\":\"Route.A\",\"text\":\"全部\"}]}\n");
+
+        Assert.That(
+            ScopedDictionaryLookup.FindSourceByExactTranslationForContextOnly("すべて", "Route.A", "first.ja.json", "second.ja.json"),
+            Is.Null);
+    }
+
     private void WriteDictionary(string fileName, params (string key, string text)[] entries)
     {
         var builder = new StringBuilder();

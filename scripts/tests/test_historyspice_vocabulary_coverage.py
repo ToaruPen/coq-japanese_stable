@@ -153,6 +153,22 @@ _EXTRADIMENSIONAL_REALM_VOID_CULT_FORM_LEAVES = {
     "*cult*, the Many",
     "popular *cult*",
 }
+
+
+def test_strip_jsonc_line_comments_removes_comment_only_lines_and_eof_comments() -> None:
+    """JSONC comment-only lines are removed even when the final line has no newline."""
+    text = '// heading\n{"spice":{"typeOfVillage":["nook"]}}\n// eof comment'
+
+    assert coverage._strip_jsonc_line_comments(text) == '{"spice":{"typeOfVillage":["nook"]}}\n'  # noqa: SLF001
+
+
+def test_strip_jsonc_line_comments_preserves_slashes_inside_strings() -> None:
+    """The JSONC comment stripper does not remove slash sequences inside strings."""
+    text = '{"url":"http://example.test//asset"}\n// trailing comment\n'
+
+    assert coverage._strip_jsonc_line_comments(text) == '{"url":"http://example.test//asset"}\n'  # noqa: SLF001
+
+
 _JEWELS_ELEMENT_LEAVES = {
     "jeweler",
     "geologist",

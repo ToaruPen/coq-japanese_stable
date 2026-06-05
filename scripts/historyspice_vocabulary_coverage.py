@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import re
 import sys
 from dataclasses import dataclass
 from pathlib import Path
@@ -211,7 +210,7 @@ def _iter_dictionary_entries(payload: object) -> list[dict[str, Any]]:
 
 
 def _strip_jsonc_line_comments(text: str) -> str:
-    return re.sub(r"(?m)^\s*//.*(?:\n|$)", "", text)
+    return "".join(line for line in text.splitlines(keepends=True) if not line.lstrip().startswith("//"))
 
 
 def _is_covered(leaf: str, dictionary_keys: set[str]) -> bool:

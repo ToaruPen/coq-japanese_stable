@@ -108,8 +108,7 @@ public sealed class GetDisplayNameRouteTranslatorTests
     [Test]
     public void TranslatePreservingColors_UsesDisplayNameAliasForLegacySpaserDisplayNameWithWeaponStats()
     {
-        WriteDictionaryFile(
-            "displayname-legacy-aliases.json",
+        WriteAliasFile(
             ("スパーザーライフル", "{{spaser|スペーザー}}ライフル"));
         WriteDictionaryFile("ui-displayname-adjectives.ja.json", ("[no cell]", "[セルなし]"));
 
@@ -147,8 +146,7 @@ public sealed class GetDisplayNameRouteTranslatorTests
     [Test]
     public void TranslatePreservingColors_UsesDisplayNameAliasForCachedTooltipWeaponName()
     {
-        WriteDictionaryFile(
-            "displayname-legacy-aliases.json",
+        WriteAliasFile(
             ("旧式位相ライフル", "{{phase|新式位相ライフル}}"));
         WriteDictionaryFile("ui-displayname-adjectives.ja.json", ("[no cell]", "[セルなし]"));
 
@@ -2476,10 +2474,12 @@ public sealed class GetDisplayNameRouteTranslatorTests
 
     private static void UseProductionDictionaries()
     {
-        Translator.SetDictionaryDirectoryForTests(ProductionDictionaryDirectory());
+        var localizationRoot = ProductionLocalizationRoot();
+        LocalizationAssetResolver.SetLocalizationRootForTests(localizationRoot);
+        Translator.SetDictionaryDirectoryForTests(Path.Combine(localizationRoot, "Dictionaries"));
     }
 
-    private static string ProductionDictionaryDirectory()
+    private static string ProductionLocalizationRoot()
     {
         return Path.GetFullPath(
             Path.Combine(
@@ -2489,8 +2489,7 @@ public sealed class GetDisplayNameRouteTranslatorTests
                 "..",
                 "..",
                 "..",
-                "Localization",
-                "Dictionaries"));
+                "Localization"));
     }
 
     private static IEnumerable<ModifierPhraseCase> KnownGameWithClauseModifierPhrases()
@@ -2612,11 +2611,51 @@ public sealed class GetDisplayNameRouteTranslatorTests
 
     private void WriteDictionaryFile(string fileName, params (string key, string text)[] entries)
     {
+        WriteDictionaryFile(fileName, BuildJsonEntriesDocument(entries));
+    }
+
+    private void WriteDictionaryFile(string fileName, string contents)
+    {
+        var path = Path.Combine(tempDirectory, fileName);
+        var parent = Path.GetDirectoryName(path);
+        if (!string.IsNullOrEmpty(parent))
+        {
+            Directory.CreateDirectory(parent);
+        }
+
+        File.WriteAllText(
+            path,
+            contents,
+            new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
+    }
+
+    private void WriteAliasFile(params (string key, string text)[] entries)
+    {
+        LocalizationAssetResolver.SetLocalizationRootForTests(tempDirectory);
+        WriteJsonEntriesFile(Path.Combine(tempDirectory, "Aliases", "displayname-legacy-aliases.json"), entries);
+    }
+
+    private static void WriteJsonEntriesFile(string path, params (string key, string text)[] entries)
+    {
+        var parent = Path.GetDirectoryName(path);
+        if (!string.IsNullOrEmpty(parent))
+        {
+            Directory.CreateDirectory(parent);
+        }
+
+        File.WriteAllText(
+            path,
+            BuildJsonEntriesDocument(entries),
+            new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
+    }
+
+    private static string BuildJsonEntriesDocument(IReadOnlyList<(string key, string text)> entries)
+    {
         var builder = new StringBuilder();
         builder.Append('{');
         builder.Append("\"entries\":[");
 
-        for (var index = 0; index < entries.Length; index++)
+        for (var index = 0; index < entries.Count; index++)
         {
             if (index > 0)
             {
@@ -2633,22 +2672,7 @@ public sealed class GetDisplayNameRouteTranslatorTests
         builder.Append("]}");
         builder.AppendLine();
 
-        WriteDictionaryFile(fileName, builder.ToString());
-    }
-
-    private void WriteDictionaryFile(string fileName, string contents)
-    {
-        var path = Path.Combine(tempDirectory, fileName);
-        var parent = Path.GetDirectoryName(path);
-        if (!string.IsNullOrEmpty(parent))
-        {
-            Directory.CreateDirectory(parent);
-        }
-
-        File.WriteAllText(
-            path,
-            contents,
-            new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
+        return builder.ToString();
     }
 
     private void WriteContextDictionaryFile(

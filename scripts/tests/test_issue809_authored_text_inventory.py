@@ -22,7 +22,7 @@ def test_build_inventory_classifies_conversation_runtime_terms_and_choice_parts(
       <part Name="WaterRitualBegin" />
     </choice>
     <choice ID="Action">
-      <text>それを=verb:give=して、=bodypart:*=を差し出せ。</text>
+      <text>=ifplayerplural:君たちは:そなたは=それを=verb:give=して、=bodypart:*=を差し出せ。</text>
     </choice>
   </conversation>
 </conversations>
@@ -60,7 +60,12 @@ def test_build_inventory_classifies_conversation_runtime_terms_and_choice_parts(
         {
             "term": "bodypart:*",
             "surface": "conversation_text",
-            "examples": ["それを=verb:give=して、=bodypart:*=を差し出せ。"],
+            "examples": ["=ifplayerplural:君たちは:そなたは=それを=verb:give=して、=bodypart:*=を差し出せ。"],
+        },
+        {
+            "term": "ifplayerplural:君たちは:そなたは",
+            "surface": "conversation_text",
+            "examples": ["=ifplayerplural:君たちは:そなたは=それを=verb:give=して、=bodypart:*=を差し出せ。"],
         },
         {
             "term": "player.formalAddressTerm",
@@ -70,7 +75,7 @@ def test_build_inventory_classifies_conversation_runtime_terms_and_choice_parts(
         {
             "term": "verb:give",
             "surface": "conversation_text",
-            "examples": ["それを=verb:give=して、=bodypart:*=を差し出せ。"],
+            "examples": ["=ifplayerplural:君たちは:そなたは=それを=verb:give=して、=bodypart:*=を差し出せ。"],
         },
     ]
     assert conversation["choice_parts"] == [

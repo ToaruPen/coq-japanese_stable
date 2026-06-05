@@ -12,7 +12,7 @@
         "nodes": 1249,
         "choices": 3074,
         "texts": 1504,
-        "texts_with_runtime_expansions": 252,
+        "texts_with_runtime_expansions": 296,
         "choice_parts": 72
       },
       "runtime_expansion_terms": [
@@ -92,6 +92,15 @@
           ]
         },
         {
+          "term": "factionaddress:Mopango|capitalize",
+          "surface": "conversation_text",
+          "examples": [
+            "=factionaddress:Mopango|capitalize=、=ifplayerplural:君たちが:君が=子どものひとりを解放したと聞いた！ すぐにでも話してみたいが、今はナハムを観察して、この出来事が影響していないか確かめねばならない。=ifplayerplural:君たちも:君も=ここで見ていっていいぞ。",
+            "=factionaddress:Mopango|capitalize=。=ifplayerplural:君たちは:君は=子らの一体を目覚めさせた。見事だ。",
+            "ようこそ、=factionaddress:Mopango|capitalize=。この奇妙な地でこれほど長く生き延びた、よくやった。"
+          ]
+        },
+        {
           "term": "generic",
           "surface": "conversation_text",
           "examples": [
@@ -103,6 +112,232 @@
           "surface": "conversation_text",
           "examples": [
             "=hermit=、もう二度と邪魔しないと誓う。"
+          ]
+        },
+        {
+          "term": "ifplayerplural:ありがとう:ありがとう",
+          "surface": "conversation_text",
+          "examples": [
+            "あるとも。尋ねてくれて=ifplayerplural:ありがとう:ありがとう=。\n\n        私の信条は「理解なき和解は塩の湿布」。"
+          ]
+        },
+        {
+          "term": "ifplayerplural:あれを見たか:あれを見たか",
+          "surface": "conversation_text",
+          "examples": [
+            "=ifplayerplural:あれを見たか:あれを見たか=、外で？棘を持つ鰻のようなもの――あれがダガシャだ。怒れる者、迷子の子。=ifplayerplural:やつから:やつから=敵意の波が溢れ出るのを感じるだろう。\n\n        だが、襲いはせぬ。"
+          ]
+        },
+        {
+          "term": "ifplayerplural:くれたら:くれたら",
+          "surface": "conversation_text",
+          "examples": [
+            "ああ、=factionaddress:Mopango=。=ifplayerplural:君たちは:君は=ほろ苦い光景だ。ダガシャを選んで=ifplayerplural:くれたら:くれたら=よかったのだが、私の光は別の方角に輝いている。\n\n        それでも、=ifplayerplural:君たち:君=が私の未来にまた現れることを望もう。=ifplayerplural:無事なら:無事であれば=、いつでも歓迎する。"
+          ]
+        },
+        {
+          "term": "ifplayerplural:そうしたのだな:そうしたのだな",
+          "surface": "conversation_text",
+          "examples": [
+            "=ifplayerplural:本当に:本当に=子らの一体を解き放ったのか？ああ、=ifplayerplural:そうしたのだな:そうしたのだな=。おめでとう。\n\n        いつかカーも自由になるのを見たい。しばし生き、道を見つけねば。"
+          ]
+        },
+        {
+          "term": "ifplayerplural:やつから:やつから",
+          "surface": "conversation_text",
+          "examples": [
+            "=ifplayerplural:あれを見たか:あれを見たか=、外で？棘を持つ鰻のようなもの――あれがダガシャだ。怒れる者、迷子の子。=ifplayerplural:やつから:やつから=敵意の波が溢れ出るのを感じるだろう。\n\n        だが、襲いはせぬ。"
+          ]
+        },
+        {
+          "term": "ifplayerplural:ダガシャを解くか:ダガシャを解くのか？",
+          "surface": "conversation_text",
+          "examples": [
+            "{{emote|*ヨナは反発装置に触れると息を呑み、目を見開く。ほぼ一分のあいだ沈黙し静止していたが、やがて装置が爪から転げ落ち、君が受け止める。*}}\n\n        何だったのだ？もっと知りたい。だが、できないのも知っている。己という錠前の鍵？ダガシャの獄の身には、偉大な知性とカリスマが封じられていると感じる。導き手の、あるいは僭主の。知るには多すぎ、知られざるものも多すぎる。\n\n        =ifplayerplural:君たちの:君の=意志は重い、旅人よ。=ifplayerplural:ダガシャを解くか:ダガシャを解くのか？="
+          ]
+        },
+        {
+          "term": "ifplayerplural:休む場所が必要か:休む場所が必要かい",
+          "surface": "conversation_text",
+          "examples": [
+            "ようこそ、=factionaddress:Mopango=。生きて飲め。=ifplayerplural:休む場所が必要か:休む場所が必要かい=? 食事は？ =ifplayerplural:取引でも:取引でも=するか？"
+          ]
+        },
+        {
+          "term": "ifplayerplural:何か問いがあるなら:何か問いがあるなら",
+          "surface": "conversation_text",
+          "examples": [
+            "やあ、=player.formalAddressTerm=。=ifplayerplural:君たちは:そなたは=ここで歓迎される。\n\n        =ifplayerplural:何か問いがあるなら:何か問いがあるなら=、喜んで答えよう。"
+          ]
+        },
+        {
+          "term": "ifplayerplural:取引でも:取引でも",
+          "surface": "conversation_text",
+          "examples": [
+            "ようこそ、=factionaddress:Mopango=。生きて飲め。=ifplayerplural:休む場所が必要か:休む場所が必要かい=? 食事は？ =ifplayerplural:取引でも:取引でも=するか？"
+          ]
+        },
+        {
+          "term": "ifplayerplural:君たち:そなた",
+          "surface": "conversation_text",
+          "examples": [
+            "もう気にしていないよ、=player.formalAddressTerm=。私は=ifplayerplural:君たち:そなた=を恨んでいない。",
+            "スリンス自身がモパンゴになりたいと望み、=ifplayerplural:君たち:そなた=がその言葉を代弁するのなら受け入れよう。望むなら、歴史を書いた設計図を私たちの隣で覗かせてやるといい。",
+            "無礼に聞こえないとよいのだが、=ifplayerplural:君たち:そなた=の頼みはまだ私たちには重すぎる。=ifplayerplural:君たちの名:そなたの名=だけでは背負いきれないのだ。\n\n        だが行いと時が満ちれば、きっと変わる。"
+          ]
+        },
+        {
+          "term": "ifplayerplural:君たち:君",
+          "surface": "conversation_text",
+          "examples": [
+            "ああ。=ifplayerplural:君たち:君=が狂躁を鎮めてくれた。\n\n        いまは焦点を結べる。見聞きしたものを道理として形にできる。躁に呑まれる前のことはほとんど覚えていない――職人だったか？教師だったか？――大いなる知を有していたが、この殻はそれをねじ曲げ、牢獄に変えた。=ifplayerplural:君たち:君=のねじり戻しの贈り物に感謝する。",
+            "ああ。=ifplayerplural:君たち:君=が狂躁を鎮めてくれた。\n\n        いまは焦点を結べる。見聞きしたものを道理として形にできる。躁に呑まれる前のことはほとんど覚えていない――職人だったか？教師だったか？――大いなる知を有していたが、この殻はそれをねじ曲げ、牢獄に変えた。=ifplayerplural:君たち:君=のねじり戻しの贈り物に感謝する。",
+            "自分の面倒も見られぬ間、モパンゴたちは私を看てくれ、いま知る唯一の名を与えてくれた。ここに留まり、彼らを手助けしよう。この躯はもはや牢獄ではない。むしろ、その奥にさらに深い真理が見いだせるかもしれぬ。\n\n        新たな友よ、=ifplayerplural:君たち:君=には、このかつての牢獄の一片を贈ろう。役立つこともあろう。感謝とともに。"
+          ]
+        },
+        {
+          "term": "ifplayerplural:君たちが:君が",
+          "surface": "conversation_text",
+          "examples": [
+            "意味はそのまま。=ifplayerplural:君たちが:君が=渦に呑まれたなら、=ifplayerplural:君たちは:君は=最後まで歌うべきだ。",
+            "装置そのものではない。鍵が牢獄を遠ざけるように忌まわしいんだ。鍵の存在は牢獄の存在でもある。\n\n        我らが見守る子どもたちは囚われており、鍵は錠とともに飲み込まれている。=ifplayerplural:君たちが:君が=ひとりを解放しても、三人は永遠に残される。\n\n        いまはk・ゴニノンが持っている。=ifplayerplural:君たちが:君が=望むなら、だ。",
+            "装置そのものではない。鍵が牢獄を遠ざけるように忌まわしいんだ。鍵の存在は牢獄の存在でもある。\n\n        我らが見守る子どもたちは囚われており、鍵は錠とともに飲み込まれている。=ifplayerplural:君たちが:君が=ひとりを解放しても、三人は永遠に残される。\n\n        いまはk・ゴニノンが持っている。=ifplayerplural:君たちが:君が=望むなら、だ。"
+          ]
+        },
+        {
+          "term": "ifplayerplural:君たちが今立っている場所だ:そなたが今立っている場所だ",
+          "surface": "conversation_text",
+          "examples": [
+            "喰らう者の墓所は十二層――移行層を数えれば十層――で成っている。民の地下墓地（=ifplayerplural:君たちが今立っている場所だ:そなたが今立っている場所だ=）、火葬場と納骨堂、二つの墳墓、そしてクッドのスルタンたち六つの墓がその上に連なる。\n\n        ここで財貨を探すなら、失望に備えておくといい。墓所には奇跡も冒涜も同じように眠っているが、地表の民が宝と呼ぶようなものはほとんどない。"
+          ]
+        },
+        {
+          "term": "ifplayerplural:君たちに:君に",
+          "surface": "conversation_text",
+          "examples": [
+            "そうか。\n\n        なら=ifplayerplural:君たちに:君に=伝えられる洞察はないな。",
+            "私の名はギャミョ。=name=、=ifplayerplural:君たちに:君に=会えて嬉しい。他の見張りたちとも話したか？彼らの具合はどうだ？\n\n        うまくいっているといいが。"
+          ]
+        },
+        {
+          "term": "ifplayerplural:君たちの:そなたの",
+          "surface": "conversation_text",
+          "examples": [
+            "おや。ふむ？~\n        =ifplayerplural:君たちは:そなたは=備えができているか。~\n        =ifplayerplural:君たちは:そなたは=進むのだな。~\n        安らぎを、=player.formalAddressTerm=.~\n        彼女の光のもとで。~\n        彼女の光があなたを照らしますように。~\n        =ifplayerplural:君たちは:そなたは=私に用があるのか？~\n        我らは彼女の前では謙虚に歩むのだ。~\n        =ifplayerplural:頼む:頼む=、=player.formalAddressTerm=.~\n        彼女の光が=ifplayerplural:君たちの:そなたの=歩みを導きますように、=player.formalAddressTerm=.~\n        彼女の光とともに生きて飲め。",
+            "=ifplayerplural:君たちの:そなたの=旅はどうだ？ スリンスの消息は？\n\n        私たちはその話を聞きたくてたまらない。"
+          ]
+        },
+        {
+          "term": "ifplayerplural:君たちの:君の",
+          "surface": "conversation_text",
+          "examples": [
+            "……？\n\n        =ifplayerplural:君たちは:君は=私の信条の意味まで尋ねるのか。では=ifplayerplural:君たちの:君の=食事も噛んでやろうか？",
+            "身を慎め、=factionaddress:Mopango=。惰性に流されて=ifplayerplural:君たち自身が:君自身が=終わることのなきように。=ifplayerplural:君たちの:君の=武勲の報せを待っている。",
+            "しばらくはモパンゴたちと共にいよう。彼らは私を護り、名を与えてくれた。\n\n        そして、=ifplayerplural:君たち:君=には約束どおり報いよう。私の躯の一片を持っていけ。=ifplayerplural:君たちの:君の=歩みの助けとなるだろう。"
+          ]
+        },
+        {
+          "term": "ifplayerplural:君たちの名:そなたの名",
+          "surface": "conversation_text",
+          "examples": [
+            "無礼に聞こえないとよいのだが、=ifplayerplural:君たち:そなた=の頼みはまだ私たちには重すぎる。=ifplayerplural:君たちの名:そなたの名=だけでは背負いきれないのだ。\n\n        だが行いと時が満ちれば、きっと変わる。"
+          ]
+        },
+        {
+          "term": "ifplayerplural:君たちは:そなたは",
+          "surface": "conversation_text",
+          "examples": [
+            "おや。ふむ？~\n        =ifplayerplural:君たちは:そなたは=備えができているか。~\n        =ifplayerplural:君たちは:そなたは=進むのだな。~\n        安らぎを、=player.formalAddressTerm=.~\n        彼女の光のもとで。~\n        彼女の光があなたを照らしますように。~\n        =ifplayerplural:君たちは:そなたは=私に用があるのか？~\n        我らは彼女の前では謙虚に歩むのだ。~\n        =ifplayerplural:頼む:頼む=、=player.formalAddressTerm=.~\n        彼女の光が=ifplayerplural:君たちの:そなたの=歩みを導きますように、=player.formalAddressTerm=.~\n        彼女の光とともに生きて飲め。",
+            "おや。ふむ？~\n        =ifplayerplural:君たちは:そなたは=備えができているか。~\n        =ifplayerplural:君たちは:そなたは=進むのだな。~\n        安らぎを、=player.formalAddressTerm=.~\n        彼女の光のもとで。~\n        彼女の光があなたを照らしますように。~\n        =ifplayerplural:君たちは:そなたは=私に用があるのか？~\n        我らは彼女の前では謙虚に歩むのだ。~\n        =ifplayerplural:頼む:頼む=、=player.formalAddressTerm=.~\n        彼女の光が=ifplayerplural:君たちの:そなたの=歩みを導きますように、=player.formalAddressTerm=.~\n        彼女の光とともに生きて飲め。",
+            "おや。ふむ？~\n        =ifplayerplural:君たちは:そなたは=備えができているか。~\n        =ifplayerplural:君たちは:そなたは=進むのだな。~\n        安らぎを、=player.formalAddressTerm=.~\n        彼女の光のもとで。~\n        彼女の光があなたを照らしますように。~\n        =ifplayerplural:君たちは:そなたは=私に用があるのか？~\n        我らは彼女の前では謙虚に歩むのだ。~\n        =ifplayerplural:頼む:頼む=、=player.formalAddressTerm=.~\n        彼女の光が=ifplayerplural:君たちの:そなたの=歩みを導きますように、=player.formalAddressTerm=.~\n        彼女の光とともに生きて飲め。"
+          ]
+        },
+        {
+          "term": "ifplayerplural:君たちは:君は",
+          "surface": "conversation_text",
+          "examples": [
+            "意味はそのまま。=ifplayerplural:君たちが:君が=渦に呑まれたなら、=ifplayerplural:君たちは:君は=最後まで歌うべきだ。",
+            "……？\n\n        =ifplayerplural:君たちは:君は=私の信条の意味まで尋ねるのか。では=ifplayerplural:君たちの:君の=食事も噛んでやろうか？",
+            "いや、いや。=ifplayerplural:君たちは:君は=私たちの習わしを知らないのだし、少し言いすぎた。謝るよ。怒ってなどいない。"
+          ]
+        },
+        {
+          "term": "ifplayerplural:君たちも:そなたも",
+          "surface": "conversation_text",
+          "examples": [
+            "ここが喰らう者の墓所であることは=ifplayerplural:君たちも:そなたも=知っているだろう。でも私の後ろには番人たちが築いた小さな集落があって、モパンゴの小さな集団が暮らしている。\n\n        集落についてもっと知りたいなら、奥にいるアギラという番人に尋ねてくれ。知識を分かち合うのが大好きなんだ。",
+            "{{emote|*ピッ*}}\n\n        信条には外から与えられる意味なんてない。=ifplayerplural:君たちも:そなたも=知ってのとおり、モパンゴのあいだで信条の意味を問いただすのは無作法とされている。"
+          ]
+        },
+        {
+          "term": "ifplayerplural:君たちも:君も",
+          "surface": "conversation_text",
+          "examples": [
+            "=factionaddress:Mopango|capitalize=、=ifplayerplural:君たちが:君が=子どものひとりを解放したと聞いた！ すぐにでも話してみたいが、今はナハムを観察して、この出来事が影響していないか確かめねばならない。=ifplayerplural:君たちも:君も=ここで見ていっていいぞ。",
+            "私はヴァアムを見守る。あれは私を見守る。共に、我らは見守る。\n\n        =factionaddress:Mopango=、=ifplayerplural:君たちも:君も=そうするべきだ。座って、見て考えよ。=ifplayerplural:君たちが:君が=剛堅な甲殻の天蓋の下でどう生きるかを。\n\n        安全で、不朽で、独りで。"
+          ]
+        },
+        {
+          "term": "ifplayerplural:君たち自身が:君自身が",
+          "surface": "conversation_text",
+          "examples": [
+            "身を慎め、=factionaddress:Mopango=。惰性に流されて=ifplayerplural:君たち自身が:君自身が=終わることのなきように。=ifplayerplural:君たちの:君の=武勲の報せを待っている。"
+          ]
+        },
+        {
+          "term": "ifplayerplural:君たち自身を:君自身を",
+          "surface": "conversation_text",
+          "examples": [
+            "=ifplayerplural:君たちが:君が=目標から=ifplayerplural:君たち自身を:君自身を=縛る枷を解き放て、=factionaddress:Mopango=。自由であれ。"
+          ]
+        },
+        {
+          "term": "ifplayerplural:安らかに休みたいなら:安らかに休みたいのなら",
+          "surface": "conversation_text",
+          "examples": [
+            "{{emote|*ピッ* *パチパチ*}}\n\n        彼女の光のもとより、=player.formalAddressTerm=。\n\n        =ifplayerplural:安らかに休みたいなら:安らかに休みたいのなら=、ここで歓迎しよう。"
+          ]
+        },
+        {
+          "term": "ifplayerplural:本当に:本当に",
+          "surface": "conversation_text",
+          "examples": [
+            "=ifplayerplural:本当に:本当に=子らの一体を解き放ったのか？ああ、=ifplayerplural:そうしたのだな:そうしたのだな=。おめでとう。\n\n        いつかカーも自由になるのを見たい。しばし生き、道を見つけねば。"
+          ]
+        },
+        {
+          "term": "ifplayerplural:無事なら:無事であれば",
+          "surface": "conversation_text",
+          "examples": [
+            "ああ、=factionaddress:Mopango=。=ifplayerplural:君たちは:君は=ほろ苦い光景だ。ダガシャを選んで=ifplayerplural:くれたら:くれたら=よかったのだが、私の光は別の方角に輝いている。\n\n        それでも、=ifplayerplural:君たち:君=が私の未来にまた現れることを望もう。=ifplayerplural:無事なら:無事であれば=、いつでも歓迎する。"
+          ]
+        },
+        {
+          "term": "ifplayerplural:胸を張るといい:胸を張るがよい",
+          "surface": "conversation_text",
+          "examples": [
+            "=factionaddress:Mopango|capitalize=、=ifplayerplural:君たちは:君は=重大事を成した。\n\n        私は彼女の光の蓄えを感じる。ダガシャは我らを高みに導くだろう。=ifplayerplural:胸を張るといい:胸を張るがよい=。"
+          ]
+        },
+        {
+          "term": "ifplayerplural:見たことがあるだろう:見たことがあるだろうか",
+          "surface": "conversation_text",
+          "examples": [
+            "私はカーと呼ばれる古の機械生物の監視を志願した。奇妙な脚であちらこちらへと跳ねるのを、=ifplayerplural:見たことがあるだろう:見たことがあるだろうか=。\n\n        しばしば思う。カーは恐れ以外の何かを知っているのだろうか、と。"
+          ]
+        },
+        {
+          "term": "ifplayerplural:許すなら:許すならば",
+          "surface": "conversation_text",
+          "examples": [
+            "=ifplayerplural:君たちは:君は=大いなる関心の対象を携えている。\n\n        もし=ifplayerplural:許すなら:許すならば=、私もそれと交信したい。"
+          ]
+        },
+        {
+          "term": "ifplayerplural:頼む:頼む",
+          "surface": "conversation_text",
+          "examples": [
+            "おや。ふむ？~\n        =ifplayerplural:君たちは:そなたは=備えができているか。~\n        =ifplayerplural:君たちは:そなたは=進むのだな。~\n        安らぎを、=player.formalAddressTerm=.~\n        彼女の光のもとで。~\n        彼女の光があなたを照らしますように。~\n        =ifplayerplural:君たちは:そなたは=私に用があるのか？~\n        我らは彼女の前では謙虚に歩むのだ。~\n        =ifplayerplural:頼む:頼む=、=player.formalAddressTerm=.~\n        彼女の光が=ifplayerplural:君たちの:そなたの=歩みを導きますように、=player.formalAddressTerm=.~\n        彼女の光とともに生きて飲め。"
           ]
         },
         {
@@ -210,6 +445,13 @@
           "surface": "conversation_text",
           "examples": [
             "=recipe= の作り方を教えてくれるか？"
+          ]
+        },
+        {
+          "term": "spice.commonPhrases.adventurer.!random",
+          "surface": "conversation_text",
+          "examples": [
+            "*villageName* の村へようこそ、=spice.commonPhrases.adventurer.!random="
           ]
         },
         {
@@ -559,7 +801,7 @@
   "totals": {
     "conversation_files": 2,
     "conversation_texts": 1734,
-    "conversation_runtime_expansion_terms": 36,
+    "conversation_runtime_expansion_terms": 68,
     "conversation_choice_parts": 85,
     "quests": 28,
     "quest_steps": 84,

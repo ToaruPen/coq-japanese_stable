@@ -1214,7 +1214,7 @@
   <object Name="BlazeTonic" Inherits="Tonic" Replace="true">
     <part Name="Render" DisplayName="{{blaze|ブレイズ}} インジェクター" />
     <part Name="Blaze_Tonic_Applicator" />
-    <part Name="RulesDescription" Text="持続：41-50ラウンド　熱耐性 +100／冷気耐性 -50／クイックネス+10（真系：+20）。凍結無効。熱ダメージ +25%。外部の熱源で体温は上昇しない。発火して効果を失わないよう、移動し続けなければならない。" AltForGenotype="True Kin" GenotypeAlt="持続：41-50ラウンド　熱耐性 +100／冷気耐性 -50／クイックネス+20。凍結無効。熱ダメージ +25%。外部の熱源で体温は上昇しない。発火して効果を失わないよう、移動し続けなければならない。" />
+    <part Name="RulesDescription" Text="持続：41-50ラウンド　熱耐性 +100／冷気耐性 -50／クイックネス+10（真系：+20）。凍結無効。あなたが与える熱ダメージ +25%。外部の熱源で体温は上昇しない。発火して効果を失わないよう、移動し続けなければならない。" AltForGenotype="True Kin" GenotypeAlt="持続：41-50ラウンド　熱耐性 +100／冷気耐性 -50／クイックネス+20。凍結無効。あなたが与える熱ダメージ +25%。外部の熱源で体温は上昇しない。発火して効果を失わないよう、移動し続けなければならない。" />
     /&gt;
     <part Name="TinkerItem" Bits="01" Ingredient="Fire Ant Gaster Paste" />
     <tag Name="Tier" Value="2" />

@@ -1354,7 +1354,6 @@ public sealed class CombatAndLogMessageQueuePatchTests
     [Test]
     public void DoorAttemptOpen_TranslatesInterfaceNoEffectEnglishDisplayName_WhenPatched()
     {
-        UseRepositoryPatternDictionary();
         WriteDisplayNameDictionary(("Becoming nook", "変容の僻隅"));
 
         AssertDoorAttemptOpenMessage(

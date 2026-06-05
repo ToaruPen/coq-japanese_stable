@@ -1164,6 +1164,7 @@ internal static class MessagePatternTranslator
         }
         else if (translateDisplayNameCapture)
         {
+            // Color-attached display names must reach the display-name route with markup restored.
             value = hasSpans
                 ? TranslateDisplayNameTemplateCapture(
                     ColorAwareTranslationComposer.MarkupAwareRestoreCapture(value, spans, group))

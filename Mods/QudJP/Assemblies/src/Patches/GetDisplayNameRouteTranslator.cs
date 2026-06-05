@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
@@ -14,12 +15,9 @@ internal static class GetDisplayNameRouteTranslator
     private const string DisplayNameAdjectiveContext = "GetDisplayName.Adjective";
     private const string DisplayNameStateTemplateContext = "GetDisplayName.StateTemplate";
     private const string DisplayNameTitleContext = "GetDisplayName.Title";
+    private const string DisplayNameLegacyAliasPath = "Aliases/displayname-legacy-aliases.json";
     private const string DisplayNameStateTemplateDictionaryFile = "Scoped/ui-displayname-state-templates.ja.json";
 
-    private static readonly string[] DisplayNameLegacyAliasDictionaryFiles =
-    {
-        "displayname-legacy-aliases.json",
-    };
     private static readonly string[] DisplayNameDictionaryFiles =
     {
         "ui-displayname-adjectives.ja.json",
@@ -5488,7 +5486,97 @@ internal static class GetDisplayNameRouteTranslator
 
     private static string? TranslateDisplayNameLegacyAliasExact(string source)
     {
-        return ScopedDictionaryLookup.TranslateExactOrLowerAscii(source, DisplayNameLegacyAliasDictionaryFiles);
+        return DisplayNameLegacyAliasStore.TranslateExactOrLowerAscii(source);
+    }
+
+    private static class DisplayNameLegacyAliasStore
+    {
+        private static readonly object Lock = new();
+        private static string? cachedPath;
+        private static Dictionary<string, string>? cachedEntries;
+
+        internal static string? TranslateExactOrLowerAscii(string source)
+        {
+            if (string.IsNullOrEmpty(source))
+            {
+                return null;
+            }
+
+            var entries = Load();
+            if (entries.TryGetValue(source, out var translated))
+            {
+                return translated;
+            }
+
+            var lowerAscii = StringHelpers.LowerAscii(source);
+            if (string.Equals(lowerAscii, source, StringComparison.Ordinal))
+            {
+                return null;
+            }
+
+            return entries.TryGetValue(lowerAscii, out translated) ? translated : null;
+        }
+
+        private static IReadOnlyDictionary<string, string> Load()
+        {
+            var path = LocalizationAssetResolver.GetLocalizationPath(DisplayNameLegacyAliasPath);
+            lock (Lock)
+            {
+                if (cachedEntries is not null && string.Equals(cachedPath, path, StringComparison.Ordinal))
+                {
+                    return cachedEntries;
+                }
+
+                cachedPath = path;
+                cachedEntries = Read(path);
+                return cachedEntries;
+            }
+        }
+
+        private static Dictionary<string, string> Read(string path)
+        {
+            var entries = new Dictionary<string, string>(StringComparer.Ordinal);
+            if (!File.Exists(path))
+            {
+                return entries;
+            }
+
+            var document = JsonAssetLoader.LoadFromFile<DisplayNameLegacyAliasDocument>(path);
+            if (document.Entries is null)
+            {
+                return entries;
+            }
+
+            for (var index = 0; index < document.Entries.Count; index++)
+            {
+                var entry = document.Entries[index];
+                if (entry.Key is not { Length: > 0 } key || entry.Text is not { Length: > 0 } text)
+                {
+                    continue;
+                }
+
+                entries[key] = text;
+            }
+
+            return entries;
+        }
+    }
+
+    [DataContract]
+    private sealed class DisplayNameLegacyAliasDocument
+    {
+        [DataMember(Name = "entries")]
+        public List<DisplayNameLegacyAliasEntry>? Entries { get; set; }
+    }
+
+    [DataContract]
+    private sealed class DisplayNameLegacyAliasEntry
+    {
+        [DataMember(Name = "key")]
+        public string? Key { get; set; }
+
+        [DataMember(Name = "text")]
+        public string? Text { get; set; }
     }
 
     private static string? TranslateDisplayNameExactOrLowerAscii(string source)

@@ -1674,6 +1674,33 @@ public sealed class WorldPartsProducerTranslationPatchTests
         }
     }
 
+    [Test]
+    public void CyberneticsBaseItemPatch_DoesNotTranslateMetadata_WhenOwnerAbsent()
+    {
+        var evt = new DummyGetShortDescriptionEvent();
+        evt.Postfix.Append("Existing English description.");
+        var target = new DummyCyberneticsBaseItemProducerTarget
+        {
+            DestroyOnRemoval = true,
+            Slots = "Hands",
+            Cost = 2,
+        };
+
+        _ = target.HandleEvent(evt);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                evt.Postfix.ToString(),
+                Is.EqualTo("Existing English description.{{rules|Destroyed when uninstalled.}}{{rules|Target body parts: Hands}}{{rules|License points: 2}}{{rules|Only compatible with True Kin genotypes}}"));
+            Assert.That(
+                DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                    nameof(CyberneticsBaseItemShortDescriptionTranslationPatch),
+                    "CyberneticsBaseItem.ShortDescriptionMetadata"),
+                Is.EqualTo(0));
+        });
+    }
+
     [TestCase("{{rules|Destroyed when uninstalled.}}", "{{rules|アンインストール時に破壊される。}}")]
     [TestCase("{{rules|Untranslated appendix.}}", "{{rules|Untranslated appendix.}}")]
     public void CyberneticsBaseItemPatch_StripsDirectMarkerFromAppendedMetadata(string appended, string expected)
