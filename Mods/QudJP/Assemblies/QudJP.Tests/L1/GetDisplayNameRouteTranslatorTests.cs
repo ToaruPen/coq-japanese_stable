@@ -185,6 +185,16 @@ public sealed class GetDisplayNameRouteTranslatorTests
         Assert.That(translated, Is.EqualTo("威厳ある嘆きの尖端"));
     }
 
+    [Test]
+    public void TranslatePreservingColors_StripsEnglishArticleFromColoredLocalizedGeneratedDisplayName()
+    {
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            "the {{G|太陽の剣}}",
+            nameof(GetDisplayNameProcessPatch));
+
+        Assert.That(translated, Is.EqualTo("{{G|太陽の剣}}"));
+    }
+
     [TestCase("some {{r|生の猪肉}}")]
     [TestCase("Some {{r|生の猪肉}}")]
     public void TranslatePreservingColors_StripsSomeArticleModifierFromLocalizedDisplayName(string source)

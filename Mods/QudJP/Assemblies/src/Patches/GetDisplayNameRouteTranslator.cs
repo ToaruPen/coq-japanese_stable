@@ -1106,13 +1106,12 @@ internal static class GetDisplayNameRouteTranslator
 
     private static bool TryStripEnglishArticleFromAlreadyLocalizedDisplayName(
         string source,
-        IReadOnlyCollection<ColorSpan> spans,
+        IReadOnlyList<ColorSpan> spans,
         string route,
         out string translated)
     {
         translated = source;
-        if (spans.Count != 0
-            || CompactWeaponStatsDisplayNameSuffixPattern.IsMatch(source)
+        if (CompactWeaponStatsDisplayNameSuffixPattern.IsMatch(source)
             || CompactWeaponStatsDisplayNameSuffixSequencePattern.IsMatch(source)
             || ArmorStatsDisplayNameSuffixPattern.IsMatch(source)
             || ArmorStatsDisplayNameSuffixSequencePattern.IsMatch(source))
@@ -1123,6 +1122,14 @@ internal static class GetDisplayNameRouteTranslator
         if (!TryStripEnglishArticleFromAlreadyLocalizedBase(source, out translated))
         {
             return false;
+        }
+
+        if (spans.Count != 0)
+        {
+            translated = ColorAwareTranslationComposer.RestoreSourceBoundaryWrappersByVisibleTextPreservingTranslatedOwnership(
+                translated,
+                spans,
+                source);
         }
 
         DynamicTextObservability.RecordTransform(
