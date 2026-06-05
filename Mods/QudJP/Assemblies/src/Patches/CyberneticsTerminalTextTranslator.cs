@@ -70,7 +70,7 @@ internal static class CyberneticsTerminalTextTranslator
         RegexOptions.Compiled | RegexOptions.CultureInvariant);
 
     private static readonly Regex CyberneticsSlotPattern = new Regex(
-        "^(?<label>.+?) (?<slotSegment>\\((?<slot>Face|Body|Head|Back|Feet|Arm|Hands)\\))$",
+        "^(?<label>.+?) (?<slotSegment>\\((?<slot>Face|Body|Head|Back|Feet|Arm|Hand|Hands|Tail)\\))$",
         RegexOptions.Compiled | RegexOptions.CultureInvariant);
 
     private static readonly Regex ReminderPattern = new Regex(
@@ -123,7 +123,9 @@ internal static class CyberneticsTerminalTextTranslator
         ["Back"] = "背中",
         ["Feet"] = "足",
         ["Arm"] = "腕",
+        ["Hand"] = "手",
         ["Hands"] = "手",
+        ["Tail"] = "尾",
     };
 
     private static readonly MethodInfo? LeetMethod = ResolveLeetMethod();

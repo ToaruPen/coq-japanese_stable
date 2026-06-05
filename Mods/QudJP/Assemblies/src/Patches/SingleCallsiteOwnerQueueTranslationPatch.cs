@@ -18,6 +18,10 @@ public static class SingleCallsiteOwnerQueueTranslationPatch
     private const string ModMorphogeneticOwner = "XRL.World.Parts.ModMorphogenetic|ApplyMorphicShock";
     private const string MonochromeOwner = "XRL.World.Effects.Monochrome|FireEvent";
     private const string PersuasionRebukeRobotAttemptOwner = "XRL.World.Parts.Skill.Persuasion_RebukeRobot|AttemptRebuke";
+    private const string PyroZoneStartedOwner = "XRL.World.Parts.PyroZone|Started";
+    private const string PyroZoneStoppedOwner = "XRL.World.Parts.PyroZone|Stopped";
+    private const string CryoZoneStartedOwner = "XRL.World.Parts.CryoZone|Started";
+    private const string CryoZoneStoppedOwner = "XRL.World.Parts.CryoZone|Stopped";
     private const string SnapjawHowlOwner = "XRL.World.Parts.Skill.Snapjaw_Howl|FireEvent";
     private const string SphynxSaltTonicOwner = "XRL.World.Effects.SphynxSalt_Tonic|Apply";
     private const string StairsDownOwner = "XRL.World.Parts.StairsDown|CheckPullDown";
@@ -90,6 +94,22 @@ public static class SingleCallsiteOwnerQueueTranslationPatch
         "^You now have (?<length>\\d+) feet of copper wire\\.$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex PyroZoneStartedPattern = new(
+        "^The air (?<direction>.+?) starts to shimmer with heat!$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex PyroZoneStoppedPattern = new(
+        "^The air (?<direction>.+?) ceases shimmering with heat\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex CryoZoneStartedPattern = new(
+        "^The air (?<direction>.+?) bursts into a field of frigid mist!$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex CryoZoneStoppedPattern = new(
+        "^The frigid mist (?<direction>.+?) dissipates\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     [ThreadStatic]
     private static int activeDepth;
 
@@ -111,6 +131,8 @@ public static class SingleCallsiteOwnerQueueTranslationPatch
         var modMorphogeneticType = FindAssemblyCSharpType("XRL.World.Parts.ModMorphogenetic");
         var monochromeType = FindAssemblyCSharpType("XRL.World.Effects.Monochrome");
         var persuasionRebukeRobotType = FindAssemblyCSharpType("XRL.World.Parts.Skill.Persuasion_RebukeRobot");
+        var pyroZoneType = FindAssemblyCSharpType("XRL.World.Parts.PyroZone");
+        var cryoZoneType = FindAssemblyCSharpType("XRL.World.Parts.CryoZone");
         var snapjawHowlType = FindAssemblyCSharpType("XRL.World.Parts.Skill.Snapjaw_Howl");
         var sphynxSaltTonicType = FindAssemblyCSharpType("XRL.World.Effects.SphynxSalt_Tonic");
         var stairsDownType = FindAssemblyCSharpType("XRL.World.Parts.StairsDown");
@@ -129,6 +151,8 @@ public static class SingleCallsiteOwnerQueueTranslationPatch
             || modMorphogeneticType is null
             || monochromeType is null
             || persuasionRebukeRobotType is null
+            || pyroZoneType is null
+            || cryoZoneType is null
             || snapjawHowlType is null
             || sphynxSaltTonicType is null
             || stairsDownType is null
@@ -175,6 +199,26 @@ public static class SingleCallsiteOwnerQueueTranslationPatch
             targets,
             persuasionRebukeRobotType,
             "AttemptRebuke",
+            Type.EmptyTypes);
+        AddTarget(
+            targets,
+            pyroZoneType,
+            "Started",
+            Type.EmptyTypes);
+        AddTarget(
+            targets,
+            pyroZoneType,
+            "Stopped",
+            Type.EmptyTypes);
+        AddTarget(
+            targets,
+            cryoZoneType,
+            "Started",
+            Type.EmptyTypes);
+        AddTarget(
+            targets,
+            cryoZoneType,
+            "Stopped",
             Type.EmptyTypes);
         AddTarget(
             targets,
@@ -336,6 +380,11 @@ public static class SingleCallsiteOwnerQueueTranslationPatch
         {
             translated = "舌がないと叱責できない。";
             detail = "PersuasionRebukeRobotMissingTongue";
+            return true;
+        }
+
+        if (TryTranslateTemperatureZoneMessage(source, ownerKey, out translated, out detail))
+        {
             return true;
         }
 
@@ -540,6 +589,97 @@ public static class SingleCallsiteOwnerQueueTranslationPatch
         }
 
         return false;
+    }
+
+    private static bool TryTranslateTemperatureZoneMessage(
+        string source,
+        string? ownerKey,
+        out string translated,
+        out string detail)
+    {
+        var match = PyroZoneStartedPattern.Match(source);
+        if (match.Success && OwnerMatches(ownerKey, PyroZoneStartedOwner))
+        {
+            if (!TryTranslateZoneLocation(match.Groups["direction"].Value, out var location))
+            {
+                translated = source;
+                detail = string.Empty;
+                return false;
+            }
+
+            translated = location + "の空気が熱で揺らめき始めた！";
+            detail = "PyroZoneStarted";
+            return true;
+        }
+
+        match = PyroZoneStoppedPattern.Match(source);
+        if (match.Success && OwnerMatches(ownerKey, PyroZoneStoppedOwner))
+        {
+            if (!TryTranslateZoneLocation(match.Groups["direction"].Value, out var location))
+            {
+                translated = source;
+                detail = string.Empty;
+                return false;
+            }
+
+            translated = location + "の空気の熱による揺らめきが収まった。";
+            detail = "PyroZoneStopped";
+            return true;
+        }
+
+        match = CryoZoneStartedPattern.Match(source);
+        if (match.Success && OwnerMatches(ownerKey, CryoZoneStartedOwner))
+        {
+            if (!TryTranslateZoneLocation(match.Groups["direction"].Value, out var location))
+            {
+                translated = source;
+                detail = string.Empty;
+                return false;
+            }
+
+            translated = location + "の空気が極寒の霧に包まれた！";
+            detail = "CryoZoneStarted";
+            return true;
+        }
+
+        match = CryoZoneStoppedPattern.Match(source);
+        if (match.Success && OwnerMatches(ownerKey, CryoZoneStoppedOwner))
+        {
+            if (!TryTranslateZoneLocation(match.Groups["direction"].Value, out var location))
+            {
+                translated = source;
+                detail = string.Empty;
+                return false;
+            }
+
+            translated = location + "の極寒の霧が消えた。";
+            detail = "CryoZoneStopped";
+            return true;
+        }
+
+        translated = source;
+        detail = string.Empty;
+        return false;
+    }
+
+    private static bool TryTranslateZoneLocation(string source, out string translated)
+    {
+        if (string.Equals(source, "here", StringComparison.OrdinalIgnoreCase))
+        {
+            translated = "このあたり";
+            return true;
+        }
+
+        if (!DirectionPhraseTranslator.TryTranslateNounStem(source, out var direction))
+        {
+            translated = source;
+            return false;
+        }
+
+        translated = direction.EndsWith("側", StringComparison.Ordinal)
+            ? direction.Substring(0, direction.Length - 1)
+            : direction;
+        return true;
     }
 
     private static string? CurrentOwnerKey()

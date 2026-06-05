@@ -39,12 +39,12 @@
     },
     {
       "pattern": "^On the (.+?) of (.+?), you arrive at the oasis-hamlet of Joppa, along the far rim of Moghra'yi, the Great Salt Desert\\.\\n\\nAll around you, moisture farmers tend to groves of viridian watervine\\. There are huts wrought from rock salt and brinestalk\\.\\n\\nOn the horizon, Qud's jungles strangle chrome steeples and rusted archways to the earth\\. Further and beyond, the fabled Spindle rises above the fray and pierces the cloud-ribboned sky\\.$",
-      "template": "{t1}の{t0}日、あなたは大塩砂漠モグラヤイの遥かな縁にあるオアシス集落ジョッパに到着した。\n\nあたりではウォーターヴァインの茂みを水耕農家たちが世話している。岩塩とブラインストークで組まれた小屋が建っている。\n\n地平線では、Qudのジャングルがクロームの尖塔と錆びたアーチを大地に絡みつかせている。さらにその彼方では、伝説のスピンドルが乱景の上にそびえ、雲の帯を貫いて空へ伸びている。",
+      "template": "{t1}の{t0}日、あなたは大塩砂漠モグラヤイの遥かな縁にあるオアシス集落ジョッパに到着した。\n\nあたりではウォーターヴァインの茂みを水耕農家たちが世話している。岩塩とブラインストークで組まれた小屋が建っている。\n\n地平線では、クッドのジャングルがクロームの尖塔と錆びたアーチを大地に絡みつかせている。さらにその彼方では、伝説のスピンドルが乱景の上にそびえ、雲の帯を貫いて空へ伸びている。",
       "route": "popup"
     },
     {
       "pattern": "^On the (.+?) of (.+?), you arrive at the village of (.+?)\\.\\n\\nOn the horizon, Qud's jungles strangle chrome steeples and rusted archways to the earth\\. Further and beyond, the fabled Spindle rises above the fray and pierces the cloud-ribboned sky\\.$",
-      "template": "{t1}の{t0}日、あなたは{2}の村に到着した。\n\n地平線では、Qudのジャングルがクロームの尖塔と錆びたアーチを大地に絡みつかせている。さらにその彼方では、伝説のスピンドルが乱景の上にそびえ、雲の帯を貫いて空へ伸びている。",
+      "template": "{t1}の{t0}日、あなたは{t2}の村に到着した。\n\n地平線では、クッドのジャングルがクロームの尖塔と錆びたアーチを大地に絡みつかせている。さらにその彼方では、伝説のスピンドルが乱景の上にそびえ、雲の帯を貫いて空へ伸びている。",
       "route": "popup"
     },
     {
@@ -444,8 +444,18 @@
       "route": "emit-message"
     },
     {
+      "pattern": "^You see (?:a |an |the )?(.+?) to the (north|south|east|west|northeast|northwest|southeast|southwest), so you refrain from (moving|resting|digging|gathering|attacking|acting|auto-exploring|exploring|waiting|disassembling|移動中|休息中|掘削中|収集中|攻撃中|行動中|探索中|待機中|分解中)[.!]?$",
+      "template": "{t1}に{0}が見えたので{t2}を控えた。",
+      "route": "emit-message"
+    },
+    {
       "pattern": "^You see (.+?) above and stop (moving|resting|digging|gathering|attacking|acting|auto-exploring|exploring|waiting|disassembling|移動中|休息中|掘削中|収集中|攻撃中|行動中|探索中|待機中|分解中)[.!]?$",
       "template": "頭上に{0}が見えたので{t1}をやめた。",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^You see (.+?) above, so you refrain from (moving|resting|digging|gathering|attacking|acting|auto-exploring|exploring|waiting|disassembling|移動中|休息中|掘削中|収集中|攻撃中|行動中|探索中|待機中|分解中)[.!]?$",
+      "template": "頭上に{0}が見えたので{t1}を控えた。",
       "route": "emit-message"
     },
     {
@@ -454,8 +464,18 @@
       "route": "emit-message"
     },
     {
+      "pattern": "^You see (.+?) below, so you refrain from (moving|resting|digging|gathering|attacking|acting|auto-exploring|exploring|waiting|disassembling|移動中|休息中|掘削中|収集中|攻撃中|行動中|探索中|待機中|分解中)[.!]?$",
+      "template": "足元に{0}が見えたので{t1}を控えた。",
+      "route": "emit-message"
+    },
+    {
       "pattern": "^You see (?:a |an |the )?(.+?) and stop (moving|resting|digging|gathering|attacking|acting|auto-exploring|exploring|waiting|disassembling|移動中|休息中|掘削中|収集中|攻撃中|行動中|探索中|待機中|分解中)[.!]?$",
       "template": "{0}が見えたので{t1}をやめた。",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^You see (?:a |an |the )?(.+?), so you refrain from (moving|resting|digging|gathering|attacking|acting|auto-exploring|exploring|waiting|disassembling|移動中|休息中|掘削中|収集中|攻撃中|行動中|探索中|待機中|分解中)[.!]?$",
+      "template": "{0}が見えたので{t1}を控えた。",
       "route": "emit-message"
     },
     {

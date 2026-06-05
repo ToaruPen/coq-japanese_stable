@@ -106,6 +106,41 @@ public sealed partial class Issue201StatusScreensBatch2Tests
     }
 
     [Test]
+    public void EquipmentLinePostfix_TranslatesBaetylRelicItemNameWithColorAndSuffix()
+    {
+        WriteDictionaryFile(
+            Path.Combine("Scoped", "historyspice-common.ja.json"),
+            ("analog", "アナログの"));
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyEquipmentLineTarget), nameof(DummyEquipmentLineTarget.setData)),
+                postfix: new HarmonyMethod(RequireMethod(typeof(EquipmentLineTranslationPatch), nameof(EquipmentLineTranslationPatch.Postfix))));
+
+            var target = new DummyEquipmentLineTarget();
+            target.setData(new DummyEquipmentLineDataTarget
+            {
+                bodyPart = new DummyBodyPart
+                {
+                    CardinalDescription = "Right Hand",
+                    Equipped = new DummyStatusGameObject
+                    {
+                        DisplayName = "{{M|Chain of the Analog Sand}} \u00040 \t0 [6ドラムのゲル]",
+                    },
+                },
+            });
+
+            Assert.That(target.itemText.Text, Is.EqualTo("{{M|アナログの砂の鎖}} \u00040 \t0 [6ドラムのゲル]"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void EquipmentLinePostfix_LeavesOriginalOutput_OnUnsupportedInput()
     {
         var harmonyId = CreateHarmonyId();

@@ -41,6 +41,15 @@ public sealed class DynamicQuestGeneratedQuestTextTranslatorTests
     [TestCase("The sanctity of the Mechanimists", "メカニマス教団の聖性")]
     [TestCase("Travel to {{|the rust wells}} and pray at {{|the salt shrine}}.", "{{|錆の井戸}}へ行き、{{|塩の祠}}で祈る。")]
     [TestCase("Travel to {{|the rust wells}} and put something in {{|the chest}}.", "{{|錆の井戸}}へ行き、{{|chest}}に何かを入れる。")]
+    [TestCase("Visit カルクヘタラ, Stargazerhome", "カルクヘタラ, 星見の家を訪問")]
+    [TestCase("Travel to the historical site of カルクヘタラ, Stargazerhome.", "カルクヘタラ, 星見の家の史跡へ向かう。")]
+    [TestCase("Travel to the historical site of カルクヘタラ, Stargazerhome", "カルクヘタラ, 星見の家の史跡へ向かう。")]
+    [TestCase("Locate ダビッパ, Old Home of Window Makers", "ダビッパ, 窓職人たちの古き家を見つける")]
+    [TestCase("Locate ドゥシュル, Bygone Hearth of Jewelers", "ドゥシュル, 宝石職人たちの往時の炉辺を見つける")]
+    [TestCase("Recover Charmed, the Gift of 多肉植物", "多肉植物の幸運に恵まれた賜物を取り戻す")]
+    [TestCase("Recover Charmed, the Gift of 多肉植物 at Luckymarsh.", "幸運な沼沢で多肉植物の幸運に恵まれた賜物を取り戻す。")]
+    [TestCase("Recover Rubycus at the Briny Dunes.", "塩辛い砂丘でRubycusを取り戻す。")]
+    [TestCase("Recover Inquisitive ワームwoe", "探究心の強いワームの嘆きを取り戻す")]
     [TestCase("Locate the rusted relic at {{|the spindle}}.", "{{|スピンドル}}で錆びた遺物を見つける。")]
     public void TryTranslate_TranslatesGeneratedQuestText(string source, string expected)
     {
@@ -63,6 +72,41 @@ public sealed class DynamicQuestGeneratedQuestTextTranslatorTests
             Assert.That(translated, Is.True);
             Assert.That(result, Is.EqualTo("{{G|錆びた遺物を探す}}"));
         });
+    }
+
+    [Test]
+    public void TryTranslate_PrefersZoneDisplayCaptureBeforeSpaceSeparatedComponents()
+    {
+        var tempDirectory = Path.Combine(
+            Path.GetTempPath(),
+            "qudjp-dynamic-quest-generated-l1",
+            Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(tempDirectory);
+
+        try
+        {
+            WriteDictionaryFile(
+                tempDirectory,
+                "Scoped/historyspice-common.ja.json",
+                ("old", "古き"),
+                ("home", "家"));
+            WriteDictionaryFile(tempDirectory, "ui-zone-display.ja.json", ("Old Home", "古き住処"));
+            ScopedDictionaryLookup.ResetForTests();
+            Translator.ResetForTests();
+            Translator.SetDictionaryDirectoryForTests(tempDirectory);
+
+            var translated = DynamicQuestGeneratedQuestTextTranslator.TryTranslate("Visit Old Home", out var result);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(translated, Is.True);
+                Assert.That(result, Is.EqualTo("古き住処を訪問"));
+            });
+        }
+        finally
+        {
+            Directory.Delete(tempDirectory, recursive: true);
+        }
     }
 
     [Test]
@@ -95,4 +139,43 @@ public sealed class DynamicQuestGeneratedQuestTextTranslatorTests
 
     private static string GetRepositoryDictionaryDirectory() =>
         Path.Combine(TestProjectPaths.GetRepositoryRoot(), "Mods", "QudJP", "Localization", "Dictionaries");
+
+    private static void WriteDictionaryFile(string directory, string fileName, params (string key, string text)[] entries)
+    {
+        var path = Path.Combine(directory, fileName);
+        var parent = Path.GetDirectoryName(path);
+        if (!string.IsNullOrEmpty(parent))
+        {
+            Directory.CreateDirectory(parent);
+        }
+
+        var builder = new System.Text.StringBuilder();
+        builder.Append("{\"entries\":[");
+        for (var index = 0; index < entries.Length; index++)
+        {
+            if (index > 0)
+            {
+                builder.Append(',');
+            }
+
+            builder.Append("{\"key\":\"");
+            builder.Append(EscapeJson(entries[index].key));
+            builder.Append("\",\"text\":\"");
+            builder.Append(EscapeJson(entries[index].text));
+            builder.Append("\"}");
+        }
+
+        builder.Append("]}\n");
+        File.WriteAllText(path, builder.ToString(), new System.Text.UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
+    }
+
+    private static string EscapeJson(string value)
+    {
+        return value
+            .Replace("\\", "\\\\", StringComparison.Ordinal)
+            .Replace("\"", "\\\"", StringComparison.Ordinal)
+            .Replace("\n", "\\n", StringComparison.Ordinal)
+            .Replace("\r", "\\r", StringComparison.Ordinal)
+            .Replace("\t", "\\t", StringComparison.Ordinal);
+    }
 }

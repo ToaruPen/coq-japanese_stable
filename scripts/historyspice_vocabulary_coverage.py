@@ -57,6 +57,12 @@ def extract_historyspice_leaves(payload: object) -> list[LeafRecord]:
     return leaves
 
 
+def load_historyspice_payload(path: Path) -> object:
+    """Load Base/HistorySpice JSON or JSONC with Qud's line-comment header."""
+    text = path.read_text(encoding="utf-8")
+    return json.loads(_strip_jsonc_line_comments(text))
+
+
 def load_dictionary_keys(dictionary_paths: list[Path]) -> set[str]:
     """Load dictionary keys from QudJP JSON dictionary files."""
     keys: set[str] = set()
@@ -120,7 +126,7 @@ def build_report(
     groups: tuple[str, ...] = DEFAULT_GROUPS,
 ) -> dict[str, object]:
     """Build the complete vocabulary coverage report."""
-    leaves = extract_historyspice_leaves(json.loads(historyspice_path.read_text(encoding="utf-8")))
+    leaves = extract_historyspice_leaves(load_historyspice_payload(historyspice_path))
     all_dictionary_paths = sorted(dictionaries_root.rglob("*.json"))
     hse_dictionary_keys = load_dictionary_keys(hse_dictionary_paths)
     all_dictionary_keys = load_dictionary_keys(all_dictionary_paths)
@@ -201,6 +207,10 @@ def _iter_dictionary_entries(payload: object) -> list[dict[str, Any]]:
     if not isinstance(entries, list):
         return []
     return [entry for entry in entries if isinstance(entry, dict)]
+
+
+def _strip_jsonc_line_comments(text: str) -> str:
+    return "".join(line for line in text.splitlines(keepends=True) if not line.lstrip().startswith("//"))
 
 
 def _is_covered(leaf: str, dictionary_keys: set[str]) -> bool:

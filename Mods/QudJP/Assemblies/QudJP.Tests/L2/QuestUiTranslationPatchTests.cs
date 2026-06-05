@@ -141,6 +141,123 @@ public sealed class QuestUiTranslationPatchTests
     }
 
     [Test]
+    public void QuestsLinePostfix_TranslatesGeneratedHistoricQuestTitleAndBody_WhenPatched()
+    {
+        WriteDictionary(("Raising Indrix", "インドリクスを奮い立たせる"));
+        WriteDictionaryFile(
+            "Scoped/historyspice-common.ja.json",
+            ("charmed", "幸運に恵まれた"),
+            ("gift", "賜物"),
+            ("lucky", "幸運な"),
+            ("marsh", "沼沢"),
+            ("old", "古き"),
+            ("Window Makers", "窓職人たち"),
+            ("stargazer", "星見"),
+            ("home", "家"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyQuestsLineTarget), nameof(DummyQuestsLineTarget.setData)),
+                postfix: new HarmonyMethod(RequireMethod(typeof(QuestsLineTranslationPatch), nameof(QuestsLineTranslationPatch.Postfix))));
+
+            var generatedTarget = new DummyQuestsLineTarget();
+            generatedTarget.setData(
+                new DummyQuestsLineDataTarget
+                {
+                    quest = new DummyQuestTarget
+                    {
+                        DisplayName = "Recover Charmed, the Gift of 多肉植物",
+                        QuestGiverName = "シャアプド Spire",
+                        QuestGiverLocationName = "トゥキスフ, Stargazerhome, 地下1層",
+                    },
+                    expanded = true,
+                    BodyText = "{{white|ù Locate ダビッパ, Old Home of Window Makers}}\n"
+                        + "   {{y|Travel to the historical site of カルクヘタラ, Stargazerhome.}}\n\n"
+                        + "{{white|ù Recover Charmed, the Gift of 多肉植物}}\n"
+                        + "   {{y|Recover Charmed, the Gift of 多肉植物 at Luckymarsh.}}\n",
+                });
+
+            var authoredTarget = new DummyQuestsLineTarget();
+            authoredTarget.setData(
+                new DummyQuestsLineDataTarget
+                {
+                    quest = new DummyQuestTarget
+                    {
+                        DisplayName = "Raising Indrix",
+                        QuestGiverName = "監視官インドリクス",
+                        QuestGiverLocationName = "Kyakukya",
+                    },
+                    expanded = false,
+                });
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(
+                    generatedTarget.titleText.Text,
+                    Is.EqualTo("[-] 多肉植物の幸運に恵まれた賜物を取り戻す"));
+                Assert.That(
+                    generatedTarget.bodyText.Text,
+                    Is.EqualTo("{{white|ù ダビッパ, 窓職人たちの古き家を見つける}}\n"
+                        + "   {{y|カルクヘタラ, 星見の家の史跡へ向かう。}}\n\n"
+                        + "{{white|ù 多肉植物の幸運に恵まれた賜物を取り戻す}}\n"
+                        + "   {{y|幸運な沼沢で多肉植物の幸運に恵まれた賜物を取り戻す。}}\n"));
+                Assert.That(authoredTarget.titleText.Text, Is.EqualTo("[+] インドリクスを奮い立たせる"));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void QuestsLinePostfix_TranslatesQuestLogBodyStepNames_WhenPatched()
+    {
+        WriteDictionary(
+            ("Travel to Red Rock", "レッドロックへ向かう"),
+            ("Find the Vermin", "害獣を見つける"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyQuestsLineTarget), nameof(DummyQuestsLineTarget.setData)),
+                postfix: new HarmonyMethod(RequireMethod(typeof(QuestsLineTranslationPatch), nameof(QuestsLineTranslationPatch.Postfix))));
+
+            var target = new DummyQuestsLineTarget();
+            target.setData(
+                new DummyQuestsLineDataTarget
+                {
+                    quest = new DummyQuestTarget
+                    {
+                        DisplayName = "What's Eating the Watervine?",
+                        QuestGiverName = "Mehmet",
+                        QuestGiverLocationName = "Joppa",
+                    },
+                    BodyText = "{{white|ù Travel to Red Rock}}\n   {{y|Find the Vermin}}\n   {{y|Unregistered Step}}",
+                });
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(
+                    target.bodyText.Text,
+                    Is.EqualTo("{{white|ù レッドロックへ向かう}}\n   {{y|害獣を見つける}}\n   {{y|Unregistered Step}}"));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(nameof(QuestsLineTranslationPatch), "QuestLog.StepName"),
+                    Is.EqualTo(2));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void QuestsStatusScreenPostfix_TranslatesQuestMapPinTitleAndPrefix_WhenPatched()
     {
         WriteDictionary(
@@ -165,7 +282,7 @@ public sealed class QuestUiTranslationPatchTests
                     Is.EqualTo("{{W|ジョッパ}}"));
                 Assert.That(
                     target.mapController.pins[0].pinItem.detailsText.Text,
-                    Is.EqualTo("{{B|クエスト:}} Find Mehmet\n{{B|クエスト:}} Return to Argyve"));
+                    Is.EqualTo("{{B|クエスト:}} Mehmetを探す\n{{B|クエスト:}} Argyveへ戻る"));
                 Assert.That(
                     DynamicTextObservability.GetRouteFamilyHitCountForTests(nameof(QuestsStatusScreenTranslationPatch), "ZoneDisplayName"),
                     Is.EqualTo(1));
@@ -272,6 +389,56 @@ public sealed class QuestUiTranslationPatchTests
     }
 
     [Test]
+    public void QuestsStatusScreenPostfix_TranslatesMultiLineGeneratedQuestMapPinDetails_WhenPatched()
+    {
+        WriteDictionary(("quest:", "クエスト:"));
+        WriteDictionaryFile(
+            "Scoped/historyspice-common.ja.json",
+            ("charmed", "幸運に恵まれた"),
+            ("gift", "賜物"),
+            ("stargazer", "星見"),
+            ("home", "家"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyQuestsStatusScreenTarget), nameof(DummyQuestsStatusScreenTarget.UpdateViewFromData)),
+                postfix: new HarmonyMethod(RequireMethod(typeof(QuestsStatusScreenTranslationPatch), nameof(QuestsStatusScreenTranslationPatch.Postfix))));
+
+            var target = new DummyQuestsStatusScreenTarget
+            {
+                PinDataOverride = new List<DummyMapPinData>
+                {
+                    new DummyMapPinData
+                    {
+                        title = "{{W|トゥキスフ, Stargazerhome, 地表}}",
+                        details = "{{B|quest:}} Visit カルクヘタラ, Stargazerhome\n"
+                            + "{{B|quest:}} Recover Charmed, the Gift of 多肉植物",
+                    },
+                },
+            };
+            target.UpdateViewFromData();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(
+                    target.mapController.pins[0].pinItem.detailsText.Text,
+                    Is.EqualTo("{{B|クエスト:}} カルクヘタラ, 星見の家を訪問\n"
+                        + "{{B|クエスト:}} 多肉植物の幸運に恵まれた賜物を取り戻す"));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(nameof(QuestsStatusScreenTranslationPatch), "QuestsStatusScreen.MapPinDetails"),
+                    Is.EqualTo(1));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void QuestLogPostfix_TranslatesOptionalPrefixAndBonusReward_WhenPatched()
     {
         WriteDictionary(
@@ -307,6 +474,86 @@ public sealed class QuestUiTranslationPatchTests
         }
     }
 
+    [Test]
+    public void QuestLogPostfix_TranslatesAuthoredQuestStepNames_WhenPatched()
+    {
+        WriteDictionary(
+            ("Optional: ", "任意: "),
+            ("Travel to Red Rock", "レッドロックへ向かう"),
+            ("Return with the Corpse", "死体を持って戻る"));
+        DummyQuestLogTarget.LinesOverride = new List<string>
+        {
+            "{{white|ù Travel to Red Rock}}",
+            "{{white|ù Optional: Return with the Corpse}}",
+            "{{white|ù Unregistered Step}}",
+        };
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyQuestLogTarget), nameof(DummyQuestLogTarget.GetLinesForQuest)),
+                postfix: new HarmonyMethod(RequireMethod(typeof(QuestLogTranslationPatch), nameof(QuestLogTranslationPatch.Postfix))));
+
+            var lines = DummyQuestLogTarget.GetLinesForQuest(null);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(
+                    lines,
+                    Is.EqualTo(new[]
+                    {
+                        "{{white|ù レッドロックへ向かう}}",
+                        "{{white|ù 任意: 死体を持って戻る}}",
+                        "{{white|ù Unregistered Step}}",
+                    }));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(nameof(QuestLogTranslationPatch), "QuestLog.StepName"),
+                    Is.EqualTo(2));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void QuestLogPostfix_PreservesEmptyAndDirectMarkedStepNames_WhenPatched()
+    {
+        WriteDictionary(("Travel to Red Rock", "レッドロックへ向かう"));
+        var directMarkedLine = MessageFrameTranslator.DirectTranslationMarker + "{{white|ù Travel to Red Rock}}";
+        DummyQuestLogTarget.LinesOverride = new List<string>
+        {
+            string.Empty,
+            directMarkedLine,
+        };
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyQuestLogTarget), nameof(DummyQuestLogTarget.GetLinesForQuest)),
+                postfix: new HarmonyMethod(RequireMethod(typeof(QuestLogTranslationPatch), nameof(QuestLogTranslationPatch.Postfix))));
+
+            var lines = DummyQuestLogTarget.GetLinesForQuest(null);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(lines, Is.EqualTo(new[] { string.Empty, directMarkedLine }));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(nameof(QuestLogTranslationPatch), "QuestLog.StepName"),
+                    Is.EqualTo(0));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
     [TestCase(
         "Aiding {{&Y|ドリンクス}} to Find the ポリセフian 祖父角の角笛",
         "{{&Y|ドリンクス}}がポリセフian 祖父角の角笛を探すのを助ける")]
@@ -331,6 +578,133 @@ public sealed class QuestUiTranslationPatchTests
             var lines = DummyQuestLogTarget.GetLinesForQuest(null);
 
             Assert.That(lines, Is.EqualTo(new[] { expected }));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void QuestLogPostfix_TranslatesGeneratedHistoricQuestLines_WhenPatched()
+    {
+        WriteDictionary();
+        WriteDictionaryFile(
+            "Scoped/historyspice-common.ja.json",
+            ("bygone", "往時の"),
+            ("charmed", "幸運に恵まれた"),
+            ("gift", "賜物"),
+            ("jewelers", "宝石職人たち"),
+            ("old", "古き"),
+            ("Window Makers", "窓職人たち"),
+            ("hearth", "炉辺"),
+            ("lucky", "幸運な"),
+            ("marsh", "沼沢"),
+            ("stargazer", "星見"),
+            ("home", "家"));
+        DummyQuestLogTarget.LinesOverride = new List<string>
+        {
+            "{{white|ù Visit カルクヘタラ, Stargazerhome}}",
+            "{{white|ù Locate ドゥシュル, Bygone Hearth of Jewelers}}",
+            "   {{y|Recover Charmed, the Gift of 多肉植物 at Luckymarsh.}}",
+        };
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyQuestLogTarget), nameof(DummyQuestLogTarget.GetLinesForQuest)),
+                postfix: new HarmonyMethod(RequireMethod(typeof(QuestLogTranslationPatch), nameof(QuestLogTranslationPatch.Postfix))));
+
+            var lines = DummyQuestLogTarget.GetLinesForQuest(null);
+
+            Assert.That(
+                lines,
+                Is.EqualTo(new[]
+                {
+                    "{{white|ù カルクヘタラ, 星見の家を訪問}}",
+                    "{{white|ù ドゥシュル, 宝石職人たちの往時の炉辺を見つける}}",
+                    "   {{y|幸運な沼沢で多肉植物の幸運に恵まれた賜物を取り戻す。}}",
+                }));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void QuestLogPrefix_TranslatesSavedGeneratedQuestStepTextBeforeClipping_WhenPatched()
+    {
+        WriteDictionary();
+        WriteDictionaryFile(
+            "Scoped/historyspice-common.ja.json",
+            ("stargazer", "星見"),
+            ("home", "家"));
+        var quest = new DummyQuestLogQuest();
+        quest.StepsByID["visit"] = new DummyQuestLogQuestStep
+        {
+            Name = "Visit カルクヘタラ, Stargazerhome",
+            Text = "Travel to the historical site of カルクヘタラ, Stargazerhome.",
+        };
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyQuestLogTarget), nameof(DummyQuestLogTarget.GetLinesForQuest)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(QuestLogTranslationPatch), nameof(QuestLogTranslationPatch.Prefix))),
+                postfix: new HarmonyMethod(RequireMethod(typeof(QuestLogTranslationPatch), nameof(QuestLogTranslationPatch.Postfix))));
+
+            _ = DummyQuestLogTarget.GetLinesForQuest(quest, includeTitle: false, clip: true, clipWidth: 24);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(quest.StepsByID["visit"].Name, Is.EqualTo("カルクヘタラ, 星見の家を訪問"));
+                Assert.That(quest.StepsByID["visit"].Text, Is.EqualTo("カルクヘタラ, 星見の家の史跡へ向かう。"));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(nameof(QuestLogTranslationPatch), "QuestLog.SavedQuestStepText"),
+                    Is.EqualTo(1));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void QuestLogPrefix_DoesNotMutateDirectMarkedSavedQuestStep_WhenPatched()
+    {
+        WriteDictionary();
+        var quest = new DummyQuestLogQuest();
+        quest.StepsByID["direct"] = new DummyQuestLogQuestStep
+        {
+            Name = MessageFrameTranslator.DirectTranslationMarker + "Visit Joppa",
+            Text = MessageFrameTranslator.DirectTranslationMarker + "Travel to Joppa.",
+        };
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyQuestLogTarget), nameof(DummyQuestLogTarget.GetLinesForQuest)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(QuestLogTranslationPatch), nameof(QuestLogTranslationPatch.Prefix))),
+                postfix: new HarmonyMethod(RequireMethod(typeof(QuestLogTranslationPatch), nameof(QuestLogTranslationPatch.Postfix))));
+
+            _ = DummyQuestLogTarget.GetLinesForQuest(quest, includeTitle: false, clip: true, clipWidth: 24);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(quest.StepsByID["direct"].Name, Is.EqualTo(MessageFrameTranslator.DirectTranslationMarker + "Visit Joppa"));
+                Assert.That(quest.StepsByID["direct"].Text, Is.EqualTo(MessageFrameTranslator.DirectTranslationMarker + "Travel to Joppa."));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(nameof(QuestLogTranslationPatch), "QuestLog.SavedQuestStepText"),
+                    Is.Zero);
+            });
         }
         finally
         {

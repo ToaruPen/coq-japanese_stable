@@ -698,24 +698,12 @@ internal static class MessagePatternTranslator
             }
 
             var group = match.Groups[captureIndex + 1];
-            var value = group.Value;
-            if (translateAdverbCapture)
-            {
-                value = TranslateAdverbTemplateCapture(value);
-            }
-            else if (translateDisplayNameCapture)
-            {
-                value = TranslateDisplayNameTemplateCapture(value);
-            }
-            else if (translateCapture)
-            {
-                value = TranslateTemplateCapture(value);
-            }
-
-            if (spans is not null && spans.Count > 0)
-            {
-                value = ColorAwareTranslationComposer.MarkupAwareRestoreCapture(value, spans, group);
-            }
+            var value = TranslatePatternCaptureValue(
+                group,
+                spans,
+                translateCapture,
+                translateAdverbCapture,
+                translateDisplayNameCapture);
 
             if (captureIndex + 1 == firstCaptureGroupIndex && translatedFirstCaptureStart < 0)
             {
@@ -834,20 +822,13 @@ internal static class MessagePatternTranslator
                 return false;
             }
 
-            var value = group.Value;
-            if (part.TranslateAdverbCapture)
-            {
-                value = TranslateAdverbTemplateCapture(value);
-            }
-            else if (part.TranslateDisplayNameCapture)
-            {
-                value = TranslateDisplayNameTemplateCapture(value);
-            }
-            else if (part.TranslateCapture)
-            {
-                value = TranslateTemplateCapture(value);
-            }
-            builder.Append(ColorAwareTranslationComposer.MarkupAwareRestoreCapture(value, spans, group));
+            var value = TranslatePatternCaptureValue(
+                group,
+                spans,
+                part.TranslateCapture,
+                part.TranslateAdverbCapture,
+                part.TranslateDisplayNameCapture);
+            builder.Append(value);
             nextSourceStart = group.Index + group.Length;
         }
 
@@ -1166,6 +1147,38 @@ internal static class MessagePatternTranslator
         return template.Contains("{t")
             || template.Contains("{a")
             || template.Contains("{d");
+    }
+
+    private static string TranslatePatternCaptureValue(
+        Group group,
+        IReadOnlyList<ColorSpan>? spans,
+        bool translateCapture,
+        bool translateAdverbCapture,
+        bool translateDisplayNameCapture)
+    {
+        var value = group.Value;
+        var hasSpans = spans is not null && spans.Count > 0;
+        if (translateAdverbCapture)
+        {
+            value = TranslateAdverbTemplateCapture(value);
+        }
+        else if (translateDisplayNameCapture)
+        {
+            // Color-attached display names must reach the display-name route with markup restored.
+            value = hasSpans
+                ? TranslateDisplayNameTemplateCapture(
+                    ColorAwareTranslationComposer.MarkupAwareRestoreCapture(value, spans, group))
+                : TranslateDisplayNameTemplateCapture(value);
+            return value;
+        }
+        else if (translateCapture)
+        {
+            value = TranslateTemplateCapture(value);
+        }
+
+        return hasSpans
+            ? ColorAwareTranslationComposer.MarkupAwareRestoreCapture(value, spans, group)
+            : value;
     }
 
     private static string TranslateDisplayNameTemplateCapture(string source)

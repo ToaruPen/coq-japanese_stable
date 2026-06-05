@@ -39,6 +39,24 @@ public sealed class AnnalsPatternsCandidateInventoryTests
         }
     }
 
+    [Test]
+    public void AnnalsCandidates_HaveNoNeedsManualEntries()
+    {
+        var candidates = ReadJson<AnnalsCandidateDocumentDto>(
+            Path.Combine(RepositoryRoot, "scripts", "_artifacts", "annals", "candidates_pending.json"));
+
+        Assert.That(
+            candidates.Candidates,
+            Is.Not.Null,
+            "scripts/_artifacts/annals/candidates_pending.json must contain a candidates array.");
+        Assert.That(
+            candidates.Candidates!
+                .Where(static candidate => candidate.Status == "needs_manual")
+                .Select(static candidate => candidate.Id),
+            Is.Empty,
+            "annals candidate inventory contains unexpected needs_manual candidate IDs.");
+    }
+
     private static T ReadJson<T>(string path)
     {
         using var stream = File.OpenRead(path);
@@ -62,6 +80,9 @@ internal sealed class AnnalsCandidateDocumentDto
 [DataContract]
 internal sealed class AnnalsCandidateDto
 {
+    [DataMember(Name = "id")]
+    public string? Id { get; set; }
+
     [DataMember(Name = "extracted_pattern")]
     public string? ExtractedPattern { get; set; }
 

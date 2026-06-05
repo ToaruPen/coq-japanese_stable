@@ -14,6 +14,7 @@ namespace QudJP.Patches;
 public static class QuestLifecyclePopupTranslationPatch
 {
     private const string Context = nameof(QuestLifecyclePopupTranslationPatch);
+    private const string QuestDictionaryFile = "ui-quests.ja.json";
 
     private static readonly Regex QuestReceivedPattern = new(
         "^You have received a new quest, (?<quest>.+)!$",
@@ -319,7 +320,35 @@ public static class QuestLifecyclePopupTranslationPatch
     {
         var group = match.Groups["quest"];
         var quest = ColorAwareTranslationComposer.RestoreCapture(group.Value, spans, group).Trim();
+        return TranslateQuestTitlePreservingColors(quest);
+    }
+
+    private static string TranslateQuestTitlePreservingColors(string quest)
+    {
+        var dictionaryTranslation = ColorAwareTranslationComposer.TranslatePreservingColors(
+            quest,
+            static visible =>
+            {
+                var translated = TranslateQuestTitleVisibleFromDictionary(visible);
+                return translated is null ? visible : translated;
+            });
+        if (!string.Equals(dictionaryTranslation, quest, StringComparison.Ordinal))
+        {
+            return dictionaryTranslation;
+        }
+
         return GeneratedQuestTitleTranslator.TranslatePreservingColors(quest, Context);
+    }
+
+    private static string? TranslateQuestTitleVisibleFromDictionary(string visible)
+    {
+        var translated = ScopedDictionaryLookup.TranslateExactOrLowerAscii(visible, QuestDictionaryFile);
+        if (translated is null)
+        {
+            return null;
+        }
+
+        return translated;
     }
 
     private static string RestoreStep(Match match, IReadOnlyList<ColorSpan> spans)
@@ -353,9 +382,21 @@ public static class QuestLifecyclePopupTranslationPatch
             return false;
         }
 
-        if (GetQuestStepTextByName().TryGetValue(stepName, out var found))
+        var stepTextByName = GetQuestStepTextByName();
+        if (stepTextByName.TryGetValue(stepName, out var found))
         {
             translated = found;
+            return true;
+        }
+
+        var localizedStepName = ScopedDictionaryLookup.TranslateExactOrLowerAscii(stepName, QuestDictionaryFile);
+        if (localizedStepName is not null
+            && localizedStepName.Length != 0
+            && !string.Equals(localizedStepName, stepName, StringComparison.Ordinal))
+        {
+            translated = stepTextByName.TryGetValue(localizedStepName, out found)
+                ? found
+                : localizedStepName;
             return true;
         }
 

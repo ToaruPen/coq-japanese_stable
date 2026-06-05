@@ -17,6 +17,10 @@ public sealed class SingleCallsiteOwnerQueueTranslationPatchTests
     private const string ModMorphogeneticOwner = "XRL.World.Parts.ModMorphogenetic|ApplyMorphicShock";
     private const string MonochromeOwner = "XRL.World.Effects.Monochrome|FireEvent";
     private const string PersuasionRebukeRobotAttemptOwner = "XRL.World.Parts.Skill.Persuasion_RebukeRobot|AttemptRebuke";
+    private const string PyroZoneStartedOwner = "XRL.World.Parts.PyroZone|Started";
+    private const string PyroZoneStoppedOwner = "XRL.World.Parts.PyroZone|Stopped";
+    private const string CryoZoneStartedOwner = "XRL.World.Parts.CryoZone|Started";
+    private const string CryoZoneStoppedOwner = "XRL.World.Parts.CryoZone|Stopped";
     private const string SnapjawHowlOwner = "XRL.World.Parts.Skill.Snapjaw_Howl|FireEvent";
     private const string SphynxSaltTonicOwner = "XRL.World.Effects.SphynxSalt_Tonic|Apply";
     private const string StairsDownOwner = "XRL.World.Parts.StairsDown|CheckPullDown";
@@ -82,6 +86,26 @@ public sealed class SingleCallsiteOwnerQueueTranslationPatchTests
         "You cannot rebuke without a tongue.",
         "舌がないと叱責できない。",
         "PersuasionRebukeRobotMissingTongue")]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerQueueTarget.PyroZoneStarted),
+        "The air to the southeast starts to shimmer with heat!",
+        "南東の空気が熱で揺らめき始めた！",
+        "PyroZoneStarted")]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerQueueTarget.PyroZoneStopped),
+        "The air to the southwest ceases shimmering with heat.",
+        "南西の空気の熱による揺らめきが収まった。",
+        "PyroZoneStopped")]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerQueueTarget.CryoZoneStarted),
+        "The air here bursts into a field of frigid mist!",
+        "このあたりの空気が極寒の霧に包まれた！",
+        "CryoZoneStarted")]
+    [TestCase(
+        nameof(DummySingleCallsiteOwnerQueueTarget.CryoZoneStopped),
+        "The frigid mist to the northwest dissipates.",
+        "北西の極寒の霧が消えた。",
+        "CryoZoneStopped")]
     [TestCase(
         nameof(DummySingleCallsiteOwnerQueueTarget.FireSnapjawHowlEvent),
         "You are frenzied by the howl!",
@@ -230,6 +254,17 @@ public sealed class SingleCallsiteOwnerQueueTranslationPatchTests
         {
             harmony.UnpatchAll(harmonyId);
         }
+    }
+
+    [Test]
+    public void SingleCallsiteOwnerQueue_DoesNotPartiallyTranslateTemperatureZoneWithUnknownDirection_WhenOwnerPatched()
+    {
+        AssertOwnerQueuedMessage(
+            nameof(DummySingleCallsiteOwnerQueueTarget.PyroZoneStarted),
+            "The air skyward starts to shimmer with heat!",
+            "The air skyward starts to shimmer with heat!",
+            "PyroZoneStarted",
+            expectedHits: 0);
     }
 
     [Test]
@@ -464,6 +499,10 @@ public sealed class SingleCallsiteOwnerQueueTranslationPatchTests
             nameof(DummySingleCallsiteOwnerQueueTarget.ApplyMorphicShock) => CreateOwnerRouteFromKey(ModMorphogeneticOwner),
             nameof(DummySingleCallsiteOwnerQueueTarget.FireMonochromeEvent) => CreateOwnerRouteFromKey(MonochromeOwner),
             nameof(DummySingleCallsiteOwnerQueueTarget.AttemptRebukeRobot) => CreateOwnerRouteFromKey(PersuasionRebukeRobotAttemptOwner),
+            nameof(DummySingleCallsiteOwnerQueueTarget.PyroZoneStarted) => CreateOwnerRouteFromKey(PyroZoneStartedOwner),
+            nameof(DummySingleCallsiteOwnerQueueTarget.PyroZoneStopped) => CreateOwnerRouteFromKey(PyroZoneStoppedOwner),
+            nameof(DummySingleCallsiteOwnerQueueTarget.CryoZoneStarted) => CreateOwnerRouteFromKey(CryoZoneStartedOwner),
+            nameof(DummySingleCallsiteOwnerQueueTarget.CryoZoneStopped) => CreateOwnerRouteFromKey(CryoZoneStoppedOwner),
             nameof(DummySingleCallsiteOwnerQueueTarget.FireSnapjawHowlEvent) => CreateOwnerRouteFromKey(SnapjawHowlOwner),
             nameof(DummySingleCallsiteOwnerQueueTarget.ApplySphynxSaltTonic) => CreateOwnerRouteFromKey(SphynxSaltTonicOwner),
             nameof(DummySingleCallsiteOwnerQueueTarget.CheckPullDown) => CreateOwnerRouteFromKey(StairsDownOwner),
@@ -499,6 +538,22 @@ public sealed class SingleCallsiteOwnerQueueTranslationPatchTests
         public static bool FireMonochromeEvent() => true;
 
         public static bool AttemptRebukeRobot() => true;
+
+        public static void PyroZoneStarted()
+        {
+        }
+
+        public static void PyroZoneStopped()
+        {
+        }
+
+        public static void CryoZoneStarted()
+        {
+        }
+
+        public static void CryoZoneStopped()
+        {
+        }
 
         public static bool FireSnapjawHowlEvent() => true;
 

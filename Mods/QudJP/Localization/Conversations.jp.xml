@@ -363,7 +363,7 @@
       <choice GotoID="End" CompleteQuestStep="If, Then, Else~Return to the Keter" FinishQuest="If, Then, Else"><text>生きて飲め。</text><part Name="IfThenElseAchievement" /></choice>
     </node>
     <node ID="Accept"><text>ありがとう、旅人 =name=。</text><choice GotoID="Welcome">……</choice></node>
-    <node ID="Tau" Inherits="Welcome"><text>私の小鈴、燃えて輝く、心は星光と直角で満ちている。彼女はチャヴァを去る――それは彼女の選択だ。私 は……。</text><choice GotoID="Work2" Priority="1">私は何をすべき？</choice><choice Target="Chime" Load="Remove" /><choice Target="Barathrum" Load="Remove" /></node>
+    <node ID="Tau" Inherits="Welcome"><text>私の小鈴、燃えて輝く、心は星光と直角で満ちている。彼女はチャヴァを去る――それは彼女の選択だ。私は……。</text><choice GotoID="Work2" Priority="1">私は何をすべき？</choice><choice Target="Chime" Load="Remove" /><choice Target="Barathrum" Load="Remove" /></node>
     <node ID="Name" Inherits="Welcome"><text>かつて〈自我〉の詩人が、私に〈生命の樹〉の名をこぼした。私にとって私は、浸潤する〈柔(ソフト)〉から吸い上げた多数の〈自我〉だ。私はチャヴァ、そして私はディヴラックだ。</text><choice GotoID="ManySelves" Priority="99">多数の自我？ どういうことだ？</choice></node>
     <node ID="ManySelves"><text>チャヴァとして私は多数。ディヴラックとして私は一。私は一であり多数。一なるものは私を〈樹の都市〉、〈知性ある場所〉と呼んだ。君は〈二堅(ツーファーム)〉から芽吹いた自我を、そのように思えばよい。</text></node>
     <node ID="Physiology" SetSpeakerIntProperty="PhysiologyExplained,1">
@@ -386,7 +386,7 @@
     <node ID="SlynthRequestReject">驚きが先に立ち、落ち着きは後から来る。=name=、彼らの住まいについて合意が見いだせぬ。すまぬ。</node>
     <node ID="SlynthAbout">我らは光帽子の決断を待っている。可能性の数多きを思い描いている。</node>
     <node ID="SlynthArrived"><text>このケテルはざわめく！ スリンスが我らの中にあり、植物の民と我らが互いに慣れるのは緩やかだ。単一の感情を語ることはできないが、新しき伴侶と共に我らは -then に向かう。</text><choice Target="Start">感謝する、ディヴラック。</choice></node>
-    <node ID="SlynthSettled"><text>よく来た、=name=。いく人かはすでに -else を選んだが、最初のスリンスたちは我らのサントのように我らに連なった。可動で別であり、共有で共だ。これは奇妙な -then だが、ここからどんな枝がこぼれ出るだろう？ 見届けるのが楽しみだ。</text><choice Target="Start">共に生き、飲もう、チャヴァ。</choice></node>
+    <node ID="SlynthSettled"><text>よく来た、=name=。何人かはすでに -else を選んだが、最初のスリンスたちは我らのサントのように我らに連なった。可動で別であり、共有で共だ。これは奇妙な -then だが、ここからどんな枝がこぼれ出るだろう？ 見届けるのが楽しみだ。</text><choice Target="Start">共に生き、飲もう、チャヴァ。</choice></node>
   </conversation>
 
   <!-- Tikva (chime) -->
@@ -582,7 +582,7 @@
       <text>
         {{emote|*鈴越しに反響する騒音が、距離と物質に遮られて鈍く届く。*}}
 
-        我らも一緒に鳴く。君の kicksoft が我ら自身の叫びの拍に沈む。
+        我らも一緒に鳴く。君の柔蹴りが我ら自身の叫びの拍に沈む。
       </text>
       <choice GotoID="Companion2">タウは -else の儀を終えた。</choice>
     </start>
@@ -591,7 +591,7 @@
       <text>
         {{emote|*鈴の音が、立ち上る騒音と区別できなくなる。*}}
 
-        すべてがくしゃり（crungle）と折れ曲がる。柔(ソフト)があらゆる形の境界を越えて伸び、炎なき熱樹皮で我らを灼く。それがタウの洞窟のような欠落を震わせる。乾いた涙塩が恋人たちのあいだで固まる。
+        すべてがくしゃくしゃと折れ曲がる。柔(ソフト)があらゆる形の境界を越えて伸び、炎なき熱樹皮で我らを灼く。それがタウの洞窟のような欠落を震わせる。乾いた涙塩が恋人たちのあいだで固まる。
       </text>
       <choice GotoID="PostQuestions">質問がある。</choice>
       <choice GotoID="End">生きて飲め。</choice>
@@ -601,7 +601,7 @@
       <text>
         {{emote|*鈴越しに反響する騒音が、距離と物質に遮られて鈍く届く。*}}
 
-        我らも一緒に鳴く。君の kicksoft が我ら自身の叫びの拍に沈む。
+        我らも一緒に鳴く。君の柔蹴りが我ら自身の叫びの拍に沈む。
       </text>
       <choice GotoID="Else2">タウの旅路はどうなった？</choice>
     </start>
@@ -610,7 +610,7 @@
       <text>
         {{emote|*鈴の音が、立ち上る騒音と区別できなくなる。*}}
 
-        すべてがくしゃり（crungle）と折れ曲がる。柔(ソフト)があらゆる形の境界を抜けて伸び、炎なき熱樹皮で我らを灼く。それがタウの洞窟のような欠落を震わせる。触覚が失われ、各面が裂かれる前に震える。
+        すべてがくしゃくしゃと折れ曲がる。柔(ソフト)があらゆる形の境界を抜けて伸び、炎なき熱樹皮で我らを灼く。それがタウの洞窟のような欠落を震わせる。触覚が失われ、各面が裂かれる前に震える。
       </text>
       <choice GotoID="PostQuestions">質問がある。</choice>
       <choice GotoID="End">生きて飲め。</choice>
@@ -618,7 +618,7 @@
     
     <start ID="Welcome">
       <text>
-        誰が私の水晶の腕を叩き、誰が風のいたずらで私を kicksoft する？ 君がここにいるのを感じるぞ、友よ。
+        誰が私の水晶の腕を叩き、誰が風のいたずらで私を柔蹴りする？ 君がここにいるのを感じるぞ、友よ。
       </text>
       <choice GotoID="Name">私は =name=。君は？</choice>
       <choice GotoID="Feel">……感じているのか？</choice>
@@ -659,7 +659,7 @@
 
         君が私の水晶の腕を叩き、風のいたずらでこづく。我らの感じた夢は終わっていない。今ここに君を感じる。
 				
-        先程、柔(ソフト)が突然あふれ出した時、西の根を打つ戦の石と、空気の kicksoft が静寂へほどけるのを感じた。静かな闇の中で、星の排気の灼熱と咆哮する器の鼓動を感じた。そして……感じすぎた。糸の数が私の縁覚に多すぎた。
+        先程、柔(ソフト)が突然あふれ出した時、西の根を打つ戦の石と、空気の柔蹴りが静寂へほどけるのを感じた。静かな闇の中で、星の排気の灼熱と咆哮する器の鼓動を感じた。そして……感じすぎた。糸の数が私の縁覚に多すぎた。
       </text>
       <choice GotoID="Gyredream2">[聴き続ける]</choice>
     </node>
@@ -1420,7 +1420,7 @@
 
     <node ID="Trash">
       <text>
-        てんか（tink） ちらかる。燃えカス、床にぽろぽろ！ るーと ばちん、硝子 ぱらぱら、こあ 焦げて でんき こぼれる。
+        てんか、ちらかる。燃えカス、床にぽろぽろ！ るーと ばちん、硝子 ぱらぱら、こあ 焦げて でんき こぼれる。
       </text>
       <choice UseID="SvardymChoice" />
       <choice UseID="FreeholdChoice" />
@@ -1938,7 +1938,7 @@
 
     <node ID="SlynthWhat">
       <text>
-        我らはスリンスと呼ばれる。睡蓮の挿し木を収めた水耕の揺り籠から一体ずつ育ち、日渣（sunslag）に力を得る民だ。世代は指で数えるほどしか過ぎておらず、私が……まあ何十年か前に育つまでは、文字の歴史も持たなかった。
+        我らはスリンスと呼ばれる。睡蓮の挿し木を収めた水耕の揺り籠から一体ずつ育ち、日渣に力を得る民だ。世代は指で数えるほどしか過ぎておらず、私が……まあ何十年か前に育つまでは、文字の歴史も持たなかった。
       </text>
       <choice UseID="Greet" />
       <choice UseID="How" />
@@ -4892,7 +4892,7 @@
       <text>
         クランク。クランク。クランク。クランク。パクス・クランク。
         
-        下に行かせてって頼みたいけど、あそこには“マッシュルーム（mush room）”が足りないの。いや、あるからこそ足りないっていうか。つまりね、「ニークには聞こえなくていいんだよ」って感じ。
+        下に行かせてって頼みたいけど、あそこには“マッシュ・ルーム”が足りないの。いや、あるからこそ足りないっていうか。つまりね、「ニークには聞こえなくていいんだよ」って感じ。
       </text>
       <choice GotoID="Start">……そっか。</choice>
       <choice GotoID="End">生きて飲め、友よ。</choice>
@@ -5079,7 +5079,7 @@
     </node>
     <node ID="GritGate">
       <text>
-        ここがグリット・ゲートさ！ アーチの連なる広間、クロームの煌めき、チェインタレットの優しいハミング！
+        ここがグリット・ゲートさ！ アーチの連なる広間、クロームの煌めき、チェーンタレットの優しいハミング！
 
         クッドのどこを探しても、グリット・ゲートの代わりはないよ、=player.formalAddressTerm=。私は短い生の間にも旅をしてきたが、いつもここへ戻ってくる。ここは空気そのものが知識でざわめいていてね――ほかのいろんなものでも、ざわめいているけど。
       </text>
@@ -5427,7 +5427,7 @@
 
         知恵を軽んじることは、カサフェセンスを軽んじることだ。彼女は虚空の中で輝きを屈折させ、周囲を照らす。私たちの先人の書いた知恵も同じなんだ。
 
-        クロームの機構は神性ゆえに複雑だ。それを知らずにいること、過去も未来も知らずにいることは、父祖への侮辱ではないか？ 知る喜びを求める価値はないか？ 我が同士エシェルシュタット二世、最初の子は私と同じ考えを持っている。
+        クロームの機構は神性ゆえに複雑だ。それを知らずにいること、過去も未来も知らずにいることは、父祖への侮辱ではないか？ 知る喜びを求める価値はないか？ 我が同志エシェルシュタット二世、最初の子は私と同じ考えを持っている。
       </text>
       <choice GotoID="Start" Transient="true">
         <text>本を寄贈しよう。</text>
@@ -7359,6 +7359,53 @@
 
   <!-- Otho (key quest chain and updates) -->
   <conversation ID="Otho">
+    <node ID="Start" IfHaveActiveQuest="More Than a Willing Spirit" IfHaveBlueprint="Dormant Waydroid" IfLevelLessOrEqual="12" Replace="true">
+      <text>
+        グリット・ゲートへようこそ。私はオソ、バラサラムの執事だ。このような出迎えになったことは詫びるが、我々は用心せねばならない。クッドは非常に容赦のない場所だからな。
+
+        それほど未熟な身でゴルゴタから戻ってきたことは、途方もない素質の証だ。褒美としてこの銃を受け取れ。我ら最高の銃鍛冶、スパラフチーレの刻印が入っている。この腕輪も持っていけ。
+
+        信号について話し合う準備ができたら戻ってこい。
+      </text>
+      <choice GotoID="End">生きて飲め。</choice>
+      <choice GotoID="End" CompleteQuestStep="More Than a Willing Spirit~Return to Grit Gate|3000">
+        <text>ありがとう。また戻ってくる。</text>
+        <part Name="ReceiveItem" Blueprints="MasterworkCarbine,MasterworkChainPistol" Pick="true" Identify="All" />
+        <part Name="ReceiveItem" Blueprints="Hologram Bracelet" Identify="All" />
+        <part Name="GritGateHandler" Rank="Apprentice" />
+      </choice>
+    </node>
+
+    <node ID="Start" IfHaveActiveQuest="More Than a Willing Spirit" IfHaveBlueprint="Dormant Waydroid" IfLevelLessOrEqual="18" Replace="true">
+      <text>
+        グリット・ゲートへようこそ。私はオソ、バラサラムの執事だ。このような出迎えになったことは詫びるが、我々は用心せねばならない。クッドは非常に容赦のない場所だからな。
+
+        ウェイドロイドを連れて戻ってきたことは喜ばしい。とはいえ、お前が抱えている危険についてはまだほとんど知らないだろう。褒美としてこの銃を受け取れ。我ら最高の銃鍛冶、スパラフチーレの刻印が入っている。
+
+        信号について話し合う準備ができたら戻ってこい。
+      </text>
+      <choice GotoID="End" CompleteQuestStep="More Than a Willing Spirit~Return to Grit Gate|1250">
+        <text>ありがとう。また戻ってくる。</text>
+        <part Name="ReceiveItem" Blueprints="MasterworkCarbine,MasterworkChainPistol" Pick="true" Identify="All" />
+        <part Name="GritGateHandler" Rank="Apprentice" />
+      </choice>
+    </node>
+
+    <node ID="Start" IfHaveActiveQuest="More Than a Willing Spirit" IfHaveBlueprint="Dormant Waydroid" Replace="true">
+      <text>
+        グリット・ゲートへようこそ。私はオソ、バラサラムの執事だ。このような出迎えになったことは詫びるが、我々は用心せねばならない。クッドは非常に容赦のない場所だからな。
+
+        お前は我々と学ぶに値する。これを受け取れ。
+
+        信号について話し合う準備ができたら戻ってこい。
+      </text>
+      <choice GotoID="End" CompleteQuestStep="More Than a Willing Spirit~Return to Grit Gate|750">
+        <text>ありがとう。また戻ってくる。</text>
+        <part Name="ReceiveItem" Blueprints="EMPGrenade3,ColdGrenade3,StasisGrenade3" Identify="All" />
+        <part Name="GritGateHandler" Rank="Apprentice" />
+      </choice>
+    </node>
+
     <node ID="Signal" Replace="true">
       <text>
         その信号は、どこからとも知れぬ場所から繰り返し送信されているものだ。=V0tinkeraddendum= 我らが工匠の一人、&amp;mQガール&amp;y が長波検出器を仕掛けている最中に見つけた。残念ながら暗号化されており、ここには解読手段がない。だが、この件でお前が助けになれるかもしれない。
@@ -8593,7 +8640,7 @@
     </node>
     <node ID="-1">
       <text>
-        聞きたい？ 父さまと仲間に最初に組み立ててもらった時は、ぼくはシェム2だったんだ。make-me 計画の二番目の試作機。
+        聞きたい？ 父さまと仲間に最初に組み立ててもらった時は、ぼくはシェム2だったんだ。ぼく作り計画の二番目の試作機。
 
         でも、廊下を駆け回って、ニークに読み聞かせてもらって、スパラフチレの作業台によじ登ってネジを換えてもらううちに、ぼくはもっと別の姿になれるってわかった。だから自分でシェム1にダウングレードしたんだ。
 

@@ -381,12 +381,12 @@
     {
       "context": "XRL.World.Parts.ModPadded.GetShortDescription",
       "key": "% chance to prevent daze or stun effects, and it doubles the chance for the wearer to shake off daze and stun effects with the Shake It Off skill power.",
-      "text": "%の確率で朦朧やスタンを防ぎ、振り払う技能でそれらを振り払う確率を2倍にする。"
+      "text": "%の確率で朦朧や気絶を防ぎ、振り払う技能でそれらを振り払う確率を2倍にする。"
     },
     {
       "context": "XRL.World.Parts.ModPadded.GetShortDescription",
       "key": " % chance to prevent daze or stun effects, and it doubles the chance for the wearer to shake off daze and stun effects with the Shake It Off skill power.",
-      "text": "%の確率で朦朧やスタンを防ぎ、振り払う技能でそれらを振り払う確率を2倍にする。"
+      "text": "%の確率で朦朧や気絶を防ぎ、振り払う技能でそれらを振り払う確率を2倍にする。"
     },
     {
       "context": "XRL.World.Parts.ModPiping.GetShortDescription",
@@ -546,7 +546,7 @@
     {
       "context": "XRL.World.Parts.ModSpiked.GetShortDescription",
       "key": "Spiked: This item adds bonus damage to Shield Slam equal to your Strength modifier and causes your target to bleed.",
-      "text": "スパイク: Strength修正と同値の追加ダメージをシールドスラムに与え、標的を出血させる。"
+      "text": "スパイク: 筋力修正と同値の追加ダメージをシールドスラムに与え、標的を出血させる。"
     },
     {
       "context": "XRL.World.Parts.ModSpiked.GetShortDescription",

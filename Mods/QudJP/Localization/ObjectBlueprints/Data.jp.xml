@@ -286,13 +286,13 @@
     <tag Name="Description" Value="強力な混乱ガス吐息"/>
   </object>
   <object Name="ProceduralCookingIngredient_starch" Load="Merge">
-    <tag Name="Description" Value="特殊な俊敏由来"/>
+    <tag Name="Description" Value="特殊なクイックネス由来"/>
   </object>
   <object Name="ProceduralCookingIngredient_lignin" Load="Merge">
     <tag Name="Description" Value="特殊な再生由来"/>
   </object>
   <object Name="ProceduralCookingIngredient_quicknessMinor" Load="Merge">
-    <tag Name="Description" Value="シンプルな俊敏由来"/>
+    <tag Name="Description" Value="シンプルなクイックネス由来"/>
   </object>
   <object Name="ProceduralCookingIngredient_density" Load="Merge">
     <tag Name="Description" Value="不安定な密度由来"/>

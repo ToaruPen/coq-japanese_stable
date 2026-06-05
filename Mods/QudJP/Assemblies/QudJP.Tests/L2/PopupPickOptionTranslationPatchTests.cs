@@ -230,6 +230,39 @@ public sealed class PopupPickOptionTranslationPatchTests
     }
 
     [Test]
+    public void Prefix_RepositoryDictionary_TranslatesDynamicQuestRewardDisplayNamesAndKeepsQuantitySuffix()
+    {
+        Translator.SetDictionaryDirectoryForTests(GetRepositoryDictionaryDirectory());
+
+        using var patch = PatchPickOption();
+
+        DummyPopupGenericTarget.PickOption(
+            Title: "Choose a reward",
+            Options: new[]
+            {
+                "{{Y|copper nugget}} &Wx3, copper nugget",
+                "copper nugget",
+            });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(DummyPopupGenericTarget.LastPickOptionTitle, Is.EqualTo("報酬を選ぶ。"));
+            Assert.That(
+                DummyPopupGenericTarget.LastPickOptionOptions,
+                Is.EqualTo(new[]
+                {
+                    "{{Y|銅塊}} &Wx3, 銅塊",
+                    "銅塊",
+                }));
+            Assert.That(
+                DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                    nameof(PopupPickOptionTranslationPatch),
+                    "DynamicQuestRewardOption.DisplayName"),
+                Is.EqualTo(2));
+        });
+    }
+
+    [Test]
     public void Prefix_RepositoryDictionary_TranslatesReviewedFixedProducerPickOptionPayload()
     {
         Translator.SetDictionaryDirectoryForTests(GetRepositoryDictionaryDirectory());
@@ -608,6 +641,7 @@ public sealed class PopupPickOptionTranslationPatchTests
             ("drop all", "XRL.World.IInventoryActionsEvent", "すべて落とす"),
             ("replace cell", "XRL.World.IInventoryActionsEvent", "セルを交換"),
             ("install cell", "XRL.World.IInventoryActionsEvent", "セルを装着"),
+            ("interface", "XRL.World.IInventoryActionsEvent", "接続する"),
             ("direct to attack target", "XRL.World.IInventoryActionsEvent", "攻撃対象を指示"),
             ("direct to engage aggressively", "XRL.World.IInventoryActionsEvent", "攻撃的に交戦させる"),
             ("direct to engage defensively only", "XRL.World.IInventoryActionsEvent", "防御的に交戦させる"),
@@ -655,6 +689,11 @@ public sealed class PopupPickOptionTranslationPatchTests
                     "{{W|[n]}} {{y|add notes}}",
                     "InventoryActionMenu:ABC123"),
                 Is.EqualTo("{{W|[n]}} {{y|メモを追加}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[i]}} {{y|interface}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[i]}} {{y|接続する}}"));
             Assert.That(
                 SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
                     "{{W|[r]}} {{y|remove}}",

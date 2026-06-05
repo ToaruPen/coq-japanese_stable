@@ -16,6 +16,8 @@ public static class QuestsStatusScreenTranslationPatch
         new Regex(@"\{\{B\|(?<label>quest:)\}\}\s", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex VisitMapPinDetailsPattern =
         new Regex(@"(?<lead>(?:^|\n)(?:\{\{B\|[^}]+\}\}\s*)?)Visit (?<target>[^\r\n]+)", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex MapPinQuestLinePattern =
+        new Regex(@"^(?<lead>(?:\{\{B\|[^}]+\}\}\s*)?)(?<quest>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     [HarmonyTargetMethod]
     private static MethodBase? TargetMethod()
@@ -187,6 +189,13 @@ public static class QuestsStatusScreenTranslationPatch
             changed = true;
         }
 
+        var generatedTranslated = TranslateGeneratedMapPinQuestLines(translated, route, out var generatedChanged);
+        if (generatedChanged)
+        {
+            translated = generatedTranslated;
+            changed = true;
+        }
+
         if (changed)
         {
             DynamicTextObservability.RecordTransform(route, "QuestsStatusScreen.MapPinDetails", source, translated);
@@ -215,5 +224,40 @@ public static class QuestsStatusScreenTranslationPatch
             });
         changed = didChange;
         return translated;
+    }
+
+    private static string TranslateGeneratedMapPinQuestLines(string source, string route, out bool changed)
+    {
+        var newline = source.Contains("\r\n") ? "\r\n" : "\n";
+        var normalized = newline == "\r\n"
+            ? source.Replace("\r\n", "\n")
+            : source;
+        var lines = normalized.Split(new[] { '\n' }, StringSplitOptions.None);
+        var didChange = false;
+        for (var index = 0; index < lines.Length; index++)
+        {
+            var line = lines[index];
+            var match = MapPinQuestLinePattern.Match(line);
+            if (!match.Success)
+            {
+                continue;
+            }
+
+            var quest = match.Groups["quest"].Value;
+            var translatedQuest = ScopedDictionaryLookup.TranslateExactOrLowerAscii(quest, DictionaryFile);
+            if ((string.IsNullOrEmpty(translatedQuest) || string.Equals(translatedQuest, quest, StringComparison.Ordinal))
+                && (!DynamicQuestGeneratedQuestTextTranslator.TryTranslate(quest, out translatedQuest)
+                    || string.Equals(translatedQuest, quest, StringComparison.Ordinal)))
+            {
+                continue;
+            }
+
+            lines[index] = match.Groups["lead"].Value + translatedQuest;
+            didChange = true;
+            DynamicTextObservability.RecordTransform(route, "QuestsStatusScreen.MapPinGeneratedQuestLine", line, lines[index]);
+        }
+
+        changed = didChange;
+        return string.Join(newline, lines);
     }
 }

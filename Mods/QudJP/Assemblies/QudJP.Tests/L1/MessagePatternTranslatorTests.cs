@@ -154,15 +154,15 @@ public sealed class MessagePatternTranslatorTests
     [Test]
     public void Translate_HandlesOptionalPunctuation()
     {
-        WritePatternDictionary(("^You are stunned[.!]?$", "あなたは朦朧としている"));
+        WritePatternDictionary(("^You are stunned[.!]?$", "あなたは気絶している"));
 
         var first = MessagePatternTranslator.Translate("You are stunned");
         var second = MessagePatternTranslator.Translate("You are stunned!");
 
         Assert.Multiple(() =>
         {
-            Assert.That(first, Is.EqualTo("あなたは朦朧としている"));
-            Assert.That(second, Is.EqualTo("あなたは朦朧としている"));
+            Assert.That(first, Is.EqualTo("あなたは気絶している"));
+            Assert.That(second, Is.EqualTo("あなたは気絶している"));
         });
     }
 
@@ -293,7 +293,7 @@ public sealed class MessagePatternTranslatorTests
         WritePatternDictionary(
             (
                 "^On the (.+?) of (.+?), you arrive at the village of (.+?)\\.\\n\\nOn the horizon, Qud's jungles strangle chrome steeples and rusted archways to the earth\\. Further and beyond, the fabled Spindle rises above the fray and pierces the cloud-ribboned sky\\.$",
-                "{t1}の{t0}日、あなたは{t2}の村に到着した。\n\n地平線では、Qudのジャングルがクロームの尖塔と錆びたアーチを大地に絡みつかせている。さらにその彼方では、伝説のスピンドルが乱景の上にそびえ、雲の帯を貫いて空へ伸びている。"));
+                "{t1}の{t0}日、あなたは{t2}の村に到着した。\n\n地平線では、クッドのジャングルがクロームの尖塔と錆びたアーチを大地に絡みつかせている。さらにその彼方では、伝説のスピンドルが乱景の上にそびえ、雲の帯を貫いて空へ伸びている。"));
         WriteExactDictionary(
             ("5th", "第5"),
             ("Ut yara Ux", "ウト・ヤラ・ウクス"),
@@ -305,7 +305,7 @@ public sealed class MessagePatternTranslatorTests
         var translated = MessagePatternTranslator.Translate(source);
 
         var expected = "ウト・ヤラ・ウクスの第5日、あなたはダムールと菌類地帯の村に到着した。\n\n" +
-            "地平線では、Qudのジャングルがクロームの尖塔と錆びたアーチを大地に絡みつかせている。さらにその彼方では、伝説のスピンドルが乱景の上にそびえ、雲の帯を貫いて空へ伸びている。";
+            "地平線では、クッドのジャングルがクロームの尖塔と錆びたアーチを大地に絡みつかせている。さらにその彼方では、伝説のスピンドルが乱景の上にそびえ、雲の帯を貫いて空へ伸びている。";
 
         Assert.That(translated, Is.EqualTo(expected));
     }
@@ -369,7 +369,7 @@ public sealed class MessagePatternTranslatorTests
     [TestCase("{{y|&rA loud buzz is emitted. The unauthorized glyph flashes on the display.}}", "{{y|&r大きなブザー音が鳴った。認証されていないグリフがディスプレイに点滅した。}}")]
     [TestCase("Youは氷で滑った！", "あなたは氷で滑った！")]
     [TestCase("The 濡れた ジュースサップは氷で滑った！", "濡れた ジュースサップは氷で滑った！")]
-    [TestCase("濡れたチェインレーザー砲座の shot goes wild!", "濡れたチェインレーザー砲座の弾が逸れた！")]
+    [TestCase("濡れたチェーンレーザー砲座の shot goes wild!", "濡れたチェーンレーザー砲座の弾が逸れた！")]
     [TestCase("鉛スラッグ hits you to the east! (x2)", "鉛スラッグがあなたに東側に命中！ (x2)")]
     [TestCase("鉛スラッグ critically hits you to the east! (x2)", "鉛スラッグが会心であなたに東側に命中！ (x2)")]
     [TestCase("鉛スラッグ hits you to the east, but your mental attack has no effect.", "鉛スラッグがあなたに東側に命中したが、精神攻撃は効果がない")]
@@ -822,7 +822,7 @@ public sealed class MessagePatternTranslatorTests
 
         Assert.That(
             translated,
-            Is.EqualTo("{{g|{{g|{{Y|塩気のある}} {{slimy|粘液質の}} Point of the Commanding Woe}}で21ダメージを与えた。({{&W|x2}}) [19]}}"));
+            Is.EqualTo("{{g|{{g|{{Y|塩気のある}} {{slimy|粘液質の}} 威厳ある嘆きの尖端}}で21ダメージを与えた。({{&W|x2}}) [19]}}"));
     }
 
     [Test]
@@ -835,7 +835,7 @@ public sealed class MessagePatternTranslatorTests
 
         Assert.That(
             translated,
-            Is.EqualTo("{{g|{{Y-R-Y-Y-Y-Y-Y-r-Y sequence|Point of the Commanding Woe}}で会心の一撃、28ダメージを与えた。({{&W|x3}}) [21]}}"));
+            Is.EqualTo("{{g|{{Y-R-Y-Y-Y-Y-Y-r-Y sequence|威厳ある嘆きの尖端}}で会心の一撃、28ダメージを与えた。({{&W|x3}}) [21]}}"));
     }
 
     [Test]
@@ -859,7 +859,7 @@ public sealed class MessagePatternTranslatorTests
 
         Assert.That(
             translated,
-            Is.EqualTo("{{r|{{Y-R-Y-Y-Y-Y-Y-r-Y sequence|Point of the Commanding Woe}}での攻撃は外れた。[8 vs 12]}}"));
+            Is.EqualTo("{{r|{{Y-R-Y-Y-Y-Y-Y-r-Y sequence|威厳ある嘆きの尖端}}での攻撃は外れた。[8 vs 12]}}"));
     }
 
     [Test]
@@ -1099,6 +1099,17 @@ public sealed class MessagePatternTranslatorTests
             "You see 巨大トンボ and {{r|クッズー}}共生体 to the northeast and stop 移動中.");
 
         Assert.That(translated, Is.EqualTo("北東に巨大トンボ and {{r|クッズー}}共生体が見えたので移動をやめた。"));
+    }
+
+    [Test]
+    public void Translate_RepositoryDictionary_TranslatesDirectionalSeeAndRefrainWithLocalizedAutoActDescription()
+    {
+        UseRepositoryPatternDictionary();
+
+        var translated = MessagePatternTranslator.Translate(
+            "You see 塩気のある血まみれのクローンリング to the east, so you refrain from 休息中.");
+
+        Assert.That(translated, Is.EqualTo("東に塩気のある血まみれのクローンリングが見えたので休息を控えた。"));
     }
 
     [Test]
@@ -1351,7 +1362,7 @@ public sealed class MessagePatternTranslatorTests
         WriteExactDictionary(("27th", "第27"), ("Uru Ux", "ウル・ウクス"));
         WritePatternDictionary((
             "^On the (.+?) of (.+?), you arrive at the oasis-hamlet of Joppa, along the far rim of Moghra'yi, the Great Salt Desert\\.\\n\\nAll around you, moisture farmers tend to groves of viridian watervine\\. There are huts wrought from rock salt and brinestalk\\.\\n\\nOn the horizon, Qud's jungles strangle chrome steeples and rusted archways to the earth\\. Further and beyond, the fabled Spindle rises above the fray and pierces the cloud-ribboned sky\\.$",
-            "{t1}の{t0}日、あなたは大塩砂漠モグライィの遥かな縁にあるオアシス集落ジョッパに到着した。\n\nあたりではウォーターヴァインの茂みを水耕農家たちが世話している。岩塩とブラインストークで組まれた小屋が建っている。\n\n地平線では、Qudのジャングルがクロームの尖塔と錆びたアーチを大地に絡みつかせている。さらにその彼方では、伝説のスピンドルが乱景の上にそびえ、雲の帯を貫いて空へ伸びている。"));
+            "{t1}の{t0}日、あなたは大塩砂漠モグライィの遥かな縁にあるオアシス集落ジョッパに到着した。\n\nあたりではウォーターヴァインの茂みを水耕農家たちが世話している。岩塩とブラインストークで組まれた小屋が建っている。\n\n地平線では、クッドのジャングルがクロームの尖塔と錆びたアーチを大地に絡みつかせている。さらにその彼方では、伝説のスピンドルが乱景の上にそびえ、雲の帯を貫いて空へ伸びている。"));
 
         var source = "On the 27th of Uru Ux, you arrive at the oasis-hamlet of Joppa, along the far rim of Moghra'yi, the Great Salt Desert.\n\n" +
             "All around you, moisture farmers tend to groves of viridian watervine. There are huts wrought from rock salt and brinestalk.\n\n" +
@@ -1361,7 +1372,7 @@ public sealed class MessagePatternTranslatorTests
 
         var expected = "ウル・ウクスの第27日、あなたは大塩砂漠モグライィの遥かな縁にあるオアシス集落ジョッパに到着した。\n\n" +
             "あたりではウォーターヴァインの茂みを水耕農家たちが世話している。岩塩とブラインストークで組まれた小屋が建っている。\n\n" +
-            "地平線では、Qudのジャングルがクロームの尖塔と錆びたアーチを大地に絡みつかせている。さらにその彼方では、伝説のスピンドルが乱景の上にそびえ、雲の帯を貫いて空へ伸びている。";
+            "地平線では、クッドのジャングルがクロームの尖塔と錆びたアーチを大地に絡みつかせている。さらにその彼方では、伝説のスピンドルが乱景の上にそびえ、雲の帯を貫いて空へ伸びている。";
 
         Assert.That(translated, Is.EqualTo(expected));
     }
@@ -2293,7 +2304,7 @@ public sealed class MessagePatternTranslatorTests
         var translated = MessagePatternTranslator.Translate(
             "You don't penetrate 珪岩の armor with the Point of the Commanding Woe. [23]");
 
-        Assert.That(translated, Is.EqualTo("Point of the Commanding Woeでは珪岩の装甲を貫けなかった！ [23]"));
+        Assert.That(translated, Is.EqualTo("威厳ある嘆きの尖端では珪岩の装甲を貫けなかった！ [23]"));
     }
 
     [Test]

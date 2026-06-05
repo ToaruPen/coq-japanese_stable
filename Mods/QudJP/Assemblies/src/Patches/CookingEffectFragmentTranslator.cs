@@ -61,6 +61,21 @@ internal static class CookingEffectFragmentTranslator
                 NormalizeChance(RestoreVisible(match.Groups["chance"], spans)),
                 "の確率で")),
         new(
+            "EatYuckwheatTrigger",
+            new Regex(
+                "^whenever @thisCreature eat@s an unfermented yuckwheat stem,$",
+                RegexOptions.CultureInvariant | RegexOptions.Compiled),
+            static (_, _) => "@thisCreature が未発酵のヤックウィートの茎を食べるたび、"),
+        new(
+            "EatYuckwheatElectricalDischargePronounTemplate",
+            new Regex(
+                "^whenever @thisCreature eat@s an unfermented yuckwheat stem, @they release an electrical discharge per Electrical Generation at level (?<level>\\d+(?:-\\d+)?)\\.$",
+                RegexOptions.CultureInvariant | RegexOptions.Compiled),
+            static (match, spans) => string.Concat(
+                "@thisCreature が未発酵のヤックウィートの茎を食べるたび、@they は電気生成レベル",
+                FormatRange(RestoreVisible(match.Groups["level"], spans)),
+                "の放電を行う。")),
+        new(
             "TakeDamageChance",
             new Regex(
                 "^whenever @thisCreature take@s damage, there's (?<chance>.+?) chance$",

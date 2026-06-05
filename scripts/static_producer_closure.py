@@ -6123,7 +6123,7 @@ def _generated_queue_does_verb_families() -> tuple[CoveredOwnerFamily, ...]:
                         *tests.required_substrings,
                         "DropOffStolenGoodsMoveToDropoff",
                         "folded carbide dagger",
-                        "を{{y|shaft}}に落とした。",
+                        "を{{y|縦坑}}に落とした。",
                     ),
                 ),
                 EvidenceFile(
@@ -6192,7 +6192,7 @@ def _generated_queue_does_verb_families() -> tuple[CoveredOwnerFamily, ...]:
                         *tests.required_substrings,
                         "BodyPartUnequipPartAndChildren",
                         "Your {{Y|carbide dagger}} falls to the ground.",
-                        "{{Y|carbide dagger}}は地面に倒れた。",
+                        "{{Y|カーバイドの短剣}}は地面に倒れた。",
                     ),
                 ),
                 EvidenceFile(
@@ -16423,7 +16423,7 @@ COVERED_OWNER_CALLSITES: Final = (
                     "Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
                     "Patch_DoesNotClaimFixedOrEmptyPopup_WhenOwnerPatched",
                     "permanent insertion of {{Y|a cybernetic credit wedge}}",
-                    "Access diodes flash in the affirmative.",
+                    "Auxiliary diodes glow without comment.",
                 ),
             ),
             EvidenceFile(

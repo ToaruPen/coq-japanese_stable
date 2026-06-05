@@ -9562,7 +9562,7 @@ def test_policy_records_issue719_tranche39_active_effect_fixed_message_frame_ove
 
     residual_payload = residual_bucket_payload(inventory, inventory_path=Path("inventory.json"))
 
-    assert residual_payload["total_entries"] == 6
+    assert residual_payload["actionable_entries"] == 6
     assert sum(entry["text_construction_count"] for entry in residual_payload["entries"]) == 42
     assert residual_payload["bucket_counts"] == {
         "active_effect_message_frame_route_split": 6,
@@ -9614,7 +9614,7 @@ def test_policy_records_issue719_tranche40_active_effect_fixed_message_frame_ove
 
     residual_payload = residual_bucket_payload(inventory, inventory_path=Path("inventory.json"))
 
-    assert residual_payload["total_entries"] == 0
+    assert residual_payload["actionable_entries"] == 0
     assert sum(entry["text_construction_count"] for entry in residual_payload["entries"]) == 0
 
 
@@ -9671,7 +9671,7 @@ def test_policy_records_issue719_tranche40_active_effect_conversation_responsive
 
     residual_payload = residual_bucket_payload(inventory, inventory_path=Path("inventory.json"))
 
-    assert residual_payload["total_entries"] == 0
+    assert residual_payload["actionable_entries"] == 0
     assert sum(entry["text_construction_count"] for entry in residual_payload["entries"]) == 0
 
 
@@ -9743,7 +9743,7 @@ def test_policy_records_issue719_tranche41_active_effect_didx_owner_route_overla
 
     residual_payload = residual_bucket_payload(inventory, inventory_path=Path("inventory.json"))
 
-    assert residual_payload["total_entries"] == 0
+    assert residual_payload["actionable_entries"] == 0
     assert sum(entry["text_construction_count"] for entry in residual_payload["entries"]) == 0
 
 
@@ -9826,7 +9826,7 @@ def test_policy_records_issue719_tranche42_social_active_effect_owner_route_over
 
     residual_payload = residual_bucket_payload(inventory, inventory_path=Path("inventory.json"))
 
-    assert residual_payload["total_entries"] == 0
+    assert residual_payload["actionable_entries"] == 0
     assert sum(entry["text_construction_count"] for entry in residual_payload["entries"]) == 0
 
 
@@ -9860,7 +9860,7 @@ def test_policy_records_issue719_tranche43_cardiac_arrest_remove_owner_route_ove
 
     residual_payload = residual_bucket_payload(inventory, inventory_path=Path("inventory.json"))
 
-    assert residual_payload["total_entries"] == 0
+    assert residual_payload["actionable_entries"] == 0
     assert sum(entry["text_construction_count"] for entry in residual_payload["entries"]) == 0
 
 
@@ -11501,7 +11501,7 @@ def test_residual_bucket_payload_assigns_every_unreviewed_entry_to_a_followup_bu
 
     payload = residual_bucket_payload(inventory, inventory_path=Path("inventory.json"))
 
-    assert payload["total_entries"] == 6
+    assert payload["actionable_entries"] == 6
     assert payload["disposition_counts"] == {
         "likely_implementation_gap": 2,
         "runtime_evidence_required": 4,
@@ -11590,7 +11590,7 @@ def test_followup_issue_payload_groups_residual_buckets_into_consolidated_issue(
 
     payload = followup_issue_payload(inventory, inventory_path=Path("inventory.json"))
 
-    assert payload["total_entries"] == 6
+    assert payload["actionable_entries"] == 6
     assert payload["track_counts"] == {"consolidated": 6}
     assert payload["issue_counts"] == {"issue719-consolidated-residuals": 6}
     assert list(payload["issues"]) == ["issue719-consolidated-residuals"]
@@ -11751,7 +11751,7 @@ def test_followup_issue_payload_routes_edge_residual_buckets_without_keyerror() 
 
     payload = followup_issue_payload(inventory, inventory_path=Path("inventory.json"))
 
-    assert payload["total_entries"] == 2
+    assert payload["actionable_entries"] == 2
     assert payload["issue_counts"] == {"issue719-consolidated-residuals": 2}
     assert (
         "active_effect_non_description_route_split" in payload["issues"]["issue719-consolidated-residuals"]["buckets"]
@@ -12491,7 +12491,7 @@ def test_residual_bucket_payload_promotes_cooking_preset_display_names_to_owner_
         inventory,
         inventory_path=Path("issue719-cooking-preset-display-name-test.json"),
     )
-    assert residual["total_entries"] == 0
+    assert residual["actionable_entries"] == 0
 
 
 def test_residual_bucket_payload_splits_world_part_generated_display_names_by_owner_shape() -> None:
@@ -12916,7 +12916,7 @@ def test_residual_bucket_payload_promotes_village_signature_dishes_to_cooking_di
         inventory_path=Path("issue719-village-signature-dish-test.json"),
     )
 
-    assert residual["total_entries"] == 0
+    assert residual["actionable_entries"] == 0
     for family_id, _, _, _ in families.values():
         assert entries[family_id]["closure_status"] == "covered_by_owner_route"
         _assert_evidence_contains(
@@ -13012,7 +13012,7 @@ def test_residual_bucket_payload_promotes_village_coda_generated_names_to_displa
             "GetDisplayNameRouteTranslatorTests.cs",
             "VillageCoda.cs",
         )
-    assert payload["total_entries"] == 0
+    assert payload["actionable_entries"] == 0
 
 
 def test_residual_bucket_payload_splits_mural_generated_display_names_by_owner_shape() -> None:
@@ -14238,6 +14238,7 @@ def test_residual_bucket_payload_splits_quest_runtime_routes_by_owner_shape() ->
         families["reward_choice"][0],
         "DynamicQuestRewardElement_ChoiceFromPopulation.award",
         "PopupPickOptionTranslationPatchTests.cs",
+        "&WxN",
         "ui-popup.ja.json",
     )
     assert {
@@ -19200,6 +19201,39 @@ def test_load_inventory_backfills_empty_first_lines_from_representative_calls(tm
     entry = build_surface_queue(inventory)[0]
 
     assert entry["first_lines"] == [738]
+
+
+def test_followup_issue_payload_filters_covered_entries_when_called_with_valuable_include() -> None:
+    """Follow-up grouping remains residual-only even if the caller asks for valuable entries."""
+    covered_book_line = (
+        "XRL.World.Conversations.Parts/InsertRandomBookLine.cs::"
+        "InsertRandomBookLine.HandleEvent(PrepareTextEvent)"
+    )
+    action_required_status_line = "Qud.UI/LeftSideCategory.cs::LeftSideCategory.setData(object)"
+    inventory = _inventory(
+        [
+            _family(
+                covered_book_line,
+                "XRL.World.Conversations.Parts/InsertRandomBookLine.cs",
+                "HandleEvent",
+                {"ConversationTextAppend": 1},
+            ),
+            _family(
+                action_required_status_line,
+                "Qud.UI/LeftSideCategory.cs",
+                "setData",
+                {"SetText": 1},
+            ),
+        ]
+    )
+
+    payload = followup_issue_payload(inventory, inventory_path=Path("issue809-followup-test.json"), include="valuable")
+
+    issue = payload["issues"]["issue719-consolidated-residuals"]
+    assert payload["actionable_entries"] == 1
+    assert payload["issue_counts"] == {"issue719-consolidated-residuals": 1}
+    assert issue["entry_count"] == 1
+    assert issue["top_entries"][0]["family_id"] == action_required_status_line
 
 
 def _inventory(families: list[TextConstructionFamily]) -> TextConstructionInventory:

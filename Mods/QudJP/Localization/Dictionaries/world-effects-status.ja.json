@@ -76,7 +76,7 @@
         {
             "key": "{{C|stunned}}",
             "context": "XRL.World.Effects.Stun.Description",
-            "text": "{{C|スタン}}"
+            "text": "{{C|気絶}}"
         },
         {
             "key": "Can't take actions.\n-{0} DV",
@@ -231,7 +231,7 @@
         {
             "key": "-{0} Quickness",
             "context": "XRL.World.Effects.ITimeDilated.Details",
-            "text": "-{0} 俊敏"
+            "text": "-{0} クイックネス"
         },
         {
             "key": "lost",
@@ -251,7 +251,7 @@
         {
             "key": "-70 Quickness\nDoesn't function properly.",
             "context": "XRL.World.Effects.Rusted.Details",
-            "text": "-70 俊敏\n正常に機能しない。"
+            "text": "-70 クイックネス\n正常に機能しない。"
         },
         {
             "key": "Doesn't function properly and can't be equipped.\nWill erode into dust if rusted again.",
@@ -291,7 +291,7 @@
         {
             "key": "+{0} Quickness\nWill become sluggish soon.",
             "context": "XRL.World.Effects.AxonsInflated.Details",
-            "text": "+{0} 俊敏\nまもなく鈍重になる。"
+            "text": "+{0} クイックネス\nまもなく鈍重になる。"
         },
         {
             "key": "{{r|sluggish}}",
@@ -531,7 +531,7 @@
         {
             "key": "{{C|stunned by gas}}",
             "context": "XRL.World.Effects.StunGasStun.Description",
-            "text": "{{C|ガスでスタン}}"
+            "text": "{{C|ガスによる気絶}}"
         },
         {
             "key": "{{C|unpiloted}}",
@@ -587,6 +587,11 @@
             "key": "{{M|inspired}}",
             "context": "XRL.World.Effects.Inspired.Description",
             "text": "{{M|ひらめき}}"
+        },
+        {
+            "key": "The next time you cook a meal by choosing ingredients, you get a choice of three dynamically-generated effects to apply. You create a recipe for the chosen effect.",
+            "context": "XRL.World.Effects.Inspired.GetDetails",
+            "text": "次に材料を選んで料理を作るとき、適用する動的生成効果を3つの候補から選べる。選んだ効果のレシピを作成する。"
         },
         {
             "key": "{{M|mutating}}",

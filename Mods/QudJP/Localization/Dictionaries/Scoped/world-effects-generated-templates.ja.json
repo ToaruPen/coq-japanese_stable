@@ -10,7 +10,7 @@
   },
   "entries": [
     { "key": "dominated ({0} turns remaining)", "context": "XRL.World.Effects.Dominated.GetDescription", "text": "支配された（残り{0}ターン）" },
-    { "key": "time-dilated ({{C|-{0}}} Quickness)", "context": "XRL.World.Effects.ITimeDilated.GetDescription", "text": "時間遅延 ({{C|-{0}}} Quickness)" },
+    { "key": "time-dilated ({{C|-{0}}} Quickness)", "context": "XRL.World.Effects.ITimeDilated.GetDescription", "text": "時間遅延 ({{C|-{0}}} クイックネス)" },
     { "key": "Acts semi-randomly.\n-{0} DV\n-{0} MA", "context": "XRL.World.Effects.Confused.GetDetails", "text": "半ばランダムに行動する。\n-{0} DV\n-{0} MA" },
     { "key": "Acts semi-randomly.\n-{0} DV\n-{0} MA\n-{1} to all mental attributes", "context": "XRL.World.Effects.Confused.GetDetails", "text": "半ばランダムに行動する。\n-{0} DV\n-{0} MA\n全精神属性に -{1}" },
     { "key": "lying on {0}", "context": "XRL.World.Effects.Prone.GetDescription", "text": "{0}に横たわっている" },
@@ -21,8 +21,8 @@
     { "key": "marked by {0}", "context": "XRL.World.Effects.RifleMark.GetDescription", "text": "{0}にマークされている" },
     { "key": "cleaved ({{C|-{0} AV}})", "context": "XRL.World.Effects.ShatterArmor.GetDescription", "text": "裂かれた（{{C|-{0} AV}}）" },
     { "key": "psionically cleaved (-{0} MA)", "context": "XRL.World.Effects.ShatterMentalArmor.GetDescription", "text": "精神的に裂かれた（-{0} MA）" },
-    { "key": "+{0} Quickness\n+1 rank to physical mutations", "context": "XRL.World.Effects.AdrenalControl2Boosted.GetDetails", "text": "+{0} Quickness\n肉体変異 +1ランク" },
-    { "key": "+{0} Quickness\n+{1} ranks to physical mutations", "context": "XRL.World.Effects.AdrenalControl2Boosted.GetDetails", "text": "+{0} Quickness\n肉体変異 +{1}ランク" },
+    { "key": "+{0} Quickness\n+1 rank to physical mutations", "context": "XRL.World.Effects.AdrenalControl2Boosted.GetDetails", "text": "クイックネス+{0}\n肉体変異 +1ランク" },
+    { "key": "+{0} Quickness\n+{1} ranks to physical mutations", "context": "XRL.World.Effects.AdrenalControl2Boosted.GetDetails", "text": "クイックネス+{0}\n肉体変異 +{1}ランク" },
     { "key": "+{0} DV while wielding a long blade in the primary hand.", "context": "XRL.World.Effects.LongbladeStance_Defensive.GetDetails", "text": "主手に長剣を装備しているあいだDV+{0}。" },
     { "key": "+{0} to your penetration roll and -{1} to hit while wielding a long blade in the primary hand.", "context": "XRL.World.Effects.LongbladeStance_Aggressive.GetDetails", "text": "主手に長剣を装備しているあいだ貫通判定+{0}、命中-{1}。" },
     { "key": "+{0} to hit while wielding a long blade in the primary hand.", "context": "XRL.World.Effects.LongbladeStance_Dueling.GetDetails", "text": "主手に長剣を装備しているあいだ命中+{0}。" }

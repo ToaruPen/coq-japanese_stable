@@ -142,6 +142,7 @@ public static class VehicleSeatTranslationPatch
     private static string RestoreItem(Match match, IReadOnlyList<ColorSpan> spans)
     {
         var item = match.Groups["item"];
-        return ColorAwareTranslationComposer.MarkupAwareRestoreCapture(item.Value, spans, item).Trim();
+        var restored = ColorAwareTranslationComposer.MarkupAwareRestoreCapture(item.Value, spans, item).Trim();
+        return DisplayNameCaptureTranslator.TranslatePreservingColors(restored, Context);
     }
 }

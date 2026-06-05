@@ -104,6 +104,45 @@ internal static class ScopedDictionaryLookup
             : null;
     }
 
+    internal static string? FindSourceByExactTranslationForContextOnly(
+        string translated,
+        string context,
+        params string[] dictionaryFileNames)
+    {
+        if (string.IsNullOrEmpty(translated) || string.IsNullOrWhiteSpace(context) || dictionaryFileNames.Length == 0)
+        {
+            return null;
+        }
+
+        string? candidate = null;
+        for (var index = 0; index < dictionaryFileNames.Length; index++)
+        {
+            if (!LoadDictionary(dictionaryFileNames[index])
+                    .TryGetContextSourceByTranslation(translated, context, out var loadedCandidate, out var ambiguous))
+            {
+                if (ambiguous)
+                {
+                    return null;
+                }
+
+                continue;
+            }
+
+            if (candidate is null)
+            {
+                candidate = loadedCandidate;
+                continue;
+            }
+
+            if (!string.Equals(candidate, loadedCandidate, StringComparison.Ordinal))
+            {
+                return null;
+            }
+        }
+
+        return candidate;
+    }
+
     internal static void ResetForTests()
     {
         Cache.Clear();
@@ -326,6 +365,48 @@ internal static class ScopedDictionaryLookup
             }
 
             translated = source;
+            return false;
+        }
+
+        internal bool TryGetContextSourceByTranslation(
+            string translated,
+            string context,
+            out string source,
+            out bool ambiguous)
+        {
+            ambiguous = false;
+            var prefix = context.Trim() + "\u001f";
+            string? candidate = null;
+            foreach (var entry in contextualEntries)
+            {
+                if (!entry.Key.StartsWith(prefix, StringComparison.Ordinal)
+                    || !string.Equals(entry.Value, translated, StringComparison.Ordinal))
+                {
+                    continue;
+                }
+
+                var sourceCandidate = entry.Key.Substring(prefix.Length);
+                if (candidate is null)
+                {
+                    candidate = sourceCandidate;
+                    continue;
+                }
+
+                if (!string.Equals(candidate, sourceCandidate, StringComparison.Ordinal))
+                {
+                    source = translated;
+                    ambiguous = true;
+                    return false;
+                }
+            }
+
+            if (candidate is not null)
+            {
+                source = candidate;
+                return true;
+            }
+
+            source = translated;
             return false;
         }
     }

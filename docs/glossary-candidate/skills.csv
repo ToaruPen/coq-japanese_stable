@@ -101,7 +101,7 @@ Harvestry,収穫,,source: Skills.jp.xml; ui-skillsandpowers.ja.json,draft
 Heat Absorption,熱吸収,,source: HiddenMutations.jp.xml,draft
 Heavy Weapon,重火器,,source: Skills.jp.xml; ui-skillsandpowers.ja.json,draft
 Heightened Hearing,強化聴覚,,source: Mutations.jp.xml,draft
-Heightened Quickness,強化俊敏,,source: Mutations.jp.xml,draft
+Heightened Quickness,クイックネス強化,,source: Mutations.jp.xml,draft
 Heightened Smell,強化嗅覚,,source: HiddenMutations.jp.xml,draft
 Hobble,足を止める,,source: Skills.jp.xml; ui-skillsandpowers.ja.json,draft
 Hook and Drag,フック・アンド・ドラッグ,,source: Skills.jp.xml; ui-skillsandpowers.ja.json,draft
@@ -227,7 +227,7 @@ Stinger (Confusing Venom),毒針（混乱毒）,,source: Mutations.jp.xml,draft
 Stinger (Paralyzing Venom),毒針（麻痺毒）,,source: Mutations.jp.xml,draft
 Stinger (Poisoning Venom),毒針（猛毒）,,source: Mutations.jp.xml,draft
 Strapping Shoulders,逞しい肩,,source: Skills.jp.xml; ui-skillsandpowers.ja.json,draft
-Stun Breath,朦朧ブレス,,source: HiddenMutations.jp.xml,draft
+Stun Breath,気絶ブレス,,source: HiddenMutations.jp.xml,draft
 Stunning Force,衝撃念力,,source: Mutations.jp.xml,draft
 Sunder Mind,精神断裂,,source: Mutations.jp.xml,draft
 Suppressive Fire,制圧射撃,,source: Skills.jp.xml; ui-skillsandpowers.ja.json,draft

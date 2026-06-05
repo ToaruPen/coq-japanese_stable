@@ -11,7 +11,7 @@ public sealed partial class Issue201OtherUiBindingPatchTests
     public void CyberneticsTerminalTextTranspiler_TranslatesConstructorInitializedScreen()
     {
         WriteCyberneticsDictionary(
-            ("Your curiosity is admirable, aristocrat.\n\nCybernetics are bionic augmentations implanted in your body to assist in your self-actualization. You can have implants installed at becoming nooks such as this one. Either load them in the rack or carry them on your person.", "その好奇心は見事である、貴顕よ。\n\nサイバネティクスとは、自己実現を助けるために肉体へ埋め込む生体改造である。このような変容の窪みで装着できる。ラックに載せるか、自ら携えるがよい。"),
+            ("Your curiosity is admirable, aristocrat.\n\nCybernetics are bionic augmentations implanted in your body to assist in your self-actualization. You can have implants installed at becoming nooks such as this one. Either load them in the rack or carry them on your person.", "その好奇心は見事である、貴顕よ。\n\nサイバネティクスとは、自己実現を助けるために肉体へ埋め込む生体改造である。このような変容の僻隅で装着できる。ラックに載せるか、自ら携えるがよい。"),
             ("How many implants can I install?", "インプラントは何個まで装着できますか?"),
             ("Return To Main Menu", "メインメニューに戻る"));
 
@@ -63,7 +63,7 @@ public sealed partial class Issue201OtherUiBindingPatchTests
     public void CyberneticsTerminalTextTranspiler_ResolvesDynamicTemplates()
     {
         WriteCyberneticsDictionary(
-            ("Welcome, Aristocrat, to a becoming nook. {0} one step closer to the Grand Unification. Please choose from the following options.", "ようこそ、貴顕よ、変容の窪みへ。{0}は大統一へまた一歩近づいた。以下の選択肢から選ぶがよい。"),
+            ("Welcome, Aristocrat, to a becoming nook. {0} one step closer to the Grand Unification. Please choose from the following options.", "ようこそ、貴顕よ、変容の僻隅へ。{0}は大統一へまた一歩近づいた。以下の選択肢から選ぶがよい。"),
             ("[{0} license points]", "[{0} ライセンスポイント]"),
             (" [will replace {0}]", " [{0}を置き換える]"),
             ("Night Vision Goggles", "暗視ゴーグル"),
@@ -76,7 +76,7 @@ public sealed partial class Issue201OtherUiBindingPatchTests
 
             Assert.Multiple(() =>
             {
-                Assert.That(screen.MainText, Is.EqualTo("ようこそ、貴顕よ、変容の窪みへ。あなたは大統一へまた一歩近づいた。以下の選択肢から選ぶがよい。"));
+                Assert.That(screen.MainText, Is.EqualTo("ようこそ、貴顕よ、変容の僻隅へ。あなたは大統一へまた一歩近づいた。以下の選択肢から選ぶがよい。"));
                 Assert.That(screen.Options[0], Is.EqualTo("暗視ゴーグル {{C|[3 ライセンスポイント]}}"));
                 Assert.That(screen.Options[1], Is.EqualTo("視神経チゼル [暗視ゴーグルを置き換える]"));
             });
@@ -137,6 +137,8 @@ public sealed partial class Issue201OtherUiBindingPatchTests
             screen.MainText = "Please choose a target body part.";
             screen.Options.Add("{{Y|皮膚用断熱材}} (Back)");
             screen.Options.Add("translucent skin (Back)");
+            screen.Options.Add("translucent skin (Hand)");
+            screen.Options.Add("translucent skin (Tail)");
             screen.Options.Add("made-up cyberware (Back)");
             screen.Options.Add("Back");
             screen.Update();
@@ -145,8 +147,10 @@ public sealed partial class Issue201OtherUiBindingPatchTests
             {
                 Assert.That(screen.Options[0], Is.EqualTo("{{Y|皮膚用断熱材}}（背中）"));
                 Assert.That(screen.Options[1], Is.EqualTo("透明皮膚（背中）"));
-                Assert.That(screen.Options[2], Is.EqualTo("made-up cyberware (Back)"));
-                Assert.That(screen.Options[3], Is.EqualTo("Back"));
+                Assert.That(screen.Options[2], Is.EqualTo("透明皮膚（手）"));
+                Assert.That(screen.Options[3], Is.EqualTo("透明皮膚（尾）"));
+                Assert.That(screen.Options[4], Is.EqualTo("made-up cyberware (Back)"));
+                Assert.That(screen.Options[5], Is.EqualTo("Back"));
                 Assert.That(screen.RenderedText, Does.Contain("{{Y|皮膚用断熱材}}（背中）"));
                 Assert.That(
                     DynamicTextObservability.GetRouteFamilyHitCountForTests(nameof(CyberneticsTerminalTextTranslator), "CyberneticsTerminal.OptionText"),

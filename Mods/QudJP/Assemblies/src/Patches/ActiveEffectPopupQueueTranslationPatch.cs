@@ -389,7 +389,7 @@ internal static class ActiveEffectPopupQueueTranslator
         match = DazedPattern.Match(stripped);
         if (match.Success)
         {
-            translated = TranslateSubjectActor(Restore(match, spans, "subject")) + "は呆然としている。";
+            translated = TranslateSubjectActor(Restore(match, spans, "subject")) + "は朦朧としている。";
             detail = "DazedApply";
             return true;
         }

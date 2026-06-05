@@ -561,6 +561,7 @@ public sealed class TargetMethodResolutionTests
     [TestCase(typeof(LeftSideCategoryTranslationPatch), "setData", "Qud.UI.LeftSideCategory", "System.Void", new[] { "XRL.UI.Framework.FrameworkDataElement" })]
     [TestCase(typeof(PickTargetWindowUpdateTranslationPatch), "Update", "Qud.UI.PickTargetWindow", "System.Void", new string[0])]
     [TestCase(typeof(GivesRepShortDescriptionTranslationPatch), "HandleEvent", "XRL.World.Parts.GivesRep", "System.Boolean", new[] { "XRL.World.GetShortDescriptionEvent" })]
+    [TestCase(typeof(CyberneticsBaseItemShortDescriptionTranslationPatch), "HandleEvent", "XRL.World.Parts.CyberneticsBaseItem", "System.Boolean", new[] { "XRL.World.GetShortDescriptionEvent" })]
     [TestCase(typeof(MutationsApiTranslationPatch), "BuyRandomMutation", "Qud.API.MutationsAPI", "System.Boolean", new[] { "XRL.World.GameObject", "System.Int32", "System.Boolean", "System.String" })]
     [TestCase(typeof(GritGateTerminalKnowledgePopupTranslationPatch), "Activate", "XRL.UI.GritGateTerminalScreenKnowledge", "System.Void", new string[0])]
     [TestCase(typeof(GritGateTerminalScreenMessageTranslationPatch), "Activate", "XRL.UI.GritGateTerminalScreenMessage", "System.Void", new string[0])]
@@ -2027,6 +2028,8 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.Effects.CookingDomainElectric_EMP_ProceduralCookingTriggeredAction|GetTemplatedDescription|System.String",
         "XRL.World.Effects.CookingDomainElectric_OnElectricDamaged|GetTriggerDescription|System.String",
         "XRL.World.Effects.CookingDomainElectric_OnElectricDamaged|GetTemplatedTriggerDescription|System.String",
+        "XRL.World.Effects.CookingDomainMedicinal_OnEatYuckwheat|GetTriggerDescription|System.String",
+        "XRL.World.Effects.ProceduralCookingEffectWithTrigger|GetTemplatedTriggerDescription|System.String",
         "XRL.World.Effects.CookingDomainArmor_OnPenetration|GetTriggerDescription|System.String",
         "XRL.World.Effects.CookingDomainArmor_OnPenetration|GetTemplatedTriggerDescription|System.String",
         "XRL.World.Effects.CookingDomainReflect_Reflect100_ProceduralCookingTriggeredAction_Effect|GetDetails|System.String",
@@ -2380,6 +2383,10 @@ public sealed class TargetMethodResolutionTests
         "XRL.World.Parts.ModMorphogenetic|ApplyMorphicShock|System.Boolean|XRL.World.GameObject|System.Int32|XRL.World.GameObject|System.Int32",
         "XRL.World.Effects.Monochrome|FireEvent|System.Boolean|XRL.World.Event",
         "XRL.World.Parts.Skill.Persuasion_RebukeRobot|AttemptRebuke|System.Boolean",
+        "XRL.World.Parts.PyroZone|Started|System.Void",
+        "XRL.World.Parts.PyroZone|Stopped|System.Void",
+        "XRL.World.Parts.CryoZone|Started|System.Void",
+        "XRL.World.Parts.CryoZone|Stopped|System.Void",
         "XRL.World.Parts.Skill.Snapjaw_Howl|FireEvent|System.Boolean|XRL.World.Event",
         "XRL.World.Effects.SphynxSalt_Tonic|Apply|System.Boolean|XRL.World.GameObject",
         "XRL.World.Parts.StairsDown|CheckPullDown|System.Boolean|XRL.World.GameObject",

@@ -20,6 +20,7 @@ public sealed class InventoryActionDisplayTranslationPatchTests
         Translator.SetDictionaryDirectoryForTests(tempDirectory);
         ScopedDictionaryLookup.ResetForTests();
         DynamicTextObservability.ResetForTests();
+        InventoryActionMenuCloseTimingObservability.ResetForTests();
         InventoryActionDisplayTranslationPatch.SetInventoryActionKeyMappedPredicateForTests(null);
     }
 
@@ -29,6 +30,7 @@ public sealed class InventoryActionDisplayTranslationPatchTests
         Translator.ResetForTests();
         ScopedDictionaryLookup.ResetForTests();
         DynamicTextObservability.ResetForTests();
+        InventoryActionMenuCloseTimingObservability.ResetForTests();
         InventoryActionDisplayTranslationPatch.SetInventoryActionKeyMappedPredicateForTests(null);
 
         if (Directory.Exists(tempDirectory))
@@ -271,6 +273,118 @@ public sealed class InventoryActionDisplayTranslationPatchTests
     }
 
     [Test]
+    public void TranslateActionTable_RekeysAlreadyLocalizedDisassembleAllFromEnglishCandidates_WhenDisassembleHotkeysCollide()
+    {
+        WriteDisassembleActionDictionary();
+        var actions = CreateDisassembleActionMenuFixture("{{hotkey|す}}べて分解", 'す');
+
+        InventoryActionDisplayTranslationPatch.TranslateActionTableForTests(actions);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(actions["DisassembleAll"].Display, Is.EqualTo("すべて分解"));
+            Assert.That(actions["DisassembleAll"].Key, Is.EqualTo('i'));
+        });
+    }
+
+    [Test]
+    public void TranslateActionTable_RekeysAlreadyLocalizedActionsFromEnglishCandidates_WhenJapaneseHotkeysWereEmbedded()
+    {
+        WriteInventoryActionDictionary(
+            ("drop", "落とす"),
+            ("sit", "座る"),
+            ("add notes", "メモを追加"),
+            ("show effects", "効果を表示"));
+        var actions = new Dictionary<string, DummyInventoryAction>
+        {
+            ["Drop"] = new()
+            {
+                Display = "drop",
+                Command = "CommandDropObject",
+                Key = 'd',
+            },
+            ["Sit"] = new()
+            {
+                Display = "sit",
+                Command = "Sit",
+                Key = 's',
+            },
+            ["AddNotes"] = new()
+            {
+                Display = "{{hotkey|メ}}モを追加",
+                Command = "AddNotes",
+                Key = 'メ',
+            },
+            ["ShowEffects"] = new()
+            {
+                Display = "{{hotkey|効}}果を表示",
+                Command = "ShowEffects",
+                Key = '効',
+            },
+        };
+
+        InventoryActionDisplayTranslationPatch.TranslateActionTableForTests(actions);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(actions["AddNotes"].Display, Is.EqualTo("メモを追加"));
+            Assert.That(actions["AddNotes"].Key, Is.EqualTo('a'));
+            Assert.That(actions["ShowEffects"].Display, Is.EqualTo("効果を表示"));
+            Assert.That(actions["ShowEffects"].Key, Is.EqualTo('h'));
+        });
+    }
+
+    [Test]
+    public void ShowInventoryActionMenuPrefix_RekeysActionsAddedAfterOwnerGetInventoryActionsEvent()
+    {
+        WriteDisassembleActionDictionary();
+        var actions = CreateDisassembleActionMenuFixture(
+            "disassemble all",
+            'm',
+            includeSingleDisassemble: false,
+            markImportantDefault: 200);
+        var state = InventoryActionMenuCloseTimingObservability.TimingScope.Empty;
+
+        InventoryActionMenuShowTimingPatch.Prefix(actions, ref state);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(actions["DisassembleAll"].Display, Is.EqualTo("すべて分解"));
+            Assert.That(actions["DisassembleAll"].Key, Is.EqualTo('i'));
+        });
+    }
+
+    [Test]
+    public void ShowInventoryActionMenuPrefix_TranslatesFallbackRelicTitle_WhenIntroIsNull()
+    {
+        WriteDictionary(
+            Path.Combine("Scoped", "historyspice-common.ja.json"),
+            context: null,
+            ("analog", "アナログの"));
+        var actions = new Dictionary<string, DummyInventoryAction>();
+        var owner = new DummyInventoryActionMenuItem
+        {
+            DisplayName = "{{Y|カムシュルクール}}",
+        };
+        var item = new DummyInventoryActionMenuItem
+        {
+            DisplayName = "{{M|Chain of the Analog Sand}} \u00040 \t0 [6ドラムのゲル]",
+        };
+        string? intro = null;
+        var state = InventoryActionMenuCloseTimingObservability.TimingScope.Empty;
+
+        InventoryActionMenuShowTimingPatch.Prefix(actions, ref state);
+        AssertTranslateIntroPrefixBindsToShowInventoryActionMenuGoArgument();
+        InventoryActionMenuShowTimingPatch.TranslateIntroPrefix(item, ref intro);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(owner.DisplayName, Is.EqualTo("{{Y|カムシュルクール}}"));
+            Assert.That(intro, Is.EqualTo("{{M|アナログの砂の鎖}} \u00040 \t0 [6ドラムのゲル]"));
+        });
+    }
+
+    [Test]
     public void TranslateActionTable_RekeysTranslatedActions_WhenNativeHotkeysAreConsumedByMenuNavigation()
     {
         WriteInventoryActionDictionary(("mark important", "重要にする"), ("look", "見る"));
@@ -431,6 +545,108 @@ public sealed class InventoryActionDisplayTranslationPatchTests
         Assert.That(actions["AlreadyTranslated"].Display, Is.EqualTo("既に翻訳済み"));
     }
 
+    private void WriteDisassembleActionDictionary()
+    {
+        WriteInventoryActionDictionary(
+            ("drop", "落とす"),
+            ("equip (auto)", "自動で装備"),
+            ("equip (manual)", "手動で装備"),
+            ("mark important", "重要にする"),
+            ("add notes", "メモを追加"),
+            ("sit", "座る"),
+            ("treat these as scrap", "スクラップ扱いにする"),
+            ("mod with tinkering", "工作で改造"),
+            ("show effects", "効果を表示"),
+            ("disassemble all", "すべて分解"));
+    }
+
+    private static Dictionary<string, DummyInventoryAction> CreateDisassembleActionMenuFixture(
+        string disassembleAllDisplay,
+        char disassembleAllKey,
+        bool includeSingleDisassemble = true,
+        int markImportantDefault = 0)
+    {
+        var actions = new Dictionary<string, DummyInventoryAction>
+        {
+            ["Drop"] = new()
+            {
+                Display = "drop",
+                Command = "CommandDropObject",
+                Key = 'd',
+            },
+            ["EquipAuto"] = new()
+            {
+                Display = "equip (auto)",
+                Command = "CommandEquipObject",
+                Key = 'e',
+            },
+            ["EquipManual"] = new()
+            {
+                Display = "equip (manual)",
+                Command = "CommandEquipObjectManual",
+                Key = 'E',
+            },
+            ["MarkImportant"] = new()
+            {
+                Display = "mark important",
+                Command = "MarkImportant",
+                Key = 'm',
+                Default = markImportantDefault,
+            },
+            ["AddNotes"] = new()
+            {
+                Display = "add notes",
+                Command = "AddNotes",
+                Key = 'n',
+            },
+            ["Sit"] = new()
+            {
+                Display = "sit",
+                Command = "Sit",
+                Key = 's',
+            },
+            ["TreatAsScrap"] = new()
+            {
+                Display = "treat these as scrap",
+                Command = "TreatAsScrap",
+                Key = 'S',
+            },
+            ["ModWithTinkering"] = new()
+            {
+                Display = "mod with tinkering",
+                Command = "ModWithTinkering",
+                Key = 't',
+            },
+            ["ShowEffects"] = new()
+            {
+                Display = "show effects",
+                Command = "ShowEffects",
+                Key = 'w',
+            },
+            ["DisassembleAll"] = new()
+            {
+                Display = disassembleAllDisplay,
+                Command = "DisassembleAll",
+                Key = disassembleAllKey,
+                Default = -1,
+                Priority = -1,
+            },
+        };
+
+        if (includeSingleDisassemble)
+        {
+            actions["Disassemble"] = new DummyInventoryAction
+            {
+                Display = "disassemble",
+                Command = "Disassemble",
+                Key = 'm',
+                Default = -1,
+            };
+        }
+
+        return actions;
+    }
+
     private void WriteInventoryActionDictionary(params (string key, string text)[] entries)
     {
         WriteDictionary("ui-inventory-actions.ja.json", "XRL.World.IInventoryActionsEvent", entries);
@@ -468,8 +684,15 @@ public sealed class InventoryActionDisplayTranslationPatchTests
 
         builder.Append("]}");
         builder.AppendLine();
+        var path = Path.Combine(tempDirectory, fileName);
+        var parent = Path.GetDirectoryName(path);
+        if (!string.IsNullOrEmpty(parent))
+        {
+            Directory.CreateDirectory(parent);
+        }
+
         File.WriteAllText(
-            Path.Combine(tempDirectory, fileName),
+            path,
             builder.ToString(),
             new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
     }
@@ -484,6 +707,16 @@ public sealed class InventoryActionDisplayTranslationPatchTests
             .Replace("\t", "\\t", StringComparison.Ordinal);
     }
 
+    private static void AssertTranslateIntroPrefixBindsToShowInventoryActionMenuGoArgument()
+    {
+        var parameter = typeof(InventoryActionMenuShowTimingPatch)
+            .GetMethod(nameof(InventoryActionMenuShowTimingPatch.TranslateIntroPrefix))!
+            .GetParameters()
+            .FirstOrDefault();
+
+        Assert.That(parameter?.Name, Is.EqualTo("__2"));
+    }
+
     private sealed class DummyInventoryAction
     {
         public string? Display { get; set; }
@@ -493,5 +726,12 @@ public sealed class InventoryActionDisplayTranslationPatchTests
         public char Key { get; set; }
 
         public int Default { get; set; }
+
+        public int Priority { get; set; }
+    }
+
+    private sealed class DummyInventoryActionMenuItem
+    {
+        public string? DisplayName { get; set; }
     }
 }

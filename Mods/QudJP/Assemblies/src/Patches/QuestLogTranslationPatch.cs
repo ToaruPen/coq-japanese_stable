@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -18,6 +19,9 @@ public static class QuestLogTranslationPatch
         new Regex("^(?<prefix>.*?)(?<label>Optional:\\s)(?<suffix>.*)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex BonusRewardPattern =
         new Regex("^(?<indent>\\s*)Bonus reward for completing this quest by level &C(?<value>.+?)&y\\.$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    // Preserve quest-step status markers (X/û/ù) and Optional/任意 prefixes while translating only the step name.
+    private static readonly Regex QuestStepStatusPrefixPattern =
+        new Regex("^(?<prefix>\\s*(?:[Xûù]\\s*)?(?:(?:Optional|任意):\\s)?)(?<name>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     [HarmonyTargetMethod]
     private static MethodBase? TargetMethod()
@@ -39,6 +43,18 @@ public static class QuestLogTranslationPatch
         }
 
         return method;
+    }
+
+    public static void Prefix(object? __0)
+    {
+        try
+        {
+            TranslateSavedQuestSteps(__0);
+        }
+        catch (Exception ex)
+        {
+            Trace.TraceError("QudJP: QuestLogTranslationPatch.Prefix failed: {0}", ex);
+        }
     }
 
     public static void Postfix(ref List<string>? __result)
@@ -79,6 +95,7 @@ public static class QuestLogTranslationPatch
             {
                 var translated = optionalMatch.Groups["prefix"].Value + translatedLabel + optionalMatch.Groups["suffix"].Value;
                 translated = GeneratedQuestTitleTranslator.TranslateEmbeddedPreservingColors(translated, route);
+                translated = TranslateAuthoredQuestStepLine(translated, route);
                 DynamicTextObservability.RecordTransform(route, "QuestLog.OptionalPrefix", source, translated);
                 return translated;
             }
@@ -98,6 +115,161 @@ public static class QuestLogTranslationPatch
             }
         }
 
+        var stepTranslated = TranslateAuthoredQuestStepLine(source, route);
+        if (!string.Equals(stepTranslated, source, StringComparison.Ordinal))
+        {
+            return stepTranslated;
+        }
+
         return GeneratedQuestTitleTranslator.TranslateEmbeddedPreservingColors(source, route);
+    }
+
+    private static void TranslateSavedQuestSteps(object? quest)
+    {
+        if (quest is null)
+        {
+            return;
+        }
+
+        if (GetMemberValue(quest, "StepsByID") is not IDictionary stepsById)
+        {
+            return;
+        }
+
+        var index = 0;
+        foreach (var step in stepsById.Values)
+        {
+            if (step is not null)
+            {
+                TranslateSavedQuestStepMember(step, "Name", index, "QuestLog.SavedQuestStepName");
+                TranslateSavedQuestStepMember(step, "Text", index, "QuestLog.SavedQuestStepText");
+            }
+
+            index++;
+        }
+    }
+
+    private static void TranslateSavedQuestStepMember(object step, string memberName, int index, string family)
+    {
+        var source = GetStringMemberValue(step, memberName);
+        if (string.IsNullOrEmpty(source))
+        {
+            return;
+        }
+
+        if (!DynamicQuestGeneratedQuestTextTranslator.TryTranslate(source, out var translated))
+        {
+            return;
+        }
+
+        if (string.Equals(source, translated, StringComparison.Ordinal))
+        {
+            return;
+        }
+
+        if (!SetStringMemberValue(step, memberName, translated))
+        {
+            return;
+        }
+
+        if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out _))
+        {
+            return;
+        }
+
+        var route = ObservabilityHelpers.ComposeContext(Context, "step=" + index + ";field=" + memberName);
+        DynamicTextObservability.RecordTransform(route, family, source, translated);
+    }
+
+    internal static string TranslateAuthoredQuestStepLine(string source, string route)
+    {
+        return ColorAwareTranslationComposer.TranslatePreservingColors(
+            source,
+            visible => TranslateQuestStepVisible(visible, route, source));
+    }
+
+    private static string TranslateQuestStepVisible(string visible, string route, string originalSource)
+    {
+        var direct = ScopedDictionaryLookup.TranslateExactOrLowerAscii(visible, DictionaryFile);
+        if (direct is not null
+            && direct.Length != 0
+            && !string.Equals(direct, visible, StringComparison.Ordinal))
+        {
+            DynamicTextObservability.RecordTransform(route, "QuestLog.StepName", originalSource, direct);
+            return direct;
+        }
+
+        var match = QuestStepStatusPrefixPattern.Match(visible);
+        if (!match.Success)
+        {
+            return visible;
+        }
+
+        var prefix = match.Groups["prefix"].Value;
+        var name = match.Groups["name"].Value;
+        var translatedName = ScopedDictionaryLookup.TranslateExactOrLowerAscii(name, DictionaryFile);
+        if (!string.IsNullOrEmpty(translatedName) && !string.Equals(translatedName, name, StringComparison.Ordinal))
+        {
+            var translated = match.Groups["prefix"].Value + translatedName;
+            DynamicTextObservability.RecordTransform(route, "QuestLog.StepName", originalSource, translated);
+            return translated;
+        }
+
+        if (prefix.Length == 0)
+        {
+            return visible;
+        }
+
+        if (prefix.Contains("Optional:")
+            || prefix.Contains("任意:"))
+        {
+            return visible;
+        }
+
+        if (!DynamicQuestGeneratedQuestTextTranslator.TryTranslate(name, out var generatedName)
+            || string.Equals(generatedName, name, StringComparison.Ordinal))
+        {
+            return visible;
+        }
+
+        var generatedTranslated = match.Groups["prefix"].Value + generatedName;
+        DynamicTextObservability.RecordTransform(route, "QuestLog.GeneratedQuestText", originalSource, generatedTranslated);
+        return generatedTranslated;
+    }
+
+    private static object? GetMemberValue(object instance, string memberName)
+    {
+        var type = instance.GetType();
+        var property = AccessTools.Property(type, memberName);
+        if (property is not null && property.CanRead)
+        {
+            return property.GetValue(instance);
+        }
+
+        var field = AccessTools.Field(type, memberName);
+        return field?.GetValue(instance);
+    }
+
+    private static string? GetStringMemberValue(object instance, string memberName) =>
+        GetMemberValue(instance, memberName) as string;
+
+    private static bool SetStringMemberValue(object instance, string memberName, string value)
+    {
+        var type = instance.GetType();
+        var property = AccessTools.Property(type, memberName);
+        if (property is not null && property.CanWrite && property.PropertyType == typeof(string))
+        {
+            property.SetValue(instance, value);
+            return true;
+        }
+
+        var field = AccessTools.Field(type, memberName);
+        if (field is not null && field.FieldType == typeof(string))
+        {
+            field.SetValue(instance, value);
+            return true;
+        }
+
+        return false;
     }
 }

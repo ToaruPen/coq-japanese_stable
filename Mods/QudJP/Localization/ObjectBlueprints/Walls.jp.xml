@@ -428,10 +428,10 @@
   </object>
 
 <object Name="CrysteelPlatedWall" Inherits="BaseWallMetal" Replace="true">
-    <part Name="Render" DisplayName="クライスティール板の剪断壁" RenderString="177" ColorString="&amp;g^y" TileColor="&amp;g" DetailColor="y" Occluding="true" />
+    <part Name="Render" DisplayName="クリスティール板の剪断壁" RenderString="177" ColorString="&amp;g^y" TileColor="&amp;g" DetailColor="y" Occluding="true" />
     <stat Name="AV" Value="30" />
     <stat Name="Hitpoints" Value="3000" />
-    <part Name="Description" Short="磨かれたクライスティールの充填板がフルクリート梁で縦方向に支持され、空洞を生命の物音が反響してゆく。" />
+    <part Name="Description" Short="磨かれたクリスティールの充填板がフルクリート梁で縦方向に支持され、空洞を生命の物音が反響してゆく。" />
     <tag Name="PaintWith" Value="MetalWalls" />
     <tag Name="NoSparkingQuest" />
     <tag Name="VaporObject" Value="LavaPuddle" />

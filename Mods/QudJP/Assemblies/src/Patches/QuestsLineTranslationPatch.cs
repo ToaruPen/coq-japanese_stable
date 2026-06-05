@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Diagnostics;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using HarmonyLib;
 
 namespace QudJP.Patches;
@@ -11,6 +12,8 @@ public static class QuestsLineTranslationPatch
 {
     private const string Context = nameof(QuestsLineTranslationPatch);
     private const string DictionaryFile = "ui-quests.ja.json";
+    private static readonly Regex QuestTitlePrefixPattern =
+        new Regex("^(?<prefix>\\[[+-]\\]\\s*)(?<title>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.Singleline);
 
     [HarmonyTargetMethod]
     private static MethodBase? TargetMethod()
@@ -31,6 +34,7 @@ public static class QuestsLineTranslationPatch
             TranslateStaticMenuOptions(type);
             TranslateExactTextField(__instance, "titleText", "titleText", "QuestsLine.TitleText");
             TranslateGiverText(__instance, "giverText", "giverText");
+            TranslateBodyText(__instance, "bodyText", "bodyText");
         }
         catch (Exception ex)
         {
@@ -91,12 +95,37 @@ public static class QuestsLineTranslationPatch
             translated = GeneratedQuestTitleTranslator.TranslateEmbeddedPreservingColors(current!, route);
         }
 
+        if (string.Equals(translated, current, StringComparison.Ordinal) && family == "QuestsLine.TitleText")
+        {
+            translated = TranslateQuestTitle(current!, route);
+        }
+
         if (string.Equals(translated, current, StringComparison.Ordinal))
         {
             return;
         }
 
         OwnerTextSetter.SetTranslatedText(uiTextSkin, current!, translated, Context, typeof(QuestsLineTranslationPatch));
+    }
+
+    private static string TranslateQuestTitle(string source, string route)
+    {
+        var match = QuestTitlePrefixPattern.Match(source);
+        if (!match.Success)
+        {
+            return source;
+        }
+
+        var title = match.Groups["title"].Value;
+        var translatedTitle = TranslateExactLeaf(title, route, "QuestsLine.TitleText");
+        if (string.Equals(translatedTitle, title, StringComparison.Ordinal)
+            && (!DynamicQuestGeneratedQuestTextTranslator.TryTranslate(title, out translatedTitle)
+                || string.Equals(translatedTitle, title, StringComparison.Ordinal)))
+        {
+            return source;
+        }
+
+        return match.Groups["prefix"].Value + translatedTitle;
     }
 
     private static void TranslateGiverText(object instance, string memberName, string routeSuffix)
@@ -113,7 +142,7 @@ public static class QuestsLineTranslationPatch
         for (var index = 0; index < parts.Length; index++)
         {
             var route = ObservabilityHelpers.ComposeContext(Context, "field=" + routeSuffix + "[" + index + "]");
-            var translated = TranslateExactLeaf(parts[index], route, "QuestsLine.GiverText");
+            var translated = TranslateGiverPart(parts[index], route, index);
             if (string.Equals(translated, parts[index], StringComparison.Ordinal))
             {
                 continue;
@@ -130,6 +159,67 @@ public static class QuestsLineTranslationPatch
 
         var translatedText = string.Join(" / ", parts);
         OwnerTextSetter.SetTranslatedText(uiTextSkin, current!, translatedText, Context, typeof(QuestsLineTranslationPatch));
+    }
+
+    private static string TranslateGiverPart(string source, string route, int index)
+    {
+        var translated = TranslateExactLeaf(source, route, "QuestsLine.GiverText");
+        if (!string.Equals(translated, source, StringComparison.Ordinal))
+        {
+            return translated;
+        }
+
+        if (index == 0)
+        {
+            translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(source, route);
+            return string.Equals(translated, source, StringComparison.Ordinal) ? source : translated;
+        }
+
+        if (MessageLogProducerTranslationHelpers.TryTranslateZoneDisplayName(source, route, out translated)
+            && !string.Equals(translated, source, StringComparison.Ordinal))
+        {
+            return translated;
+        }
+
+        return source;
+    }
+
+    private static void TranslateBodyText(object instance, string memberName, string routeSuffix)
+    {
+        var uiTextSkin = GetMemberValue(instance, memberName);
+        var current = UITextSkinReflectionAccessor.GetCurrentText(uiTextSkin, Context);
+        if (string.IsNullOrEmpty(current))
+        {
+            return;
+        }
+
+        var currentText = current!;
+        var newline = currentText.Contains("\r\n") ? "\r\n" : "\n";
+        var normalized = newline == "\r\n"
+            ? currentText.Replace("\r\n", "\n")
+            : currentText;
+        var lines = normalized.Split(new[] { '\n' }, StringSplitOptions.None);
+        var changed = false;
+        for (var index = 0; index < lines.Length; index++)
+        {
+            var route = ObservabilityHelpers.ComposeContext(Context, "field=" + routeSuffix + "[" + index + "]");
+            var translated = QuestLogTranslationPatch.TranslateQuestLogLine(lines[index], route);
+            if (string.Equals(translated, lines[index], StringComparison.Ordinal))
+            {
+                continue;
+            }
+
+            lines[index] = translated;
+            changed = true;
+        }
+
+        if (!changed)
+        {
+            return;
+        }
+
+        var translatedText = string.Join(newline, lines);
+        OwnerTextSetter.SetTranslatedText(uiTextSkin, currentText, translatedText, Context, typeof(QuestsLineTranslationPatch));
     }
 
     private static string TranslateExactLeaf(string source, string route, string family)

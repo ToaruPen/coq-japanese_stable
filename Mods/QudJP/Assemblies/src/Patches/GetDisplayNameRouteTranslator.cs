@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
@@ -14,6 +15,7 @@ internal static class GetDisplayNameRouteTranslator
     private const string DisplayNameAdjectiveContext = "GetDisplayName.Adjective";
     private const string DisplayNameStateTemplateContext = "GetDisplayName.StateTemplate";
     private const string DisplayNameTitleContext = "GetDisplayName.Title";
+    private const string DisplayNameLegacyAliasPath = "Aliases/displayname-legacy-aliases.json";
     private const string DisplayNameStateTemplateDictionaryFile = "Scoped/ui-displayname-state-templates.ja.json";
 
     private static readonly string[] DisplayNameDictionaryFiles =
@@ -350,6 +352,11 @@ internal static class GetDisplayNameRouteTranslator
             return source!;
         }
 
+        if (TryStripEnglishArticleFromAlreadyLocalizedDisplayName(stripped, spans, route, out var articleStrippedTranslation))
+        {
+            return articleStrippedTranslation;
+        }
+
         if (TryTranslateWholeBracketedDisplayNameState(stripped, spans, route, out var wholeBracketedStateTranslation))
         {
             return wholeBracketedStateTranslation;
@@ -378,6 +385,11 @@ internal static class GetDisplayNameRouteTranslator
                 earlyExactTranslation,
                 spans,
                 stripped.Length);
+        }
+
+        if (TryTranslateLocalizedPrefixRelicGeneratedDisplayName(source!, route, out var localizedPrefixRelicTranslation))
+        {
+            return localizedPrefixRelicTranslation;
         }
 
         if (TryTranslateExactBaseCompactWeaponStatsDisplayNameSuffix(stripped, spans, route, out var earlyCompactWeaponStatsTranslation))
@@ -747,6 +759,12 @@ internal static class GetDisplayNameRouteTranslator
             return true;
         }
 
+        if (RelicGeneratedNameTranslator.TryTranslate(source, out translated))
+        {
+            DynamicTextObservability.RecordTransform(route, "DisplayName.RelicGeneratedName", source, translated);
+            return true;
+        }
+
         if (TryTranslateGeneratedTitleSuffix(transformed, route, out var titleTranslated))
         {
             transformed = titleTranslated;
@@ -1086,6 +1104,53 @@ internal static class GetDisplayNameRouteTranslator
             visible => TranslateDisplayNameState(visible, route));
     }
 
+    private static bool TryStripEnglishArticleFromAlreadyLocalizedDisplayName(
+        string source,
+        IReadOnlyList<ColorSpan> spans,
+        string route,
+        out string translated)
+    {
+        translated = source;
+        if (CompactWeaponStatsDisplayNameSuffixPattern.IsMatch(source)
+            || CompactWeaponStatsDisplayNameSuffixSequencePattern.IsMatch(source)
+            || ArmorStatsDisplayNameSuffixPattern.IsMatch(source)
+            || ArmorStatsDisplayNameSuffixSequencePattern.IsMatch(source))
+        {
+            return false;
+        }
+
+        if (!TryStripEnglishArticleFromAlreadyLocalizedBase(source, out translated))
+        {
+            return false;
+        }
+
+        if (spans.Count != 0)
+        {
+            translated = ColorAwareTranslationComposer.RestoreSourceBoundaryWrappersByVisibleTextPreservingTranslatedOwnership(
+                translated,
+                spans,
+                source);
+        }
+
+        DynamicTextObservability.RecordTransform(
+            route,
+            "DisplayName.LocalizedNameLeadingEnglishArticle",
+            source,
+            translated);
+        return true;
+    }
+
+    private static bool TryStripEnglishArticleFromAlreadyLocalizedBase(string source, out string translated)
+    {
+        translated = StringHelpers.StripLeadingEnglishArticle(
+            source,
+            includeCapitalizedDefiniteArticle: true,
+            includeCapitalizedIndefiniteArticle: true,
+            includeQuantifierArticle: true);
+        return !string.Equals(translated, source, StringComparison.Ordinal)
+            && IsAlreadyLocalizedDisplayNameStateText(ColorAwareTranslationComposer.GetVisibleText(translated));
+    }
+
 
     private static bool TryTranslateArmorStatsDisplayNameSuffix(
         string source,
@@ -1418,6 +1483,14 @@ internal static class GetDisplayNameRouteTranslator
         var baseGroup = match.Groups["base"];
         var baseSource = baseGroup.Value;
         var translatedBase = TranslateDisplayNameFragmentPreservingColors(baseSource, spans, baseGroup, route);
+        var articleStripCandidate = string.Equals(translatedBase, baseSource, StringComparison.Ordinal)
+            ? baseSource
+            : translatedBase;
+        if (TryStripEnglishArticleFromAlreadyLocalizedBase(articleStripCandidate, out var articleStrippedBase))
+        {
+            translatedBase = articleStrippedBase;
+        }
+
         var stats = string.Equals(transformName, "DisplayName.CompactWeaponStatsSuffix", StringComparison.Ordinal)
             ? RestoreCompactWeaponStatsSlice(match.Groups["stats"], spans)
             : RestoreVisibleSlice(match.Groups["stats"], spans);
@@ -2042,7 +2115,8 @@ internal static class GetDisplayNameRouteTranslator
     private static bool IsDisplayNameArticleModifier(string modifier)
     {
         var visible = ColorAwareTranslationComposer.GetVisibleText(modifier);
-        return visible is "a" or "an" or "the";
+        return visible is "a" or "an" or "the"
+            || string.Equals(visible, "some", StringComparison.OrdinalIgnoreCase);
     }
 
     private static bool IsStainedDisplayNameModifier(string modifier)
@@ -2359,6 +2433,74 @@ internal static class GetDisplayNameRouteTranslator
         var translatedRest = TranslateDisplayNameFragment(rest, route);
         translated = translatedModifier + GetModifierRestSeparator(modifier, rest) + translatedRest;
         DynamicTextObservability.RecordTransform(route, "DisplayName.MixedModifier", source, translated);
+        return true;
+    }
+
+    private static bool TryTranslateLocalizedPrefixRelicGeneratedDisplayName(string source, string route, out string translated)
+    {
+        translated = source;
+        var visible = ColorAwareTranslationComposer.GetVisibleText(source);
+        if (string.IsNullOrEmpty(visible)
+            || !JapaneseCharacterPattern.IsMatch(visible)
+            || !EnglishWordPattern.IsMatch(visible))
+        {
+            return false;
+        }
+
+        for (var index = 0; index < visible.Length; index++)
+        {
+            if (!IsRelicSuffixStart(visible, index))
+            {
+                continue;
+            }
+
+            var suffix = visible.Substring(index);
+            if (!RelicGeneratedNameTranslator.TryTranslate(suffix, out var translatedSuffix))
+            {
+                continue;
+            }
+
+            var translatedVisible = visible.Substring(0, index) + translatedSuffix;
+            translated = TryReplaceVisibleRange(source, index, suffix.Length, translatedSuffix, out var replaced)
+                ? replaced
+                : ColorAwareTranslationComposer.TranslatePreservingColors(source, _ => translatedVisible);
+            DynamicTextObservability.RecordTransform(route, "DisplayName.LocalizedPrefixRelicGeneratedName", source, translated);
+            return true;
+        }
+
+        return false;
+    }
+
+    private static bool IsRelicSuffixStart(string visible, int index)
+    {
+        if (index < 0 || index >= visible.Length)
+        {
+            return false;
+        }
+
+        var current = visible[index];
+        if (current < 'A' || current > 'Z')
+        {
+            return false;
+        }
+
+        return index == 0 || visible[index - 1] == ' ';
+    }
+
+    private static bool TryReplaceVisibleRange(
+        string source,
+        int visibleStart,
+        int visibleLength,
+        string replacement,
+        out string replaced)
+    {
+        replaced = source;
+        if (!ColorCodePreserver.TryGetRawRangeForVisibleRange(source, visibleStart, visibleLength, out var rawStart, out var rawEnd))
+        {
+            return false;
+        }
+
+        replaced = source.Substring(0, rawStart) + replacement + source.Substring(rawEnd);
         return true;
     }
 
@@ -3804,6 +3946,24 @@ internal static class GetDisplayNameRouteTranslator
             return blueprintMarkup;
         }
 
+        var alias = TranslateDisplayNameLegacyAliasExact(source);
+        if (alias is not null)
+        {
+            return alias;
+        }
+
+        var direct = TranslateDisplayNameExactOrLowerAscii(source);
+        if (direct is not null)
+        {
+            return direct;
+        }
+
+        if (RelicGeneratedNameTranslator.TryTranslate(source, out var relicGeneratedName))
+        {
+            DynamicTextObservability.RecordTransform(route, "DisplayName.RelicGeneratedNameFragment", source, relicGeneratedName);
+            return relicGeneratedName;
+        }
+
         if (IsStableDisplayNameFragment(source, route))
         {
             return source;
@@ -3812,12 +3972,6 @@ internal static class GetDisplayNameRouteTranslator
         if (TryTranslateDisplayNameRouteText(source, route, out var translated))
         {
             return translated;
-        }
-
-        var direct = TranslateDisplayNameExactOrLowerAscii(source);
-        if (direct is not null)
-        {
-            return direct;
         }
 
         return source;
@@ -5348,7 +5502,11 @@ internal static class GetDisplayNameRouteTranslator
 
     private static bool TryTranslateExactDisplayNameLookup(string source, string route, out string translated)
     {
-        var direct = TranslateDisplayNameExactOrLowerAscii(source);
+        var direct = TranslateDisplayNameLegacyAliasExact(source);
+        if (direct is null)
+        {
+            direct = TranslateDisplayNameExactOrLowerAscii(source);
+        }
         if (direct is not null)
         {
             translated = direct;
@@ -5368,7 +5526,11 @@ internal static class GetDisplayNameRouteTranslator
             return false;
         }
 
-        var trimmedTranslation = TranslateDisplayNameExactOrLowerAscii(trimmed);
+        var trimmedTranslation = TranslateDisplayNameLegacyAliasExact(trimmed);
+        if (trimmedTranslation is null)
+        {
+            trimmedTranslation = TranslateDisplayNameExactOrLowerAscii(trimmed);
+        }
         if (trimmedTranslation is null)
         {
             return false;
@@ -5387,6 +5549,101 @@ internal static class GetDisplayNameRouteTranslator
     private static string? TryTranslateDisplayNameScopedExact(string source)
     {
         return ScopedDictionaryLookup.TranslateExactOrLowerAscii(source, DisplayNameDictionaryFiles);
+    }
+
+    private static string? TranslateDisplayNameLegacyAliasExact(string source)
+    {
+        return DisplayNameLegacyAliasStore.TranslateExactOrLowerAscii(source);
+    }
+
+    private static class DisplayNameLegacyAliasStore
+    {
+        private static readonly object Lock = new();
+        private static string? cachedPath;
+        private static Dictionary<string, string>? cachedEntries;
+
+        internal static string? TranslateExactOrLowerAscii(string source)
+        {
+            if (string.IsNullOrEmpty(source))
+            {
+                return null;
+            }
+
+            var entries = Load();
+            if (entries.TryGetValue(source, out var translated))
+            {
+                return translated;
+            }
+
+            var lowerAscii = StringHelpers.LowerAscii(source);
+            if (string.Equals(lowerAscii, source, StringComparison.Ordinal))
+            {
+                return null;
+            }
+
+            return entries.TryGetValue(lowerAscii, out translated) ? translated : null;
+        }
+
+        private static IReadOnlyDictionary<string, string> Load()
+        {
+            var path = LocalizationAssetResolver.GetLocalizationPath(DisplayNameLegacyAliasPath);
+            lock (Lock)
+            {
+                if (cachedEntries is not null && string.Equals(cachedPath, path, StringComparison.Ordinal))
+                {
+                    return cachedEntries;
+                }
+
+                cachedPath = path;
+                cachedEntries = Read(path);
+                return cachedEntries;
+            }
+        }
+
+        private static Dictionary<string, string> Read(string path)
+        {
+            var entries = new Dictionary<string, string>(StringComparer.Ordinal);
+            if (!File.Exists(path))
+            {
+                return entries;
+            }
+
+            var document = JsonAssetLoader.LoadFromFile<DisplayNameLegacyAliasDocument>(path);
+            if (document.Entries is null)
+            {
+                return entries;
+            }
+
+            for (var index = 0; index < document.Entries.Count; index++)
+            {
+                var entry = document.Entries[index];
+                if (entry.Key is not { Length: > 0 } key || entry.Text is not { Length: > 0 } text)
+                {
+                    continue;
+                }
+
+                entries[key] = text;
+            }
+
+            return entries;
+        }
+    }
+
+    [DataContract]
+    private sealed class DisplayNameLegacyAliasDocument
+    {
+        [DataMember(Name = "entries")]
+        public List<DisplayNameLegacyAliasEntry>? Entries { get; set; }
+    }
+
+    [DataContract]
+    private sealed class DisplayNameLegacyAliasEntry
+    {
+        [DataMember(Name = "key")]
+        public string? Key { get; set; }
+
+        [DataMember(Name = "text")]
+        public string? Text { get; set; }
     }
 
     private static string? TranslateDisplayNameExactOrLowerAscii(string source)

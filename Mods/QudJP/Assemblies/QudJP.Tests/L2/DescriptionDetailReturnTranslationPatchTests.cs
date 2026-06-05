@@ -87,6 +87,11 @@ public sealed class DescriptionDetailReturnTranslationPatchTests
         "カーバイドフィストを装備",
         "GameObjectUnitDescription")]
     [TestCase(
+        nameof(DummyDescriptionDetailReturnTarget.GameObjectMetachromeUnitGetDescription),
+        "Equipped with {{C|the Point of the Commanding Woe}}",
+        "{{C|威厳ある嘆きの尖端}}を装備",
+        "GameObjectUnitDescription")]
+    [TestCase(
         nameof(DummyDescriptionDetailReturnTarget.GameObjectBodyPartUnitGetDescription),
         "Extra arm slot",
         "腕スロットを追加",
@@ -152,6 +157,8 @@ public sealed class DescriptionDetailReturnTranslationPatchTests
             ("This contraption hums quietly.", "この装置は静かにうなっている。"),
             ("Tinkering", "工匠"),
             ("carbide fists", "カーバイドフィスト"),
+            ("commanding", "威厳ある"),
+            ("woe", "嘆き"),
             ("arm", "腕"),
             ("Temporal Fugue", "時間遁走"),
             ("the Barathrumites", "バラサラム派（技師団）"),

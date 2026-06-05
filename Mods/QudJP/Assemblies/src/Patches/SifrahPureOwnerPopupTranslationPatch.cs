@@ -571,7 +571,7 @@ public static class SifrahPureOwnerPopupTranslationPatch
                    route,
                    family,
                    "AttributeSacrifice",
-                   value => value + "が消耗しすぎているため、それはできない。",
+                   value => TranslateAttributeName(value) + "が消耗しすぎているため、それはできない。",
                    out translated)
                || IsActiveOwner("XRL.World.RitualSifrahTokenInvokeHigherBeing", "CheckTokenUse", "RitualInvokeHigherBeingCheckTokenUse")
                && TryTranslate(
@@ -756,6 +756,20 @@ public static class SifrahPureOwnerPopupTranslationPatch
             source);
         DynamicTextObservability.RecordTransform(route, "Popup.ProducerText." + Context + "." + detail, source, translated);
         return true;
+    }
+
+    private static string TranslateAttributeName(string source)
+    {
+        return source switch
+        {
+            "Strength" => "筋力",
+            "Agility" => "敏捷",
+            "Toughness" => "頑健",
+            "Intelligence" => "知力",
+            "Willpower" => "意志力",
+            "Ego" => "自我",
+            _ => source,
+        };
     }
 
     private static bool TryTranslateCheckEarlyExit(

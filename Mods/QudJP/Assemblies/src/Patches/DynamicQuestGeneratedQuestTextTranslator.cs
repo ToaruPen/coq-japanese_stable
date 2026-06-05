@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text.RegularExpressions;
 
 namespace QudJP.Patches;
@@ -34,6 +35,18 @@ internal static class DynamicQuestGeneratedQuestTextTranslator
 
     private static readonly Regex FindNamePattern = new(
         "^Find (?<target>.+)$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.Singleline);
+
+    private static readonly Regex VisitNamePattern = new(
+        "^Visit (?<target>.+)$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.Singleline);
+
+    private static readonly Regex LocateNamePattern = new(
+        "^Locate (?<target>.+)$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.Singleline);
+
+    private static readonly Regex RecoverItemNamePattern = new(
+        "^Recover (?<item>.+)$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.Singleline);
 
     private static readonly Regex ReturnItemNamePattern = new(
@@ -78,6 +91,22 @@ internal static class DynamicQuestGeneratedQuestTextTranslator
 
     private static readonly Regex TravelVerbTextPattern = new(
         "^Travel to (?<target>.+?) and (?<verb>open|close|enter|sleep in|sleep on|sit on|put something in|put something on|drink from|cook at|smoke from|pray at|desecrate) (?<item>.+)\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.Singleline);
+
+    private static readonly Regex TravelHistoricalSiteTextPattern = new(
+        "^Travel to the historical site of (?<target>.+?)(?:\\.)?$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.Singleline);
+
+    private static readonly Regex RecoverAtTextPattern = new(
+        "^Recover (?<item>.+?) at (?<target>.+)\\.$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.Singleline);
+
+    private static readonly Regex GiftRelicNamePattern = new(
+        "^(?<quality>.+?), the Gift of (?<domain>.+)$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.Singleline);
+
+    private static readonly Regex OfPhrasePattern = new(
+        "^(?<head>.+?) of (?<tail>.+)$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.Singleline);
 
     internal static bool TryTranslate(string? source, out string translated)
@@ -131,6 +160,15 @@ internal static class DynamicQuestGeneratedQuestTextTranslator
             || TryTranslatePattern(FindNamePattern, stripped, spans, source, match =>
                 TranslateCapture(match, captureSpans, "target") + "を探す",
                 out translated)
+            || TryTranslatePattern(VisitNamePattern, stripped, spans, source, match =>
+                TranslateCapture(match, captureSpans, "target") + "を訪問",
+                out translated)
+            || TryTranslatePattern(LocateNamePattern, stripped, spans, source, match =>
+                TranslateCapture(match, captureSpans, "target") + "を見つける",
+                out translated)
+            || TryTranslatePattern(RecoverItemNamePattern, stripped, spans, source, match =>
+                TranslateCapture(match, captureSpans, "item") + "を取り戻す",
+                out translated)
             || TryTranslatePattern(ReturnItemNamePattern, stripped, spans, source, match =>
                 TranslateCapture(match, captureSpans, "item") + "を" + TranslateCapture(match, captureSpans, "target") + "へ返す",
                 out translated)
@@ -183,6 +221,12 @@ internal static class DynamicQuestGeneratedQuestTextTranslator
             || TryTranslatePattern(TravelVerbTextPattern, stripped, spans, source, match =>
                 TranslateCapture(match, captureSpans, "target") + "へ行き、"
                 + BuildVerbObjectPhrase(match.Groups["verb"].Value, TranslateCapture(match, captureSpans, "item")) + "。",
+                out translated)
+            || TryTranslatePattern(TravelHistoricalSiteTextPattern, stripped, spans, source, match =>
+                TranslateCapture(match, captureSpans, "target") + "の史跡へ向かう。",
+                out translated)
+            || TryTranslatePattern(RecoverAtTextPattern, stripped, spans, source, match =>
+                TranslateCapture(match, captureSpans, "target") + "で" + TranslateCapture(match, captureSpans, "item") + "を取り戻す。",
                 out translated))
         {
             return true;
@@ -231,6 +275,26 @@ internal static class DynamicQuestGeneratedQuestTextTranslator
     internal static string TranslateCaptureVisible(string source)
     {
         var trimmed = source.Trim();
+        if (TryTranslateGiftRelicName(trimmed, out var giftRelic))
+        {
+            return giftRelic;
+        }
+
+        if (TryTranslateCommaSeparatedCapture(trimmed, out var commaSeparated))
+        {
+            return commaSeparated;
+        }
+
+        if (TryTranslateOfPhrase(trimmed, out var ofPhrase))
+        {
+            return ofPhrase;
+        }
+
+        if (TryTranslateCompactSuffixCapture(trimmed, out var compactSuffix))
+        {
+            return compactSuffix;
+        }
+
         if (TryTranslateSpecialCapture(trimmed, out var special))
         {
             return special;
@@ -252,9 +316,170 @@ internal static class DynamicQuestGeneratedQuestTextTranslator
             return exact;
         }
 
+        if (TryTranslateZoneDisplayNameCapture(trimmed, out var zone)
+            && !string.Equals(zone, trimmed, StringComparison.Ordinal))
+        {
+            return zone;
+        }
+
+        if (TryTranslateZoneDisplayNameCapture(stripped, out zone)
+            && !string.Equals(zone, stripped, StringComparison.Ordinal))
+        {
+            return zone;
+        }
+
+        if (TryTranslateSpaceSeparatedCapture(stripped, out var spaceSeparated))
+        {
+            return spaceSeparated;
+        }
+
+        if (ContainsJapaneseCharacters(stripped))
+        {
+            return stripped;
+        }
+
         return HistorySpiceComponentLookup.TryTranslateTitlePhrase(stripped, out var titlePhrase)
             ? titlePhrase
             : stripped;
+    }
+
+    private static bool TryTranslateZoneDisplayNameCapture(string source, out string translated)
+    {
+        translated = source;
+        if (!Directory.Exists(Translator.GetDictionaryDirectoryPath()))
+        {
+            return false;
+        }
+
+        return MessageLogProducerTranslationHelpers.TryTranslateZoneDisplayName(
+            source,
+            nameof(DynamicQuestGeneratedQuestTextTranslator),
+            out translated);
+    }
+
+    private static bool ContainsJapaneseCharacters(string source)
+    {
+        for (var index = 0; index < source.Length; index++)
+        {
+            var character = source[index];
+            if ((character >= '\u3040' && character <= '\u30ff')
+                || (character >= '\u3400' && character <= '\u9fff'))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static bool TryTranslateGiftRelicName(string source, out string translated)
+    {
+        var match = GiftRelicNamePattern.Match(source);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        translated = TranslateCaptureVisible(match.Groups["domain"].Value) + "の"
+            + TranslateCaptureVisible(match.Groups["quality"].Value) + "賜物";
+        return true;
+    }
+
+    private static bool TryTranslateCommaSeparatedCapture(string source, out string translated)
+    {
+        var parts = source.Split(new[] { ", " }, StringSplitOptions.None);
+        if (parts.Length <= 1)
+        {
+            translated = source;
+            return false;
+        }
+
+        var changed = false;
+        for (var index = 0; index < parts.Length; index++)
+        {
+            var part = parts[index];
+            var translatedPart = TranslateCaptureVisible(part);
+            if (!string.Equals(translatedPart, part, StringComparison.Ordinal))
+            {
+                changed = true;
+            }
+
+            parts[index] = translatedPart;
+        }
+
+        translated = string.Join(", ", parts);
+        return changed;
+    }
+
+    private static bool TryTranslateOfPhrase(string source, out string translated)
+    {
+        var match = OfPhrasePattern.Match(source);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        var head = TranslateCaptureVisible(match.Groups["head"].Value);
+        var tail = TranslateCaptureVisible(match.Groups["tail"].Value);
+        if (string.Equals(head, match.Groups["head"].Value, StringComparison.Ordinal)
+            && string.Equals(tail, match.Groups["tail"].Value, StringComparison.Ordinal))
+        {
+            translated = source;
+            return false;
+        }
+
+        translated = tail + "の" + head;
+        return true;
+    }
+
+    private static bool TryTranslateCompactSuffixCapture(string source, out string translated)
+    {
+        const string WoeSuffix = "woe";
+        if (source.Length <= WoeSuffix.Length
+            || !source.EndsWith(WoeSuffix, StringComparison.OrdinalIgnoreCase)
+            || !HistorySpiceComponentLookup.TryTranslateWord(WoeSuffix, out var translatedSuffix))
+        {
+            translated = source;
+            return false;
+        }
+
+        var root = source.Substring(0, source.Length - WoeSuffix.Length);
+        if (root.Length == 0)
+        {
+            translated = source;
+            return false;
+        }
+
+        translated = TranslateCaptureVisible(root) + "の" + translatedSuffix;
+        return true;
+    }
+
+    private static bool TryTranslateSpaceSeparatedCapture(string source, out string translated)
+    {
+        var words = source.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+        if (words.Length <= 1)
+        {
+            translated = source;
+            return false;
+        }
+
+        var changed = false;
+        for (var index = 0; index < words.Length; index++)
+        {
+            var word = words[index];
+            var translatedWord = TranslateCaptureVisible(word);
+            if (!string.Equals(translatedWord, word, StringComparison.Ordinal))
+            {
+                changed = true;
+            }
+
+            words[index] = translatedWord;
+        }
+
+        translated = string.Concat(words);
+        return changed;
     }
 
     private static bool TryTranslateSpecialCapture(string source, out string translated)

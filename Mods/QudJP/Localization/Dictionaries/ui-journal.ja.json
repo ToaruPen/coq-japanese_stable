@@ -115,6 +115,10 @@
       "text": "不明"
     },
     {
+      "key": "[NO GOSPEL]",
+      "text": "[年代記なし]"
+    },
+    {
       "key": "<unknown>",
       "context": "Qud.UI.Qud.UI.JournalStatusScreen",
       "text": "<不明>"
@@ -277,7 +281,7 @@
     {
       "key": "Ruins with Becoming Nooks",
       "context": "Qud.UI.Qud.API.JournalMapNote",
-      "text": "変身の窪み付きの廃墟"
+      "text": "変容の僻隅付きの廃墟"
     },
     {
       "key": "Miscellaneous",

@@ -1005,6 +1005,34 @@ public sealed class LocalizationCoverageTests
     }
 
     [Test]
+    public void ConversationsJapanese_CoversOthoInitialWaydroidRewardStartNodes()
+    {
+        var document = XDocument.Load(Path.Combine(localizationRoot, "Conversations.jp.xml"));
+        var otho = document
+            .Descendants("conversation")
+            .Single(element => (string?)element.Attribute("ID") == "Otho");
+        var nodes = otho
+            .Elements("node")
+            .Where(element =>
+                (string?)element.Attribute("ID") == "Start"
+                && (string?)element.Attribute("IfHaveActiveQuest") == "More Than a Willing Spirit"
+                && (string?)element.Attribute("IfHaveBlueprint") == "Dormant Waydroid")
+            .ToArray();
+
+        var combinedText = string.Join("\n", nodes.Select(static element => element.Value));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(nodes, Has.Length.EqualTo(3));
+            Assert.That(nodes.All(static element => (string?)element.Attribute("Replace") == "true"), Is.True);
+            Assert.That(combinedText, Does.Contain("ありがとう。また戻ってくる。"));
+            Assert.That(combinedText, Does.Not.Contain("Welcome to Grit Gate"));
+            Assert.That(combinedText, Does.Not.Contain("Thank you. I will return."));
+            Assert.That(combinedText, Does.Not.Contain("You are worthy to study with us."));
+        });
+    }
+
+    [Test]
     public void WorldEffectsStatusDictionary_CoversStaticActiveEffectDescriptionLeaves()
     {
         var worldEffectsStatusKeys = LoadEntries(Path.Combine(localizationRoot, "Dictionaries", "world-effects-status.ja.json"))
@@ -1426,6 +1454,38 @@ public sealed class LocalizationCoverageTests
                     entries,
                     Does.Contain(expectedEntry),
                     $"MultiHorns.Mutate runtime SetDisplayName leaf should be available to status display sinks: {expectedEntry.Key}.");
+            }
+        });
+    }
+
+    [Test]
+    public void DisplayNameAtomicDictionary_ContainsRuntimeCyberneticsDisplayNames()
+    {
+        var entries = LoadEntries(Path.Combine(localizationRoot, "Dictionaries", "ui-displayname-atomic.ja.json"));
+        var expectedEntries = new[]
+        {
+            new DictionaryEntry("optical bioscanner", string.Empty, "光学バイオスキャナ"),
+            new DictionaryEntry("optical technoscanner", string.Empty, "光学テクノスキャナ"),
+            new DictionaryEntry("dermal insulation", string.Empty, "皮膚用断熱材"),
+            new DictionaryEntry("night vision", string.Empty, "暗視システム"),
+            new DictionaryEntry("hyper-elastic ankle tendons", string.Empty, "高弾性足首腱"),
+            new DictionaryEntry("parabolic muscular subroutine", string.Empty, "放物筋サブルーチン"),
+            new DictionaryEntry("translucent skin", string.Empty, "透明皮膚"),
+            new DictionaryEntry("stabilizer arm locks", string.Empty, "安定化アームロック"),
+            new DictionaryEntry("rapid release finger flexors", string.Empty, "高速リリース屈筋"),
+            new DictionaryEntry("carbide hand bones", string.Empty, "カーバイド製手骨"),
+            new DictionaryEntry("pentaceps", string.Empty, "ペンタセプス"),
+            new DictionaryEntry("inflatable axons", string.Empty, "膨張軸索"),
+        };
+
+        Assert.Multiple(() =>
+        {
+            foreach (var expectedEntry in expectedEntries)
+            {
+                Assert.That(
+                    entries,
+                    Does.Contain(expectedEntry),
+                    $"Runtime cybernetics display names should be available outside chargen: {expectedEntry.Key}.");
             }
         });
     }

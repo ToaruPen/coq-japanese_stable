@@ -170,7 +170,7 @@ internal static class DoesVerbRouteTranslator
     private static string NormalizeAndRestoreSubjectMarkup(string subject, IReadOnlyList<ColorSpan>? spans)
     {
         var normalizedSubject = NormalizeSubject(subject);
-        if (spans is null || spans.Count == 0)
+        if (spans is null || spans.Count == 0 || ColorAwareTranslationComposer.HasColorMarkup(normalizedSubject))
         {
             return normalizedSubject;
         }
@@ -224,7 +224,7 @@ internal static class DoesVerbRouteTranslator
         if (trimmed.StartsWith("Your ", StringComparison.Ordinal)
             || trimmed.StartsWith("your ", StringComparison.Ordinal))
         {
-            return trimmed.Substring(5);
+            return TranslateSubjectLeaf(trimmed.Substring(5));
         }
 
         if (trimmed.StartsWith("The ", StringComparison.Ordinal)
@@ -243,9 +243,33 @@ internal static class DoesVerbRouteTranslator
 
     private static string TranslateSubjectLeaf(string subject)
     {
-        return StringHelpers.TryGetTranslationExactOrLowerAscii(subject, out var translated)
-            ? translated
-            : subject;
+        if (StringHelpers.TryGetTranslationExactOrLowerAscii(subject, out var translated))
+        {
+            return translated;
+        }
+
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(subject);
+        if (spans.Count > 0
+            && StringHelpers.TryGetTranslationExactOrLowerAscii(stripped, out var strippedTranslated))
+        {
+            return ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+                strippedTranslated,
+                spans,
+                stripped.Length,
+                subject);
+        }
+
+        var translatedVisible = ColorAwareTranslationComposer.TranslatePreservingColors(
+            subject,
+            static visible => StringHelpers.TryGetTranslationExactOrLowerAscii(visible, out var translated)
+                ? translated
+                : visible);
+        if (!string.Equals(translatedVisible, subject, StringComparison.Ordinal))
+        {
+            return translatedVisible;
+        }
+
+        return DisplayNameCaptureTranslator.TranslatePreservingColors(subject, nameof(DoesVerbRouteTranslator));
     }
 
     private static bool TryTranslateVisibleMessage(

@@ -501,6 +501,37 @@ internal sealed class DummyGivesRepProducerTarget
     }
 }
 
+internal sealed class DummyCyberneticsBaseItemProducerTarget
+{
+    public string Slots { get; set; } = "Hands";
+
+    public int Cost { get; set; } = 2;
+
+    public bool DestroyOnRemoval { get; set; }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public bool HandleEvent(DummyGetShortDescriptionEvent E)
+    {
+        if (DestroyOnRemoval)
+        {
+            E.Postfix.Append("{{rules|Destroyed when uninstalled.}}");
+        }
+
+        if (!string.IsNullOrEmpty(Slots))
+        {
+            E.Postfix.Append("{{rules|Target body parts: ")
+                .Append(Slots.Replace(",", ", ", StringComparison.Ordinal))
+                .Append("}}");
+        }
+
+        E.Postfix.Append("{{rules|License points: ")
+            .Append(Cost)
+            .Append("}}")
+            .Append("{{rules|Only compatible with True Kin genotypes}}");
+        return true;
+    }
+}
+
 internal sealed class DummyPetEitherOrProducerTarget
 {
     public string QueuedMessageToSend { get; set; } = string.Empty;

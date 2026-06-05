@@ -52,6 +52,14 @@ public static class DynamicQuestConstructorConversationTranslationPatch
         var transformed = 0;
         foreach (var instruction in instructions)
         {
+            if (IsQuestIntroConsumerCall(instruction))
+            {
+                transformed++;
+                yield return new CodeInstruction(
+                    OpCodes.Call,
+                    AccessTools.Method(typeof(DynamicQuestConstructorConversationTranslationPatch), nameof(TranslateExpandedText)));
+            }
+
             yield return instruction;
             if (IsTranslatableStringProducerCall(instruction))
             {
@@ -116,6 +124,23 @@ public static class DynamicQuestConstructorConversationTranslationPatch
         }
 
         return IsStringReplaceCall(method) || IsStringConcatCall(method);
+    }
+
+    private static bool IsQuestIntroConsumerCall(CodeInstruction instruction)
+    {
+        if (instruction.opcode != OpCodes.Call
+            && instruction.opcode != OpCodes.Callvirt
+            || instruction.operand is not MethodInfo method
+            || method.Name != "AddNode")
+        {
+            return false;
+        }
+
+        var parameters = method.GetParameters();
+        return parameters.Length == 3
+            && parameters[0].ParameterType != typeof(string)
+            && parameters[1].ParameterType == typeof(string)
+            && parameters[2].ParameterType == typeof(string);
     }
 
     private static bool IsStringReplaceCall(MethodInfo method)

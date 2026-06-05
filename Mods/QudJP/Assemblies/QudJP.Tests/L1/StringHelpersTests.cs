@@ -38,6 +38,18 @@ public sealed class StringHelpersTests
         Assert.That(StringHelpers.StripLeadingEnglishArticle(source), Is.EqualTo(expected));
     }
 
+    [TestCase("some raw boar meat", "raw boar meat")]
+    [TestCase("Some raw boar meat", "raw boar meat")]
+    public void StripLeadingEnglishArticle_CanUseDisplayNameArticleModifierSet(string source, string expected)
+    {
+        Assert.That(
+            StringHelpers.StripLeadingEnglishArticle(
+                source,
+                includeCapitalizedIndefiniteArticle: true,
+                includeQuantifierArticle: true),
+            Is.EqualTo(expected));
+    }
+
     [TestCase("The watervine", "watervine")]
     [TestCase("the watervine", "watervine")]
     [TestCase("a snapjaw", "a snapjaw")]

@@ -42,6 +42,20 @@ internal static class StairsFragmentTranslator
         }
 
         var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        if (string.Equals(expectedDirection, "descend", StringComparison.Ordinal)
+            && string.Equals(
+                stripped,
+                "It looks like an awfully long fall. Are you sure you want to jump into the shaft?",
+                StringComparison.Ordinal))
+        {
+            translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(
+                "ひどく長い落下になりそうだ。本当に縦穴に飛び込む？",
+                spans,
+                stripped.Length);
+            DynamicTextObservability.RecordTransform(route, family + ".LongFallJumpPrompt", source, translated);
+            return true;
+        }
+
         var match = UseCommandPattern.Match(stripped);
         if (!match.Success || !string.Equals(match.Groups["direction"].Value, expectedDirection, StringComparison.Ordinal))
         {

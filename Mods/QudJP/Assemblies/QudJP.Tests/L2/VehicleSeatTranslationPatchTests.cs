@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 using HarmonyLib;
 using QudJP.Patches;
 using QudJP.Tests.DummyTargets;
+using QudJP.Tests.L1;
 
 namespace QudJP.Tests.L2;
 
@@ -14,6 +15,10 @@ public sealed class VehicleSeatTranslationPatchTests
     [SetUp]
     public void SetUp()
     {
+        Translator.ResetForTests();
+        var localizationRoot = Path.Combine(TestProjectPaths.GetRepositoryRoot(), "Mods", "QudJP", "Localization");
+        LocalizationAssetResolver.SetLocalizationRootForTests(localizationRoot);
+        Translator.SetDictionaryDirectoryForTests(Path.Combine(localizationRoot, "Dictionaries"));
         DynamicTextObservability.ResetForTests();
         MessageFrameTranslator.ResetForTests();
         DummyPopupShow.Reset();
@@ -22,6 +27,8 @@ public sealed class VehicleSeatTranslationPatchTests
     [TearDown]
     public void TearDown()
     {
+        Translator.ResetForTests();
+        LocalizationAssetResolver.SetLocalizationRootForTests(null);
         DummyPopupShow.Reset();
         MessageFrameTranslator.ResetForTests();
         DynamicTextObservability.ResetForTests();
@@ -29,11 +36,11 @@ public sealed class VehicleSeatTranslationPatchTests
 
     [TestCase(
         "Accessing the pilot console requires the permanent insertion of {{Y|a cybernetic credit wedge}}.\n\nAre you sure you want to proceed?",
-        "操縦コンソールへアクセスするには{{Y|a cybernetic credit wedge}}を恒久的に挿入する必要がある。\n\n続行しますか？",
+        "操縦コンソールへアクセスするには{{Y|サイバネティック・クレジットウェッジ}}を恒久的に挿入する必要がある。\n\n続行しますか？",
         "VehicleSeatPilotConsoleConfirmation")]
     [TestCase(
         "Accessing the pilot console requires the permanent insertion of a cybernetic credit wedge.",
-        "操縦コンソールへアクセスするにはa cybernetic credit wedgeを恒久的に挿入する必要がある。",
+        "操縦コンソールへアクセスするにはサイバネティック・クレジットウェッジを恒久的に挿入する必要がある。",
         "VehicleSeatPilotConsoleRequirement")]
     public void Patch_TranslatesPilotConsoleRequirementPopup_WhenOwnerPatched(
         string source,
@@ -72,7 +79,7 @@ public sealed class VehicleSeatTranslationPatchTests
     }
 
     [TestCase("")]
-    [TestCase("Access diodes flash in the affirmative.")]
+    [TestCase("Auxiliary diodes glow without comment.")]
     public void Patch_DoesNotClaimFixedOrEmptyPopup_WhenOwnerPatched(string source)
     {
         AssertOwnerPopup(source, source, "VehicleSeatPilotConsoleRequirement", expectedHits: 0);
@@ -80,6 +87,36 @@ public sealed class VehicleSeatTranslationPatchTests
 
     private static void AssertOwnerPopup(string source, string expected, string detail, int expectedHits)
     {
+        VehicleSeatTranslationPatch.Prefix();
+        try
+        {
+            OwnerPopupRouteTestHarness.WithPatchedPopupOnly(
+                () =>
+                {
+                    new DummyVehicleSeatProducer
+                    {
+                        PopupMessageToShow = source,
+                    }.AttemptPilot(new DummyGameObject());
+
+                    Assert.Multiple(() =>
+                    {
+                        Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(expected));
+                        Assert.That(HitCount(detail), Is.EqualTo(expectedHits));
+                    });
+                });
+        }
+        finally
+        {
+            VehicleSeatTranslationPatch.Finalizer(null);
+        }
+    }
+
+    [Test]
+    public void Patch_TargetMethodFixture_TranslatesWhenOwnerMethodIsPatched()
+    {
+        const string source =
+            "Accessing the pilot console requires the permanent insertion of a cybernetic credit wedge.";
+
         OwnerPopupRouteTestHarness.WithPatchedPopupOwner(
             typeof(VehicleSeatTranslationPatch),
             RequireOwnerMethod(),
@@ -92,8 +129,10 @@ public sealed class VehicleSeatTranslationPatchTests
 
                 Assert.Multiple(() =>
                 {
-                    Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(expected));
-                    Assert.That(HitCount(detail), Is.EqualTo(expectedHits));
+                    Assert.That(
+                        DummyPopupShow.LastShowMessage,
+                        Is.EqualTo("操縦コンソールへアクセスするにはサイバネティック・クレジットウェッジを恒久的に挿入する必要がある。"));
+                    Assert.That(HitCount("VehicleSeatPilotConsoleRequirement"), Is.EqualTo(1));
                 });
             });
     }

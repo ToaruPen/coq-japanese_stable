@@ -109,7 +109,7 @@ public sealed class MutationActivatedAbilityNameTranslationPatchTests
     [TestCase("Breathe Normality Gas", "正常化ブレス")]
     [TestCase("Breathe Corrosive Gas", "腐食ブレス")]
     [TestCase("Breathe Confusion Gas", "混乱ブレス")]
-    [TestCase("Breathe Stun Gas", "朦朧ブレス")]
+    [TestCase("Breathe Stun Gas", "気絶ブレス")]
     [TestCase("Breathe Poison Gas", "毒ブレス")]
     [TestCase("Breathe Sleep Gas", "睡眠ブレス")]
     [TestCase("Breathe Shame Gas", "恥辱ブレス")]

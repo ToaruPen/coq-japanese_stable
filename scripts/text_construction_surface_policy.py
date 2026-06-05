@@ -3404,9 +3404,10 @@ ISSUE719_DYNAMIC_QUEST_REWARD_CHOICE_EVIDENCE: Final[list[str]] = [
     ),
     (
         "The fixed 'Choose a reward' title is covered by PopupPickOptionTranslationPatch "
-        "and the shipped ui-popup dictionary entry; the option strings are composed "
-        "from GameObject.GetDisplayName(... AsIfKnown: true) or DisplayNameOnlyDirect "
-        "plus a count suffix, so they remain GameObject display-name owner output."
+        "and the shipped ui-popup dictionary entry; the option strings are covered by "
+        "a PopupPickOptionTranslationPatch emitted-shape test that translates generated "
+        "display-name parts while preserving comma-separated entries and '&WxN' quantity "
+        "suffixes."
     ),
     "decompiled owner source: XRL.World/DynamicQuestRewardElement_ChoiceFromPopulation.cs lines 27-63",
     "Mods/QudJP/Assemblies/src/Patches/PopupPickOptionTranslationPatch.cs",
@@ -13317,7 +13318,7 @@ class ResidualBucketPayload(TypedDict):
 
     schema_version: str
     inventory: str
-    total_entries: int
+    actionable_entries: int
     bucket_counts: dict[str, int]
     disposition_counts: dict[str, int]
     lane_counts: dict[str, int]
@@ -13355,7 +13356,7 @@ class FollowupIssuePayload(TypedDict):
 
     schema_version: str
     inventory: str
-    total_entries: int
+    actionable_entries: int
     issue_counts: dict[str, int]
     track_counts: dict[str, int]
     issues: dict[str, FollowupIssueSummary]
@@ -13915,7 +13916,7 @@ def residual_bucket_payload(
     return {
         "schema_version": "1.0",
         "inventory": str(inventory_path),
-        "total_entries": len(entries),
+        "actionable_entries": len(entries),
         "bucket_counts": dict(sorted(bucket_counts.items())),
         "disposition_counts": dict(sorted(disposition_counts.items())),
         "lane_counts": dict(sorted(lane_counts.items(), key=lambda item: LANE_ORDER[item[0]])),
@@ -13960,8 +13961,12 @@ def followup_issue_payload(
     }
     issue_counts: dict[str, int] = {}
     track_counts: dict[str, int] = {}
+    actionable_entries = 0
 
     for entry in residual_payload["entries"]:
+        if entry["closure_status"] not in {"unreviewed", "action_required", "runtime_required"}:
+            continue
+        actionable_entries += 1
         residual_bucket = entry["residual_bucket"]
         followup_id = ISSUE719_FOLLOWUP_BY_BUCKET.get(residual_bucket)
         if followup_id is None:
@@ -13996,7 +14001,7 @@ def followup_issue_payload(
     return {
         "schema_version": "1.0",
         "inventory": str(inventory_path),
-        "total_entries": residual_payload["total_entries"],
+        "actionable_entries": actionable_entries,
         "issue_counts": dict(sorted(issue_counts.items())),
         "track_counts": dict(sorted(track_counts.items())),
         "issues": dict(sorted(issues.items())),

@@ -8435,7 +8435,7 @@
   </object>
 
 <object Name="ChaingunTurret" Inherits="HostileTurret" Replace="true">
-    <part Name="Render" DisplayName="{{c|チェインガン・タレット}}" RenderString="3" ColorString="&amp;R" Tile="Creatures/sw_chaingun_turret.bmp" DetailColor="c" />
+    <part Name="Render" DisplayName="{{c|チェーンガン・タレット}}" RenderString="3" ColorString="&amp;R" Tile="Creatures/sw_chaingun_turret.bmp" DetailColor="c" />
     <part Name="HostileTurretBuilder" />
     <part Name="PowerSwitch" SecurityClearance="-3" />
     <inventoryobject Blueprint="Chaingun" />
@@ -8460,7 +8460,7 @@
   </object>
 
 <object Name="ChainLaserEmplacement" Inherits="WeaponEmplacement" Replace="true">
-    <part Name="Render" DisplayName="{{B|チェインレーザー砲座}}" RenderString="5" ColorString="&amp;B" Tile="Creatures/sw_chainlaser_emplacement.bmp" DetailColor="c" />
+    <part Name="Render" DisplayName="{{B|チェーンレーザー砲座}}" RenderString="5" ColorString="&amp;B" Tile="Creatures/sw_chainlaser_emplacement.bmp" DetailColor="c" />
     <part Name="HostileTurretBuilder" />
     <part Name="PowerSwitch" SecurityClearance="-4" />
     <inventoryobject Blueprint="Chain Laser" />

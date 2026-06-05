@@ -83,6 +83,23 @@ public sealed class DynamicQuestConstructorConversationTranslationPatchTests
         });
     }
 
+    [Test]
+    public void AddQuestConversationToGiver_DoesNotTranslateStringKeyAddNodeOverload_WhenPatched()
+    {
+        WithPatchedConstructorMethods(() =>
+        {
+            DummyDynamicQuestConstructorConversationTarget.AddStringKeyNode();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyDynamicQuestConstructorConversationTarget.NodeKeys, Does.Contain("Will you?"));
+                Assert.That(
+                    DummyDynamicQuestConstructorConversationTarget.Nodes,
+                    Does.Contain("かつて私の同胞は*Activity*に日々を費やしていた"));
+            });
+        });
+    }
+
     private static void WithPatchedConstructorMethods(Action action)
     {
         var harmonyId = "qudjp.tests.dynamic-quest-constructor-conversation." + Guid.NewGuid().ToString("N");
@@ -107,6 +124,11 @@ public sealed class DynamicQuestConstructorConversationTranslationPatchTests
                 original: RequireMethod(
                     typeof(DummyDynamicQuestConstructorConversationTarget),
                     nameof(DummyDynamicQuestConstructorConversationTarget.InteractWithObject)),
+                transpiler: transpiler);
+            harmony.Patch(
+                original: RequireMethod(
+                    typeof(DummyDynamicQuestConstructorConversationTarget),
+                    nameof(DummyDynamicQuestConstructorConversationTarget.AddStringKeyNode)),
                 transpiler: transpiler);
             action();
         }
@@ -133,6 +155,8 @@ public sealed class DynamicQuestConstructorConversationTranslationPatchTests
 
 internal static class DummyDynamicQuestConstructorConversationTarget
 {
+    public static DummyConversationBlueprint Blueprint { get; } = new();
+
     public static string ItemPrompt { get; set; } = "Will you?";
 
     public static string SitePrompt { get; set; } = "Would you be willing to locate it?";
@@ -201,6 +225,8 @@ internal static class DummyDynamicQuestConstructorConversationTarget
 
     public static List<string> Nodes { get; } = [];
 
+    public static List<string> NodeKeys { get; } = [];
+
     public static void Reset()
     {
         ItemPrompt = "Will you?";
@@ -237,12 +263,15 @@ internal static class DummyDynamicQuestConstructorConversationTarget
         StrangeGoTo = "I need someone to go to *deliveryTarget* and *verb* the *itemName* there";
         StrangeTellNoOne = "By *sacredThing*, tell no one of this";
         Nodes.Clear();
+        NodeKeys.Clear();
+        Blueprint.NodeIds.Clear();
+        Blueprint.Texts.Clear();
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
     public static void FindSpecificItem()
     {
-        AddNode(DummyHistoricStringExpander.ExpandString(ItemSacredIntro)
+        AddNode(Blueprint, null, DummyHistoricStringExpander.ExpandString(ItemSacredIntro)
                 .Replace("*Activity*", "tending hearths") + ". "
             + DummyHistoricStringExpander.ExpandString(ItemAfterLearning)
                 .Replace("*sanctityOfSacredThing*", "the sanctity of salt") + ". "
@@ -265,13 +294,13 @@ internal static class DummyDynamicQuestConstructorConversationTarget
                 .Replace("*has*", "has") + ". "
             + DummyHistoricStringExpander.ExpandString(ItemPrompt) + " "
             + DummyHistoricStringExpander.ExpandString(ItemReward) + ".");
-        AddNode(DummyHistoricStringExpander.ExpandString("The rest of this generated introduction has *itemName* placeholders."));
+        AddNode(Blueprint, null, DummyHistoricStringExpander.ExpandString("The rest of this generated introduction has *itemName* placeholders."));
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
     public static void FindSpecificSite()
     {
-        AddNode(DummyHistoricStringExpander.ExpandString(SiteTravelersCame) + ". "
+        AddNode(Blueprint, null, DummyHistoricStringExpander.ExpandString(SiteTravelersCame) + ". "
             + DummyHistoricStringExpander.ExpandString(SiteSpokeOfPlace)
                 .Replace("*GuestActivity*", "breaking bread")
                 .Replace("*site*", "{{|the hidden archive}}") + ". "
@@ -293,7 +322,7 @@ internal static class DummyDynamicQuestConstructorConversationTarget
     [MethodImpl(MethodImplOptions.NoInlining)]
     public static void InteractWithObject()
     {
-        AddNode(DummyHistoricStringExpander.ExpandString(ObjectIntro)
+        AddNode(Blueprint, null, DummyHistoricStringExpander.ExpandString(ObjectIntro)
                 .Replace("*itemName*", "{{|sacred vessel}}")
                 .Replace("*deliveryTarget*", "{{|the salt shrine}}") + "? "
             + DummyHistoricStringExpander.ExpandString(ObjectHoly)
@@ -305,7 +334,7 @@ internal static class DummyDynamicQuestConstructorConversationTarget
             + DummyHistoricStringExpander.ExpandString(ObjectHonor) + ". "
             + DummyHistoricStringExpander.ExpandString(ObjectPrompt) + "? "
             + DummyHistoricStringExpander.ExpandString(ObjectReward) + ".");
-        AddNode(DummyHistoricStringExpander.ExpandString(StrangeIntro) + "\n\n"
+        AddNode(Blueprint, null, DummyHistoricStringExpander.ExpandString(StrangeIntro) + "\n\n"
             + DummyHistoricStringExpander.ExpandString(StrangeComeClose) + " "
             + DummyHistoricStringExpander.ExpandString(StrangePlan)
                 .Replace("*plan*", "{{|scheme}}") + ". "
@@ -320,8 +349,29 @@ internal static class DummyDynamicQuestConstructorConversationTarget
                 .Replace("*sacredThing*", "patience") + ".");
     }
 
-    private static void AddNode(string text)
+    private static void AddNode(DummyConversationBlueprint blueprint, string? id, string? text)
     {
+        blueprint.NodeIds.Add(id);
+        blueprint.Texts.Add(text);
+        Nodes.Add(text ?? string.Empty);
+    }
+
+    private static void AddNode(string key, string text)
+    {
+        NodeKeys.Add(key);
         Nodes.Add(text);
     }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public static void AddStringKeyNode()
+    {
+        AddNode("Will you?", DummyHistoricStringExpander.ExpandString(ItemSacredIntro));
+    }
+}
+
+internal sealed class DummyConversationBlueprint
+{
+    public List<string?> NodeIds { get; } = [];
+
+    public List<string?> Texts { get; } = [];
 }

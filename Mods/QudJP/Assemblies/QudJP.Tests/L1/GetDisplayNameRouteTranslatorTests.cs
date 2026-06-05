@@ -94,6 +94,148 @@ public sealed class GetDisplayNameRouteTranslatorTests
     }
 
     [Test]
+    public void TranslatePreservingColors_UsesProductionAliasForLegacySpaserDisplayNameWithLeadingModifier()
+    {
+        UseProductionDictionaries();
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            "{{c|jacked}} {{spaser|スパーザー}}ライフル",
+            nameof(GetDisplayNameProcessPatch));
+
+        Assert.That(translated, Is.EqualTo("{{c|ジャック付き}} {{spaser|スペーザー}}ライフル"));
+    }
+
+    [Test]
+    public void TranslatePreservingColors_UsesDisplayNameAliasForLegacySpaserDisplayNameWithWeaponStats()
+    {
+        WriteAliasFile(
+            ("スパーザーライフル", "{{spaser|スペーザー}}ライフル"));
+        WriteDictionaryFile("ui-displayname-adjectives.ja.json", ("[no cell]", "[セルなし]"));
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            "スパーザーライフル \u001A14 \u00031d12 [no cell] <AAC7>",
+            nameof(GetDisplayNameProcessPatch));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Does.Contain("スペーザー"));
+            Assert.That(translated, Does.Contain("ライフル"));
+            Assert.That(translated, Does.Contain("[セルなし]"));
+            Assert.That(translated, Does.Not.Contain("スパーザー"));
+        });
+    }
+
+    [Test]
+    public void TranslatePreservingColors_ProductionAlias_UpdatesCachedSpaserTooltipWeaponName()
+    {
+        UseProductionDictionaries();
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            "スパーザーライフル \u001A14 \u00031d12 [no cell] <AAC7>",
+            nameof(LookTooltipInformationWrapPatch));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Does.Contain("スペーザー"));
+            Assert.That(translated, Does.Contain("ライフル"));
+            Assert.That(translated, Does.Contain("[セルなし]"));
+            Assert.That(translated, Does.Not.Contain("スパーザー"));
+        });
+    }
+
+    [Test]
+    public void TranslatePreservingColors_StripsEnglishArticleFromLocalizedGeneratedWeaponStatsName()
+    {
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            "the 威厳ある嘆きの尖端 \u001A10/13 \u00031d12+1",
+            nameof(LookTooltipInformationWrapPatch));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Does.StartWith("威厳ある嘆きの尖端 "));
+            Assert.That(translated, Does.Not.StartWith("the "));
+            Assert.That(translated, Does.Contain("10"));
+            Assert.That(translated, Does.Contain("1d12+1"));
+        });
+    }
+
+    [Test]
+    public void TranslatePreservingColors_StripsEnglishArticleFromColoredLocalizedGeneratedWeaponStatsName()
+    {
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            "the {{Y-R-Y-Y-Y-Y-Y-r-Y sequence|威厳ある嘆きの尖端}} {{c|\u001A}}10{{K|/13}} {{r|\u0003}}1d12+1",
+            nameof(LookTooltipInformationWrapPatch));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Does.StartWith("{{Y-R-Y-Y-Y-Y-Y-r-Y sequence|威厳ある嘆きの尖端}} "));
+            Assert.That(translated, Does.Not.StartWith("the "));
+            Assert.That(translated, Does.Contain("{{c|\u001A}}10"));
+            Assert.That(translated, Does.Contain("{{r|\u0003}}1d12+1"));
+        });
+    }
+
+    [Test]
+    public void TranslatePreservingColors_StripsEnglishArticleFromLocalizedGeneratedDisplayName()
+    {
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            "the 威厳ある嘆きの尖端",
+            nameof(GetDisplayNameProcessPatch));
+
+        Assert.That(translated, Is.EqualTo("威厳ある嘆きの尖端"));
+    }
+
+    [Test]
+    public void TranslatePreservingColors_StripsEnglishArticleFromColoredLocalizedGeneratedDisplayName()
+    {
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            "the {{G|太陽の剣}}",
+            nameof(GetDisplayNameProcessPatch));
+
+        Assert.That(translated, Is.EqualTo("{{G|太陽の剣}}"));
+    }
+
+    [TestCase("some {{r|生の猪肉}}")]
+    [TestCase("Some {{r|生の猪肉}}")]
+    public void TranslatePreservingColors_StripsSomeArticleModifierFromLocalizedDisplayName(string source)
+    {
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            source,
+            nameof(GetDisplayNamePatch));
+
+        Assert.That(translated, Is.EqualTo("{{r|生の猪肉}}"));
+    }
+
+    [Test]
+    public void TranslatePreservingColors_PreservesColorWrapperAroundAlreadyLocalizedDisplayName()
+    {
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            "{{W|ヨンダーケーン}}",
+            nameof(CampfirePreserveTranslationPatch));
+
+        Assert.That(translated, Is.EqualTo("{{W|ヨンダーケーン}}"));
+    }
+
+    [Test]
+    public void TranslatePreservingColors_UsesDisplayNameAliasForCachedTooltipWeaponName()
+    {
+        WriteAliasFile(
+            ("旧式位相ライフル", "{{phase|新式位相ライフル}}"));
+        WriteDictionaryFile("ui-displayname-adjectives.ja.json", ("[no cell]", "[セルなし]"));
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            "旧式位相ライフル \u001A14 \u00031d12 [no cell] <AAC7>",
+            nameof(LookTooltipInformationWrapPatch));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Does.Contain("新式位相ライフル"));
+            Assert.That(translated, Does.Contain("[セルなし]"));
+            Assert.That(translated, Does.Not.Contain("旧式位相ライフル"));
+        });
+    }
+
+    [Test]
     public void TranslatePreservingColors_ProductionDictionary_TranslatesWaterStainedPrefix()
     {
         UseProductionDictionaries();
@@ -1439,6 +1581,31 @@ public sealed class GetDisplayNameRouteTranslatorTests
         });
     }
 
+    [Test]
+    public void TranslatePreservingColors_TranslatesBaetylRelicNameWhilePreservingColorAndSuffix()
+    {
+        WriteDictionaryFile(
+            "Scoped/historyspice-common.ja.json",
+            ("analog", "アナログの"));
+        const string source = "{{M|Chain of the Analog Sand}} \u00040 \t0 [6ドラムのゲル]";
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            source,
+            "InventoryActionMenu.Title");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.EqualTo("{{M|アナログの砂の鎖}} \u00040 \t0 [6ドラムのゲル]"));
+            Assert.That(
+                ColorShapeCaptureObservability.Capture(
+                    nameof(GetDisplayNameRouteTranslator),
+                    nameof(TranslatePreservingColors_TranslatesBaetylRelicNameWhilePreservingColorAndSuffix),
+                    source,
+                    translated).MarkupSemanticStatus,
+                Is.EqualTo("clean"));
+        });
+    }
+
     [TestCase(
         "{{Y|Skillsoft [{{W|Tinkering}}]}}",
         "{{Y|スキルソフト [{{W|工作}}]}}")]
@@ -2405,10 +2572,12 @@ public sealed class GetDisplayNameRouteTranslatorTests
 
     private static void UseProductionDictionaries()
     {
-        Translator.SetDictionaryDirectoryForTests(ProductionDictionaryDirectory());
+        var localizationRoot = ProductionLocalizationRoot();
+        LocalizationAssetResolver.SetLocalizationRootForTests(localizationRoot);
+        Translator.SetDictionaryDirectoryForTests(Path.Combine(localizationRoot, "Dictionaries"));
     }
 
-    private static string ProductionDictionaryDirectory()
+    private static string ProductionLocalizationRoot()
     {
         return Path.GetFullPath(
             Path.Combine(
@@ -2418,8 +2587,7 @@ public sealed class GetDisplayNameRouteTranslatorTests
                 "..",
                 "..",
                 "..",
-                "Localization",
-                "Dictionaries"));
+                "Localization"));
     }
 
     private static IEnumerable<ModifierPhraseCase> KnownGameWithClauseModifierPhrases()
@@ -2541,11 +2709,51 @@ public sealed class GetDisplayNameRouteTranslatorTests
 
     private void WriteDictionaryFile(string fileName, params (string key, string text)[] entries)
     {
+        WriteDictionaryFile(fileName, BuildJsonEntriesDocument(entries));
+    }
+
+    private void WriteDictionaryFile(string fileName, string contents)
+    {
+        var path = Path.Combine(tempDirectory, fileName);
+        var parent = Path.GetDirectoryName(path);
+        if (!string.IsNullOrEmpty(parent))
+        {
+            Directory.CreateDirectory(parent);
+        }
+
+        File.WriteAllText(
+            path,
+            contents,
+            new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
+    }
+
+    private void WriteAliasFile(params (string key, string text)[] entries)
+    {
+        LocalizationAssetResolver.SetLocalizationRootForTests(tempDirectory);
+        WriteJsonEntriesFile(Path.Combine(tempDirectory, "Aliases", "displayname-legacy-aliases.json"), entries);
+    }
+
+    private static void WriteJsonEntriesFile(string path, params (string key, string text)[] entries)
+    {
+        var parent = Path.GetDirectoryName(path);
+        if (!string.IsNullOrEmpty(parent))
+        {
+            Directory.CreateDirectory(parent);
+        }
+
+        File.WriteAllText(
+            path,
+            BuildJsonEntriesDocument(entries),
+            new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
+    }
+
+    private static string BuildJsonEntriesDocument(IReadOnlyList<(string key, string text)> entries)
+    {
         var builder = new StringBuilder();
         builder.Append('{');
         builder.Append("\"entries\":[");
 
-        for (var index = 0; index < entries.Length; index++)
+        for (var index = 0; index < entries.Count; index++)
         {
             if (index > 0)
             {
@@ -2562,22 +2770,7 @@ public sealed class GetDisplayNameRouteTranslatorTests
         builder.Append("]}");
         builder.AppendLine();
 
-        WriteDictionaryFile(fileName, builder.ToString());
-    }
-
-    private void WriteDictionaryFile(string fileName, string contents)
-    {
-        var path = Path.Combine(tempDirectory, fileName);
-        var parent = Path.GetDirectoryName(path);
-        if (!string.IsNullOrEmpty(parent))
-        {
-            Directory.CreateDirectory(parent);
-        }
-
-        File.WriteAllText(
-            path,
-            contents,
-            new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
+        return builder.ToString();
     }
 
     private void WriteContextDictionaryFile(

@@ -109,6 +109,11 @@ public sealed class ExaminerTranslationPatchTests
         "{{Y|箱}} is not owned by you, and examining a {{C|奇妙な装置}} inside it risks causing damage. Are you sure you want to do so?",
         "{{Y|箱}}はあなたのものではない。それの中にある{{C|奇妙な装置}}を調べると損傷を引き起こすおそれがある。それでもそうしますか？",
         "ContainerOwnedExamine")]
+    [TestCase(
+        nameof(DummyPopupShow.ShowYesNoCancel),
+        "The ロッカー is not owned by you, and examining a 奇妙な遺物 inside it risks causing damage. Are you sure you want to do so?",
+        "ロッカーはあなたのものではない。それの中にある奇妙な遺物を調べると損傷を引き起こすおそれがある。それでもそうしますか？",
+        "ContainerOwnedExamine")]
     public void Patch_TranslatesExaminerHandleEventPopups_WhenOwnerPatched(
         string popupMethod,
         string source,

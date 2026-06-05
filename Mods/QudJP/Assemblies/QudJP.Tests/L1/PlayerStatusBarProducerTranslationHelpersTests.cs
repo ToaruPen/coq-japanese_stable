@@ -48,6 +48,34 @@ public sealed class PlayerStatusBarProducerTranslationHelpersTests
     }
 
     [Test]
+    public void TranslateStringDataValue_PreservesFoodWaterColorWrappers()
+    {
+        WriteDictionary(("Sated", "満腹"), ("Quenched", "潤沢"));
+
+        var translated = InvokeHelperStringMethod(
+            "TranslateStringDataValue",
+            "FoodWater",
+            "{{g|Sated}} {{b|Quenched}}",
+            "PlayerStatusBarProducerTranslationPatch.BeginEndTurn");
+
+        Assert.That(translated, Is.EqualTo("{{g|満腹}} {{b|潤沢}}"));
+    }
+
+    [Test]
+    public void TranslateStringDataValue_ReturnsFoodWaterSource_WhenOnePartIsUntranslated()
+    {
+        WriteDictionary(("Sated", "満腹"));
+
+        var translated = InvokeHelperStringMethod(
+            "TranslateStringDataValue",
+            "FoodWater",
+            "Sated UnknownStatus",
+            "PlayerStatusBarProducerTranslationPatch.BeginEndTurn");
+
+        Assert.That(translated, Is.EqualTo("Sated UnknownStatus"));
+    }
+
+    [Test]
     public void TranslateStringDataValue_TranslatesZoneDisplayName()
     {
         WriteDictionary(("World Map", "ワールドマップ"));

@@ -1,0 +1,810 @@
+{
+  "schema_version": "1.0",
+  "issue": 809,
+  "description": "Tracked authored conversation and quest text inventory for issue #809. Quest titles are cataloged only to document their explicit exclusion from translation targets.",
+  "conversation_files": [
+    {
+      "path": "Mods/QudJP/Localization/Conversations.jp.xml",
+      "surface": "conversation_authored_xml",
+      "counts": {
+        "conversations": 204,
+        "starts": 98,
+        "nodes": 1252,
+        "choices": 3078,
+        "texts": 1510,
+        "texts_with_runtime_expansions": 296,
+        "choice_parts": 79
+      },
+      "runtime_expansion_terms": [
+        {
+          "term": "EskhindRoadDirection",
+          "surface": "conversation_text",
+          "examples": [
+            "=EskhindRoadDirection= の道を辿れば、エスクと私が昔遊んだ空洞の木がある。",
+            "ああ。エスクと私は──=EskhindRoadDirection= へ進むと、雷に打たれて空洞になった木があってね。あれが私たちにとって村から一番遠い場所だった。私が初めて監視官の集会に出るまでは。\n\n        当時はよくそこで過ごした。今もそこにいるのかもしれないが、私には確かめる勇気がないんだ。"
+          ]
+        },
+        {
+          "term": "MARKOVCORVIDSENTENCE",
+          "surface": "conversation_text",
+          "examples": [
+            "{{emote|*カーッ*}} =MARKOVCORVIDSENTENCE= {{emote|*カーッ*}}"
+          ]
+        },
+        {
+          "term": "MARKOVPARAGRAPH",
+          "surface": "conversation_text",
+          "examples": [
+            "{{emote|*チプ チプ チプ チプ*}}\n\n\n        =MARKOVPARAGRAPH=\n        {{emote|*チプ チプ チプ チプ*}}"
+          ]
+        },
+        {
+          "term": "MARKOVSENTENCE",
+          "surface": "conversation_text",
+          "examples": [
+            "クランクが君にぱふっとする。=MARKOVSENTENCE="
+          ]
+        },
+        {
+          "term": "MARKOVWATERBIRDSENTENCE",
+          "surface": "conversation_text",
+          "examples": [
+            "{{emote|*グワッ*}} =MARKOVWATERBIRDSENTENCE= {{emote|*グワッ*}}"
+          ]
+        },
+        {
+          "term": "MarkOfDeath",
+          "surface": "conversation_text",
+          "examples": [
+            "{{emote|ヘロドディクスが恐れに駆られて唸る。}}\n\n        印は =MarkOfDeath= だ。"
+          ]
+        },
+        {
+          "term": "V0tinkeraddendum",
+          "surface": "conversation_text",
+          "examples": [
+            "その信号は、どこからとも知れぬ場所から繰り返し送信されているものだ。=V0tinkeraddendum= 我らが工匠の一人、&mQガール&y が長波検出器を仕掛けている最中に見つけた。残念ながら暗号化されており、ここには解読手段がない。だが、この件でお前が助けになれるかもしれない。\n\n        我々はずっと以前から、大広間 &Cベテスダ・スーサ&y の底に、完全に機能する &Wベテル&y があると知っている。メカニマス教団はその周囲を聖別して神殿を建てた。Qガールは信号を解読する方法を考案したと主張しているが、ベテルの計算資源が必要だ。もしメカニマスの施設に潜入できるなら、ベテルに接続して信号を解読できるだろう。"
+          ]
+        },
+        {
+          "term": "circumstance.influence",
+          "surface": "conversation_text",
+          "examples": [
+            "=circumstance.influence= の痕跡がある。村に悟られぬよう隠されたのだろう。だがそれだけでは証拠にならない。犯人がいないじゃないか！"
+          ]
+        },
+        {
+          "term": "factionaddress:Barathrumites",
+          "surface": "conversation_text",
+          "examples": [
+            "そうか？だがここでは =factionaddress:Barathrumites= ではない！\n\n        グリット・ゲートはジョッパではない、鼻高々の半田釘め。この家では今も見習いだ。\n\n        それで何の用だ？手短に言え！",
+            "提案がある、=factionaddress:Barathrumites=。ただちに=player.reflexive= を私の視界から消し去れ。そうすれば、エレシュキガルに君を構成原子へ還元するよう頼むのは控えよう。",
+            "ようこそグリット・ゲートへ、=factionaddress:Barathrumites=。賢明な買い物で滞在の質を高めていかないかい？"
+          ]
+        },
+        {
+          "term": "factionaddress:Mopango",
+          "surface": "conversation_text",
+          "examples": [
+            "=ifplayerplural:君たちは:そなたは=世界を変えた、=factionaddress:Mopango=。この奇妙な存在たちは何千年も閉じ込められていたが、=ifplayerplural:君たちは:そなたは=そのひとつに声を与えた。\n\n        ナハムがドヨバの言うとおり賢いのなら、ほどなく多くを学べるだろう。得た知識をこの小集団が広め、私たちはカサフェセンスへもう一歩近づけるかもしれない。\n\n        =ifplayerplural:君たちは:そなたは=いつでもここを訪れ、留まっていきなさい。",
+            "=ifplayerplural:君たちは:そなたは=世界を変えた、=factionaddress:Mopango=。この奇妙な存在たちは何千年も閉じ込められていたが、=ifplayerplural:君たちは:そなたは=そのひとつに声を与えた。\n\n        ダガシャにはどうしても恐れを抱いてしまう。だが我らに害をなさないのなら、手を取り合うことにやぶさかではない。この小集団の未来は確かに変わったし、おそらく良い方向に向かうだろう。\n\n        =ifplayerplural:君たちは:そなたは=いつでもここを訪れ、留まっていきなさい。",
+            "=ifplayerplural:君たちは:そなたは=世界を変えた、=factionaddress:Mopango=。この奇妙な存在たちは何千年も閉じ込められていたが、=ifplayerplural:君たちは:そなたは=そのひとつに声を与えた。\n\n        とはいえ、どんな変化が訪れるのかは量りがたい。古のヴァアムにまだ守り、護る力が残っているだろうか？ もっと良い移動手段を授けられるだろうか？ この件はダドゴムとも話し、後は時が示してくれる。\n\n        =ifplayerplural:君たちは:そなたは=いつでもここを訪れ、留まっていきなさい。"
+          ]
+        },
+        {
+          "term": "factionaddress:Mopango|capitalize",
+          "surface": "conversation_text",
+          "examples": [
+            "=factionaddress:Mopango|capitalize=、=ifplayerplural:君たちが:君が=子どものひとりを解放したと聞いた！ すぐにでも話してみたいが、今はナハムを観察して、この出来事が影響していないか確かめねばならない。=ifplayerplural:君たちも:君も=ここで見ていっていいぞ。",
+            "=factionaddress:Mopango|capitalize=。=ifplayerplural:君たちは:君は=子らの一体を目覚めさせた。見事だ。",
+            "ようこそ、=factionaddress:Mopango|capitalize=。この奇妙な地でこれほど長く生き延びた、よくやった。"
+          ]
+        },
+        {
+          "term": "generic",
+          "surface": "conversation_text",
+          "examples": [
+            "=generic="
+          ]
+        },
+        {
+          "term": "hermit",
+          "surface": "conversation_text",
+          "examples": [
+            "=hermit=、もう二度と邪魔しないと誓う。"
+          ]
+        },
+        {
+          "term": "ifplayerplural:ありがとう:ありがとう",
+          "surface": "conversation_text",
+          "examples": [
+            "あるとも。尋ねてくれて=ifplayerplural:ありがとう:ありがとう=。\n\n        私の信条は「理解なき和解は塩の湿布」。"
+          ]
+        },
+        {
+          "term": "ifplayerplural:あれを見たか:あれを見たか",
+          "surface": "conversation_text",
+          "examples": [
+            "=ifplayerplural:あれを見たか:あれを見たか=、外で？棘を持つ鰻のようなもの――あれがダガシャだ。怒れる者、迷子の子。=ifplayerplural:やつから:やつから=敵意の波が溢れ出るのを感じるだろう。\n\n        だが、襲いはせぬ。"
+          ]
+        },
+        {
+          "term": "ifplayerplural:くれたら:くれたら",
+          "surface": "conversation_text",
+          "examples": [
+            "ああ、=factionaddress:Mopango=。=ifplayerplural:君たちは:君は=ほろ苦い光景だ。ダガシャを選んで=ifplayerplural:くれたら:くれたら=よかったのだが、私の光は別の方角に輝いている。\n\n        それでも、=ifplayerplural:君たち:君=が私の未来にまた現れることを望もう。=ifplayerplural:無事なら:無事であれば=、いつでも歓迎する。"
+          ]
+        },
+        {
+          "term": "ifplayerplural:そうしたのだな:そうしたのだな",
+          "surface": "conversation_text",
+          "examples": [
+            "=ifplayerplural:本当に:本当に=子らの一体を解き放ったのか？ああ、=ifplayerplural:そうしたのだな:そうしたのだな=。おめでとう。\n\n        いつかカーも自由になるのを見たい。しばし生き、道を見つけねば。"
+          ]
+        },
+        {
+          "term": "ifplayerplural:やつから:やつから",
+          "surface": "conversation_text",
+          "examples": [
+            "=ifplayerplural:あれを見たか:あれを見たか=、外で？棘を持つ鰻のようなもの――あれがダガシャだ。怒れる者、迷子の子。=ifplayerplural:やつから:やつから=敵意の波が溢れ出るのを感じるだろう。\n\n        だが、襲いはせぬ。"
+          ]
+        },
+        {
+          "term": "ifplayerplural:ダガシャを解くか:ダガシャを解くのか？",
+          "surface": "conversation_text",
+          "examples": [
+            "{{emote|*ヨナは反発装置に触れると息を呑み、目を見開く。ほぼ一分のあいだ沈黙し静止していたが、やがて装置が爪から転げ落ち、君が受け止める。*}}\n\n        何だったのだ？もっと知りたい。だが、できないのも知っている。己という錠前の鍵？ダガシャの獄の身には、偉大な知性とカリスマが封じられていると感じる。導き手の、あるいは僭主の。知るには多すぎ、知られざるものも多すぎる。\n\n        =ifplayerplural:君たちの:君の=意志は重い、旅人よ。=ifplayerplural:ダガシャを解くか:ダガシャを解くのか？="
+          ]
+        },
+        {
+          "term": "ifplayerplural:休む場所が必要か:休む場所が必要かい",
+          "surface": "conversation_text",
+          "examples": [
+            "ようこそ、=factionaddress:Mopango=。生きて飲め。=ifplayerplural:休む場所が必要か:休む場所が必要かい=? 食事は？ =ifplayerplural:取引でも:取引でも=するか？"
+          ]
+        },
+        {
+          "term": "ifplayerplural:何か問いがあるなら:何か問いがあるなら",
+          "surface": "conversation_text",
+          "examples": [
+            "やあ、=player.formalAddressTerm=。=ifplayerplural:君たちは:そなたは=ここで歓迎される。\n\n        =ifplayerplural:何か問いがあるなら:何か問いがあるなら=、喜んで答えよう。"
+          ]
+        },
+        {
+          "term": "ifplayerplural:取引でも:取引でも",
+          "surface": "conversation_text",
+          "examples": [
+            "ようこそ、=factionaddress:Mopango=。生きて飲め。=ifplayerplural:休む場所が必要か:休む場所が必要かい=? 食事は？ =ifplayerplural:取引でも:取引でも=するか？"
+          ]
+        },
+        {
+          "term": "ifplayerplural:君たち:そなた",
+          "surface": "conversation_text",
+          "examples": [
+            "もう気にしていないよ、=player.formalAddressTerm=。私は=ifplayerplural:君たち:そなた=を恨んでいない。",
+            "スリンス自身がモパンゴになりたいと望み、=ifplayerplural:君たち:そなた=がその言葉を代弁するのなら受け入れよう。望むなら、歴史を書いた設計図を私たちの隣で覗かせてやるといい。",
+            "無礼に聞こえないとよいのだが、=ifplayerplural:君たち:そなた=の頼みはまだ私たちには重すぎる。=ifplayerplural:君たちの名:そなたの名=だけでは背負いきれないのだ。\n\n        だが行いと時が満ちれば、きっと変わる。"
+          ]
+        },
+        {
+          "term": "ifplayerplural:君たち:君",
+          "surface": "conversation_text",
+          "examples": [
+            "ああ。=ifplayerplural:君たち:君=が狂躁を鎮めてくれた。\n\n        いまは焦点を結べる。見聞きしたものを道理として形にできる。躁に呑まれる前のことはほとんど覚えていない――職人だったか？教師だったか？――大いなる知を有していたが、この殻はそれをねじ曲げ、牢獄に変えた。=ifplayerplural:君たち:君=のねじり戻しの贈り物に感謝する。",
+            "ああ。=ifplayerplural:君たち:君=が狂躁を鎮めてくれた。\n\n        いまは焦点を結べる。見聞きしたものを道理として形にできる。躁に呑まれる前のことはほとんど覚えていない――職人だったか？教師だったか？――大いなる知を有していたが、この殻はそれをねじ曲げ、牢獄に変えた。=ifplayerplural:君たち:君=のねじり戻しの贈り物に感謝する。",
+            "自分の面倒も見られぬ間、モパンゴたちは私を看てくれ、いま知る唯一の名を与えてくれた。ここに留まり、彼らを手助けしよう。この躯はもはや牢獄ではない。むしろ、その奥にさらに深い真理が見いだせるかもしれぬ。\n\n        新たな友よ、=ifplayerplural:君たち:君=には、このかつての牢獄の一片を贈ろう。役立つこともあろう。感謝とともに。"
+          ]
+        },
+        {
+          "term": "ifplayerplural:君たちが:君が",
+          "surface": "conversation_text",
+          "examples": [
+            "意味はそのまま。=ifplayerplural:君たちが:君が=渦に呑まれたなら、=ifplayerplural:君たちは:君は=最後まで歌うべきだ。",
+            "装置そのものではない。鍵が牢獄を遠ざけるように忌まわしいんだ。鍵の存在は牢獄の存在でもある。\n\n        我らが見守る子どもたちは囚われており、鍵は錠とともに飲み込まれている。=ifplayerplural:君たちが:君が=ひとりを解放しても、三人は永遠に残される。\n\n        いまはk・ゴニノンが持っている。=ifplayerplural:君たちが:君が=望むなら、だ。",
+            "装置そのものではない。鍵が牢獄を遠ざけるように忌まわしいんだ。鍵の存在は牢獄の存在でもある。\n\n        我らが見守る子どもたちは囚われており、鍵は錠とともに飲み込まれている。=ifplayerplural:君たちが:君が=ひとりを解放しても、三人は永遠に残される。\n\n        いまはk・ゴニノンが持っている。=ifplayerplural:君たちが:君が=望むなら、だ。"
+          ]
+        },
+        {
+          "term": "ifplayerplural:君たちが今立っている場所だ:そなたが今立っている場所だ",
+          "surface": "conversation_text",
+          "examples": [
+            "喰らう者の墓所は十二層――移行層を数えれば十層――で成っている。民の地下墓地（=ifplayerplural:君たちが今立っている場所だ:そなたが今立っている場所だ=）、火葬場と納骨堂、二つの墳墓、そしてクッドのスルタンたち六つの墓がその上に連なる。\n\n        ここで財貨を探すなら、失望に備えておくといい。墓所には奇跡も冒涜も同じように眠っているが、地表の民が宝と呼ぶようなものはほとんどない。"
+          ]
+        },
+        {
+          "term": "ifplayerplural:君たちに:君に",
+          "surface": "conversation_text",
+          "examples": [
+            "そうか。\n\n        なら=ifplayerplural:君たちに:君に=伝えられる洞察はないな。",
+            "私の名はギャミョ。=name=、=ifplayerplural:君たちに:君に=会えて嬉しい。他の見張りたちとも話したか？彼らの具合はどうだ？\n\n        うまくいっているといいが。"
+          ]
+        },
+        {
+          "term": "ifplayerplural:君たちの:そなたの",
+          "surface": "conversation_text",
+          "examples": [
+            "おや。ふむ？~\n        =ifplayerplural:君たちは:そなたは=備えができているか。~\n        =ifplayerplural:君たちは:そなたは=進むのだな。~\n        安らぎを、=player.formalAddressTerm=.~\n        彼女の光のもとで。~\n        彼女の光があなたを照らしますように。~\n        =ifplayerplural:君たちは:そなたは=私に用があるのか？~\n        我らは彼女の前では謙虚に歩むのだ。~\n        =ifplayerplural:頼む:頼む=、=player.formalAddressTerm=.~\n        彼女の光が=ifplayerplural:君たちの:そなたの=歩みを導きますように、=player.formalAddressTerm=.~\n        彼女の光とともに生きて飲め。",
+            "=ifplayerplural:君たちの:そなたの=旅はどうだ？ スリンスの消息は？\n\n        私たちはその話を聞きたくてたまらない。"
+          ]
+        },
+        {
+          "term": "ifplayerplural:君たちの:君の",
+          "surface": "conversation_text",
+          "examples": [
+            "……？\n\n        =ifplayerplural:君たちは:君は=私の信条の意味まで尋ねるのか。では=ifplayerplural:君たちの:君の=食事も噛んでやろうか？",
+            "身を慎め、=factionaddress:Mopango=。惰性に流されて=ifplayerplural:君たち自身が:君自身が=終わることのなきように。=ifplayerplural:君たちの:君の=武勲の報せを待っている。",
+            "しばらくはモパンゴたちと共にいよう。彼らは私を護り、名を与えてくれた。\n\n        そして、=ifplayerplural:君たち:君=には約束どおり報いよう。私の躯の一片を持っていけ。=ifplayerplural:君たちの:君の=歩みの助けとなるだろう。"
+          ]
+        },
+        {
+          "term": "ifplayerplural:君たちの名:そなたの名",
+          "surface": "conversation_text",
+          "examples": [
+            "無礼に聞こえないとよいのだが、=ifplayerplural:君たち:そなた=の頼みはまだ私たちには重すぎる。=ifplayerplural:君たちの名:そなたの名=だけでは背負いきれないのだ。\n\n        だが行いと時が満ちれば、きっと変わる。"
+          ]
+        },
+        {
+          "term": "ifplayerplural:君たちは:そなたは",
+          "surface": "conversation_text",
+          "examples": [
+            "おや。ふむ？~\n        =ifplayerplural:君たちは:そなたは=備えができているか。~\n        =ifplayerplural:君たちは:そなたは=進むのだな。~\n        安らぎを、=player.formalAddressTerm=.~\n        彼女の光のもとで。~\n        彼女の光があなたを照らしますように。~\n        =ifplayerplural:君たちは:そなたは=私に用があるのか？~\n        我らは彼女の前では謙虚に歩むのだ。~\n        =ifplayerplural:頼む:頼む=、=player.formalAddressTerm=.~\n        彼女の光が=ifplayerplural:君たちの:そなたの=歩みを導きますように、=player.formalAddressTerm=.~\n        彼女の光とともに生きて飲め。",
+            "おや。ふむ？~\n        =ifplayerplural:君たちは:そなたは=備えができているか。~\n        =ifplayerplural:君たちは:そなたは=進むのだな。~\n        安らぎを、=player.formalAddressTerm=.~\n        彼女の光のもとで。~\n        彼女の光があなたを照らしますように。~\n        =ifplayerplural:君たちは:そなたは=私に用があるのか？~\n        我らは彼女の前では謙虚に歩むのだ。~\n        =ifplayerplural:頼む:頼む=、=player.formalAddressTerm=.~\n        彼女の光が=ifplayerplural:君たちの:そなたの=歩みを導きますように、=player.formalAddressTerm=.~\n        彼女の光とともに生きて飲め。",
+            "おや。ふむ？~\n        =ifplayerplural:君たちは:そなたは=備えができているか。~\n        =ifplayerplural:君たちは:そなたは=進むのだな。~\n        安らぎを、=player.formalAddressTerm=.~\n        彼女の光のもとで。~\n        彼女の光があなたを照らしますように。~\n        =ifplayerplural:君たちは:そなたは=私に用があるのか？~\n        我らは彼女の前では謙虚に歩むのだ。~\n        =ifplayerplural:頼む:頼む=、=player.formalAddressTerm=.~\n        彼女の光が=ifplayerplural:君たちの:そなたの=歩みを導きますように、=player.formalAddressTerm=.~\n        彼女の光とともに生きて飲め。"
+          ]
+        },
+        {
+          "term": "ifplayerplural:君たちは:君は",
+          "surface": "conversation_text",
+          "examples": [
+            "意味はそのまま。=ifplayerplural:君たちが:君が=渦に呑まれたなら、=ifplayerplural:君たちは:君は=最後まで歌うべきだ。",
+            "……？\n\n        =ifplayerplural:君たちは:君は=私の信条の意味まで尋ねるのか。では=ifplayerplural:君たちの:君の=食事も噛んでやろうか？",
+            "いや、いや。=ifplayerplural:君たちは:君は=私たちの習わしを知らないのだし、少し言いすぎた。謝るよ。怒ってなどいない。"
+          ]
+        },
+        {
+          "term": "ifplayerplural:君たちも:そなたも",
+          "surface": "conversation_text",
+          "examples": [
+            "ここが喰らう者の墓所であることは=ifplayerplural:君たちも:そなたも=知っているだろう。でも私の後ろには番人たちが築いた小さな集落があって、モパンゴの小さな集団が暮らしている。\n\n        集落についてもっと知りたいなら、奥にいるアギラという番人に尋ねてくれ。知識を分かち合うのが大好きなんだ。",
+            "{{emote|*ピッ*}}\n\n        信条には外から与えられる意味なんてない。=ifplayerplural:君たちも:そなたも=知ってのとおり、モパンゴのあいだで信条の意味を問いただすのは無作法とされている。"
+          ]
+        },
+        {
+          "term": "ifplayerplural:君たちも:君も",
+          "surface": "conversation_text",
+          "examples": [
+            "=factionaddress:Mopango|capitalize=、=ifplayerplural:君たちが:君が=子どものひとりを解放したと聞いた！ すぐにでも話してみたいが、今はナハムを観察して、この出来事が影響していないか確かめねばならない。=ifplayerplural:君たちも:君も=ここで見ていっていいぞ。",
+            "私はヴァアムを見守る。あれは私を見守る。共に、我らは見守る。\n\n        =factionaddress:Mopango=、=ifplayerplural:君たちも:君も=そうするべきだ。座って、見て考えよ。=ifplayerplural:君たちが:君が=剛堅な甲殻の天蓋の下でどう生きるかを。\n\n        安全で、不朽で、独りで。"
+          ]
+        },
+        {
+          "term": "ifplayerplural:君たち自身が:君自身が",
+          "surface": "conversation_text",
+          "examples": [
+            "身を慎め、=factionaddress:Mopango=。惰性に流されて=ifplayerplural:君たち自身が:君自身が=終わることのなきように。=ifplayerplural:君たちの:君の=武勲の報せを待っている。"
+          ]
+        },
+        {
+          "term": "ifplayerplural:君たち自身を:君自身を",
+          "surface": "conversation_text",
+          "examples": [
+            "=ifplayerplural:君たちが:君が=目標から=ifplayerplural:君たち自身を:君自身を=縛る枷を解き放て、=factionaddress:Mopango=。自由であれ。"
+          ]
+        },
+        {
+          "term": "ifplayerplural:安らかに休みたいなら:安らかに休みたいのなら",
+          "surface": "conversation_text",
+          "examples": [
+            "{{emote|*ピッ* *パチパチ*}}\n\n        彼女の光のもとより、=player.formalAddressTerm=。\n\n        =ifplayerplural:安らかに休みたいなら:安らかに休みたいのなら=、ここで歓迎しよう。"
+          ]
+        },
+        {
+          "term": "ifplayerplural:本当に:本当に",
+          "surface": "conversation_text",
+          "examples": [
+            "=ifplayerplural:本当に:本当に=子らの一体を解き放ったのか？ああ、=ifplayerplural:そうしたのだな:そうしたのだな=。おめでとう。\n\n        いつかカーも自由になるのを見たい。しばし生き、道を見つけねば。"
+          ]
+        },
+        {
+          "term": "ifplayerplural:無事なら:無事であれば",
+          "surface": "conversation_text",
+          "examples": [
+            "ああ、=factionaddress:Mopango=。=ifplayerplural:君たちは:君は=ほろ苦い光景だ。ダガシャを選んで=ifplayerplural:くれたら:くれたら=よかったのだが、私の光は別の方角に輝いている。\n\n        それでも、=ifplayerplural:君たち:君=が私の未来にまた現れることを望もう。=ifplayerplural:無事なら:無事であれば=、いつでも歓迎する。"
+          ]
+        },
+        {
+          "term": "ifplayerplural:胸を張るといい:胸を張るがよい",
+          "surface": "conversation_text",
+          "examples": [
+            "=factionaddress:Mopango|capitalize=、=ifplayerplural:君たちは:君は=重大事を成した。\n\n        私は彼女の光の蓄えを感じる。ダガシャは我らを高みに導くだろう。=ifplayerplural:胸を張るといい:胸を張るがよい=。"
+          ]
+        },
+        {
+          "term": "ifplayerplural:見たことがあるだろう:見たことがあるだろうか",
+          "surface": "conversation_text",
+          "examples": [
+            "私はカーと呼ばれる古の機械生物の監視を志願した。奇妙な脚であちらこちらへと跳ねるのを、=ifplayerplural:見たことがあるだろう:見たことがあるだろうか=。\n\n        しばしば思う。カーは恐れ以外の何かを知っているのだろうか、と。"
+          ]
+        },
+        {
+          "term": "ifplayerplural:許すなら:許すならば",
+          "surface": "conversation_text",
+          "examples": [
+            "=ifplayerplural:君たちは:君は=大いなる関心の対象を携えている。\n\n        もし=ifplayerplural:許すなら:許すならば=、私もそれと交信したい。"
+          ]
+        },
+        {
+          "term": "ifplayerplural:頼む:頼む",
+          "surface": "conversation_text",
+          "examples": [
+            "おや。ふむ？~\n        =ifplayerplural:君たちは:そなたは=備えができているか。~\n        =ifplayerplural:君たちは:そなたは=進むのだな。~\n        安らぎを、=player.formalAddressTerm=.~\n        彼女の光のもとで。~\n        彼女の光があなたを照らしますように。~\n        =ifplayerplural:君たちは:そなたは=私に用があるのか？~\n        我らは彼女の前では謙虚に歩むのだ。~\n        =ifplayerplural:頼む:頼む=、=player.formalAddressTerm=.~\n        彼女の光が=ifplayerplural:君たちの:そなたの=歩みを導きますように、=player.formalAddressTerm=.~\n        彼女の光とともに生きて飲め。"
+          ]
+        },
+        {
+          "term": "motive.influence",
+          "surface": "conversation_text",
+          "examples": [
+            "ふむ。=motive.influence= が起きていて、=thief.name= がそれを隠していた、ということか。\n\n        つまり君の言いたいことは……"
+          ]
+        },
+        {
+          "term": "mound.complete.days",
+          "surface": "conversation_text",
+          "examples": [
+            "まだ！ =mound.complete.days= に戻って。",
+            "まだ！ =mound.complete.days= に戻って。"
+          ]
+        },
+        {
+          "term": "name",
+          "surface": "conversation_text",
+          "examples": [
+            "私は =name= だ、友よ。君の名は？",
+            "私は =name= だ、友よ。どう呼べばいい？",
+            "=name=、君は =village.name= のために多くを成した。その願いは君の格にふさわしい。斯くして、彼らが =village.activity= に加わり、我らと同じように =village.sacred= を大切にできるなら、ここへ迎えよう。"
+          ]
+        },
+        {
+          "term": "object.nameSingle",
+          "surface": "conversation_text",
+          "examples": [
+            "その =object.nameSingle= を譲ってくれないか？",
+            "その =object.nameSingle= を譲ってくれないか？"
+          ]
+        },
+        {
+          "term": "player.FormalAddressTerm",
+          "surface": "conversation_text",
+          "examples": [
+            "大丈夫？~\n        ああ……そわそわ……わくわく。~\n        ここでは争わない、嬉しい。~\n        あはは……緊張する！~\n        ここにいる？~\n        =player.FormalAddressTerm= も一緒？~\n        不思議な新しい場所。~\n        生きて飲め。",
+            "ここが家。~\n        ようこそ、ここへ。~\n        会えてよかった。~\n        ああ……よきかな。~\n        新しい家の選び方、良かった。~\n        ここで幸せ。~\n        ははは！ 喜び！~\n        ああ、=player.FormalAddressTerm= が来た、嬉しい。~\n        生きて飲め。",
+            "取引する？~\n        私、攻めない。~\n        =player.formalAddressTerm=、平和？~\n        交易したい？~\n        良い拾い物？~\n        あっ！ 君、旅の者。調子は？~\n        生きて育て、=player.formalAddressTerm=。~\n        =player.FormalAddressTerm=、平和に挨拶。~\n        生きて飲め。~\n        あ？~\n        挨拶、=player.formalAddressTerm=。"
+          ]
+        },
+        {
+          "term": "player.OffspringTerm",
+          "surface": "conversation_text",
+          "examples": [
+            "=player.OffspringTerm=、あなたは誰？"
+          ]
+        },
+        {
+          "term": "player.apparentSpecies",
+          "surface": "conversation_text",
+          "examples": [
+            "=player.apparentSpecies=? 歓迎する！ 望みは何だ？",
+            "お会いできて光栄だ、=player.apparentSpecies= の =player.formalAddressTerm= =name=! 私はタムだ。",
+            "ジョッパは私の家だ、そうさ。\n\n        兄弟たちとソルトバックのキャラバンでモグラヤイを歩いていたが、イルーダド長老に会ってすぐにここへ腰を落ち着けると決めた。=player.formalAddressTerm= =player.apparentSpecies= も、長老と話せばわかるはずだよ。"
+          ]
+        },
+        {
+          "term": "player.formalAddressTerm",
+          "surface": "conversation_text",
+          "examples": [
+            "起こったことは恨むが、まだ身体を得ている。君は私を生かした。\n\n        私の未来は自由だ。だがとても霞んでいる。君の手の火傷でまだひりついている。君とはしばらく顔を合わせたくない。生きて飲め、=player.formalAddressTerm=。",
+            "本当に？\n\n        君の予言はギャイアの冷たい風を前にしてほとんど暖かくない。私の未来は自由だ。だが霞んでいる。君の手の火傷でまだひりついている。\n\n        君とはしばらく顔を合わせたくない。生きて飲め、=player.formalAddressTerm=。",
+            "生きて、=player.formalAddressTerm=！\n\n        {{emote|*気恥ずかしげに るっく*}}\n\n        の、飲んで、=player.formalAddressTerm=！\n\n        クルカ、ぼく。クルカ。"
+          ]
+        },
+        {
+          "term": "player.offspringTerm",
+          "surface": "conversation_text",
+          "examples": [
+            "命をたっぷりと飲みな、=player.offspringTerm=。道は見つけられているかい？",
+            "彼らをけなしたり、胸の内まで代弁したりはしないよ、=name=。でも、私の身に刻まれた印象の輪郭を案内することはできる。\n\n        誰の話を聞きたい、=player.offspringTerm=?",
+            "ここにいるべき時なのか、=player.offspringTerm=？"
+          ]
+        },
+        {
+          "term": "player.reflexive",
+          "surface": "conversation_text",
+          "examples": [
+            "{{emote|*ぶつぶつ*}} …クランク定数からの予期せぬ偏差だ。\n\n        {{emote|*アルジーヴが咳き込む。*}}\n\n        邪魔をしに来たのか？お前は水狂いか？フーンドレン目の巡礼か？アーコノートか？ =player.reflexive= を役に立たせて、どこかの洞窟からガラクタを拾ってこい。「報酬」をやるかもしれん。",
+            "{{emote|*ダルディはいくつもの作業台から顔を上げずに話しかける。いくつかからは煙や蒸気、未知の瘴気がもうもうと立ち上っている。*}}\n\n        我が実験室へようこそ、=name=。旅路に戻る前に、ここで=player.reflexive= を休め、養え。",
+            "提案がある、=factionaddress:Barathrumites=。ただちに=player.reflexive= を私の視界から消し去れ。そうすれば、エレシュキガルに君を構成原子へ還元するよう頼むのは控えよう。"
+          ]
+        },
+        {
+          "term": "player.siblingTerm",
+          "surface": "conversation_text",
+          "examples": [
+            "生きて飲め、=subject.waterRitualLiquid=-=player.siblingTerm=。"
+          ]
+        },
+        {
+          "term": "questgivers",
+          "surface": "conversation_text",
+          "examples": [
+            "=questgivers= に会いに行くといい。",
+            "=questgivers= と話してみてくれ。",
+            "=questgivers= を探してみてくれ。"
+          ]
+        },
+        {
+          "term": "recipe",
+          "surface": "conversation_text",
+          "examples": [
+            "=recipe= の作り方を教えてくれるか？"
+          ]
+        },
+        {
+          "term": "spice.commonPhrases.adventurer.!random",
+          "surface": "conversation_text",
+          "examples": [
+            "*villageName* の村へようこそ、=spice.commonPhrases.adventurer.!random="
+          ]
+        },
+        {
+          "term": "subject.refname",
+          "surface": "conversation_text",
+          "examples": [
+            "私を =subject.refname= と呼んでくれ。",
+            "私の名は =subject.refname=。",
+            "=subject.refname= と呼ばれている。"
+          ]
+        },
+        {
+          "term": "subject.waterRitualLiquid",
+          "surface": "conversation_text",
+          "examples": [
+            "生きて飲め、=subject.waterRitualLiquid=-=player.siblingTerm=。",
+            "秘密を打ち明けてくれ、=subject.waterRitualLiquid=のきょうだい。",
+            "=subject.waterRitualLiquid=のきょうだい、共に来てくれないか。"
+          ]
+        },
+        {
+          "term": "sultan:4",
+          "surface": "conversation_text",
+          "examples": [
+            "秋をいくつ数えたかは覚えているが、腐り尽くして黒くならねば年輪も正しく数えられん。根元の刻印によれば、私の種は =sultan:4= の治世に蒔かれたらしい。"
+          ]
+        },
+        {
+          "term": "thief.name",
+          "surface": "conversation_text",
+          "examples": [
+            "残念だが、その水脈はもう毒された。=thief.name= が犯人ではないと判明している。",
+            "ふむ。=motive.influence= が起きていて、=thief.name= がそれを隠していた、ということか。\n\n        つまり君の言いたいことは……"
+          ]
+        },
+        {
+          "term": "village.activity",
+          "surface": "conversation_text",
+          "examples": [
+            "=name=、君は =village.name= のために多くを成した。その願いは君の格にふさわしい。斯くして、彼らが =village.activity= に加わり、我らと同じように =village.sacred= を大切にできるなら、ここへ迎えよう。",
+            "昔、=village.name= を記した歴史を読んだ。=village.sacred= を敬い、=village.profane= を等しく退ける土地だとね。\n\n          我らの同胞も =village.activity= の暮らしを受け入れられるだろうか。皆に相談してみよう。",
+            "話し合いと熟慮の末、合意に至った。スリンスは =village.name= の市民となる。=village.activity= を学び、=village.sacred= を尊び、=village.profane= を退けよう。\n\n        旅立ちは朝、=village.name= へ。"
+          ]
+        },
+        {
+          "term": "village.name",
+          "surface": "conversation_text",
+          "examples": [
+            "=name=、君は =village.name= のために多くを成した。その願いは君の格にふさわしい。斯くして、彼らが =village.activity= に加わり、我らと同じように =village.sacred= を大切にできるなら、ここへ迎えよう。",
+            "おお、=name=。スリンスが来た。植物の民と =village.name= の人々が互いに慣れるには、時間がかかる。=village.sacred= の徳によって、彼らがすぐにここで居場所を見つけられるように。",
+            "=village.sacred= に感謝を。我らは彼らの道を学び、彼らは我らの道を学ぶ。=village.profane= の退廃を受け入れられぬ者もいるが、彼らの振る舞いは慈しみから生じる。ゆえに、=village.name= は慈しみには慈しみで応えよう。"
+          ]
+        },
+        {
+          "term": "village.profane",
+          "surface": "conversation_text",
+          "examples": [
+            "=village.sacred= に感謝を。我らは彼らの道を学び、彼らは我らの道を学ぶ。=village.profane= の退廃を受け入れられぬ者もいるが、彼らの振る舞いは慈しみから生じる。ゆえに、=village.name= は慈しみには慈しみで応えよう。",
+            "昔、=village.name= を記した歴史を読んだ。=village.sacred= を敬い、=village.profane= を等しく退ける土地だとね。\n\n          我らの同胞も =village.activity= の暮らしを受け入れられるだろうか。皆に相談してみよう。",
+            "話し合いと熟慮の末、合意に至った。スリンスは =village.name= の市民となる。=village.activity= を学び、=village.sacred= を尊び、=village.profane= を退けよう。\n\n        旅立ちは朝、=village.name= へ。"
+          ]
+        },
+        {
+          "term": "village.sacred",
+          "surface": "conversation_text",
+          "examples": [
+            "=name=、君は =village.name= のために多くを成した。その願いは君の格にふさわしい。斯くして、彼らが =village.activity= に加わり、我らと同じように =village.sacred= を大切にできるなら、ここへ迎えよう。",
+            "おお、=name=。スリンスが来た。植物の民と =village.name= の人々が互いに慣れるには、時間がかかる。=village.sacred= の徳によって、彼らがすぐにここで居場所を見つけられるように。",
+            "=village.sacred= に感謝を。我らは彼らの道を学び、彼らは我らの道を学ぶ。=village.profane= の退廃を受け入れられぬ者もいるが、彼らの振る舞いは慈しみから生じる。ゆえに、=village.name= は慈しみには慈しみで応えよう。"
+          ]
+        },
+        {
+          "term": "villageZeroName",
+          "surface": "conversation_text",
+          "examples": [
+            "[数分が経過する]\n\n        我らと学びたいのだな。だが意欲だけでは足りない。\n\n        クッドは =villageZeroName= ではない。私たちの時間も手間も無駄にしないと証明しなければならない。北にある巨大な洞窟ゴルゴタへ向かい、その内部で機能不全に陥ったウエイドロイドの集積所を見つけろ。\n\n        そのうちの一体を回収し、修理して、ここへ戻るのだ。出来栄えに納得すれば我らの一員として受け入れよう。そうでなければ門前払いだ。\n\n        この条件を受けるか？"
+          ]
+        }
+      ],
+      "choice_parts": [
+        {
+          "name": "AddSlynthCandidate",
+          "surface": "conversation_choice_part",
+          "count": 4
+        },
+        {
+          "name": "AngorNegotiation",
+          "surface": "conversation_choice_part",
+          "count": 2
+        },
+        {
+          "name": "AskName",
+          "surface": "conversation_choice_part",
+          "count": 1
+        },
+        {
+          "name": "BuildGolem",
+          "surface": "conversation_choice_part",
+          "count": 2
+        },
+        {
+          "name": "ChavvahAttune",
+          "surface": "conversation_choice_part",
+          "count": 1
+        },
+        {
+          "name": "CrossIntoBrightsheol",
+          "surface": "conversation_choice_part",
+          "count": 1
+        },
+        {
+          "name": "GiveArtifact",
+          "surface": "conversation_choice_part",
+          "count": 2
+        },
+        {
+          "name": "GiveReshephSecret",
+          "surface": "conversation_choice_part",
+          "count": 1
+        },
+        {
+          "name": "GritGateHandler",
+          "surface": "conversation_choice_part",
+          "count": 9
+        },
+        {
+          "name": "HaveItem",
+          "surface": "conversation_choice_part",
+          "count": 1
+        },
+        {
+          "name": "IfThenElseAchievement",
+          "surface": "conversation_choice_part",
+          "count": 1
+        },
+        {
+          "name": "LibrarianGiveBook",
+          "surface": "conversation_choice_part",
+          "count": 3
+        },
+        {
+          "name": "PaxInfectLimb",
+          "surface": "conversation_choice_part",
+          "count": 3
+        },
+        {
+          "name": "QuestHandler",
+          "surface": "conversation_choice_part",
+          "count": 3
+        },
+        {
+          "name": "ReceiveItem",
+          "surface": "conversation_choice_part",
+          "count": 11
+        },
+        {
+          "name": "RequireReputation",
+          "surface": "conversation_choice_part",
+          "count": 1
+        },
+        {
+          "name": "SlynthCandidatesReady",
+          "surface": "conversation_choice_part",
+          "count": 1
+        },
+        {
+          "name": "StartFight",
+          "surface": "conversation_choice_part",
+          "count": 8
+        },
+        {
+          "name": "Tag",
+          "surface": "conversation_choice_part",
+          "count": 1
+        },
+        {
+          "name": "TakeItem",
+          "surface": "conversation_choice_part",
+          "count": 3
+        },
+        {
+          "name": "TakeLiquid",
+          "surface": "conversation_choice_part",
+          "count": 2
+        },
+        {
+          "name": "Trade",
+          "surface": "conversation_choice_part",
+          "count": 1
+        },
+        {
+          "name": "WaterRitualBegin",
+          "surface": "conversation_choice_part",
+          "count": 1
+        },
+        {
+          "name": "WaterRitualBuyItem",
+          "surface": "conversation_choice_part",
+          "count": 2
+        },
+        {
+          "name": "WaterRitualBuySecret",
+          "surface": "conversation_choice_part",
+          "count": 1
+        },
+        {
+          "name": "WaterRitualCookingRecipe",
+          "surface": "conversation_choice_part",
+          "count": 2
+        },
+        {
+          "name": "WaterRitualFungusColonize",
+          "surface": "conversation_choice_part",
+          "count": 1
+        },
+        {
+          "name": "WaterRitualGainMutation",
+          "surface": "conversation_choice_part",
+          "count": 1
+        },
+        {
+          "name": "WaterRitualHermitOath",
+          "surface": "conversation_choice_part",
+          "count": 1
+        },
+        {
+          "name": "WaterRitualJoinParty",
+          "surface": "conversation_choice_part",
+          "count": 1
+        },
+        {
+          "name": "WaterRitualLearnSkill",
+          "surface": "conversation_choice_part",
+          "count": 1
+        },
+        {
+          "name": "WaterRitualNephilimPacify",
+          "surface": "conversation_choice_part",
+          "count": 1
+        },
+        {
+          "name": "WaterRitualRandomMutation",
+          "surface": "conversation_choice_part",
+          "count": 1
+        },
+        {
+          "name": "WaterRitualSellSecret",
+          "surface": "conversation_choice_part",
+          "count": 2
+        },
+        {
+          "name": "WaterRitualSkillPoint",
+          "surface": "conversation_choice_part",
+          "count": 1
+        },
+        {
+          "name": "WaterRitualTinkeringRecipe",
+          "surface": "conversation_choice_part",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "path": "Mods/QudJP/Localization/HiddenConversations.jp.xml",
+      "surface": "conversation_authored_xml",
+      "counts": {
+        "conversations": 9,
+        "starts": 21,
+        "nodes": 247,
+        "choices": 397,
+        "texts": 230,
+        "texts_with_runtime_expansions": 50,
+        "choice_parts": 13
+      },
+      "runtime_expansion_terms": [
+        {
+          "term": "RebekahRegion",
+          "surface": "conversation_text",
+          "examples": [
+            "{{emote|*バラサラムが息を吸い、どもる。*}} 彼女は――\n\n        レシェフは彼女の背信を許さなかった。=RebekahRegion=の癩病者を助けているうちに、彼女は「腐れた舌」に罹った。死期が来た時、彼女は――"
+          ]
+        },
+        {
+          "term": "name",
+          "surface": "conversation_text",
+          "examples": [
+            "すまない、=name=。お前を誇りに思っている！願わくば…わたしが剥がれ落ちずにいられればよかったのに、お前の手本のように。",
+            "ではな、メイヴン。=name=よ。生きて飲め。",
+            "わたしたちは――\n\n        成し遂げたのだ、=name=。わたしは――"
+          ]
+        }
+      ],
+      "choice_parts": [
+        {
+          "name": "ChangeTarget",
+          "surface": "conversation_choice_part",
+          "count": 3
+        },
+        {
+          "name": "EndGame",
+          "surface": "conversation_choice_part",
+          "count": 10
+        }
+      ]
+    }
+  ],
+  "quest_file": {
+    "path": "Mods/QudJP/Localization/Quests.jp.xml",
+    "surface": "quest_authored_xml",
+    "quest_titles_translation_policy": "excluded",
+    "counts": {
+      "quests": 28,
+      "quest_titles_excluded": 28,
+      "quest_metadata_texts": 3,
+      "quest_steps": 84,
+      "quest_step_names": 84,
+      "quest_step_texts": 84,
+      "quest_handler_parts": 0
+    },
+    "quest_metadata_text_attributes": [
+      {
+        "attribute": "Accomplishment",
+        "surface": "quest_metadata_text",
+        "count": 19
+      },
+      {
+        "attribute": "Gospel",
+        "surface": "quest_metadata_text",
+        "count": 19
+      },
+      {
+        "attribute": "Hagiograph",
+        "surface": "quest_metadata_text",
+        "count": 19
+      }
+    ],
+    "quest_handler_parts": [],
+    "known_structural_attributes": [
+      "Achievement",
+      "Factions",
+      "HagiographCategory",
+      "Level",
+      "Name",
+      "Reputation"
+    ]
+  },
+  "totals": {
+    "conversation_files": 2,
+    "conversation_texts": 1740,
+    "conversation_runtime_expansion_terms": 68,
+    "conversation_choice_parts": 92,
+    "quests": 28,
+    "quest_steps": 84,
+    "quest_step_texts": 84
+  }
+}

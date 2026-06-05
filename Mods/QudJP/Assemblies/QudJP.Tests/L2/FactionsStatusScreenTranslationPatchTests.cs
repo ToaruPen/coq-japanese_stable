@@ -187,7 +187,7 @@ public sealed class FactionsStatusScreenTranslationPatchTests
             ("historic sites", "史跡"),
             ("insect lair", "昆虫の巣"),
             ("ape lair", "類人猿の巣"),
-            ("becoming nooks", "変成の隠れ家"),
+            ("becoming nooks", "変容の僻隅"),
             ("flower fields", "花畑"),
             ("ancestral bracelet Kindrish", "祖伝の腕輪キンドリシュ"),
             ("desert canyons", "砂漠峡谷"));
@@ -216,7 +216,7 @@ public sealed class FactionsStatusScreenTranslationPatchTests
             Assert.That(secretTrade, Is.EqualTo("山羊人はジャングル内の場所に関する秘密の取引に関心があり、自分たちに関するうわさ話にも興味を示す。"));
             Assert.That(worship, Is.EqualTo("Alabal Bane Folkは彼らが崇拝するスルタンに関する秘密の取引に関心があり、自分たちに関するうわさ話にも興味を示す。"));
             Assert.That(topicList, Is.EqualTo("類人猿は昆虫の巣の場所、類人猿の巣の場所、彼らが好悪を抱くスルタン、と彼ら自身に関するうわさ話について知ることに関心がある。"));
-            Assert.That(sharing, Is.EqualTo("プトゥス聖堂騎士団は変成の隠れ家の場所と史跡の場所に関する秘密の共有に関心がある。"));
+            Assert.That(sharing, Is.EqualTo("プトゥス聖堂騎士団は変容の僻隅の場所と史跡の場所に関する秘密の共有に関心がある。"));
             Assert.That(learning, Is.EqualTo("ベイ・ラーのヒンドレンは花畑の場所、祖伝の腕輪キンドリシュの場所、と彼ら自身に関するうわさ話について知ることに関心がある。"));
             Assert.That(trading, Is.EqualTo("馬類は花畑の場所と砂漠峡谷の場所に関する秘密の取引に関心がある。"));
         });

@@ -91,14 +91,72 @@ public sealed class ActiveEffectsOwnerPatchTests
     }
 
     [Test]
+    public void EffectDetailsPatch_TranslatesInspiredCookingDetails_WhenPatched()
+    {
+        const string source = "The next time you cook a meal by choosing ingredients, you get a choice of three dynamically-generated effects to apply. You create a recipe for the chosen effect.";
+
+        WriteDictionary(
+            (source, "次に材料を選んで料理を作るとき、適用する動的生成効果を3つの候補から選べる。選んだ効果のレシピを作成する。"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyEffect), nameof(DummyEffect.GetDetails)),
+                postfix: new HarmonyMethod(RequireMethod(typeof(EffectDetailsPatch), nameof(EffectDetailsPatch.Postfix))));
+
+            var effect = new DummyEffect { DetailsText = source };
+
+            Assert.That(
+                effect.GetDetails(),
+                Is.EqualTo("次に材料を選んで料理を作るとき、適用する動的生成効果を3つの候補から選べる。選んだ効果のレシピを作成する。"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void EffectDetailsPatch_TranslatesCoatedInPlasmaDetails_WhenPatched()
+    {
+        const string source = "-100 heat resistance\n"
+            + "-100 cold resistance\n"
+            + "-100 electric resistance\n"
+            + "Temperature does not passively return to ambient temperature\n"
+            + "Patting or rolling firefighting actions are 25% as effective\n"
+            + "Removes liquid coatings\n";
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyEffect), nameof(DummyEffect.GetDetails)),
+                postfix: new HarmonyMethod(RequireMethod(typeof(EffectDetailsPatch), nameof(EffectDetailsPatch.Postfix))));
+
+            var effect = new DummyEffect { DetailsText = source };
+
+            Assert.That(
+                effect.GetDetails(),
+                Is.EqualTo("熱耐性-100。\n冷気耐性-100。\n電気耐性-100。\n温度が自然に周囲温度へ戻らない。\n叩く・転がる消火行動の効果が25%になる。\n液体の被覆を取り除く。\n"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void EffectDescriptionAndDetailsPatches_TranslateColoredDescriptionAndTemplatedPluralDetails_WhenPatched()
     {
         WriteDictionary(
             ("{{R|adrenaline flowing}}", "{{R|アドレナリン全開}}"));
         WriteScopedDictionary(
             "Scoped/world-effects-generated-templates.ja.json",
-            ("+{0} Quickness\n+1 rank to physical mutations", "XRL.World.Effects.AdrenalControl2Boosted.GetDetails", "+{0} Quickness\n肉体変異 +1ランク"),
-            ("+{0} Quickness\n+{1} ranks to physical mutations", "XRL.World.Effects.AdrenalControl2Boosted.GetDetails", "+{0} Quickness\n肉体変異 +{1}ランク"));
+            ("+{0} Quickness\n+1 rank to physical mutations", "XRL.World.Effects.AdrenalControl2Boosted.GetDetails", "クイックネス+{0}\n肉体変異 +1ランク"),
+            ("+{0} Quickness\n+{1} ranks to physical mutations", "XRL.World.Effects.AdrenalControl2Boosted.GetDetails", "クイックネス+{0}\n肉体変異 +{1}ランク"));
 
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
@@ -120,7 +178,7 @@ public sealed class ActiveEffectsOwnerPatchTests
             Assert.Multiple(() =>
             {
                 Assert.That(effect.GetDescription(), Is.EqualTo("{{R|アドレナリン全開}}"));
-                Assert.That(effect.GetDetails(), Is.EqualTo("+20 Quickness\n肉体変異 +2ランク"));
+                Assert.That(effect.GetDetails(), Is.EqualTo("クイックネス+20\n肉体変異 +2ランク"));
             });
         }
         finally
@@ -177,7 +235,7 @@ public sealed class ActiveEffectsOwnerPatchTests
         WriteScopedDictionary(
             "Scoped/world-effects-generated-templates.ja.json",
             ("dominated ({0} turns remaining)", "XRL.World.Effects.Dominated.GetDescription", "支配された（残り{0}ターン）"),
-            ("time-dilated ({{C|-{0}}} Quickness)", "XRL.World.Effects.ITimeDilated.GetDescription", "時間遅延 ({{C|-{0}}} Quickness)"),
+            ("time-dilated ({{C|-{0}}} Quickness)", "XRL.World.Effects.ITimeDilated.GetDescription", "時間遅延 ({{C|-{0}}} クイックネス)"),
             ("lying on {0}", "XRL.World.Effects.Prone.GetDescription", "{0}に横たわっている"),
             ("engulfed by {0}", "XRL.World.Effects.Engulfed.DisplayName", "{0}に呑み込まれている"),
             ("piloting {0}", "XRL.World.Effects.Piloting.DisplayName", "{0}を操縦中"),
@@ -196,7 +254,7 @@ public sealed class ActiveEffectsOwnerPatchTests
             Assert.Multiple(() =>
             {
                 Assert.That(new DummyEffect { DescriptionText = "dominated (3 turns remaining)" }.GetDescription(), Is.EqualTo("支配された（残り3ターン）"));
-                Assert.That(new DummyEffect { DescriptionText = "time-dilated ({{C|-40}} Quickness)" }.GetDescription(), Is.EqualTo("時間遅延 ({{C|-40}} Quickness)"));
+                Assert.That(new DummyEffect { DescriptionText = "time-dilated ({{C|-40}} Quickness)" }.GetDescription(), Is.EqualTo("時間遅延 ({{C|-40}} クイックネス)"));
                 Assert.That(new DummyEffect { DescriptionText = "{{C|lying on a chair}}" }.GetDescription(), Is.EqualTo("{{C|椅子に横たわっている}}"));
                 Assert.That(new DummyEffect { DescriptionText = "{{B|engulfed by a starapple tree}}" }.GetDescription(), Is.EqualTo("{{B|スターアップルの木に呑み込まれている}}"));
                 Assert.That(new DummyEffect { DescriptionText = "{{C|piloting a hovercraft}}" }.GetDescription(), Is.EqualTo("{{C|ホバークラフトを操縦中}}"));
@@ -431,8 +489,8 @@ public sealed class ActiveEffectsOwnerPatchTests
             ("{{R|adrenaline flowing}}", "{{R|アドレナリン全開}}"));
         WriteScopedDictionary(
             "Scoped/world-effects-generated-templates.ja.json",
-            ("+{0} Quickness\n+1 rank to physical mutations", "XRL.World.Effects.AdrenalControl2Boosted.GetDetails", "+{0} Quickness\n肉体変異 +1ランク"),
-            ("+{0} Quickness\n+{1} ranks to physical mutations", "XRL.World.Effects.AdrenalControl2Boosted.GetDetails", "+{0} Quickness\n肉体変異 +{1}ランク"));
+            ("+{0} Quickness\n+1 rank to physical mutations", "XRL.World.Effects.AdrenalControl2Boosted.GetDetails", "クイックネス+{0}\n肉体変異 +1ランク"),
+            ("+{0} Quickness\n+{1} ranks to physical mutations", "XRL.World.Effects.AdrenalControl2Boosted.GetDetails", "クイックネス+{0}\n肉体変異 +{1}ランク"));
 
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
@@ -458,7 +516,7 @@ public sealed class ActiveEffectsOwnerPatchTests
                 },
             });
 
-            Assert.That(screen.mutationsDetails.Text, Is.EqualTo("{{R|アドレナリン全開}}\n\n+20 Quickness\n肉体変異 +1ランク"));
+            Assert.That(screen.mutationsDetails.Text, Is.EqualTo("{{R|アドレナリン全開}}\n\nクイックネス+20\n肉体変異 +1ランク"));
         }
         finally
         {

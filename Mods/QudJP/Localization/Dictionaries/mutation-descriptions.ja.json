@@ -32,7 +32,7 @@
     {
       "key": "mutation:Adrenal Control",
       "context": "Chargen.Mutation.LongDescription",
-      "text": "あなたは自分の体内でアドレナリンの分泌を制御できる。\n\n20ターンのあいだアドレナリンの流れを高められる。\nそのあいだ{{C|+10}}の俊敏を得て、ほかの肉体突然変異のランクが{{C|+1}}上昇する。\nクールダウン: 200ターン"
+      "text": "あなたは自分の体内でアドレナリンの分泌を制御できる。\n\n20ターンのあいだアドレナリンの流れを高められる。\nそのあいだ{{C|+10}}のクイックネスを得て、ほかの肉体突然変異のランクが{{C|+1}}上昇する。\nクールダウン: 200ターン"
     },
     {
       "key": "mutation:Astral",
@@ -192,7 +192,7 @@
     {
       "key": "mutation:Heightened Quickness",
       "context": "Chargen.Mutation.LongDescription",
-      "text": "驚異的な速度を授かっている。\n\n+{{rules|15}} 俊敏"
+      "text": "驚異的な速度を授かっている。\n\nクイックネス+{{rules|15}}"
     },
     {
       "key": "mutation:Heightened Smell",
@@ -282,7 +282,7 @@
     {
       "key": "mutation:Photosynthetic Skin",
       "context": "Chargen.Mutation.LongDescription",
-      "text": "たくましい緑の皮膚で日光を吸収し、そこから養分を得る。\n\n食事の代わりに日光浴して{{rules|1日}}のあいだ特別な代謝効果を得られる: 自然回復率が{{rules|+30%}}、迅速さが{{rules|+15}}。\n日光の下にいるとデンプンとリグニンを蓄え、調理にそれぞれ{{rules|1}}食分まで使える。\n植生と同じマスにいるあいだはDVに{{rules|+1}}の迷彩ボーナス。\n{{w|根}}、{{w|木々}}、{{w|蔦}}、{{w|フィタ連合}}との評判+200。"
+      "text": "たくましい緑の皮膚で日光を吸収し、そこから養分を得る。\n\n食事の代わりに日光浴して{{rules|1日}}のあいだ特別な代謝効果を得られる: 自然回復率が{{rules|+30%}}、クイックネスが{{rules|+15}}。\n日光の下にいるとデンプンとリグニンを蓄え、調理にそれぞれ{{rules|1}}食分まで使える。\n植生と同じマスにいるあいだはDVに{{rules|+1}}の迷彩ボーナス。\n{{w|根}}、{{w|木々}}、{{w|蔦}}、{{w|フィタ連合}}との評判+200。"
     },
     {
       "key": "mutation:Plasma Emission",
@@ -367,7 +367,7 @@
     {
       "key": "mutation:Stun Breath",
       "context": "Chargen.Mutation.LongDescription",
-      "text": "朦朧ガスを吐き出す。"
+      "text": "気絶ガスを吐き出す。"
     },
     {
       "key": "mutation:Thick Fur",
@@ -377,7 +377,7 @@
     {
       "key": "mutation:Triple-jointed",
       "context": "Chargen.Mutation.LongDescription",
-      "text": "関節が異様に柔らかい。\n\n{{rules|+2}}以上の敏捷ボーナスを得て、俊敏系スキルやスプリントがクールダウンしない確率がある。"
+      "text": "関節が異様に柔らかい。\n\n{{rules|+2}}以上の敏捷ボーナスを得て、敏捷系スキルやスプリントがクールダウンしない確率がある。"
     },
     {
       "key": "mutation:Two-headed",
@@ -437,7 +437,7 @@
     {
       "key": "mutation:Cold-Blooded",
       "context": "Chargen.Mutation.LongDescription",
-      "text": "体温に活力が左右される。\n\n基礎俊敏が10低下する。気温が高いほど俊敏が増し、低いほど鈍る。{{w|無甲殼爬虫類}}との評判+100。"
+      "text": "体温に活力が左右される。\n\n基本のクイックネスが10低下する。気温が高いほどクイックネスが増し、低いほど鈍る。{{w|無甲殼爬虫類}}との評判+100。"
     },
     {
       "key": "mutation:Electromagnetic Impulse",

@@ -331,10 +331,14 @@ public sealed class WorldPartsFragmentTranslatorTests
     }
 
     [TestCase("Use {{W|Shift+D}} to descend.", "{{W|Shift+D}}で下に降りてください。")]
+    [TestCase(
+        "It looks like an awfully long fall. Are you sure you want to jump into the shaft?",
+        "ひどく長い落下になりそうだ。本当に縦穴に飛び込む？")]
     [TestCase("Use {{W|Shift+U}} to ascend.", "{{W|Shift+U}}で上に昇ってください。")]
     public void StairsTranslator_TranslatesPopupFragments(string input, string expected)
     {
-        if (input.Contains("descend", StringComparison.Ordinal))
+        if (input.Contains("descend", StringComparison.Ordinal)
+            || input.Contains("awfully long fall", StringComparison.Ordinal))
         {
             AssertTranslated(
                 StairsDownFragmentTranslator.TryTranslatePopupMessage,

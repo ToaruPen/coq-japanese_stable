@@ -32,7 +32,7 @@ EXPECTED_BEHAVIOR_DESCRIPTIONS = {
     "CarbideHandBones": "拳のダメージが2d3になる。",
     "Pentaceps": "突撃の射程が4マス伸びる。",
     "CommunicationsInterlock": "ロボットを5レベル高いものとして叱責する。",
-    "InflatableAxons": "発動。クールダウン100。\n10ラウンドのあいだ俊敏 +40、その後10ラウンド鈍重になる（俊敏 -10）。",
+    "InflatableAxons": "発動。クールダウン100。\n10ラウンドのあいだクイックネス+40、その後10ラウンド鈍重になる（クイックネス-10）。",
     "NocturnalApex": "昼間の自然回復率 +10%。\n夜ごとに1回《徘徊》でき、100ラウンドのあいだ敏捷 +6、移動速度 +10。",
     "AirCurrentMicrosensor": "階段などの上下マップ遷移が常に明らかになる。",
     "PneumaticPistons": "ジャンプ距離が4マス伸びる。",

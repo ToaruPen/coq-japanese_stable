@@ -96,7 +96,7 @@ public sealed class ActiveEffectPopupQueueTranslationPatchTests
     [TestCase(
         nameof(DummyActiveEffectPopupQueueOwner.DazedApply),
         "you are dazed.",
-        "あなたは呆然としている。",
+        "あなたは朦朧としている。",
         "DazedApply")]
     [TestCase(
         nameof(DummyActiveEffectPopupQueueOwner.ParalyzedApply),

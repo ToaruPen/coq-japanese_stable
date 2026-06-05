@@ -26,15 +26,15 @@
         },
         {
             "key": "You are stunned",
-            "text": "あなたは朦朧となった"
+            "text": "あなたは気絶した"
         },
         {
             "key": "You are stunned.",
-            "text": "あなたは朦朧となった"
+            "text": "あなたは気絶した"
         },
         {
             "key": "You are stunned!",
-            "text": "あなたは朦朧となった"
+            "text": "あなたは気絶した"
         },
         {
             "key": "You are poisoned",
@@ -246,15 +246,15 @@
         },
         {
             "key": "You are dazed",
-            "text": "あなたはよろめいた。"
+            "text": "あなたは朦朧となった"
         },
         {
             "key": "You are dazed.",
-            "text": "あなたはよろめいた。"
+            "text": "あなたは朦朧となった"
         },
         {
             "key": "You are dazed!",
-            "text": "あなたはよろめいた。"
+            "text": "あなたは朦朧となった"
         },
         {
             "key": "You cannot do that while sitting",

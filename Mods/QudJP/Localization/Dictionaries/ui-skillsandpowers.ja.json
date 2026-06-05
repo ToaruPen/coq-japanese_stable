@@ -413,7 +413,7 @@
     {
       "key": "Cooldown 50. You shame a nearby creature for 6d6 rounds, giving it a -4 penalty to DV, to-hit, Ego, Willpower and a -10% penalty to quickness.",
       "context": "TMP.Description",
-      "text": "クールダウン50。近くのクリーチャーを6d6ラウンド辱め、DV・命中・意力・意志に-4、俊敏に-10%のペナルティを与える。"
+      "text": "クールダウン50。近くのクリーチャーを6d6ラウンド辱め、DV・命中・自我・意志力に-4、クイックネスに-10%のペナルティを与える。"
     },
     {
       "key": "Cooldown 50. You try to terrify adjacent, hostile creatures (1d8 + [Ego modifier] penetration roll vs. MA). On success, a frightened creature flees from you for 6d4 rounds.",
@@ -1303,7 +1303,7 @@
     {
       "key": "Whenever you block an opponent's attack, there is a (Strength*2)-35% chance that your opponent is stunned for 1d2 rounds.",
       "context": "TMP.Description",
-      "text": "盾で攻撃を受け流すと、(筋力×2)-35%の確率で相手を1d2ラウンド朦朧にする。"
+      "text": "盾で攻撃を受け流すと、(筋力×2)-35%の確率で相手を1d2ラウンド気絶させる。"
     },
     {
       "key": "Whenever you disassemble an item, you have a 25% chance to learn how to build the item. If the item was modded, you also have a 15% chance per mod to learn the mod.",
@@ -2533,7 +2533,7 @@
     {
       "key": "Breathe Stun Gas",
       "context": "AbilityBar.ButtonText",
-      "text": "朦朧ブレス"
+      "text": "気絶ブレス"
     },
     {
       "key": "Breathe Poison Gas",

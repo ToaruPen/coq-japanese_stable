@@ -251,6 +251,7 @@ public sealed class DescriptionTextTranslatorTests
     [TestCase("This item's DV bonus is being averaged across all body parts of the same type.", "このアイテムのDVボーナスは同じ種類の全身体部位で平均化されている。")]
     [TestCase("This item's DV penalty is being averaged across all body parts of the same type.", "このアイテムのDVペナルティは同じ種類の全身体部位で平均化されている。")]
     [TestCase("-4 to saves vs. forced movement, knockdown, Being restrained", "強制移動・転倒・拘束に対するセーヴ-4")]
+    [TestCase("-4 to saves vs. forced movement, knockdown, and bleeding", "強制移動・転倒・出血に対するセーヴ-4")]
     [TestCase("+5 to saves vs. being restrained", "拘束に対するセーヴ+5")]
     [TestCase("Being restrained", "拘束")]
     [TestCase("+2 DV while occupying the same tile as foliage", "植物と同じタイルにいる間DV+2")]
@@ -289,7 +290,7 @@ public sealed class DescriptionTextTranslatorTests
     [TestCase("{{rules|When activated, +1 Agility ({{K|unpowered}})}}", "{{rules|起動時、敏捷+1（無電力）}}")]
     [TestCase("+2 Strength", "筋力+2")]
     [TestCase("-1 Toughness", "頑健-1")]
-    [TestCase("When activated, +25% quickness", "起動時、俊敏+25%")]
+    [TestCase("When activated, +25% quickness", "起動時、クイックネス+25%")]
     [TestCase("Chance of becoming lost reduced by 10%.", "道に迷う確率が10%低下する。")]
     [TestCase("Its readout indicates that its startup sequence will take an estimated 7 more rounds.", "表示には、起動シーケンス完了まであとおよそ7ラウンドかかると示されている。")]
     [TestCase("Graffiti is scrawled across the surface. It reads: ", "表面に落書きが走り書きされている。そこにはこう書かれている: ")]
@@ -308,6 +309,12 @@ public sealed class DescriptionTextTranslatorTests
     [TestCase("At daybreak on the first day of autumn、ひとりの嬰児（with colossal mace in each hand）がin the mouth of a she-wolfにて産着に包まれて見いだされた。その嬰児はのちにウーヒム IIとして知られるようになった。", "秋の第一日、夜明けに、両手に巨大なメイスを握ったひとりの嬰児が雌狼の口の中で産着に包まれて見いだされた。その嬰児はのちにウーヒム IIとして知られるようになった。")]
     [TestCase("While、visiting an obscure observatory in the Jewelersの Province of ドゥシュル, ウーヒム IV fabricated horoscope reading that evoked the presence of lucent ruby. SheはそれをRubycusと名づけた。", "宝石商の州ドゥシュルの無名の天文台を訪れていたとき、ウーヒム IVは透明なルビーの存在を呼び起こす星占いを作り上げた。彼女はそれをRubycusと名づけた。")]
     [TestCase("After treating with 昆虫, ウーヒム IV convinced them to help her found observatory in the Stargazersの Province of カルクヘタラ for the purpose of mapping stars to the shapes of jewels. They named it the Jeweled O...", "昆虫と交渉した後、ウーヒム IVは宝石の形に星を対応づける目的で、カルクヘタラの星見の州に天文台を創設する手助けをするよう彼らを説得した。彼らはそれをJeweled O...と名づけた。")]
+    [TestCase("Credits remaining: 2\u009B", "残りクレジット: 2\u009B")]
+    [TestCase("Creates: バイオダイナミック セル", "作成物：バイオダイナミック セル")]
+    [TestCase("Deactivated: Currently without power.", "停止中: 現在電力がない。")]
+    [TestCase("Integrated power systems: When equipped, you can power this device via Electrical Generation.", "統合電力システム: 装備中、発電でこの装置に電力を供給できる。")]
+    [TestCase("Fitted with cleats: +2 to saves vs. forced movement、knockdown、とbeing restrained", "クリート付き: 強制移動・転倒・拘束に対するセーヴ+2")]
+    [TestCase("Fitted with cleats: +2 to saves vs. unknown target", "Fitted with cleats: +2 to saves vs. unknown target")]
     public void TranslateShortDescription_TranslatesRuntimeObservedDescriptionLines(
         string source,
         string expected)
@@ -341,6 +348,21 @@ public sealed class DescriptionTextTranslatorTests
             "DescriptionTextTranslatorTests");
 
         Assert.That(translated, Is.EqualTo("トニック適用時のエネルギー消費が50%軽減される。"));
+    }
+
+    [TestCase("Creates: biodynamic cell", "作成物：バイオダイナミック セル")]
+    [TestCase("Creates: {{Y|biodynamic cell}}", "作成物：{{Y|バイオダイナミック セル}}")]
+    public void TranslateShortDescription_TranslatesCreatesItemThroughDisplayNameRoute(
+        string source,
+        string expected)
+    {
+        WriteDictionary("ui-displayname-atomic.ja.json", ("biodynamic cell", "バイオダイナミック セル"));
+
+        var translated = DescriptionTextTranslator.TranslateShortDescription(
+            source,
+            "DescriptionTextTranslatorTests");
+
+        Assert.That(translated, Is.EqualTo(expected));
     }
 
     [Test]
@@ -767,6 +789,24 @@ public sealed class DescriptionTextTranslatorTests
             Assert.That(translated, Is.EqualTo("このアイテムはトニックです。別のトニックの効果中にトニックを使用すると、望ましくない結果を招くことがあります。"));
             Assert.That(Translator.GetMissingKeyHitCountForTests("This"), Is.EqualTo(0));
         });
+    }
+
+    [Test]
+    public void TranslateShortDescription_TranslatesPronounExpandedMoltingBasiliskDescription()
+    {
+        const string source =
+            "A lizard of quartz scales reposes in the stillness of an artist's mould. When prey gets too comfortable with his lifelessness and traipeses by, he quickens and snaps like a thunder clap.";
+        const string expected =
+            "水晶の鱗を持つトカゲが、芸術家の型の中にいるような静けさで横たわっている。獲物がその死んだような様子に油断して通り過ぎると、すばやく動いて雷鳴のように噛みつく。";
+        WriteContextDictionary(
+            "ui-test.ja.json",
+            ("QudJP.Description.Leaf", source, expected));
+
+        var translated = DescriptionTextTranslator.TranslateShortDescription(
+            source,
+            "DescriptionTextTranslatorTests");
+
+        Assert.That(translated, Is.EqualTo(expected));
     }
 
     [Test]

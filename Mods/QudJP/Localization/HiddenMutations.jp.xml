@@ -35,7 +35,7 @@
     <mutation Name="Normality Breath" Cost="1" Class="NormalityBreather" Tile="Abilities/abil_breathe.bmp" DisplayName="正常化ブレス" />
     <mutation Name="Corrosive Breath" Cost="1" Class="CorrosiveBreather" Tile="Abilities/abil_breathe.bmp" DisplayName="腐食ブレス" />
     <mutation Name="Confusing Breath" Cost="1" Class="ConfusionBreather" Tile="Abilities/abil_breathe.bmp" DisplayName="混乱ブレス" />
-    <mutation Name="Stun Breath" Cost="1" Class="StunBreather" Tile="Abilities/abil_breathe.bmp" DisplayName="朦朧ブレス" />
+    <mutation Name="Stun Breath" Cost="1" Class="StunBreather" Tile="Abilities/abil_breathe.bmp" DisplayName="気絶ブレス" />
     <mutation Name="Poison Breath" Cost="1" Class="PoisonBreather" Tile="Abilities/abil_breathe.bmp" DisplayName="毒ブレス" />
     <mutation Name="Sleep Breath" Cost="1" Class="SleepBreather" Tile="Abilities/abil_breathe.bmp" DisplayName="睡眠ブレス" />
     <mutation Name="Shame Breath" Cost="1" Class="ShameBreather" Tile="Abilities/abil_breathe.bmp" DisplayName="恥辱ブレス" />

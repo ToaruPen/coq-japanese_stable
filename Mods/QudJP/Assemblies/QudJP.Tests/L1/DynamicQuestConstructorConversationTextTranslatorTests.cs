@@ -141,6 +141,20 @@ public sealed class DynamicQuestConstructorConversationTextTranslatorTests
     }
 
     [Test]
+    public void TryTranslate_NormalizesKnownGeneratedQuestIntroComposite()
+    {
+        const string source = "かつて私の同胞は炉の世話に日々を費やしていた. 塩の聖性を知ってから、われらは習わしを改め、新たな儀式を作った. 残念ながら, やるべき用事がある. Mehmetがわれらの{{|遺物}}を失った. {{|錆の井戸}}の近くに{{|a relic}}があると知った. 料理のために、それが必要だ. *it*を探し出し、われらのもとへ返してくれるか？ *it*を取り戻してくれれば、あなたの助力には代価を支払う. {{|錆の井戸}}に運ばれたと聞いている. 引き受けてくれるか？ あなたの奉仕には報いる.";
+
+        var translated = DynamicQuestConstructorConversationTextTranslator.TryTranslate(source, out var result);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.True);
+            Assert.That(result, Is.EqualTo("かつて私の同胞は炉の世話に日々を費やしていた。塩の聖性を知ってから、われらは習わしを改め、新たな儀式を作った。残念ながら、やるべき用事がある。Mehmetがわれらの{{|遺物}}を失った。{{|錆の井戸}}の近くに{{|遺物}}があると知った。料理のために、それが必要だ。*it*を探し出し、われらのもとへ返してくれるか？*it*を取り戻してくれれば、あなたの助力には代価を支払う。{{|錆の井戸}}に運ばれたと聞いている。引き受けてくれるか？あなたの奉仕には報いる。"));
+        });
+    }
+
+    [Test]
     public void TryTranslate_LeavesMixedUnknownCompositeUnchanged()
     {
         const string source = "未知の日本語文. {{Y|cooking}} is still raw.";

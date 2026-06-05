@@ -22,7 +22,7 @@ public sealed class MechanicalWingsPopupTranslationPatchTests
     private const string SingularUnresponsiveTranslated = "{{Y|gyrocopter backpack}}は反応しなくなった。";
     private const string LongFallSource =
         "It looks like a long way down the {{Y|shaft}} you're above. Are you sure you want to stop flying?";
-    private const string LongFallTranslated = "あなたがいる{{Y|shaft}}の下はかなり深そうだ。飛行をやめてもよいですか？";
+    private const string LongFallTranslated = "あなたがいる{{Y|縦坑}}の下はかなり深そうだ。飛行をやめてもよいですか？";
     private const string WingsWillNotMoveSource = "Your {{Y|wings}} will not move!";
     private const string WingsWillNotMoveTranslated = "あなたの{{Y|wings}}は動かない！";
 

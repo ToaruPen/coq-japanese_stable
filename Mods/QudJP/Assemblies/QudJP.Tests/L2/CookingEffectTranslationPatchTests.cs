@@ -156,6 +156,52 @@ public sealed class CookingEffectTranslationPatchTests
     }
 
     [Test]
+    public void Postfix_PreservesTrailingNewlineInProceduralEffectDescription_WhenPatched()
+    {
+        var target = new DummyCookingEffectTextTarget
+        {
+            ReturnValue = "+3 to saves vs. disease\n",
+        };
+
+        var translated = InvokePatched(target, nameof(DummyCookingEffectTextTarget.GetProceduralEffectDescription));
+        Assert.That(translated, Is.EqualTo("病気に対するセーヴ+3\n"));
+    }
+
+    [Test]
+    public void Postfix_TranslatesYuckwheatTriggerDescription_WhenPatched()
+    {
+        var target = new DummyCookingEffectTextTarget
+        {
+            ReturnValue = "whenever @thisCreature eat@s an unfermented yuckwheat stem,",
+        };
+
+        var translated = InvokePatched(target, nameof(DummyCookingEffectTextTarget.GetTriggerDescription));
+        Assert.That(translated, Is.EqualTo("@thisCreature が未発酵のヤックウィートの茎を食べるたび、"));
+    }
+
+    [Test]
+    public void Postfix_TranslatesObservedYuckwheatDischargeRuntimeComposition_WhenPatched()
+    {
+        var source = "+3 to saves vs. disease\n"
+            + "whenever @thisCreature eat@s an unfermented yuckwheat stem, @they release an electrical discharge per Electrical Generation at level 5.";
+        var target = new DummyCookingEffectTextTarget
+        {
+            ReturnValue = source,
+        };
+
+        var translated = InvokePatched(target, nameof(DummyCookingEffectTextTarget.GetProceduralEffectDescription));
+        var processed = SimulateCampfireProcessEffectDescription(translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.EqualTo("病気に対するセーヴ+3\n@thisCreature が未発酵のヤックウィートの茎を食べるたび、@they は電気生成レベル5の放電を行う。"));
+            Assert.That(processed, Is.EqualTo("病気に対するセーヴ+3\nあなたが未発酵のヤックウィートの茎を食べるたび、あなたは電気生成レベル5の放電を行う。"));
+            Assert.That(processed, Does.Not.Contain("whenever"));
+            Assert.That(processed, Does.Not.Contain("you は"));
+        });
+    }
+
+    [Test]
     public void Postfix_TranslatesObservedProceduralCookingEffectDescription_WhenPatched()
     {
         var target = new DummyCookingEffectTextTarget
@@ -301,7 +347,10 @@ public sealed class CookingEffectTranslationPatchTests
 
     private static string SimulateCampfireProcessEffectDescription(string source)
     {
-        return source.Replace("@thisCreature thirst@s at half rate.", "You thirst at half rate.", StringComparison.Ordinal);
+        return source
+            .Replace("@thisCreature thirst@s at half rate.", "You thirst at half rate.", StringComparison.Ordinal)
+            .Replace("@thisCreature が", "あなたが", StringComparison.Ordinal)
+            .Replace("@they は", "あなたは", StringComparison.Ordinal);
     }
 
     private static MethodInfo RequireMethod(Type type, string methodName)

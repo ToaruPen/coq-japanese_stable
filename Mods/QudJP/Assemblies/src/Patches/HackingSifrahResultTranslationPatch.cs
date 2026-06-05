@@ -196,12 +196,12 @@ public static class HackingSifrahResultTranslationPatch
             || TryTranslateMatch(
                 PowerConsumptionPattern,
                 source,
-                m => $"{m.Groups[1].Value}をハックし、その過程で{m.Groups[2].Value}の電力消費を減らす方法を見つけた！",
+                m => $"{TranslateObjectCapture(m.Groups[1].Value)}をハックし、その過程で{TranslateObjectCapture(m.Groups[2].Value)}の電力消費を減らす方法を見つけた！",
                 out translated)
             || TryTranslateMatch(
                 LicensePointPattern,
                 source,
-                m => $"ハックの過程で{m.Groups[1].Value}に命令を挿入し、追加の{m.Groups[2].Value}を得た！",
+                m => $"ハックの過程で{TranslateObjectCapture(m.Groups[1].Value)}に命令を挿入し、追加の{TranslateLicensePointCapture(m.Groups[2].Value)}を得た！",
                 out translated)
             || TryTranslateMatch(AlertLightsPattern, source, TranslateAlertLights, out translated);
     }
@@ -246,6 +246,27 @@ public static class HackingSifrahResultTranslationPatch
         var adverb = string.Equals(match.Groups[2].Value, "urgently", StringComparison.Ordinal)
             ? "緊急に"
             : "規則的に";
-        return $"ハックは失敗し、{match.Groups[1].Value}の警告灯が{adverb}点滅し始めた...";
+        return $"ハックは失敗し、{TranslateObjectCapture(match.Groups[1].Value)}の警告灯が{adverb}点滅し始めた...";
+    }
+
+    private static string TranslateObjectCapture(string source)
+    {
+        return source switch
+        {
+            "cybernetics terminal" => "サイバネティクスターミナル",
+            _ => source,
+        };
+    }
+
+    private static string TranslateLicensePointCapture(string source)
+    {
+        return source switch
+        {
+            "license point" => "ライセンスポイント",
+            "license points" => "ライセンスポイント",
+            "cybernetics license point" => "ライセンスポイント",
+            "cybernetics license points" => "ライセンスポイント",
+            _ => source,
+        };
     }
 }

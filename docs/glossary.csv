@@ -45,6 +45,7 @@ Chavvah,チャヴァ,,source: Factions.jp.xml; world-factions.ja.json,confirmed
 Chavvah Front Chime,チャイミング・ロック,,source: Conversations.jp.xml,draft
 Chavvah Prime,チャヴァ・プライム,,=ディヴラック（Dyvvrach）,draft
 "Chavvah, the Tree of Life",生命の樹チャヴァ,,source: world-factions.ja.json,draft
+chain,チェーン,チェーン,mechanical chain/chain-weapon prefix; armor names may use 鎖 only when the Japanese compound is already natural,approved
 Cherubim,ケルビム,,source: Factions.jp.xml; world-factions.ja.json,draft
 Children of Mamon,マモンの子ら,,source: world-factions.ja.json,draft
 Chiliad Mamon,キリアド・マモン,,source: ChiliadFactions.jp.xml; world-factions.ja.json,draft
@@ -73,6 +74,7 @@ Dagasha,ダガシャ,,source: Conversations.jp.xml,draft
 Dardi,ダルディ,,source: Conversations.jp.xml,draft
 Darkunder,暗き底,,source: Worlds.jp.xml,draft
 Daughters of Exile,流配の娘たち,流配の娘たち,修道会系の小派閥,draft
+Dazed,朦朧,,status/effect term; distinguish from stunned=気絶,draft
 Diary,昆布の紐で縛られた巻物,,source: Books.jp.xml,draft
 Disquisition On The Malady Of The Mimic,ミミック病論,,source: Books.jp.xml,draft
 Doyoba,ドヨバ,,source: Conversations.jp.xml,draft
@@ -215,6 +217,7 @@ Putus Templar,プトゥス聖堂騎士団,聖堂騎士団,反変異主義の騎�
 Q Girl,Qガール,Qガール,confirmed: shipped in Conversations/Quests/Books/Creatures/UI; visible scan has no raw English,confirmed
 Qlippoth,クリフォト,,ゴートフォークの変異個体（Qlippoth）。名称と綴りは常にこの表記で固定する,draft
 Qud,クッド,,,approved
+Quickness,クイックネス,,attribute/stat term,draft
 Quetzal Council,ケツァール評議会,,source: ChiliadFactions.jp.xml; world-factions.ja.json,draft
 Rainbow Wood,虹の森,虹の森,confirmed: shipped in Worlds/world terrain/Books/Conversations; visible scan has no raw English,confirmed
 Red Rock,レッドロック（赤岩）,レッドロック,短：レッドロック／文：赤岩,draft
@@ -254,12 +257,14 @@ Solos,ソロ,,source: Factions.jp.xml; world-factions.ja.json,draft
 Soups,スープ,,source: ChiliadFactions.jp.xml; world-factions.ja.json,draft
 Sparafucile,スパラフチレ,スパラフチレ,グリット・ゲートの銃工。手話ベースの会話も同表記,draft
 Sparking Baetyl,火花を散らすベテル,,source: Conversations.jp.xml,draft
+Spaser,スペーザー,,space + laser 系のエネルギー武器名,draft
 sphynx salt tonic,スフィンクス ソルトトニック,,source: world-effects-tonics.ja.json,draft
 Spindle Channel,スピンドルの水路,,source: Worlds.jp.xml,draft
 Star Orchid Temple,星蘭の寺院,,source: Worlds.jp.xml,draft
 Starfarer's Quay,星渡りの桟橋,,source: Worlds.jp.xml,draft
 Stiltgrounds,スティルト外縁,外縁,スティルト周辺の幕営地,draft
 Stopsvalinn,『クッドの貴族と名家の系譜』より,,source: Books.jp.xml,draft
+Stunned,気絶,,status/effect term; item names may retain スタン,draft
 Sultan,スルタン,,タイトル,confirmed
 Sultan croc,スルタン・クロコダイル,スルタン・クロコダイル,死体名は「スルタン・クロコダイルの死体」で統一,draft
 Sultan cults,スルタン教団,スルタン教団,世代史で生成される崇拝派（動的）,draft
