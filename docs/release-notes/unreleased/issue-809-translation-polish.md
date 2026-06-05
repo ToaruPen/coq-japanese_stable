@@ -1,3 +1,0 @@
-### Fixed
-
-- Polished issue #809 translation text, including Spaser weapon display names, runtime food-status phrasing, stun/daze/Quickness terminology, localized quest step display names with stable English runtime IDs, dynamic quest site-intro frames, Annals gospel fallback handling, Tinkering detail labels, and authored conversation/quest English residue.
