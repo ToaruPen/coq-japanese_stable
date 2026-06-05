@@ -7359,6 +7359,53 @@
 
   <!-- Otho (key quest chain and updates) -->
   <conversation ID="Otho">
+    <node ID="Start" IfHaveActiveQuest="More Than a Willing Spirit" IfHaveBlueprint="Dormant Waydroid" IfLevelLessOrEqual="12" Replace="true">
+      <text>
+        グリット・ゲートへようこそ。私はオソ、バラサラムの執事だ。このような出迎えになったことは詫びるが、我々は用心せねばならない。クッドは非常に容赦のない場所だからな。
+
+        それほど未熟な身でゴルゴタから戻ってきたことは、途方もない素質の証だ。褒美としてこの銃を受け取れ。我ら最高の銃鍛冶、スパラフチーレの刻印が入っている。この腕輪も持っていけ。
+
+        信号について話し合う準備ができたら戻ってこい。
+      </text>
+      <choice GotoID="End">生きて飲め。</choice>
+      <choice GotoID="End" CompleteQuestStep="More Than a Willing Spirit~Return to Grit Gate|3000">
+        <text>ありがとう。また戻ってくる。</text>
+        <part Name="ReceiveItem" Blueprints="MasterworkCarbine,MasterworkChainPistol" Pick="true" Identify="All" />
+        <part Name="ReceiveItem" Blueprints="Hologram Bracelet" Identify="All" />
+        <part Name="GritGateHandler" Rank="Apprentice" />
+      </choice>
+    </node>
+
+    <node ID="Start" IfHaveActiveQuest="More Than a Willing Spirit" IfHaveBlueprint="Dormant Waydroid" IfLevelLessOrEqual="18" Replace="true">
+      <text>
+        グリット・ゲートへようこそ。私はオソ、バラサラムの執事だ。このような出迎えになったことは詫びるが、我々は用心せねばならない。クッドは非常に容赦のない場所だからな。
+
+        ウェイドロイドを連れて戻ってきたことは喜ばしい。とはいえ、お前が抱えている危険についてはまだほとんど知らないだろう。褒美としてこの銃を受け取れ。我ら最高の銃鍛冶、スパラフチーレの刻印が入っている。
+
+        信号について話し合う準備ができたら戻ってこい。
+      </text>
+      <choice GotoID="End" CompleteQuestStep="More Than a Willing Spirit~Return to Grit Gate|1250">
+        <text>ありがとう。また戻ってくる。</text>
+        <part Name="ReceiveItem" Blueprints="MasterworkCarbine,MasterworkChainPistol" Pick="true" Identify="All" />
+        <part Name="GritGateHandler" Rank="Apprentice" />
+      </choice>
+    </node>
+
+    <node ID="Start" IfHaveActiveQuest="More Than a Willing Spirit" IfHaveBlueprint="Dormant Waydroid" Replace="true">
+      <text>
+        グリット・ゲートへようこそ。私はオソ、バラサラムの執事だ。このような出迎えになったことは詫びるが、我々は用心せねばならない。クッドは非常に容赦のない場所だからな。
+
+        お前は我々と学ぶに値する。これを受け取れ。
+
+        信号について話し合う準備ができたら戻ってこい。
+      </text>
+      <choice GotoID="End" CompleteQuestStep="More Than a Willing Spirit~Return to Grit Gate|750">
+        <text>ありがとう。また戻ってくる。</text>
+        <part Name="ReceiveItem" Blueprints="EMPGrenade3,ColdGrenade3,StasisGrenade3" Identify="All" />
+        <part Name="GritGateHandler" Rank="Apprentice" />
+      </choice>
+    </node>
+
     <node ID="Signal" Replace="true">
       <text>
         その信号は、どこからとも知れぬ場所から繰り返し送信されているものだ。=V0tinkeraddendum= 我らが工匠の一人、&amp;mQガール&amp;y が長波検出器を仕掛けている最中に見つけた。残念ながら暗号化されており、ここには解読手段がない。だが、この件でお前が助けになれるかもしれない。

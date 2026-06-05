@@ -355,6 +355,37 @@ public sealed class InventoryActionDisplayTranslationPatchTests
     }
 
     [Test]
+    public void ShowInventoryActionMenuPrefix_TranslatesFallbackRelicTitle_WhenIntroIsNull()
+    {
+        WriteDictionary(
+            Path.Combine("Scoped", "historyspice-common.ja.json"),
+            context: null,
+            ("analog", "アナログの"),
+            ("sand", "砂"));
+        var actions = new Dictionary<string, DummyInventoryAction>();
+        var owner = new DummyInventoryActionMenuItem
+        {
+            DisplayName = "{{Y|カムシュルクール}}",
+        };
+        var item = new DummyInventoryActionMenuItem
+        {
+            DisplayName = "{{M|Chain of the Analog Sand}} \u00040 \t0 [6ドラムのゲル]",
+        };
+        string? intro = null;
+        var state = InventoryActionMenuCloseTimingObservability.TimingScope.Empty;
+
+        InventoryActionMenuShowTimingPatch.Prefix(actions, ref state);
+        AssertTranslateIntroPrefixBindsToShowInventoryActionMenuGoArgument();
+        InventoryActionMenuShowTimingPatch.TranslateIntroPrefix(item, ref intro);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(owner.DisplayName, Is.EqualTo("{{Y|カムシュルクール}}"));
+            Assert.That(intro, Is.EqualTo("{{M|アナログの砂の鎖}} \u00040 \t0 [6ドラムのゲル]"));
+        });
+    }
+
+    [Test]
     public void TranslateActionTable_RekeysTranslatedActions_WhenNativeHotkeysAreConsumedByMenuNavigation()
     {
         WriteInventoryActionDictionary(("mark important", "重要にする"), ("look", "見る"));
@@ -654,8 +685,15 @@ public sealed class InventoryActionDisplayTranslationPatchTests
 
         builder.Append("]}");
         builder.AppendLine();
+        var path = Path.Combine(tempDirectory, fileName);
+        var parent = Path.GetDirectoryName(path);
+        if (!string.IsNullOrEmpty(parent))
+        {
+            Directory.CreateDirectory(parent);
+        }
+
         File.WriteAllText(
-            Path.Combine(tempDirectory, fileName),
+            path,
             builder.ToString(),
             new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
     }
@@ -670,6 +708,16 @@ public sealed class InventoryActionDisplayTranslationPatchTests
             .Replace("\t", "\\t", StringComparison.Ordinal);
     }
 
+    private static void AssertTranslateIntroPrefixBindsToShowInventoryActionMenuGoArgument()
+    {
+        var parameter = typeof(InventoryActionMenuShowTimingPatch)
+            .GetMethod(nameof(InventoryActionMenuShowTimingPatch.TranslateIntroPrefix))!
+            .GetParameters()
+            .FirstOrDefault();
+
+        Assert.That(parameter?.Name, Is.EqualTo("__2"));
+    }
+
     private sealed class DummyInventoryAction
     {
         public string? Display { get; set; }
@@ -681,5 +729,10 @@ public sealed class InventoryActionDisplayTranslationPatchTests
         public int Default { get; set; }
 
         public int Priority { get; set; }
+    }
+
+    private sealed class DummyInventoryActionMenuItem
+    {
+        public string? DisplayName { get; set; }
     }
 }

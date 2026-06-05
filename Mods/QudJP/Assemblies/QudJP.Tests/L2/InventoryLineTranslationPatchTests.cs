@@ -458,8 +458,15 @@ public sealed partial class Issue201StatusScreensBatch2Tests
 
         builder.Append("]}");
         builder.AppendLine();
+        var path = Path.Combine(tempDirectory, fileName);
+        var parent = Path.GetDirectoryName(path);
+        if (!string.IsNullOrEmpty(parent))
+        {
+            Directory.CreateDirectory(parent);
+        }
+
         File.WriteAllText(
-            Path.Combine(tempDirectory, fileName),
+            path,
             builder.ToString(),
             new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
     }

@@ -589,6 +589,11 @@
             "text": "{{M|ひらめき}}"
         },
         {
+            "key": "The next time you cook a meal by choosing ingredients, you get a choice of three dynamically-generated effects to apply. You create a recipe for the chosen effect.",
+            "context": "XRL.World.Effects.Inspired.GetDetails",
+            "text": "次に材料を選んで料理を作るとき、適用する動的生成効果を3つの候補から選べる。選んだ効果のレシピを作成する。"
+        },
+        {
             "key": "{{M|mutating}}",
             "context": "XRL.World.Effects.Mutating.Description",
             "text": "{{M|変異中}}"

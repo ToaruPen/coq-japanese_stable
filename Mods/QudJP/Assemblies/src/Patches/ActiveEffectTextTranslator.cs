@@ -61,6 +61,10 @@ internal static class ActiveEffectTextTranslator
         @"^(?<shift>[+-]\d+) (?<stat>Strength|Agility|Toughness|Intelligence|Willpower|Ego|AV|DV|MA)\.$",
         RegexOptions.CultureInvariant);
 
+    private static readonly Regex ResistanceShiftLinePattern = new(
+        @"^(?<shift>[+-]\d+) (?<stat>heat resistance|cold resistance|electric resistance)$",
+        RegexOptions.CultureInvariant);
+
     private static readonly Regex AllMentalAttributesPattern = new(
         @"^(?<shift>[+-]\d+) to all mental attributes$",
         RegexOptions.CultureInvariant);
@@ -637,6 +641,12 @@ internal static class ActiveEffectTextTranslator
             return TranslateEffectStat(statShiftMatch.Groups["stat"].Value) + statShiftMatch.Groups["shift"].Value + "。";
         }
 
+        var resistanceShiftMatch = ResistanceShiftLinePattern.Match(visible);
+        if (resistanceShiftMatch.Success)
+        {
+            return TranslateEffectStat(resistanceShiftMatch.Groups["stat"].Value) + resistanceShiftMatch.Groups["shift"].Value + "。";
+        }
+
         var allMentalAttributesMatch = AllMentalAttributesPattern.Match(visible);
         if (allMentalAttributesMatch.Success)
         {
@@ -652,6 +662,9 @@ internal static class ActiveEffectTextTranslator
             "Aids in examining and disassembling artifacts." => "遺物の調査と分解に役立つ。",
             "Distracts from examining and disassembling artifacts." => "遺物の調査と分解を妨げる。",
             "Inflicts ongoing damage." => "継続ダメージを与える。",
+            "Temperature does not passively return to ambient temperature" => "温度が自然に周囲温度へ戻らない。",
+            "Patting or rolling firefighting actions are 25% as effective" => "叩く・転がる消火行動の効果が25%になる。",
+            "Removes liquid coatings" => "液体の被覆を取り除く。",
             _ => null,
         };
         if (runtimeObservedLine is not null)
@@ -688,6 +701,9 @@ internal static class ActiveEffectTextTranslator
             "Intelligence" => "知力",
             "Willpower" => "意志力",
             "Ego" => "自我",
+            "heat resistance" => "熱耐性",
+            "cold resistance" => "冷気耐性",
+            "electric resistance" => "電気耐性",
             _ => stat,
         };
     }

@@ -63,6 +63,19 @@ internal static class InventoryActionMenuShowTimingPatch
         }
     }
 
+    [HarmonyPrefix]
+    public static void TranslateIntroPrefix(object? __2, ref string? __5)
+    {
+        try
+        {
+            TranslateFallbackIntroTitle(__2, ref __5);
+        }
+        catch (Exception ex)
+        {
+            Trace.TraceError("QudJP: {0}.TranslateIntroPrefix failed: {1}", Context, ex);
+        }
+    }
+
     public static void Postfix(object? __result, InventoryActionMenuCloseTimingObservability.TimingScope __state)
     {
         try
@@ -78,5 +91,36 @@ internal static class InventoryActionMenuShowTimingPatch
     private static int GetCount(object? actionTable)
     {
         return actionTable is ICollection collection ? collection.Count : -1;
+    }
+
+    private static void TranslateFallbackIntroTitle(object? gameObject, ref string? intro)
+    {
+        if (!string.IsNullOrEmpty(intro) || gameObject is null)
+        {
+            return;
+        }
+
+        var displayName = AccessTools.Property(gameObject.GetType(), "DisplayName")?.GetValue(gameObject) as string
+            ?? AccessTools.Field(gameObject.GetType(), "DisplayName")?.GetValue(gameObject) as string;
+        if (string.IsNullOrEmpty(displayName))
+        {
+            return;
+        }
+
+        var route = ObservabilityHelpers.ComposeContext(Context, "field=intro");
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            displayName,
+            route);
+        if (string.Equals(translated, displayName, StringComparison.Ordinal))
+        {
+            return;
+        }
+
+        intro = translated;
+        DynamicTextObservability.RecordTransform(
+            route,
+            "InventoryActionMenu.Title",
+            displayName,
+            translated);
     }
 }

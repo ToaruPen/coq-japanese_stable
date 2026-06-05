@@ -91,6 +91,64 @@ public sealed class ActiveEffectsOwnerPatchTests
     }
 
     [Test]
+    public void EffectDetailsPatch_TranslatesInspiredCookingDetails_WhenPatched()
+    {
+        const string source = "The next time you cook a meal by choosing ingredients, you get a choice of three dynamically-generated effects to apply. You create a recipe for the chosen effect.";
+
+        WriteDictionary(
+            (source, "次に材料を選んで料理を作るとき、適用する動的生成効果を3つの候補から選べる。選んだ効果のレシピを作成する。"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyEffect), nameof(DummyEffect.GetDetails)),
+                postfix: new HarmonyMethod(RequireMethod(typeof(EffectDetailsPatch), nameof(EffectDetailsPatch.Postfix))));
+
+            var effect = new DummyEffect { DetailsText = source };
+
+            Assert.That(
+                effect.GetDetails(),
+                Is.EqualTo("次に材料を選んで料理を作るとき、適用する動的生成効果を3つの候補から選べる。選んだ効果のレシピを作成する。"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void EffectDetailsPatch_TranslatesCoatedInPlasmaDetails_WhenPatched()
+    {
+        const string source = "-100 heat resistance\n"
+            + "-100 cold resistance\n"
+            + "-100 electric resistance\n"
+            + "Temperature does not passively return to ambient temperature\n"
+            + "Patting or rolling firefighting actions are 25% as effective\n"
+            + "Removes liquid coatings\n";
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyEffect), nameof(DummyEffect.GetDetails)),
+                postfix: new HarmonyMethod(RequireMethod(typeof(EffectDetailsPatch), nameof(EffectDetailsPatch.Postfix))));
+
+            var effect = new DummyEffect { DetailsText = source };
+
+            Assert.That(
+                effect.GetDetails(),
+                Is.EqualTo("熱耐性-100。\n冷気耐性-100。\n電気耐性-100。\n温度が自然に周囲温度へ戻らない。\n叩く・転がる消火行動の効果が25%になる。\n液体の被覆を取り除く。\n"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void EffectDescriptionAndDetailsPatches_TranslateColoredDescriptionAndTemplatedPluralDetails_WhenPatched()
     {
         WriteDictionary(

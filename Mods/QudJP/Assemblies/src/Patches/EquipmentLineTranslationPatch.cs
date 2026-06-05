@@ -63,7 +63,7 @@ public static class EquipmentLineTranslationPatch
             var itemSource = GetStringMemberValue(itemTarget, "DisplayName");
             if (itemSource is null) { itemSource = "{{K|-}}"; }
             var itemRoute = ObservabilityHelpers.ComposeContext(Context, "field=itemText");
-            var translatedItem = TranslateVisibleText(itemSource, itemRoute, "EquipmentLine.ItemName");
+            var translatedItem = TranslateItemText(itemSource, itemRoute);
             OwnerTextSetter.SetTranslatedText(
                 GetMemberValue(__instance, "itemText"),
                 itemSource,
@@ -174,6 +174,23 @@ public static class EquipmentLineTranslationPatch
         if (!string.Equals(translated, source, StringComparison.Ordinal))
         {
             DynamicTextObservability.RecordTransform(route, family, source, translated);
+        }
+
+        return translated;
+    }
+
+    private static string TranslateItemText(string source, string route)
+    {
+        var translated = TranslateVisibleText(source, route, "EquipmentLine.ItemName");
+        if (!string.Equals(translated, source, StringComparison.Ordinal))
+        {
+            return translated;
+        }
+
+        translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(source, route);
+        if (!string.Equals(translated, source, StringComparison.Ordinal))
+        {
+            DynamicTextObservability.RecordTransform(route, "EquipmentLine.ItemName", source, translated);
         }
 
         return translated;

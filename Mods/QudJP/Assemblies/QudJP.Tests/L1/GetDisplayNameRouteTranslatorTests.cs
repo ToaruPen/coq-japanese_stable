@@ -185,6 +185,17 @@ public sealed class GetDisplayNameRouteTranslatorTests
         Assert.That(translated, Is.EqualTo("威厳ある嘆きの尖端"));
     }
 
+    [TestCase("some {{r|生の猪肉}}")]
+    [TestCase("Some {{r|生の猪肉}}")]
+    public void TranslatePreservingColors_StripsSomeArticleModifierFromLocalizedDisplayName(string source)
+    {
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            source,
+            nameof(GetDisplayNamePatch));
+
+        Assert.That(translated, Is.EqualTo("{{r|生の猪肉}}"));
+    }
+
     [Test]
     public void TranslatePreservingColors_PreservesColorWrapperAroundAlreadyLocalizedDisplayName()
     {
@@ -1557,6 +1568,32 @@ public sealed class GetDisplayNameRouteTranslatorTests
         {
             Assert.That(translated, Is.EqualTo("ウーヒム II、強大な幽鬼の祠"));
             Assert.That(Translator.GetMissingKeyHitCountForTests("the Potent Ghost"), Is.EqualTo(0));
+        });
+    }
+
+    [Test]
+    public void TranslatePreservingColors_TranslatesBaetylRelicNameWhilePreservingColorAndSuffix()
+    {
+        WriteDictionaryFile(
+            "Scoped/historyspice-common.ja.json",
+            ("analog", "アナログの"),
+            ("sand", "砂"));
+        const string source = "{{M|Chain of the Analog Sand}} \u00040 \t0 [6ドラムのゲル]";
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            source,
+            "InventoryActionMenu.Title");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.EqualTo("{{M|アナログの砂の鎖}} \u00040 \t0 [6ドラムのゲル]"));
+            Assert.That(
+                ColorShapeCaptureObservability.Capture(
+                    nameof(GetDisplayNameRouteTranslator),
+                    nameof(TranslatePreservingColors_TranslatesBaetylRelicNameWhilePreservingColorAndSuffix),
+                    source,
+                    translated).MarkupSemanticStatus,
+                Is.EqualTo("clean"));
         });
     }
 

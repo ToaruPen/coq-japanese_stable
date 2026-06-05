@@ -320,7 +320,35 @@ public static class QuestLifecyclePopupTranslationPatch
     {
         var group = match.Groups["quest"];
         var quest = ColorAwareTranslationComposer.RestoreCapture(group.Value, spans, group).Trim();
+        return TranslateQuestTitlePreservingColors(quest);
+    }
+
+    private static string TranslateQuestTitlePreservingColors(string quest)
+    {
+        var dictionaryTranslation = ColorAwareTranslationComposer.TranslatePreservingColors(
+            quest,
+            static visible =>
+            {
+                var translated = TranslateQuestTitleVisibleFromDictionary(visible);
+                return translated is null ? visible : translated;
+            });
+        if (!string.Equals(dictionaryTranslation, quest, StringComparison.Ordinal))
+        {
+            return dictionaryTranslation;
+        }
+
         return GeneratedQuestTitleTranslator.TranslatePreservingColors(quest, Context);
+    }
+
+    private static string? TranslateQuestTitleVisibleFromDictionary(string visible)
+    {
+        var translated = ScopedDictionaryLookup.TranslateExactOrLowerAscii(visible, QuestDictionaryFile);
+        if (translated is null)
+        {
+            return null;
+        }
+
+        return translated;
     }
 
     private static string RestoreStep(Match match, IReadOnlyList<ColorSpan> spans)

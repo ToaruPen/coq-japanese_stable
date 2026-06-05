@@ -1005,6 +1005,34 @@ public sealed class LocalizationCoverageTests
     }
 
     [Test]
+    public void ConversationsJapanese_CoversOthoInitialWaydroidRewardStartNodes()
+    {
+        var document = XDocument.Load(Path.Combine(localizationRoot, "Conversations.jp.xml"));
+        var otho = document
+            .Descendants("conversation")
+            .Single(element => (string?)element.Attribute("ID") == "Otho");
+        var nodes = otho
+            .Elements("node")
+            .Where(element =>
+                (string?)element.Attribute("ID") == "Start"
+                && (string?)element.Attribute("IfHaveActiveQuest") == "More Than a Willing Spirit"
+                && (string?)element.Attribute("IfHaveBlueprint") == "Dormant Waydroid")
+            .ToArray();
+
+        var combinedText = string.Join("\n", nodes.Select(static element => element.Value));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(nodes, Has.Length.EqualTo(3));
+            Assert.That(nodes.All(static element => (string?)element.Attribute("Replace") == "true"), Is.True);
+            Assert.That(combinedText, Does.Contain("ありがとう。また戻ってくる。"));
+            Assert.That(combinedText, Does.Not.Contain("Welcome to Grit Gate"));
+            Assert.That(combinedText, Does.Not.Contain("Thank you. I will return."));
+            Assert.That(combinedText, Does.Not.Contain("You are worthy to study with us."));
+        });
+    }
+
+    [Test]
     public void WorldEffectsStatusDictionary_CoversStaticActiveEffectDescriptionLeaves()
     {
         var worldEffectsStatusKeys = LoadEntries(Path.Combine(localizationRoot, "Dictionaries", "world-effects-status.ja.json"))

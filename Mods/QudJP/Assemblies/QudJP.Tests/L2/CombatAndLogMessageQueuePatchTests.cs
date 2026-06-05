@@ -2260,17 +2260,21 @@ public sealed class CombatAndLogMessageQueuePatchTests
         "You have received a new quest, {{W|Aiding {{&Y|ドリンクス}} to Find the ポリセフian 祖父角の角笛}}!",
         "新しいクエスト「{{W|{{&Y|ドリンクス}}がポリセフian 祖父角の角笛を探すのを助ける}}」を受けた！")]
     [TestCase(
+        nameof(DummyQuestLifecyclePopupTarget.ShowStartPopup),
+        "You have received a new quest, {{W|More Than a Willing Spirit}}!",
+        "新しいクエスト「{{W|心意気だけではなく}}」を受けた！")]
+    [TestCase(
         nameof(DummyQuestLifecyclePopupTarget.ShowFailPopup),
         "You have failed the quest {{W|O Glorious Shekhinah!}}!",
-        "クエスト「{{W|O Glorious Shekhinah!}}」に失敗した！")]
+        "クエスト「{{W|おお、栄光のシェキナー！}}」に失敗した！")]
     [TestCase(
         nameof(DummyQuestLifecyclePopupTarget.ShowFailStepPopup),
         "You have failed the step, {{R|Travel to Red Rock}}, of the quest {{W|What's Eating the Watervine?}}!",
-        "クエスト「{{W|What's Eating the Watervine?}}」のステップ「{{R|ジョッパから北へ2パラサング進み、レッドロックへ向かう。}}」に失敗した！")]
+        "クエスト「{{W|ウォーターヴァインを食べているのは何？}}」のステップ「{{R|ジョッパから北へ2パラサング進み、レッドロックへ向かう。}}」に失敗した！")]
     [TestCase(
         nameof(DummyQuestLifecyclePopupTarget.ShowFinishPopup),
         "You have completed the quest {{W|O Glorious Shekhinah!}}!",
-        "クエスト「{{W|O Glorious Shekhinah!}}」を完了した！")]
+        "クエスト「{{W|おお、栄光のシェキナー！}}」を完了した！")]
     public void QuestLifecyclePopup_TranslatesPopupMessages_WhenOwnerPatched(
         string methodName,
         string source,
@@ -2344,10 +2348,10 @@ public sealed class CombatAndLogMessageQueuePatchTests
             {
                 Assert.That(
                     DummyPopupTarget.LastShowBlockMessage,
-                    Is.EqualTo("クエスト「{{W|What's Eating the Watervine?}}」のステップ「{{R|ジョッパから北へ2パラサング進み、レッドロックへ向かう。}}」を完了した！\nあなたは経験値を{{C|75}}獲得した"));
+                    Is.EqualTo("クエスト「{{W|ウォーターヴァインを食べているのは何？}}」のステップ「{{R|ジョッパから北へ2パラサング進み、レッドロックへ向かう。}}」を完了した！\nあなたは経験値を{{C|75}}獲得した"));
                 Assert.That(
                     DummyMessageQueue.LastMessage,
-                    Is.EqualTo("クエスト「{{W|What's Eating the Watervine?}}」のステップ「{{R|ジョッパから北へ2パラサング進み、レッドロックへ向かう。}}」を完了した！"));
+                    Is.EqualTo("クエスト「{{W|ウォーターヴァインを食べているのは何？}}」のステップ「{{R|ジョッパから北へ2パラサング進み、レッドロックへ向かう。}}」を完了した！"));
             });
         }
         finally
@@ -2362,7 +2366,7 @@ public sealed class CombatAndLogMessageQueuePatchTests
         AssertQuestLifecycleFinishStepShowBlock(
             "You have finished the step, {{R|Travel to Red Rock}}, of the quest {{W|What's Eating the Watervine?}}!",
             0,
-            "クエスト「{{W|What's Eating the Watervine?}}」のステップ「{{R|ジョッパから北へ2パラサング進み、レッドロックへ向かう。}}」を完了した！");
+            "クエスト「{{W|ウォーターヴァインを食べているのは何？}}」のステップ「{{R|ジョッパから北へ2パラサング進み、レッドロックへ向かう。}}」を完了した！");
     }
 
     [Test]

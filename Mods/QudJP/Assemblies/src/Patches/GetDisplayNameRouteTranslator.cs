@@ -2107,7 +2107,8 @@ internal static class GetDisplayNameRouteTranslator
     private static bool IsDisplayNameArticleModifier(string modifier)
     {
         var visible = ColorAwareTranslationComposer.GetVisibleText(modifier);
-        return visible is "a" or "an" or "the";
+        return visible is "a" or "an" or "the"
+            || string.Equals(visible, "some", StringComparison.OrdinalIgnoreCase);
     }
 
     private static bool IsStainedDisplayNameModifier(string modifier)
@@ -3947,6 +3948,12 @@ internal static class GetDisplayNameRouteTranslator
         if (direct is not null)
         {
             return direct;
+        }
+
+        if (RelicGeneratedNameTranslator.TryTranslate(source, out var relicGeneratedName))
+        {
+            DynamicTextObservability.RecordTransform(route, "DisplayName.RelicGeneratedNameFragment", source, relicGeneratedName);
+            return relicGeneratedName;
         }
 
         if (IsStableDisplayNameFragment(source, route))

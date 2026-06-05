@@ -744,6 +744,7 @@
     { "key": "tinker", "text": "修理工" },
     { "key": "electrician", "text": "電気技師" },
     { "key": "silicon", "text": "シリコン" },
+    { "key": "sand", "text": "砂" },
     { "key": "circuits", "text": "回路" },
     { "key": "logic", "text": "論理" },
     { "key": "transistors", "text": "トランジスタ" },

@@ -45,14 +45,9 @@ public static class CookingEffectTranslationPatch
 
     private static bool TryTranslateResult(string source, string family, out string translated)
     {
-        if (CookingEffectFragmentTranslator.TryTranslate(source, nameof(CookingEffectTranslationPatch), family, out translated))
-        {
-            return true;
-        }
-
         if (source.IndexOf('\n') < 0)
         {
-            return false;
+            return CookingEffectFragmentTranslator.TryTranslate(source, nameof(CookingEffectTranslationPatch), family, out translated);
         }
 
         var changed = false;
@@ -103,6 +98,7 @@ public static class CookingEffectTranslationPatch
     {
         if (length == 0)
         {
+            result.Append(source, start, length);
             return;
         }
 
@@ -130,6 +126,8 @@ public static class CookingEffectTranslationPatch
             ("XRL.World.Effects.CookingDomainElectric_EMP_ProceduralCookingTriggeredAction", "GetTemplatedDescription"),
             ("XRL.World.Effects.CookingDomainElectric_OnElectricDamaged", "GetTriggerDescription"),
             ("XRL.World.Effects.CookingDomainElectric_OnElectricDamaged", "GetTemplatedTriggerDescription"),
+            ("XRL.World.Effects.CookingDomainMedicinal_OnEatYuckwheat", "GetTriggerDescription"),
+            ("XRL.World.Effects.CookingDomainMedicinal_OnEatYuckwheat", "GetTemplatedTriggerDescription"),
             ("XRL.World.Effects.CookingDomainArmor_OnPenetration", "GetTriggerDescription"),
             ("XRL.World.Effects.CookingDomainArmor_OnPenetration", "GetTemplatedTriggerDescription"),
             ("XRL.World.Effects.CookingDomainReflect_Reflect100_ProceduralCookingTriggeredAction_Effect", "GetDetails"),

@@ -1102,6 +1102,17 @@ public sealed class MessagePatternTranslatorTests
     }
 
     [Test]
+    public void Translate_RepositoryDictionary_TranslatesDirectionalSeeAndRefrainWithLocalizedAutoActDescription()
+    {
+        UseRepositoryPatternDictionary();
+
+        var translated = MessagePatternTranslator.Translate(
+            "You see 塩気のある血まみれのクローンリング to the east, so you refrain from 休息中.");
+
+        Assert.That(translated, Is.EqualTo("東に塩気のある血まみれのクローンリングが見えたので休息を控えた。"));
+    }
+
+    [Test]
     public void Translate_RepositoryDictionary_TranslatesStopBecauseWithLocalizedAutoActDescription()
     {
         UseRepositoryPatternDictionary();

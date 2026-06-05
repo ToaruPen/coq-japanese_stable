@@ -393,7 +393,7 @@ public static class ExaminerTranslationPatch
         }
 
         translated = RestoreWholeSourceBoundary(
-            TranslateSubject(match, spans, "owner")
+            TranslateObject(match, spans, "owner")
             + "はあなたのものではない。調べると"
             + TranslateObject(match, spans, "riskTarget")
             + "を傷つけるおそれがある。それでもそうしますか？",
@@ -419,7 +419,7 @@ public static class ExaminerTranslationPatch
         }
 
         translated = RestoreWholeSourceBoundary(
-            TranslateSubject(match, spans, "container")
+            TranslateObject(match, spans, "container")
             + "はあなたのものではない。"
             + TranslateObject(match, spans, "inside")
             + "の中にある"
@@ -461,11 +461,6 @@ public static class ExaminerTranslationPatch
             group.Value,
             spans,
             group).Trim();
-    }
-
-    private static string TranslateSubject(Match match, IReadOnlyList<ColorSpan> spans, string groupName)
-    {
-        return TranslatePronounOrObject(RestoreCapture(match, spans, groupName));
     }
 
     private static string TranslateObject(Match match, IReadOnlyList<ColorSpan> spans, string groupName)

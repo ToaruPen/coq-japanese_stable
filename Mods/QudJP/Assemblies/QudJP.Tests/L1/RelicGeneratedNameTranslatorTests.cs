@@ -31,6 +31,7 @@ public sealed class RelicGeneratedNameTranslatorTests
     [TestCase("The Point of the Commanding Woe", "威厳ある嘆きの尖端")]
     [TestCase("the Point of the Commanding Woe", "威厳ある嘆きの尖端")]
     [TestCase("the Breast of the Embraced Telescope", "受け入れた望遠鏡の胸甲")]
+    [TestCase("Chain of the Analog Sand", "アナログの砂の鎖")]
     public void TryTranslate_TranslatesFiniteRelicNameShapes(string source, string expected)
     {
         var translated = RelicGeneratedNameTranslator.TryTranslate(source, out var result);

@@ -792,6 +792,24 @@ public sealed class DescriptionTextTranslatorTests
     }
 
     [Test]
+    public void TranslateShortDescription_TranslatesPronounExpandedMoltingBasiliskDescription()
+    {
+        const string source =
+            "A lizard of quartz scales reposes in the stillness of an artist's mould. When prey gets too comfortable with his lifelessness and traipeses by, he quickens and snaps like a thunder clap.";
+        const string expected =
+            "水晶の鱗を持つトカゲが、芸術家の型の中にいるような静けさで横たわっている。獲物がその死んだような様子に油断して通り過ぎると、すばやく動いて雷鳴のように噛みつく。";
+        WriteContextDictionary(
+            "ui-test.ja.json",
+            ("QudJP.Description.Leaf", source, expected));
+
+        var translated = DescriptionTextTranslator.TranslateShortDescription(
+            source,
+            "DescriptionTextTranslatorTests");
+
+        Assert.That(translated, Is.EqualTo(expected));
+    }
+
+    [Test]
     public void TranslateShortDescription_TranslatesPreparedCookingIngredientEffectTemplate()
     {
         WriteDictionary(
