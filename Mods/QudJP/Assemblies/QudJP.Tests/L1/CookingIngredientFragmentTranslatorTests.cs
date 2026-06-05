@@ -244,6 +244,18 @@ public sealed class CookingIngredientFragmentTranslatorTests
     }
 
     [Test]
+    public void TryTranslate_PreservesColorWrapperAroundAlreadyLocalizedArticleIngredient()
+    {
+        var translated = CookingIngredientFragmentTranslator.TryTranslate("A {{W|ヨンダーケーン}}", out var result);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.True);
+            Assert.That(result, Is.EqualTo("{{W|ヨンダーケーン}}"));
+        });
+    }
+
+    [Test]
     public void TryTranslate_StripsDirectMarkerWithoutRetranslating()
     {
         var translated = CookingIngredientFragmentTranslator.TryTranslate(

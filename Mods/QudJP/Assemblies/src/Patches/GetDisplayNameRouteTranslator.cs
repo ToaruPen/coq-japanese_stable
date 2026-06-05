@@ -352,6 +352,11 @@ internal static class GetDisplayNameRouteTranslator
             return source!;
         }
 
+        if (TryStripEnglishArticleFromAlreadyLocalizedDisplayName(stripped, spans, route, out var articleStrippedTranslation))
+        {
+            return articleStrippedTranslation;
+        }
+
         if (TryTranslateWholeBracketedDisplayNameState(stripped, spans, route, out var wholeBracketedStateTranslation))
         {
             return wholeBracketedStateTranslation;
@@ -1099,6 +1104,45 @@ internal static class GetDisplayNameRouteTranslator
             visible => TranslateDisplayNameState(visible, route));
     }
 
+    private static bool TryStripEnglishArticleFromAlreadyLocalizedDisplayName(
+        string source,
+        IReadOnlyCollection<ColorSpan> spans,
+        string route,
+        out string translated)
+    {
+        translated = source;
+        if (spans.Count != 0
+            || CompactWeaponStatsDisplayNameSuffixPattern.IsMatch(source)
+            || CompactWeaponStatsDisplayNameSuffixSequencePattern.IsMatch(source)
+            || ArmorStatsDisplayNameSuffixPattern.IsMatch(source)
+            || ArmorStatsDisplayNameSuffixSequencePattern.IsMatch(source))
+        {
+            return false;
+        }
+
+        if (!TryStripEnglishArticleFromAlreadyLocalizedBase(source, out translated))
+        {
+            return false;
+        }
+
+        DynamicTextObservability.RecordTransform(
+            route,
+            "DisplayName.LocalizedNameLeadingEnglishArticle",
+            source,
+            translated);
+        return true;
+    }
+
+    private static bool TryStripEnglishArticleFromAlreadyLocalizedBase(string source, out string translated)
+    {
+        translated = StringHelpers.StripLeadingEnglishArticle(
+            source,
+            includeCapitalizedDefiniteArticle: true,
+            includeCapitalizedIndefiniteArticle: true);
+        return !string.Equals(translated, source, StringComparison.Ordinal)
+            && IsAlreadyLocalizedDisplayNameStateText(ColorAwareTranslationComposer.GetVisibleText(translated));
+    }
+
 
     private static bool TryTranslateArmorStatsDisplayNameSuffix(
         string source,
@@ -1431,6 +1475,14 @@ internal static class GetDisplayNameRouteTranslator
         var baseGroup = match.Groups["base"];
         var baseSource = baseGroup.Value;
         var translatedBase = TranslateDisplayNameFragmentPreservingColors(baseSource, spans, baseGroup, route);
+        var articleStripCandidate = string.Equals(translatedBase, baseSource, StringComparison.Ordinal)
+            ? baseSource
+            : translatedBase;
+        if (TryStripEnglishArticleFromAlreadyLocalizedBase(articleStripCandidate, out var articleStrippedBase))
+        {
+            translatedBase = articleStrippedBase;
+        }
+
         var stats = string.Equals(transformName, "DisplayName.CompactWeaponStatsSuffix", StringComparison.Ordinal)
             ? RestoreCompactWeaponStatsSlice(match.Groups["stats"], spans)
             : RestoreVisibleSlice(match.Groups["stats"], spans);

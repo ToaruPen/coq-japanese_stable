@@ -144,6 +144,58 @@ public sealed class GetDisplayNameRouteTranslatorTests
     }
 
     [Test]
+    public void TranslatePreservingColors_StripsEnglishArticleFromLocalizedGeneratedWeaponStatsName()
+    {
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            "the 威厳ある嘆きの尖端 \u001A10/13 \u00031d12+1",
+            nameof(LookTooltipInformationWrapPatch));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Does.StartWith("威厳ある嘆きの尖端 "));
+            Assert.That(translated, Does.Not.StartWith("the "));
+            Assert.That(translated, Does.Contain("10"));
+            Assert.That(translated, Does.Contain("1d12+1"));
+        });
+    }
+
+    [Test]
+    public void TranslatePreservingColors_StripsEnglishArticleFromColoredLocalizedGeneratedWeaponStatsName()
+    {
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            "the {{Y-R-Y-Y-Y-Y-Y-r-Y sequence|威厳ある嘆きの尖端}} {{c|\u001A}}10{{K|/13}} {{r|\u0003}}1d12+1",
+            nameof(LookTooltipInformationWrapPatch));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Does.StartWith("{{Y-R-Y-Y-Y-Y-Y-r-Y sequence|威厳ある嘆きの尖端}} "));
+            Assert.That(translated, Does.Not.StartWith("the "));
+            Assert.That(translated, Does.Contain("{{c|\u001A}}10"));
+            Assert.That(translated, Does.Contain("{{r|\u0003}}1d12+1"));
+        });
+    }
+
+    [Test]
+    public void TranslatePreservingColors_StripsEnglishArticleFromLocalizedGeneratedDisplayName()
+    {
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            "the 威厳ある嘆きの尖端",
+            nameof(GetDisplayNameProcessPatch));
+
+        Assert.That(translated, Is.EqualTo("威厳ある嘆きの尖端"));
+    }
+
+    [Test]
+    public void TranslatePreservingColors_PreservesColorWrapperAroundAlreadyLocalizedDisplayName()
+    {
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            "{{W|ヨンダーケーン}}",
+            nameof(CampfirePreserveTranslationPatch));
+
+        Assert.That(translated, Is.EqualTo("{{W|ヨンダーケーン}}"));
+    }
+
+    [Test]
     public void TranslatePreservingColors_UsesDisplayNameAliasForCachedTooltipWeaponName()
     {
         WriteAliasFile(

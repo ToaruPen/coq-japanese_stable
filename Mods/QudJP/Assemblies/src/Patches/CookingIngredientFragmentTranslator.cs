@@ -5,6 +5,10 @@ namespace QudJP.Patches;
 
 internal static class CookingIngredientFragmentTranslator
 {
+    private static readonly Regex JapaneseCharacterPattern = new(
+        "[\\p{IsHiragana}\\p{IsKatakana}\\p{IsCJKUnifiedIdeographs}]",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     private static readonly Regex MeasuredIngredientPattern = new(
         "^(?:(?:a|an) )?(?<unit>pinch|dash|smidgen|sprinkle|nip|dram) of (?<name>.+)$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.Singleline);
@@ -19,7 +23,7 @@ internal static class CookingIngredientFragmentTranslator
 
     private static readonly Regex ArticleIngredientPattern = new(
         "^(?:a|an) (?<name>.+)$",
-        RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.Singleline);
+        RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
 
     internal static bool TryTranslate(string? source, out string translated)
     {
@@ -86,7 +90,32 @@ internal static class CookingIngredientFragmentTranslator
             return true;
         }
 
+        if (TryPreserveAlreadyLocalizedColoredIngredientName(source, out translated))
+        {
+            return true;
+        }
+
         return TryTranslateNonPossessiveIngredientName(source, out translated);
+    }
+
+    private static bool TryPreserveAlreadyLocalizedColoredIngredientName(string source, out string translated)
+    {
+        translated = source;
+        if (!ColorAwareTranslationComposer.HasColorMarkup(source))
+        {
+            return false;
+        }
+
+        var visible = ColorAwareTranslationComposer.GetVisibleText(source);
+        if (visible.StartsWith("some ", StringComparison.OrdinalIgnoreCase)
+            || visible.StartsWith("a ", StringComparison.OrdinalIgnoreCase)
+            || visible.StartsWith("an ", StringComparison.OrdinalIgnoreCase))
+        {
+            return false;
+        }
+
+        return !string.Equals(visible, source, StringComparison.Ordinal)
+            && JapaneseCharacterPattern.IsMatch(visible);
     }
 
     private static bool TryTranslateColoredIngredientName(string source, out string translated)
@@ -97,6 +126,12 @@ internal static class CookingIngredientFragmentTranslator
         {
             translated = source;
             return false;
+        }
+
+        if (string.Equals(strippedTranslation, stripped, StringComparison.Ordinal))
+        {
+            translated = source;
+            return true;
         }
 
         translated = ColorAwareTranslationComposer.RestoreWholeSourceBoundaryWrappersPreservingTranslatedOwnership(

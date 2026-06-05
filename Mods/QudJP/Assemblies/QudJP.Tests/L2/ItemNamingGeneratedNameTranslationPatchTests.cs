@@ -56,6 +56,41 @@ public sealed class ItemNamingGeneratedNameTranslationPatchTests
     }
 
     [Test]
+    public void GenerateRelicStyleName_TranslatesNameAndClearsItemArticle_WhenPatched()
+    {
+        WithPatchedGenerateRelicStyleName(() =>
+        {
+            DummyItemNamingGeneratedNameTarget.NextResult = "The Dominant Sword of the Asphalt Mines";
+            var item = new DummyItemNamingGeneratedNameObject
+            {
+                IndefiniteArticle = "the",
+                DefiniteArticle = "the",
+            };
+            item.SetCachedDisplayNameForSort("The Dominant Sword of the Asphalt Mines");
+            var element = "might";
+            var type = "LongBlade";
+
+            var result = DummyItemNamingGeneratedNameTarget.GenerateRelicStyleName(
+                item,
+                owner: new object(),
+                kill: null,
+                influencedBy: null,
+                zoneId: "JoppaWorld.1.1.10.10.10",
+                ref element,
+                ref type);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(result, Is.EqualTo("アスファルト鉱山の支配的な剣"));
+                Assert.That(item.IndefiniteArticle, Is.Empty);
+                Assert.That(item.DefiniteArticle, Is.Empty);
+                Assert.That(item.GetCachedDisplayNameForSort(), Is.Null);
+                Assert.That(HitCount(), Is.EqualTo(1));
+            });
+        });
+    }
+
+    [Test]
     public void GenerateRelicStyleName_LeavesCultureNameUnchanged_WhenPatched()
     {
         WithPatchedGenerateRelicStyleName(() =>
@@ -101,6 +136,7 @@ public sealed class ItemNamingGeneratedNameTranslationPatchTests
                 postfix: new HarmonyMethod(RequireMethod(
                     typeof(ItemNamingGeneratedNameTranslationPatch),
                     nameof(ItemNamingGeneratedNameTranslationPatch.Postfix),
+                    typeof(object),
                     typeof(string).MakeByRefType())));
             action();
         }
@@ -166,5 +202,34 @@ internal static class DummyItemNamingGeneratedNameTarget
         _ = element;
         _ = type;
         return NextResult;
+    }
+}
+
+internal sealed class DummyItemNamingGeneratedNameObject
+{
+    public string IndefiniteArticle { get; set; } = string.Empty;
+
+    public string DefiniteArticle { get; set; } = string.Empty;
+
+    private string? _CachedDisplayNameForSort;
+
+    public string? GetCachedDisplayNameForSort() => _CachedDisplayNameForSort;
+
+    public void SetCachedDisplayNameForSort(string? value)
+    {
+        _CachedDisplayNameForSort = value;
+    }
+
+    public void SetStringProperty(string name, string value, bool removeIfNull = false)
+    {
+        _ = removeIfNull;
+        if (string.Equals(name, "IndefiniteArticle", StringComparison.Ordinal))
+        {
+            IndefiniteArticle = value;
+        }
+        else if (string.Equals(name, "DefiniteArticle", StringComparison.Ordinal))
+        {
+            DefiniteArticle = value;
+        }
     }
 }
