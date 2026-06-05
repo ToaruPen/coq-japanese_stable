@@ -9,11 +9,11 @@
       "counts": {
         "conversations": 204,
         "starts": 98,
-        "nodes": 1249,
-        "choices": 3074,
-        "texts": 1504,
+        "nodes": 1252,
+        "choices": 3078,
+        "texts": 1510,
         "texts_with_runtime_expansions": 296,
-        "choice_parts": 72
+        "choice_parts": 79
       },
       "runtime_expansion_terms": [
         {
@@ -575,7 +575,7 @@
         {
           "name": "GritGateHandler",
           "surface": "conversation_choice_part",
-          "count": 6
+          "count": 9
         },
         {
           "name": "HaveItem",
@@ -605,7 +605,7 @@
         {
           "name": "ReceiveItem",
           "surface": "conversation_choice_part",
-          "count": 7
+          "count": 11
         },
         {
           "name": "RequireReputation",
@@ -800,9 +800,9 @@
   },
   "totals": {
     "conversation_files": 2,
-    "conversation_texts": 1734,
+    "conversation_texts": 1740,
     "conversation_runtime_expansion_terms": 68,
-    "conversation_choice_parts": 85,
+    "conversation_choice_parts": 92,
     "quests": 28,
     "quest_steps": 84,
     "quest_step_texts": 84
