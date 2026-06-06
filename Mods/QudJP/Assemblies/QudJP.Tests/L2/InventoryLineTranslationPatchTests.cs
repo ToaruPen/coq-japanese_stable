@@ -201,6 +201,49 @@ public sealed partial class Issue201StatusScreensBatch2Tests
     }
 
     [Test]
+    public void InventoryLinePostfix_UsesFreshGameObjectDisplayName_WhenLineDataDisplayNameIsStaleAfterIdentify()
+    {
+        WriteDictionaryFile(
+            Path.Combine("Scoped", "historyspice-common.ja.json"),
+            ("analog", "アナログの"));
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyInventoryLineTarget), nameof(DummyInventoryLineTarget.setData)),
+                postfix: new HarmonyMethod(RequireMethod(typeof(InventoryLineTranslationPatch), nameof(InventoryLineTranslationPatch.Postfix))));
+
+            var go = new DummyStatusGameObject
+            {
+                DisplayName = "{{Y-Y-Y-G-Y-Y-g-Y sequence|Chain of the Analog Sand}} \u00040 \t0 [6ドラムのゲル]",
+                Weight = 1,
+            };
+            var itemTarget = new DummyInventoryLineTarget();
+            itemTarget.setData(new DummyInventoryLineDataTarget
+            {
+                category = false,
+                displayName = "Weird Artifact",
+                go = go,
+            });
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(
+                    itemTarget.text.Text,
+                    Is.EqualTo("{{Y-Y-Y-G-Y-Y-g-Y sequence|アナログの砂の鎖}} \u00040 \t0 [6ドラムのゲル]"));
+                Assert.That(go.LastRenderContext, Is.EqualTo("Inventory"));
+                Assert.That(itemTarget.icon.LastRenderable, Is.Not.Null);
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void InventoryLinePostfix_PreservesRuntimeToolkitColor_WhenDisplayNameRouteAddsBlueprintColor()
     {
         Translator.SetDictionaryDirectoryForTests(GetRepositoryDictionaryDirectory());

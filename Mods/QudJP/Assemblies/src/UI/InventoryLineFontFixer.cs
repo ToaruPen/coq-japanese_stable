@@ -23,7 +23,6 @@ internal static class InventoryLineFontFixer
     private static int refreshTimingDiagnosticsCount;
 #endif
     private static int cleanupCount;
-    private static int lastForceUpdateCanvasesFrame = int.MinValue;
     private static readonly ConcurrentDictionary<int, SuccessfulRefreshEntry> SuccessfulRefreshKeysByLine = new();
 
     internal static bool TryApplyPrimaryFontToItemRow(object? inventoryLineInstance, object? data)
@@ -105,12 +104,8 @@ internal static class InventoryLineFontFixer
             return false;
         }
 
-        if (textSkin is not null)
-        {
-            InvokeIfPresent(textSkin, "Apply");
-        }
         _ = FontManager.TryWarmPrimaryFontCharactersForUi(finalText);
-        FontManager.ApplyToText(tmp);
+        FontManager.ApplyToTextWithoutImmediateRefresh(tmp);
         if (tmp.font is not null)
         {
             tmp.fontSharedMaterial = tmp.font.material;
@@ -133,64 +128,10 @@ internal static class InventoryLineFontFixer
             tmp.pageToDisplay = 1;
         }
 
-        var currentText = tmp.text;
-        tmp.UpdateMeshPadding();
-        InvokeIfPresent(tmp, "SetAllDirty");
-        InvokeIfPresent(tmp, "SetVerticesDirty");
-        InvokeIfPresent(tmp, "SetLayoutDirty");
-        InvokeIfPresent(tmp, "SetMaterialDirty");
-        InvokeIfPresent(tmp, "RecalculateClipping");
-        InvokeIfPresent(tmp, "RecalculateMasking");
-        tmp.havePropertiesChanged = true;
-        tmp.text = currentText;
+        var refreshed = HasLiveRenderableText(tmp);
 #if QUDJP_DEV_BUILD
-        var forceMeshStopwatch = timingStopwatch is null ? null : System.Diagnostics.Stopwatch.StartNew();
+        canvasUpdateMode = refreshed ? "live_text" : "deferred_until_unity_layout";
 #endif
-        tmp.ForceMeshUpdate(ignoreActiveState: true, forceTextReparsing: true);
-#if QUDJP_DEV_BUILD
-        if (forceMeshStopwatch is not null)
-        {
-            forceMeshStopwatch.Stop();
-            forceMeshMs = forceMeshStopwatch.Elapsed.TotalMilliseconds;
-        }
-#endif
-        var refreshed = tmp.textInfo.characterCount > 0;
-        if (refreshed)
-        {
-#if QUDJP_DEV_BUILD
-            canvasUpdateMode = "not_needed";
-#endif
-        }
-
-        if (!refreshed)
-        {
-#if QUDJP_DEV_BUILD
-            var forceCanvasStopwatch = timingStopwatch is null ? null : System.Diagnostics.Stopwatch.StartNew();
-            var forcedCanvasUpdate = TryForceUpdateCanvasesOncePerFrame();
-            if (forceCanvasStopwatch is not null)
-            {
-                forceCanvasStopwatch.Stop();
-                if (forcedCanvasUpdate)
-                {
-                    forceCanvasMs = forceCanvasStopwatch.Elapsed.TotalMilliseconds;
-                }
-            }
-            canvasUpdateMode = forcedCanvasUpdate ? "performed" : "skipped_same_frame";
-
-            forceMeshStopwatch = timingStopwatch is null ? null : System.Diagnostics.Stopwatch.StartNew();
-#else
-            _ = TryForceUpdateCanvasesOncePerFrame();
-#endif
-            tmp.ForceMeshUpdate(ignoreActiveState: true, forceTextReparsing: true);
-#if QUDJP_DEV_BUILD
-            if (forceMeshStopwatch is not null)
-            {
-                forceMeshStopwatch.Stop();
-                forceMeshMs += forceMeshStopwatch.Elapsed.TotalMilliseconds;
-            }
-#endif
-            refreshed = tmp.textInfo.characterCount > 0;
-        }
         LogDiagnostics(textSkin, tmp, finalText, applied: true);
 #if QUDJP_DEV_BUILD
         LogRefreshTimingProbe(
@@ -735,58 +676,5 @@ internal static class InventoryLineFontFixer
         return cull?.ToString() ?? "<null>";
     }
 
-    private static bool TryForceUpdateCanvasesOncePerFrame()
-    {
-        var currentFrame = Time.frameCount;
-        if (lastForceUpdateCanvasesFrame == currentFrame)
-        {
-            return false;
-        }
-
-        lastForceUpdateCanvasesFrame = currentFrame;
-        ForceUpdateCanvases();
-        return true;
-    }
-
-    private static void InvokeIfPresent(object target, string methodName)
-    {
-        try
-        {
-            _ = target.GetType().GetMethod(methodName, Type.EmptyTypes)?.Invoke(target, Array.Empty<object>());
-        }
-        catch (Exception ex)
-        {
-            Debug.LogWarning($"[QudJP] InventoryLineFontFixer: {methodName} failed: {ex.GetType().Name}: {ex.Message}");
-        }
-    }
-
-    private static void ForceUpdateCanvases()
-    {
-        try
-        {
-            var canvasType = Type.GetType("UnityEngine.Canvas, UnityEngine.UIModule", throwOnError: false);
-            if (canvasType is null)
-            {
-                canvasType = Type.GetType("UnityEngine.Canvas, UnityEngine.CoreModule", throwOnError: false);
-            }
-
-            if (canvasType is null)
-            {
-                canvasType = Type.GetType("UnityEngine.Canvas, UnityEngine", throwOnError: false);
-            }
-
-            var method = canvasType?.GetMethod(
-                "ForceUpdateCanvases",
-                System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static,
-                binder: null,
-                types: Type.EmptyTypes,
-                modifiers: null);
-            method?.Invoke(null, null);
-        }
-        catch (Exception ex)
-        {
-            Debug.LogWarning($"[QudJP] InventoryLineFontFixer: ForceUpdateCanvases failed: {ex.GetType().Name}: {ex.Message}");
-        }
-    }
 #endif
 }

@@ -52,6 +52,21 @@ public static class IExamineEventProcessIdentifyTranslationPatch
         }
     }
 
+    public static void Postfix(bool __result)
+    {
+        try
+        {
+            if (__result)
+            {
+                _ = InventoryScreenRefreshAfterIdentify.TryRefresh();
+            }
+        }
+        catch (Exception ex)
+        {
+            Trace.TraceError("QudJP: {0}.Postfix failed: {1}", Context, ex);
+        }
+    }
+
     public static Exception? Finalizer(Exception? __exception)
     {
         try
@@ -64,6 +79,13 @@ public static class IExamineEventProcessIdentifyTranslationPatch
         }
 
         return __exception;
+    }
+
+    internal static void SetInventoryScreenRefreshHooksForTests(
+        Func<object?>? screenProvider,
+        Action<object>? screenRefresher)
+    {
+        InventoryScreenRefreshAfterIdentify.SetInventoryScreenRefreshHooksForTests(screenProvider, screenRefresher);
     }
 
     internal static bool TryTranslatePopupMessage(string source, string route, string family, out string translated)

@@ -22,8 +22,12 @@ public sealed class InventoryLineFontFixerPolicyTests
 
         NUnit.Framework.Assert.That(
             method,
-            NUnit.Framework.Does.Contain("FontManager.ApplyToText(tmp);"),
-            "InventoryLine text should keep the runtime TMP font/material and receive the QudJP fallback chain.");
+            NUnit.Framework.Does.Contain("FontManager.ApplyToTextWithoutImmediateRefresh(tmp);"),
+            "InventoryLine text should keep the runtime TMP font/material and receive the QudJP fallback chain without forcing TMP mesh rebuild during scroller layout.");
+        NUnit.Framework.Assert.That(
+            method,
+            NUnit.Framework.Does.Not.Contain("FontManager.ApplyToText(tmp);"),
+            "FontManager.ApplyToText forces TMP mesh refresh and can collide with Unity layout rebuild while InventoryLine rows are being laid out.");
         NUnit.Framework.Assert.That(
             method,
             NUnit.Framework.Does.Not.Contain("FontManager.ForcePrimaryFont(tmp);"),
@@ -270,7 +274,7 @@ public sealed class InventoryLineFontFixerPolicyTests
     }
 
     [NUnit.Framework.Test]
-    public void HeavyRefresh_BatchesForceUpdateCanvasesOncePerUnityFrame()
+    public void HeavyRefresh_DoesNotForceCanvasRebuildFromInventoryRows()
     {
         var sourcePath = Path.Combine(
             TestProjectPaths.GetRepositoryRoot(),
@@ -282,38 +286,42 @@ public sealed class InventoryLineFontFixerPolicyTests
             "InventoryLineFontFixer.cs");
         var source = File.ReadAllText(sourcePath);
         var heavyRefreshMethod = ExtractMethodBody(source, "internal static bool TryRefreshTextSkinWithFallbackFont(object? textSkin, string? finalText)");
-        var batchingMethod = ExtractMethodBody(source, "private static bool TryForceUpdateCanvasesOncePerFrame");
 
         NUnit.Framework.Assert.Multiple(() =>
         {
             NUnit.Framework.Assert.That(
                 heavyRefreshMethod,
-                NUnit.Framework.Does.Contain("TryForceUpdateCanvasesOncePerFrame()"),
-                "Inventory row refresh should not call ForceUpdateCanvases directly for every row.");
+                NUnit.Framework.Does.Not.Contain("TryForceUpdateCanvasesOncePerFrame()"),
+                "Inventory row refresh runs during FrameworkScroller layout; forcing canvases here can re-enter Unity layout rebuild.");
+            NUnit.Framework.Assert.That(
+                source,
+                NUnit.Framework.Does.Not.Contain("ForceUpdateCanvases();"),
+                "InventoryLineFontFixer must not trigger Unity's global canvas rebuild.");
             NUnit.Framework.Assert.That(
                 heavyRefreshMethod,
-                NUnit.Framework.Does.Not.Contain("ForceUpdateCanvases();"),
-                "The heavy canvas update must be behind the per-frame gate.");
+                NUnit.Framework.Does.Not.Contain("InvokeIfPresent(textSkin, \"Apply\")"),
+                "UITextSkin.Apply mutates TMP text and font state; InventoryLine refresh should not call it from the scroller layout hot path.");
             NUnit.Framework.Assert.That(
-                batchingMethod,
-                NUnit.Framework.Does.Contain("Time.frameCount"));
+                heavyRefreshMethod,
+                NUnit.Framework.Does.Not.Contain("tmp.havePropertiesChanged = true"),
+                "InventoryLine refresh should not explicitly mark TMP properties dirty while Unity is rebuilding layouts.");
             NUnit.Framework.Assert.That(
-                batchingMethod,
-                NUnit.Framework.Does.Contain("lastForceUpdateCanvasesFrame"));
+                heavyRefreshMethod,
+                NUnit.Framework.Does.Not.Contain("SetAllDirty"),
+                "Inventory row refresh runs inside scroller layout and must not register TMP layout rebuilds.");
             NUnit.Framework.Assert.That(
-                batchingMethod,
-                NUnit.Framework.Does.Contain("return false;"));
+                heavyRefreshMethod,
+                NUnit.Framework.Does.Not.Contain("SetLayoutDirty"),
+                "Inventory row refresh must not dirty layout while VisibleWindowScroller is laying out children.");
             NUnit.Framework.Assert.That(
-                batchingMethod,
-                NUnit.Framework.Does.Contain("ForceUpdateCanvases();"));
-            NUnit.Framework.Assert.That(
-                batchingMethod,
-                NUnit.Framework.Does.Contain("return true;"));
+                heavyRefreshMethod,
+                NUnit.Framework.Does.Not.Contain("ForceMeshUpdate"),
+                "Inventory row refresh must not synchronously rebuild TMP meshes during Unity layout.");
         });
     }
 
     [NUnit.Framework.Test]
-    public void HeavyRefresh_TriesMeshBeforeCanvasForceAndRetriesOnlyAfterZeroCharacters()
+    public void HeavyRefresh_ReportsLiveTextWithoutSynchronousMeshOrLayoutRebuild()
     {
         var sourcePath = Path.Combine(
             TestProjectPaths.GetRepositoryRoot(),
@@ -326,30 +334,13 @@ public sealed class InventoryLineFontFixerPolicyTests
         var source = File.ReadAllText(sourcePath);
         var method = ExtractMethodBody(source, "internal static bool TryRefreshTextSkinWithFallbackFont(object? textSkin, string? finalText)");
 
-        var firstMeshIndex = method.IndexOf(
-            "tmp.ForceMeshUpdate(ignoreActiveState: true, forceTextReparsing: true);",
-            System.StringComparison.Ordinal);
-        var canvasRetryIndex = method.IndexOf(
-            "TryForceUpdateCanvasesOncePerFrame()",
-            System.StringComparison.Ordinal);
-        var zeroCharacterBranchIndex = method.IndexOf(
-            "if (!refreshed)",
-            System.StringComparison.Ordinal);
-        var secondMeshIndex = method.IndexOf(
-            "tmp.ForceMeshUpdate(ignoreActiveState: true, forceTextReparsing: true);",
-            firstMeshIndex + 1,
-            System.StringComparison.Ordinal);
-
         NUnit.Framework.Assert.Multiple(() =>
         {
-            NUnit.Framework.Assert.That(firstMeshIndex, NUnit.Framework.Is.GreaterThanOrEqualTo(0));
-            NUnit.Framework.Assert.That(canvasRetryIndex, NUnit.Framework.Is.GreaterThan(firstMeshIndex));
-            NUnit.Framework.Assert.That(zeroCharacterBranchIndex, NUnit.Framework.Is.GreaterThan(firstMeshIndex));
-            NUnit.Framework.Assert.That(canvasRetryIndex, NUnit.Framework.Is.GreaterThan(zeroCharacterBranchIndex));
-            NUnit.Framework.Assert.That(secondMeshIndex, NUnit.Framework.Is.GreaterThan(canvasRetryIndex));
+            NUnit.Framework.Assert.That(method, NUnit.Framework.Does.Contain("var refreshed = HasLiveRenderableText(tmp);"));
             NUnit.Framework.Assert.That(
                 method,
-                NUnit.Framework.Does.Contain("canvasUpdateMode = \"not_needed\";"));
+                NUnit.Framework.Does.Contain("canvasUpdateMode = refreshed ? \"live_text\" : \"deferred_until_unity_layout\";"));
+            NUnit.Framework.Assert.That(method, NUnit.Framework.Does.Not.Contain("tmp.ForceMeshUpdate"));
         });
     }
 

@@ -472,6 +472,26 @@ public sealed class PopupPickOptionTranslationPatchTests
     }
 
     [Test]
+    public void Prefix_DoesNotInjectInventoryActionMenuContextTitle_WhenVanillaTitleIsEmpty()
+    {
+        WriteDisplayNameDictionary(("Chain of the Analog Sand", "アナログの砂の鎖"));
+        var context = new DummyInventoryActionContext(
+            "{{Y-Y-Y-G-Y-Y-g-Y sequence|Chain of the Analog Sand}} \u00040 \t0 [6ドラムのゲル]");
+
+        using var patch = PatchPickOption();
+
+        DummyPopupGenericTarget.PickOption(
+            Title: string.Empty,
+            Intro: "アナログの砂の鎖 \u00040 \t0 [6ドラムのゲル]",
+            Context: context,
+            PopupID: "InventoryActionMenu:19782");
+
+        Assert.That(
+            DummyPopupGenericTarget.LastPickOptionTitle,
+            Is.Empty);
+    }
+
+    [Test]
     public void SelectableTextMenuItemDisplayTranslation_TranslatesHotkeyLabelWithoutChangingMenuData()
     {
         WriteQudMenuItemDictionary(("get", "QudMenuItem", "拾う"));
@@ -1901,6 +1921,16 @@ public sealed class PopupPickOptionTranslationPatchTests
         public string simpleText;
         public string command;
         public string hotkey;
+    }
+
+    private sealed class DummyInventoryActionContext
+    {
+        public DummyInventoryActionContext(string displayName)
+        {
+            DisplayName = displayName;
+        }
+
+        public string DisplayName { get; }
     }
 
     private sealed class HarmonyPatchScope : IDisposable

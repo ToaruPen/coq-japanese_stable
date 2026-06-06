@@ -138,6 +138,9 @@ internal static class DescriptionTextTranslator
     private static readonly Regex DamageReflectionLinePattern =
         new Regex("^Reflects (?<amount>\\d+)% damage back at your attackers, rounded up\\.$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex SlipAwayNaturalMeleeAttacksLinePattern =
+        new Regex("^\\+(?<amount>\\d+)% chance to slip away from natural melee attacks$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     private static readonly Regex FightingLinePattern =
         new Regex("^Fighting (?:a |an |the )?(?<target>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
@@ -1340,6 +1343,16 @@ internal static class DescriptionTextTranslator
             return true;
         }
 
+        var slipAwayNaturalMeleeAttacksMatch = SlipAwayNaturalMeleeAttacksLinePattern.Match(source);
+        if (slipAwayNaturalMeleeAttacksMatch.Success)
+        {
+            translated = "自然近接攻撃からすり抜ける確率+"
+                + slipAwayNaturalMeleeAttacksMatch.Groups["amount"].Value
+                + "%";
+            DynamicTextObservability.RecordTransform(route, "Description.RuntimeObservedLine", source, translated);
+            return true;
+        }
+
         if (string.Equals(
                 source,
                 "Gigantic: This item has twice the energy capacity and is much heavier than usual.",
@@ -1691,6 +1704,7 @@ internal static class DescriptionTextTranslator
             "Knockdown" => "転倒",
             "being restrained" => "拘束",
             "Being restrained" => "拘束",
+            "being grabbed" => "つかまれること",
             "bleeding" => "出血",
             "disease" => "病気",
             "disease onset" => "病気の発症",

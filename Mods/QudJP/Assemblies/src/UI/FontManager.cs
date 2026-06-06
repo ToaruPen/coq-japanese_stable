@@ -192,6 +192,16 @@ public static class FontManager
 #if HAS_TMP
     internal static void ApplyToText(TMP_Text text)
     {
+        ApplyToText(text, refreshImmediately: true);
+    }
+
+    internal static void ApplyToTextWithoutImmediateRefresh(TMP_Text text)
+    {
+        ApplyToText(text, refreshImmediately: false);
+    }
+
+    private static void ApplyToText(TMP_Text text, bool refreshImmediately)
+    {
         if (text is null)
         {
             throw new ArgumentNullException(nameof(text));
@@ -209,7 +219,10 @@ public static class FontManager
             EnsureFallbackChain(text.font, fontAsset);
         }
 
-        RefreshAfterFontAssignment(text);
+        if (refreshImmediately)
+        {
+            RefreshAfterFontAssignment(text);
+        }
     }
 
     internal static void ForcePrimaryFont(TMP_Text text)

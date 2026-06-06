@@ -378,7 +378,7 @@ internal static class ColorRouteCatalog
                 new(ColorPreservingEntryPointKind.RouteContract, "DisplayNameRouteTranslation", "Translation-layer display-name capture preprocessing contract."),
             ["Mods/QudJP/Assemblies/src/Patches/GetDisplayNameRouteTranslator.cs:257:TranslatePreservingColors"] =
                 new(ColorPreservingEntryPointKind.RouteAdapter, "DisplayNameRouteTranslation", "Patch-layer implementation of the display-name route contract."),
-            ["Mods/QudJP/Assemblies/src/Patches/GetDisplayNameRouteTranslator.cs:2053:TranslateScopedExactPreservingColors"] =
+            ["Mods/QudJP/Assemblies/src/Patches/GetDisplayNameRouteTranslator.cs:2082:TranslateScopedExactPreservingColors"] =
                 new(ColorPreservingEntryPointKind.RouteAdapter, "DisplayNameRouteTranslation", "Display-name scoped exact helper keeps display route ownership."),
             ["Mods/QudJP/Assemblies/src/Patches/DisplayNameCaptureTranslator.cs:5:TranslatePreservingColors"] =
                 new(ColorPreservingEntryPointKind.RouteAdapter, "DisplayNameRouteTranslation", "Display-name capture adapter strips articles and direct markers before route translation."),
@@ -546,7 +546,7 @@ internal static class ColorRouteCatalog
             ["Mods/QudJP/Assemblies/src/Patches/GameManagerUpdateSelectedAbilityPatch.cs|GetDisplayNameRouteTranslator.TranslatePreservingColors("] = 1,
             ["Mods/QudJP/Assemblies/src/Patches/SifrahTokenDescriptionTranslationPatch.cs|ColorAwareTranslationComposer.TranslatePreservingColors("] = 2,
             ["Mods/QudJP/Assemblies/src/Patches/SifrahTokenDescriptionTranslationPatch.cs|GetDisplayNameRouteTranslator.TranslatePreservingColors("] = 1,
-            ["Mods/QudJP/Assemblies/src/Patches/GetDisplayNameRouteTranslator.cs|ColorAwareTranslationComposer.TranslatePreservingColors("] = 8,
+            ["Mods/QudJP/Assemblies/src/Patches/GetDisplayNameRouteTranslator.cs|ColorAwareTranslationComposer.TranslatePreservingColors("] = 10,
             ["Mods/QudJP/Assemblies/src/Patches/GeneratedDisplayNameOwnerTranslationPatch.cs|GetDisplayNameRouteTranslator.TranslatePreservingColors("] = 3,
             ["Mods/QudJP/Assemblies/src/Patches/GeneratedQuestTitleTranslator.cs|ColorAwareTranslationComposer.TranslatePreservingColors("] = 1,
             ["Mods/QudJP/Assemblies/src/Patches/HelpRowTranslationPatch.cs|ColorAwareTranslationComposer.TranslatePreservingColors("] = 1,
@@ -560,7 +560,7 @@ internal static class ColorRouteCatalog
             ["Mods/QudJP/Assemblies/src/Patches/InventoryFireEventTranslationPatch.cs|ColorAwareTranslationComposer.TranslatePreservingColors("] = 1,
             ["Mods/QudJP/Assemblies/src/Patches/InventoryFireEventTranslationPatch.cs|GetDisplayNameRouteTranslator.TranslatePreservingColors("] = 1,
             ["Mods/QudJP/Assemblies/src/Patches/InventoryLineTranslationPatch.cs|ColorAwareTranslationComposer.TranslatePreservingColors("] = 1,
-            ["Mods/QudJP/Assemblies/src/Patches/InventoryLineTranslationPatch.cs|GetDisplayNameRouteTranslator.TranslatePreservingColors("] = 1,
+            ["Mods/QudJP/Assemblies/src/Patches/InventoryLineTranslationPatch.cs|GetDisplayNameRouteTranslator.TranslatePreservingColors("] = 2,
             ["Mods/QudJP/Assemblies/src/Patches/JournalNotificationTranslator.cs|JournalPatternTranslator.Translate("] = 2,
             ["Mods/QudJP/Assemblies/src/Patches/JournalLineTranslationPatch.cs|ColorAwareTranslationComposer.TranslatePreservingColors("] = 1,
             ["Mods/QudJP/Assemblies/src/Patches/JournalTextTranslator.cs|ColorAwareTranslationComposer.TranslatePreservingColors("] = 1,

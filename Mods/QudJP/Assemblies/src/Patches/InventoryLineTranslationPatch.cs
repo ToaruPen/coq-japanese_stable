@@ -101,15 +101,16 @@ public static class InventoryLineTranslationPatch
     private static void ApplyItemTranslations(object instance, object data)
     {
         var go = GetMemberValue(data, "go");
-        var displayName = GetStringMemberValue(data, "displayName");
-        var producerContext = "InventoryLineData.displayName";
-        if (displayName is null)
+        var displayName = go is null
+            ? GetStringMemberValue(data, "displayName")
+            : GetStringMemberValue(go, "DisplayName");
+        var producerContext = go is null
+            ? "InventoryLineData.displayName"
+            : "InventoryLine.GameObjectDisplayName";
+        if (displayName is null && go is not null)
         {
-            var displayNameTarget = go ?? data;
-            displayName = GetStringMemberValue(displayNameTarget, "DisplayName");
-            producerContext = go is null
-                ? "InventoryLineData.DisplayName"
-                : "InventoryLine.GameObjectDisplayName";
+            displayName = GetStringMemberValue(data, "displayName");
+            producerContext = "InventoryLineData.displayName";
         }
         if (displayName is null) { displayName = string.Empty; }
         var itemRoute = ObservabilityHelpers.ComposeContext(Context, "field=text");
@@ -212,16 +213,27 @@ public static class InventoryLineTranslationPatch
             return translatedBookTitle;
         }
 
+        var sanitizedSource = MessageFrameTranslator.StripAllDirectTranslationMarkers(source);
         var translated = TranslateVisibleTextUncached(source, route, "InventoryLine.ItemName");
-        if (string.Equals(translated, source, StringComparison.Ordinal))
+        var displayNameRouteTranslation = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            sanitizedSource,
+            ObservabilityHelpers.ComposeContext(route, "segment=displayName"));
+        if (string.Equals(displayNameRouteTranslation, sanitizedSource, StringComparison.Ordinal)
+            && !string.Equals(translated, source, StringComparison.Ordinal))
         {
-            translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
-                MessageFrameTranslator.StripAllDirectTranslationMarkers(source),
+            displayNameRouteTranslation = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+                translated,
                 ObservabilityHelpers.ComposeContext(route, "segment=displayName"));
-            if (!string.Equals(translated, source, StringComparison.Ordinal))
+        }
+
+        if (!string.Equals(displayNameRouteTranslation, sanitizedSource, StringComparison.Ordinal))
+        {
+            if (!string.Equals(displayNameRouteTranslation, source, StringComparison.Ordinal))
             {
-                DynamicTextObservability.RecordTransform(route, "InventoryLine.ItemName", source, translated);
+                DynamicTextObservability.RecordTransform(route, "InventoryLine.ItemName", source, displayNameRouteTranslation);
             }
+
+            translated = displayNameRouteTranslation;
         }
 
         return MessageFrameTranslator.StripAllDirectTranslationMarkers(translated);

@@ -15,6 +15,15 @@ public sealed class IExamineEventProcessIdentifyTranslationPatchTests
     public void SetUp()
     {
         DummyPopupShow.Reset();
+        InventoryActionMenuCloseTimingObservability.ResetForTests();
+        IExamineEventProcessIdentifyTranslationPatch.SetInventoryScreenRefreshHooksForTests(null, null);
+    }
+
+    [TearDown]
+    public void TearDown()
+    {
+        InventoryActionMenuCloseTimingObservability.ResetForTests();
+        IExamineEventProcessIdentifyTranslationPatch.SetInventoryScreenRefreshHooksForTests(null, null);
     }
 
     [Test]
@@ -69,6 +78,103 @@ public sealed class IExamineEventProcessIdentifyTranslationPatchTests
         AssertPopupMessage(source, source);
     }
 
+    [Test]
+    public void ProcessIdentify_RefreshesInventoryScreen_WhenIdentifySucceeded()
+    {
+        var screen = new DummyInventoryStatusScreen();
+        IExamineEventProcessIdentifyTranslationPatch.SetInventoryScreenRefreshHooksForTests(
+            () => screen,
+            target => ((DummyInventoryStatusScreen)target).UpdateViewFromData());
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShow(harmony);
+            PatchOwner(harmony);
+
+            DummyIExamineEventProcessIdentifyTarget.PopupMessageToShow = "You realize strange artifact is a laser pistol!";
+            DummyIExamineEventProcessIdentifyTarget.Result = true;
+            DummyIExamineEventProcessIdentifyTarget.ProcessIdentify();
+
+            Assert.That(screen.RefreshCount, Is.EqualTo(1));
+        }
+        finally
+        {
+            DummyIExamineEventProcessIdentifyTarget.Reset();
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void ProcessIdentify_RefreshesInventoryScreen_WhenRecentInventoryActionMenuCancelWouldSuppressNormalRefresh()
+    {
+        var screen = new DummyInventoryStatusScreen();
+        IExamineEventProcessIdentifyTranslationPatch.SetInventoryScreenRefreshHooksForTests(
+            () => screen,
+            target => ((DummyInventoryStatusScreen)target).UpdateViewFromData());
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShow(harmony);
+            PatchOwner(harmony);
+            PatchInventoryScreenRefresh(harmony);
+
+            var menuScope = InventoryActionMenuCloseTimingObservability.BeginMenu(actionCount: 1);
+            InventoryActionMenuCloseTimingObservability.EndMenu(menuScope, canceled: true);
+            Assert.That(
+                InventoryActionMenuCloseTimingObservability.ShouldSuppressInventoryRefreshAfterCancelForTests(),
+                Is.True);
+
+            DummyIExamineEventProcessIdentifyTarget.PopupMessageToShow = "You realize strange artifact is a laser pistol!";
+            DummyIExamineEventProcessIdentifyTarget.Result = true;
+            DummyIExamineEventProcessIdentifyTarget.ProcessIdentify();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(screen.RefreshCount, Is.EqualTo(1));
+                Assert.That(
+                    InventoryActionMenuCloseTimingObservability.ShouldSuppressInventoryRefreshAfterCancelForTests(),
+                    Is.True);
+            });
+        }
+        finally
+        {
+            DummyIExamineEventProcessIdentifyTarget.Reset();
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void ProcessIdentify_DoesNotRefreshInventoryScreen_WhenIdentifyDidNotChangeState()
+    {
+        var screen = new DummyInventoryStatusScreen();
+        IExamineEventProcessIdentifyTranslationPatch.SetInventoryScreenRefreshHooksForTests(
+            () => screen,
+            target => ((DummyInventoryStatusScreen)target).UpdateViewFromData());
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchPopupShow(harmony);
+            PatchOwner(harmony);
+
+            DummyIExamineEventProcessIdentifyTarget.PopupMessageToShow = string.Empty;
+            DummyIExamineEventProcessIdentifyTarget.Result = false;
+            DummyIExamineEventProcessIdentifyTarget.ProcessIdentify();
+
+            Assert.That(screen.RefreshCount, Is.Zero);
+        }
+        finally
+        {
+            DummyIExamineEventProcessIdentifyTarget.Reset();
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
     private static void AssertPopupMessage(string source, string expected)
     {
         var harmonyId = CreateHarmonyId();
@@ -102,7 +208,22 @@ public sealed class IExamineEventProcessIdentifyTranslationPatchTests
         harmony.Patch(
             original: RequireMethod(typeof(DummyIExamineEventProcessIdentifyTarget), nameof(DummyIExamineEventProcessIdentifyTarget.ProcessIdentify)),
             prefix: new HarmonyMethod(RequireMethod(typeof(IExamineEventProcessIdentifyTranslationPatch), nameof(IExamineEventProcessIdentifyTranslationPatch.Prefix))),
+            postfix: new HarmonyMethod(RequireMethod(typeof(IExamineEventProcessIdentifyTranslationPatch), nameof(IExamineEventProcessIdentifyTranslationPatch.Postfix), typeof(bool))),
             finalizer: new HarmonyMethod(RequireMethod(typeof(IExamineEventProcessIdentifyTranslationPatch), nameof(IExamineEventProcessIdentifyTranslationPatch.Finalizer), typeof(Exception))));
+    }
+
+    private static void PatchInventoryScreenRefresh(Harmony harmony)
+    {
+        harmony.Patch(
+            original: RequireMethod(typeof(DummyInventoryStatusScreen), nameof(DummyInventoryStatusScreen.UpdateViewFromData)),
+            prefix: new HarmonyMethod(RequireMethod(
+                typeof(InventoryActionMenuUpdateViewTimingPatch),
+                nameof(InventoryActionMenuUpdateViewTimingPatch.Prefix),
+                typeof(InventoryActionMenuCloseTimingObservability.TimingScope).MakeByRefType())),
+            postfix: new HarmonyMethod(RequireMethod(
+                typeof(InventoryActionMenuUpdateViewTimingPatch),
+                nameof(InventoryActionMenuUpdateViewTimingPatch.Postfix),
+                typeof(InventoryActionMenuCloseTimingObservability.TimingScope))));
     }
 
     private static MethodInfo RequireMethod(Type type, string methodName, params Type[] parameterTypes)
@@ -126,16 +247,29 @@ public sealed class IExamineEventProcessIdentifyTranslationPatchTests
     {
         public static string PopupMessageToShow { get; set; } = string.Empty;
 
+        public static bool Result { get; set; } = true;
+
         [MethodImpl(MethodImplOptions.NoInlining)]
         public static bool ProcessIdentify()
         {
             DummyPopupShow.Show(PopupMessageToShow);
-            return true;
+            return Result;
         }
 
         public static void Reset()
         {
             PopupMessageToShow = string.Empty;
+            Result = true;
+        }
+    }
+
+    private sealed class DummyInventoryStatusScreen
+    {
+        public int RefreshCount { get; private set; }
+
+        public void UpdateViewFromData()
+        {
+            RefreshCount++;
         }
     }
 }

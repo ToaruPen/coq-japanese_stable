@@ -397,6 +397,11 @@ internal static class GetDisplayNameRouteTranslator
             return earlyCompactWeaponStatsTranslation;
         }
 
+        if (TryTranslateArmorStatsDisplayNameSuffixWhenBaseTranslates(stripped, spans, route, out var earlyArmorStatsTranslation))
+        {
+            return earlyArmorStatsTranslation;
+        }
+
         if (TryTranslateLeadingZeroWidthMarkupPrefix(source!, route, out var zeroWidthPrefixTranslation))
         {
             return zeroWidthPrefixTranslation;
@@ -888,7 +893,7 @@ internal static class GetDisplayNameRouteTranslator
         var baseSource = match.Groups["base"].Value;
         var stateSource = match.Groups["state"].Value;
         var translatedBase = TranslateDisplayNameFragment(baseSource, route);
-        var translatedState = TranslateDisplayNameState(stateSource, route);
+        var translatedState = TranslateDisplayNameStateOrNestedDisplayName(stateSource, route);
 
         if (string.Equals(translatedBase, baseSource, StringComparison.Ordinal)
             && string.Equals(translatedState, stateSource, StringComparison.Ordinal))
@@ -918,7 +923,7 @@ internal static class GetDisplayNameRouteTranslator
         var baseGroup = match.Groups["base"];
         var stateGroup = match.Groups["state"];
         var translatedBase = RestoreWholeSlice(TranslateDisplayNameFragment(baseGroup.Value, route), spans, baseGroup);
-        var translatedState = TranslateDisplayNameStatePreservingColors(stateGroup, spans, route);
+        var translatedState = TranslateDisplayNameStateOrNestedDisplayNamePreservingColors(stateGroup, spans, route);
 
         if (string.Equals(translatedBase, baseGroup.Value, StringComparison.Ordinal)
             && string.Equals(translatedState, stateGroup.Value, StringComparison.Ordinal))
@@ -1180,6 +1185,30 @@ internal static class GetDisplayNameRouteTranslator
             CompactWeaponStatsDisplayNameSuffixPattern,
             "DisplayName.CompactWeaponStatsSuffix",
             out translated);
+    }
+
+    private static bool TryTranslateArmorStatsDisplayNameSuffixWhenBaseTranslates(
+        string source,
+        IReadOnlyList<ColorSpan> spans,
+        string route,
+        out string translated)
+    {
+        var match = ArmorStatsDisplayNameSuffixPattern.Match(source);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        var baseGroup = match.Groups["base"];
+        var translatedBase = TranslateDisplayNameFragmentPreservingColors(baseGroup.Value, spans, baseGroup, route);
+        if (string.Equals(ColorAwareTranslationComposer.GetVisibleText(translatedBase), baseGroup.Value, StringComparison.Ordinal))
+        {
+            translated = source;
+            return false;
+        }
+
+        return TryTranslateArmorStatsDisplayNameSuffix(source, spans, route, out translated);
     }
 
     private static bool TryTranslateExactBaseCompactWeaponStatsDisplayNameSuffix(
@@ -4216,6 +4245,54 @@ internal static class GetDisplayNameRouteTranslator
         return source;
     }
 
+    private static string TranslateDisplayNameStateOrNestedDisplayName(string source, string route)
+    {
+        if (TryTranslateLoadedEnergyCellDisplayNameState(source, route, out var loadedCellState))
+        {
+            return loadedCellState;
+        }
+
+        if (LooksLikeNestedDisplayNameState(source))
+        {
+            var translatedNested = TranslatePreservingColors(source, route);
+            if (!string.Equals(translatedNested, source, StringComparison.Ordinal))
+            {
+                return translatedNested;
+            }
+        }
+
+        return TranslateDisplayNameState(source, route);
+    }
+
+    private static string TranslateDisplayNameStateOrNestedDisplayNamePreservingColors(
+        Group stateGroup,
+        IReadOnlyList<ColorSpan> spans,
+        string route)
+    {
+        if (TryTranslateLoadedEnergyCellDisplayNameState(stateGroup, spans, route, out var loadedCellState))
+        {
+            return loadedCellState;
+        }
+
+        if (LooksLikeNestedDisplayNameState(stateGroup.Value))
+        {
+            var source = RestoreVisibleSlice(stateGroup, spans);
+            var translatedNested = TranslatePreservingColors(source, route);
+            if (!string.Equals(translatedNested, source, StringComparison.Ordinal))
+            {
+                return translatedNested;
+            }
+        }
+
+        return TranslateDisplayNameStatePreservingColors(stateGroup, spans, route);
+    }
+
+    private static bool LooksLikeNestedDisplayNameState(string source)
+    {
+        return AngleCodeDisplayNameSuffixPattern.IsMatch(source)
+            || ParenthesizedDisplayNameSuffixPattern.IsMatch(source);
+    }
+
     private static string TranslateDisplayNameStatePreservingColors(
         Group stateGroup,
         IReadOnlyList<ColorSpan> spans,
@@ -4271,6 +4348,49 @@ internal static class GetDisplayNameRouteTranslator
 
         translated = translatedCell + " " + translatedChargeWithParens + " " + codeSource;
         return !string.Equals(translated, stateGroup.Value, StringComparison.Ordinal);
+    }
+
+    private static bool TryTranslateLoadedEnergyCellDisplayNameState(
+        string source,
+        string route,
+        out string translated)
+    {
+        var match = LoadedEnergyCellDisplayNameStatePattern.Match(source);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        var translatedCell = ColorAwareTranslationComposer.TranslatePreservingColors(
+            match.Groups["cell"].Value,
+            visible => TranslateDisplayNameFragment(visible, route));
+        translatedCell = ColorizeLoadedEnergyCellNameIfBare(translatedCell);
+
+        var translatedChargeWithParens = ColorAwareTranslationComposer.TranslatePreservingColors(
+            match.Groups["chargeWithParens"].Value,
+            visible =>
+            {
+                if (visible.Length < 2 || visible[0] != '(' || visible[visible.Length - 1] != ')')
+                {
+                    return visible;
+                }
+
+                var charge = visible.Substring(1, visible.Length - 2);
+                if (TryStripDirectTranslationMarkerFromChargeStatus(charge, out var strippedCharge))
+                {
+                    charge = strippedCharge;
+                }
+
+                return EnergyStorageChargeStatusTranslationPatch.TryTranslateChargeStatus(charge, out var translatedCharge)
+                    ? "(" + translatedCharge + ")"
+                    : "(" + charge + ")";
+            });
+        translatedChargeWithParens = ColorizeLoadedEnergyCellChargeIfBare(translatedChargeWithParens);
+
+        var codeSource = ColorizeRawAngleCodeSuffix(match.Groups["code"].Value, semanticColors: true);
+        translated = translatedCell + " " + translatedChargeWithParens + " " + codeSource;
+        return !string.Equals(translated, source, StringComparison.Ordinal);
     }
 
     private static string ColorizeLoadedEnergyCellNameIfBare(string source)
@@ -4879,13 +4999,21 @@ internal static class GetDisplayNameRouteTranslator
         Group stateGroup,
         IReadOnlyList<ColorSpan> spans)
     {
+        var translated = "[" + translatedState + "]";
         if (stateGroup.Index <= 0)
         {
-            return "[" + translatedState + "]";
+            return translated;
+        }
+
+        var sourceVisible = "[" + stateGroup.Value + "]";
+        if (!ColorAwareTranslationComposer.HasColorMarkup(translatedState)
+            && string.Equals(ColorAwareTranslationComposer.GetVisibleText(translated), sourceVisible, StringComparison.Ordinal))
+        {
+            return RestoreVisibleSlice(sourceVisible, spans, stateGroup.Index - 1, stateGroup.Length + 2);
         }
 
         return ColorAwareTranslationComposer.RestoreWholeSliceBoundaryWrappersPreservingTranslatedOwnership(
-            "[" + translatedState + "]",
+            translated,
             spans,
             stateGroup.Index - 1,
             stateGroup.Length + 2);
@@ -4896,8 +5024,15 @@ internal static class GetDisplayNameRouteTranslator
         Group bracketGroup,
         IReadOnlyList<ColorSpan> spans)
     {
+        var translated = "[" + translatedState + "]";
+        if (!ColorAwareTranslationComposer.HasColorMarkup(translatedState)
+            && string.Equals(ColorAwareTranslationComposer.GetVisibleText(translated), bracketGroup.Value, StringComparison.Ordinal))
+        {
+            return RestoreVisibleSlice(bracketGroup, spans);
+        }
+
         return ColorAwareTranslationComposer.RestoreWholeSliceBoundaryWrappersPreservingTranslatedOwnership(
-            "[" + translatedState + "]",
+            translated,
             spans,
             bracketGroup.Index,
             bracketGroup.Length);

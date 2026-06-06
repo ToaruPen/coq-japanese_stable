@@ -22,6 +22,9 @@ internal static class InventoryActionMenuCloseTimingObservability
     private static long lastCancelTimestamp;
     private static bool suppressInventoryRefreshUntilPopupHidden;
 
+    [ThreadStatic]
+    private static int inventoryRefreshSuppressionBypassDepth;
+
     internal static TimingScope BeginMenu(int actionCount)
     {
         var timestamp = Stopwatch.GetTimestamp();
@@ -136,6 +139,11 @@ internal static class InventoryActionMenuCloseTimingObservability
 
     internal static bool ShouldSuppressInventoryRefreshAfterCancel()
     {
+        if (inventoryRefreshSuppressionBypassDepth > 0)
+        {
+            return false;
+        }
+
         lock (SyncRoot)
         {
             if (!suppressInventoryRefreshUntilPopupHidden || lastCancelSequence <= 0)
@@ -145,6 +153,19 @@ internal static class InventoryActionMenuCloseTimingObservability
 
             return ElapsedBetween(lastCancelTimestamp, Stopwatch.GetTimestamp()).TotalMilliseconds
                 <= RecentCancelWindowMilliseconds;
+        }
+    }
+
+    internal static void RunWithInventoryRefreshSuppressionBypassed(Action action)
+    {
+        inventoryRefreshSuppressionBypassDepth++;
+        try
+        {
+            action();
+        }
+        finally
+        {
+            inventoryRefreshSuppressionBypassDepth--;
         }
     }
 

@@ -332,7 +332,7 @@ public sealed class InventoryLineRenderProbePatchTests
     }
 
     [NUnit.Framework.Test]
-    public void InventoryLineFontFixer_TreatsZeroCharactersAsRefreshFailure()
+    public void InventoryLineFontFixer_TreatsNonRenderableTextAsRefreshFailure()
     {
         var sourcePath = Path.Combine(
             TestProjectPaths.GetRepositoryRoot(),
@@ -346,7 +346,10 @@ public sealed class InventoryLineRenderProbePatchTests
 
         NUnit.Framework.Assert.That(
             source,
-            NUnit.Framework.Does.Contain("var refreshed = tmp.textInfo.characterCount > 0;"));
+            NUnit.Framework.Does.Contain("var refreshed = HasLiveRenderableText(tmp);"));
+        NUnit.Framework.Assert.That(
+            source,
+            NUnit.Framework.Does.Contain("tmp.textInfo.characterCount <= 0"));
         NUnit.Framework.Assert.That(
             source,
             NUnit.Framework.Does.Contain("return refreshed;"));

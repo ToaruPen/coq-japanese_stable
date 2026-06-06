@@ -953,6 +953,16 @@ public sealed class TargetMethodResolutionTests
         "System.Boolean",
         "System.Boolean",
     })]
+    [TestCase(typeof(ExaminerMakeUnderstandingInventoryRefreshPatch), new[]
+    {
+        "System.Boolean",
+        "System.Boolean",
+    })]
+    [TestCase(typeof(ExaminerResultUnderstandingInventoryRefreshPatch), new[]
+    {
+        "XRL.World.GameObject",
+        "XRL.World.GameObject|System.Int32",
+    })]
     [TestCase(typeof(ItemNamingTranslationPatch), new[]
     {
         "XRL.World.GameObject|XRL.World.GameObject|XRL.World.GameObject|System.String|System.String|System.Int32|System.Int32|System.Int32|System.Int32|System.Boolean",

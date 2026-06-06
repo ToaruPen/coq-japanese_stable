@@ -253,6 +253,7 @@ public sealed class DescriptionTextTranslatorTests
     [TestCase("-4 to saves vs. forced movement, knockdown, Being restrained", "強制移動・転倒・拘束に対するセーヴ-4")]
     [TestCase("-4 to saves vs. forced movement, knockdown, and bleeding", "強制移動・転倒・出血に対するセーヴ-4")]
     [TestCase("+5 to saves vs. being restrained", "拘束に対するセーヴ+5")]
+    [TestCase("+15 to saves vs. being grabbed", "つかまれることに対するセーヴ+15")]
     [TestCase("Being restrained", "拘束")]
     [TestCase("+2 DV while occupying the same tile as foliage", "植物と同じタイルにいる間DV+2")]
     [TestCase("At the center of a particularly thick copse, the vegetation clears. Flower-bedecked huts huddle in the clearing within, surrounded by phalanxes of tidy watervine rows and carefully-tended lah.", "ひときわ密な雑木林の中心で植生が開けている。花で飾られた小屋がその空き地に寄り集まり、整然としたウォーターヴァインの畝と丹念に世話されたラーの列に囲まれている。")]
@@ -315,6 +316,7 @@ public sealed class DescriptionTextTranslatorTests
     [TestCase("Integrated power systems: When equipped, you can power this device via Electrical Generation.", "統合電力システム: 装備中、発電でこの装置に電力を供給できる。")]
     [TestCase("Fitted with cleats: +2 to saves vs. forced movement、knockdown、とbeing restrained", "クリート付き: 強制移動・転倒・拘束に対するセーヴ+2")]
     [TestCase("Fitted with cleats: +2 to saves vs. unknown target", "Fitted with cleats: +2 to saves vs. unknown target")]
+    [TestCase("+5% chance to slip away from natural melee attacks", "自然近接攻撃からすり抜ける確率+5%")]
     public void TranslateShortDescription_TranslatesRuntimeObservedDescriptionLines(
         string source,
         string expected)
@@ -324,6 +326,21 @@ public sealed class DescriptionTextTranslatorTests
             "DescriptionTextTranslatorTests");
 
         Assert.That(translated, Is.EqualTo(expected));
+    }
+
+    [Test]
+    public void TranslateLongDescription_TranslatesRuntimeObservedTooltipRulesPreservingColorWrappers()
+    {
+        var translated = DescriptionTextTranslator.TranslateLongDescription(
+            "{{rules|+15 to saves vs. being grabbed}}\n" +
+            "{{rules|+5% chance to slip away from natural melee attacks}}",
+            "DescriptionTextTranslatorTests");
+
+        Assert.That(
+            translated,
+            Is.EqualTo(
+                "{{rules|つかまれることに対するセーヴ+15}}\n" +
+                "{{rules|自然近接攻撃からすり抜ける確率+5%}}"));
     }
 
     [Test]

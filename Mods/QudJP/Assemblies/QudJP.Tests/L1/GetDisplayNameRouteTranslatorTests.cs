@@ -878,6 +878,36 @@ public sealed class GetDisplayNameRouteTranslatorTests
     }
 
     [Test]
+    public void TranslatePreservingColors_ColorizesBareLoadedCellInsideLocalizedBracketSuffix()
+    {
+        UseProductionDictionaries();
+
+        const string source = "高級工具セット [ケムセル (残量多) <BD1>]";
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            source,
+            nameof(InventoryLineTranslationPatch));
+
+        Assert.That(
+            translated,
+            Is.EqualTo("{{C|高級工具セット}} [{{c|ケムセル}} {{y|({{G|残量多}})}} {{y|<{{G|B}}{{C|D}}{{r|1}}>}}]"));
+    }
+
+    [Test]
+    public void TranslatePreservingColors_ColorizesBareLoadedCellInsideColoredLocalizedBracketSuffix()
+    {
+        UseProductionDictionaries();
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            "{{C|高級工具セット}} [ケムセル (残量多) <BD1>]",
+            nameof(InventoryLineTranslationPatch));
+
+        Assert.That(
+            translated,
+            Is.EqualTo("{{C|高級工具セット}} [{{c|ケムセル}} {{y|({{G|残量多}})}} {{y|<{{G|B}}{{C|D}}{{r|1}}>}}]"));
+    }
+
+    [Test]
     public void TranslatePreservingColors_TranslatesNestedLoadedCellLiquidAndStateInsideBracketSuffix()
     {
         WriteDictionaryFile(
@@ -1600,6 +1630,31 @@ public sealed class GetDisplayNameRouteTranslatorTests
                 ColorShapeCaptureObservability.Capture(
                     nameof(GetDisplayNameRouteTranslator),
                     nameof(TranslatePreservingColors_TranslatesBaetylRelicNameWhilePreservingColorAndSuffix),
+                    source,
+                    translated).MarkupSemanticStatus,
+                Is.EqualTo("clean"));
+        });
+    }
+
+    [Test]
+    public void TranslatePreservingColors_TranslatesRuntimeBaetylRelicNameWithSequenceColorAndSuffixWrappers()
+    {
+        WriteDictionaryFile(
+            "Scoped/historyspice-common.ja.json",
+            ("analog", "アナログの"));
+        const string source = "{{Y-Y-Y-G-Y-Y-g-Y sequence|Chain of the Analog Sand}} {{b|\u0004}}0 {{K|\t}}0 {{y|[{{rules|6}}ドラムの{{Y|ゲル}}]}}";
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            source,
+            nameof(GetDisplayNamePatch));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.EqualTo("{{Y-Y-Y-G-Y-Y-g-Y sequence|アナログの砂の鎖}} {{b|\u0004}}0 {{K|\t}}0 {{y|[{{rules|6}}ドラムの{{Y|ゲル}}]}}"));
+            Assert.That(
+                ColorShapeCaptureObservability.Capture(
+                    nameof(GetDisplayNameRouteTranslator),
+                    nameof(TranslatePreservingColors_TranslatesRuntimeBaetylRelicNameWithSequenceColorAndSuffixWrappers),
                     source,
                     translated).MarkupSemanticStatus,
                 Is.EqualTo("clean"));

@@ -3,6 +3,7 @@ using System.IO;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
+using HarmonyLib;
 using QudJP.Patches;
 using QudJP.Tests.DummyTargets;
 
@@ -28,6 +29,8 @@ public sealed class ExaminerTranslationPatchTests
         DynamicTextObservability.ResetForTests();
         SinkObservation.ResetForTests();
         DummyPopupShow.Reset();
+        InventoryActionMenuCloseTimingObservability.ResetForTests();
+        InventoryScreenRefreshAfterIdentify.SetInventoryScreenRefreshHooksForTests(null, null);
     }
 
     [TearDown]
@@ -36,6 +39,8 @@ public sealed class ExaminerTranslationPatchTests
         Translator.ResetForTests();
         DynamicTextObservability.ResetForTests();
         SinkObservation.ResetForTests();
+        InventoryActionMenuCloseTimingObservability.ResetForTests();
+        InventoryScreenRefreshAfterIdentify.SetInventoryScreenRefreshHooksForTests(null, null);
 
         if (Directory.Exists(tempDirectory))
         {
@@ -224,6 +229,159 @@ public sealed class ExaminerTranslationPatchTests
                     Assert.That(ExaminerHitCount(detail), Is.EqualTo(1));
                 });
             });
+    }
+
+    [Test]
+    public void MakeUnderstood_RefreshesInventoryScreen_WhenUnderstandingChanged()
+    {
+        var screen = new DummyInventoryStatusScreen();
+        InventoryScreenRefreshAfterIdentify.SetInventoryScreenRefreshHooksForTests(
+            () => screen,
+            target => ((DummyInventoryStatusScreen)target).UpdateViewFromData());
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchMakeUnderstandingRefresh(harmony);
+
+            var target = new DummyExaminerMakeUnderstandingTarget
+            {
+                PopupMessageToShow = "You identify your チューブ as a {{K|empty}} injector.",
+                Result = true,
+            };
+
+            target.MakeUnderstood(showMessage: true);
+
+            Assert.That(screen.RefreshCount, Is.EqualTo(1));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void MakeUnderstood_DoesNotRefreshInventoryScreen_WhenUnderstandingDidNotChange()
+    {
+        var screen = new DummyInventoryStatusScreen();
+        InventoryScreenRefreshAfterIdentify.SetInventoryScreenRefreshHooksForTests(
+            () => screen,
+            target => ((DummyInventoryStatusScreen)target).UpdateViewFromData());
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchMakeUnderstandingRefresh(harmony);
+
+            var target = new DummyExaminerMakeUnderstandingTarget
+            {
+                PopupMessageToShow = "You identify your チューブ as a {{K|empty}} injector.",
+                Result = false,
+            };
+
+            target.MakeUnderstood(showMessage: true);
+
+            Assert.That(screen.RefreshCount, Is.Zero);
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void ResultPartialSuccess_RefreshesInventoryScreen_WhenExaminationAdvancesUnderstanding()
+    {
+        var screen = new DummyInventoryStatusScreen();
+        InventoryScreenRefreshAfterIdentify.SetInventoryScreenRefreshHooksForTests(
+            () => screen,
+            target => ((DummyInventoryStatusScreen)target).UpdateViewFromData());
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchResultUnderstandingRefresh(harmony);
+
+            var target = new DummyExaminerProducerTarget
+            {
+                PopupMessageToShow = "You identify your チューブ as a {{K|empty}} injector.",
+            };
+
+            target.ResultPartialSuccess(new DummyGameObject());
+
+            Assert.That(screen.RefreshCount, Is.EqualTo(1));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void ResultPartialSuccess_RefreshesInventoryScreen_WhenPartialUnderstandingChangesDisplayedName()
+    {
+        var screen = new DummyInventoryStatusScreen();
+        InventoryScreenRefreshAfterIdentify.SetInventoryScreenRefreshHooksForTests(
+            () => screen,
+            target => ((DummyInventoryStatusScreen)target).UpdateViewFromData());
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            PatchResultUnderstandingRefresh(harmony);
+
+            var target = new DummyExaminerProducerTarget
+            {
+                PopupMessageToShow = "You make some progress understanding the {{Y|strange artifact}}. It seems to be an injector.",
+            };
+
+            target.ResultPartialSuccess(new DummyGameObject());
+
+            Assert.That(screen.RefreshCount, Is.EqualTo(1));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void InventoryScreenRefresh_ResolvesInstanceFromInheritedGenericSingleton()
+    {
+        try
+        {
+            DummyGenericInventoryStatusScreen.instance = new DummyGenericInventoryStatusScreen();
+
+            var resolved = InventoryScreenRefreshAfterIdentify.GetStaticInstanceForTests(
+                typeof(DummyGenericInventoryStatusScreen));
+
+            Assert.That(resolved, Is.SameAs(DummyGenericInventoryStatusScreen.instance));
+        }
+        finally
+        {
+            DummyGenericInventoryStatusScreen.instance = null;
+        }
+    }
+
+    [Test]
+    public void InventoryScreenRefresh_ResolvesInventoryScreenFromStatusScreensParent_WhenDirectSingletonIsMissing()
+    {
+        var screen = new DummyInventoryStatusScreen();
+        var parent = new DummyStatusScreensScreen(new object[]
+        {
+            new DummyTransform(new object()),
+            new DummyTransform(screen),
+        });
+
+        var resolved = InventoryScreenRefreshAfterIdentify.GetInventoryScreenFromStatusScreensForTests(
+            parent,
+            typeof(DummyInventoryStatusScreen));
+
+        Assert.That(resolved, Is.SameAs(screen));
     }
 
     [Test]
@@ -572,6 +730,30 @@ public sealed class ExaminerTranslationPatchTests
         return OwnerPopupRouteTestHarness.RouteHitCount(typeof(ExaminerTranslationPatch), detail);
     }
 
+    private static void PatchMakeUnderstandingRefresh(Harmony harmony)
+    {
+        harmony.Patch(
+            original: RequireMakeUnderstandingOwnerMethod(nameof(DummyExaminerMakeUnderstandingTarget.MakeUnderstood)),
+            postfix: new HarmonyMethod(OwnerPopupRouteTestHarness.RequireMethod(
+                typeof(ExaminerMakeUnderstandingInventoryRefreshPatch),
+                nameof(ExaminerMakeUnderstandingInventoryRefreshPatch.Postfix),
+                typeof(bool))));
+    }
+
+    private static void PatchResultUnderstandingRefresh(Harmony harmony)
+    {
+        harmony.Patch(
+            original: RequireOwnerMethod(nameof(DummyExaminerProducerTarget.ResultPartialSuccess)),
+            postfix: new HarmonyMethod(OwnerPopupRouteTestHarness.RequireMethod(
+                typeof(ExaminerResultUnderstandingInventoryRefreshPatch),
+                nameof(ExaminerResultUnderstandingInventoryRefreshPatch.Postfix))));
+    }
+
+    private static string CreateHarmonyId()
+    {
+        return $"qudjp.tests.{Guid.NewGuid():N}";
+    }
+
     private static string? LastPopupMessage(string popupMethod)
     {
         return popupMethod == nameof(DummyPopupShow.ShowYesNoCancel)
@@ -627,6 +809,8 @@ public sealed class ExaminerTranslationPatchTests
     {
         public string PopupMessageToShow { get; set; } = string.Empty;
 
+        public bool Result { get; set; } = true;
+
         [MethodImpl(MethodImplOptions.NoInlining)]
         public bool MakeUnderstood(bool showMessage)
         {
@@ -646,7 +830,61 @@ public sealed class ExaminerTranslationPatchTests
                 DummyPopupShow.Show(PopupMessageToShow);
             }
 
-            return true;
+            return Result;
+        }
+    }
+
+    private sealed class DummyInventoryStatusScreen
+    {
+        public int RefreshCount { get; private set; }
+
+        public void UpdateViewFromData()
+        {
+            RefreshCount++;
+        }
+    }
+
+    private class DummySingletonWindowBase<T>
+        where T : class
+    {
+        protected DummySingletonWindowBase()
+        {
+        }
+
+        public static T? instance;
+    }
+
+    private sealed class DummyGenericInventoryStatusScreen
+        : DummySingletonWindowBase<DummyGenericInventoryStatusScreen>
+    {
+    }
+
+    private sealed class DummyStatusScreensScreen
+    {
+        public DummyStatusScreensScreen(object[] screens)
+        {
+            Screens = screens;
+        }
+
+        public object[] Screens { get; }
+    }
+
+    private sealed class DummyTransform
+    {
+        private readonly object component;
+
+        public DummyTransform(object component)
+        {
+            this.component = component;
+        }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage(
+            "Major Code Smell",
+            "S1144:Unused private types or members",
+            Justification = "Invoked through reflection to mirror Unity Transform.GetComponent(Type).")]
+        public object? GetComponent(Type type)
+        {
+            return type.IsInstanceOfType(component) ? component : null;
         }
     }
 }

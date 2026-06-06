@@ -85,16 +85,23 @@ public static class PopupPickOptionTranslationPatch
         return method;
     }
 
-    public static void Prefix(ref string __0, ref string? __1, ref string __2, ref IReadOnlyList<string>? __4, object? __7, string? __21)
+    public static void Prefix(
+        ref string __0,
+        ref string? __1,
+        ref string __2,
+        ref IReadOnlyList<string>? __4,
+        object? __7,
+        string? __21)
     {
         try
         {
             var originalTitle = __0;
+            preservePopupOptionMenuData = ShouldPreserveInventoryActionMenuData(__21);
+            translateDynamicQuestRewardOptions = ShouldTranslateDynamicQuestRewardOptions(originalTitle);
+
             __0 = TranslatePopupText(__0)!;
             __1 = TranslatePopupText(__1);
             __2 = TranslatePopupText(__2)!;
-            preservePopupOptionMenuData = ShouldPreserveInventoryActionMenuData(__21);
-            translateDynamicQuestRewardOptions = ShouldTranslateDynamicQuestRewardOptions(originalTitle);
             if (preservePopupOptionMenuData)
             {
                 return;
