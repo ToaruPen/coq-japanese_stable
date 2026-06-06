@@ -23,7 +23,7 @@ internal static class ExaminerMakeUnderstandingInventoryRefreshPatch
 
         foreach (var methodName in new[] { "MakeUnderstood", "MakePartiallyUnderstood" })
         {
-            var method = AccessTools.Method(examinerType, methodName, [typeof(bool)]);
+            var method = AccessTools.Method(examinerType, methodName, new[] { typeof(bool) });
             if (method is not null)
             {
                 yield return method;

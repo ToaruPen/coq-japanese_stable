@@ -22,7 +22,7 @@ internal static class ExaminerResultUnderstandingInventoryRefreshPatch
             yield break;
         }
 
-        var resultSuccess = AccessTools.Method(examinerType, "ResultSuccess", [gameObjectType]);
+        var resultSuccess = AccessTools.Method(examinerType, "ResultSuccess", new[] { gameObjectType });
         if (resultSuccess is not null)
         {
             yield return resultSuccess;
@@ -32,7 +32,7 @@ internal static class ExaminerResultUnderstandingInventoryRefreshPatch
             Trace.TraceError("QudJP: {0}.ResultSuccess(GameObject) target not found.", Context);
         }
 
-        var resultPartialSuccess = AccessTools.Method(examinerType, "ResultPartialSuccess", [gameObjectType, typeof(int)]);
+        var resultPartialSuccess = AccessTools.Method(examinerType, "ResultPartialSuccess", new[] { gameObjectType, typeof(int) });
         if (resultPartialSuccess is not null)
         {
             yield return resultPartialSuccess;

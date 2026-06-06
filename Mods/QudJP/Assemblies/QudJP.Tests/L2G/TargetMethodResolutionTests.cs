@@ -955,13 +955,13 @@ public sealed class TargetMethodResolutionTests
     })]
     [TestCase(typeof(ExaminerMakeUnderstandingInventoryRefreshPatch), new[]
     {
-        "System.Boolean",
-        "System.Boolean",
+        "XRL.World.Parts.Examiner|MakeUnderstood|System.Boolean|System.Boolean",
+        "XRL.World.Parts.Examiner|MakePartiallyUnderstood|System.Boolean|System.Boolean",
     })]
     [TestCase(typeof(ExaminerResultUnderstandingInventoryRefreshPatch), new[]
     {
-        "XRL.World.GameObject",
-        "XRL.World.GameObject|System.Int32",
+        "XRL.World.Parts.Examiner|ResultSuccess|System.Void|XRL.World.GameObject",
+        "XRL.World.Parts.Examiner|ResultPartialSuccess|System.Void|XRL.World.GameObject|System.Int32",
     })]
     [TestCase(typeof(ItemNamingTranslationPatch), new[]
     {
@@ -1058,6 +1058,7 @@ public sealed class TargetMethodResolutionTests
         var result = targetMethodsMethod!.Invoke(null, null) as System.Collections.IEnumerable;
         Assert.That(result, Is.Not.Null, $"TargetMethods returned null for {patchType.FullName}");
 
+        var expectFullMethodSignatures = expectedSignatures.Any(IsFullMethodSignatureExpectation);
         var actualSignatures = new List<string>();
         foreach (var item in result!)
         {
@@ -1066,11 +1067,19 @@ public sealed class TargetMethodResolutionTests
                 continue;
             }
 
-            var signature = string.Join("|", Array.ConvertAll(methodInfo.GetParameters(), static parameter => NormalizeTypeName(parameter.ParameterType.FullName)));
+            var signature = expectFullMethodSignatures
+                ? FullMethodSignature(methodInfo)
+                : string.Join("|", Array.ConvertAll(methodInfo.GetParameters(), static parameter => NormalizeTypeName(parameter.ParameterType.FullName)));
             actualSignatures.Add(signature);
         }
 
         Assert.That(actualSignatures, Is.EquivalentTo(expectedSignatures));
+    }
+
+    private static bool IsFullMethodSignatureExpectation(string signature)
+    {
+        var parts = signature.Split('|');
+        return parts.Length >= 3 && !parts[1].Contains('.', StringComparison.Ordinal);
     }
 
     [Test]
