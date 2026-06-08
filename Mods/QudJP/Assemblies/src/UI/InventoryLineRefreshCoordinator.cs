@@ -15,6 +15,7 @@ internal static class InventoryLineRefreshCoordinator
     private static bool pendingInventoryLineRefresh;
     private static object? pendingChangedItem;
     private static bool needsInventoryLineResortAfterFullRefresh;
+    private static bool expectedPostFullRefreshSort;
 
     internal readonly struct DisplaySnapshot
     {
@@ -118,6 +119,7 @@ internal static class InventoryLineRefreshCoordinator
         pendingInventoryLineRefresh = false;
         pendingChangedItem = null;
         needsInventoryLineResortAfterFullRefresh = true;
+        expectedPostFullRefreshSort = true;
         InventoryActionMenuCloseTimingObservability.ClearInventoryLineRefreshPendingAfterAction();
 
         LogPendingRefresh("consume-full", changedItem, "allow-original-update");
@@ -134,11 +136,46 @@ internal static class InventoryLineRefreshCoordinator
         return TryResortInventoryLinesAfterFullRefresh(inventoryScreen);
     }
 
+    internal static bool ResetInventoryFiltersBeforeFullRefresh(object? inventoryScreen)
+    {
+        if (inventoryScreen is null)
+        {
+            return false;
+        }
+
+        try
+        {
+            var filterBar = ReflectionUtils.GetPropertyOrFieldValue(inventoryScreen, "filterBar");
+            if (filterBar is null)
+            {
+                LogPreFullRefreshFilterReset("missing-filter-bar", inventoryScreen);
+                return false;
+            }
+
+            var resetFilters = AccessTools.Method(filterBar.GetType(), "ResetFilters", Type.EmptyTypes);
+            if (resetFilters is null)
+            {
+                LogPreFullRefreshFilterReset("missing-reset-filters", inventoryScreen);
+                return false;
+            }
+
+            _ = resetFilters.Invoke(filterBar, null);
+            LogPreFullRefreshFilterReset("reset-filters", inventoryScreen);
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Trace.TraceWarning("QudJP: InventoryLineRefreshCoordinator pre-full-refresh filter reset failed: {0}", ex);
+            return false;
+        }
+    }
+
     internal static void ClearForTests()
     {
         pendingInventoryLineRefresh = false;
         pendingChangedItem = null;
         needsInventoryLineResortAfterFullRefresh = false;
+        expectedPostFullRefreshSort = false;
     }
 
     private static bool HasCategoryChanged(DisplaySnapshot before, DisplaySnapshot after)
@@ -190,6 +227,22 @@ internal static class InventoryLineRefreshCoordinator
             + ";item=" + DescribeObject(item));
     }
 
+    private static void LogPreFullRefreshFilterReset(string phase, object inventoryScreen)
+    {
+        RuntimeDiagnostics.LogVerboseProbe(() =>
+            "[QudJP] InventoryLineRefresh/v1: phase=" + phase
+            + ";reason=pre-full-refresh"
+            + ";screen=" + DescribeType(inventoryScreen));
+    }
+
+    private static void LogPostFullRefreshSortAttempt(string phase, object? inventoryScreen)
+    {
+        RuntimeDiagnostics.LogVerboseProbe(() =>
+            "[QudJP] InventoryLineRefresh/v1: phase=" + phase
+            + ";reason=post-full-refresh"
+            + ";screen=" + (inventoryScreen is null ? "<null>" : DescribeType(inventoryScreen)));
+    }
+
     private static void LogPostFullRefreshSortResult(
         string phase,
         object inventoryScreen,
@@ -198,18 +251,18 @@ internal static class InventoryLineRefreshCoordinator
     {
         RuntimeDiagnostics.LogVerboseProbe(() =>
         {
-            var type = inventoryScreen.GetType();
-            var screenName = type.FullName;
-            if (string.IsNullOrEmpty(screenName))
-            {
-                screenName = type.Name;
-            }
-
             return "[QudJP] InventoryLineRefresh/v1: phase=" + phase
                 + ";sort_mode=" + Escape(sortMode)
                 + ";line_count=" + (listItems?.Count ?? -1).ToString(CultureInfo.InvariantCulture)
-                + ";screen=" + screenName;
+                + ";screen=" + DescribeType(inventoryScreen);
         });
+    }
+
+    private static string DescribeType(object value)
+    {
+        var type = value.GetType();
+        var typeName = type.FullName;
+        return string.IsNullOrEmpty(typeName) ? type.Name : typeName;
     }
 
     private static string DescribeObject(object? value)
@@ -282,9 +335,17 @@ internal static class InventoryLineRefreshCoordinator
     {
         if (!needsInventoryLineResortAfterFullRefresh)
         {
+            if (expectedPostFullRefreshSort)
+            {
+                expectedPostFullRefreshSort = false;
+                LogPostFullRefreshSortAttempt("post-sort-skipped-no-pending", inventoryScreen);
+            }
+
             return false;
         }
 
+        expectedPostFullRefreshSort = false;
+        LogPostFullRefreshSortAttempt("post-sort-enter", inventoryScreen);
         if (inventoryScreen is null)
         {
             LogPendingRefresh("missing-screen-instance", null, "post-full-refresh");

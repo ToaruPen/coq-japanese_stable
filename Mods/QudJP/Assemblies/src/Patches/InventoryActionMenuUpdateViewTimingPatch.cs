@@ -54,6 +54,10 @@ internal static class InventoryActionMenuUpdateViewTimingPatch
             var resetNameCaches = InventoryNameRefreshCoordinator.ResetDirtyInventoryNameCachesBeforeRefresh(__instance);
             var consumedInventoryLineRefresh =
                 InventoryLineRefreshCoordinator.ConsumePendingInventoryLineRefreshForUpdateView();
+            if (consumedInventoryLineRefresh)
+            {
+                InventoryLineRefreshCoordinator.ResetInventoryFiltersBeforeFullRefresh(__instance);
+            }
 
             if (InventoryActionMenuCloseTimingObservability.ShouldSuppressInventoryRefreshAfterCancel()
                 && !resetNameCaches

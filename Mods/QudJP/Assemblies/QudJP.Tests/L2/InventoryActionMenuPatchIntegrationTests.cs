@@ -115,6 +115,59 @@ public sealed class InventoryActionMenuPatchIntegrationTests
     }
 
     [Test]
+    public void CloseTimingHarmonyPatches_ResetFiltersBeforePendingInventoryLineRefresh()
+    {
+        RuntimeDiagnostics.SetVerboseProbesEnabledForTests(true);
+        using var patches = PatchCloseTiming();
+        var inventory = new DummyInventoryStatusScreenTarget();
+        var item = new DummyRefreshItem
+        {
+            DisplayName = "{{K|空の}} インジェクター",
+            Category = "Tonics",
+        };
+        inventory.GO = new DummyRefreshOwner(item);
+        inventory.filterBar.enabledCategories.Clear();
+        inventory.filterBar.enabledCategories.Add("Artifacts");
+
+        _ = InventoryLineRefreshCoordinator.MarkActiveInventoryLinesRefreshPendingForChangedItemForTests(item);
+        inventory.UpdateViewFromData();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(inventory.RefreshCount, Is.EqualTo(1));
+            Assert.That(inventory.filterBar.enabledCategories, Is.EqualTo(new[] { "*All" }));
+            Assert.That(inventory.LastVisibleInventoryNames, Is.EqualTo(new[] { "{{K|空の}} インジェクター" }));
+        });
+    }
+
+    [Test]
+    public void CloseTimingHarmonyPatches_RefreshesDisplayNameChangedByInventoryAction()
+    {
+        RuntimeDiagnostics.SetVerboseProbesEnabledForTests(true);
+        using var patches = PatchCloseTiming();
+        var inventory = new DummyInventoryStatusScreenTarget();
+        var item = new DummyRefreshItem
+        {
+            DisplayName = "{{K|空の}} エネルギーセル",
+            Category = "Energy Cells",
+        };
+        inventory.GO = new DummyRefreshOwner(item);
+        var state = default(InventoryLineRefreshCoordinator.DisplaySnapshot);
+
+        InventoryActionProcessInventoryLineRefreshPatch.Prefix(item, inventory.GO, ref state);
+        item.DisplayName = "{{Y|満充電の}} エネルギーセル";
+        InventoryActionProcessInventoryLineRefreshPatch.Postfix(item, inventory.GO, state);
+        inventory.UpdateViewFromData();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(inventory.RefreshCount, Is.EqualTo(1));
+            Assert.That(inventory.LastVisibleInventoryNames, Is.EqualTo(new[] { "{{Y|満充電の}} エネルギーセル" }));
+            Assert.That(InventoryActionMenuCloseTimingObservability.HasPendingInventoryLineRefreshAfterAction(), Is.False);
+        });
+    }
+
+    [Test]
     public void CloseTimingHarmonyPatches_AllowsRefreshAfterPriorChangedActionEvenWhenNextMenuCancels()
     {
         RuntimeDiagnostics.SetVerboseProbesEnabledForTests(true);
@@ -493,18 +546,126 @@ public sealed class InventoryActionMenuPatchIntegrationTests
         }
     }
 
+#pragma warning disable CA1308, S1144, S3459, S3604, S4487
     private sealed class DummyInventoryStatusScreenTarget
     {
+        private readonly List<DummyInventoryLineData> listItems = new();
+
+        private readonly Dictionary<string, List<DummyInventoryLineData>> objectCategories = new();
+
+        public string sortMode = "Category";
+
         public DummyRefreshOwner? GO { get; set; }
 
+        public DummyFilterBar filterBar { get; } = new();
+
+        public DummyInventoryController inventoryController { get; } = new();
+
         public int RefreshCount { get; private set; }
+
+        public IReadOnlyList<string> LastVisibleInventoryNames => inventoryController.LastItems
+            .Where(static item => !item.category)
+            .Select(static item => item.go!.DisplayName)
+            .ToArray();
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         public void UpdateViewFromData()
         {
             RefreshCount++;
+            if (GO is null)
+            {
+                return;
+            }
+
+            listItems.Clear();
+            objectCategories.Clear();
+            foreach (var item in GO.Inventory.Objects.Cast<DummyRefreshItem>())
+            {
+                var category = item.GetInventoryCategory();
+                if (!filterBar.enabledCategories.Contains("*All")
+                    && !filterBar.enabledCategories.Contains(category))
+                {
+                    continue;
+                }
+
+                var line = new DummyInventoryLineData(item);
+                listItems.Add(line);
+                if (!objectCategories.TryGetValue(category, out var categoryLines))
+                {
+                    categoryLines = new List<DummyInventoryLineData>();
+                    objectCategories.Add(category, categoryLines);
+                }
+
+                categoryLines.Add(line);
+            }
+
+            inventoryController.BeforeShow(listItems);
         }
     }
+
+    private sealed class DummyFilterBar
+    {
+        public List<string> enabledCategories { get; } = new() { "*All" };
+
+#pragma warning disable S1144
+        public void ResetFilters()
+#pragma warning restore S1144
+        {
+            enabledCategories.Clear();
+            enabledCategories.Add("*All");
+        }
+    }
+
+    private sealed class DummyInventoryController
+    {
+        public List<DummyInventoryLineData> LastItems { get; private set; } = new();
+
+#pragma warning disable S1144
+        public void BeforeShow(IEnumerable selections)
+#pragma warning restore S1144
+        {
+            LastItems = selections.Cast<DummyInventoryLineData>().ToList();
+        }
+    }
+
+    private sealed class DummyInventoryLineData
+    {
+        private string? cachedDisplayName;
+
+        private string? cachedSortString;
+
+        public bool category;
+
+        public string categoryName = "";
+
+#pragma warning disable S1144
+        public int categoryOffset { get; set; }
+#pragma warning restore S1144
+
+        public DummyRefreshItem? go;
+
+        public DummyInventoryLineData(DummyRefreshItem go)
+        {
+            this.go = go;
+            category = false;
+            categoryName = go.Category;
+        }
+
+#pragma warning disable S1144
+        public string? displayName
+        {
+            get => cachedDisplayName ??= go?.DisplayName;
+            set => cachedDisplayName = value;
+        }
+
+        public string? sortString
+        {
+            get => cachedSortString ??= displayName?.ToLowerInvariant();
+            set => cachedSortString = value;
+        }
+#pragma warning restore S1144
+    }
+#pragma warning restore CA1308, S1144, S3459, S3604, S4487
 
     private sealed class DummyRefreshOwner
     {
