@@ -24,6 +24,12 @@ Use `just deploy-dev` only when you are actively investigating runtime behavior
 and need dev-only probe logs. Development builds are for local diagnosis; do not
 use them for Steam Workshop staging, release ZIPs, or player-facing uploads.
 
+When deploying a merged PR, review fix, or any other specific commit for
+runtime verification, create or use a clean worktree at that commit before
+running `just deploy-dev`. Do not deploy from a dirty coordination checkout:
+stale local edits can produce a DLL that does not match the commit being
+verified.
+
 ```bash
 # Shipping-style local deployment
 just deploy-mod
