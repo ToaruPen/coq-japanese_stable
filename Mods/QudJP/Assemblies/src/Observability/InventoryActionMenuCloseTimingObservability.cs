@@ -21,6 +21,7 @@ internal static class InventoryActionMenuCloseTimingObservability
     private static int lastCancelSequence;
     private static long lastCancelTimestamp;
     private static bool suppressInventoryRefreshUntilPopupHidden;
+    private static bool inventoryLineRefreshPendingAfterAction;
 
     internal static TimingScope BeginMenu(int actionCount)
     {
@@ -148,6 +149,27 @@ internal static class InventoryActionMenuCloseTimingObservability
         }
     }
 
+    internal static bool HasPendingInventoryLineRefreshAfterAction()
+    {
+        lock (SyncRoot)
+        {
+            return inventoryLineRefreshPendingAfterAction;
+        }
+    }
+
+    internal static void MarkInventoryLineRefreshPendingAfterAction()
+    {
+        lock (SyncRoot)
+        {
+            inventoryLineRefreshPendingAfterAction = true;
+        }
+    }
+
+    internal static void ClearInventoryLineRefreshPendingAfterAction()
+    {
+        ClearPendingInventoryLineRefreshAfterAction();
+    }
+
     internal static bool ShouldObservePopupUpdate()
     {
         return RuntimeDiagnostics.VerboseProbesEnabled || ShouldSuppressInventoryRefreshAfterCancel();
@@ -165,6 +187,8 @@ internal static class InventoryActionMenuCloseTimingObservability
 
     internal static TimingScope BeginInventoryRefresh()
     {
+        ClearPendingInventoryLineRefreshAfterAction();
+
         if (!RuntimeDiagnostics.VerboseProbesEnabled || !TryGetRecentCancel(out var sequence, out var elapsed))
         {
             return TimingScope.Empty;
@@ -216,6 +240,7 @@ internal static class InventoryActionMenuCloseTimingObservability
             lastCancelSequence = 0;
             lastCancelTimestamp = 0;
             suppressInventoryRefreshUntilPopupHidden = false;
+            inventoryLineRefreshPendingAfterAction = false;
         }
     }
 
@@ -247,6 +272,14 @@ internal static class InventoryActionMenuCloseTimingObservability
             {
                 suppressInventoryRefreshUntilPopupHidden = false;
             }
+        }
+    }
+
+    private static void ClearPendingInventoryLineRefreshAfterAction()
+    {
+        lock (SyncRoot)
+        {
+            inventoryLineRefreshPendingAfterAction = false;
         }
     }
 

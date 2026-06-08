@@ -91,6 +91,8 @@ public sealed class TargetMethodResolutionTests
         "System.Boolean",
     })]
     [TestCase(typeof(InventoryAndEquipmentStatusScreenTranslationPatch), "UpdateViewFromData", "Qud.UI.InventoryAndEquipmentStatusScreen", "System.Void", new string[0])]
+    [TestCase(typeof(InventoryAndEquipmentStatusScreenNameRefreshPatch), "UpdateViewFromData", "Qud.UI.InventoryAndEquipmentStatusScreen", "System.Void", new string[0])]
+    [TestCase(typeof(InventoryAndEquipmentStatusScreenInventoryLineSortPatch), "UpdateViewFromData", "Qud.UI.InventoryAndEquipmentStatusScreen", "System.Void", new string[0])]
     [TestCase(typeof(InventoryAndEquipmentStatusScreenShowRepairPatch), "ShowScreen", "Qud.UI.InventoryAndEquipmentStatusScreen", "XRL.UI.Framework.NavigationContext", new[] { "XRL.World.GameObject", "Qud.UI.StatusScreensScreen" })]
     [TestCase(typeof(InventoryLineTranslationPatch), "setData", "Qud.UI.InventoryLine", "System.Void", new[] { "XRL.UI.Framework.FrameworkDataElement" })]
     [TestCase(typeof(InventoryLineRenderProbePatch), "setData", "Qud.UI.InventoryLine", "System.Void", new[] { "XRL.UI.Framework.FrameworkDataElement" })]
@@ -528,6 +530,12 @@ public sealed class TargetMethodResolutionTests
         "System.Collections.Generic.IComparer`1[[XRL.World.InventoryAction]]",
         "System.Boolean",
     })]
+    [TestCase(typeof(InventoryActionProcessInventoryLineRefreshPatch), "Process", "XRL.World.InventoryAction", "XRL.World.IEvent", new[]
+    {
+        "XRL.World.GameObject",
+        "XRL.World.GameObject",
+        "System.Boolean",
+    })]
     [TestCase(typeof(InventoryActionMenuPopupHideTimingPatch), "Hide", "Qud.UI.PopupMessage", "System.Void", new string[0])]
     [TestCase(typeof(InventoryActionMenuPopupUpdateTimingPatch), "Update", "Qud.UI.PopupMessage", "System.Void", new string[0])]
     [TestCase(typeof(InventoryActionMenuUpdateViewTimingPatch), "UpdateViewFromData", "Qud.UI.InventoryAndEquipmentStatusScreen", "System.Void", new string[0])]
@@ -686,6 +694,31 @@ public sealed class TargetMethodResolutionTests
     }
 
 #if HAS_GAME_DLL
+    [Test]
+    public void ExaminerInventoryNameRefreshPatch_TargetsNameStateChangingMethods()
+    {
+        var targets = ResolveTargetMethodSignatures(typeof(ExaminerInventoryNameRefreshPatch));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                targets,
+                Does.Contain("XRL.World.Parts.Examiner|ResultSuccess|System.Void|XRL.World.GameObject"));
+            Assert.That(
+                targets,
+                Does.Contain("XRL.World.Parts.Examiner|ResultExceptionalSuccess|System.Void|XRL.World.GameObject"));
+            Assert.That(
+                targets,
+                Does.Contain("XRL.World.Parts.Examiner|ResultPartialSuccess|System.Void|XRL.World.GameObject|System.Int32"));
+            Assert.That(
+                targets,
+                Does.Contain("XRL.World.Parts.Examiner|MakeUnderstood|System.Boolean|System.Boolean"));
+            Assert.That(
+                targets,
+                Does.Contain("XRL.World.Parts.Examiner|MakePartiallyUnderstood|System.Boolean|System.Boolean"));
+        });
+    }
+
     [Test]
     public void ImportedFoodOrDrinkFactionNameTargetMethod_ResolvesExactRuntimeSignature()
     {

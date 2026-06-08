@@ -12,6 +12,21 @@ internal static class InventoryActionMenuUpdateViewTimingPatch
     private const string Context = nameof(InventoryActionMenuUpdateViewTimingPatch);
     private const string TargetTypeName = "Qud.UI.InventoryAndEquipmentStatusScreen";
 
+    internal readonly struct RefreshState
+    {
+        internal RefreshState(object? inventoryScreen, InventoryActionMenuCloseTimingObservability.TimingScope timingScope)
+        {
+            InventoryScreen = inventoryScreen;
+            TimingScope = timingScope;
+        }
+
+        internal static RefreshState Empty { get; } = new(null, InventoryActionMenuCloseTimingObservability.TimingScope.Empty);
+
+        internal object? InventoryScreen { get; }
+
+        internal InventoryActionMenuCloseTimingObservability.TimingScope TimingScope { get; }
+    }
+
     [HarmonyTargetMethod]
     private static MethodBase? TargetMethod()
     {
@@ -31,33 +46,43 @@ internal static class InventoryActionMenuUpdateViewTimingPatch
         return method;
     }
 
-    public static bool Prefix(ref InventoryActionMenuCloseTimingObservability.TimingScope __state)
+    [HarmonyPriority(Priority.First)]
+    public static bool Prefix(object? __instance, ref RefreshState __state)
     {
         try
         {
-            if (InventoryActionMenuCloseTimingObservability.ShouldSuppressInventoryRefreshAfterCancel())
+            var resetNameCaches = InventoryNameRefreshCoordinator.ResetDirtyInventoryNameCachesBeforeRefresh(__instance);
+            var consumedInventoryLineRefresh =
+                InventoryLineRefreshCoordinator.ConsumePendingInventoryLineRefreshForUpdateView();
+
+            if (InventoryActionMenuCloseTimingObservability.ShouldSuppressInventoryRefreshAfterCancel()
+                && !resetNameCaches
+                && !consumedInventoryLineRefresh
+                && !InventoryNameRefreshCoordinator.HasPendingRefresh()
+                && !InventoryActionMenuCloseTimingObservability.HasPendingInventoryLineRefreshAfterAction())
             {
                 InventoryActionMenuCloseTimingObservability.LogInventoryRefreshSuppressed();
-                __state = InventoryActionMenuCloseTimingObservability.TimingScope.Empty;
+                __state = RefreshState.Empty;
                 return false;
             }
 
-            __state = InventoryActionMenuCloseTimingObservability.BeginInventoryRefresh();
+            __state = new RefreshState(__instance, InventoryActionMenuCloseTimingObservability.BeginInventoryRefresh());
             return true;
         }
         catch (Exception ex)
         {
             Trace.TraceError("QudJP: {0}.Prefix failed: {1}", Context, ex);
-            __state = InventoryActionMenuCloseTimingObservability.TimingScope.Empty;
+            __state = new RefreshState(__instance, InventoryActionMenuCloseTimingObservability.TimingScope.Empty);
             return true;
         }
     }
 
-    public static void Postfix(InventoryActionMenuCloseTimingObservability.TimingScope __state)
+    public static void Postfix(RefreshState __state)
     {
         try
         {
-            InventoryActionMenuCloseTimingObservability.EndInventoryRefresh(__state);
+            _ = InventoryLineRefreshCoordinator.TryResortInventoryLinesAfterFullRefresh(__state.InventoryScreen);
+            InventoryActionMenuCloseTimingObservability.EndInventoryRefresh(__state.TimingScope);
         }
         catch (Exception ex)
         {

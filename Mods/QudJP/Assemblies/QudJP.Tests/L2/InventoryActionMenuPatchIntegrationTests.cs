@@ -18,6 +18,7 @@ public sealed class InventoryActionMenuPatchIntegrationTests
         InventoryActionMenuCloseTimingObservability.ResetForTests();
         InventoryActionMenuCursorSoundPatch.SetPlayCursorSoundRequestObserverForTests(null);
         InventoryActionMenuPopupUpdateTimingPatch.ResetForTests();
+        InventoryLineRefreshCoordinator.ClearForTests();
     }
 
     [Test]
@@ -48,6 +49,183 @@ public sealed class InventoryActionMenuPatchIntegrationTests
             Assert.That(output, Does.Contain("phase=popup-hide-request"));
             Assert.That(output, Does.Contain("phase=inventory-refresh-suppressed"));
             Assert.That(output, Does.Contain("phase=popup-hidden-after-frame-delay"));
+        });
+    }
+
+    [Test]
+    public void CloseTimingHarmonyPatches_AllowsDirtyInventoryNameRefreshDuringCancelSuppression()
+    {
+        RuntimeDiagnostics.SetVerboseProbesEnabledForTests(true);
+        using var patches = PatchCloseTiming(includeNameRefresh: true);
+        var menu = new DummyInventoryActionMenuTarget();
+        var popup = new DummyPopupMessageTarget
+        {
+            PopupID = "InventoryActionMenu:(noid)",
+        };
+        menu.PopupToHide = popup;
+        var item = new DummyRefreshItem();
+        var inventory = new DummyInventoryStatusScreenTarget
+        {
+            GO = new DummyRefreshOwner(item),
+        };
+
+        var output = TestTraceHelper.CaptureTrace(() =>
+        {
+            _ = menu.Show(new ArrayList { "look" }, cancel: true);
+            InventoryNameRefreshCoordinator.MarkInventoryNameStateChanged(item);
+            inventory.UpdateViewFromData();
+        });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(inventory.RefreshCount, Is.EqualTo(1));
+            Assert.That(item.ResetNameCacheCallCount, Is.EqualTo(2));
+            Assert.That(output, Does.Not.Contain("phase=inventory-refresh-suppressed"));
+        });
+    }
+
+    [Test]
+    public void CloseTimingHarmonyPatches_AllowsFullRefresh_WhenPendingInventoryLineRefreshIsPending()
+    {
+        RuntimeDiagnostics.SetVerboseProbesEnabledForTests(true);
+        using var patches = PatchCloseTiming();
+        var menu = new DummyInventoryActionMenuTarget
+        {
+            PopupToHide = new DummyPopupMessageTarget
+            {
+                PopupID = "InventoryActionMenu:(noid)",
+            },
+        };
+        var inventory = new DummyInventoryStatusScreenTarget();
+        var item = new DummyRefreshItem();
+
+        var output = TestTraceHelper.CaptureTrace(() =>
+        {
+            _ = menu.Show(new ArrayList { "look" }, cancel: true);
+            _ = InventoryLineRefreshCoordinator.MarkActiveInventoryLinesRefreshPendingForChangedItemForTests(item);
+            inventory.UpdateViewFromData();
+        });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(inventory.RefreshCount, Is.EqualTo(1));
+            Assert.That(InventoryActionMenuCloseTimingObservability.HasPendingInventoryLineRefreshAfterAction(), Is.False);
+            Assert.That(output, Does.Not.Contain("phase=inventory-refresh-suppressed"));
+        });
+    }
+
+    [Test]
+    public void CloseTimingHarmonyPatches_AllowsRefreshAfterPriorChangedActionEvenWhenNextMenuCancels()
+    {
+        RuntimeDiagnostics.SetVerboseProbesEnabledForTests(true);
+        using var patches = PatchCloseTiming();
+        var actionMenu = new DummyInventoryActionMenuTarget();
+        var cancelMenu = new DummyInventoryActionMenuTarget
+        {
+            PopupToHide = new DummyPopupMessageTarget
+            {
+                PopupID = "InventoryActionMenu:(noid)",
+            },
+        };
+        var inventory = new DummyInventoryStatusScreenTarget();
+        var item = new DummyRefreshItem
+        {
+            DisplayName = "zz mystery",
+        };
+        var state = default(InventoryLineRefreshCoordinator.DisplaySnapshot);
+
+        var output = TestTraceHelper.CaptureTrace(() =>
+        {
+            _ = actionMenu.Show(new ArrayList { "change cell" }, cancel: false);
+            InventoryActionProcessInventoryLineRefreshPatch.Prefix(item, new DummyRefreshOwner(item), ref state);
+            item.DisplayName = "aa known";
+            InventoryActionProcessInventoryLineRefreshPatch.Postfix(item, new DummyRefreshOwner(item), state);
+            _ = cancelMenu.Show(new ArrayList { "look" }, cancel: true);
+            inventory.UpdateViewFromData();
+        });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(inventory.RefreshCount, Is.EqualTo(1));
+            Assert.That(InventoryActionMenuCloseTimingObservability.HasPendingInventoryLineRefreshAfterAction(), Is.False);
+            Assert.That(output, Does.Contain("reason=display-or-category-changed"));
+            Assert.That(output, Does.Not.Contain("phase=inventory-refresh-suppressed"));
+        });
+    }
+
+    [Test]
+    public void CloseTimingHarmonyPatches_DoesNotAllowRefreshAfterPlainActionSelection()
+    {
+        RuntimeDiagnostics.SetVerboseProbesEnabledForTests(true);
+        using var patches = PatchCloseTiming();
+        var actionMenu = new DummyInventoryActionMenuTarget();
+        var cancelMenu = new DummyInventoryActionMenuTarget
+        {
+            PopupToHide = new DummyPopupMessageTarget
+            {
+                PopupID = "InventoryActionMenu:(noid)",
+            },
+        };
+        var inventory = new DummyInventoryStatusScreenTarget();
+
+        var output = TestTraceHelper.CaptureTrace(() =>
+        {
+            _ = actionMenu.Show(new ArrayList { "look" }, cancel: false);
+            _ = cancelMenu.Show(new ArrayList { "look" }, cancel: true);
+            inventory.UpdateViewFromData();
+        });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(inventory.RefreshCount, Is.Zero);
+            Assert.That(InventoryActionMenuCloseTimingObservability.HasPendingInventoryLineRefreshAfterAction(), Is.False);
+            Assert.That(output, Does.Not.Contain("reason=action-menu-selection"));
+            Assert.That(output, Does.Contain("phase=inventory-refresh-suppressed"));
+        });
+    }
+
+    [Test]
+    public void InventoryActionProcessPatch_DefersInventoryLineRefresh_WhenActionChangesDisplayName()
+    {
+        var inventory = new DummyInventoryStatusScreenTarget();
+        var item = new DummyRefreshItem
+        {
+            DisplayName = "zz mystery",
+        };
+        var state = default(InventoryLineRefreshCoordinator.DisplaySnapshot);
+
+        InventoryActionProcessInventoryLineRefreshPatch.Prefix(item, new DummyRefreshOwner(item), ref state);
+        item.DisplayName = "aa known";
+        InventoryActionProcessInventoryLineRefreshPatch.Postfix(item, new DummyRefreshOwner(item), state);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(inventory.RefreshCount, Is.Zero);
+            Assert.That(
+                InventoryActionMenuCloseTimingObservability.HasPendingInventoryLineRefreshAfterAction(),
+                Is.True);
+        });
+    }
+
+    [Test]
+    public void InventoryActionProcessPatch_DoesNotDeferInventoryLineRefresh_WhenActionCompletesWithoutDisplayChange()
+    {
+        var inventory = new DummyInventoryStatusScreenTarget();
+        var item = new DummyRefreshItem
+        {
+            DisplayName = "aa known",
+        };
+        var state = default(InventoryLineRefreshCoordinator.DisplaySnapshot);
+
+        InventoryActionProcessInventoryLineRefreshPatch.Prefix(item, new DummyRefreshOwner(item), ref state);
+        InventoryActionProcessInventoryLineRefreshPatch.Postfix(item, new DummyRefreshOwner(item), state);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(inventory.RefreshCount, Is.Zero);
+            Assert.That(
+                InventoryActionMenuCloseTimingObservability.HasPendingInventoryLineRefreshAfterAction(),
+                Is.False);
         });
     }
 
@@ -154,7 +332,7 @@ public sealed class InventoryActionMenuPatchIntegrationTests
             Is.False);
     }
 
-    private static IDisposable PatchCloseTiming()
+    private static IDisposable PatchCloseTiming(bool includeNameRefresh = false)
     {
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
@@ -179,11 +357,22 @@ public sealed class InventoryActionMenuPatchIntegrationTests
             prefix: new HarmonyMethod(RequireMethod(
                 typeof(InventoryActionMenuUpdateViewTimingPatch),
                 nameof(InventoryActionMenuUpdateViewTimingPatch.Prefix),
-                typeof(InventoryActionMenuCloseTimingObservability.TimingScope).MakeByRefType())),
+                typeof(object),
+                typeof(InventoryActionMenuUpdateViewTimingPatch.RefreshState).MakeByRefType())),
             postfix: new HarmonyMethod(RequireMethod(
                 typeof(InventoryActionMenuUpdateViewTimingPatch),
                 nameof(InventoryActionMenuUpdateViewTimingPatch.Postfix),
-                typeof(InventoryActionMenuCloseTimingObservability.TimingScope))));
+                typeof(InventoryActionMenuUpdateViewTimingPatch.RefreshState))));
+        if (includeNameRefresh)
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyInventoryStatusScreenTarget), nameof(DummyInventoryStatusScreenTarget.UpdateViewFromData)),
+                prefix: new HarmonyMethod(RequireMethod(
+                    typeof(InventoryAndEquipmentStatusScreenNameRefreshPatch),
+                    nameof(InventoryAndEquipmentStatusScreenNameRefreshPatch.Prefix),
+                    typeof(object))));
+        }
+
         return new HarmonyScope(harmony, harmonyId);
     }
 
@@ -306,12 +495,52 @@ public sealed class InventoryActionMenuPatchIntegrationTests
 
     private sealed class DummyInventoryStatusScreenTarget
     {
+        public DummyRefreshOwner? GO { get; set; }
+
         public int RefreshCount { get; private set; }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         public void UpdateViewFromData()
         {
             RefreshCount++;
+        }
+    }
+
+    private sealed class DummyRefreshOwner
+    {
+        public DummyRefreshOwner(DummyRefreshItem item)
+        {
+            Inventory.Objects.Add(item);
+        }
+
+        public DummyRefreshInventory Inventory { get; } = new();
+    }
+
+    private sealed class DummyRefreshInventory
+    {
+        public ArrayList Objects { get; } = new();
+    }
+
+    private sealed class DummyRefreshItem
+    {
+        public string DisplayName { get; set; } = "dummy item";
+
+        public string Category { get; set; } = "Artifacts";
+
+        public int ResetNameCacheCallCount { get; private set; }
+
+#pragma warning disable S1144
+        public string GetInventoryCategory()
+#pragma warning restore S1144
+        {
+            return Category;
+        }
+
+#pragma warning disable S1144
+        public void ResetNameCache()
+#pragma warning restore S1144
+        {
+            ResetNameCacheCallCount++;
         }
     }
 

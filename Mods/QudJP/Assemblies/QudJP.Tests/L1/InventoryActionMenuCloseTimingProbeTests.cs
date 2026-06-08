@@ -124,4 +124,32 @@ public sealed class InventoryActionMenuCloseTimingProbeTests
             Assert.That(output, Does.Not.Contain("inventory-refresh-end"));
         });
     }
+
+    [Test]
+    public void EndMenu_DoesNotMarkInventoryLineRefreshPendingAfterActionSelectionAlone()
+    {
+        var actionScope = InventoryActionMenuCloseTimingObservability.BeginMenu(actionCount: 7);
+
+        InventoryActionMenuCloseTimingObservability.EndMenu(actionScope, canceled: false);
+
+        Assert.That(
+            InventoryActionMenuCloseTimingObservability.HasPendingInventoryLineRefreshAfterAction(),
+            Is.False);
+    }
+
+    [Test]
+    public void MarkInventoryLineRefreshPendingAfterAction_MarksUntilRefreshBegins()
+    {
+        InventoryActionMenuCloseTimingObservability.MarkInventoryLineRefreshPendingAfterAction();
+
+        Assert.That(
+            InventoryActionMenuCloseTimingObservability.HasPendingInventoryLineRefreshAfterAction(),
+            Is.True);
+
+        _ = InventoryActionMenuCloseTimingObservability.BeginInventoryRefresh();
+
+        Assert.That(
+            InventoryActionMenuCloseTimingObservability.HasPendingInventoryLineRefreshAfterAction(),
+            Is.False);
+    }
 }
