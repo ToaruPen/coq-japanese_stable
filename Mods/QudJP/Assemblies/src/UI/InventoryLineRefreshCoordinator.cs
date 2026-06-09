@@ -6,16 +6,24 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
 using HarmonyLib;
+using QudJP.Patches;
 
 namespace QudJP;
 
 internal static class InventoryLineRefreshCoordinator
 {
     private static bool pendingInventoryLineRefresh;
+    private static bool pendingInventoryLineRefreshRequiresResort;
     private static object? pendingChangedItem;
     private static bool needsInventoryLineResortAfterFullRefresh;
     private static bool expectedPostFullRefreshSort;
+    private static bool refreshingBeforeActionMenuReopen;
+    private static DisplaySnapshot lastActionMenuItemSnapshot;
+    private static readonly Regex LoadedStateSuffixPattern = new(
+        @"\s+\[[^\[\]]*\](?=\s*(?:<[^<>]*>)?\s*$)",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     internal readonly struct DisplaySnapshot
     {
@@ -23,12 +31,14 @@ internal static class InventoryLineRefreshCoordinator
             object? item,
             string? displayName,
             string? inventoryCategory,
+            string? stableDisplaySortKey,
             string? renderSignature,
             object[]? ownerInventoryObjects)
         {
             Item = item;
             DisplayName = displayName;
             InventoryCategory = inventoryCategory;
+            StableDisplaySortKey = stableDisplaySortKey;
             RenderSignature = renderSignature;
             OwnerInventoryObjects = ownerInventoryObjects;
         }
@@ -38,6 +48,8 @@ internal static class InventoryLineRefreshCoordinator
         internal string? DisplayName { get; }
 
         internal string? InventoryCategory { get; }
+
+        internal string? StableDisplaySortKey { get; }
 
         internal string? RenderSignature { get; }
 
@@ -56,10 +68,12 @@ internal static class InventoryLineRefreshCoordinator
             return default;
         }
 
+        var displayName = ReflectionUtils.GetPropertyOrFieldValue(item, "DisplayName") as string;
         return new DisplaySnapshot(
             item,
-            ReflectionUtils.GetPropertyOrFieldValue(item, "DisplayName") as string,
+            displayName,
             InvokeStringMethod(item, "GetInventoryCategory"),
+            BuildStableDisplaySortKey(displayName),
             CaptureRenderSignature(item),
             CaptureInventoryObjects(owner));
     }
@@ -77,14 +91,18 @@ internal static class InventoryLineRefreshCoordinator
         var after = CaptureDisplaySnapshot(item);
         if (HasOwnerInventoryMembershipChanged(before.OwnerInventoryObjects, owner))
         {
-            MarkPendingRefresh(item, "owner-inventory-membership-changed");
+            MarkPendingRefresh(item, "owner-inventory-membership-changed", requiresResort: false);
             return true;
         }
 
         var categoryChanged = HasCategoryChanged(before, after);
+        var stableSortKeyChanged = HasStableDisplaySortKeyChanged(before, after);
         if (HasDisplayChanged(before, after, categoryChanged))
         {
-            MarkPendingRefresh(item, "display-or-category-changed");
+            MarkPendingRefresh(
+                item,
+                "display-or-category-changed",
+                requiresResort: categoryChanged || stableSortKeyChanged);
             return true;
         }
 
@@ -92,20 +110,24 @@ internal static class InventoryLineRefreshCoordinator
         return false;
     }
 
-    internal static bool MarkActiveInventoryLinesRefreshPendingForChangedItem(object? changedItem)
+    internal static bool MarkActiveInventoryLinesRefreshPendingForChangedItem(
+        object? changedItem,
+        bool requiresResort = true)
     {
         if (changedItem is null)
         {
             return false;
         }
 
-        MarkPendingRefresh(changedItem, "explicit");
+        MarkPendingRefresh(changedItem, "explicit", requiresResort);
         return true;
     }
 
-    internal static bool MarkActiveInventoryLinesRefreshPendingForChangedItemForTests(object? changedItem)
+    internal static bool MarkActiveInventoryLinesRefreshPendingForChangedItemForTests(
+        object? changedItem,
+        bool requiresResort = true)
     {
-        return MarkActiveInventoryLinesRefreshPendingForChangedItem(changedItem);
+        return MarkActiveInventoryLinesRefreshPendingForChangedItem(changedItem, requiresResort);
     }
 
     internal static bool ConsumePendingInventoryLineRefreshForUpdateView()
@@ -117,9 +139,11 @@ internal static class InventoryLineRefreshCoordinator
         }
 
         pendingInventoryLineRefresh = false;
+        var requiresResort = pendingInventoryLineRefreshRequiresResort;
+        pendingInventoryLineRefreshRequiresResort = false;
         pendingChangedItem = null;
-        needsInventoryLineResortAfterFullRefresh = true;
-        expectedPostFullRefreshSort = true;
+        needsInventoryLineResortAfterFullRefresh = requiresResort;
+        expectedPostFullRefreshSort = requiresResort;
         InventoryActionMenuCloseTimingObservability.ClearInventoryLineRefreshPendingAfterAction();
 
         LogPendingRefresh("consume-full", changedItem, "allow-original-update");
@@ -134,6 +158,29 @@ internal static class InventoryLineRefreshCoordinator
     internal static bool TryResortInventoryLinesAfterFullRefreshForTests(object? inventoryScreen)
     {
         return TryResortInventoryLinesAfterFullRefresh(inventoryScreen);
+    }
+
+    internal static bool TryRefreshPendingInventoryLinesBeforeActionMenuReopen()
+    {
+        return TryRefreshPendingInventoryLinesBeforeActionMenuReopen(FindActiveInventoryScreen());
+    }
+
+    internal static bool TryRefreshChangedInventoryLinesBeforeActionMenuOpen(object? item, object? owner)
+    {
+        return TryRefreshChangedInventoryLinesBeforeActionMenuOpen(FindActiveInventoryScreen(), item, owner);
+    }
+
+    internal static bool TryRefreshChangedInventoryLinesBeforeActionMenuOpenForTests(
+        object? inventoryScreen,
+        object? item,
+        object? owner)
+    {
+        return TryRefreshChangedInventoryLinesBeforeActionMenuOpen(inventoryScreen, item, owner);
+    }
+
+    internal static bool TryRefreshPendingInventoryLinesBeforeActionMenuReopenForTests(object? inventoryScreen)
+    {
+        return TryRefreshPendingInventoryLinesBeforeActionMenuReopen(inventoryScreen);
     }
 
     internal static bool ResetInventoryFiltersBeforeFullRefresh(object? inventoryScreen)
@@ -173,14 +220,22 @@ internal static class InventoryLineRefreshCoordinator
     internal static void ClearForTests()
     {
         pendingInventoryLineRefresh = false;
+        pendingInventoryLineRefreshRequiresResort = false;
         pendingChangedItem = null;
         needsInventoryLineResortAfterFullRefresh = false;
         expectedPostFullRefreshSort = false;
+        refreshingBeforeActionMenuReopen = false;
+        lastActionMenuItemSnapshot = default;
     }
 
     private static bool HasCategoryChanged(DisplaySnapshot before, DisplaySnapshot after)
     {
         return !string.Equals(before.InventoryCategory, after.InventoryCategory, StringComparison.Ordinal);
+    }
+
+    private static bool HasStableDisplaySortKeyChanged(DisplaySnapshot before, DisplaySnapshot after)
+    {
+        return !string.Equals(before.StableDisplaySortKey, after.StableDisplaySortKey, StringComparison.Ordinal);
     }
 
     private static bool HasDisplayChanged(DisplaySnapshot before, DisplaySnapshot after, bool categoryChanged)
@@ -207,23 +262,38 @@ internal static class InventoryLineRefreshCoordinator
             + ";after_category=" + Escape(after.InventoryCategory));
     }
 
-    private static void MarkPendingRefresh(object? item, string reason)
+    private static void MarkPendingRefresh(object? item, string reason, bool requiresResort = true)
     {
         InventoryActionMenuCloseTimingObservability.MarkInventoryLineRefreshPendingAfterAction();
         pendingInventoryLineRefresh = true;
+        pendingInventoryLineRefreshRequiresResort |= requiresResort;
         pendingChangedItem = item;
-        LogPendingRefresh("mark", item, reason);
+        LogPendingRefresh("mark", item, reason, requiresResort);
+    }
+
+    private static string? BuildStableDisplaySortKey(string? displayName)
+    {
+        if (string.IsNullOrEmpty(displayName))
+        {
+            return displayName;
+        }
+
+        var translatedDisplayName = InventoryLineTranslationPatch.TranslateItemDisplayNameForSortKey(displayName!);
+        var visible = ColorAwareTranslationComposer.GetVisibleText(translatedDisplayName);
+        return LoadedStateSuffixPattern.Replace(visible, string.Empty);
     }
 
     private static void LogPendingRefresh(
         string phase,
         object? item,
-        string reason)
+        string reason,
+        bool? requiresResort = null)
     {
         RuntimeDiagnostics.LogVerboseProbe(() =>
             "[QudJP] InventoryLineRefresh/v1: phase=" + phase
             + ";kind=Full"
             + ";reason=" + reason
+            + (requiresResort.HasValue ? ";requires_resort=" + requiresResort.Value : string.Empty)
             + ";item=" + DescribeObject(item));
     }
 
@@ -256,6 +326,112 @@ internal static class InventoryLineRefreshCoordinator
                 + ";line_count=" + (listItems?.Count ?? -1).ToString(CultureInfo.InvariantCulture)
                 + ";screen=" + DescribeType(inventoryScreen);
         });
+    }
+
+    private static bool TryRefreshPendingInventoryLinesBeforeActionMenuReopen(object? inventoryScreen)
+    {
+        if (inventoryScreen is null || refreshingBeforeActionMenuReopen)
+        {
+            return false;
+        }
+
+        if (!pendingInventoryLineRefresh && !InventoryNameRefreshCoordinator.HasPendingRefresh())
+        {
+            return false;
+        }
+
+        refreshingBeforeActionMenuReopen = true;
+        try
+        {
+            var resetNameCaches = InventoryNameRefreshCoordinator.ResetDirtyInventoryNameCachesBeforeRefresh(inventoryScreen);
+            var consumedInventoryLineRefresh = ConsumePendingInventoryLineRefreshForUpdateView();
+            if (!resetNameCaches && !consumedInventoryLineRefresh)
+            {
+                return false;
+            }
+
+            if (consumedInventoryLineRefresh)
+            {
+                ResetInventoryFiltersBeforeFullRefresh(inventoryScreen);
+            }
+
+            var updateView = FindInstanceMethod(inventoryScreen.GetType(), "UpdateViewFromData");
+            if (updateView is null)
+            {
+                LogPendingRefresh("missing-update-view", null, "action-menu-reopen");
+                return false;
+            }
+
+            updateView.Invoke(inventoryScreen, null);
+            _ = TryResortInventoryLinesAfterFullRefresh(inventoryScreen);
+            LogPendingRefresh("action-menu-reopen-refresh", null, "before-next-action-menu");
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Trace.TraceWarning(
+                "QudJP: InventoryLineRefreshCoordinator action-menu-reopen refresh failed: {0}",
+                ex);
+            return false;
+        }
+        finally
+        {
+            refreshingBeforeActionMenuReopen = false;
+        }
+    }
+
+    private static bool TryRefreshChangedInventoryLinesBeforeActionMenuOpen(
+        object? inventoryScreen,
+        object? item,
+        object? owner)
+    {
+        MarkActionMenuItemRefreshIfChanged(item, owner);
+        var refreshed = TryRefreshPendingInventoryLinesBeforeActionMenuReopen(inventoryScreen);
+        lastActionMenuItemSnapshot = item is null
+            ? default
+            : CaptureDisplaySnapshot(item, owner);
+        return refreshed;
+    }
+
+    private static void MarkActionMenuItemRefreshIfChanged(object? item, object? owner)
+    {
+        if (item is null)
+        {
+            return;
+        }
+
+        var before = lastActionMenuItemSnapshot;
+        if (!ReferenceEquals(before.Item, item))
+        {
+            return;
+        }
+
+        _ = RefreshAfterInventoryActionIfChanged(item, owner, before);
+    }
+
+    private static object? FindActiveInventoryScreen()
+    {
+        try
+        {
+            var inventoryScreenType = GameTypeResolver.FindType(
+                "Qud.UI.InventoryAndEquipmentStatusScreen",
+                "InventoryAndEquipmentStatusScreen");
+            var singletonBaseType = AccessTools.TypeByName("Qud.UI.SingletonWindowBase`1");
+            if (inventoryScreenType is null || singletonBaseType is null)
+            {
+                return null;
+            }
+
+            var singletonType = singletonBaseType.MakeGenericType(inventoryScreenType);
+            return AccessTools.Field(singletonType, "instance")?.GetValue(null);
+        }
+        catch (Exception ex)
+        {
+            Trace.TraceWarning(
+                "QudJP: InventoryLineRefreshCoordinator active inventory screen lookup failed: {0}",
+                ex);
+            return null;
+        }
     }
 
     private static string DescribeType(object value)
@@ -388,6 +564,8 @@ internal static class InventoryLineRefreshCoordinator
         }
         catch (Exception ex)
         {
+            RuntimeDiagnostics.LogWarning(
+                $"[QudJP] Warning: InventoryLineRefreshCoordinator post-full-refresh sort failed: {ex.GetType().Name}: {ex.Message}");
             Trace.TraceWarning("QudJP: InventoryLineRefreshCoordinator post-full-refresh sort failed: {0}", ex);
             return false;
         }
@@ -550,7 +728,8 @@ internal static class InventoryLineRefreshCoordinator
             }
         }
 
-        itemLines.Sort(CompareLineDisplayName);
+        var sortKeys = BuildVisibleSortKeys(itemLines);
+        itemLines.Sort((left, right) => CompareLineDisplayName(left, right, sortKeys));
         listItems.Clear();
         foreach (var line in itemLines)
         {
@@ -605,11 +784,12 @@ internal static class InventoryLineRefreshCoordinator
             SetPropertyOrFieldValue(header, "category", true);
             SetPropertyOrFieldValue(header, "categoryAmount", categoryLines.Count);
             SetPropertyOrFieldValue(header, "categoryWeight", GetCategoryWeight(categoryLines));
-            SetPropertyOrFieldValue(header, "categoryExpanded", !IsCollapsed(inventoryScreen, categoryName));
+            var collapsed = IsCollapsed(inventoryScreen, categoryName);
+            SetPropertyOrFieldValue(header, "categoryExpanded", !collapsed);
             SetPropertyOrFieldValue(header, "categoryOffset", 0);
             listItems.Add(header);
 
-            if (IsCollapsed(inventoryScreen, categoryName))
+            if (collapsed)
             {
                 continue;
             }
@@ -665,7 +845,8 @@ internal static class InventoryLineRefreshCoordinator
             sorted.Add(line);
         }
 
-        sorted.Sort(CompareLineDisplayName);
+        var sortKeys = BuildVisibleSortKeys(sorted);
+        sorted.Sort((left, right) => CompareLineDisplayName(left, right, sortKeys));
         lines.Clear();
         foreach (var line in sorted)
         {
@@ -673,12 +854,36 @@ internal static class InventoryLineRefreshCoordinator
         }
     }
 
-    private static int CompareLineDisplayName(object? left, object? right)
+    private static Dictionary<object, string> BuildVisibleSortKeys(IEnumerable<object> lines)
+    {
+        var sortKeys = new Dictionary<object, string>(ReferenceObjectEqualityComparer.Instance);
+        foreach (var line in lines)
+        {
+            if (!sortKeys.ContainsKey(line))
+            {
+                sortKeys[line] = GetVisibleSortKey(line);
+            }
+        }
+
+        return sortKeys;
+    }
+
+    private static int CompareLineDisplayName(
+        object? left,
+        object? right,
+        IReadOnlyDictionary<object, string> sortKeys)
     {
         return CultureInfo.CurrentCulture.CompareInfo.Compare(
-            GetVisibleSortKey(left),
-            GetVisibleSortKey(right),
+            GetCachedVisibleSortKey(left, sortKeys),
+            GetCachedVisibleSortKey(right, sortKeys),
             CompareOptions.IgnoreCase | CompareOptions.IgnoreKanaType | CompareOptions.IgnoreWidth);
+    }
+
+    private static string GetCachedVisibleSortKey(object? line, IReadOnlyDictionary<object, string> sortKeys)
+    {
+        return line is not null && sortKeys.TryGetValue(line, out var sortKey)
+            ? sortKey
+            : string.Empty;
     }
 
     private static string GetVisibleSortKey(object? line)
@@ -689,7 +894,8 @@ internal static class InventoryLineRefreshCoordinator
             return string.Empty;
         }
 
-        return ColorAwareTranslationComposer.GetVisibleText(displayName);
+        var translatedDisplayName = InventoryLineTranslationPatch.TranslateItemDisplayNameForSortKey(displayName!);
+        return ColorAwareTranslationComposer.GetVisibleText(translatedDisplayName);
     }
 
     private static bool IsCategoryLine(object? line)
@@ -705,23 +911,49 @@ internal static class InventoryLineRefreshCoordinator
 
     private static bool TryInvokeBeforeShow(object inventoryController, IList listItems)
     {
+        var selectionType = listItems.GetType();
         foreach (var method in GetInstanceMethods(inventoryController.GetType(), "BeforeShow"))
         {
             var parameters = method.GetParameters();
-            if (parameters.Length == 1 && CanAcceptEnumerable(parameters[0].ParameterType))
+            if (parameters.Length == 1
+                && parameters[0].ParameterType.IsAssignableFrom(selectionType)
+                && TryInvokeBeforeShowCandidate(method, inventoryController, new object[] { listItems }))
             {
-                method.Invoke(inventoryController, new object[] { listItems });
                 return true;
             }
 
-            if (parameters.Length == 2 && CanAcceptEnumerable(parameters[1].ParameterType))
+            if (parameters.Length == 2
+                && CanPassNull(parameters[0].ParameterType)
+                && parameters[1].ParameterType.IsAssignableFrom(selectionType)
+                && TryInvokeBeforeShowCandidate(method, inventoryController, new object?[] { null, listItems }))
             {
-                method.Invoke(inventoryController, new object?[] { null, listItems });
                 return true;
             }
         }
 
         return false;
+    }
+
+    private static bool TryInvokeBeforeShowCandidate(MethodInfo method, object inventoryController, object?[] parameters)
+    {
+        try
+        {
+            method.Invoke(inventoryController, parameters);
+            return true;
+        }
+        catch (ArgumentException)
+        {
+            return false;
+        }
+        catch (TargetParameterCountException)
+        {
+            return false;
+        }
+    }
+
+    private static bool CanPassNull(Type parameterType)
+    {
+        return !parameterType.IsValueType || Nullable.GetUnderlyingType(parameterType) is not null;
     }
 
     private static string? CaptureRenderSignature(object item)
@@ -745,7 +977,7 @@ internal static class InventoryLineRefreshCoordinator
 
     private static object? InvokeRenderForUi(object item)
     {
-        var method = FindInstanceMethod(item.GetType(), "RenderForUI");
+        var method = FindAnyInstanceMethod(item.GetType(), "RenderForUI");
         if (method is null)
         {
             return null;
@@ -767,7 +999,24 @@ internal static class InventoryLineRefreshCoordinator
 
     private static string? InvokeStringMethod(object instance, string methodName)
     {
-        return FindInstanceMethod(instance.GetType(), methodName)?.Invoke(instance, null) as string;
+        foreach (var method in GetInstanceMethods(instance.GetType(), methodName))
+        {
+            if (method.ReturnType != typeof(string))
+            {
+                continue;
+            }
+
+            var parameters = method.GetParameters();
+            var args = BuildDefaultArguments(parameters);
+            if (args is null)
+            {
+                continue;
+            }
+
+            return method.Invoke(instance, args) as string;
+        }
+
+        return null;
     }
 
     private static void SetPropertyOrFieldValue(object instance, string memberName, object? value)
@@ -798,15 +1047,6 @@ internal static class InventoryLineRefreshCoordinator
         }
     }
 
-    private static bool CanAcceptEnumerable(Type parameterType)
-    {
-        return parameterType == typeof(IEnumerable)
-            || (parameterType.IsGenericType
-                && parameterType.GetGenericTypeDefinition() == typeof(IEnumerable<>))
-            || parameterType.IsAssignableFrom(typeof(List<object>))
-            || typeof(IEnumerable).IsAssignableFrom(parameterType);
-    }
-
     private static MethodInfo? FindInstanceMethod(Type type, string methodName, params Type[] parameterTypes)
     {
 #pragma warning disable S3011
@@ -815,9 +1055,7 @@ internal static class InventoryLineRefreshCoordinator
 
         for (var candidateType = type; candidateType is not null; candidateType = candidateType.BaseType)
         {
-            var method = parameterTypes.Length == 0
-                ? AccessTools.Method(candidateType, methodName)
-                : AccessTools.Method(candidateType, methodName, parameterTypes);
+            var method = AccessTools.Method(candidateType, methodName, parameterTypes);
             if (method is not null)
             {
                 return method;
@@ -833,6 +1071,61 @@ internal static class InventoryLineRefreshCoordinator
         }
 
         return null;
+    }
+
+    private static MethodInfo? FindAnyInstanceMethod(Type type, string methodName)
+    {
+#pragma warning disable S3011
+        const BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+#pragma warning restore S3011
+
+        for (var candidateType = type; candidateType is not null; candidateType = candidateType.BaseType)
+        {
+            var method = AccessTools.Method(candidateType, methodName);
+            if (method is not null)
+            {
+                return method;
+            }
+
+#pragma warning disable S3011
+            method = candidateType.GetMethod(methodName, flags);
+#pragma warning restore S3011
+            if (method is not null)
+            {
+                return method;
+            }
+        }
+
+        return null;
+    }
+
+    private static object?[]? BuildDefaultArguments(ParameterInfo[] parameters)
+    {
+        if (parameters.Length == 0)
+        {
+            return Array.Empty<object?>();
+        }
+
+        var args = new object?[parameters.Length];
+        for (var i = 0; i < parameters.Length; i++)
+        {
+            var parameter = parameters[i];
+            if (!parameter.HasDefaultValue)
+            {
+                return null;
+            }
+
+            args[i] = parameter.DefaultValue is DBNull
+                ? GetDefaultValue(parameter.ParameterType)
+                : parameter.DefaultValue;
+        }
+
+        return args;
+    }
+
+    private static object? GetDefaultValue(Type type)
+    {
+        return type.IsValueType ? Activator.CreateInstance(type) : null;
     }
 
     private static IEnumerable<MethodInfo> GetInstanceMethods(Type type, string methodName)
@@ -854,4 +1147,18 @@ internal static class InventoryLineRefreshCoordinator
         }
     }
 
+    private sealed class ReferenceObjectEqualityComparer : IEqualityComparer<object>
+    {
+        internal static readonly ReferenceObjectEqualityComparer Instance = new();
+
+        public new bool Equals(object? x, object? y)
+        {
+            return ReferenceEquals(x, y);
+        }
+
+        public int GetHashCode(object obj)
+        {
+            return RuntimeHelpers.GetHashCode(obj);
+        }
+    }
 }

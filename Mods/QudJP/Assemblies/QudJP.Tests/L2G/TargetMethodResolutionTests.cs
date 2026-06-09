@@ -31,6 +31,44 @@ public sealed class TargetMethodResolutionTests
     }
 
 #if HAS_GAME_DLL
+    [Test]
+    public void InventoryFrameworkScrollerBeforeShow_AcceptsInventoryLineDataList()
+    {
+        var assembly = EnsureGameAssemblyLoaded();
+        var frameworkScrollerType = assembly.GetType("XRL.UI.Framework.FrameworkScroller", throwOnError: false);
+        var frameworkDataElementType = assembly.GetType("XRL.UI.Framework.FrameworkDataElement", throwOnError: false);
+        var inventoryLineDataType = assembly.GetType("Qud.UI.InventoryLineData", throwOnError: false);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(frameworkScrollerType, Is.Not.Null);
+            Assert.That(frameworkDataElementType, Is.Not.Null);
+            Assert.That(inventoryLineDataType, Is.Not.Null);
+        });
+
+        var inventoryLineListType = typeof(List<>).MakeGenericType(inventoryLineDataType!);
+        var frameworkDataEnumerableType = typeof(IEnumerable<>).MakeGenericType(frameworkDataElementType!);
+        var beforeShow = frameworkScrollerType!
+            .GetMethods(BindingFlags.Instance | BindingFlags.Public)
+            .FirstOrDefault(method =>
+            {
+                if (!string.Equals(method.Name, "BeforeShow", StringComparison.Ordinal))
+                {
+                    return false;
+                }
+
+                var parameters = method.GetParameters();
+                return parameters.Length == 1
+                    && parameters[0].ParameterType.IsAssignableFrom(inventoryLineListType);
+            });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(frameworkDataEnumerableType.IsAssignableFrom(inventoryLineListType), Is.True);
+            Assert.That(beforeShow, Is.Not.Null);
+        });
+    }
+
     [TestCase(typeof(GetDisplayNamePatch), "GetFor", "XRL.World.GetDisplayNameEvent", "System.String", new[]
     {
         "XRL.World.GameObject",
@@ -93,6 +131,17 @@ public sealed class TargetMethodResolutionTests
     [TestCase(typeof(InventoryAndEquipmentStatusScreenTranslationPatch), "UpdateViewFromData", "Qud.UI.InventoryAndEquipmentStatusScreen", "System.Void", new string[0])]
     [TestCase(typeof(InventoryAndEquipmentStatusScreenNameRefreshPatch), "UpdateViewFromData", "Qud.UI.InventoryAndEquipmentStatusScreen", "System.Void", new string[0])]
     [TestCase(typeof(InventoryAndEquipmentStatusScreenInventoryLineSortPatch), "UpdateViewFromData", "Qud.UI.InventoryAndEquipmentStatusScreen", "System.Void", new string[0])]
+    [TestCase(typeof(EquipmentApiInventoryActionMenuRefreshPatch), "ShowInventoryActionMenu", "Qud.API.EquipmentAPI", "XRL.World.InventoryAction", new[]
+    {
+        "System.Collections.Generic.Dictionary`2[[System.String],[XRL.World.InventoryAction]]",
+        "XRL.World.GameObject",
+        "XRL.World.GameObject",
+        "System.Boolean",
+        "System.Boolean",
+        "System.String",
+        "System.Collections.Generic.IComparer`1[[XRL.World.InventoryAction]]",
+        "System.Boolean",
+    })]
     [TestCase(typeof(InventoryAndEquipmentStatusScreenShowRepairPatch), "ShowScreen", "Qud.UI.InventoryAndEquipmentStatusScreen", "XRL.UI.Framework.NavigationContext", new[] { "XRL.World.GameObject", "Qud.UI.StatusScreensScreen" })]
     [TestCase(typeof(InventoryLineTranslationPatch), "setData", "Qud.UI.InventoryLine", "System.Void", new[] { "XRL.UI.Framework.FrameworkDataElement" })]
     [TestCase(typeof(InventoryLineRenderProbePatch), "setData", "Qud.UI.InventoryLine", "System.Void", new[] { "XRL.UI.Framework.FrameworkDataElement" })]
@@ -693,6 +742,51 @@ public sealed class TargetMethodResolutionTests
             Is.EqualTo("XRL.World.Parts.Skill.Cudgel_Conk|PerformConk|System.Boolean"));
     }
 
+    [Test]
+    public void EquipmentApiInventoryActionMenuRefreshPatch_Prefix_UsesHarmonyIndexArguments()
+    {
+        var prefix = typeof(EquipmentApiInventoryActionMenuRefreshPatch).GetMethod(
+            "Prefix",
+            BindingFlags.Public | BindingFlags.Static);
+
+        Assert.That(prefix, Is.Not.Null, "Prefix not found for EquipmentApiInventoryActionMenuRefreshPatch");
+
+        var parameters = prefix!.GetParameters();
+        Assert.Multiple(() =>
+        {
+            Assert.That(parameters, Has.Length.EqualTo(2));
+            Assert.That(parameters[0].Name, Is.EqualTo("__1"));
+            Assert.That(parameters[1].Name, Is.EqualTo("__2"));
+        });
+    }
+
+    [Test]
+    public void InventoryActionProcessInventoryLineRefreshPatch_UsesHarmonyIndexArguments()
+    {
+        var prefix = typeof(InventoryActionProcessInventoryLineRefreshPatch).GetMethod(
+            "Prefix",
+            BindingFlags.Public | BindingFlags.Static);
+        var postfix = typeof(InventoryActionProcessInventoryLineRefreshPatch).GetMethod(
+            "Postfix",
+            BindingFlags.Public | BindingFlags.Static);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(prefix, Is.Not.Null, "Prefix not found for InventoryActionProcessInventoryLineRefreshPatch");
+            Assert.That(postfix, Is.Not.Null, "Postfix not found for InventoryActionProcessInventoryLineRefreshPatch");
+        });
+
+        var prefixParameters = prefix!.GetParameters();
+        var postfixParameters = postfix!.GetParameters();
+        Assert.Multiple(() =>
+        {
+            Assert.That(prefixParameters[0].Name, Is.EqualTo("__0"));
+            Assert.That(prefixParameters[1].Name, Is.EqualTo("__1"));
+            Assert.That(postfixParameters[0].Name, Is.EqualTo("__0"));
+            Assert.That(postfixParameters[1].Name, Is.EqualTo("__1"));
+        });
+    }
+
 #if HAS_GAME_DLL
     [Test]
     public void ExaminerInventoryNameRefreshPatch_TargetsNameStateChangingMethods()
@@ -717,6 +811,21 @@ public sealed class TargetMethodResolutionTests
                 targets,
                 Does.Contain("XRL.World.Parts.Examiner|MakePartiallyUnderstood|System.Boolean|System.Boolean"));
         });
+    }
+
+    [Test]
+    public void InventoryActionEventInventoryLineRefreshPatch_TargetsDirectCheckOverloads()
+    {
+        var targets = ResolveTargetMethodSignatures(typeof(InventoryActionEventInventoryLineRefreshPatch));
+        const string tail = "|XRL.World.GameObject|XRL.World.GameObject|XRL.World.GameObject|System.String|System.Boolean|System.Boolean|System.Boolean|System.Boolean|System.Boolean|System.Int32|System.Int32|System.Int32|XRL.World.GameObject|XRL.World.Cell|XRL.World.Cell|XRL.World.IInventory";
+
+        Assert.That(targets, Is.EquivalentTo(new[]
+        {
+            "XRL.World.InventoryActionEvent|Check|System.Boolean" + tail,
+            "XRL.World.InventoryActionEvent|Check|System.Boolean|System.Boolean&" + tail,
+            "XRL.World.InventoryActionEvent|Check|System.Boolean|XRL.World.IEvent&" + tail,
+            "XRL.World.InventoryActionEvent|Check|System.Boolean|XRL.World.InventoryActionEvent&" + tail,
+        }));
     }
 
     [Test]
@@ -3372,6 +3481,30 @@ public sealed class TargetMethodResolutionTests
         {
             Assert.That(method, Is.Not.Null, "GameObject.RenderForUI(string, bool) not found.");
             Assert.That(method?.ReturnType.FullName, Is.EqualTo("XRL.World.RenderEvent"));
+        });
+    }
+
+    [Test]
+    public void InventoryLineRefreshCoordinator_GameObjectInventoryCategoryHasOptionalKnownParameter()
+    {
+        var assembly = EnsureGameAssemblyLoaded();
+        var gameObjectType = assembly.GetType("XRL.World.GameObject", throwOnError: false);
+        Assert.That(gameObjectType, Is.Not.Null, "Type not found: XRL.World.GameObject");
+
+        var method = gameObjectType!.GetMethod(
+            "GetInventoryCategory",
+            BindingFlags.Public | BindingFlags.Instance,
+            binder: null,
+            types: new[] { typeof(bool) },
+            modifiers: null);
+        var parameter = method?.GetParameters().SingleOrDefault();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(method, Is.Not.Null, "GameObject.GetInventoryCategory(bool) not found.");
+            Assert.That(method?.ReturnType, Is.EqualTo(typeof(string)));
+            Assert.That(parameter?.IsOptional, Is.True);
+            Assert.That(parameter?.DefaultValue, Is.EqualTo(false));
         });
     }
 #endif

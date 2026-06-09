@@ -454,6 +454,51 @@ public sealed class GetDisplayNameRouteTranslatorTests
     }
 
     [Test]
+    public void TranslatePreservingColors_PreservesArmorStatColors_WhenRelicNameHasMarkedUpBracketedState()
+    {
+        WriteDictionaryFile("Scoped/historyspice-common.ja.json", ("analog", "アナログの"));
+        WriteDictionaryFile("ui-liquids.ja.json", ("gel", "ゲル"));
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            "{{Y-Y-Y-G-Y-Y-g-Y sequence|Chain of the Analog Sand}} {{b|\u0004}}0 {{K|\t}}0 {{y|[{{rules|6}} drams of {{Y|gel}}]}}",
+            nameof(GetDisplayNamePatch));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Does.Contain("{{Y-Y-Y-G-Y-Y-g-Y sequence|アナログの砂の鎖}}"));
+            Assert.That(translated, Does.Contain("{{b|\u0004}}0"));
+            Assert.That(translated, Does.Contain("{{K|\t}}0"));
+            Assert.That(translated, Does.Not.Contain("\u00040 \t0"));
+        });
+    }
+
+    [Test]
+    public void TranslatePreservingColors_TranslatesWholeWrappedRelicGeneratedName()
+    {
+        WriteDictionaryFile("Scoped/historyspice-common.ja.json", ("analog", "アナログの"));
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            "{{Y-Y-Y-G-Y-Y-g-Y sequence|Chain of the Analog Sand}}",
+            nameof(GetDisplayNamePatch));
+
+        Assert.That(translated, Is.EqualTo("{{Y-Y-Y-G-Y-Y-g-Y sequence|アナログの砂の鎖}}"));
+    }
+
+    [Test]
+    public void TranslatePreservingColors_ColorizesRawArmorStats_WhenRelicNameHasBareStatSuffix()
+    {
+        WriteDictionaryFile("Scoped/historyspice-common.ja.json", ("analog", "アナログの"));
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            "{{Y-Y-Y-G-Y-Y-g-Y sequence|Chain of the Analog Sand}} \u00040 \t0 [6ドラムのゲル]",
+            nameof(GetDisplayNamePatch));
+
+        Assert.That(
+            translated,
+            Is.EqualTo("{{Y-Y-Y-G-Y-Y-g-Y sequence|アナログの砂の鎖}} {{b|\u0004}}0 {{K|\t}}0 [6ドラムのゲル]"));
+    }
+
+    [Test]
     public void TranslatePreservingColors_TranslatesWholeWrappedBaseBeforeQuantifiedLiquidState()
     {
         WriteDictionaryFile(
@@ -774,7 +819,7 @@ public sealed class GetDisplayNameRouteTranslatorTests
         {
             Assert.That(
                 translated,
-                Is.EqualTo("{{r|血}}に染まったリストファン \u00040 \t0 [セルなし] {{y|<{{B|C}}{{B|C}}{{r|1}}{{b|3}}>}}"));
+                Is.EqualTo("{{r|血}}に染まったリストファン {{b|\u0004}}0 {{K|\t}}0 [セルなし] {{y|<{{B|C}}{{B|C}}{{r|1}}{{b|3}}>}}"));
             Assert.That(
                 ColorShapeCaptureObservability.Capture(
                     nameof(InventoryLineTranslationPatch),
@@ -800,7 +845,7 @@ public sealed class GetDisplayNameRouteTranslatorTests
         {
             Assert.That(
                 translated,
-                Is.EqualTo("{{r|血}}に染まったリストファン \u00040 \t0 [セルなし] {{y|<{{B|C}}{{B|C}}{{r|1}}{{b|3}}>}}"));
+                Is.EqualTo("{{r|血}}に染まったリストファン {{b|\u0004}}0 {{K|\t}}0 [セルなし] {{y|<{{B|C}}{{B|C}}{{r|1}}{{b|3}}>}}"));
             Assert.That(translated, Does.Not.Contain("{{r|{{r|血に染まっ}}"));
             Assert.That(translated, Does.Not.Contain("}}セ{{b|ル}}なし"));
         });
@@ -1595,7 +1640,7 @@ public sealed class GetDisplayNameRouteTranslatorTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(translated, Is.EqualTo("{{M|アナログの砂の鎖}} \u00040 \t0 [6ドラムのゲル]"));
+            Assert.That(translated, Is.EqualTo("{{M|アナログの砂の鎖}} {{b|\u0004}}0 {{K|\t}}0 [6ドラムのゲル]"));
             Assert.That(
                 ColorShapeCaptureObservability.Capture(
                     nameof(GetDisplayNameRouteTranslator),

@@ -261,7 +261,30 @@ public sealed class InventoryActionMenuPatchIntegrationTests
     }
 
     [Test]
-    public void InventoryActionProcessPatch_DoesNotDeferInventoryLineRefresh_WhenActionCompletesWithoutDisplayChange()
+    public void InventoryActionEventPatch_DefersInventoryLineRefresh_WhenDirectEventChangesDisplayName()
+    {
+        var inventory = new DummyInventoryStatusScreenTarget();
+        var item = new DummyRefreshItem
+        {
+            DisplayName = "ontological anchor",
+        };
+        var state = default(InventoryLineRefreshCoordinator.DisplaySnapshot);
+
+        InventoryActionEventInventoryLineRefreshPatch.Prefix(new DummyRefreshOwner(item), item, ref state);
+        item.DisplayName = "ontological anchor [full chem cell]";
+        InventoryActionEventInventoryLineRefreshPatch.Postfix(new DummyRefreshOwner(item), item, state);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(inventory.RefreshCount, Is.Zero);
+            Assert.That(
+                InventoryActionMenuCloseTimingObservability.HasPendingInventoryLineRefreshAfterAction(),
+                Is.True);
+        });
+    }
+
+    [Test]
+    public void InventoryActionProcessPatch_DefersInventoryLineRefresh_WhenActionCompletesWithoutDisplayChange()
     {
         var inventory = new DummyInventoryStatusScreenTarget();
         var item = new DummyRefreshItem
@@ -278,7 +301,29 @@ public sealed class InventoryActionMenuPatchIntegrationTests
             Assert.That(inventory.RefreshCount, Is.Zero);
             Assert.That(
                 InventoryActionMenuCloseTimingObservability.HasPendingInventoryLineRefreshAfterAction(),
-                Is.False);
+                Is.True);
+        });
+    }
+
+    [Test]
+    public void InventoryActionEventPatch_DefersInventoryLineRefresh_WhenDirectEventCompletesWithoutDisplayChange()
+    {
+        var inventory = new DummyInventoryStatusScreenTarget();
+        var item = new DummyRefreshItem
+        {
+            DisplayName = "ontological anchor",
+        };
+        var state = default(InventoryLineRefreshCoordinator.DisplaySnapshot);
+
+        InventoryActionEventInventoryLineRefreshPatch.Prefix(new DummyRefreshOwner(item), item, ref state);
+        InventoryActionEventInventoryLineRefreshPatch.Postfix(new DummyRefreshOwner(item), item, state);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(inventory.RefreshCount, Is.Zero);
+            Assert.That(
+                InventoryActionMenuCloseTimingObservability.HasPendingInventoryLineRefreshAfterAction(),
+                Is.True);
         });
     }
 

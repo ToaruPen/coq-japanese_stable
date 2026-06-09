@@ -97,9 +97,52 @@ public sealed class InventoryActionMenuCursorSoundPatchTests
         Assert.That(output, Does.Not.Contain("InventoryActionMenuCursorSound/v1"));
     }
 
+    [Test]
+    public void ShouldPlayCursorSoundForPopupController_AllowsGenericPopupWithNullPopupId_WhenMenuItemsExist()
+    {
+        var controller = new FakeMenuController
+        {
+            menuData = new List<object> { new() },
+        };
+
+        Assert.That(
+            InventoryActionMenuCursorSoundPatch.ShouldPlayCursorSoundForPopupControllerForTests(controller, null),
+            Is.True);
+    }
+
+    [Test]
+    public void ShouldPlayCursorSoundForPopupController_RejectsGenericPopupWithNullPopupId_WhenNoMenuItemsExist()
+    {
+        var controller = new FakeMenuController();
+
+        Assert.That(
+            InventoryActionMenuCursorSoundPatch.ShouldPlayCursorSoundForPopupControllerForTests(controller, null),
+            Is.False);
+    }
+
+    [Test]
+    public void ShouldPlayCursorSoundForPopupController_AllowsInventoryActionMenuPopupIdWithoutMenuItems()
+    {
+        var controller = new object();
+
+        Assert.That(
+            InventoryActionMenuCursorSoundPatch.ShouldPlayCursorSoundForPopupControllerForTests(
+                controller,
+                "InventoryActionMenu:abc"),
+            Is.True);
+    }
+
     private sealed class FakePopupMessage
     {
         public object? controller;
         public string? PopupID;
+    }
+
+    private sealed class FakeMenuController
+    {
+        public List<object>? menuData;
+#pragma warning disable S1144
+        public List<object> bottomContextOptions = new();
+#pragma warning restore S1144
     }
 }

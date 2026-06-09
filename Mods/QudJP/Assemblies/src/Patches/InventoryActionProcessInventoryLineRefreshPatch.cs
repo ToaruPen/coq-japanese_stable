@@ -35,13 +35,13 @@ internal static class InventoryActionProcessInventoryLineRefreshPatch
     }
 
     public static void Prefix(
-        object? GO,
-        object? Owner,
+        object? __0,
+        object? __1,
         ref InventoryLineRefreshCoordinator.DisplaySnapshot __state)
     {
         try
         {
-            __state = InventoryLineRefreshCoordinator.CaptureDisplaySnapshot(GO, Owner);
+            __state = InventoryLineRefreshCoordinator.CaptureDisplaySnapshot(__0, __1);
         }
         catch (Exception ex)
         {
@@ -51,13 +51,18 @@ internal static class InventoryActionProcessInventoryLineRefreshPatch
     }
 
     public static void Postfix(
-        object? GO,
-        object? Owner,
+        object? __0,
+        object? __1,
         InventoryLineRefreshCoordinator.DisplaySnapshot __state)
     {
         try
         {
-            _ = InventoryLineRefreshCoordinator.RefreshAfterInventoryActionIfChanged(GO, Owner, __state);
+            if (!InventoryLineRefreshCoordinator.RefreshAfterInventoryActionIfChanged(__0, __1, __state))
+            {
+                _ = InventoryLineRefreshCoordinator.MarkActiveInventoryLinesRefreshPendingForChangedItem(
+                    __0,
+                    requiresResort: false);
+            }
         }
         catch (Exception ex)
         {

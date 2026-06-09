@@ -158,6 +158,28 @@ public sealed class UITextSkinTranslationPatchTests
             Is.EqualTo("アイゲンライフル（{{R-R-r-r-g-g-G-G-B-B-b-b sequence|ビームスプリッタ装着}}） {{W|\u001a}}10 {{r|\u0003}}1d12 {{y|[{{w|フィジェット}} {{c|セル}} {{b|\u0004}}0 {{K|\t}}0 {{y|({{g|残量多}})}}]}}"));
     }
 
+    [Test]
+    public void TranslatePreservingColors_TranslatesMixedLocalizedRelicDisplayNameAtUiTextSink()
+    {
+        Directory.CreateDirectory(Path.Combine(tempDirectory, "Scoped"));
+        WriteContextDictionaryFile(
+            "Scoped/historyspice-common.ja.json",
+            ("analog", null, "アナログの"));
+
+        var source = "{{Y-Y-Y-G-Y-Y-g-Y sequence|Chain of the Analog Sand}} \u00040 \t0 [6ドラムのゲル]";
+        var translated = UITextSkinTranslationPatch.TranslatePreservingColors(
+            source,
+            nameof(UITextSkinTranslationPatch));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                translated,
+                Is.EqualTo("{{Y-Y-Y-G-Y-Y-g-Y sequence|アナログの砂の鎖}} {{b|\u0004}}0 {{K|\t}}0 [6ドラムのゲル]"));
+            Assert.That(translated, Does.Not.Contain("Chain of the Analog Sand"));
+        });
+    }
+
     [TestCase("[Esc]")]
     [TestCase("[Space]")]
     [TestCase("[]")]
