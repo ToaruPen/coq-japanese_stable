@@ -240,7 +240,6 @@ public sealed class InventoryActionMenuPatchIntegrationTests
     [Test]
     public void InventoryActionProcessPatch_DefersInventoryLineRefresh_WhenActionChangesDisplayName()
     {
-        var inventory = new DummyInventoryStatusScreenTarget();
         var item = new DummyRefreshItem
         {
             DisplayName = "zz mystery",
@@ -253,7 +252,6 @@ public sealed class InventoryActionMenuPatchIntegrationTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(inventory.RefreshCount, Is.Zero);
             Assert.That(
                 InventoryActionMenuCloseTimingObservability.HasPendingInventoryLineRefreshAfterAction(),
                 Is.True);

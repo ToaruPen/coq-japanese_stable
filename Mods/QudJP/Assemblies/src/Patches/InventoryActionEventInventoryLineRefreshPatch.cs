@@ -77,13 +77,13 @@ internal static class InventoryActionEventInventoryLineRefreshPatch
     }
 
     public static void Prefix(
-        object? Actor,
-        object? Item,
+        [HarmonyArgument("Actor")] object? actor,
+        [HarmonyArgument("Item")] object? item,
         ref InventoryLineRefreshCoordinator.DisplaySnapshot __state)
     {
         try
         {
-            __state = InventoryLineRefreshCoordinator.CaptureDisplaySnapshot(Item, Actor);
+            __state = InventoryLineRefreshCoordinator.CaptureDisplaySnapshot(item, actor);
         }
         catch (Exception ex)
         {
@@ -93,16 +93,16 @@ internal static class InventoryActionEventInventoryLineRefreshPatch
     }
 
     public static void Postfix(
-        object? Actor,
-        object? Item,
+        [HarmonyArgument("Actor")] object? actor,
+        [HarmonyArgument("Item")] object? item,
         InventoryLineRefreshCoordinator.DisplaySnapshot __state)
     {
         try
         {
-            if (!InventoryLineRefreshCoordinator.RefreshAfterInventoryActionIfChanged(Item, Actor, __state))
+            if (!InventoryLineRefreshCoordinator.RefreshAfterInventoryActionIfChanged(item, actor, __state))
             {
                 _ = InventoryLineRefreshCoordinator.MarkActiveInventoryLinesRefreshPendingForChangedItem(
-                    Item,
+                    item,
                     requiresResort: false);
             }
         }

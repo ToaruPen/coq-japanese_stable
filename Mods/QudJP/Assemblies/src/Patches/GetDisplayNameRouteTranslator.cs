@@ -1087,14 +1087,14 @@ internal static class GetDisplayNameRouteTranslator
         string route,
         bool preserveColorsForNonStatBase)
     {
-        if (IsWholeQudWrapper(baseSource))
-        {
-            return TranslateDisplayNameFragmentPreservingWholeQudWrapper(baseSource, route);
-        }
-
         if (LooksLikeDisplayNameWithStatSuffix(baseSource))
         {
             return TranslatePreservingColors(baseSource, route);
+        }
+
+        if (IsWholeQudWrapper(baseSource))
+        {
+            return TranslateDisplayNameFragmentPreservingWholeQudWrapper(baseSource, route);
         }
 
         return preserveColorsForNonStatBase

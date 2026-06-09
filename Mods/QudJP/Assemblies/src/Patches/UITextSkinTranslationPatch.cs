@@ -500,6 +500,35 @@ public static class UITextSkinTranslationPatch
         return IsAlreadyLocalizedDirectRouteText(source, context);
     }
 
+    internal static bool LooksLikeMixedDisplayNameSinkTextForTests(string source)
+    {
+        var sanitizedSource = MessageFrameTranslator.StripAllDirectTranslationMarkers(source);
+        var stripped = ColorAwareTranslationComposer.GetVisibleText(sanitizedSource);
+        return LooksLikeMixedDisplayNameSinkText(sanitizedSource, stripped);
+    }
+
+    internal static bool LooksLikeInventoryDisplayNameLineForTests(string source)
+    {
+        var stripped = ColorAwareTranslationComposer.GetVisibleText(source);
+        return LooksLikeInventoryDisplayNameLine(stripped);
+    }
+
+    internal static bool ContainsCharacterForTests(string source, char character)
+    {
+        return ContainsCharacter(source, character);
+    }
+
+    internal static bool TryTranslateMixedDisplayNameSinkTextForTests(string source, out string translated)
+    {
+        var sanitizedSource = MessageFrameTranslator.StripAllDirectTranslationMarkers(source);
+        var stripped = ColorAwareTranslationComposer.GetVisibleText(sanitizedSource);
+        return TryTranslateMixedDisplayNameSinkText(
+            sanitizedSource,
+            stripped,
+            nameof(UITextSkinTranslationPatch),
+            out translated);
+    }
+
     internal static string? ResolveObservabilityContextForTests(string? context, params string[] stackTypeNames)
     {
         return ResolveObservabilityContext(context, stackTypeNames);

@@ -1,8 +1,10 @@
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using HarmonyLib;
 
 namespace QudJP.Patches;
@@ -17,6 +19,7 @@ public static class InventoryActionMenuCursorSoundPatch
     private static MethodInfo? playUiSoundMethod;
     private static Type? soundEffectType;
     private static Action<object?, string?>? playCursorSoundRequestObserverForTests;
+    private static readonly ConcurrentDictionary<(Type Type, string FieldName), Lazy<FieldInfo?>> CollectionFieldCache = new();
 
     internal static void RememberPopupController(object? popupMessage)
     {
@@ -165,7 +168,11 @@ public static class InventoryActionMenuCursorSoundPatch
 
     private static bool HasNonEmptyCollectionField(object instance, string fieldName)
     {
-        var field = AccessTools.Field(instance.GetType(), fieldName);
+        var field = CollectionFieldCache.GetOrAdd(
+            (instance.GetType(), fieldName),
+            static key => new Lazy<FieldInfo?>(
+                () => AccessTools.Field(key.Type, key.FieldName),
+                LazyThreadSafetyMode.ExecutionAndPublication)).Value;
         if (field is null)
         {
             return false;

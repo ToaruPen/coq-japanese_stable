@@ -14,6 +14,7 @@ namespace QudJP;
 
 internal static class InventoryLineRefreshCoordinator
 {
+    // Inventory UI state is owned by the Unity main thread. Keep these fields single-threaded.
     private static bool pendingInventoryLineRefresh;
     private static bool pendingInventoryLineRefreshRequiresResort;
     private static object? pendingChangedItem;
@@ -625,7 +626,7 @@ internal static class InventoryLineRefreshCoordinator
     private static List<object> CollectItemLines(IList listItems, IDictionary objectCategories)
     {
         var lines = new List<object>();
-        var seen = new HashSet<object>();
+        var seen = new HashSet<object>(ReferenceIdentityComparer.Instance);
 
         AddItemLines(listItems, lines, seen);
         foreach (var value in objectCategories.Values)
@@ -657,26 +658,51 @@ internal static class InventoryLineRefreshCoordinator
             var sampleType = sampleList.GetType();
             if (sampleType.IsGenericType && sampleType.GetGenericArguments().Length == 1)
             {
-                var sampleInstance = Activator.CreateInstance(sampleType);
-                if (sampleInstance is IList sampleCategoryList)
+                try
                 {
-                    return sampleCategoryList;
-                }
+                    var sampleInstance = Activator.CreateInstance(sampleType);
+                    if (sampleInstance is IList sampleCategoryList)
+                    {
+                        return sampleCategoryList;
+                    }
 
-                Trace.TraceError("QudJP: could not create inventory category list of type {0}.", sampleType.FullName);
-                throw new InvalidOperationException("Could not create category list.");
+                    Trace.TraceError("QudJP: could not create inventory category list of type {0}.", sampleType.FullName);
+                }
+                catch (Exception ex)
+                {
+                    Trace.TraceError(
+                        "QudJP: could not create inventory category list of type {0}: {1}",
+                        sampleType.FullName,
+                        ex);
+                }
             }
         }
 
-        var listType = typeof(List<>).MakeGenericType(lineType);
-        var instance = Activator.CreateInstance(listType);
-        if (instance is IList categoryList)
+        return CreateFallbackLineList(lineType);
+    }
+
+    private static IList CreateFallbackLineList(Type lineType)
+    {
+        try
         {
-            return categoryList;
+            var listType = typeof(List<>).MakeGenericType(lineType);
+            var instance = Activator.CreateInstance(listType);
+            if (instance is IList categoryList)
+            {
+                return categoryList;
+            }
+
+            Trace.TraceError("QudJP: could not create inventory category list of type {0}.", listType.FullName);
+        }
+        catch (Exception ex)
+        {
+            Trace.TraceError(
+                "QudJP: could not create inventory category list for line type {0}: {1}",
+                lineType.FullName,
+                ex);
         }
 
-        Trace.TraceError("QudJP: could not create inventory category list of type {0}.", listType.FullName);
-        throw new InvalidOperationException("Could not create category list.");
+        return new ArrayList();
     }
 
     private static string? GetCurrentInventoryCategory(object line)
@@ -856,7 +882,7 @@ internal static class InventoryLineRefreshCoordinator
 
     private static Dictionary<object, string> BuildVisibleSortKeys(IEnumerable<object> lines)
     {
-        var sortKeys = new Dictionary<object, string>(ReferenceObjectEqualityComparer.Instance);
+        var sortKeys = new Dictionary<object, string>(ReferenceIdentityComparer.Instance);
         foreach (var line in lines)
         {
             if (!sortKeys.ContainsKey(line))
@@ -1147,18 +1173,4 @@ internal static class InventoryLineRefreshCoordinator
         }
     }
 
-    private sealed class ReferenceObjectEqualityComparer : IEqualityComparer<object>
-    {
-        internal static readonly ReferenceObjectEqualityComparer Instance = new();
-
-        public new bool Equals(object? x, object? y)
-        {
-            return ReferenceEquals(x, y);
-        }
-
-        public int GetHashCode(object obj)
-        {
-            return RuntimeHelpers.GetHashCode(obj);
-        }
-    }
 }

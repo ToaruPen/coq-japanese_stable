@@ -780,10 +780,14 @@ public sealed class TargetMethodResolutionTests
         var postfixParameters = postfix!.GetParameters();
         Assert.Multiple(() =>
         {
+            Assert.That(prefixParameters, Has.Length.EqualTo(3));
+            Assert.That(postfixParameters, Has.Length.EqualTo(3));
             Assert.That(prefixParameters[0].Name, Is.EqualTo("__0"));
             Assert.That(prefixParameters[1].Name, Is.EqualTo("__1"));
+            Assert.That(prefixParameters[2].Name, Is.EqualTo("__state"));
             Assert.That(postfixParameters[0].Name, Is.EqualTo("__0"));
             Assert.That(postfixParameters[1].Name, Is.EqualTo("__1"));
+            Assert.That(postfixParameters[2].Name, Is.EqualTo("__state"));
         });
     }
 

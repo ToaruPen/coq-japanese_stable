@@ -169,22 +169,4 @@ internal static class InventoryNameRefreshCoordinator
         }
     }
 
-    private sealed class ReferenceIdentityComparer : IEqualityComparer<object>
-    {
-        internal static readonly ReferenceIdentityComparer Instance = new();
-
-        private ReferenceIdentityComparer()
-        {
-        }
-
-        public new bool Equals(object? x, object? y)
-        {
-            return ReferenceEquals(x, y);
-        }
-
-        public int GetHashCode(object obj)
-        {
-            return System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(obj);
-        }
-    }
 }

@@ -241,8 +241,12 @@ public static class InventoryLineTranslationPatch
         {
             translated = TranslateVisibleTextUncached(sanitizedSource, route, "InventoryLine.ItemName.SortKey");
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            Trace.TraceError(
+                "QudJP: InventoryLineTranslationPatch.TranslateItemDisplayNameForSortKey visible-text translation failed for source '{0}': {1}",
+                sanitizedSource,
+                ex);
             // Sorting must remain available even if dictionary loading is unavailable.
         }
 
@@ -252,8 +256,12 @@ public static class InventoryLineTranslationPatch
             {
                 translated = TranslateDisplayNameRouteFallback(sanitizedSource, route);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Trace.TraceError(
+                    "QudJP: InventoryLineTranslationPatch.TranslateItemDisplayNameForSortKey display-name fallback failed for source '{0}': {1}",
+                    sanitizedSource,
+                    ex);
                 translated = sanitizedSource;
             }
         }
