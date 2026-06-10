@@ -11,7 +11,7 @@ namespace QudJP;
 
 public static class QudJPMod
 {
-    internal const string BuildMarker = "ui-child-snapshot-v3";
+    internal const string BuildMarker = "inventory-action-fallback-no-resort-v1";
 
     private static int isInitialized;
 

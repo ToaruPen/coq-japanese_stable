@@ -1,7 +1,10 @@
 using System;
+using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using HarmonyLib;
 
 namespace QudJP.Patches;
@@ -16,6 +19,7 @@ public static class InventoryActionMenuCursorSoundPatch
     private static MethodInfo? playUiSoundMethod;
     private static Type? soundEffectType;
     private static Action<object?, string?>? playCursorSoundRequestObserverForTests;
+    private static readonly ConcurrentDictionary<(Type Type, string FieldName), Lazy<FieldInfo?>> CollectionFieldCache = new();
 
     internal static void RememberPopupController(object? popupMessage)
     {
@@ -94,9 +98,7 @@ public static class InventoryActionMenuCursorSoundPatch
     {
         var hasPopupId = TryGetRememberedPopupId(controller, out var popupId);
         ObservePlayCursorSoundRequestForTests(controller, popupId);
-        if (!hasPopupId
-            || popupId is null
-            || !popupId.StartsWith(InventoryActionMenuPopupIdPrefix, StringComparison.Ordinal))
+        if (!hasPopupId || !ShouldPlayCursorSoundForPopupController(controller, popupId))
         {
             return;
         }
@@ -105,6 +107,11 @@ public static class InventoryActionMenuCursorSoundPatch
         {
             LogCursorSoundPlayed(popupId);
         }
+    }
+
+    internal static bool ShouldPlayCursorSoundForPopupControllerForTests(object? controller, string? popupId)
+    {
+        return ShouldPlayCursorSoundForPopupController(controller, popupId);
     }
 
     internal static void SetPlayCursorSoundRequestObserverForTests(Action<object?, string?>? observer)
@@ -135,6 +142,67 @@ public static class InventoryActionMenuCursorSoundPatch
 
         var field = GetPopupIdField(popupMessage.GetType());
         return field?.GetValue(popupMessage) as string;
+    }
+
+    private static bool ShouldPlayCursorSoundForPopupController(object? controller, string? popupId)
+    {
+        if (controller is null)
+        {
+            return false;
+        }
+
+        if (popupId is not null
+            && popupId.StartsWith(InventoryActionMenuPopupIdPrefix, StringComparison.Ordinal))
+        {
+            return true;
+        }
+
+        return HasSelectablePopupOptions(controller);
+    }
+
+    private static bool HasSelectablePopupOptions(object controller)
+    {
+        return HasNonEmptyCollectionField(controller, "menuData")
+            || HasNonEmptyCollectionField(controller, "bottomContextOptions");
+    }
+
+    private static bool HasNonEmptyCollectionField(object instance, string fieldName)
+    {
+        var field = CollectionFieldCache.GetOrAdd(
+            (instance.GetType(), fieldName),
+            static key => new Lazy<FieldInfo?>(
+                () => AccessTools.Field(key.Type, key.FieldName),
+                LazyThreadSafetyMode.ExecutionAndPublication)).Value;
+        if (field is null)
+        {
+            return false;
+        }
+
+        var value = field.GetValue(instance);
+        if (value is null)
+        {
+            return false;
+        }
+
+        if (value is ICollection collection)
+        {
+            return collection.Count > 0;
+        }
+
+        if (value is IEnumerable enumerable && value is not string)
+        {
+            var enumerator = enumerable.GetEnumerator();
+            try
+            {
+                return enumerator.MoveNext();
+            }
+            finally
+            {
+                (enumerator as IDisposable)?.Dispose();
+            }
+        }
+
+        return false;
     }
 
     private static FieldInfo? GetControllerField(Type popupMessageType)

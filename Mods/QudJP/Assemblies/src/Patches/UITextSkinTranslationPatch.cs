@@ -305,6 +305,16 @@ public static class UITextSkinTranslationPatch
             return displayNameTranslation;
         }
 
+        if (TryTranslateMixedDisplayNameSinkText(sanitizedSource, stripped, effectiveContext, out var mixedDisplayNameTranslation))
+        {
+            DynamicTextObservability.RecordTransform(
+                nameof(UITextSkinTranslationPatch),
+                "DisplayName.MixedSinkText",
+                sanitizedSource,
+                mixedDisplayNameTranslation);
+            return mixedDisplayNameTranslation;
+        }
+
         var alreadyLocalized = IsAlreadyLocalizedDirectRouteText(stripped, effectiveContext);
         var shouldSkipTranslation = ShouldSkipTranslation(stripped, effectiveContext);
         if (alreadyLocalized)
@@ -400,11 +410,69 @@ public static class UITextSkinTranslationPatch
         return true;
     }
 
+    private static bool TryTranslateMixedDisplayNameSinkText(
+        string source,
+        string stripped,
+        string? context,
+        out string translated)
+    {
+        translated = source;
+        if (!string.Equals(context, nameof(UITextSkinTranslationPatch), StringComparison.Ordinal)
+            || !LooksLikeMixedDisplayNameSinkText(source, stripped))
+        {
+            return false;
+        }
+
+        var displayNameTranslation = source;
+        if (!DisplayNameSemanticPipeline.TryTranslateResult(
+                ref displayNameTranslation,
+                ObservabilityHelpers.ComposeContext(
+                    nameof(GetDisplayNameProcessPatch),
+                    "UITextSkin.MixedDisplayNameSinkText")))
+        {
+            return false;
+        }
+
+        translated = displayNameTranslation;
+        return true;
+    }
+
     private static bool LooksLikeKnownDisplayNameWithClause(string source)
     {
         for (var index = 0; index < DisplayNameWithClauseMarkers.Length; index++)
         {
             if (StringHelpers.ContainsOrdinalIgnoreCase(source, " with " + DisplayNameWithClauseMarkers[index]))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static bool LooksLikeMixedDisplayNameSinkText(string source, string stripped)
+    {
+        return JapaneseCharacterPattern.IsMatch(stripped)
+            && HasUntranslatedEnglishWord(stripped)
+            && (source.Contains(" sequence|")
+                || (ContainsCharacter(stripped, '\u0004') && ContainsCharacter(stripped, '\t'))
+                || LooksLikeInventoryDisplayNameLine(stripped));
+    }
+
+    private static bool LooksLikeInventoryDisplayNameLine(string stripped)
+    {
+        return stripped.Contains(" [")
+            && (stripped.Contains(" lbs.")
+                || stripped.Contains(" kg")
+                || ContainsCharacter(stripped, '\u0004')
+                || ContainsCharacter(stripped, '\t'));
+    }
+
+    private static bool ContainsCharacter(string source, char character)
+    {
+        for (var index = 0; index < source.Length; index++)
+        {
+            if (source[index] == character)
             {
                 return true;
             }
@@ -430,6 +498,35 @@ public static class UITextSkinTranslationPatch
     internal static bool IsAlreadyLocalizedDirectRouteTextForContext(string source, string? context)
     {
         return IsAlreadyLocalizedDirectRouteText(source, context);
+    }
+
+    internal static bool LooksLikeMixedDisplayNameSinkTextForTests(string source)
+    {
+        var sanitizedSource = MessageFrameTranslator.StripAllDirectTranslationMarkers(source);
+        var stripped = ColorAwareTranslationComposer.GetVisibleText(sanitizedSource);
+        return LooksLikeMixedDisplayNameSinkText(sanitizedSource, stripped);
+    }
+
+    internal static bool LooksLikeInventoryDisplayNameLineForTests(string source)
+    {
+        var stripped = ColorAwareTranslationComposer.GetVisibleText(source);
+        return LooksLikeInventoryDisplayNameLine(stripped);
+    }
+
+    internal static bool ContainsCharacterForTests(string source, char character)
+    {
+        return ContainsCharacter(source, character);
+    }
+
+    internal static bool TryTranslateMixedDisplayNameSinkTextForTests(string source, out string translated)
+    {
+        var sanitizedSource = MessageFrameTranslator.StripAllDirectTranslationMarkers(source);
+        var stripped = ColorAwareTranslationComposer.GetVisibleText(sanitizedSource);
+        return TryTranslateMixedDisplayNameSinkText(
+            sanitizedSource,
+            stripped,
+            nameof(UITextSkinTranslationPatch),
+            out translated);
     }
 
     internal static string? ResolveObservabilityContextForTests(string? context, params string[] stackTypeNames)
@@ -527,6 +624,20 @@ public static class UITextSkinTranslationPatch
             || HotkeySuffixedLabelPattern.IsMatch(source);
     }
 
+    private static bool HasUntranslatedEnglishWord(string source)
+    {
+        var matches = EnglishWordPattern.Matches(source);
+        for (var index = 0; index < matches.Count; index++)
+        {
+            if (!AllowedLocalizedEnglishTokenPattern.IsMatch(matches[index].Value))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     private static bool IsAlreadyLocalizedDirectRouteText(string source, string? context)
     {
         if (!IsDirectRouteAlreadyLocalizedContext(context))
@@ -539,16 +650,8 @@ public static class UITextSkinTranslationPatch
             return false;
         }
 
-        var matches = EnglishWordPattern.Matches(source);
-        for (var index = 0; index < matches.Count; index++)
-        {
-            if (!AllowedLocalizedEnglishTokenPattern.IsMatch(matches[index].Value))
-            {
-                return false;
-            }
-        }
-
-        return !IsStrictDirectRouteContext(context) || !HasDirectRouteDynamicMarkers(source);
+        return !HasUntranslatedEnglishWord(source)
+            && (!IsStrictDirectRouteContext(context) || !HasDirectRouteDynamicMarkers(source));
     }
 
     private static bool IsDirectRouteAlreadyLocalizedContext(string? context)

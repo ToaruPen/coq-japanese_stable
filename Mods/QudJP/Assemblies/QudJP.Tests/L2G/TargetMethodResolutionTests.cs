@@ -31,6 +31,44 @@ public sealed class TargetMethodResolutionTests
     }
 
 #if HAS_GAME_DLL
+    [Test]
+    public void InventoryFrameworkScrollerBeforeShow_AcceptsInventoryLineDataList()
+    {
+        var assembly = EnsureGameAssemblyLoaded();
+        var frameworkScrollerType = assembly.GetType("XRL.UI.Framework.FrameworkScroller", throwOnError: false);
+        var frameworkDataElementType = assembly.GetType("XRL.UI.Framework.FrameworkDataElement", throwOnError: false);
+        var inventoryLineDataType = assembly.GetType("Qud.UI.InventoryLineData", throwOnError: false);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(frameworkScrollerType, Is.Not.Null);
+            Assert.That(frameworkDataElementType, Is.Not.Null);
+            Assert.That(inventoryLineDataType, Is.Not.Null);
+        });
+
+        var inventoryLineListType = typeof(List<>).MakeGenericType(inventoryLineDataType!);
+        var frameworkDataEnumerableType = typeof(IEnumerable<>).MakeGenericType(frameworkDataElementType!);
+        var beforeShow = frameworkScrollerType!
+            .GetMethods(BindingFlags.Instance | BindingFlags.Public)
+            .FirstOrDefault(method =>
+            {
+                if (!string.Equals(method.Name, "BeforeShow", StringComparison.Ordinal))
+                {
+                    return false;
+                }
+
+                var parameters = method.GetParameters();
+                return parameters.Length == 1
+                    && parameters[0].ParameterType.IsAssignableFrom(inventoryLineListType);
+            });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(frameworkDataEnumerableType.IsAssignableFrom(inventoryLineListType), Is.True);
+            Assert.That(beforeShow, Is.Not.Null);
+        });
+    }
+
     [TestCase(typeof(GetDisplayNamePatch), "GetFor", "XRL.World.GetDisplayNameEvent", "System.String", new[]
     {
         "XRL.World.GameObject",
@@ -91,6 +129,19 @@ public sealed class TargetMethodResolutionTests
         "System.Boolean",
     })]
     [TestCase(typeof(InventoryAndEquipmentStatusScreenTranslationPatch), "UpdateViewFromData", "Qud.UI.InventoryAndEquipmentStatusScreen", "System.Void", new string[0])]
+    [TestCase(typeof(InventoryAndEquipmentStatusScreenNameRefreshPatch), "UpdateViewFromData", "Qud.UI.InventoryAndEquipmentStatusScreen", "System.Void", new string[0])]
+    [TestCase(typeof(InventoryAndEquipmentStatusScreenInventoryLineSortPatch), "UpdateViewFromData", "Qud.UI.InventoryAndEquipmentStatusScreen", "System.Void", new string[0])]
+    [TestCase(typeof(EquipmentApiInventoryActionMenuRefreshPatch), "ShowInventoryActionMenu", "Qud.API.EquipmentAPI", "XRL.World.InventoryAction", new[]
+    {
+        "System.Collections.Generic.Dictionary`2[[System.String],[XRL.World.InventoryAction]]",
+        "XRL.World.GameObject",
+        "XRL.World.GameObject",
+        "System.Boolean",
+        "System.Boolean",
+        "System.String",
+        "System.Collections.Generic.IComparer`1[[XRL.World.InventoryAction]]",
+        "System.Boolean",
+    })]
     [TestCase(typeof(InventoryAndEquipmentStatusScreenShowRepairPatch), "ShowScreen", "Qud.UI.InventoryAndEquipmentStatusScreen", "XRL.UI.Framework.NavigationContext", new[] { "XRL.World.GameObject", "Qud.UI.StatusScreensScreen" })]
     [TestCase(typeof(InventoryLineTranslationPatch), "setData", "Qud.UI.InventoryLine", "System.Void", new[] { "XRL.UI.Framework.FrameworkDataElement" })]
     [TestCase(typeof(InventoryLineRenderProbePatch), "setData", "Qud.UI.InventoryLine", "System.Void", new[] { "XRL.UI.Framework.FrameworkDataElement" })]
@@ -528,6 +579,12 @@ public sealed class TargetMethodResolutionTests
         "System.Collections.Generic.IComparer`1[[XRL.World.InventoryAction]]",
         "System.Boolean",
     })]
+    [TestCase(typeof(InventoryActionProcessInventoryLineRefreshPatch), "Process", "XRL.World.InventoryAction", "XRL.World.IEvent", new[]
+    {
+        "XRL.World.GameObject",
+        "XRL.World.GameObject",
+        "System.Boolean",
+    })]
     [TestCase(typeof(InventoryActionMenuPopupHideTimingPatch), "Hide", "Qud.UI.PopupMessage", "System.Void", new string[0])]
     [TestCase(typeof(InventoryActionMenuPopupUpdateTimingPatch), "Update", "Qud.UI.PopupMessage", "System.Void", new string[0])]
     [TestCase(typeof(InventoryActionMenuUpdateViewTimingPatch), "UpdateViewFromData", "Qud.UI.InventoryAndEquipmentStatusScreen", "System.Void", new string[0])]
@@ -685,7 +742,109 @@ public sealed class TargetMethodResolutionTests
             Is.EqualTo("XRL.World.Parts.Skill.Cudgel_Conk|PerformConk|System.Boolean"));
     }
 
+    [Test]
+    public void EquipmentApiInventoryActionMenuRefreshPatch_Prefix_UsesHarmonyIndexArguments()
+    {
+        var prefix = typeof(EquipmentApiInventoryActionMenuRefreshPatch).GetMethod(
+            "Prefix",
+            BindingFlags.Public | BindingFlags.Static);
+
+        Assert.That(prefix, Is.Not.Null, "Prefix not found for EquipmentApiInventoryActionMenuRefreshPatch");
+
+        var parameters = prefix!.GetParameters();
+        Assert.Multiple(() =>
+        {
+            Assert.That(parameters, Has.Length.EqualTo(2));
+            Assert.That(parameters[0].Name, Is.EqualTo("__1"));
+            Assert.That(parameters[1].Name, Is.EqualTo("__2"));
+        });
+    }
+
+    [Test]
+    public void InventoryActionProcessInventoryLineRefreshPatch_UsesHarmonyIndexArguments()
+    {
+        var prefix = typeof(InventoryActionProcessInventoryLineRefreshPatch).GetMethod(
+            "Prefix",
+            BindingFlags.Public | BindingFlags.Static);
+        var postfix = typeof(InventoryActionProcessInventoryLineRefreshPatch).GetMethod(
+            "Postfix",
+            BindingFlags.Public | BindingFlags.Static);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(prefix, Is.Not.Null, "Prefix not found for InventoryActionProcessInventoryLineRefreshPatch");
+            Assert.That(postfix, Is.Not.Null, "Postfix not found for InventoryActionProcessInventoryLineRefreshPatch");
+        });
+
+        var prefixParameters = prefix!.GetParameters();
+        var postfixParameters = postfix!.GetParameters();
+        Assert.Multiple(() =>
+        {
+            Assert.That(prefixParameters, Has.Length.EqualTo(3));
+            Assert.That(postfixParameters, Has.Length.EqualTo(3));
+            Assert.That(prefixParameters[0].Name, Is.EqualTo("__0"));
+            Assert.That(prefixParameters[1].Name, Is.EqualTo("__1"));
+            Assert.That(prefixParameters[2].Name, Is.EqualTo("__state"));
+            Assert.That(postfixParameters[0].Name, Is.EqualTo("__0"));
+            Assert.That(postfixParameters[1].Name, Is.EqualTo("__1"));
+            Assert.That(postfixParameters[2].Name, Is.EqualTo("__state"));
+        });
+    }
+
 #if HAS_GAME_DLL
+    [Test]
+    public void ExaminerInventoryNameRefreshPatch_TargetsNameStateChangingMethods()
+    {
+        var targets = ResolveTargetMethodSignatures(typeof(ExaminerInventoryNameRefreshPatch));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                targets,
+                Does.Contain("XRL.World.Parts.Examiner|ResultSuccess|System.Void|XRL.World.GameObject"));
+            Assert.That(
+                targets,
+                Does.Contain("XRL.World.Parts.Examiner|ResultExceptionalSuccess|System.Void|XRL.World.GameObject"));
+            Assert.That(
+                targets,
+                Does.Contain("XRL.World.Parts.Examiner|ResultPartialSuccess|System.Void|XRL.World.GameObject|System.Int32"));
+            Assert.That(
+                targets,
+                Does.Contain("XRL.World.Parts.Examiner|MakeUnderstood|System.Boolean|System.Boolean"));
+            Assert.That(
+                targets,
+                Does.Contain("XRL.World.Parts.Examiner|MakePartiallyUnderstood|System.Boolean|System.Boolean"));
+        });
+    }
+
+    [Test]
+    public void InventoryActionEventInventoryLineRefreshPatch_TargetsDirectCheckOverloads()
+    {
+        var targetMethods = ResolveTargetMethods(typeof(InventoryActionEventInventoryLineRefreshPatch));
+        var targets = targetMethods
+            .Select(FullMethodSignature)
+            .ToHashSet(StringComparer.Ordinal);
+        const string tail = "|XRL.World.GameObject|XRL.World.GameObject|XRL.World.GameObject|System.String|System.Boolean|System.Boolean|System.Boolean|System.Boolean|System.Boolean|System.Int32|System.Int32|System.Int32|XRL.World.GameObject|XRL.World.Cell|XRL.World.Cell|XRL.World.IInventory";
+
+        Assert.That(targets, Is.EquivalentTo(new[]
+        {
+            "XRL.World.InventoryActionEvent|Check|System.Boolean" + tail,
+            "XRL.World.InventoryActionEvent|Check|System.Boolean|System.Boolean&" + tail,
+            "XRL.World.InventoryActionEvent|Check|System.Boolean|XRL.World.IEvent&" + tail,
+            "XRL.World.InventoryActionEvent|Check|System.Boolean|XRL.World.InventoryActionEvent&" + tail,
+        }));
+        foreach (var method in targetMethods)
+        {
+            var parameters = method.GetParameters();
+            var actorIndex = parameters.Length == 16 ? 1 : 2;
+            Assert.Multiple(() =>
+            {
+                Assert.That(parameters[actorIndex].Name, Is.EqualTo("Actor"));
+                Assert.That(parameters[actorIndex + 1].Name, Is.EqualTo("Item"));
+            });
+        }
+    }
+
     [Test]
     public void ImportedFoodOrDrinkFactionNameTargetMethod_ResolvesExactRuntimeSignature()
     {
@@ -3341,6 +3500,30 @@ public sealed class TargetMethodResolutionTests
             Assert.That(method?.ReturnType.FullName, Is.EqualTo("XRL.World.RenderEvent"));
         });
     }
+
+    [Test]
+    public void InventoryLineRefreshCoordinator_GameObjectInventoryCategoryHasOptionalKnownParameter()
+    {
+        var assembly = EnsureGameAssemblyLoaded();
+        var gameObjectType = assembly.GetType("XRL.World.GameObject", throwOnError: false);
+        Assert.That(gameObjectType, Is.Not.Null, "Type not found: XRL.World.GameObject");
+
+        var method = gameObjectType!.GetMethod(
+            "GetInventoryCategory",
+            BindingFlags.Public | BindingFlags.Instance,
+            binder: null,
+            types: new[] { typeof(bool) },
+            modifiers: null);
+        var parameter = method?.GetParameters().SingleOrDefault();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(method, Is.Not.Null, "GameObject.GetInventoryCategory(bool) not found.");
+            Assert.That(method?.ReturnType, Is.EqualTo(typeof(string)));
+            Assert.That(parameter?.IsOptional, Is.True);
+            Assert.That(parameter?.DefaultValue, Is.EqualTo(false));
+        });
+    }
 #endif
 
     private static MethodBase? InvokeTargetMethod(Type patchType)
@@ -3371,22 +3554,29 @@ public sealed class TargetMethodResolutionTests
 
     private static HashSet<string> ResolveTargetMethodSignatures(Type patchType)
     {
+        return ResolveTargetMethods(patchType)
+            .Select(FullMethodSignature)
+            .ToHashSet(StringComparer.Ordinal);
+    }
+
+    private static List<MethodInfo> ResolveTargetMethods(Type patchType)
+    {
         var targetMethodsMethod = patchType.GetMethod("TargetMethods", BindingFlags.NonPublic | BindingFlags.Static);
         Assert.That(targetMethodsMethod, Is.Not.Null, $"TargetMethods not found for {patchType.FullName}");
 
         var result = targetMethodsMethod!.Invoke(null, null) as System.Collections.IEnumerable;
         Assert.That(result, Is.Not.Null, $"TargetMethods returned null for {patchType.FullName}");
 
-        var signatures = new HashSet<string>(StringComparer.Ordinal);
+        var methods = new List<MethodInfo>();
         foreach (var item in result!)
         {
             if (item is MethodInfo methodInfo)
             {
-                signatures.Add(FullMethodSignature(methodInfo));
+                methods.Add(methodInfo);
             }
         }
 
-        return signatures;
+        return methods;
     }
 
     private static MethodBase? FindMethodByNameAndParameterCount(

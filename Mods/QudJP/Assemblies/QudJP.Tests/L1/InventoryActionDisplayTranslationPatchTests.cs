@@ -380,7 +380,7 @@ public sealed class InventoryActionDisplayTranslationPatchTests
         Assert.Multiple(() =>
         {
             Assert.That(owner.DisplayName, Is.EqualTo("{{Y|カムシュルクール}}"));
-            Assert.That(intro, Is.EqualTo("{{M|アナログの砂の鎖}} \u00040 \t0 [6ドラムのゲル]"));
+            Assert.That(intro, Is.EqualTo("{{M|アナログの砂の鎖}} {{b|\u0004}}0 {{K|\t}}0 [6ドラムのゲル]"));
         });
     }
 

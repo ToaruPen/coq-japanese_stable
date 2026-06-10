@@ -132,7 +132,7 @@ public sealed partial class Issue201StatusScreensBatch2Tests
                 },
             });
 
-            Assert.That(target.itemText.Text, Is.EqualTo("{{M|アナログの砂の鎖}} \u00040 \t0 [6ドラムのゲル]"));
+            Assert.That(target.itemText.Text, Is.EqualTo("{{M|アナログの砂の鎖}} {{b|\u0004}}0 {{K|\t}}0 [6ドラムのゲル]"));
         }
         finally
         {

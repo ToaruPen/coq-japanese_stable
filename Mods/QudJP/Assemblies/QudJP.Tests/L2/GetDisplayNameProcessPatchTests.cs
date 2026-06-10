@@ -899,7 +899,7 @@ public sealed class GetDisplayNameProcessPatchTests
             var processor = new DummyDisplayNameProcessor();
             var result = processor.ProcessFor("{{C|the Breast of the Embraced Telescope}} \x04" + "4 \t2");
 
-            Assert.That(result, Is.EqualTo("{{C|受け入れた望遠鏡の胸甲}} \x04" + "4 \t2"));
+            Assert.That(result, Is.EqualTo("{{C|受け入れた望遠鏡の胸甲}} {{b|\x04}}4 {{K|\t}}2"));
         });
     }
 

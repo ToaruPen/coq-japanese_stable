@@ -215,9 +215,7 @@ public static class InventoryLineTranslationPatch
         var translated = TranslateVisibleTextUncached(source, route, "InventoryLine.ItemName");
         if (string.Equals(translated, source, StringComparison.Ordinal))
         {
-            translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
-                MessageFrameTranslator.StripAllDirectTranslationMarkers(source),
-                ObservabilityHelpers.ComposeContext(route, "segment=displayName"));
+            translated = TranslateDisplayNameRouteFallback(source, route);
             if (!string.Equals(translated, source, StringComparison.Ordinal))
             {
                 DynamicTextObservability.RecordTransform(route, "InventoryLine.ItemName", source, translated);
@@ -232,6 +230,50 @@ public static class InventoryLineTranslationPatch
         return TranslateItemDisplayName(
             source,
             ObservabilityHelpers.ComposeContext(Context, "field=text"));
+    }
+
+    internal static string TranslateItemDisplayNameForSortKey(string source)
+    {
+        var route = ObservabilityHelpers.ComposeContext(Context, "sort-key");
+        var sanitizedSource = MessageFrameTranslator.StripAllDirectTranslationMarkers(source);
+        var translated = sanitizedSource;
+        try
+        {
+            translated = TranslateVisibleTextUncached(sanitizedSource, route, "InventoryLine.ItemName.SortKey");
+        }
+        catch (Exception ex)
+        {
+            Trace.TraceError(
+                "QudJP: InventoryLineTranslationPatch.TranslateItemDisplayNameForSortKey visible-text translation failed for source '{0}': {1}",
+                sanitizedSource,
+                ex);
+            // Sorting must remain available even if dictionary loading is unavailable.
+        }
+
+        if (string.Equals(translated, sanitizedSource, StringComparison.Ordinal))
+        {
+            try
+            {
+                translated = TranslateDisplayNameRouteFallback(sanitizedSource, route);
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError(
+                    "QudJP: InventoryLineTranslationPatch.TranslateItemDisplayNameForSortKey display-name fallback failed for source '{0}': {1}",
+                    sanitizedSource,
+                    ex);
+                translated = sanitizedSource;
+            }
+        }
+
+        return MessageFrameTranslator.StripAllDirectTranslationMarkers(translated);
+    }
+
+    private static string TranslateDisplayNameRouteFallback(string source, string route)
+    {
+        return GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            MessageFrameTranslator.StripAllDirectTranslationMarkers(source),
+            ObservabilityHelpers.ComposeContext(route, "segment=displayName"));
     }
 
     internal static void ClearTranslationCachesForTests()
