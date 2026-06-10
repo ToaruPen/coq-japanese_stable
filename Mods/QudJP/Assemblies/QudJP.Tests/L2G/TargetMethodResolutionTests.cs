@@ -820,7 +820,10 @@ public sealed class TargetMethodResolutionTests
     [Test]
     public void InventoryActionEventInventoryLineRefreshPatch_TargetsDirectCheckOverloads()
     {
-        var targets = ResolveTargetMethodSignatures(typeof(InventoryActionEventInventoryLineRefreshPatch));
+        var targetMethods = ResolveTargetMethods(typeof(InventoryActionEventInventoryLineRefreshPatch));
+        var targets = targetMethods
+            .Select(FullMethodSignature)
+            .ToHashSet(StringComparer.Ordinal);
         const string tail = "|XRL.World.GameObject|XRL.World.GameObject|XRL.World.GameObject|System.String|System.Boolean|System.Boolean|System.Boolean|System.Boolean|System.Boolean|System.Int32|System.Int32|System.Int32|XRL.World.GameObject|XRL.World.Cell|XRL.World.Cell|XRL.World.IInventory";
 
         Assert.That(targets, Is.EquivalentTo(new[]
@@ -830,6 +833,16 @@ public sealed class TargetMethodResolutionTests
             "XRL.World.InventoryActionEvent|Check|System.Boolean|XRL.World.IEvent&" + tail,
             "XRL.World.InventoryActionEvent|Check|System.Boolean|XRL.World.InventoryActionEvent&" + tail,
         }));
+        foreach (var method in targetMethods)
+        {
+            var parameters = method.GetParameters();
+            var actorIndex = parameters.Length == 16 ? 1 : 2;
+            Assert.Multiple(() =>
+            {
+                Assert.That(parameters[actorIndex].Name, Is.EqualTo("Actor"));
+                Assert.That(parameters[actorIndex + 1].Name, Is.EqualTo("Item"));
+            });
+        }
     }
 
     [Test]
@@ -3541,22 +3554,29 @@ public sealed class TargetMethodResolutionTests
 
     private static HashSet<string> ResolveTargetMethodSignatures(Type patchType)
     {
+        return ResolveTargetMethods(patchType)
+            .Select(FullMethodSignature)
+            .ToHashSet(StringComparer.Ordinal);
+    }
+
+    private static List<MethodInfo> ResolveTargetMethods(Type patchType)
+    {
         var targetMethodsMethod = patchType.GetMethod("TargetMethods", BindingFlags.NonPublic | BindingFlags.Static);
         Assert.That(targetMethodsMethod, Is.Not.Null, $"TargetMethods not found for {patchType.FullName}");
 
         var result = targetMethodsMethod!.Invoke(null, null) as System.Collections.IEnumerable;
         Assert.That(result, Is.Not.Null, $"TargetMethods returned null for {patchType.FullName}");
 
-        var signatures = new HashSet<string>(StringComparer.Ordinal);
+        var methods = new List<MethodInfo>();
         foreach (var item in result!)
         {
             if (item is MethodInfo methodInfo)
             {
-                signatures.Add(FullMethodSignature(methodInfo));
+                methods.Add(methodInfo);
             }
         }
 
-        return signatures;
+        return methods;
     }
 
     private static MethodBase? FindMethodByNameAndParameterCount(
