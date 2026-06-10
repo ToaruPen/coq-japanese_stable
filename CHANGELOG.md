@@ -10,6 +10,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+## [0.5.01] - 2026-06-11
+
+### Fixed
+
+- inventory / equipment 画面で、日本語化後の表示名更新によって並び順や選択状態が崩れる場合を修正しました。
+- inventory action menu の更新時に、表示名・行テキスト・cursor sound の状態が安定して保たれるようにしました。
+
+---
+
 ## [0.5.00] - 2026-06-06
 
 ### Added
@@ -425,7 +434,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
-[Unreleased]: https://github.com/ToaruPen/coq-japanese_stable/compare/v0.5.00...HEAD
+[Unreleased]: https://github.com/ToaruPen/coq-japanese_stable/compare/v0.5.01...HEAD
+[0.5.01]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.5.01
 [0.5.00]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.5.00
 [0.4.10]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.4.10
 [0.4.00]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.4.00
