@@ -408,7 +408,7 @@ def test_find_latest_release_zip_uses_name_tiebreaker_for_equal_mtime(tmp_path: 
     assert find_latest_release_zip(tmp_path) == second
 
 
-def test_main_writes_vdf_and_staging(tmp_path: Path) -> None:
+def test_main_writes_vdf_and_staging(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
     """CLI creates staging and workshop_item.vdf for steamcmd."""
     release_zip = tmp_path / "dist" / "QudJP-v0.2.0.zip"
     _write_release_zip(release_zip)
@@ -451,6 +451,10 @@ def test_main_writes_vdf_and_staging(tmp_path: Path) -> None:
     vdf = vdf_output.read_text(encoding="utf-8")
     assert '"publishedfileid" "3718988020"' in vdf
     assert '"changenote" "v0.2.0: initial steamcmd setup"' in vdf
+    assert (
+        f"Upload command: steamcmd +login <user> +workshop_build_item {vdf_output.resolve()} +quit"
+        in capsys.readouterr().out
+    )
 
 
 def test_main_reads_changenote_file(tmp_path: Path) -> None:
