@@ -2134,6 +2134,51 @@ public sealed class MessagePatternTranslatorTests
     }
 
     [Test]
+    public void Translate_RepositoryDictionary_TranslatesElectricalArcAvoidingConductiveSource()
+    {
+        UseRepositoryPatternDictionary();
+
+        var translated = MessagePatternTranslator.Translate(
+            "The electrical arc leaps toward the 血まみれの塩の水たまり to the northwest, avoiding エッシェルシュタット II because of his サンダル!");
+
+        Assert.That(
+            translated,
+            Is.EqualTo("電弧が血まみれの塩の水たまり（北西）へ走ったが、エッシェルシュタット IIのサンダルのため避けた！"));
+    }
+
+    [Test]
+    public void Translate_RepositoryDictionary_TranslatesAutoActVisibleInjuredInterrupt()
+    {
+        UseRepositoryPatternDictionary();
+
+        var translated = MessagePatternTranslator.Translate(
+            "You stop 移動中 because you see {{M|エッシェルシュタット II}} being injured.");
+
+        Assert.That(translated, Is.EqualTo("{{M|エッシェルシュタット II}}が傷つくのが見えたので移動をやめた。"));
+    }
+
+    [Test]
+    public void Translate_RepositoryDictionary_TranslatesFlinchAwayProjectileNearMiss()
+    {
+        UseRepositoryPatternDictionary();
+
+        var translated = MessagePatternTranslator.Translate(
+            "{{&G|You flinch away as a {{C|レーザービーム}} streaks past from the northeast!}}");
+
+        Assert.That(translated, Is.EqualTo("{{&G|北東から{{C|レーザービーム}}がかすめ飛ぶのを身をすくめて避けた！}}"));
+    }
+
+    [Test]
+    public void Translate_RepositoryDictionary_TranslatesAppearsToDirection()
+    {
+        UseRepositoryPatternDictionary();
+
+        var translated = MessagePatternTranslator.Translate("A ともされた炎 appears to the southeast.");
+
+        Assert.That(translated, Is.EqualTo("南東にともされた炎が現れた。"));
+    }
+
+    [Test]
     public void Translate_RepositoryDictionary_TranslatesBootSequenceReadoutDescription()
     {
         UseRepositoryPatternDictionary();

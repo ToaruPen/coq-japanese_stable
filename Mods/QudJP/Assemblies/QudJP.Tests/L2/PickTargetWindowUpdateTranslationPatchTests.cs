@@ -133,6 +133,28 @@ public sealed class PickTargetWindowUpdateTranslationPatchTests
     }
 
     [Test]
+    public void TranslateCurrentText_TranslatesObservedOpenDirectionPrompt()
+    {
+        WriteDictionary(
+            ("Open", "開く"),
+            ("[Select a direction]", "[方向を選択]"));
+        DummyPickTargetWindow.currentText = "Open | [Select a direction]";
+
+        var changed = PickTargetWindowUpdateTranslationPatch.TranslateCurrentTextForTests(typeof(DummyPickTargetWindow));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(changed, Is.True);
+            Assert.That(DummyPickTargetWindow.currentText, Is.EqualTo("開く | [方向を選択]"));
+            Assert.That(
+                DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                    nameof(PickTargetWindowUpdateTranslationPatch),
+                    "PickTarget.CommandBar"),
+                Is.GreaterThan(0));
+        });
+    }
+
+    [Test]
     public void Prefix_DoesNotCallSetTextAgain_WhenProducerRegeneratesSameEnglishCommandBar()
     {
         WriteDictionary(

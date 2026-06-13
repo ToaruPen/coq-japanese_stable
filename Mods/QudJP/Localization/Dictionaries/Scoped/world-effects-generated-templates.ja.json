@@ -10,6 +10,7 @@
   },
   "entries": [
     { "key": "dominated ({0} turns remaining)", "context": "XRL.World.Effects.Dominated.GetDescription", "text": "支配された（残り{0}ターン）" },
+    { "key": "time-dilated ({{C|{0}}} Quickness)", "context": "XRL.World.Effects.ITimeDilated.GetDescription", "text": "時間遅延 ({{C|{0}}} クイックネス)" },
     { "key": "time-dilated ({{C|-{0}}} Quickness)", "context": "XRL.World.Effects.ITimeDilated.GetDescription", "text": "時間遅延 ({{C|-{0}}} クイックネス)" },
     { "key": "Acts semi-randomly.\n-{0} DV\n-{0} MA", "context": "XRL.World.Effects.Confused.GetDetails", "text": "半ばランダムに行動する。\n-{0} DV\n-{0} MA" },
     { "key": "Acts semi-randomly.\n-{0} DV\n-{0} MA\n-{1} to all mental attributes", "context": "XRL.World.Effects.Confused.GetDetails", "text": "半ばランダムに行動する。\n-{0} DV\n-{0} MA\n全精神属性に -{1}" },

@@ -1273,6 +1273,19 @@ public sealed class TargetMethodResolutionTests
     }
 
     [Test]
+    public void PreparedCookingRecipeComponentDisplayNameTranslationPatch_TargetMethods_ResolveExpectedOwners()
+    {
+        var signatures = ResolveTargetMethodSignatures(typeof(PreparedCookingRecipeComponentDisplayNameTranslationPatch));
+
+        Assert.That(signatures, Is.EquivalentTo(new[]
+        {
+            "XRL.World.Skills.Cooking.PreparedCookingRecipieComponentBlueprint|getDisplayName|System.String",
+            "XRL.World.Skills.Cooking.PreparedCookingRecipieComponentDomain|getDisplayName|System.String",
+            "XRL.World.Skills.Cooking.PreparedCookingRecipieComponentLiquid|getDisplayName|System.String",
+        }));
+    }
+
+    [Test]
     public void VillageWallDescriptionTranslationPatch_TargetMethods_ResolveExpectedOwners()
     {
         var signatures = ResolveTargetMethodSignatures(typeof(VillageWallDescriptionTranslationPatch));

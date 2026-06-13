@@ -49,6 +49,11 @@
       "text": "注ぐ"
     },
     {
+      "key": "Open",
+      "context": "PickTarget.CommandBar",
+      "text": "開く"
+    },
+    {
       "key": "Dig to where?",
       "context": "PickTarget.Digging.Label",
       "text": "どこまで掘る？"

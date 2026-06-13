@@ -795,12 +795,17 @@
       "scope": "cross_file",
       "path": "Dictionaries",
       "key": "Water Containers",
-      "entry_count": 2,
+      "entry_count": 3,
       "texts": [
         "容れ物",
+        "水筒",
         "水筒"
       ],
       "occurrences": [
+        {
+          "path": "Dictionaries/ui-default.ja.json",
+          "text": "水筒"
+        },
         {
           "path": "Dictionaries/ui-phase3b-static.ja.json",
           "text": "水筒"

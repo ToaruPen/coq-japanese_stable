@@ -45,6 +45,8 @@ public static class PopupTranslationPatch
         new Regex("^remove cell: (?<cell>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex InventoryActionRechargeCellPattern =
         new Regex("^Recharge (?<cell>.+)$", RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.Compiled);
+    private static readonly Regex InventoryActionFillTargetPattern =
+        new Regex("^fill (?<target>.+)$", RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.Compiled);
     private static readonly Regex InventoryActionCleanAllItemsPattern =
         new Regex("^clean all your items \\[(?<amount>\\d+) drams?\\]$", RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.Compiled);
     private static readonly Regex RenameItemTitlePattern =
@@ -1824,6 +1826,34 @@ public static class PopupTranslationPatch
                 translated = hotkeyMarker + translated;
             }
 
+            return true;
+        }
+
+        var fillMatch = InventoryActionFillTargetPattern.Match(label);
+        if (fillMatch.Success)
+        {
+            var target = fillMatch.Groups["target"].Value;
+            if (spans is not null && labelGroup is not null)
+            {
+                target = RestoreNestedVisibleSlice(labelGroup, fillMatch.Groups["target"], spans);
+            }
+            else if (spans is not null && labelStart.HasValue)
+            {
+                target = RestoreNestedVisibleSlice(
+                    label,
+                    fillMatch.Groups["target"].Index,
+                    fillMatch.Groups["target"].Length,
+                    labelStart.Value,
+                    spans);
+            }
+
+            target = RemoveUnmatchedQudClosings(target);
+            var translatedTarget = ColorAwareTranslationComposer.TranslatePreservingColors(
+                target,
+                visible => GetDisplayNameRouteTranslator.TranslatePreservingColors(
+                    visible,
+                    nameof(PopupTranslationPatch)));
+            translated = AppendDefaultColorAfterInlineColor(translatedTarget) + "を満たす";
             return true;
         }
 

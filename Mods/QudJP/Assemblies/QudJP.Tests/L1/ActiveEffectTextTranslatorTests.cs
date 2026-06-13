@@ -182,6 +182,7 @@ public sealed class ActiveEffectTextTranslatorTests
     }
 
     [TestCase("dominated (3 turns remaining)", "支配された（残り3ターン）")]
+    [TestCase("time-dilated (0 Quickness)", "時間遅延 ({{C|0}} クイックネス)")]
     [TestCase("time-dilated ({{C|-40}} Quickness)", "時間遅延 ({{C|-40}} クイックネス)")]
     [TestCase("{{C|lying on a chair}}", "{{C|椅子に横たわっている}}")]
     [TestCase("{{C|lying on a 寝袋}}", "{{C|寝袋に横たわっている}}")]
@@ -205,6 +206,7 @@ public sealed class ActiveEffectTextTranslatorTests
         WriteScopedDictionary(
             "Scoped/world-effects-generated-templates.ja.json",
             ("dominated ({0} turns remaining)", "XRL.World.Effects.Dominated.GetDescription", "支配された（残り{0}ターン）"),
+            ("time-dilated ({{C|{0}}} Quickness)", "XRL.World.Effects.ITimeDilated.GetDescription", "時間遅延 ({{C|{0}}} クイックネス)"),
             ("time-dilated ({{C|-{0}}} Quickness)", "XRL.World.Effects.ITimeDilated.GetDescription", "時間遅延 ({{C|-{0}}} クイックネス)"),
             ("lying on {0}", "XRL.World.Effects.Prone.GetDescription", "{0}に横たわっている"),
             ("engulfed by {0}", "XRL.World.Effects.Engulfed.DisplayName", "{0}に呑み込まれている"),
@@ -219,6 +221,32 @@ public sealed class ActiveEffectTextTranslatorTests
             source,
             "ActiveEffectTextTranslatorTests",
             "ActiveEffects.Description.Generated",
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(changed, Is.True);
+            Assert.That(translated, Is.EqualTo(expected));
+            Assert.That(Translator.GetMissingKeyHitCountForTests(source), Is.EqualTo(0));
+        });
+    }
+
+    [TestCase("{{W|wakeful}}", "{{W|覚醒している}}")]
+    [TestCase("{{w|hampered}}", "{{w|妨げられている}}")]
+    [TestCase("{{B|wading}}", "{{B|浅瀬を進んでいる}}")]
+    [TestCase("{{C|stunned}}", "{{C|気絶}}")]
+    [TestCase("{{r|bleeding}}", "{{r|出血}}")]
+    [TestCase("{{coated in plasma|coated in plasma}}", "{{coated in plasma|プラズマ被覆}}")]
+    [TestCase("{{r|shamed}}", "{{r|恥辱}}")]
+    [TestCase("{{C|{{Y|salty}} {{C|luminous}}}}", "{{C|{{Y|塩気のある}}{{C|発光する}}}}")]
+    public void TryTranslateText_TranslatesRuntimeObservedEffectDisplayNames(string source, string expected)
+    {
+        UseRepositoryDictionary();
+
+        var changed = ActiveEffectTextTranslator.TryTranslateText(
+            source,
+            "ActiveEffectTextTranslatorTests",
+            "ActiveEffects.DisplayName",
             out var translated);
 
         Assert.Multiple(() =>
@@ -494,6 +522,12 @@ public sealed class ActiveEffectTextTranslatorTests
         }
 
         File.WriteAllText(path, contents, Utf8WithoutBom);
+    }
+
+    private static void UseRepositoryDictionary()
+    {
+        var localizationRoot = Path.Combine(TestProjectPaths.GetRepositoryRoot(), "Mods", "QudJP", "Localization");
+        Translator.SetDictionaryDirectoryForTests(Path.Combine(localizationRoot, "Dictionaries"));
     }
 
     private static string EscapeJson(string value)

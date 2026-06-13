@@ -430,7 +430,15 @@ public static class UITextSkinTranslationPatch
                     nameof(GetDisplayNameProcessPatch),
                     "UITextSkin.MixedDisplayNameSinkText")))
         {
-            return false;
+            displayNameTranslation = stripped;
+            if (!DisplayNameSemanticPipeline.TryTranslateResult(
+                    ref displayNameTranslation,
+                    ObservabilityHelpers.ComposeContext(
+                        nameof(GetDisplayNameProcessPatch),
+                        "UITextSkin.MixedDisplayNameSinkText.Stripped")))
+            {
+                return false;
+            }
         }
 
         translated = displayNameTranslation;
@@ -465,7 +473,9 @@ public static class UITextSkinTranslationPatch
             && (stripped.Contains(" lbs.")
                 || stripped.Contains(" kg")
                 || ContainsCharacter(stripped, '\u0004')
-                || ContainsCharacter(stripped, '\t'));
+                || ContainsCharacter(stripped, '\t')
+                || ContainsCharacter(stripped, '\u001A')
+                || ContainsCharacter(stripped, '\u0003'));
     }
 
     private static bool ContainsCharacter(string source, char character)

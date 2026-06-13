@@ -1000,6 +1000,11 @@ public sealed class LocalizationCoverageTests
             Assert.That(skillsAndPowersKeys, Does.Contain("page {0} of {1}"));
             Assert.That(uiDefaultKeys, Does.Contain("Active Effects - {0}"));
             Assert.That(uiDefaultKeys, Does.Contain("No active effects."));
+            Assert.That(uiDefaultKeys, Does.Contain("Water Containers"));
+            Assert.That(uiDefaultKeys, Does.Contain("Books"));
+            Assert.That(uiDefaultKeys, Does.Contain("Applicators"));
+            Assert.That(uiDefaultKeys, Does.Contain("Energy Cells"));
+            Assert.That(uiDefaultKeys, Does.Contain("Cybernetic Implants"));
             Assert.That(worldEffectsStatusKeys, Does.Contain("corrected vision"));
         });
     }
@@ -1428,6 +1433,9 @@ public sealed class LocalizationCoverageTests
             Assert.That(
                 pickTargetEntries,
                 Does.Contain(new DictionaryEntry("Pour", "PickTarget.CommandBar", "注ぐ")));
+            Assert.That(
+                pickTargetEntries,
+                Does.Contain(new DictionaryEntry("Open", "PickTarget.CommandBar", "開く")));
             Assert.That(
                 pickTargetEntries,
                 Does.Contain(new DictionaryEntry("[Select a direction]", "PickTarget.DirectionPrompt", "[方向を選択]")));

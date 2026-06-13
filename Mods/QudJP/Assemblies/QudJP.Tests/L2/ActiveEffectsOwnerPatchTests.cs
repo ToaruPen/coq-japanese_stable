@@ -3,6 +3,7 @@ using System.Text;
 using HarmonyLib;
 using QudJP.Patches;
 using QudJP.Tests.DummyTargets;
+using QudJP.Tests.L1;
 
 namespace QudJP.Tests.L2;
 
@@ -235,6 +236,7 @@ public sealed class ActiveEffectsOwnerPatchTests
         WriteScopedDictionary(
             "Scoped/world-effects-generated-templates.ja.json",
             ("dominated ({0} turns remaining)", "XRL.World.Effects.Dominated.GetDescription", "支配された（残り{0}ターン）"),
+            ("time-dilated ({{C|{0}}} Quickness)", "XRL.World.Effects.ITimeDilated.GetDescription", "時間遅延 ({{C|{0}}} クイックネス)"),
             ("time-dilated ({{C|-{0}}} Quickness)", "XRL.World.Effects.ITimeDilated.GetDescription", "時間遅延 ({{C|-{0}}} クイックネス)"),
             ("lying on {0}", "XRL.World.Effects.Prone.GetDescription", "{0}に横たわっている"),
             ("engulfed by {0}", "XRL.World.Effects.Engulfed.DisplayName", "{0}に呑み込まれている"),
@@ -254,6 +256,7 @@ public sealed class ActiveEffectsOwnerPatchTests
             Assert.Multiple(() =>
             {
                 Assert.That(new DummyEffect { DescriptionText = "dominated (3 turns remaining)" }.GetDescription(), Is.EqualTo("支配された（残り3ターン）"));
+                Assert.That(new DummyEffect { DescriptionText = "time-dilated (0 Quickness)" }.GetDescription(), Is.EqualTo("時間遅延 ({{C|0}} クイックネス)"));
                 Assert.That(new DummyEffect { DescriptionText = "time-dilated ({{C|-40}} Quickness)" }.GetDescription(), Is.EqualTo("時間遅延 ({{C|-40}} クイックネス)"));
                 Assert.That(new DummyEffect { DescriptionText = "{{C|lying on a chair}}" }.GetDescription(), Is.EqualTo("{{C|椅子に横たわっている}}"));
                 Assert.That(new DummyEffect { DescriptionText = "{{B|engulfed by a starapple tree}}" }.GetDescription(), Is.EqualTo("{{B|スターアップルの木に呑み込まれている}}"));
@@ -602,6 +605,40 @@ public sealed class ActiveEffectsOwnerPatchTests
     }
 
     [Test]
+    public void GameObjectShowActiveEffectsPatch_TranslatesRuntimeObservedEffectDisplayNames_WhenPatched()
+    {
+        UseRepositoryDictionary();
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyEffect), nameof(DummyEffect.GetDescription)),
+                postfix: new HarmonyMethod(RequireMethod(typeof(EffectDescriptionPatch), nameof(EffectDescriptionPatch.Postfix))));
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyGameObjectActiveEffectsTarget), nameof(DummyGameObjectActiveEffectsTarget.ShowActiveEffects)),
+                transpiler: new HarmonyMethod(RequireMethod(typeof(GameObjectShowActiveEffectsPatch), nameof(GameObjectShowActiveEffectsPatch.Transpiler))));
+
+            var target = new DummyGameObjectActiveEffectsTarget
+            {
+                TitleSuffix = "Player",
+                Effect = new DummyEffect
+                {
+                    DescriptionText = "{{W|wakeful}}",
+                },
+            };
+            target.ShowActiveEffects();
+
+            Assert.That(DummyBookUI.LastText, Is.EqualTo("{{W|覚醒している}}\n\n"));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
     public void GameObjectShowActiveEffectsPatch_TranslatesMoveSpeedDetailWithoutPeriod_WhenPatched()
     {
         WriteDictionary(
@@ -719,6 +756,12 @@ public sealed class ActiveEffectsOwnerPatchTests
             path,
             contents,
             new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
+    }
+
+    private static void UseRepositoryDictionary()
+    {
+        var localizationRoot = Path.Combine(TestProjectPaths.GetRepositoryRoot(), "Mods", "QudJP", "Localization");
+        Translator.SetDictionaryDirectoryForTests(Path.Combine(localizationRoot, "Dictionaries"));
     }
 
     private static string EscapeJson(string value)

@@ -23,6 +23,7 @@ internal static class ActiveEffectTextTranslator
         new Dictionary<string, string>(StringComparer.Ordinal)
         {
             ["dominated ({0} turns remaining)"] = "XRL.World.Effects.Dominated.GetDescription",
+            ["time-dilated ({{C|{0}}} Quickness)"] = "XRL.World.Effects.ITimeDilated.GetDescription",
             ["time-dilated ({{C|-{0}}} Quickness)"] = "XRL.World.Effects.ITimeDilated.GetDescription",
             ["Acts semi-randomly.\n-{0} DV\n-{0} MA"] = "XRL.World.Effects.Confused.GetDetails",
             ["Acts semi-randomly.\n-{0} DV\n-{0} MA\n-{1} to all mental attributes"] = "XRL.World.Effects.Confused.GetDetails",
@@ -73,8 +74,8 @@ internal static class ActiveEffectTextTranslator
         @"^dominated \((?<turns>\d+) turns? remaining\)$",
         RegexOptions.CultureInvariant);
 
-    private static readonly Regex TimeDilatedPattern = new(
-        @"^time-dilated \(-(?<penalty>\d+) Quickness\)$",
+    private static readonly Regex TimeDilatedSignedPattern = new(
+        @"^time-dilated \((?<penalty>-?\d+) Quickness\)$",
         RegexOptions.CultureInvariant);
 
     private static readonly Regex ConfusionDetailsPattern = new(
@@ -158,19 +159,19 @@ internal static class ActiveEffectTextTranslator
     private static bool TryTranslateExact(string source, string route, string family, out string translated)
     {
         var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
-        if (StringHelpers.TryGetTranslationExactOrLowerAscii(stripped, out var exact)
-            && !string.Equals(exact, stripped, StringComparison.Ordinal))
-        {
-            translated = RestoreExactTranslation(exact, spans, stripped.Length);
-            DynamicTextObservability.RecordTransform(route, family, source, translated);
-            return true;
-        }
-
         if (!string.Equals(source, stripped, StringComparison.Ordinal)
             && StringHelpers.TryGetTranslationExactOrLowerAscii(source, out var exactSource)
             && !string.Equals(exactSource, source, StringComparison.Ordinal))
         {
             translated = exactSource;
+            DynamicTextObservability.RecordTransform(route, family, source, translated);
+            return true;
+        }
+
+        if (StringHelpers.TryGetTranslationExactOrLowerAscii(stripped, out var exact)
+            && !string.Equals(exact, stripped, StringComparison.Ordinal))
+        {
+            translated = RestoreExactTranslation(exact, spans, stripped.Length);
             DynamicTextObservability.RecordTransform(route, family, source, translated);
             return true;
         }
@@ -304,9 +305,23 @@ internal static class ActiveEffectTextTranslator
                 spans,
                 route,
                 family,
-                TimeDilatedPattern,
-                "time-dilated ({{C|-{0}}} Quickness)",
+                TimeDilatedSignedPattern,
+                "time-dilated ({{C|{0}}} Quickness)",
                 match => new object[] { match.Groups["penalty"].Value },
+                out translated))
+        {
+            return true;
+        }
+
+        if (TryTranslateSimpleGeneratedTemplate(
+                source,
+                stripped,
+                spans,
+                route,
+                family,
+                TimeDilatedSignedPattern,
+                "time-dilated ({{C|-{0}}} Quickness)",
+                match => new object[] { match.Groups["penalty"].Value.TrimStart('-') },
                 out translated))
         {
             return true;

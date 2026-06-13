@@ -97,6 +97,26 @@ public sealed class CookingRecipeDisplayNameTranslationPatchTests
     }
 
     [Test]
+    public void GetDisplayName_TranslatesObservedMixedLocalizedGeneratedDishName_WhenPatched()
+    {
+        WithPatchedDisplayName(() =>
+        {
+            var target = new DummyCookingRecipeDisplayNameTarget
+            {
+                DisplayNameResult = "{{W|カムシュルウールの Yogurt with 甲虫ジャーキー, Meat Rice, and Meat Kugel}}",
+            };
+
+            var result = target.GetDisplayName();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(result, Is.EqualTo("{{W|カムシュルウールのヨーグルト：甲虫ジャーキー、肉飯、肉クーゲル入り}}"));
+                Assert.That(HitCount(), Is.EqualTo(1));
+            });
+        });
+    }
+
+    [Test]
     public void GetDisplayName_LeavesUnknownDishNameUnchanged_WhenPatched()
     {
         WithPatchedDisplayName(() =>

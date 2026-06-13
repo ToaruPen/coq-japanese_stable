@@ -834,6 +834,16 @@
             "text": "朦朧"
         },
         {
+            "key": "wakeful",
+            "context": "XRL.World.Effects.Wakeful.Description",
+            "text": "覚醒している"
+        },
+        {
+            "key": "hampered",
+            "context": "XRL.World.Effects.Hampered.Description",
+            "text": "妨げられている"
+        },
+        {
             "key": "{{C|dazed}}",
             "context": "XRL.World.Effects.Dazed.Description",
             "text": "{{C|朦朧}}"

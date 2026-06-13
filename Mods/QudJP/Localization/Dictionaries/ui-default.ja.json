@@ -140,12 +140,24 @@
       "text": "光源"
     },
     {
+      "key": "Water Containers",
+      "text": "水筒"
+    },
+    {
       "key": "Food",
       "text": "食料"
     },
     {
       "key": "Meds",
       "text": "医薬品"
+    },
+    {
+      "key": "Applicators",
+      "text": "塗布具"
+    },
+    {
+      "key": "Energy Cells",
+      "text": "エネルギーセル"
     },
     {
       "key": "Scrap",
@@ -166,6 +178,10 @@
     {
       "key": "Trade Goods",
       "text": "交易品"
+    },
+    {
+      "key": "Cybernetic Implants",
+      "text": "サイバネティクスインプラント"
     },
     {
       "key": "Grenades",
@@ -291,6 +307,10 @@
       "text": "終了"
     },
     {
+      "key": "Open",
+      "text": "開く"
+    },
+    {
       "key": "Location:",
       "text": "場所："
     },
@@ -301,6 +321,26 @@
     {
       "key": "Total size: {0}",
       "text": "合計サイズ：{0}"
+    },
+    {
+      "key": "Level {0} {1} [{2}]",
+      "text": "レベル {0} {1}［{2}］"
+    },
+    {
+      "key": "{0}, {1} turn {2}",
+      "text": "{0}、{1} ターン {2}"
+    },
+    {
+      "key": "Classic",
+      "text": "クラシック"
+    },
+    {
+      "key": "Roleplay",
+      "text": "ロールプレイ"
+    },
+    {
+      "key": "Wander",
+      "text": "放浪"
     },
     {
       "key": "Expand",

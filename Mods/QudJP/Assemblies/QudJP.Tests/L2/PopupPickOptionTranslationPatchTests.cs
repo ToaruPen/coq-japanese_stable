@@ -1168,6 +1168,7 @@ public sealed class PopupPickOptionTranslationPatchTests
             ("examine", "調べる"),
             ("open", "開ける"),
             ("drop", "落とす"),
+            ("drink", "飲む"),
             ("eat", "食べる"),
             ("fill", "満たす"),
             ("pour", "注ぐ"),
@@ -1214,6 +1215,16 @@ public sealed class PopupPickOptionTranslationPatchTests
                     "{{W|[d]}} {{y|drop}}",
                     "InventoryActionMenu:ABC123"),
                 Is.EqualTo("{{W|[d]}} {{y|落とす}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[k]}} {{y|drin{{hotkey|k}}}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[k]}} {{y|飲む}}"));
+            Assert.That(
+                SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+                    "{{W|[F]}} {{y|{{hotkey|F}}ill}}",
+                    "InventoryActionMenu:ABC123"),
+                Is.EqualTo("{{W|[F]}} {{y|満たす}}"));
             Assert.That(
                 SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
                     "{{W|[p]}} {{y|pour}}",
@@ -1370,6 +1381,16 @@ public sealed class PopupPickOptionTranslationPatchTests
             "InventoryActionMenu:ABC123");
 
         Assert.That(translated, Is.EqualTo("{{W|[i]}} {{y|重要にする}}"));
+    }
+
+    [Test]
+    public void SelectableTextMenuItemDisplayTranslation_TranslatesObservedFillItemInventoryActionMenuRow()
+    {
+        var translated = SelectableTextMenuItemTranslationPatch.TranslateMenuItemTextForDisplay(
+            "{{W|[f]}} {{y|{{hotkey|f}}ill 鉛酸 セル}}",
+            "InventoryActionMenu:ABC123");
+
+        Assert.That(translated, Is.EqualTo("{{W|[f]}} {{y|鉛酸 セルを満たす}}"));
     }
 
     [Test]

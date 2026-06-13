@@ -9,11 +9,11 @@ internal sealed class DummySaveGameInfo
 {
     public string Name { get; set; } = "Warden";
 
-    public string Description { get; set; } = "Mutated Human";
+    public string Description { get; set; } = "Level 29  [Roleplay]";
 
-    public string Info { get; set; } = "Joppa";
+    public string Info { get; set; } = "Bethesda Susa, 7 turn 12345";
 
-    public string SaveTime { get; set; } = "1 hour ago";
+    public string SaveTime { get; set; } = "Wednesday, June 10, 2026 at 5:58:42 PM";
 
     public string Size { get; set; } = "Total size: 12mb";
 

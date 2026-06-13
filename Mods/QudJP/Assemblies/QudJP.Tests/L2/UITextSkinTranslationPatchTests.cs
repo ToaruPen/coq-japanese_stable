@@ -180,6 +180,33 @@ public sealed class UITextSkinTranslationPatchTests
         });
     }
 
+    [Test]
+    public void TranslatePreservingColors_TranslatesMixedLocalizedCompactWeaponStatsLineAtUiTextSink()
+    {
+        WriteDictionary(("chem cell", "ケムセル"));
+        WriteContextDictionaryFile(
+            "ui-displayname-adjectives.ja.json",
+            ("frozen", "GetDisplayName.Adjective", "{{freezing|凍結した}}"),
+            ("metered", "GetDisplayName.Adjective", "{{c|計量式}}"));
+
+        const string source =
+            "{{freezing|frozen}} {{normal|常態ガス}}ポンプ {{c|\u001A}}4 {{y|[{{freezing|frozen}} {{c|metered}} {{c|ケムセル}} {{y|({{G|79%}})}} {{y|<{{|{{G|B}}{{C|D}}{{r|1}}}}>}}]}} {{y|<{{|{{R|A}}{{B|C}}{{C|D}}{{K|5}}}}>}}";
+
+        var translated = UITextSkinTranslationPatch.TranslatePreservingColors(
+            source,
+            nameof(UITextSkinTranslationPatch));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Does.StartWith("{{freezing|凍結した}}常態ガスポンプ {{c|\u001A}}4"));
+            Assert.That(translated, Does.Contain("[{{freezing|凍結した}}{{c|計量式}}ケムセル"));
+            Assert.That(translated, Does.Contain("{{y|<{{G|B}}{{C|D}}{{r|1}}>}}"));
+            Assert.That(translated, Does.Contain("{{y|<{{B|A}}{{B|C}}{{B|D}}{{g|5}}>}}"));
+            Assert.That(translated, Does.Not.Contain("frozen"));
+            Assert.That(translated, Does.Not.Contain("metered"));
+        });
+    }
+
     [TestCase("[Esc]")]
     [TestCase("[Space]")]
     [TestCase("[]")]

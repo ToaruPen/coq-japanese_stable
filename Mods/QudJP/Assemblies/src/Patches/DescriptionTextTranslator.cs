@@ -19,6 +19,12 @@ internal static class DescriptionTextTranslator
     private static readonly Regex VillageDispositionTargetPattern =
         new Regex("^(?:the|The) villagers of (?<name>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
+    private static readonly Regex MissingLimbsLinePattern =
+        new Regex("^(?<subject>He's|She's|It's|They're|You're|He is|She is|It is|They are|You are) missing (?<limbs>.+?)\\.$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex MissingLimbPossessivePrefixPattern =
+        new Regex("^(?:his|her|its|their|your)\\s+(?<limb>.+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
     private static readonly Regex StatAbbreviationPattern =
         new Regex("^[A-Z]{2,4}$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
@@ -719,6 +725,11 @@ internal static class DescriptionTextTranslator
         }
 
         if (TryTranslateFactionDispositionLinePreservingColors(source, route, out translated))
+        {
+            return true;
+        }
+
+        if (TryTranslateMissingLimbsLinePreservingColors(source, route, out translated))
         {
             return true;
         }
@@ -1959,6 +1970,95 @@ internal static class DescriptionTextTranslator
         return true;
     }
 
+    private static bool TryTranslateMissingLimbsLinePreservingColors(string source, string route, out string translated)
+    {
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
+        var match = MissingLimbsLinePattern.Match(stripped);
+        if (!match.Success)
+        {
+            translated = source;
+            return false;
+        }
+
+        var subject = TranslateMissingLimbSubject(match.Groups["subject"].Value);
+        if (subject.Length == 0)
+        {
+            translated = source;
+            return false;
+        }
+
+        if (!TryTranslateMissingLimbsList(match.Groups["limbs"].Value, route, out var limbs))
+        {
+            translated = source;
+            return false;
+        }
+
+        limbs = RestoreBalancedCapture(limbs, spans, match.Groups["limbs"]);
+        translated = subject + limbs + "を失っている。";
+        translated = RestoreWholeLineBoundaryWrappers(translated, spans, stripped.Length);
+        DynamicTextObservability.RecordTransform(route, "Description.MissingLimbs", source, translated);
+        return true;
+    }
+
+    private static string TranslateMissingLimbSubject(string source)
+    {
+        return source switch
+        {
+            "He's" or "He is" => "彼は",
+            "She's" or "She is" => "彼女は",
+            "It's" or "It is" => "それは",
+            "They're" or "They are" => "彼らは",
+            "You're" or "You are" => "あなたは",
+            _ => string.Empty,
+        };
+    }
+
+    private static bool TryTranslateMissingLimbsList(string source, string route, out string translated)
+    {
+        var normalized = MissingLimbPossessivePrefixPattern.Replace(source, "${limb}", 1);
+        translated = TranslateMissingLimbPhrase(normalized, route);
+        return !string.Equals(translated, normalized, StringComparison.Ordinal);
+    }
+
+    private static string TranslateMissingLimbPhrase(string source, string route)
+    {
+        var words = source.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+        var translated = new List<string>();
+        var translatedBodyPart = false;
+        for (var index = 0; index < words.Length; index++)
+        {
+            var word = words[index];
+            var position = TranslateBodyPartPosition(word);
+            if (position is not null)
+            {
+                translated.Add(position);
+                continue;
+            }
+
+            var remainder = string.Join(" ", words.Skip(index));
+            var bodyPart = GetDisplayNameRouteTranslator.TranslatePreservingColors(remainder, route);
+            if (!string.Equals(bodyPart, remainder, StringComparison.Ordinal))
+            {
+                translated.Add(bodyPart);
+                translatedBodyPart = true;
+                break;
+            }
+
+            return source;
+        }
+
+        return translatedBodyPart ? string.Concat(translated) : source;
+    }
+
+    private static string? TranslateBodyPartPosition(string source)
+    {
+        var key = char.ToUpperInvariant(source[0]) + source.Substring(1);
+        return ScopedDictionaryLookup.TranslateExactOrLowerAsciiForContext(
+            key,
+            "BodyPart.Position",
+            "bodypart-position.ja.json");
+    }
+
     private static string RestoreBalancedCapture(string value, IReadOnlyList<ColorSpan>? spans, Group group)
     {
         if (spans is null || spans.Count == 0 || !group.Success)
@@ -2033,6 +2133,12 @@ internal static class DescriptionTextTranslator
         if (ShouldSkipExactLeafTranslation(source))
         {
             return source;
+        }
+
+        if (FriendOrFoeReasonTranslator.TryTranslate(source, out var friendOrFoeReason)
+            && !string.Equals(source, friendOrFoeReason, StringComparison.Ordinal))
+        {
+            return friendOrFoeReason;
         }
 
         if (StringHelpers.TryGetTranslationExactOrLowerAscii(source, out var translated)

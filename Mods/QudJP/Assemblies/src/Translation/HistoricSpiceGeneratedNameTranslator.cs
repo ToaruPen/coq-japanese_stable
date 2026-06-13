@@ -1096,6 +1096,13 @@ internal static class HistoricSpiceGeneratedNameTranslator
         var index = start;
         while (index < end)
         {
+            if (ContainsJapaneseCharacter(words[index]))
+            {
+                translatedChunks.Add(words[index]);
+                index++;
+                continue;
+            }
+
             if (!TryTranslateLongestDishChunk(words, index, out var translatedChunk, out var consumed)
                 || index + consumed > end)
             {
@@ -1323,13 +1330,28 @@ internal static class HistoricSpiceGeneratedNameTranslator
     private static bool IsDishConnectorWord(string source) =>
         string.Equals(source, "of", StringComparison.OrdinalIgnoreCase);
 
+    private static bool ContainsJapaneseCharacter(string source)
+    {
+        for (var index = 0; index < source.Length; index++)
+        {
+            var character = source[index];
+            if ((character >= '\u3040' && character <= '\u30ff')
+                || (character >= '\u3400' && character <= '\u9fff'))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     private static bool IsFestivalWord(string source) => FestivalWords.Contains(source);
 
     private static string[] SplitWords(string source) =>
         source.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
     private static string[] SplitRecipeWords(string source) =>
-        source.Replace(",", " ,").Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+        source.Replace(",", " , ").Replace("、", " , ").Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
     private static string ConcatWords(string[] words, int start, int end)
     {

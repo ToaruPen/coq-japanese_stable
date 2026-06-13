@@ -13,6 +13,10 @@ internal static class CookingIngredientFragmentTranslator
         "^(?:(?:a|an) )?(?<unit>pinch|dash|smidgen|sprinkle|nip|dram) of (?<name>.+)$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.Singleline);
 
+    private static readonly Regex CountedMeasuredIngredientPattern = new(
+        "^(?<count>\\d+|\\{\\{[A-Za-z]+\\|\\d+\\}\\}) (?<unit>servings?|drams?) of (?<name>.+)$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.Singleline);
+
     private static readonly Regex PossessiveBodyPartIngredientPattern = new(
         "^(?<owner>.+?)(?:'s|') (?<part>right hand|left hand|right foot|left foot|hand|foot|head|face|arm|leg|tail|wing|horn)$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.Singleline);
@@ -45,7 +49,16 @@ internal static class CookingIngredientFragmentTranslator
             return false;
         }
 
-        var match = MeasuredIngredientPattern.Match(source!);
+        var match = CountedMeasuredIngredientPattern.Match(source!);
+        if (match.Success
+            && TryTranslateIngredientName(match.Groups["name"].Value, out var countedIngredient)
+            && TryTranslateCountedUnit(match.Groups["unit"].Value, out var countedUnit))
+        {
+            translated = countedIngredient + match.Groups["count"].Value + countedUnit;
+            return true;
+        }
+
+        match = MeasuredIngredientPattern.Match(source!);
         if (match.Success
             && TryTranslateIngredientName(match.Groups["name"].Value, out var ingredient)
             && TryTranslateUnit(match.Groups["unit"].Value, out var unit))
@@ -171,6 +184,24 @@ internal static class CookingIngredientFragmentTranslator
         if (!string.Equals(direct, lower, StringComparison.Ordinal))
         {
             translated = direct;
+            return true;
+        }
+
+        translated = source;
+        return false;
+    }
+
+    private static bool TryTranslateCountedUnit(string source, out string translated)
+    {
+        if (source.StartsWith("serving", StringComparison.OrdinalIgnoreCase))
+        {
+            translated = "食分";
+            return true;
+        }
+
+        if (source.StartsWith("dram", StringComparison.OrdinalIgnoreCase))
+        {
+            translated = "ドラム";
             return true;
         }
 

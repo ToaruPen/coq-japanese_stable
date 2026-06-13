@@ -390,6 +390,40 @@ public sealed class DescriptionTextTranslatorTests
     }
 
     [Test]
+    public void TranslateShortDescription_TranslatesRuntimeObservedMissingForefootLine()
+    {
+        WriteContextDictionary(
+            "bodypart-position.ja.json",
+            ("BodyPart.Position", "Left", "左"));
+        WriteDictionary(
+            "ui-displayname-atomic.ja.json",
+            ("forefoot", "前足"));
+
+        var translated = DescriptionTextTranslator.TranslateShortDescription(
+            "He's missing his left forefoot.",
+            "DescriptionTextTranslatorTests");
+
+        Assert.That(translated, Is.EqualTo("彼は左前足を失っている。"));
+    }
+
+    [TestCase("He's missing his left hand.")]
+    [TestCase("She's missing her right foot.")]
+    [TestCase("They're missing their left hand and right foot.")]
+    public void TranslateShortDescription_LeavesMissingLimbLineUnchanged_WhenLimbLeafIsUnknown(string source)
+    {
+        WriteContextDictionary(
+            "bodypart-position.ja.json",
+            ("BodyPart.Position", "Left", "左"),
+            ("BodyPart.Position", "Right", "右"));
+
+        var translated = DescriptionTextTranslator.TranslateShortDescription(
+            source,
+            "DescriptionTextTranslatorTests");
+
+        Assert.That(translated, Is.EqualTo(source));
+    }
+
+    [Test]
     public void TranslateLongDescription_PreservesColoredFactionTarget_InDispositionLine()
     {
         var translated = DescriptionTextTranslator.TranslateLongDescription(
@@ -429,6 +463,18 @@ public sealed class DescriptionTextTranslatorTests
             "DescriptionTextTranslatorTests");
 
         Assert.That(translated, Is.EqualTo("{{C|the Mechanimists}}に敬愛されている。理由: 巡礼者に施しをしたため。"));
+    }
+
+    [Test]
+    public void TranslateLongDescription_TranslatesRuntimeObservedFriendOrFoeReasonFrame()
+    {
+        WriteHistorySpiceDictionary(("pretender", "僭称者"));
+
+        var translated = DescriptionTextTranslator.TranslateLongDescription(
+            "Hated by {{C|ベテル}} for insulting their pretender.",
+            "DescriptionTextTranslatorTests");
+
+        Assert.That(translated, Is.EqualTo("{{C|ベテル}}に憎まれている。理由: 僭称者を侮辱した。"));
     }
 
     [Test]

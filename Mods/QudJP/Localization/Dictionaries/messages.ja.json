@@ -999,6 +999,11 @@
       "route": "emit-message"
     },
     {
+      "pattern": "^(?:A|An|The) (.+?) appears to the (north|south|east|west|northeast|northwest|southeast|southwest)[.!]?$",
+      "template": "{t1}に{t0}が現れた。",
+      "route": "emit-message"
+    },
+    {
       "pattern": "^The way is blocked by some (.+?)[.!]?$",
       "template": "{0}が道を塞いでいる。",
       "route": "emit-message"
@@ -1091,6 +1096,11 @@
     {
       "pattern": "^You stop (moving|resting|digging|gathering|attacking|acting|auto-exploring|exploring|waiting|disassembling|移動中|休息中|掘削中|収集中|攻撃中|行動中|探索中|待機中|分解中) because you hear (.+?) being injured to the (north|south|east|west|northeast|northwest|southeast|southwest)[.!]?$",
       "template": "{t2}で{d1}が傷つく音が聞こえたので{t0}をやめた。",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^You stop (moving|resting|digging|gathering|attacking|acting|auto-exploring|exploring|waiting|disassembling|移動中|休息中|掘削中|収集中|攻撃中|行動中|探索中|待機中|分解中) because you see (.+?) being injured[.!]?$",
+      "template": "{d1}が傷つくのが見えたので{t0}をやめた。",
       "route": "emit-message"
     },
     {
@@ -1586,6 +1596,11 @@
     {
       "pattern": "^(?:The |the |[Aa]n? )?(.+?)(?:'s|s') shot goes wild!$",
       "template": "{0}の弾が逸れた！",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^You flinch away as (?:the |a |an )?(.+?) streaks past from the (north|south|east|west|northeast|northwest|southeast|southwest)!$",
+      "template": "{t1}から{t0}がかすめ飛ぶのを身をすくめて避けた！",
       "route": "emit-message"
     },
     {
@@ -2356,6 +2371,11 @@
     {
       "pattern": "^(?:An|The) electrical arc leaps toward (?:the |a |an )?(.+?) (to the north|to the south|to the east|to the west|to the northeast|to the northwest|to the southeast|to the southwest|nearby|above|below|here|somewhere)!$",
       "template": "電弧が{0}（{a1}）へ走った！",
+      "route": "emit-message"
+    },
+    {
+      "pattern": "^(?:An|The) electrical arc leaps toward (?:the |a |an )?(.+?) (?:to the (north|south|east|west|northeast|northwest|southeast|southwest)|(nearby|above|below|here|somewhere)), avoiding (.+?) because of (?:his|her|its|their|your) (.+?)!$",
+      "template": "電弧が{t0}（{t1}{t2}）へ走ったが、{t3}の{t4}のため避けた！",
       "route": "emit-message"
     },
     {

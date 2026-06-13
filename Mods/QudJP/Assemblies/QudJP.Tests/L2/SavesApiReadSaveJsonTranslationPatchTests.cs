@@ -39,7 +39,11 @@ public sealed class SavesApiReadSaveJsonTranslationPatchTests
     [Test]
     public void Postfix_TranslatesTotalSize_WhenPatched()
     {
-        WriteDictionary(("Total size: {0}", "合計サイズ：{0}"));
+        WriteDictionary(
+            ("Total size: {0}", "合計サイズ：{0}"),
+            ("Level {0} {1} [{2}]", "レベル {0} {1}［{2}］"),
+            ("Roleplay", "ロールプレイ"),
+            ("{0}, {1} turn {2}", "{0}、{1} ターン {2}"));
 
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
@@ -55,6 +59,10 @@ public sealed class SavesApiReadSaveJsonTranslationPatchTests
             Assert.Multiple(() =>
             {
                 Assert.That(result.Size, Is.EqualTo("合計サイズ：12mb"));
+                Assert.That(result.Description, Is.EqualTo("レベル 29 ［ロールプレイ］"));
+                Assert.That(result.Info, Is.EqualTo("Bethesda Susa、7 ターン 12345"));
+                Assert.That(result.SaveTime, Is.EqualTo("Wednesday, June 10, 2026 at 5:58:42 PM"));
+                Assert.That(result.SaveTime, Does.Contain(" at "));
                 Assert.That(
                     DynamicTextObservability.GetRouteFamilyHitCountForTests(
                         nameof(SavesApiReadSaveJsonTranslationPatch),
@@ -83,6 +91,7 @@ public sealed class SavesApiReadSaveJsonTranslationPatchTests
             var result = DummySavesApiTarget.ReadSaveJson("dir", "Primary.json");
 
             Assert.That(result.Size, Is.EqualTo("Total size: 12mb"));
+            Assert.That(result.Description, Is.EqualTo("Level 29  [Roleplay]"));
         }
         finally
         {

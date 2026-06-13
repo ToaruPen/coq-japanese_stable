@@ -1128,6 +1128,56 @@ public sealed class GetDisplayNameRouteTranslatorTests
     }
 
     [Test]
+    public void TranslatePreservingColors_TranslatesFreezingNormalityGasPumpAndNestedMeteredCell()
+    {
+        WriteDictionary(("chem cell", "ケムセル"));
+        WriteContextDictionaryFile(
+            "ui-displayname-adjectives.ja.json",
+            ("frozen", "GetDisplayName.Adjective", "{{freezing|凍結した}}"),
+            ("metered", "GetDisplayName.Adjective", "{{c|計量式}}"));
+
+        const string source =
+            "frozen 常態ガスポンプ \u001A4 [frozen metered ケムセル (79%) <BD1>] <ACD5>";
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            source,
+            nameof(InventoryLineTranslationPatch));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Does.StartWith("{{freezing|凍結した}}常態ガスポンプ {{c|\u001A}}4"));
+            Assert.That(translated, Does.Contain("[{{freezing|凍結した}}{{c|計量式}}ケムセル"));
+            Assert.That(translated, Does.Contain("{{y|<{{G|B}}{{C|D}}{{r|1}}>}}"));
+            Assert.That(translated, Does.Contain("{{y|<{{B|A}}{{B|C}}{{B|D}}{{g|5}}>}}"));
+            Assert.That(translated, Does.Not.Contain("frozen"));
+            Assert.That(translated, Does.Not.Contain("metered"));
+        });
+    }
+
+    [Test]
+    public void TranslatePreservingColors_TranslatesWrappedRelicNameInsideCompactWeaponStatsBase()
+    {
+        WriteDictionaryFile(
+            "Scoped/historyspice-common.ja.json",
+            ("point", "尖端"),
+            ("commanding", "威厳ある"),
+            ("woe", "嘆き"));
+
+        const string source =
+            "凍結した Point of the Commanding Woe \u001A10/13 \u00031d12+1";
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            source,
+            nameof(EquipmentLineTranslationPatch));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Does.StartWith("凍結した 威厳ある嘆きの尖端 {{c|\u001A}}10/13 {{r|\u0003}}1d12+1"));
+            Assert.That(translated, Does.Not.Contain("Point of the Commanding Woe"));
+        });
+    }
+
+    [Test]
     public void TranslatePreservingColors_TranslatesKnownDisplayNameWithClauses()
     {
         WriteDictionary(("laser rifle", "レーザーライフル"));
@@ -1546,6 +1596,39 @@ public sealed class GetDisplayNameRouteTranslatorTests
             Assert.That(translated, Is.EqualTo(expected));
             Assert.That(Translator.GetMissingKeyHitCountForTests(source), Is.EqualTo(0));
         });
+    }
+
+    [TestCase("the Sky-Bear", "空熊")]
+    [TestCase("phylactery", "ファイラクテリー")]
+    public void TranslatePreservingColors_UsesShippedRuntimeObservedDisplayNameLeaves(
+        string source,
+        string expected)
+    {
+        UseProductionDictionaries();
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            source,
+            nameof(GetDisplayNamePatch));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.EqualTo(expected));
+            Assert.That(Translator.GetMissingKeyHitCountForTests(source), Is.EqualTo(0));
+        });
+    }
+
+    [Test]
+    public void TranslatePreservingColors_TranslatesRuntimeObservedPariahTitleSuffix()
+    {
+        WriteDictionaryFile(
+            "ui-displayname-atomic.ja.json",
+            ("Pariah", "パリア"));
+
+        var translated = GetDisplayNameRouteTranslator.TranslatePreservingColors(
+            "聖堂騎士団長 Pariah",
+            nameof(GetDisplayNamePatch));
+
+        Assert.That(translated, Is.EqualTo("聖堂騎士団長、パリア"));
     }
 
     [TestCase("advertisement for {{M|クユラミルの蒸留所, 伝説の樹液商}}", "{{M|クユラミルの蒸留所, 伝説の樹液商}}の広告")]

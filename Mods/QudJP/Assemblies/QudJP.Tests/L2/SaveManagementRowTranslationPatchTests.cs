@@ -41,7 +41,9 @@ public sealed class SaveManagementRowTranslationPatchTests
     [Test]
     public void Postfix_TranslatesLastSavedLine_WhenPatched()
     {
-        WriteDictionary(("Last saved:", "最終セーブ："));
+        WriteDictionary(
+            ("Location:", "場所："),
+            ("Last saved:", "最終セーブ："));
 
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);
@@ -55,10 +57,11 @@ public sealed class SaveManagementRowTranslationPatchTests
             var target = new DummySaveManagementRowTarget();
             target.setData(new DummySaveInfoData());
 
-            const string source = "{{C|Last saved:}} 1 hour ago";
+            const string source = "{{C|Last saved:}} Wednesday, June 10, 2026 at 5:58:42 PM";
             Assert.Multiple(() =>
             {
-                Assert.That(target.TextSkins[2].Text, Is.EqualTo("{{C|最終セーブ：}} 1 hour ago"));
+                Assert.That(target.TextSkins[1].Text, Is.EqualTo("{{C|場所：}} Bethesda Susa, 7 turn 12345"));
+                Assert.That(target.TextSkins[2].Text, Is.EqualTo("{{C|最終セーブ：}} 水曜日, 6月 10, 2026 5:58:42 PM"));
                 Assert.That(target.TextSkins[3].Text, Is.EqualTo("{{K|Total size: 12mb {save-123} }}"));
                 Assert.That(
                     DynamicTextObservability.GetRouteFamilyHitCountForTests(
@@ -71,7 +74,7 @@ public sealed class SaveManagementRowTranslationPatchTests
                         nameof(SaveManagementRowTranslationPatch),
                         SinkObservation.ObservationOnlyDetail,
                         source,
-                        "Last saved: 1 hour ago"),
+                        "Last saved: Wednesday, June 10, 2026 at 5:58:42 PM"),
                     Is.EqualTo(0));
             });
         }
@@ -96,7 +99,8 @@ public sealed class SaveManagementRowTranslationPatchTests
             var target = new DummySaveManagementRowTarget();
             target.setData(new DummySaveInfoData());
 
-            Assert.That(target.TextSkins[2].Text, Is.EqualTo("{{C|Last saved:}} 1 hour ago"));
+            Assert.That(target.TextSkins[1].Text, Is.EqualTo("{{C|Location:}} Bethesda Susa, 7 turn 12345"));
+            Assert.That(target.TextSkins[2].Text, Is.EqualTo("{{C|Last saved:}} Wednesday, June 10, 2026 at 5:58:42 PM"));
         }
         finally
         {

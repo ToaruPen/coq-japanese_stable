@@ -152,18 +152,25 @@ public static class CookingRecipeDisplayNameTranslationPatch
             return true;
         }
 
+        if (TryTranslatePossessiveDishName(source, out translated))
+        {
+            return true;
+        }
+
         if (HistoricSpiceGeneratedNameTranslator.TryTranslateCapture(source, out translated))
         {
             return true;
         }
 
-        return TryTranslatePossessiveDishName(source, out translated);
+        translated = source;
+        return false;
     }
 
     private static bool TryTranslatePossessiveDishName(string source, out string translated)
     {
         if (TryTranslatePossessiveDishName(source, "'s ", out translated)
-            || TryTranslatePossessiveDishName(source, "' ", out translated))
+            || TryTranslatePossessiveDishName(source, "' ", out translated)
+            || TryTranslatePossessiveDishName(source, "の ", out translated))
         {
             return true;
         }
