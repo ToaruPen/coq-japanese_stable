@@ -46,10 +46,12 @@ internal sealed class DummySaveManagementRowTarget
 
 internal static class DummySavesApiTarget
 {
+    public static Func<DummySaveGameInfo>? SaveFactoryForTests { get; set; }
+
     public static DummySaveGameInfo ReadSaveJson(string dir, string file)
     {
         _ = dir;
         _ = file;
-        return new DummySaveGameInfo();
+        return SaveFactoryForTests?.Invoke() ?? new DummySaveGameInfo();
     }
 }

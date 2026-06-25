@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.Reflection;
+using System.Text;
 using System.Text.RegularExpressions;
 using HarmonyLib;
 
@@ -77,10 +78,7 @@ public static class SavesApiReadSaveJsonTranslationPatch
             return current;
         }
 
-        return template
-            .Replace("{0}", match.Groups["level"].Value)
-            .Replace("{1}", subtype)
-            .Replace("{2}", mode);
+        return ReplaceTemplatePlaceholders(template, match.Groups["level"].Value, subtype, mode);
     }
 
     private static string TranslateInfo(string current)
@@ -97,10 +95,11 @@ public static class SavesApiReadSaveJsonTranslationPatch
             return current;
         }
 
-        return template
-            .Replace("{0}", match.Groups["location"].Value)
-            .Replace("{1}", match.Groups["time"].Value)
-            .Replace("{2}", match.Groups["turn"].Value);
+        return ReplaceTemplatePlaceholders(
+            template,
+            match.Groups["location"].Value,
+            match.Groups["time"].Value,
+            match.Groups["turn"].Value);
     }
 
     private static string TranslateSize(string current)
@@ -114,7 +113,32 @@ public static class SavesApiReadSaveJsonTranslationPatch
         var translatedTemplate = Translator.Translate(TemplateKey);
         return string.Equals(translatedTemplate, TemplateKey, StringComparison.Ordinal)
             ? current
-            : translatedTemplate.Replace("{0}", current.Substring(Prefix.Length));
+            : ReplaceTemplatePlaceholders(translatedTemplate, current.Substring(Prefix.Length));
+    }
+
+    private static string ReplaceTemplatePlaceholders(string template, params string[] values)
+    {
+        var builder = new StringBuilder(template.Length);
+        for (var index = 0; index < template.Length; index++)
+        {
+            if (index + 2 < template.Length
+                && template[index] == '{'
+                && template[index + 2] == '}'
+                && char.IsDigit(template[index + 1]))
+            {
+                var valueIndex = template[index + 1] - '0';
+                if (valueIndex < values.Length)
+                {
+                    builder.Append(values[valueIndex]);
+                    index += 2;
+                    continue;
+                }
+            }
+
+            builder.Append(template[index]);
+        }
+
+        return builder.ToString();
     }
 
     private static void TranslateStringMember(object result, string memberName, string observabilityFamily, Func<string, string> translate)

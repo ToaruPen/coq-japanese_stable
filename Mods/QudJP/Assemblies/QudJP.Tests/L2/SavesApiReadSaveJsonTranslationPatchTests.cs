@@ -29,6 +29,7 @@ public sealed class SavesApiReadSaveJsonTranslationPatchTests
     {
         Translator.ResetForTests();
         DynamicTextObservability.ResetForTests();
+        DummySavesApiTarget.SaveFactoryForTests = null;
 
         if (Directory.Exists(tempDirectory))
         {
@@ -108,21 +109,74 @@ public sealed class SavesApiReadSaveJsonTranslationPatchTests
             ("Level {0} {1} [{2}]", "レベル {0} {1}［{2}］"),
             ("{0}, {1} turn {2}", "{0}、{1} ターン {2}"));
 
-        var result = new DummySaveGameInfo
+        DummySavesApiTarget.SaveFactoryForTests = () => new DummySaveGameInfo
         {
             Description = "Level 29  [Roleplay]",
             Info = "Bethesda Susa, unknown turn",
             SaveTime = "Wednesday, June 10, 2026 at 5:58:42 PM",
         };
 
-        SavesApiReadSaveJsonTranslationPatch.Postfix(result);
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
 
-        Assert.Multiple(() =>
+        try
         {
-            Assert.That(result.Description, Is.EqualTo("Level 29  [Roleplay]"));
-            Assert.That(result.Info, Is.EqualTo("Bethesda Susa, unknown turn"));
-            Assert.That(result.SaveTime, Is.EqualTo("Wednesday, June 10, 2026 at 5:58:42 PM"));
-        });
+            harmony.Patch(
+                original: RequireMethod(typeof(DummySavesApiTarget), nameof(DummySavesApiTarget.ReadSaveJson)),
+                postfix: new HarmonyMethod(RequireMethod(typeof(SavesApiReadSaveJsonTranslationPatch), nameof(SavesApiReadSaveJsonTranslationPatch.Postfix))));
+
+            var result = DummySavesApiTarget.ReadSaveJson("dir", "Primary.json");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(result.Description, Is.EqualTo("Level 29  [Roleplay]"));
+                Assert.That(result.Info, Is.EqualTo("Bethesda Susa, unknown turn"));
+                Assert.That(result.SaveTime, Is.EqualTo("Wednesday, June 10, 2026 at 5:58:42 PM"));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void Postfix_PreservesPlaceholderLikeTextInsideInsertedFields_WhenPatched()
+    {
+        WriteDictionary(
+            ("Total size: {0}", "合計サイズ：{0}"),
+            ("Level {0} {1} [{2}]", "レベル {0} {1}［{2}］"),
+            ("Apostle {2}", "使徒 {2}"),
+            ("Roleplay", "ロールプレイ"),
+            ("{0}, {1} turn {2}", "{0}、{1} ターン {2}"));
+
+        DummySavesApiTarget.SaveFactoryForTests = () => new DummySaveGameInfo
+        {
+            Description = "Level 29 Apostle {2} [Roleplay]",
+            Info = "Bethesda {2}, phase {0} turn 12345",
+        };
+
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummySavesApiTarget), nameof(DummySavesApiTarget.ReadSaveJson)),
+                postfix: new HarmonyMethod(RequireMethod(typeof(SavesApiReadSaveJsonTranslationPatch), nameof(SavesApiReadSaveJsonTranslationPatch.Postfix))));
+
+            var result = DummySavesApiTarget.ReadSaveJson("dir", "Primary.json");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(result.Description, Is.EqualTo("レベル 29 使徒 {2}［ロールプレイ］"));
+                Assert.That(result.Info, Is.EqualTo("Bethesda {2}、phase {0} ターン 12345"));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
     }
 
     private static string CreateHarmonyId()
