@@ -9,7 +9,7 @@ internal sealed class DummySaveGameInfo
 {
     public string Name { get; set; } = "Warden";
 
-    public string Description { get; set; } = "Level 29  [Roleplay]";
+    public string Description { get; set; } = "Level 29 Apostle [Roleplay]";
 
     public string Info { get; set; } = "Bethesda Susa, 7 turn 12345";
 

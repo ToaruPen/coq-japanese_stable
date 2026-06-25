@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
 using System.Text.RegularExpressions;
@@ -305,7 +306,7 @@ public static class UITextSkinTranslationPatch
             return displayNameTranslation;
         }
 
-        if (TryTranslateMixedDisplayNameSinkText(sanitizedSource, stripped, effectiveContext, out var mixedDisplayNameTranslation))
+        if (TryTranslateMixedDisplayNameSinkText(sanitizedSource, stripped, spans, effectiveContext, out var mixedDisplayNameTranslation))
         {
             DynamicTextObservability.RecordTransform(
                 nameof(UITextSkinTranslationPatch),
@@ -413,6 +414,7 @@ public static class UITextSkinTranslationPatch
     private static bool TryTranslateMixedDisplayNameSinkText(
         string source,
         string stripped,
+        IReadOnlyList<ColorSpan> spans,
         string? context,
         out string translated)
     {
@@ -438,6 +440,14 @@ public static class UITextSkinTranslationPatch
                         "UITextSkin.MixedDisplayNameSinkText.Stripped")))
             {
                 return false;
+            }
+
+            if (!ColorAwareTranslationComposer.HasColorMarkup(displayNameTranslation))
+            {
+                displayNameTranslation = ColorAwareTranslationComposer.RestoreRelative(
+                    displayNameTranslation,
+                    spans,
+                    stripped.Length);
             }
         }
 
@@ -531,10 +541,11 @@ public static class UITextSkinTranslationPatch
     internal static bool TryTranslateMixedDisplayNameSinkTextForTests(string source, out string translated)
     {
         var sanitizedSource = MessageFrameTranslator.StripAllDirectTranslationMarkers(source);
-        var stripped = ColorAwareTranslationComposer.GetVisibleText(sanitizedSource);
+        var (stripped, spans) = ColorAwareTranslationComposer.Strip(sanitizedSource);
         return TryTranslateMixedDisplayNameSinkText(
             sanitizedSource,
             stripped,
+            spans,
             nameof(UITextSkinTranslationPatch),
             out translated);
     }

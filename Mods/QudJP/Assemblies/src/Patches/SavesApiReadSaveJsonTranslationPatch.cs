@@ -63,7 +63,7 @@ public static class SavesApiReadSaveJsonTranslationPatch
             return current;
         }
 
-        var subtype = match.Groups["subtype"].Value;
+        var subtype = ChargenStructuredTextTranslator.Translate(match.Groups["subtype"].Value);
         var mode = Translator.Translate(match.Groups["mode"].Value);
         var template = Translator.Translate("Level {0} {1} [{2}]");
         if (string.Equals(template, "Level {0} {1} [{2}]", StringComparison.Ordinal))

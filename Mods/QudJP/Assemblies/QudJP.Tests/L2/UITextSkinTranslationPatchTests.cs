@@ -181,6 +181,23 @@ public sealed class UITextSkinTranslationPatchTests
     }
 
     [Test]
+    public void TranslatePreservingColors_PreservesDisplayNameWrapper_WhenMixedSinkUsesStrippedFallback()
+    {
+        WriteDictionary(("phylactery", "ファイラクテリー"));
+
+        const string source = "{{Y|phylactery}} \u00040 \t0 [6ドラムのゲル]";
+        var translated = UITextSkinTranslationPatch.TranslatePreservingColors(
+            source,
+            nameof(UITextSkinTranslationPatch));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.EqualTo("{{Y|ファイラクテリー}} \u00040 \t0 [6ドラムのゲル]"));
+            Assert.That(translated, Does.Not.Contain("phylactery"));
+        });
+    }
+
+    [Test]
     public void TranslatePreservingColors_TranslatesMixedLocalizedCompactWeaponStatsLineAtUiTextSink()
     {
         WriteDictionary(("chem cell", "ケムセル"));

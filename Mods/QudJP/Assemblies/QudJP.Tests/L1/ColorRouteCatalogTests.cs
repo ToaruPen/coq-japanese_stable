@@ -398,9 +398,9 @@ internal static class ColorRouteCatalog
                 new(ColorPreservingEntryPointKind.RouteAdapter, "SkillsAndPowersStatusScreenTranslationPatch", "Skills and powers exact leaf route adapter preserves color ownership."),
             ["Mods/QudJP/Assemblies/src/Patches/SkillsAndPowersStatusScreenTranslationPatch.cs:524:TryTranslateStructuredLinePreservingColors"] =
                 new(ColorPreservingEntryPointKind.RouteAdapter, "SkillsAndPowersStatusScreenTranslationPatch", "Skills and powers structured line route adapter preserves color ownership."),
-            ["Mods/QudJP/Assemblies/src/Patches/UITextSkinTranslationPatch.cs:233:TranslatePreservingColors"] =
+            ["Mods/QudJP/Assemblies/src/Patches/UITextSkinTranslationPatch.cs:234:TranslatePreservingColors"] =
                 new(ColorPreservingEntryPointKind.RouteAdapter, "UITextSkinTranslationPatch", "UITextSkin-specific color-preserving sink route."),
-            ["Mods/QudJP/Assemblies/src/Patches/UITextSkinTranslationPatch.cs:238:TranslatePreservingColors"] =
+            ["Mods/QudJP/Assemblies/src/Patches/UITextSkinTranslationPatch.cs:239:TranslatePreservingColors"] =
                 new(ColorPreservingEntryPointKind.RouteAdapter, "UITextSkinTranslationPatch", "UITextSkin-specific color-preserving sink route with context details."),
         };
 
