@@ -100,6 +100,31 @@ public sealed class SavesApiReadSaveJsonTranslationPatchTests
         }
     }
 
+    [Test]
+    public void Postfix_LeavesLegacyUnsupportedFieldsUnchanged()
+    {
+        WriteDictionary(
+            ("Total size: {0}", "合計サイズ：{0}"),
+            ("Level {0} {1} [{2}]", "レベル {0} {1}［{2}］"),
+            ("{0}, {1} turn {2}", "{0}、{1} ターン {2}"));
+
+        var result = new DummySaveGameInfo
+        {
+            Description = "Level 29  [Roleplay]",
+            Info = "Bethesda Susa, unknown turn",
+            SaveTime = "Wednesday, June 10, 2026 at 5:58:42 PM",
+        };
+
+        SavesApiReadSaveJsonTranslationPatch.Postfix(result);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Description, Is.EqualTo("Level 29  [Roleplay]"));
+            Assert.That(result.Info, Is.EqualTo("Bethesda Susa, unknown turn"));
+            Assert.That(result.SaveTime, Is.EqualTo("Wednesday, June 10, 2026 at 5:58:42 PM"));
+        });
+    }
+
     private static string CreateHarmonyId()
     {
         return $"qudjp.tests.{Guid.NewGuid():N}";
