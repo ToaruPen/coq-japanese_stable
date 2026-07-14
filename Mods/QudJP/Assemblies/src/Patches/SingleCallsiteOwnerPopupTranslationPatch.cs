@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using HarmonyLib;
 
@@ -421,6 +423,8 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
     [ThreadStatic]
     private static Stack<string>? ownerStack;
 
+    private static readonly ConcurrentDictionary<MethodBase, string> AsyncOwnerKeys = new();
+
     [HarmonyTargetMethods]
     private static IEnumerable<MethodBase> TargetMethods()
     {
@@ -815,11 +819,12 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
             "XRL.World.GameObjectFactory",
             "HandleBlueprintXML",
             [typeof(string)]);
-        AddTarget(
+        AddAsyncTarget(
             targets,
             "XRL.XRLGame",
             "LoadGame",
-            [typeof(string), typeof(bool), typeof(bool), typeof(Dictionary<string, object>)]);
+            [typeof(string), typeof(bool), typeof(bool), typeof(Dictionary<string, object>)],
+            XrlGameLoadGameOwner);
         AddTarget(
             targets,
             "XRL.World.Parts.ThinWorld",
@@ -844,7 +849,10 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         {
             OwnerTranslationScope.Enter(ref activeDepth);
             ownerStack ??= new Stack<string>();
-            ownerStack.Push(FormatOwnerKey(__originalMethod));
+            ownerStack.Push(
+                AsyncOwnerKeys.TryGetValue(__originalMethod, out var ownerKey)
+                    ? ownerKey
+                    : FormatOwnerKey(__originalMethod));
         }
         catch (Exception ex)
         {
@@ -2161,5 +2169,53 @@ public static class SingleCallsiteOwnerPopupTranslationPatch
         }
 
         Trace.TraceError("QudJP: {0}.{1}.{2} target not found.", Context, typeName, methodName);
+    }
+
+    private static void AddAsyncTarget(
+        List<MethodBase> targets,
+        string typeName,
+        string methodName,
+        Type[] parameters,
+        string ownerKey)
+    {
+        var targetType = AccessTools.TypeByName(typeName);
+        if (targetType is null)
+        {
+            Trace.TraceError("QudJP: {0} target type {1} not found.", Context, typeName);
+            return;
+        }
+
+        var logicalMethod = AccessTools.Method(targetType, methodName, parameters);
+        if (logicalMethod is null)
+        {
+            Trace.TraceError("QudJP: {0}.{1}.{2} target not found.", Context, typeName, methodName);
+            return;
+        }
+
+        var moveNext = ResolveAsyncMoveNext(logicalMethod, ownerKey);
+        if (moveNext is not null)
+        {
+            targets.Add(moveNext);
+        }
+    }
+
+    internal static MethodInfo? ResolveAsyncMoveNext(MethodInfo logicalMethod, string ownerKey)
+    {
+        var stateMachineType = logicalMethod.GetCustomAttribute<AsyncStateMachineAttribute>()?.StateMachineType;
+        if (stateMachineType is null)
+        {
+            Trace.TraceError("QudJP: {0}.{1} async state machine not found.", Context, logicalMethod.Name);
+            return null;
+        }
+
+        var moveNext = AccessTools.Method(stateMachineType, nameof(IAsyncStateMachine.MoveNext), Type.EmptyTypes);
+        if (moveNext is null)
+        {
+            Trace.TraceError("QudJP: {0}.{1} MoveNext target not found.", Context, logicalMethod.Name);
+            return null;
+        }
+
+        _ = AsyncOwnerKeys.TryAdd(moveNext, ownerKey);
+        return moveNext;
     }
 }

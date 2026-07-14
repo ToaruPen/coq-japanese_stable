@@ -3,7 +3,7 @@
 ## Why
 
 This directory owns the shipped QudJP mod DLL and the tests that define C#
-patch behavior for Caves of Qud `1.0.4`.
+patch behavior for Caves of Qud `1.0.5`.
 
 Most work here changes one of three contracts:
 
@@ -48,6 +48,14 @@ analyzer coverage is required.
 Use `just test-csharp` for broad local C# behavior coverage. Use category
 recipes for focused layer checks; they use isolated artifacts and can run
 concurrently when the local machine can afford the duplicated setup.
+
+Treat a direct game type in a production signature, project reference, or
+test-linked production source as a dependency-boundary change. After the
+focused RED/GREEN cycle, immediately run `just test-csharp` and
+`just ci-dotnet-no-game`; the latter must compile and execute without an
+installed `Assembly-CSharp.dll`. Keep any fallback reference stub minimal,
+conditional on the real DLL being absent, and aligned with the real assembly
+identity asserted by L2G.
 
 Use deterministic tooling before prompt-only reasoning for route and call-shape
 work:

@@ -229,7 +229,7 @@ UI 文字列・アイテム名・能力名など、プロシージャルでな�
 </conversations>
 ```
 
-- ID (`conversation ID`、`node ID`、`choice ID`、`object Name` など) は **ゲームバージョン 1.0.4** の値と完全一致する必要があります。
+- ID (`conversation ID`、`node ID`、`choice ID`、`object Name` など) は **ゲームバージョン 1.0.5** の値と完全一致する必要があります。
 - `=variable.name=` のようなランタイム置換プレースホルダーは保持してください。
 - `<text>` 要素の中身 (およびそれに類する表示テキスト要素) だけを日本語化します。
 
@@ -462,6 +462,13 @@ PR を出すと GitHub Actions (`.github/workflows/ci.yml`) が変更ファイ�
 
 ローカルの同一 worktree でも `just test-l1` / `just test-l2` / `just test-l2g` は run-scoped artifacts を使うため、カテゴリ間の並列実行で `obj/` / `bin/` の file lock は共有しません。ただし各カテゴリが別々に test artifact を build するため、全体確認では `just test-csharp` や `just check` を優先してください。PR 前の最終確認では analyzer を含む `just check` または `just pr-check` を使います。
 
+ゲーム本体の版を更新するときは、stable reference と
+`~/dev/coq-decompiled_stable/` を先に更新し、修正前後に
+`just game-version-check` を実行してください。現行版を表す文書・build
+marker、追跡中の owner 証跡、実 DLL ありの全 C# テスト、実 DLL なしの CI
+build/test、個別および全 Harmony target binding を一括で検証します。履歴
+レポートや scanner provenance の旧版表記はこの現行版チェックの対象外です。
+
 ---
 
 ## 重要な制約
@@ -470,9 +477,9 @@ PR を出すと GitHub Actions (`.github/workflows/ci.yml`) が変更ファイ�
 
 このファイルはゲームの著作物です。`.gitignore` で除外されていますが、意図的に追加しないよう注意してください。同様に、`Mods/QudJP/Assemblies/QudJP.dll` のビルド成果物もコミット対象ではありません。
 
-**ゲームバージョン 1.0.4 に合わせる**
+**ゲームバージョン 1.0.5 に合わせる**
 
-Blueprint ID、Conversation ID、メソッドシグネチャはすべてゲームバージョン 1.0.4 に合わせてください。バージョンが異なると Harmony パッチが当たらなくなります。
+Blueprint ID、Conversation ID、メソッドシグネチャはすべてゲームバージョン 1.0.5 に合わせてください。バージョンが異なると Harmony パッチが当たらなくなります。
 
 **クリーンルーム実装**
 
@@ -509,7 +516,7 @@ Blueprint ID、Conversation ID、メソッドシグネチャはすべてゲー�
 
 Issue を開く際は以下を含めてください:
 
-- **OS とバージョン** (例: Windows 11 / Caves of Qud v1.0.4 / QudJP v0.1.0)
+- **OS とバージョン** (例: Windows 11 / Caves of Qud v1.0.5 / QudJP v0.1.0)
 - **再現手順** — 最小ステップ
 - **期待される挙動 / 実際の挙動**
 - **`Player.log` の該当行** (上述の OS 別パスから抜粋)

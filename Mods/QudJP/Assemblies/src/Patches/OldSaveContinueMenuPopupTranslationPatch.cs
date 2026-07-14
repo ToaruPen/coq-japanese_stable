@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using HarmonyLib;
 
 namespace QudJP.Patches;
@@ -17,17 +18,25 @@ public static class OldSaveContinueMenuPopupTranslationPatch
     [HarmonyTargetMethods]
     private static IEnumerable<MethodBase> TargetMethods()
     {
-        foreach (var method in ResolveTarget("Qud.UI.MainMenu", "ContinueMenu"))
+        foreach (var method in ResolveTarget("Qud.UI.MainMenu", "ContinueMenu", Type.EmptyTypes))
         {
             yield return method;
         }
 
-        foreach (var method in ResolveTarget("Qud.UI.SaveManagement", "ContinueMenu"))
+        foreach (var method in ResolveTarget("Qud.UI.SaveManagement", "ContinueMenu", Type.EmptyTypes))
         {
             yield return method;
         }
 
-        foreach (var method in ResolveTarget("XRL.Core.XRLCore", "SaveManagement"))
+        foreach (var method in ResolveTarget("XRL.Core.XRLCore", "SaveManagement", Type.EmptyTypes))
+        {
+            yield return method;
+        }
+
+        foreach (var method in ResolveTarget(
+                     "XRL.XRLGame",
+                     "LoadGame",
+                     [typeof(string), typeof(bool), typeof(bool), typeof(Dictionary<string, object>)]))
         {
             yield return method;
         }
@@ -77,7 +86,7 @@ public static class OldSaveContinueMenuPopupTranslationPatch
         return !string.Equals(translated, source, StringComparison.Ordinal);
     }
 
-    private static IEnumerable<MethodBase> ResolveTarget(string typeName, string methodName)
+    private static IEnumerable<MethodBase> ResolveTarget(string typeName, string methodName, Type[] parameters)
     {
         var targetType = AccessTools.TypeByName(typeName);
         if (targetType is null)
@@ -86,13 +95,27 @@ public static class OldSaveContinueMenuPopupTranslationPatch
             yield break;
         }
 
-        var method = AccessTools.Method(targetType, methodName, Type.EmptyTypes);
-        if (method is not null)
+        var logicalMethod = AccessTools.Method(targetType, methodName, parameters);
+        if (logicalMethod is null)
         {
-            yield return method;
+            Trace.TraceError("QudJP: {0}.{1}.{2} target not found.", Context, typeName, methodName);
             yield break;
         }
 
-        Trace.TraceError("QudJP: {0}.{1}.{2} target not found.", Context, typeName, methodName);
+        var stateMachineType = logicalMethod.GetCustomAttribute<AsyncStateMachineAttribute>()?.StateMachineType;
+        if (stateMachineType is null)
+        {
+            Trace.TraceError("QudJP: {0}.{1}.{2} async state machine not found.", Context, typeName, methodName);
+            yield break;
+        }
+
+        var moveNext = AccessTools.Method(stateMachineType, nameof(IAsyncStateMachine.MoveNext), Type.EmptyTypes);
+        if (moveNext is not null)
+        {
+            yield return moveNext;
+            yield break;
+        }
+
+        Trace.TraceError("QudJP: {0}.{1}.{2} MoveNext target not found.", Context, typeName, methodName);
     }
 }

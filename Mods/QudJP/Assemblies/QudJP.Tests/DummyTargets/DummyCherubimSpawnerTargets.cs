@@ -56,6 +56,11 @@ namespace QudJP.Tests.DummyTargets
                 return (T)(object)description;
             }
 
+            if (string.Equals(typeof(T).FullName, "XRL.World.Parts.Description", StringComparison.Ordinal))
+            {
+                return null!;
+            }
+
             throw new InvalidOperationException($"Unsupported part type: {typeof(T).FullName}");
         }
 
@@ -87,6 +92,19 @@ namespace QudJP.Tests.DummyTargets
         public new string? GetxTag(string category, string name)
         {
             return null;
+        }
+    }
+
+    internal sealed class DummyCherubimGameObjectWithThrowingDescriptionLookup : DummyCherubimGameObject
+    {
+        public DummyCherubimDescriptionPart CapturedDescriptionPart => base.DescriptionPart;
+
+        public new DummyCherubimDescriptionPart DescriptionPart =>
+            throw new InvalidOperationException("Injected description lookup failure.");
+
+        public new T GetPart<T>() where T : class
+        {
+            throw new InvalidOperationException("Injected description lookup failure.");
         }
     }
 

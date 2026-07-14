@@ -249,16 +249,7 @@ public static class TradeUiPopupTranslationPatch
 
         AddTarget(
             methods,
-            AccessTools.Method(
-                popupType,
-                "ShowYesNo",
-                new[]
-                {
-                    typeof(string),
-                    typeof(string),
-                    typeof(bool),
-                    dialogResultType,
-                }),
+            ResolveShowYesNoMethod(popupType, dialogResultType),
             "Popup.ShowYesNo");
 
         if (methods.Count == 0)
@@ -267,6 +258,22 @@ public static class TradeUiPopupTranslationPatch
         }
 
         return methods;
+    }
+
+    internal static MethodInfo? ResolveShowYesNoMethod(Type popupType, Type dialogResultType)
+    {
+        var callbackType = typeof(Action<>).MakeGenericType(dialogResultType);
+        return AccessTools.Method(
+            popupType,
+            "ShowYesNo",
+            new[]
+            {
+                typeof(string),
+                typeof(string),
+                typeof(bool),
+                dialogResultType,
+                callbackType,
+            });
     }
 
     public static void Prefix(object[] __args)
@@ -1337,7 +1344,7 @@ public static class TradeUiPopupTranslationPatch
             out translated);
     }
 
-    private static void AddTarget(List<MethodBase> targets, MethodBase method, string description)
+    private static void AddTarget(List<MethodBase> targets, MethodBase? method, string description)
     {
         if (method is null)
         {

@@ -11,7 +11,7 @@ namespace QudJP;
 
 public static class QudJPMod
 {
-    internal const string BuildMarker = "inventory-action-fallback-no-resort-v1";
+    internal const string BuildMarker = "qud-1.0.5-compat-v1";
 
     private static int isInitialized;
 

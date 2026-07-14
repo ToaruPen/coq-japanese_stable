@@ -1,5 +1,6 @@
 #if HAS_GAME_DLL || HAS_TMP
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.Loader;
 using System.Text.RegularExpressions;
 using HarmonyLib;
@@ -31,6 +32,14 @@ public sealed class TargetMethodResolutionTests
     }
 
 #if HAS_GAME_DLL
+    [Test]
+    public void GameAssembly_UsesExpectedVersion()
+    {
+        Assert.That(
+            EnsureGameAssemblyLoaded().GetName().Version,
+            Is.EqualTo(new Version(2, 0, 211, 50)));
+    }
+
     [Test]
     public void InventoryFrameworkScrollerBeforeShow_AcceptsInventoryLineDataList()
     {
@@ -96,7 +105,7 @@ public sealed class TargetMethodResolutionTests
     [TestCase(typeof(UITextSkinTranslationPatch), "SetText", "XRL.UI.UITextSkin", "System.Boolean", new[] { "System.String" })]
     [TestCase(typeof(CharacterStatusScreenTranslationPatch), "UpdateViewFromData", "Qud.UI.CharacterStatusScreen", "System.Void", new string[0])]
     [TestCase(typeof(SaveManagementRowTranslationPatch), "setData", "SaveManagementRow", "System.Void", new[] { "XRL.UI.Framework.FrameworkDataElement" })]
-    [TestCase(typeof(SavesApiReadSaveJsonTranslationPatch), "ReadSaveJson", "Qud.API.SavesAPI", "Qud.API.SaveGameInfo", new[] { "System.String", "System.String" })]
+    [TestCase(typeof(SavesApiReadSaveJsonTranslationPatch), "ReadSaveJson", "Qud.API.SavesAPI", "System.Threading.Tasks.Task`1[[Qud.API.SaveGameInfo]]", new[] { "System.String", "System.String" })]
     [TestCase(typeof(TinkeringStatusScreenTranslationPatch), "UpdateViewFromData", "Qud.UI.TinkeringStatusScreen", "System.Void", new string[0])]
     [TestCase(typeof(BookLineTranslationPatch), "setData", "Qud.UI.BookLine", "System.Void", new[] { "XRL.UI.Framework.FrameworkDataElement" })]
     [TestCase(typeof(BookAutoformatCjkWrapPatch), "AutoformatPages", "XRL.UI.BookUI", "System.Collections.Generic.List`1[[XRL.UI.BookPage]]", new[]
@@ -935,7 +944,7 @@ public sealed class TargetMethodResolutionTests
         "System.String|System.Boolean|System.Boolean|System.Boolean|System.Boolean|System.Boolean",
         "System.String|System.Boolean|System.Boolean|System.Boolean",
         "System.String|System.Threading.CancellationToken",
-        "System.String|System.String|System.Boolean|XRL.UI.DialogResult",
+        "System.String|System.String|System.Boolean|XRL.UI.DialogResult|System.Action`1[[XRL.UI.DialogResult]]",
         "System.String",
         "System.String|System.String|System.Boolean|XRL.UI.DialogResult",
         "System.String",
@@ -1011,7 +1020,7 @@ public sealed class TargetMethodResolutionTests
     {
         "System.String|System.String|System.String|System.Boolean|System.Boolean|System.Boolean|System.Boolean|Genkit.Location2D",
         "System.String|System.String|System.String|System.Boolean|System.Boolean|System.Boolean|System.Boolean|Genkit.Location2D",
-        "System.String|System.String|System.Boolean|XRL.UI.DialogResult",
+        "System.String|System.String|System.Boolean|XRL.UI.DialogResult|System.Action`1[[XRL.UI.DialogResult]]",
     })]
     [TestCase(typeof(TradeUiVendorPopupTranslationPatch), new[]
     {
@@ -1584,7 +1593,7 @@ public sealed class TargetMethodResolutionTests
     })]
     [TestCase(typeof(QudMutationsModuleWindowVariantPopupTranslationPatch), new[]
     {
-        "XRL.CharacterBuilds.Qud.UI.QudMutationsModuleWindow+<SelectVariant>d__29|MoveNext|System.Void",
+        "XRL.CharacterBuilds.Qud.UI.QudMutationsModuleWindow+<SelectVariant>d__31|MoveNext|System.Void",
     })]
     [TestCase(typeof(CodeRedemptionPopupTranslationPatch), new[]
     {
@@ -1593,7 +1602,7 @@ public sealed class TargetMethodResolutionTests
     })]
     [TestCase(typeof(XrlCoreRestoreModsLoadedTranslationPatch), new[]
     {
-        "XRL.Core.XRLCore+<RestoreModsLoadedAsync>d__121|MoveNext|System.Void",
+        "XRL.Core.XRLCore+<RestoreModsLoadedAsync>d__130|MoveNext|System.Void",
     })]
     [TestCase(typeof(SkillsAndPowersSelectNodePopupTranslationPatch), new[]
     {
@@ -2399,9 +2408,10 @@ public sealed class TargetMethodResolutionTests
     })]
     [TestCase(typeof(OldSaveContinueMenuPopupTranslationPatch), new[]
     {
-        "Qud.UI.MainMenu|ContinueMenu|System.Threading.Tasks.Task`1[[XRL.XRLGame]]",
-        "Qud.UI.SaveManagement|ContinueMenu|System.Threading.Tasks.Task`1[[XRL.XRLGame]]",
-        "XRL.Core.XRLCore|SaveManagement|XRL.XRLGame",
+        "Qud.UI.MainMenu+<ContinueMenu>d__27|MoveNext|System.Void",
+        "Qud.UI.SaveManagement+<ContinueMenu>d__15|MoveNext|System.Void",
+        "XRL.Core.XRLCore+<SaveManagement>d__157|MoveNext|System.Void",
+        "XRL.XRLGame+<LoadGame>d__183|MoveNext|System.Void",
     })]
     [TestCase(typeof(GolemQuestSelectionPopupTranslationPatch), new[]
     {
@@ -2813,7 +2823,7 @@ public sealed class TargetMethodResolutionTests
         "XRL.PopulationManager|WishFindBlueprint|System.Void|System.String",
         "XRL.PopulationManager|RollOneFrom|XRL.PopulationResult|System.String|System.Collections.Generic.Dictionary`2[[System.String],[System.String]]|System.String",
         "XRL.World.GameObjectFactory|HandleBlueprintXML|System.Void|System.String",
-        "XRL.XRLGame|LoadGame|XRL.XRLGame|System.String|System.Boolean|System.Boolean|System.Collections.Generic.Dictionary`2[[System.String],[System.Object]]",
+        "XRL.XRLGame+<LoadGame>d__183|MoveNext|System.Void",
         "XRL.World.Parts.ThinWorld|TransitToThinWorld|System.Void|XRL.World.GameObject|System.Boolean",
         "XRL.World.Parts.PlayerMuralController|HandleEvent|System.Boolean|XRL.World.EndTurnEvent",
         "XRL.World.Parts.GivesRep|HandleEvent|System.Boolean|XRL.World.BeforeDeathRemovalEvent",
@@ -2836,6 +2846,91 @@ public sealed class TargetMethodResolutionTests
         }
 
         Assert.That(actualSignatures, Is.EquivalentTo(expectedSignatures));
+    }
+
+    [TestCase(
+        typeof(OldSaveContinueMenuPopupTranslationPatch),
+        "Qud.UI.MainMenu",
+        "ContinueMenu",
+        "Qud.UI.MainMenu+<ContinueMenu>d__27|MoveNext|System.Void",
+        new string[0])]
+    [TestCase(
+        typeof(OldSaveContinueMenuPopupTranslationPatch),
+        "Qud.UI.SaveManagement",
+        "ContinueMenu",
+        "Qud.UI.SaveManagement+<ContinueMenu>d__15|MoveNext|System.Void",
+        new string[0])]
+    [TestCase(
+        typeof(OldSaveContinueMenuPopupTranslationPatch),
+        "XRL.Core.XRLCore",
+        "SaveManagement",
+        "XRL.Core.XRLCore+<SaveManagement>d__157|MoveNext|System.Void",
+        new string[0])]
+    [TestCase(
+        typeof(OldSaveContinueMenuPopupTranslationPatch),
+        "XRL.XRLGame",
+        "LoadGame",
+        "XRL.XRLGame+<LoadGame>d__183|MoveNext|System.Void",
+        new[]
+        {
+            "System.String",
+            "System.Boolean",
+            "System.Boolean",
+            "System.Collections.Generic.Dictionary`2[[System.String],[System.Object]]",
+        })]
+    [TestCase(
+        typeof(SingleCallsiteOwnerPopupTranslationPatch),
+        "XRL.XRLGame",
+        "LoadGame",
+        "XRL.XRLGame+<LoadGame>d__183|MoveNext|System.Void",
+        new[]
+        {
+            "System.String",
+            "System.Boolean",
+            "System.Boolean",
+            "System.Collections.Generic.Dictionary`2[[System.String],[System.Object]]",
+        })]
+    public void AsyncOwnerSourceMethod_MapsToResolvedMoveNextTarget(
+        Type patchType,
+        string sourceTypeName,
+        string sourceMethodName,
+        string expectedMoveNextSignature,
+        string[] sourceParameterTypes)
+    {
+        var sourceType = EnsureGameAssemblyLoaded().GetType(sourceTypeName, throwOnError: false);
+        Assert.That(sourceType, Is.Not.Null, $"Async owner type not found: {sourceTypeName}");
+
+        var sourceMethods = sourceType!
+            .GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static)
+            .Where(method =>
+                string.Equals(method.Name, sourceMethodName, StringComparison.Ordinal)
+                && Array.ConvertAll(
+                    method.GetParameters(),
+                    static parameter => NormalizeTypeName(parameter.ParameterType.FullName))
+                    .SequenceEqual(sourceParameterTypes, StringComparer.Ordinal))
+            .ToArray();
+        Assert.That(
+            sourceMethods,
+            Has.Length.EqualTo(1),
+            $"Expected one exact async owner method: {sourceTypeName}.{sourceMethodName}");
+
+        var stateMachineAttribute = sourceMethods[0].GetCustomAttribute<AsyncStateMachineAttribute>(inherit: false);
+        Assert.That(
+            stateMachineAttribute,
+            Is.Not.Null,
+            $"AsyncStateMachineAttribute missing: {sourceTypeName}.{sourceMethodName}");
+
+        var moveNext = stateMachineAttribute!.StateMachineType.GetMethod(
+            "MoveNext",
+            BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+        Assert.That(moveNext, Is.Not.Null, $"MoveNext missing: {stateMachineAttribute.StateMachineType.FullName}");
+
+        var resolvedTargets = ResolveTargetMethods(patchType);
+        Assert.Multiple(() =>
+        {
+            Assert.That(FullMethodSignature(moveNext!), Is.EqualTo(expectedMoveNextSignature));
+            Assert.That(resolvedTargets, Does.Contain(moveNext));
+        });
     }
 
     [Test]
@@ -3033,7 +3128,7 @@ public sealed class TargetMethodResolutionTests
         "XRL.UI.Popup|ShowAsync|System.Threading.Tasks.Task|System.String|System.Boolean|System.Boolean|System.Boolean|System.Boolean|System.Boolean",
         "XRL.UI.Popup|ShowFail|System.Void|System.String|System.Boolean|System.Boolean|System.Boolean",
         "XRL.UI.Popup|ShowKeybindAsync|System.Threading.Tasks.Task|System.String|System.Threading.CancellationToken",
-        "XRL.UI.Popup|ShowYesNo|XRL.UI.DialogResult|System.String|System.String|System.Boolean|XRL.UI.DialogResult",
+        "XRL.UI.Popup|ShowYesNo|XRL.UI.DialogResult|System.String|System.String|System.Boolean|XRL.UI.DialogResult|System.Action`1[[XRL.UI.DialogResult]]",
         "XRL.UI.Popup|ShowYesNoAsync|System.Threading.Tasks.Task`1[[XRL.UI.DialogResult]]|System.String",
         "XRL.UI.Popup|ShowYesNoCancel|XRL.UI.DialogResult|System.String|System.String|System.Boolean|XRL.UI.DialogResult",
         "XRL.UI.Popup|ShowYesNoCancelAsync|System.Threading.Tasks.Task`1[[XRL.UI.DialogResult]]|System.String",
@@ -3042,7 +3137,7 @@ public sealed class TargetMethodResolutionTests
     {
         "XRL.UI.Popup|Show|System.Void|System.String|System.String|System.String|System.Boolean|System.Boolean|System.Boolean|System.Boolean|Genkit.Location2D",
         "XRL.UI.Popup|ShowBlock|ConsoleLib.Console.Keys|System.String|System.String|System.String|System.Boolean|System.Boolean|System.Boolean|System.Boolean|Genkit.Location2D",
-        "XRL.UI.Popup|ShowYesNo|XRL.UI.DialogResult|System.String|System.String|System.Boolean|XRL.UI.DialogResult",
+        "XRL.UI.Popup|ShowYesNo|XRL.UI.DialogResult|System.String|System.String|System.Boolean|XRL.UI.DialogResult|System.Action`1[[XRL.UI.DialogResult]]",
     })]
     [TestCase(typeof(PopupAskStringTranslationPatch), new[]
     {

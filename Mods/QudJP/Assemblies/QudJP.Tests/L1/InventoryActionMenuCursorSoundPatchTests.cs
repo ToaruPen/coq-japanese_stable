@@ -1,3 +1,4 @@
+using System.Reflection;
 using QudJP.Patches;
 
 namespace QudJP.Tests.L1;
@@ -85,16 +86,48 @@ public sealed class InventoryActionMenuCursorSoundPatchTests
     {
         RuntimeDiagnostics.SetVerboseProbesEnabledForTests(true);
         var controller = new object();
-        InventoryActionMenuCursorSoundPatch.RememberPopupController(new FakePopupMessage
+        var popup = new FakePopupMessage
         {
             controller = controller,
             PopupID = "InventoryActionMenu:abc",
+        };
+        InventoryActionMenuCursorSoundPatch.RememberPopupController(popup);
+
+        string output;
+        try
+        {
+            var patchType = typeof(InventoryActionMenuCursorSoundPatch);
+            var playMethodCache = patchType.GetField("playUiSoundMethod", BindingFlags.NonPublic | BindingFlags.Static)
+                ?? throw new InvalidOperationException("PlayUISound method cache field not found.");
+            var effectTypeCache = patchType.GetField("soundEffectType", BindingFlags.NonPublic | BindingFlags.Static)
+                ?? throw new InvalidOperationException("Sound effect type cache field not found.");
+            var originalPlayMethod = playMethodCache.GetValue(null);
+            var originalEffectType = effectTypeCache.GetValue(null);
+            try
+            {
+                playMethodCache.SetValue(null, null);
+                effectTypeCache.SetValue(null, typeof(object));
+                output = TestTraceHelper.CaptureTrace(() =>
+                    InventoryActionMenuCursorSoundPatch.PlayCursorSoundForInventoryActionMenuController(controller));
+            }
+            finally
+            {
+                playMethodCache.SetValue(null, originalPlayMethod);
+                effectTypeCache.SetValue(null, originalEffectType);
+            }
+        }
+        finally
+        {
+            InventoryActionMenuCursorSoundPatch.ForgetPopupController(popup);
+        }
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(output, Does.Not.Contain("InventoryActionMenuCursorSound/v1"));
+            Assert.That(
+                InventoryActionMenuCursorSoundPatch.TryGetRememberedPopupId(controller, out _),
+                Is.False);
         });
-
-        var output = TestTraceHelper.CaptureTrace(() =>
-            InventoryActionMenuCursorSoundPatch.PlayCursorSoundForInventoryActionMenuController(controller));
-
-        Assert.That(output, Does.Not.Contain("InventoryActionMenuCursorSound/v1"));
     }
 
     [Test]

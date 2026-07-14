@@ -64,10 +64,22 @@
     </Reference>
   </ItemGroup>
 
+  <ItemGroup Condition="!Exists('$(AssemblyCSharpPath)')">
+    <ProjectReference Include="../ReferenceStubs/Assembly-CSharp/Assembly-CSharp.csproj" />
+  </ItemGroup>
+
   <ItemGroup Condition="Exists('$(AssemblyCSharpPath)')">
     <None Include="$(AssemblyCSharpPath)">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>Assembly-CSharp.dll</TargetPath>
+      <Visible>false</Visible>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup Condition="Exists('$(ManagedDir)/ZString.dll')">
+    <None Include="$(ManagedDir)/ZString.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>ZString.dll</TargetPath>
       <Visible>false</Visible>
     </None>
   </ItemGroup>

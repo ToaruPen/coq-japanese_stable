@@ -389,7 +389,7 @@ issue737-runtime-closeout-strict min_mtime="2026-05-19T20:33:00+09:00" log=playe
 check: build test-csharp python-check python-test localization-check translation-token-check changelog-link-check markdown-report-check localization-coverage-map-check
 
 # Run the CI-like PR gate before pushing broad C#, script, or localization changes.
-pr-check base_ref="origin/main" head_ref="HEAD": ci-dotnet roslyn-build python-check python-test localization-check translation-token-check changelog-link-check localization-coverage-map-check
+pr-check base_ref="origin/main" head_ref="HEAD": ci-dotnet ci-dotnet-no-game roslyn-build python-check python-test ast-grep-check localization-check translation-token-check changelog-link-check localization-coverage-map-check
   {{python}} scripts/release_notes.py check-fragment --base-ref "{{base_ref}}" --head-ref "{{head_ref}}"
   {{python}} scripts/check_markdown_reports.py --base-ref "{{base_ref}}" --head-ref "{{head_ref}}"
 
@@ -470,6 +470,44 @@ ci-dotnet:
   artifacts_root="$run_root/a/b"
   dotnet build Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj --configuration Release --no-dependencies --artifacts-path "$artifacts_root" {{dotnet_test_build_properties}}
   dotnet test "$artifacts_root/bin/QudJP.Tests/release/QudJP.Tests.dll"
+
+# Build and test without any installed game DLLs, matching the dependency boundary used by CI.
+ci-dotnet-no-game:
+  #!/usr/bin/env bash
+  set -euo pipefail
+  mkdir -p "{{dotnet_artifacts_root}}/ci-dotnet-no-game"
+  run_root="$(mktemp -d "{{dotnet_artifacts_root}}/ci-dotnet-no-game/run.XXXXXX")"
+  run_root="$(cd "$run_root" && pwd)"
+  trap 'rm -rf "$run_root"' EXIT
+  missing_game_dir="$run_root/missing-game"
+  production_artifacts="$run_root/production"
+  mkdir -p "$run_root/a/b"
+  cp -R Mods/QudJP/Localization "$run_root/Localization"
+  test_artifacts="$run_root/a/b"
+  dotnet build Mods/QudJP/Assemblies/QudJP.csproj --configuration Release --artifacts-path "$production_artifacts" -p:GameDir="$missing_game_dir" -p:QudJPOutputPath="$production_artifacts/bin/QudJP/release/"
+  production_output="$production_artifacts/bin/QudJP/release"
+  test -f "$production_output/QudJP.dll" || { echo "no-game production output missing QudJP.dll: $production_output" >&2; exit 1; }
+  if find "$production_output" -maxdepth 1 -type f \( -name 'Assembly-CSharp.dll' -o -name 'UnityEngine*.dll' -o -name 'Unity.TextMeshPro.dll' \) -print -quit | grep -q .; then
+    echo "stubs leaked into no-game production output: $production_output" >&2
+    exit 1
+  fi
+  dotnet build Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj --configuration Release --artifacts-path "$test_artifacts" -p:GameDir="$missing_game_dir" -p:QudJPOutputPath="$test_artifacts/bin/QudJP/release/" {{dotnet_test_build_properties}}
+  test_dll="$test_artifacts/bin/QudJP.Tests/release/QudJP.Tests.dll"
+  dotnet test "$test_dll"
+
+# Check that all current target-version surfaces and Assembly-CSharp identities agree.
+target-game-version-check:
+  uv run pytest scripts/tests/test_target_game_version_contract.py -q
+
+# Run the full compatibility baseline after refreshing the stable game and decompiled source.
+game-version-check:
+  just target-game-version-check
+  uv run pytest scripts/tests/test_static_producer_closure.py::test_covered_owner_families_have_current_source_and_test_evidence -q
+  just build
+  just test-csharp
+  just ci-dotnet-no-game
+  just qudtest-headless qudtest:bindings .artifacts/qudtest-game-version-bindings
+  just qudtest-headless qudtest:bindings-all .artifacts/qudtest-game-version-bindings-all
 
 # Build the Annals Roslyn extractor.
 roslyn-build-annals:

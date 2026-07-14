@@ -2,7 +2,7 @@
 
 ## Why
 
-QudJP is the Japanese localization mod for Caves of Qud `1.0.4`. The repo contains the shipped DLL, localization assets, and the tooling used to validate and deploy them.
+QudJP is the Japanese localization mod for Caves of Qud `1.0.5`. The repo contains the shipped DLL, localization assets, and the tooling used to validate and deploy them.
 
 ## What
 
@@ -77,6 +77,9 @@ just build
 just test-l1
 just test-l2
 just test-l2g
+just ci-dotnet-no-game
+just target-game-version-check
+just game-version-check
 just python-check
 just python-test
 just localization-check
@@ -86,5 +89,11 @@ just sync-mod
 ```
 
 - Decompiled game source lives in `~/dev/coq-decompiled_stable/` and must never be committed.
+- For a game-version upgrade, refresh the stable game reference and
+  `~/dev/coq-decompiled_stable/` first, then run `just game-version-check`
+  before compatibility edits to capture the complete baseline and again after
+  the fixes. This gate checks current-version metadata, tracked owner evidence,
+  the full C# suite against the installed game, the game-DLL-free CI boundary,
+  and both exact and all-patch QudTest bindings.
 - Do not commit `Assembly-CSharp.dll` or other game binaries.
 - Only the built DLL and localization assets ship; `.cs` source files do not.

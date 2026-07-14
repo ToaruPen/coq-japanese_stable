@@ -2,17 +2,17 @@
 
 > **Status**: Active development (主開発リポジトリ)
 >
-> **対象ゲームバージョン**: Caves of Qud 1.0.4
+> **対象ゲームバージョン**: Caves of Qud 1.0.5
 >
 > **Steam Workshop**: [`3718988020`](https://steamcommunity.com/sharedfiles/filedetails/?id=3718988020)
 
 ## Why
 
-Caves of Qud は完全な英語ローカライゼーション API が整備される前から運用されてきたタイトルで、UI / quest / conversation / 自動生成テキストを日本語化するには Harmony patch を主軸としたアプローチが必要。本リポジトリは Caves of Qud 1.0.4 ユーザーが実際にプレイできる翻訳状態を維持することを最優先する。
+Caves of Qud は完全な英語ローカライゼーション API が整備される前から運用されてきたタイトルで、UI / quest / conversation / 自動生成テキストを日本語化するには Harmony patch を主軸としたアプローチが必要。本リポジトリは Caves of Qud 1.0.5 ユーザーが実際にプレイできる翻訳状態を維持することを最優先する。
 
 ## What This Repo Is For
 
-- Caves of Qud 1.0.4 ユーザー向け日本語化 Mod の開発と出荷
+- Caves of Qud 1.0.5 ユーザー向け日本語化 Mod の開発と出荷
 - 会話 / UI / quest / 自動生成テキスト / 装備名 / 能力名 / 書籍 等の翻訳資産の保守
 - Harmony patch 群、CJK フォント、翻訳辞書、検証・release tooling の維持
 - フォント資産とライセンス情報の同梱管理
@@ -22,7 +22,7 @@ Caves of Qud は完全な英語ローカライゼーション API が整備さ�
 - experimental branch (`lang-experimental` 系) ターゲットの開発 (→ v2)
 - 新ローカライゼーション API (`Strings/_T/_S` / `[LanguageProvider]`) への先行移植
 - 英語以外の他言語サポート
-- Caves of Qud 1.0.4 の挙動を破壊する実験的リファクタ
+- Caves of Qud 1.0.5 の挙動を破壊する実験的リファクタ
 
 ## macOS Apple Silicon
 

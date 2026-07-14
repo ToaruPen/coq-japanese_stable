@@ -103,11 +103,13 @@ public static class PopupShowTranslationPatch
         MethodInfo? showYesNoMethod = null;
         if (dialogResultType is not null)
         {
-            showYesNoMethod = AccessTools.Method(popupType, "ShowYesNo",
-                new[] { typeof(string), typeof(string), typeof(bool), dialogResultType });
+            showYesNoMethod = ResolveShowYesNoMethod(popupType, dialogResultType);
         }
         if (showYesNoMethod is null)
         {
+            Trace.TraceWarning(
+                "QudJP: {0} failed to resolve callback-bearing Popup.ShowYesNo; falling back to name-only lookup.",
+                Context);
             showYesNoMethod = AccessTools.Method(popupType, "ShowYesNo");
         }
 
@@ -180,6 +182,22 @@ public static class PopupShowTranslationPatch
         }
 
         return targets;
+    }
+
+    internal static MethodInfo? ResolveShowYesNoMethod(Type popupType, Type dialogResultType)
+    {
+        var callbackType = typeof(Action<>).MakeGenericType(dialogResultType);
+        return AccessTools.Method(
+            popupType,
+            "ShowYesNo",
+            new[]
+            {
+                typeof(string),
+                typeof(string),
+                typeof(bool),
+                dialogResultType,
+                callbackType,
+            });
     }
 
     public static void Prefix(ref string __0, MethodBase? __originalMethod)

@@ -4,6 +4,11 @@ using System.Globalization;
 
 namespace QudJP.Tests.DummyTargets;
 
+internal static class Options
+{
+    public static bool ShowNumberOfItems = true;
+}
+
 internal sealed class DummyFallbackInventoryLineDataTarget
 {
     public string FallbackText { get; set; } = "inventory fallback";

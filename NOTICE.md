@@ -20,7 +20,7 @@ QudJP is a community localization mod for
 
 - QudJP is an independent community project. It is not affiliated with,
   endorsed by, or sponsored by Freehold Games.
-- Targeted game version: Caves of Qud 1.0.4.
+- Targeted game version: Caves of Qud 1.0.5.
 - The original English text in the game is copyright Freehold Games.
   QudJP distributes Japanese translations of that text as a derivative work
   for the sole purpose of enabling Japanese-language play, in line with the

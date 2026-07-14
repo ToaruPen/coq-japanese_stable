@@ -31,6 +31,7 @@ public sealed class PopupShowTranslationPatchTests
         DynamicTextObservability.ResetForTests();
         SinkObservation.ResetForTests();
         DummyPopupShow.Reset();
+        CallbackShowYesNoTarget.Reset();
     }
 
     [TearDown]
@@ -73,6 +74,69 @@ public sealed class PopupShowTranslationPatchTests
         {
             harmony.UnpatchAll(harmonyId);
         }
+    }
+
+    [Test]
+    public void Prefix_TranslatesOnlyCallbackShowYesNoMessage_AndPreservesCallbackContract()
+    {
+        const string source = "Do you want to continue?";
+        const string translated = "続けますか？";
+        const string sound = "Sounds/UI/test_confirmation";
+        WriteDictionary((source, translated));
+
+        var callbackCount = 0;
+        var callbackStage = 0;
+        var callbackResult = XRL.UI.DialogResult.Yes;
+        Action<XRL.UI.DialogResult> callback = result =>
+        {
+            callbackCount++;
+            callbackStage = CallbackShowYesNoTarget.InvocationStage;
+            callbackResult = result;
+        };
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+
+        try
+        {
+            harmony.Patch(
+                original: RequireCallbackShowYesNoMethod(),
+                prefix: new HarmonyMethod(RequireMethod(typeof(PopupShowTranslationPatch), nameof(PopupShowTranslationPatch.Prefix))),
+                finalizer: new HarmonyMethod(RequireMethod(typeof(PopupShowTranslationPatch), nameof(PopupShowTranslationPatch.Finalizer))));
+
+            var result = CallbackShowYesNoTarget.ShowYesNo(
+                source,
+                sound,
+                false,
+                XRL.UI.DialogResult.Cancel,
+                callback);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(CallbackShowYesNoTarget.LastMessage, Is.EqualTo(translated));
+                Assert.That(CallbackShowYesNoTarget.LastSound, Is.EqualTo(sound));
+                Assert.That(CallbackShowYesNoTarget.LastAllowEscape, Is.False);
+                Assert.That(CallbackShowYesNoTarget.LastDefaultResult, Is.EqualTo(XRL.UI.DialogResult.Cancel));
+                Assert.That(CallbackShowYesNoTarget.LastCallback, Is.SameAs(callback));
+                Assert.That(callbackCount, Is.EqualTo(1));
+                Assert.That(callbackStage, Is.EqualTo(1));
+                Assert.That(callbackResult, Is.EqualTo(XRL.UI.DialogResult.Cancel));
+                Assert.That(result, Is.EqualTo(XRL.UI.DialogResult.Cancel));
+            });
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    [Test]
+    public void ResolveShowYesNoMethod_BindsCallbackBearingOverloadExactly()
+    {
+        var resolved = PopupShowTranslationPatch.ResolveShowYesNoMethod(
+            typeof(CallbackShowYesNoTarget),
+            typeof(XRL.UI.DialogResult));
+
+        Assert.That(resolved, Is.EqualTo(RequireCallbackShowYesNoMethod()));
     }
 
     [Test]
@@ -1003,6 +1067,67 @@ public sealed class PopupShowTranslationPatchTests
     {
         return AccessTools.Method(type, methodName)
             ?? throw new InvalidOperationException($"Method not found: {type.FullName}.{methodName}");
+    }
+
+    private static MethodInfo RequireCallbackShowYesNoMethod()
+    {
+        return AccessTools.Method(
+                typeof(CallbackShowYesNoTarget),
+                nameof(CallbackShowYesNoTarget.ShowYesNo),
+                new[]
+                {
+                    typeof(string),
+                    typeof(string),
+                    typeof(bool),
+                    typeof(XRL.UI.DialogResult),
+                    typeof(Action<XRL.UI.DialogResult>),
+                })
+            ?? throw new InvalidOperationException(
+                $"Callback ShowYesNo method not found: {typeof(CallbackShowYesNoTarget).FullName}");
+    }
+
+    private static class CallbackShowYesNoTarget
+    {
+        public static string? LastMessage { get; private set; }
+
+        public static string? LastSound { get; private set; }
+
+        public static bool LastAllowEscape { get; private set; }
+
+        public static XRL.UI.DialogResult LastDefaultResult { get; private set; }
+
+        public static Action<XRL.UI.DialogResult>? LastCallback { get; private set; }
+
+        public static int InvocationStage { get; private set; }
+
+        public static void Reset()
+        {
+            LastMessage = null;
+            LastSound = null;
+            LastAllowEscape = default;
+            LastDefaultResult = default;
+            LastCallback = null;
+            InvocationStage = 0;
+        }
+
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
+        public static XRL.UI.DialogResult ShowYesNo(
+            string Message,
+            string Sound,
+            bool AllowEscape,
+            XRL.UI.DialogResult defaultResult,
+            Action<XRL.UI.DialogResult> callback)
+        {
+            LastMessage = Message;
+            LastSound = Sound;
+            LastAllowEscape = AllowEscape;
+            LastDefaultResult = defaultResult;
+            LastCallback = callback;
+            InvocationStage = 1;
+            callback(defaultResult);
+            InvocationStage = 2;
+            return defaultResult;
+        }
     }
 
     private static string? RunShowWithPopupPatch(string source)
