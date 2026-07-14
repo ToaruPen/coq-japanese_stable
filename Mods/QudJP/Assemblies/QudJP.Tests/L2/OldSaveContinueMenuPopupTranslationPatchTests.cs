@@ -94,6 +94,34 @@ public sealed class OldSaveContinueMenuPopupTranslationPatchTests
     }
 
     [Test]
+    public void Prefix_PreservesOuterScope_AfterNestedScopeExits()
+    {
+        OldSaveContinueMenuPopupTranslationPatch.Prefix();
+        try
+        {
+            AssertScopeActive();
+
+            OldSaveContinueMenuPopupTranslationPatch.Prefix();
+            try
+            {
+                AssertScopeActive();
+            }
+            finally
+            {
+                _ = OldSaveContinueMenuPopupTranslationPatch.Finalizer(null);
+            }
+
+            AssertScopeActive();
+        }
+        finally
+        {
+            _ = OldSaveContinueMenuPopupTranslationPatch.Finalizer(null);
+        }
+
+        AssertScopeInactive(OldSaveMessage);
+    }
+
+    [Test]
     public void Patch_DoesNotRecordOwnerRoute_WhenOwnerAbsent()
     {
         WithPatchedPopupOnly(() =>
@@ -322,6 +350,18 @@ public sealed class OldSaveContinueMenuPopupTranslationPatchTests
                 out var translated),
             Is.False);
         Assert.That(translated, Is.EqualTo(source));
+    }
+
+    private static void AssertScopeActive()
+    {
+        Assert.That(
+            OldSaveContinueMenuPopupTranslationPatch.TryTranslatePopupMessage(
+                OldSaveMessage,
+                nameof(PopupShowTranslationPatch),
+                "OldSaveContinueMenuPopup",
+                out var translated),
+            Is.True);
+        Assert.That(translated, Is.EqualTo(TranslatedOldSaveMessage));
     }
 
     private static Task WaitForMoveNextToReturn()

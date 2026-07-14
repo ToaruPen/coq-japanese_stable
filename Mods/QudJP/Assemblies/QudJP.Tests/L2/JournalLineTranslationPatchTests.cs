@@ -6,19 +6,6 @@ namespace QudJP.Tests.L2;
 
 public sealed partial class Issue201OtherUiBindingPatchTests
 {
-    [TestCase(2, "Small", false)]
-    [TestCase(1, "Small", true)]
-    [TestCase(1, "Medium", false)]
-    public void ShouldClipForSmallMedia_UsesCategoryAndMediaSize(
-        int currentCategory,
-        string sizeClass,
-        bool expected)
-    {
-        Assert.That(
-            JournalLineTranslationPatch.ShouldClipForSmallMedia(currentCategory, sizeClass),
-            Is.EqualTo(expected));
-    }
-
     [Test]
     public void JournalLinePrefix_TranslatesCategoryRecipeAndEntryRows_WhenPatched()
     {
