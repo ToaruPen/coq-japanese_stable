@@ -20,6 +20,14 @@ public sealed class CherubimSpawnerGeneratedTextTranslationPatchTests
     }
 
     [Test]
+    public void DummyGameObjectGetPart_RejectsUnrelatedPartType()
+    {
+        var gameObject = new DummyCherubimGameObject();
+
+        Assert.Throws<InvalidOperationException>(() => gameObject.GetPart<RulesDescription>());
+    }
+
+    [Test]
     public void BestowElementPostfix_TranslatesElementDisplayNameAndAddedRules_WhenPrependNameIsTrue()
     {
         var gameObject = new DummyCherubimGameObject();

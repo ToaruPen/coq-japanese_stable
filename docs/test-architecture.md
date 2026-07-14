@@ -55,7 +55,7 @@ L2 層は 2 つのカテゴリに分かれます。
 **このモードで優先して検証するもの**:
 - `HarmonyTargetMethod` / `HarmonyTargetMethods` が実 DLL 上で正しいメソッドを解決できるか
 - 実ゲーム DLL 由来の static メソッドや、Unity ランタイムなしで安全に呼べる処理
-- ILSpy 解析で得たフック候補が現行ゲーム 1.0.4 の実 DLL と一致しているか
+- ILSpy 解析で得たフック候補が現行ゲーム 1.0.5 の実 DLL と一致しているか
 
 **制約**:
 - `Assembly-CSharp.dll` の型を参照してよい
@@ -219,7 +219,7 @@ headless では `--skip-player-log` を使い、ゲーム内 wish 検証では
 
 **制約**:
 - 手動実行のみ
-- Caves of Qud v1.0.4 の実行環境が必要
+- Caves of Qud v1.0.5 の実行環境が必要
 
 **手順**:
 

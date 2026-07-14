@@ -292,5 +292,5 @@ source/expected pair with case-specific assertion messages.
 
 - Do not commit `Assembly-CSharp.dll` or other game binaries.
 - Contributors need a local game install for DLL-assisted work.
-- Blueprint and conversation IDs must match game version `1.0.4`.
+- Blueprint and conversation IDs must match game version `1.0.5`.
 - The shipped mod is the built DLL plus localization assets and fonts, not the C# source tree.

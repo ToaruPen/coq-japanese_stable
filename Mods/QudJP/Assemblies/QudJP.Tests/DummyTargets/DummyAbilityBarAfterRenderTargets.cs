@@ -90,9 +90,15 @@ internal sealed class DummyAbilityBarButtonGameObject
 
     public DummyUITextSkin Text => component.Text;
 
+    public Type? LastRequestedComponentType { get; private set; }
+
     public object? GetComponent(Type componentType)
     {
-        return componentType == typeof(AbilityBarButton) ? component : null;
+        LastRequestedComponentType = componentType;
+        return componentType == typeof(AbilityBarButton)
+            || string.Equals(componentType.FullName, "Qud.UI.AbilityBarButton", StringComparison.Ordinal)
+            ? component
+            : null;
     }
 }
 

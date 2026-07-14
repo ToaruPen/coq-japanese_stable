@@ -24,6 +24,7 @@ public sealed class FactionsStatusScreenTranslationPatchTests
         Translator.SetDictionaryDirectoryForTests(tempDirectory);
         DynamicTextObservability.ResetForTests();
         SinkObservation.ResetForTests();
+        FactionsStatusScreenTranslationPatch.ResetDiagnosticsForTests();
     }
 
     [TearDown]
@@ -32,6 +33,7 @@ public sealed class FactionsStatusScreenTranslationPatchTests
         Translator.ResetForTests();
         DynamicTextObservability.ResetForTests();
         SinkObservation.ResetForTests();
+        FactionsStatusScreenTranslationPatch.ResetDiagnosticsForTests();
 
         if (Directory.Exists(tempDirectory))
         {
@@ -321,6 +323,35 @@ public sealed class FactionsStatusScreenTranslationPatchTests
         });
     }
 
+    [Test]
+    public void FactionSearchFragmentLookupFailure_LogsPowerOfTwoHitsPerInnerExceptionSignature()
+    {
+        var output = TestTraceHelper.CaptureTrace(() =>
+        {
+            for (var index = 0; index < 4; index++)
+            {
+                FactionsStatusScreenTranslationPatch.RecordFactionSearchFragmentLookupFailure(
+                    new TargetInvocationException(new InvalidOperationException("lookup unavailable")));
+            }
+
+            FactionsStatusScreenTranslationPatch.RecordFactionSearchFragmentLookupFailure(
+                new TargetInvocationException(new InvalidOperationException("different failure")));
+        });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(CountOccurrences(output, "faction search fragment lookup failed"), Is.EqualTo(4));
+            Assert.That(CountOccurrences(output, "lookup unavailable"), Is.EqualTo(3));
+            Assert.That(CountOccurrences(output, "different failure"), Is.EqualTo(1));
+            Assert.That(output, Does.Contain("hit 1"));
+            Assert.That(output, Does.Contain("hit 2"));
+            Assert.That(output, Does.Not.Contain("hit 3"));
+            Assert.That(output, Does.Contain("hit 4"));
+            Assert.That(output, Does.Contain("InvalidOperationException: lookup unavailable"));
+            Assert.That(output, Does.Not.Contain(nameof(TargetInvocationException)));
+        });
+    }
+
     private static string CreateHarmonyId()
     {
         return $"qudjp.tests.{Guid.NewGuid():N}";
@@ -330,6 +361,19 @@ public sealed class FactionsStatusScreenTranslationPatchTests
     {
         return AccessTools.Method(type, methodName)
             ?? throw new InvalidOperationException($"Method not found: {type.FullName}.{methodName}");
+    }
+
+    private static int CountOccurrences(string source, string value)
+    {
+        var count = 0;
+        var startIndex = 0;
+        while ((startIndex = source.IndexOf(value, startIndex, StringComparison.Ordinal)) >= 0)
+        {
+            count++;
+            startIndex += value.Length;
+        }
+
+        return count;
     }
 
     private void WriteDictionary(params (string key, string text)[] entries)

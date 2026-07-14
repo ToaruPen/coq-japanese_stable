@@ -24,6 +24,8 @@ public sealed class OldSaveContinueMenuPopupTranslationPatchTests
     private const string TranslatedOldSaveTemplate =
         "このセーブデータは古いフォーマット（{0}）のようです。\nゲームクライアントで以前のブランチに切り替えれば読み込める可能性があります。";
 
+    private static TaskCompletionSource<bool> moveNextFinalized = CreateFinalizerSignal();
+
     private string tempDirectory = null!;
 
     [SetUp]
@@ -38,6 +40,7 @@ public sealed class OldSaveContinueMenuPopupTranslationPatchTests
         DynamicTextObservability.ResetForTests();
         SinkObservation.ResetForTests();
         DummyPopupShow.Reset();
+        ResetFinalizerSignal();
 
         WriteDictionary((OldSaveTemplate, TranslatedOldSaveTemplate));
     }
@@ -60,23 +63,34 @@ public sealed class OldSaveContinueMenuPopupTranslationPatchTests
     [TestCase(nameof(DummyOldSaveContinueMenuProducer.MainMenuContinueMenu))]
     [TestCase(nameof(DummyOldSaveContinueMenuProducer.SaveManagementContinueMenu))]
     [TestCase(nameof(DummyOldSaveContinueMenuProducer.XrlCoreSaveManagement))]
-    public void Patch_TranslatesOldSavePopup_WhenOwnerPatched(string methodName)
+    [TestCase(nameof(DummyOldSaveContinueMenuProducer.XrlGameLoadGame))]
+    public async Task Patch_TranslatesOldSavePopup_InAsyncOwnerContinuation(string methodName)
     {
-        WithPatchedOwnerAndPopup(methodName, () =>
-        {
-            var target = new DummyOldSaveContinueMenuProducer
+        await WithPatchedOwnerAndPopupAsync(
+            methodName,
+            async () =>
             {
-                PopupMessageToShow = OldSaveMessage,
-            };
+                var target = new DummyOldSaveContinueMenuProducer
+                {
+                    PopupMessageToShow = OldSaveMessage,
+                };
 
-            InvokeOwnerMethod(target, methodName);
+                AssertScopeInactive(OldSaveMessage);
+                var invocation = InvokeOwnerMethod(target, methodName);
+                AssertScopeInactive(OldSaveMessage);
 
-            Assert.Multiple(() =>
-            {
-                Assert.That(LastPopupMessage(methodName), Is.EqualTo(TranslatedOldSaveMessage));
-                Assert.That(HitCount(), Is.EqualTo(1));
-            });
-        });
+                ResetFinalizerSignal();
+                target.ContinueOwner();
+                await invocation.ConfigureAwait(false);
+                await WaitForMoveNextToReturn().ConfigureAwait(false);
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(LastPopupMessage(methodName), Is.EqualTo(TranslatedOldSaveMessage));
+                    Assert.That(HitCount(), Is.EqualTo(1));
+                });
+                AssertScopeInactive(OldSaveMessage);
+            }).ConfigureAwait(false);
     }
 
     [Test]
@@ -98,68 +112,111 @@ public sealed class OldSaveContinueMenuPopupTranslationPatchTests
 
     [TestCase(nameof(DummyOldSaveContinueMenuProducer.MainMenuContinueMenu))]
     [TestCase(nameof(DummyOldSaveContinueMenuProducer.XrlCoreSaveManagement))]
-    public void Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched(string methodName)
+    public async Task Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched(string methodName)
     {
         var source = MessageFrameTranslator.MarkDirectTranslation(OldSaveMessage);
 
-        WithPatchedOwnerAndPopup(methodName, () =>
-        {
-            var target = new DummyOldSaveContinueMenuProducer
+        await WithPatchedOwnerAndPopupAsync(
+            methodName,
+            async () =>
             {
-                PopupMessageToShow = source,
-            };
+                var target = new DummyOldSaveContinueMenuProducer
+                {
+                    PopupMessageToShow = source,
+                };
 
-            InvokeOwnerMethod(target, methodName);
+                var invocation = InvokeOwnerMethod(target, methodName);
+                ResetFinalizerSignal();
+                target.ContinueOwner();
+                await invocation.ConfigureAwait(false);
+                await WaitForMoveNextToReturn().ConfigureAwait(false);
 
-            Assert.Multiple(() =>
-            {
-                Assert.That(LastPopupMessage(methodName), Is.EqualTo(OldSaveMessage));
-                Assert.That(HitCount(), Is.Zero);
-            });
-        });
+                Assert.Multiple(() =>
+                {
+                    Assert.That(LastPopupMessage(methodName), Is.EqualTo(OldSaveMessage));
+                    Assert.That(HitCount(), Is.Zero);
+                });
+            }).ConfigureAwait(false);
     }
 
     [TestCase(nameof(DummyOldSaveContinueMenuProducer.MainMenuContinueMenu))]
     [TestCase(nameof(DummyOldSaveContinueMenuProducer.XrlCoreSaveManagement))]
-    public void Patch_LeavesUnknownOldSavePopupUnchanged_WhenOwnerPatched(string methodName)
+    public async Task Patch_LeavesUnknownOldSavePopupUnchanged_WhenOwnerPatched(string methodName)
     {
         const string source = "That save file comes from an unknown future save format revision.";
 
-        WithPatchedOwnerAndPopup(methodName, () =>
-        {
-            var target = new DummyOldSaveContinueMenuProducer
+        await WithPatchedOwnerAndPopupAsync(
+            methodName,
+            async () =>
             {
-                PopupMessageToShow = source,
-            };
+                var target = new DummyOldSaveContinueMenuProducer
+                {
+                    PopupMessageToShow = source,
+                };
 
-            InvokeOwnerMethod(target, methodName);
+                var invocation = InvokeOwnerMethod(target, methodName);
+                ResetFinalizerSignal();
+                target.ContinueOwner();
+                await invocation.ConfigureAwait(false);
+                await WaitForMoveNextToReturn().ConfigureAwait(false);
 
-            Assert.Multiple(() =>
-            {
-                Assert.That(LastPopupMessage(methodName), Is.EqualTo(source));
-                Assert.That(HitCount(), Is.Zero);
-            });
-        });
+                Assert.Multiple(() =>
+                {
+                    Assert.That(LastPopupMessage(methodName), Is.EqualTo(source));
+                    Assert.That(HitCount(), Is.Zero);
+                });
+            }).ConfigureAwait(false);
     }
 
     [TestCase(nameof(DummyOldSaveContinueMenuProducer.MainMenuContinueMenu))]
     [TestCase(nameof(DummyOldSaveContinueMenuProducer.XrlCoreSaveManagement))]
-    public void Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched(string methodName)
+    public async Task Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched(string methodName)
     {
-        WithPatchedOwnerAndPopup(methodName, () =>
-        {
-            var target = new DummyOldSaveContinueMenuProducer
+        await WithPatchedOwnerAndPopupAsync(
+            methodName,
+            async () =>
             {
-                PopupMessageToShow = string.Empty,
-            };
+                var target = new DummyOldSaveContinueMenuProducer
+                {
+                    PopupMessageToShow = string.Empty,
+                };
 
-            InvokeOwnerMethod(target, methodName);
+                var invocation = InvokeOwnerMethod(target, methodName);
+                ResetFinalizerSignal();
+                target.ContinueOwner();
+                await invocation.ConfigureAwait(false);
+                await WaitForMoveNextToReturn().ConfigureAwait(false);
 
-            Assert.That(LastPopupMessage(methodName), Is.EqualTo(string.Empty));
-        });
+                Assert.That(LastPopupMessage(methodName), Is.EqualTo(string.Empty));
+            }).ConfigureAwait(false);
     }
 
-    private static void WithPatchedOwnerAndPopup(string methodName, Action action)
+    [Test]
+    public async Task Patch_CleansUpScope_WhenAsyncOwnerContinuationThrows()
+    {
+        await WithPatchedOwnerAndPopupAsync(
+            nameof(DummyOldSaveContinueMenuProducer.MainMenuContinueMenu),
+            async () =>
+            {
+                var target = new DummyOldSaveContinueMenuProducer
+                {
+                    ThrowAfterAwait = true,
+                };
+
+                var invocation = target.MainMenuContinueMenu();
+                AssertScopeInactive(OldSaveMessage);
+
+                ResetFinalizerSignal();
+                target.ContinueOwner();
+                await Assert.ThatAsync(
+                    async () => await invocation.ConfigureAwait(false),
+                    Throws.TypeOf<InvalidOperationException>()).ConfigureAwait(false);
+                await WaitForMoveNextToReturn().ConfigureAwait(false);
+                AssertScopeInactive(OldSaveMessage);
+            }).ConfigureAwait(false);
+    }
+
+    private static async Task WithPatchedOwnerAndPopupAsync(string methodName, Func<Task> action)
     {
         var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";
         var harmony = new Harmony(harmonyId);
@@ -167,11 +224,11 @@ public sealed class OldSaveContinueMenuPopupTranslationPatchTests
         {
             PatchPopupShowMethods(harmony);
             harmony.Patch(
-                original: RequireOwnerMethod(methodName),
+                original: RequireMoveNextMethod(RequireOwnerMethod(methodName)),
                 prefix: new HarmonyMethod(RequireMethod(typeof(OldSaveContinueMenuPopupTranslationPatch), nameof(OldSaveContinueMenuPopupTranslationPatch.Prefix))),
-                finalizer: new HarmonyMethod(RequireMethod(typeof(OldSaveContinueMenuPopupTranslationPatch), nameof(OldSaveContinueMenuPopupTranslationPatch.Finalizer), typeof(Exception))));
+                finalizer: new HarmonyMethod(RequireMethod(typeof(OldSaveContinueMenuPopupTranslationPatchTests), nameof(ObserveOldSaveFinalizer), typeof(Exception))));
 
-            action();
+            await action().ConfigureAwait(false);
         }
         finally
         {
@@ -230,28 +287,65 @@ public sealed class OldSaveContinueMenuPopupTranslationPatchTests
                 typeof(MethodBase))));
     }
 
-    private static void InvokeOwnerMethod(DummyOldSaveContinueMenuProducer target, string methodName)
+    private static Task InvokeOwnerMethod(DummyOldSaveContinueMenuProducer target, string methodName)
     {
         if (string.Equals(methodName, nameof(DummyOldSaveContinueMenuProducer.XrlCoreSaveManagement), StringComparison.Ordinal))
         {
-            target.XrlCoreSaveManagement();
-            return;
+            return target.XrlCoreSaveManagement();
         }
 
         if (string.Equals(methodName, nameof(DummyOldSaveContinueMenuProducer.SaveManagementContinueMenu), StringComparison.Ordinal))
         {
-            target.SaveManagementContinueMenu();
-            return;
+            return target.SaveManagementContinueMenu();
         }
 
-        target.MainMenuContinueMenu();
+        return string.Equals(methodName, nameof(DummyOldSaveContinueMenuProducer.XrlGameLoadGame), StringComparison.Ordinal)
+            ? target.XrlGameLoadGame()
+            : target.MainMenuContinueMenu();
     }
 
     private static string? LastPopupMessage(string methodName)
     {
-        return string.Equals(methodName, nameof(DummyOldSaveContinueMenuProducer.XrlCoreSaveManagement), StringComparison.Ordinal)
-            ? DummyPopupShow.LastShowMessage
-            : DummyPopupShow.LastShowAsyncMessage;
+        return string.Equals(methodName, nameof(DummyOldSaveContinueMenuProducer.MainMenuContinueMenu), StringComparison.Ordinal)
+               || string.Equals(methodName, nameof(DummyOldSaveContinueMenuProducer.SaveManagementContinueMenu), StringComparison.Ordinal)
+            ? DummyPopupShow.LastShowAsyncMessage
+            : DummyPopupShow.LastShowMessage;
+    }
+
+    private static void AssertScopeInactive(string source)
+    {
+        Assert.That(
+            OldSaveContinueMenuPopupTranslationPatch.TryTranslatePopupMessage(
+                source,
+                nameof(PopupShowTranslationPatch),
+                "OldSaveContinueMenuPopup",
+                out var translated),
+            Is.False);
+        Assert.That(translated, Is.EqualTo(source));
+    }
+
+    private static Task WaitForMoveNextToReturn()
+    {
+        // AsyncTaskMethodBuilder may resume the Task awaiter inline before Harmony's Finalizer runs.
+        // This signal is completed only after the production Finalizer has unwound that invocation.
+        return moveNextFinalized.Task;
+    }
+
+    private static Exception? ObserveOldSaveFinalizer(Exception? __exception)
+    {
+        var result = OldSaveContinueMenuPopupTranslationPatch.Finalizer(__exception);
+        _ = moveNextFinalized.TrySetResult(true);
+        return result;
+    }
+
+    private static void ResetFinalizerSignal()
+    {
+        moveNextFinalized = CreateFinalizerSignal();
+    }
+
+    private static TaskCompletionSource<bool> CreateFinalizerSignal()
+    {
+        return new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
     }
 
     private static int HitCount()
@@ -304,6 +398,13 @@ public sealed class OldSaveContinueMenuPopupTranslationPatchTests
         return RequireMethod(typeof(DummyOldSaveContinueMenuProducer), methodName);
     }
 
+    private static MethodInfo RequireMoveNextMethod(MethodInfo logicalMethod)
+    {
+        var stateMachineType = logicalMethod.GetCustomAttribute<AsyncStateMachineAttribute>()?.StateMachineType
+                               ?? throw new InvalidOperationException($"Async state machine not found: {logicalMethod.Name}");
+        return RequireMethod(stateMachineType, nameof(IAsyncStateMachine.MoveNext));
+    }
+
     private static MethodInfo RequireMethod(Type type, string methodName, params Type[] parameters)
     {
         return type.GetMethod(
@@ -317,24 +418,62 @@ public sealed class OldSaveContinueMenuPopupTranslationPatchTests
 
     private sealed class DummyOldSaveContinueMenuProducer
     {
+        private readonly TaskCompletionSource<bool> ownerGate = new(TaskCreationOptions.RunContinuationsAsynchronously);
+
         public string PopupMessageToShow { get; set; } = string.Empty;
 
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        public void MainMenuContinueMenu()
+        public bool ThrowAfterAwait { get; set; }
+
+        public void ContinueOwner()
         {
-            _ = DummyPopupShow.ShowAsync(PopupMessageToShow);
+            ownerGate.SetResult(true);
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        public void SaveManagementContinueMenu()
+        public async Task MainMenuContinueMenu()
         {
-            _ = DummyPopupShow.ShowAsync(PopupMessageToShow);
+            await ownerGate.Task.ConfigureAwait(false);
+            ThrowIfRequested();
+            await DummyPopupShow.ShowAsync(PopupMessageToShow).ConfigureAwait(false);
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        public void XrlCoreSaveManagement()
+        public async Task SaveManagementContinueMenu()
+        {
+            await ownerGate.Task.ConfigureAwait(false);
+            ThrowIfRequested();
+            _ = nameof(SaveManagementContinueMenu);
+            await DummyPopupShow.ShowAsync(PopupMessageToShow).ConfigureAwait(false);
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public async Task XrlCoreSaveManagement()
+        {
+            await ownerGate.Task.ConfigureAwait(false);
+            ThrowIfRequested();
+            ShowPopupSynchronously();
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public async Task XrlGameLoadGame()
+        {
+            await ownerGate.Task.ConfigureAwait(false);
+            ThrowIfRequested();
+            _ = nameof(XrlGameLoadGame);
+            ShowPopupSynchronously();
+        }
+
+        private void ShowPopupSynchronously()
         {
             DummyPopupShow.Show(PopupMessageToShow);
+        }
+
+        private void ThrowIfRequested()
+        {
+            if (ThrowAfterAwait)
+            {
+                throw new InvalidOperationException("Dummy async owner failed after suspension.");
+            }
         }
     }
 }

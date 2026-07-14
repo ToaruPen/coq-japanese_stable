@@ -17,8 +17,16 @@ public sealed partial class Issue201OtherUiBindingPatchTests
             ("Expand", "展開"),
             ("Collapse", "折りたたむ"),
             ("Select", "選択"));
-        PickGameObjectScreen.NotePlayerOwned = true;
-        PickGameObjectScreen.ShowContext = true;
+        using var notePlayerOwnedOverride = StaticBooleanSettingOverride.ForResolvedType(
+            "Qud.UI.PickGameObjectScreen",
+            "PickGameObjectScreen",
+            "NotePlayerOwned",
+            value: true);
+        using var showContextOverride = StaticBooleanSettingOverride.ForResolvedType(
+            "Qud.UI.PickGameObjectScreen",
+            "PickGameObjectScreen",
+            "ShowContext",
+            value: true);
 
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);

@@ -8,13 +8,15 @@
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
     <AnalysisLevel>latest-all</AnalysisLevel>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <!-- macOS stable reference default. Override with -p:GameDir=... for beta, Windows, or other installs. -->
     <GameDir Condition="'$(GameDir)' == ''">$(HOME)/Games/CavesOfQud-stable-ref/CoQ.app/Contents/Resources/Data</GameDir>
     <ManagedDir>$(GameDir)/Managed</ManagedDir>
     <AssemblyCSharpPath>$(ManagedDir)/Assembly-CSharp.dll</AssemblyCSharpPath>
-    <OutputPath>$(MSBuildProjectDirectory)/</OutputPath>
+    <OutputPath Condition="'$(QudJPOutputPath)' == ''">$(MSBuildProjectDirectory)/</OutputPath>
+    <OutputPath Condition="'$(QudJPOutputPath)' != ''">$(QudJPOutputPath)</OutputPath>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
   </PropertyGroup>
@@ -63,6 +65,10 @@
       <HintPath>$(AssemblyCSharpPath)</HintPath>
       <Private>false</Private>
     </Reference>
+  </ItemGroup>
+
+  <ItemGroup Condition="!Exists('$(AssemblyCSharpPath)')">
+    <ProjectReference Include="ReferenceStubs/Assembly-CSharp/Assembly-CSharp.csproj" Private="false" />
   </ItemGroup>
 
   <PropertyGroup Condition="Exists('$(ManagedDir)/Unity.TextMeshPro.dll')">

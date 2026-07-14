@@ -1,0 +1,55 @@
+id: dictionary-override-must-be-nonparallel
+language: CSharp
+severity: error
+files:
+  - Mods/QudJP/Assemblies/QudJP.Tests/**/*.cs
+rule:
+  pattern: Translator.SetDictionaryDirectoryForTests($$$ARGS)
+  not:
+    inside:
+      any:
+        - all:
+            - kind: class_declaration
+            - has:
+                all:
+                  - kind: attribute_list
+                  - has:
+                      all:
+                        - kind: attribute
+                        - has:
+                            kind: identifier
+                            field: name
+                            regex: ^NonParallelizable(Attribute)?$
+                            stopBy: neighbor
+                      stopBy: end
+                stopBy: neighbor
+        - all:
+            - kind: method_declaration
+            - has:
+                all:
+                  - kind: attribute_list
+                  - has:
+                      all:
+                        - kind: attribute
+                        - has:
+                            kind: identifier
+                            field: name
+                            regex: ^NonParallelizable(Attribute)?$
+                            stopBy: neighbor
+                      stopBy: end
+                stopBy: neighbor
+            - has:
+                all:
+                  - kind: attribute_list
+                  - has:
+                      all:
+                        - kind: attribute
+                        - has:
+                            kind: identifier
+                            field: name
+                            regex: ^(Test|TestCase|TestCaseSource|Theory)(Attribute)?$
+                            stopBy: neighbor
+                      stopBy: end
+                stopBy: neighbor
+      stopBy: end
+message: Add NonParallelizable to the enclosing NUnit fixture or test method.

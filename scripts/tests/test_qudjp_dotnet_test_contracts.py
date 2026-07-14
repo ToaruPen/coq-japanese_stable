@@ -6,91 +6,10 @@ import re
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-TEST_ROOT = REPO_ROOT / "Mods" / "QudJP" / "Assemblies" / "QudJP.Tests"
 JUSTFILE = REPO_ROOT / "justfile"
+QUDJP_CSPROJ = REPO_ROOT / "Mods" / "QudJP" / "Assemblies" / "QudJP.csproj"
 TEST_ARCHITECTURE_DOC = REPO_ROOT / "docs" / "test-architecture.md"
 RULES_DOC = REPO_ROOT / "docs" / "RULES.md"
-TRANSLATOR_DICTIONARY_CALL = "Translator.SetDictionaryDirectoryForTests("
-
-CLASS_DECLARATION = re.compile(r"\bclass\s+[A-Za-z_][A-Za-z0-9_]*\b")
-METHOD_DECLARATION = re.compile(
-    r"^\s*(?:public|private|protected|internal|static|async|virtual|override|sealed"
-    r"|partial|\s)+[A-Za-z_][A-Za-z0-9_<>,\[\]?]*\s+"
-    r"[A-Za-z_][A-Za-z0-9_]*\s*\("
-)
-
-
-def _has_non_parallelizable_attribute(lines: list[str], declaration_index: int) -> bool:
-    """Return whether the declaration has an immediate NonParallelizable attribute."""
-    j = declaration_index - 1
-    attribute_lines: list[str] = []
-    while j >= 0:
-        stripped = lines[j].strip()
-        if stripped == "":
-            j -= 1
-            continue
-        if not stripped.startswith("["):
-            break
-        attribute_lines.append(stripped)
-        j -= 1
-
-    return any("NonParallelizable" in line for line in attribute_lines)
-
-
-def _nearest_declaration(
-    lines: list[str],
-    line_index: int,
-    pattern: re.Pattern[str],
-    *,
-    stop_after: int = -1,
-) -> int | None:
-    """Find the nearest preceding line that matches a C# declaration pattern."""
-    for index in range(line_index, stop_after, -1):
-        if pattern.search(lines[index]):
-            return index
-    return None
-
-
-def test_translator_dictionary_fixtures_are_non_parallelizable() -> None:
-    """Translator dictionary overrides mutate global state and must not run in parallel."""
-    assert TEST_ROOT.is_dir(), f"QudJP test root not found: {TEST_ROOT}"
-
-    offenders: list[str] = []
-    for path in sorted(TEST_ROOT.rglob("*.cs")):
-        text = path.read_text(encoding="utf-8")
-        if TRANSLATOR_DICTIONARY_CALL not in text:
-            continue
-        lines = text.splitlines()
-        for call_index, line in enumerate(lines):
-            if TRANSLATOR_DICTIONARY_CALL not in line:
-                continue
-
-            class_index = _nearest_declaration(lines, call_index, CLASS_DECLARATION)
-            if class_index is None:
-                offenders.append(f"{path.relative_to(REPO_ROOT)}:{call_index + 1}")
-                continue
-
-            method_index = _nearest_declaration(
-                lines,
-                call_index,
-                METHOD_DECLARATION,
-                stop_after=class_index,
-            )
-            if (
-                not _has_non_parallelizable_attribute(lines, class_index)
-                and (
-                    method_index is None
-                    or not _has_non_parallelizable_attribute(lines, method_index)
-                )
-            ):
-                offenders.append(f"{path.relative_to(REPO_ROOT)}:{call_index + 1}")
-
-    assert not offenders, (
-        "Translator.SetDictionaryDirectoryForTests(...) mutates global translator "
-        "state. Add [NonParallelizable] to each enclosing NUnit fixture class or "
-        "test method that uses it:\n"
-        + "\n".join(offenders)
-    )
 
 
 def _recipe_block(justfile: str, recipe_name: str, next_recipe_name: str | None) -> str:
@@ -123,6 +42,57 @@ def test_local_csharp_full_suite_builds_test_project_once() -> None:
 
     assert "test-csharp" in check_recipe
     assert "test-l1 test-l2 test-l2g" not in check_recipe
+
+
+def test_game_version_gate_covers_current_and_game_free_contracts() -> None:
+    """Version upgrades must prove docs, both dependency modes, and patch bindings."""
+    justfile = "\n" + JUSTFILE.read_text(encoding="utf-8")
+    csproj = QUDJP_CSPROJ.read_text(encoding="utf-8")
+    pr_check = _recipe_block(justfile, "pr-check", "ci-dotnet")
+    no_game = _recipe_block(justfile, "ci-dotnet-no-game", "target-game-version-check")
+    target_version = _recipe_block(justfile, "target-game-version-check", "game-version-check")
+    game_version = _recipe_block(justfile, "game-version-check", "roslyn-build-annals")
+
+    assert "<EnableDefaultCompileItems>false</EnableDefaultCompileItems>" in csproj
+    assert '<OutputPath Condition="\'$(QudJPOutputPath)\' == \'\'">' in csproj
+    assert '<OutputPath Condition="\'$(QudJPOutputPath)\' != \'\'">$(QudJPOutputPath)</OutputPath>' in csproj
+    assert "ci-dotnet-no-game" in pr_check
+    assert "ast-grep-check" in pr_check
+
+    assert 'mktemp -d "{{dotnet_artifacts_root}}/ci-dotnet-no-game/run.XXXXXX"' in no_game
+    assert 'run_root="$(cd "$run_root" && pwd)"' in no_game
+    assert 'missing_game_dir="$run_root/missing-game"' in no_game
+    assert no_game.count("dotnet build Mods/QudJP/Assemblies/QudJP.csproj") == 1
+    assert no_game.count("dotnet build Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj") == 1
+    assert no_game.count('--artifacts-path "$') == 2
+    assert no_game.count('-p:GameDir="$missing_game_dir"') == 2
+    assert no_game.count('-p:QudJPOutputPath="$') == 2
+    assert 'production_output="$production_artifacts/bin/QudJP/release"' in no_game
+    assert 'test -f "$production_output/QudJP.dll"' in no_game
+    assert "Assembly-CSharp.dll" in no_game
+    assert "UnityEngine*.dll" in no_game
+    assert "Unity.TextMeshPro.dll" in no_game
+    assert "stubs leaked into no-game production output" in no_game
+    assert "--no-dependencies" not in no_game
+    assert "{{dotnet_test_build_properties}}" in no_game
+    assert no_game.count('dotnet test "$test_dll"') == 1
+
+    assert "scripts/tests/test_target_game_version_contract.py" in target_version
+
+    expected_steps = (
+        "just target-game-version-check",
+        (
+            "uv run pytest scripts/tests/test_static_producer_closure.py::"
+            "test_covered_owner_families_have_current_source_and_test_evidence -q"
+        ),
+        "just build",
+        "just test-csharp",
+        "just ci-dotnet-no-game",
+        "just qudtest-headless qudtest:bindings .artifacts/qudtest-game-version-bindings",
+        "just qudtest-headless qudtest:bindings-all .artifacts/qudtest-game-version-bindings-all",
+    )
+    positions = [game_version.index(step) for step in expected_steps]
+    assert positions == sorted(positions)
 
 
 def test_route_family_test_guidance_limits_l2_case_growth() -> None:

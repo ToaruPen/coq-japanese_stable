@@ -53,9 +53,16 @@ public static class CherubimSpawnerReplaceDescriptionPatch
                 return true;
             }
 
-            if (!TryReplaceDescription(__0, Description, Features, displayName))
+            try
             {
-                Trace.TraceError("QudJP: CherubimSpawnerReplaceDescriptionPatch failed to apply guarded no-space replacement.");
+                if (!TryReplaceDescription(__0, Description, Features, displayName))
+                {
+                    Trace.TraceError("QudJP: CherubimSpawnerReplaceDescriptionPatch failed to apply guarded no-space replacement.");
+                }
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError("QudJP: CherubimSpawnerReplaceDescriptionPatch guarded no-space replacement failed: {0}", ex);
             }
 
             return false;

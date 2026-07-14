@@ -1,0 +1,71 @@
+id: dictionary-override-must-be-nonparallel
+valid:
+  - |
+      [NonParallelizable]
+      public sealed class Fixture
+      {
+          private sealed class NestedHelper
+          {
+          }
+
+          private static void UseDictionary()
+          {
+              Translator.SetDictionaryDirectoryForTests("dict");
+          }
+      }
+  - |
+      public sealed class Fixture
+      {
+          [Test]
+          [NonParallelizable]
+          public void Test()
+          {
+              Translator.SetDictionaryDirectoryForTests("dict");
+          }
+      }
+  - |
+      public sealed class Fixture
+      {
+          [TestCase("dict")]
+          [NonParallelizable]
+          public void Test(string dictionary)
+          {
+              Translator.SetDictionaryDirectoryForTests(dictionary);
+          }
+      }
+  - |
+      public sealed class Fixture
+      {
+          [TestCaseSource(nameof(Cases))]
+          [NonParallelizable]
+          public void Test(string dictionary)
+          {
+              Translator.SetDictionaryDirectoryForTests(dictionary);
+          }
+      }
+  - |
+      public sealed class Fixture
+      {
+          public void Test()
+          {
+              Translator.Translate("text");
+          }
+      }
+invalid:
+  - |
+      public sealed class Fixture
+      {
+          [NonParallelizable]
+          public void Helper()
+          {
+              Translator.SetDictionaryDirectoryForTests("dict");
+          }
+      }
+  - |
+      public sealed class Fixture
+      {
+          public void Test()
+          {
+              Translator.SetDictionaryDirectoryForTests("dict");
+          }
+      }

@@ -110,6 +110,18 @@ def test_ci_python_lane_reports_slowest_test_durations() -> None:
     assert "--ignore=scripts/tests/test_scan_static_producer_inventory.py" in python_job
 
 
+def test_ci_python_lane_runs_for_ast_grep_rules_and_scoped_csharp_tests() -> None:
+    """Structural test rules must run when either their config or scanned C# changes."""
+    workflow = _workflow_text()
+
+    assert "matches_ast_grep_inputs" in workflow
+    assert "sgconfig\\.yml" in workflow
+    assert "rules/" in workflow
+    assert "rule-tests/" in workflow
+    assert "Mods/QudJP/Assemblies/QudJP\\.Tests/.*\\.cs" in workflow
+    assert "matches_ast_grep_inputs; then" in workflow
+
+
 def test_ci_roslyn_lane_runs_scan_backed_pytest_separately() -> None:
     """Roslyn/scan pytest coverage should run in the Roslyn lane, not the core Python lane."""
     workflow = _workflow_text()

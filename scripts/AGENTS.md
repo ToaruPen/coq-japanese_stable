@@ -32,6 +32,8 @@ just ast-search-cs '<pattern>' [path]
 just ast-search-py '<pattern>' [path]
 just lsp-check
 .codex/hooks/lsp-check-after-tool.sh
+just target-game-version-check
+just game-version-check
 just static-producer-check
 just static-producer-preview
 just annals-pattern-preview

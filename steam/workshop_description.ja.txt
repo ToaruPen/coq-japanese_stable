@@ -7,7 +7,7 @@ Caves of Qud を日本語で遊ぶための非公式ファン制作 Mod です�
 
 対応バージョン
 
-  * Caves of Qud 1.0.4 対応
+  * Caves of Qud 1.0.5 対応
 
 主な内容
 

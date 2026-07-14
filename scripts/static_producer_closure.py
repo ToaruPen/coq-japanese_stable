@@ -9619,7 +9619,7 @@ def _existing_popup_owner_route_families() -> tuple[CoveredOwnerFamily, ...]:
     old_save_tests = EvidenceFile(
         "Mods/QudJP/Assemblies/QudJP.Tests/L2/OldSaveContinueMenuPopupTranslationPatchTests.cs",
         (
-            "Patch_TranslatesOldSavePopup_WhenOwnerPatched",
+            "Patch_TranslatesOldSavePopup_InAsyncOwnerContinuation",
             "Patch_DoesNotRecordOwnerRoute_WhenOwnerAbsent",
             "Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
             "Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
@@ -9708,8 +9708,10 @@ def _existing_popup_owner_route_families() -> tuple[CoveredOwnerFamily, ...]:
                 EvidenceFile(
                     "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
                     (
-                        "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
-                        "Qud.UI.MainMenu|ContinueMenu|System.Threading.Tasks.Task`1[[XRL.XRLGame]]",
+                        "AsyncOwnerSourceMethod_MapsToResolvedMoveNextTarget",
+                        '"Qud.UI.MainMenu"',
+                        '"ContinueMenu"',
+                        "Qud.UI.MainMenu+<ContinueMenu>d__27|MoveNext|System.Void",
                     ),
                 ),
             ),
@@ -9731,8 +9733,10 @@ def _existing_popup_owner_route_families() -> tuple[CoveredOwnerFamily, ...]:
                 EvidenceFile(
                     "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
                     (
-                        "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
-                        "Qud.UI.SaveManagement|ContinueMenu|System.Threading.Tasks.Task`1[[XRL.XRLGame]]",
+                        "AsyncOwnerSourceMethod_MapsToResolvedMoveNextTarget",
+                        '"Qud.UI.SaveManagement"',
+                        '"ContinueMenu"',
+                        "Qud.UI.SaveManagement+<ContinueMenu>d__15|MoveNext|System.Void",
                     ),
                 ),
             ),
@@ -17026,7 +17030,7 @@ COVERED_OWNER_CALLSITES: Final = (
             EvidenceFile(
                 "Mods/QudJP/Assemblies/QudJP.Tests/L2/OldSaveContinueMenuPopupTranslationPatchTests.cs",
                 (
-                    "Patch_TranslatesOldSavePopup_WhenOwnerPatched",
+                    "Patch_TranslatesOldSavePopup_InAsyncOwnerContinuation",
                     "Patch_DoesNotRecordOwnerRoute_WhenOwnerAbsent",
                     "Patch_DoesNotRetranslateDirectMarkedPopup_WhenOwnerPatched",
                     "Patch_LeavesEmptyPopupUnchanged_WhenOwnerPatched",
@@ -17040,9 +17044,11 @@ COVERED_OWNER_CALLSITES: Final = (
             EvidenceFile(
                 "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
                 (
-                    "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
+                    "AsyncOwnerSourceMethod_MapsToResolvedMoveNextTarget",
                     "OldSaveContinueMenuPopupTranslationPatch",
-                    "XRL.Core.XRLCore|SaveManagement|XRL.XRLGame",
+                    '"XRL.Core.XRLCore"',
+                    '"SaveManagement"',
+                    "XRL.Core.XRLCore+<SaveManagement>d__157|MoveNext|System.Void",
                 ),
             ),
         ),
@@ -17423,9 +17429,11 @@ COVERED_OWNER_CALLSITES: Final = (
             EvidenceFile(
                 "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
                 (
-                    "OwnerProducerTargetMethods_ResolveExpectedFullSignatures",
+                    "AsyncOwnerSourceMethod_MapsToResolvedMoveNextTarget",
                     "SingleCallsiteOwnerPopupTranslationPatch",
-                    "XRL.XRLGame|LoadGame|XRL.XRLGame|System.String|System.Boolean|System.Boolean|System.Collections.Generic.Dictionary`2[[System.String],[System.Object]]",
+                    '"XRL.XRLGame"',
+                    '"LoadGame"',
+                    "XRL.XRLGame+<LoadGame>d__183|MoveNext|System.Void",
                 ),
             ),
         ),

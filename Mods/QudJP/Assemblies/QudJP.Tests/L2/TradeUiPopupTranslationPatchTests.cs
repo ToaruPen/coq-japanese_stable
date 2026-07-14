@@ -35,6 +35,7 @@ public sealed class TradeUiPopupTranslationPatchTests
         DynamicTextObservability.ResetForTests();
         File.WriteAllText(patternFilePath, "{\"patterns\":[]}\n", Utf8WithoutBom);
         DummyTradeUiPopupTarget.Reset();
+        CallbackShowYesNoTarget.Reset();
         DummyPopupShow.Reset();
         DummyPopupTarget.Reset();
         DummyPopupGenericTarget.Reset();
@@ -84,6 +85,55 @@ public sealed class TradeUiPopupTranslationPatchTests
         Assert.That(
             DummyTradeUiPopupTarget.LastShowYesNoMessage,
             Is.EqualTo("取引を釣り合わせるには10ドラムの真水を支払う必要がある。承諾する？"));
+    }
+
+    [Test]
+    public void Prefix_TranslatesOnlyCallbackShowYesNoMessage_AndPreservesCallbackContract()
+    {
+        const string source = "You'll have to pony up 10 drams of fresh water to even up the trade. Agreed?";
+        const string translated = "取引を釣り合わせるには10ドラムの真水を支払う必要がある。承諾する？";
+        const string sound = "Sounds/UI/test_trade_confirmation";
+        var callbackCount = 0;
+        var callbackStage = 0;
+        var callbackResult = XRL.UI.DialogResult.Yes;
+        Action<XRL.UI.DialogResult> callback = result =>
+        {
+            callbackCount++;
+            callbackStage = CallbackShowYesNoTarget.InvocationStage;
+            callbackResult = result;
+        };
+
+        using var patch = PatchCallbackShowYesNo();
+
+        var result = CallbackShowYesNoTarget.ShowYesNo(
+            source,
+            sound,
+            false,
+            XRL.UI.DialogResult.Cancel,
+            callback);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(CallbackShowYesNoTarget.LastMessage, Is.EqualTo(translated));
+            Assert.That(CallbackShowYesNoTarget.LastSound, Is.EqualTo(sound));
+            Assert.That(CallbackShowYesNoTarget.LastAllowEscape, Is.False);
+            Assert.That(CallbackShowYesNoTarget.LastDefaultResult, Is.EqualTo(XRL.UI.DialogResult.Cancel));
+            Assert.That(CallbackShowYesNoTarget.LastCallback, Is.SameAs(callback));
+            Assert.That(callbackCount, Is.EqualTo(1));
+            Assert.That(callbackStage, Is.EqualTo(1));
+            Assert.That(callbackResult, Is.EqualTo(XRL.UI.DialogResult.Cancel));
+            Assert.That(result, Is.EqualTo(XRL.UI.DialogResult.Cancel));
+        });
+    }
+
+    [Test]
+    public void ResolveShowYesNoMethod_BindsCallbackBearingOverloadExactly()
+    {
+        var resolved = TradeUiPopupTranslationPatch.ResolveShowYesNoMethod(
+            typeof(CallbackShowYesNoTarget),
+            typeof(XRL.UI.DialogResult));
+
+        Assert.That(resolved, Is.EqualTo(RequireCallbackShowYesNoMethod()));
     }
 
     [Test]
@@ -1034,6 +1084,16 @@ public sealed class TradeUiPopupTranslationPatchTests
         return new HarmonyPatchScope(harmony, harmonyId);
     }
 
+    private static IDisposable PatchCallbackShowYesNo()
+    {
+        var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";
+        var harmony = new Harmony(harmonyId);
+        harmony.Patch(
+            original: RequireCallbackShowYesNoMethod(),
+            prefix: new HarmonyMethod(RequireMethod(typeof(TradeUiPopupTranslationPatch), nameof(TradeUiPopupTranslationPatch.Prefix))));
+        return new HarmonyPatchScope(harmony, harmonyId);
+    }
+
     private static IDisposable PatchPopupShow(string methodName)
     {
         var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";
@@ -1080,6 +1140,67 @@ public sealed class TradeUiPopupTranslationPatchTests
     {
         return AccessTools.Method(type, methodName)
             ?? throw new InvalidOperationException($"Method not found: {type.FullName}.{methodName}");
+    }
+
+    private static MethodInfo RequireCallbackShowYesNoMethod()
+    {
+        return AccessTools.Method(
+                typeof(CallbackShowYesNoTarget),
+                nameof(CallbackShowYesNoTarget.ShowYesNo),
+                new[]
+                {
+                    typeof(string),
+                    typeof(string),
+                    typeof(bool),
+                    typeof(XRL.UI.DialogResult),
+                    typeof(Action<XRL.UI.DialogResult>),
+                })
+            ?? throw new InvalidOperationException(
+                $"Callback ShowYesNo method not found: {typeof(CallbackShowYesNoTarget).FullName}");
+    }
+
+    private static class CallbackShowYesNoTarget
+    {
+        public static string? LastMessage { get; private set; }
+
+        public static string? LastSound { get; private set; }
+
+        public static bool LastAllowEscape { get; private set; }
+
+        public static XRL.UI.DialogResult LastDefaultResult { get; private set; }
+
+        public static Action<XRL.UI.DialogResult>? LastCallback { get; private set; }
+
+        public static int InvocationStage { get; private set; }
+
+        public static void Reset()
+        {
+            LastMessage = null;
+            LastSound = null;
+            LastAllowEscape = default;
+            LastDefaultResult = default;
+            LastCallback = null;
+            InvocationStage = 0;
+        }
+
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
+        public static XRL.UI.DialogResult ShowYesNo(
+            string Message,
+            string Sound,
+            bool AllowEscape,
+            XRL.UI.DialogResult defaultResult,
+            Action<XRL.UI.DialogResult> callback)
+        {
+            LastMessage = Message;
+            LastSound = Sound;
+            LastAllowEscape = AllowEscape;
+            LastDefaultResult = defaultResult;
+            LastCallback = callback;
+            InvocationStage = 1;
+            callback(defaultResult);
+            InvocationStage = 2;
+            return defaultResult;
+        }
     }
 
     private static void InvokeVendorMethod(DummyTradeUiVendorPopupProducerTarget target, string methodName)

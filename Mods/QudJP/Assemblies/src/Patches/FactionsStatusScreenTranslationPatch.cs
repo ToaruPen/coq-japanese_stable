@@ -1,6 +1,7 @@
 using System;
-using System.Diagnostics;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -10,6 +11,10 @@ namespace QudJP.Patches;
 
 public static class FactionsStatusScreenTranslationPatch
 {
+    private const string FactionSearchFragmentLookupRoute =
+        nameof(FactionsStatusScreenTranslationPatch) + "." + nameof(TryGetLocalizedFactionSearchFragments);
+    private static readonly ConcurrentDictionary<string, int> FactionSearchFragmentLookupFailureCounts =
+        new ConcurrentDictionary<string, int>(StringComparer.Ordinal);
     private static readonly Regex VillageLabelPattern =
         new Regex("^The villagers of (?<name>[^.]+)$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex VillageNeutralPattern =
@@ -824,6 +829,64 @@ public static class FactionsStatusScreenTranslationPatch
             return false;
         }
 
+        IReadOnlyList<string?> sources;
+        try
+        {
+            if (!TryGetFactionSearchFragmentSources(factionId!, out sources))
+            {
+                return false;
+            }
+        }
+        catch (Exception ex)
+        {
+            RecordFactionSearchFragmentLookupFailure(ex);
+            return false;
+        }
+
+        var localized = new List<string>();
+        for (var index = 0; index < sources.Count; index++)
+        {
+            AddLocalizedSearchFragment(localized, sources[index]);
+        }
+
+        fragments = localized;
+        return localized.Count > 0;
+    }
+
+    internal static void RecordFactionSearchFragmentLookupFailure(Exception exception)
+    {
+        var diagnostic = exception is TargetInvocationException targetInvocationException
+            ? targetInvocationException.InnerException ?? exception
+            : exception;
+        var diagnosticType = diagnostic.GetType();
+        var exceptionSignature = (diagnosticType.FullName ?? diagnosticType.Name) + ": " + diagnostic.Message;
+        var counterKey = FactionSearchFragmentLookupRoute
+            + ObservabilityHelpers.ContextSeparator
+            + exceptionSignature;
+        var hitCount = FactionSearchFragmentLookupFailureCounts.AddOrUpdate(
+            counterKey,
+            1,
+            ObservabilityHelpers.IncrementCounter);
+        if (!ObservabilityHelpers.ShouldLogMissingHit(hitCount))
+        {
+            return;
+        }
+
+        Trace.TraceWarning(
+            "QudJP: {0} faction search fragment lookup failed (hit {1}): {2}",
+            FactionSearchFragmentLookupRoute,
+            hitCount,
+            diagnostic);
+    }
+
+    internal static void ResetDiagnosticsForTests()
+    {
+        FactionSearchFragmentLookupFailureCounts.Clear();
+    }
+
+    private static bool TryGetFactionSearchFragmentSources(string factionId, out IReadOnlyList<string?> sources)
+    {
+        sources = Array.Empty<string?>();
         var factionsType = AccessTools.TypeByName("XRL.World.Factions");
         var factionType = AccessTools.TypeByName("XRL.World.Faction");
         if (factionsType is null || factionType is null)
@@ -838,7 +901,7 @@ public static class FactionsStatusScreenTranslationPatch
             return false;
         }
 
-        var faction = getFaction.Invoke(null, new object[] { factionId! });
+        var faction = getFaction.Invoke(null, new object[] { factionId });
         if (faction is null)
         {
             return false;
@@ -852,17 +915,16 @@ public static class FactionsStatusScreenTranslationPatch
             "GetHolyPlaceText",
         };
 
-        var localized = new List<string>();
+        var collectedSources = new List<string?>();
         for (var index = 0; index < methods.Length; index++)
         {
             var method = faction.GetType().GetMethod(methods[index], PublicInstanceFlags);
-            var source = method?.Invoke(faction, null) as string;
-            AddLocalizedSearchFragment(localized, source);
+            collectedSources.Add(method?.Invoke(faction, null) as string);
         }
 
-        AddLocalizedSearchFragment(localized, getPreferredSecretDescription.Invoke(null, new object[] { factionId! }) as string);
-        fragments = localized;
-        return localized.Count > 0;
+        collectedSources.Add(getPreferredSecretDescription.Invoke(null, new object[] { factionId }) as string);
+        sources = collectedSources;
+        return true;
     }
 
     private static void AddLocalizedSearchFragment(List<string> localized, string? source)
