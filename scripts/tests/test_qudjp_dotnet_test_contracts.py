@@ -8,6 +8,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[2]
 JUSTFILE = REPO_ROOT / "justfile"
 QUDJP_CSPROJ = REPO_ROOT / "Mods" / "QudJP" / "Assemblies" / "QudJP.csproj"
+QUDTEST_HEADLESS_CSPROJ = REPO_ROOT / "scripts" / "tools" / "QudTestHeadless" / "QudTestHeadless.csproj"
 TEST_ARCHITECTURE_DOC = REPO_ROOT / "docs" / "test-architecture.md"
 RULES_DOC = REPO_ROOT / "docs" / "RULES.md"
 
@@ -93,6 +94,23 @@ def test_game_version_gate_covers_current_and_game_free_contracts() -> None:
     )
     positions = [game_version.index(step) for step in expected_steps]
     assert positions == sorted(positions)
+
+
+def test_qudtest_headless_references_assembly_csharp_stub_without_game_dll() -> None:
+    """The headless harness must compile game-typed patches on CI runners."""
+    csproj = QUDTEST_HEADLESS_CSPROJ.read_text(encoding="utf-8")
+    no_game_group = re.search(
+        r'<ItemGroup Condition="!Exists\(\'\$\(AssemblyCSharpPath\)\'\)">(?P<body>.*?)</ItemGroup>',
+        csproj,
+        re.DOTALL,
+    )
+
+    assert no_game_group is not None
+    assert (
+        '<ProjectReference Include="../../../Mods/QudJP/Assemblies/ReferenceStubs/'
+        'Assembly-CSharp/Assembly-CSharp.csproj" />'
+        in no_game_group.group("body")
+    )
 
 
 def test_route_family_test_guidance_limits_l2_case_growth() -> None:

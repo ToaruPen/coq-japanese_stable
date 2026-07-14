@@ -56,6 +56,10 @@
     </Reference>
   </ItemGroup>
 
+  <ItemGroup Condition="!Exists('$(AssemblyCSharpPath)')">
+    <ProjectReference Include="../../../Mods/QudJP/Assemblies/ReferenceStubs/Assembly-CSharp/Assembly-CSharp.csproj" />
+  </ItemGroup>
+
   <ItemGroup Condition="Exists('$(AssemblyCSharpPath)')">
     <None Include="$(AssemblyCSharpPath)">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
