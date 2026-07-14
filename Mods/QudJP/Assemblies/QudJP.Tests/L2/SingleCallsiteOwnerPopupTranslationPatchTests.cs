@@ -1737,7 +1737,7 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
     {
         // AsyncTaskMethodBuilder may resume the Task awaiter inline before Harmony's Finalizer runs.
         // This signal is completed only after the production Finalizer has unwound that invocation.
-        return moveNextFinalized.Task;
+        return moveNextFinalized.Task.WaitAsync(TimeSpan.FromSeconds(5));
     }
 
     private static Exception? ObserveSingleCallsiteFinalizer(Exception? __exception)

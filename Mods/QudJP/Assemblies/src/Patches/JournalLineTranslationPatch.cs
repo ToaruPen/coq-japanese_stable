@@ -324,14 +324,21 @@ public static class JournalLineTranslationPatch
 
     private static bool ShouldClipForSmallMedia(object? screen)
     {
-        if (GetIntMemberValue(screen, "CurrentCategory") == 2)
+        var currentCategory = GetIntMemberValue(screen, "CurrentCategory");
+        if (currentCategory == 2)
         {
             return false;
         }
 
         var mediaType = ResolveType("XRL.UI.Media", "Media");
         var sizeClassValue = mediaType is null ? null : GetStaticMemberValue(mediaType, "sizeClass");
-        return string.Equals(sizeClassValue?.ToString(), "Small", StringComparison.Ordinal);
+        return ShouldClipForSmallMedia(currentCategory, sizeClassValue?.ToString());
+    }
+
+    internal static bool ShouldClipForSmallMedia(int currentCategory, string? sizeClass)
+    {
+        return currentCategory != 2
+               && string.Equals(sizeClass, "Small", StringComparison.Ordinal);
     }
 
     private static string GetNoEntriesText(object data)
