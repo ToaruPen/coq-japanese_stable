@@ -11,6 +11,7 @@ _ASSET_DIR = Path("steam/harmony-patch")
 _INSTALL_CMD = _ASSET_DIR / "Install Harmony 2.4.2.cmd"
 _RESTORE_CMD = _ASSET_DIR / "Restore Game Harmony.cmd"
 _UPDATER = _ASSET_DIR / "QudJP-Harmony-2.4.2.ps1"
+_README = _ASSET_DIR / "README-ja.txt"
 
 _GAME_HASH = "0de0118c8f1d4408de389ca33b46d2ff7778f3a8541b430cae729ec913d899c7"
 _PAYLOAD_HASH = "77e6901ecc606aec66c2a972782a3779e4f50c037d2d165eb7ececdd4d8f794d"
@@ -118,22 +119,30 @@ def test_script_refuses_to_mutate_a_running_game() -> None:
     assert "Kill(" not in script
 
 
-def test_elevation_preserves_only_validated_operation_and_target() -> None:
-    """A protected game directory is retried as admin without a command surface."""
+def test_script_never_self_elevates_from_the_user_writable_package() -> None:
+    """A protected game directory fails closed instead of relaunching package code."""
     script = _text(_UPDATER)
-    elevation = _function_text(script, "Restart-Elevated")
     main = _function_text(script, "Invoke-Updater")
 
-    assert "WindowsPrincipal" in script
     assert "Test-DirectoryWritable" in main
-    assert "Restart-Elevated -SelectedOperation $Operation -ValidatedTargetDll $resolvedTarget" in main
-    assert "Start-Process" in elevation
-    assert "-Verb RunAs" in elevation
-    assert "'-Operation'" in elevation
-    assert "'-TargetDll'" in elevation
-    assert "$SelectedOperation" in elevation
-    assert "$ValidatedTargetDll" in elevation
-    assert "Invoke-Expression" not in elevation
+    assert "Start-Process" not in script
+    assert "Restart-Elevated" not in script
+    assert "WindowsPrincipal" not in script
+    assert "powershell.exe" not in script.lower()
+    assert "Install Harmony 2.4.2.cmd" in main
+    assert "Restore Game Harmony.cmd" in main
+    assert "管理者として実行" in main
+
+
+def test_readme_requires_manual_explorer_elevation() -> None:
+    """Users are told to close the failed run and elevate only the fixed wrapper."""
+    readme = _text(_README)
+
+    assert "自動的に管理者権限で再実行しません" in readme
+    assert "この画面を閉じ" in readme
+    assert "Install Harmony 2.4.2.cmd" in readme
+    assert "Restore Game Harmony.cmd" in readme
+    assert "管理者として実行" in readme
 
 
 def test_install_requires_literal_confirmation_and_validates_before_mutation() -> None:
@@ -162,15 +171,63 @@ def test_install_requires_literal_confirmation_and_validates_before_mutation() -
 
 
 def test_install_is_idempotent_and_never_overwrites_a_backup() -> None:
-    """A verified 2.4.2 target succeeds as-is, while backup creation is one-shot."""
+    """A verified 2.4.2 target succeeds as-is, while backup creation is atomic."""
     script = _text(_UPDATER)
     install = _function_text(script, "Install-Harmony")
     backup = _function_text(script, "Copy-VerifiedOriginalBackup")
 
     _assert_in_order(install, "if ($currentHash -eq $PayloadSha256)", "return", "$SupportedGameSha256")
-    _assert_in_order(backup, "Test-Path -LiteralPath $BackupPath", "Copy-Item", "Assert-FileHash")
+    assert "[IO.FileMode]::CreateNew" in backup
+    assert "[IO.FileShare]::None" in backup
+    assert ".CopyTo(" in backup
+    assert "catch [IO.IOException]" in backup
+    _assert_in_order(
+        backup,
+        "[IO.FileMode]::CreateNew",
+        "catch [IO.IOException]",
+        "Test-Path -LiteralPath $BackupPath",
+        "Assert-FileHash",
+    )
+    assert "Copy-Item" not in backup
     assert "Remove-Item -LiteralPath $BackupPath" not in script
     assert "Move-Item" not in backup
+
+
+def test_mutation_window_uses_a_named_mutex_and_rechecks_the_game() -> None:
+    """Both operations serialize mutation and recheck CoQ after confirmation."""
+    script = _text(_UPDATER)
+    enter_mutex = _function_text(script, "Enter-MutationMutex")
+    exit_mutex = _function_text(script, "Exit-MutationMutex")
+    install = _function_text(script, "Install-Harmony")
+    restore = _function_text(script, "Restore-GameHarmony")
+
+    assert "$MutationMutexName" in script
+    assert "System.Threading.Mutex" in enter_mutex
+    assert "$MutationMutexName" in enter_mutex
+    assert ".WaitOne(" in enter_mutex
+    assert ".ReleaseMutex()" in exit_mutex
+    assert ".Dispose()" in exit_mutex
+    _assert_in_order(
+        install,
+        "Request-LiteralConfirmation -ExpectedLiteral 'INSTALL'",
+        "Enter-MutationMutex",
+        "Assert-FileHash -Path $ResolvedTarget -ExpectedHash $SupportedGameSha256",
+        "Assert-CoQNotRunning",
+        "Copy-VerifiedOriginalBackup",
+        "Replace-WithVerifiedFile",
+    )
+    _assert_in_order(
+        restore,
+        "Request-LiteralConfirmation -ExpectedLiteral 'RESTORE'",
+        "Enter-MutationMutex",
+        "Assert-FileHash -Path $ResolvedTarget -ExpectedHash $PayloadSha256",
+        "Assert-FileHash -Path $backupPath -ExpectedHash $SupportedGameSha256",
+        "Assert-CoQNotRunning",
+        "Replace-WithVerifiedFile",
+    )
+    for mutation in (install, restore):
+        assert "finally" in mutation
+        assert "Exit-MutationMutex" in mutation
 
 
 def test_install_uses_verified_sibling_temp_and_rolls_back_on_failure() -> None:

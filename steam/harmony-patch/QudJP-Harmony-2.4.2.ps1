@@ -11,6 +11,7 @@ $SupportedGameSha256 = '0de0118c8f1d4408de389ca33b46d2ff7778f3a8541b430cae729ec9
 $PayloadSha256 = '77e6901ecc606aec66c2a972782a3779e4f50c037d2d165eb7ececdd4d8f794d'
 $BackupName = '0Harmony.dll.qudjp-backup-before-2.4.2'
 $GameDllSuffix = 'Caves of Qud\CoQ_Data\Managed\0Harmony.dll'
+$MutationMutexName = 'Local\QudJP-Harmony-2.4.2-Mutation'
 
 function Get-FileSha256 {
     param([string]$Path)
@@ -151,12 +152,6 @@ function Assert-CoQNotRunning {
     }
 }
 
-function Test-IsAdministrator {
-    $identity = [Security.Principal.WindowsIdentity]::GetCurrent()
-    $principal = New-Object Security.Principal.WindowsPrincipal($identity)
-    return $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
-}
-
 function Test-DirectoryWritable {
     param([string]$Directory)
 
@@ -176,27 +171,33 @@ function Test-DirectoryWritable {
     }
 }
 
-function Restart-Elevated {
-    param(
-        [ValidateSet('Install', 'Restore')]
-        [string]$SelectedOperation,
-        [string]$ValidatedTargetDll
-    )
+function Enter-MutationMutex {
+    $mutex = [System.Threading.Mutex]::new($false, $MutationMutexName)
+    try {
+        try {
+            if (-not $mutex.WaitOne([TimeSpan]::FromSeconds(30))) {
+                throw '別の QudJP Harmony 更新処理が実行中です。完了後にもう一度実行してください。'
+            }
+        }
+        catch [Threading.AbandonedMutexException] {
+            # 放棄された mutex はこのプロセスが取得済みなので、安全性検査を続ける。
+        }
+        return $mutex
+    }
+    catch {
+        $mutex.Dispose()
+        throw
+    }
+}
 
-    $validatedTarget = Resolve-ValidatedTargetDll -CandidatePath $ValidatedTargetDll
-    $quotedScriptPath = '"{0}"' -f $PSCommandPath
-    $quotedTargetPath = '"{0}"' -f $validatedTarget
-    $arguments = @(
-        '-NoProfile',
-        '-ExecutionPolicy', 'Bypass',
-        '-File', $quotedScriptPath,
-        '-Operation', $SelectedOperation,
-        '-TargetDll', $quotedTargetPath
-    )
-    Write-Host 'ゲームフォルダーへの書き込みに管理者権限が必要です。Windows の確認画面で許可してください。'
-    $elevated = Start-Process -FilePath 'powershell.exe' -Verb RunAs -ArgumentList $arguments -Wait -PassThru
-    if ($elevated.ExitCode -ne 0) {
-        throw "管理者権限での処理が完了しませんでした (終了コード: $($elevated.ExitCode))。"
+function Exit-MutationMutex {
+    param([System.Threading.Mutex]$Mutex)
+
+    try {
+        $Mutex.ReleaseMutex()
+    }
+    finally {
+        $Mutex.Dispose()
     }
 }
 
@@ -219,12 +220,46 @@ function Copy-VerifiedOriginalBackup {
         [string]$BackupPath
     )
 
-    if (Test-Path -LiteralPath $BackupPath) {
-        Assert-FileHash -Path $BackupPath -ExpectedHash $SupportedGameSha256 -Description '既存の QudJP バックアップ'
-        Write-Host "確認済みバックアップを再利用します（上書きしません）: $BackupPath"
-        return
+    $sourceStream = $null
+    $backupStream = $null
+    try {
+        $sourceStream = [IO.File]::Open(
+            $TargetPath,
+            [IO.FileMode]::Open,
+            [IO.FileAccess]::Read,
+            [IO.FileShare]::None
+        )
+        try {
+            $backupStream = [IO.File]::Open(
+                $BackupPath,
+                [IO.FileMode]::CreateNew,
+                [IO.FileAccess]::Write,
+                [IO.FileShare]::None
+            )
+        }
+        catch [IO.IOException] {
+            $sourceStream.Dispose()
+            $sourceStream = $null
+            if (-not (Test-Path -LiteralPath $BackupPath -PathType Leaf)) {
+                throw
+            }
+            Assert-FileHash -Path $BackupPath -ExpectedHash $SupportedGameSha256 -Description '既存の QudJP バックアップ'
+            Write-Host "確認済みバックアップを再利用します（上書きしません）: $BackupPath"
+            return
+        }
+
+        $sourceStream.CopyTo($backupStream)
+        $backupStream.Flush()
     }
-    Copy-Item -LiteralPath $TargetPath -Destination $BackupPath
+    finally {
+        if ($null -ne $backupStream) {
+            $backupStream.Dispose()
+        }
+        if ($null -ne $sourceStream) {
+            $sourceStream.Dispose()
+        }
+    }
+
     Assert-FileHash -Path $BackupPath -ExpectedHash $SupportedGameSha256 -Description '作成した QudJP バックアップ'
     Write-Host "ゲーム同梱 Harmony をバックアップしました: $BackupPath"
 }
@@ -278,20 +313,28 @@ function Install-Harmony {
 
     $backupPath = Join-Path (Split-Path -Parent $ResolvedTarget) $BackupName
     Request-LiteralConfirmation -ExpectedLiteral 'INSTALL' -Message "Harmony 2.4.2 に更新します。`n対象: $ResolvedTarget`nバックアップ: $backupPath"
-    Copy-VerifiedOriginalBackup -TargetPath $ResolvedTarget -BackupPath $backupPath
+    $mutationMutex = Enter-MutationMutex
     try {
-        Replace-WithVerifiedFile -SourcePath $PayloadPath -TargetPath $ResolvedTarget -ExpectedHash $PayloadSha256
-        Assert-FileHash -Path $ResolvedTarget -ExpectedHash $PayloadSha256 -Description '更新後の Harmony 2.4.2'
-    }
-    catch {
-        $installFailure = $_.Exception.Message
+        Assert-FileHash -Path $ResolvedTarget -ExpectedHash $SupportedGameSha256 -Description '更新直前のゲーム Harmony'
+        Assert-CoQNotRunning
+        Copy-VerifiedOriginalBackup -TargetPath $ResolvedTarget -BackupPath $backupPath
         try {
-            Restore-VerifiedBackupOnFailure -BackupPath $backupPath -TargetPath $ResolvedTarget
+            Replace-WithVerifiedFile -SourcePath $PayloadPath -TargetPath $ResolvedTarget -ExpectedHash $PayloadSha256
+            Assert-FileHash -Path $ResolvedTarget -ExpectedHash $PayloadSha256 -Description '更新後の Harmony 2.4.2'
         }
         catch {
-            throw "Harmony の更新と自動復元の両方に失敗しました。ゲームを起動せず、QudJP のサポートへ連絡してください。`n更新エラー: $installFailure`n復元エラー: $($_.Exception.Message)"
+            $installFailure = $_.Exception.Message
+            try {
+                Restore-VerifiedBackupOnFailure -BackupPath $backupPath -TargetPath $ResolvedTarget
+            }
+            catch {
+                throw "Harmony の更新と自動復元の両方に失敗しました。ゲームを起動せず、QudJP のサポートへ連絡してください。`n更新エラー: $installFailure`n復元エラー: $($_.Exception.Message)"
+            }
+            throw "Harmony の更新に失敗したため、確認済みバックアップへ復元しました。`n原因: $installFailure"
         }
-        throw "Harmony の更新に失敗したため、確認済みバックアップへ復元しました。`n原因: $installFailure"
+    }
+    finally {
+        Exit-MutationMutex -Mutex $mutationMutex
     }
     Write-Host 'Harmony 2.4.2 への更新が完了しました。バックアップは削除せず保管してください。'
 }
@@ -306,20 +349,29 @@ function Restore-GameHarmony {
     Assert-FileHash -Path $ResolvedTarget -ExpectedHash $PayloadSha256 -Description '現在の Harmony 2.4.2'
     Assert-FileHash -Path $backupPath -ExpectedHash $SupportedGameSha256 -Description '復元用 QudJP バックアップ'
     Request-LiteralConfirmation -ExpectedLiteral 'RESTORE' -Message "ゲーム同梱 Harmony に戻します。`n対象: $ResolvedTarget`n復元元: $backupPath"
+    $mutationMutex = Enter-MutationMutex
     try {
-        Replace-WithVerifiedFile -SourcePath $backupPath -TargetPath $ResolvedTarget -ExpectedHash $SupportedGameSha256
-        Assert-FileHash -Path $ResolvedTarget -ExpectedHash $SupportedGameSha256 -Description '復元後のゲーム Harmony'
-    }
-    catch {
-        $restoreFailure = $_.Exception.Message
+        Assert-FileHash -Path $ResolvedTarget -ExpectedHash $PayloadSha256 -Description '復元直前の Harmony 2.4.2'
+        Assert-FileHash -Path $backupPath -ExpectedHash $SupportedGameSha256 -Description '復元直前の QudJP バックアップ'
+        Assert-CoQNotRunning
         try {
-            Replace-WithVerifiedFile -SourcePath $PayloadPath -TargetPath $ResolvedTarget -ExpectedHash $PayloadSha256
-            Assert-FileHash -Path $ResolvedTarget -ExpectedHash $PayloadSha256 -Description '復元失敗後の Harmony 2.4.2'
+            Replace-WithVerifiedFile -SourcePath $backupPath -TargetPath $ResolvedTarget -ExpectedHash $SupportedGameSha256
+            Assert-FileHash -Path $ResolvedTarget -ExpectedHash $SupportedGameSha256 -Description '復元後のゲーム Harmony'
         }
         catch {
-            throw "ゲーム同梱 Harmony の復元と Harmony 2.4.2 へのロールバックに失敗しました。ゲームを起動せず、QudJP のサポートへ連絡してください。`n復元エラー: $restoreFailure`nロールバックエラー: $($_.Exception.Message)"
+            $restoreFailure = $_.Exception.Message
+            try {
+                Replace-WithVerifiedFile -SourcePath $PayloadPath -TargetPath $ResolvedTarget -ExpectedHash $PayloadSha256
+                Assert-FileHash -Path $ResolvedTarget -ExpectedHash $PayloadSha256 -Description '復元失敗後の Harmony 2.4.2'
+            }
+            catch {
+                throw "ゲーム同梱 Harmony の復元と Harmony 2.4.2 へのロールバックに失敗しました。ゲームを起動せず、QudJP のサポートへ連絡してください。`n復元エラー: $restoreFailure`nロールバックエラー: $($_.Exception.Message)"
+            }
+            throw "ゲーム同梱 Harmony の復元に失敗したため、Harmony 2.4.2 へ戻しました。`n原因: $restoreFailure"
         }
-        throw "ゲーム同梱 Harmony の復元に失敗したため、Harmony 2.4.2 へ戻しました。`n原因: $restoreFailure"
+    }
+    finally {
+        Exit-MutationMutex -Mutex $mutationMutex
     }
     Write-Host 'ゲーム同梱 Harmony の復元が完了しました。バックアップは削除せず保管しています。'
 }
@@ -336,11 +388,13 @@ function Invoke-Updater {
 
     $targetDirectory = Split-Path -Parent $resolvedTarget
     if (-not (Test-DirectoryWritable -Directory $targetDirectory)) {
-        if (Test-IsAdministrator) {
-            throw "管理者権限でもゲームフォルダーへ書き込めません: $targetDirectory"
+        if ($Operation -eq 'Install') {
+            $launcherName = 'Install Harmony 2.4.2.cmd'
         }
-        Restart-Elevated -SelectedOperation $Operation -ValidatedTargetDll $resolvedTarget
-        return
+        else {
+            $launcherName = 'Restore Game Harmony.cmd'
+        }
+        throw "ゲームフォルダーへ書き込めません。この画面を閉じ、エクスプローラーで $launcherName を右クリックして「管理者として実行」してください。`n対象: $targetDirectory"
     }
 
     if ($Operation -eq 'Install') {
