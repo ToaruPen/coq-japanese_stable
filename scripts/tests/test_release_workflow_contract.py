@@ -60,3 +60,18 @@ def test_release_workflow_creates_draft_github_release_without_steam_upload() ->
     assert "--latest=false" not in workflow
     assert "contents: write" in workflow
     assert "workshop_build_item" not in workflow
+
+
+def test_release_workflow_builds_and_publishes_harmony_patch_assets() -> None:
+    """Tag releases attach the standalone Harmony ZIP and checksum everywhere."""
+    workflow = _workflow_text()
+    harmony_zip = "QudJP-Harmony-2.4.2-Windows.zip"
+    harmony_sidecar = f"{harmony_zip}.sha256"
+
+    assert "python scripts/build_harmony_patch.py" in workflow
+    assert workflow.index("python scripts/build_release.py") < workflow.index("python scripts/build_harmony_patch.py")
+    assert workflow.count(f"dist/{harmony_zip}") >= 2
+    assert workflow.count(f"dist/{harmony_sidecar}") >= 2
+    assert "## Optional Harmony 2.4.2 Windows Patch" in workflow
+    assert f"ZIP: \\`{harmony_zip}\\`" in workflow
+    assert "Harmony ZIP SHA256:" in workflow

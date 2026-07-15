@@ -65,6 +65,13 @@ def test_workshop_upload_preflight_recipe_uses_dedicated_verifier() -> None:
     assert "--expected-version" in recipe
 
 
+def test_build_harmony_patch_recipe_uses_the_pinned_builder() -> None:
+    """The task runner exposes the standalone Harmony release-asset build."""
+    recipe = _recipe_body("build-harmony-patch")
+
+    assert "{{python}} scripts/build_harmony_patch.py" in recipe
+
+
 def test_agent_tool_recipes_have_readable_primary_names() -> None:
     """Agent-facing tool recipes should expose descriptive names, not only abbreviations."""
     justfile = _justfile_text()
