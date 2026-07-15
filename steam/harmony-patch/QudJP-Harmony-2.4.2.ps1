@@ -86,7 +86,14 @@ function Get-SteamLibraryRoots {
         if (-not (Test-Path -LiteralPath $vdfPath -PathType Leaf)) {
             continue
         }
-        foreach ($line in (Get-Content -LiteralPath $vdfPath -ErrorAction Stop)) {
+        try {
+            $vdfLines = Get-Content -LiteralPath $vdfPath -ErrorAction Stop
+        }
+        catch {
+            # 読み取れないライブラリ設定だけを除外し、ほかの候補を続けて確認する。
+            continue
+        }
+        foreach ($line in $vdfLines) {
             $libraryPath = $null
             if ($line -match '"path"\s+"(?<path>[^"]+)"') {
                 $libraryPath = $Matches['path']

@@ -95,7 +95,7 @@ jobs:
         run: python scripts/build_release.py
 
       - name: Build Harmony patch ZIP
-        run: python scripts/build_harmony_patch.py
+        run: uv run python scripts/build_harmony_patch.py
 
       - name: Validate release ZIP identity
         shell: bash

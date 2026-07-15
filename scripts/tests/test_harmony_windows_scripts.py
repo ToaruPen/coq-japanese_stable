@@ -108,6 +108,22 @@ def test_target_discovery_covers_steam_libraries_and_manual_fallback() -> None:
         assert needle in script
 
 
+def test_unreadable_steam_library_metadata_skips_only_that_candidate() -> None:
+    """An unreadable VDF cannot prevent later roots or manual selection."""
+    script = _text(_UPDATER)
+    discovery = _function_text(script, "Get-SteamLibraryRoots")
+
+    _assert_in_order(
+        discovery,
+        "$vdfPath = Join-Path",
+        "try {",
+        "Get-Content -LiteralPath $vdfPath -ErrorAction Stop",
+        "catch {",
+        "continue",
+        "foreach ($line in $vdfLines)",
+    )
+
+
 def test_script_refuses_to_mutate_a_running_game() -> None:
     """The updater detects CoQ and never attempts to terminate it."""
     script = _text(_UPDATER)
@@ -143,6 +159,24 @@ def test_readme_requires_manual_explorer_elevation() -> None:
     assert "Install Harmony 2.4.2.cmd" in readme
     assert "Restore Game Harmony.cmd" in readme
     assert "管理者として実行" in readme
+
+
+def test_readme_distinguishes_installer_hash_check_from_manual_manifest() -> None:
+    """Player guidance names the embedded hash as the installer's authority."""
+    readme = _text(_README)
+
+    assert "スクリプトに組み込まれた確認済みハッシュ" in readme
+    assert "SHA256SUMS.txt は手動検証用" in readme
+    assert "SHA256SUMS.txt と一致しない場合" not in readme
+
+
+@pytest.mark.parametrize("wrapper", [_INSTALL_CMD, _RESTORE_CMD])
+def test_cmd_wrappers_use_windows_crlf_line_endings(wrapper: Path) -> None:
+    """Explorer-launched batch files use native Windows line endings only."""
+    payload = wrapper.read_bytes()
+
+    assert b"\r\n" in payload
+    assert payload.count(b"\n") == payload.count(b"\r\n")
 
 
 def test_install_requires_literal_confirmation_and_validates_before_mutation() -> None:

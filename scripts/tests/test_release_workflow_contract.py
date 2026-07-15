@@ -68,10 +68,17 @@ def test_release_workflow_builds_and_publishes_harmony_patch_assets() -> None:
     harmony_zip = "QudJP-Harmony-2.4.2-Windows.zip"
     harmony_sidecar = f"{harmony_zip}.sha256"
 
-    assert "python scripts/build_harmony_patch.py" in workflow
-    assert workflow.index("python scripts/build_release.py") < workflow.index("python scripts/build_harmony_patch.py")
-    assert workflow.count(f"dist/{harmony_zip}") >= 2
-    assert workflow.count(f"dist/{harmony_sidecar}") >= 2
+    harmony_build_command = "uv run python scripts/build_harmony_patch.py"
+    upload_start = workflow.index("      - name: Upload release artifact")
+    release_start = workflow.index("      - name: Create draft GitHub Release")
+    upload_block = workflow[upload_start:release_start]
+    release_block = workflow[release_start:]
+
+    assert harmony_build_command in workflow
+    assert workflow.index("python scripts/build_release.py") < workflow.index(harmony_build_command)
+    for block in (upload_block, release_block):
+        assert f"dist/{harmony_zip}" in block
+        assert f"dist/{harmony_sidecar}" in block
     assert "## Optional Harmony 2.4.2 Windows Patch" in workflow
     assert f"ZIP: \\`{harmony_zip}\\`" in workflow
     assert "Harmony ZIP SHA256:" in workflow

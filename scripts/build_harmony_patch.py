@@ -33,6 +33,8 @@ _TRACKED_ASSET_NAMES = (
     "LICENSE-Harmony.txt",
     "THIRD-PARTY-NOTICES.txt",
 )
+DEFAULT_ASSETS_DIR = PROJECT_ROOT / "steam" / "harmony-patch"
+DEFAULT_QUDJP_LICENSE = PROJECT_ROOT / "LICENSE"
 
 
 class HarmonyPatchBuildError(RuntimeError):
@@ -166,8 +168,8 @@ def build_patch_zip(
     qudjp_license: Path | None = None,
 ) -> list[str]:
     """Verify inputs and atomically build the exact standalone patch package."""
-    assets_dir = assets_dir or PROJECT_ROOT / "steam" / "harmony-patch"
-    qudjp_license = qudjp_license or PROJECT_ROOT / "LICENSE"
+    assets_dir = assets_dir or DEFAULT_ASSETS_DIR
+    qudjp_license = qudjp_license or DEFAULT_QUDJP_LICENSE
     sidecar = output_zip.with_name(f"{output_zip.name}.sha256")
     temporary_zip: Path | None = None
 
@@ -265,13 +267,13 @@ def _parse_args(argv: Sequence[str] | None) -> argparse.Namespace:
     parser.add_argument(
         "--assets-dir",
         type=Path,
-        default=PROJECT_ROOT / "steam" / "harmony-patch",
+        default=DEFAULT_ASSETS_DIR,
         help=argparse.SUPPRESS,
     )
     parser.add_argument(
         "--qudjp-license",
         type=Path,
-        default=PROJECT_ROOT / "LICENSE",
+        default=DEFAULT_QUDJP_LICENSE,
         help=argparse.SUPPRESS,
     )
     return parser.parse_args(argv)
