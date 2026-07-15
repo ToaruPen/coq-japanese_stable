@@ -43,7 +43,7 @@ Notes for Apple Silicon Macs
 
 Reports and Contributions
 
-This project is available on GitHub. If you encounter a problem, please post it in this mod's comment section or report it as a GitHub Issue. When opening an Issue, including your Player.log would be very helpful.
+This project is available on GitHub. If you encounter a problem, please post it in this mod's comment section or report it as a GitHub Issue. When opening an Issue, including your Player.log would be very helpful. Before attaching Player.log to a public Issue, remove sensitive information such as usernames and local paths.
 
   * GitHub: https://github.com/ToaruPen/coq-japanese_stable
   * macOS Player.log: ~/Library/Logs/Freehold Games/CavesOfQud/Player.log

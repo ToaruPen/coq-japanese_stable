@@ -43,7 +43,7 @@ macOS Apple Silicon での注意
 
 報告・Contribution
 
-このプロジェクトは GitHub で公開しています。何か問題があれば、この Mod のコメント欄に投稿していただくか、GitHub Issue として報告してください。Issue の場合は Player.log も添付してもらえると助かります。
+このプロジェクトは GitHub で公開しています。何か問題があれば、この Mod のコメント欄に投稿していただくか、GitHub Issue として報告してください。Issue の場合は Player.log も添付してもらえると助かります。Player.log を公開 Issue に添付する前に、ユーザー名やローカルパスなどの機微情報を削除してください。
 
   * GitHub: https://github.com/ToaruPen/coq-japanese_stable
   * macOS Player.log: ~/Library/Logs/Freehold Games/CavesOfQud/Player.log
