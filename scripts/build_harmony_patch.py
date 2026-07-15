@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import http.client
 import sys
 import tempfile
 import urllib.error
@@ -133,10 +134,10 @@ def _inner_checksum_manifest(payloads: dict[str, bytes]) -> bytes:
 def _write_deterministic_member(archive: zipfile.ZipFile, name: str, payload: bytes) -> None:
     """Write one regular ZIP member with stable metadata and compression."""
     info = zipfile.ZipInfo(name, date_time=_FIXED_ZIP_TIMESTAMP)
-    info.compress_type = zipfile.ZIP_DEFLATED
+    info.compress_type = zipfile.ZIP_STORED
     info.create_system = 3
     info.external_attr = 0o100644 << 16
-    archive.writestr(info, payload, compress_type=zipfile.ZIP_DEFLATED, compresslevel=9)
+    archive.writestr(info, payload, compress_type=zipfile.ZIP_STORED)
 
 
 def _write_outer_checksum(output_zip: Path) -> Path:
@@ -197,8 +198,7 @@ def build_patch_zip(
             with zipfile.ZipFile(
                 temporary_zip,
                 "w",
-                compression=zipfile.ZIP_DEFLATED,
-                compresslevel=9,
+                compression=zipfile.ZIP_STORED,
             ) as archive:
                 for member in members:
                     _write_deterministic_member(archive, member, archive_payloads[member])
@@ -240,7 +240,7 @@ def _download_official_archive(destination: Path) -> None:
             with destination.open("xb") as output:
                 for chunk in iter(lambda: response.read(1024 * 1024), b""):
                     output.write(chunk)
-    except (OSError, urllib.error.URLError) as exc:
+    except (http.client.HTTPException, OSError, urllib.error.URLError) as exc:
         destination.unlink(missing_ok=True)
         msg = f"cannot download official Harmony archive from {HARMONY_ARCHIVE_URL}: {exc}"
         raise HarmonyPatchBuildError(msg) from exc

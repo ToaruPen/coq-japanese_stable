@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+import http.client
 import zipfile
 from typing import TYPE_CHECKING
 
@@ -12,6 +13,7 @@ from scripts import build_harmony_patch
 
 if TYPE_CHECKING:
     from pathlib import Path
+    from typing import Self
 
 
 EXPECTED_MEMBERS = {
@@ -125,6 +127,42 @@ def test_build_patch_zip_has_exact_member_contract(tmp_path: Path, monkeypatch: 
     assert packaged_dll == dll_payload
 
 
+def test_patch_zip_uses_stored_members_for_cross_zlib_reproducibility(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Package bytes do not depend on the host zlib implementation."""
+    output_zip = _build_fixture_patch(tmp_path, monkeypatch)
+
+    with zipfile.ZipFile(output_zip) as archive:
+        members = archive.infolist()
+
+    assert members
+    assert all(member.compress_type == zipfile.ZIP_STORED for member in members)
+
+
+def test_patch_zip_has_stable_order_timestamps_and_bytes(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Repeated builds preserve member order, metadata, and complete ZIP bytes."""
+    first_output = _build_fixture_patch(tmp_path, monkeypatch)
+    second_output = tmp_path / "second-QudJP-Harmony-2.4.2-Windows.zip"
+    build_harmony_patch.build_patch_zip(
+        tmp_path / "Harmony-Fat.2.4.2.0.zip",
+        second_output,
+        assets_dir=tmp_path / "harmony-patch",
+        qudjp_license=tmp_path / "LICENSE",
+    )
+
+    with zipfile.ZipFile(first_output) as archive:
+        members = archive.infolist()
+
+    assert [member.filename for member in members] == sorted(EXPECTED_MEMBERS)
+    assert all(member.date_time == (1980, 1, 1, 0, 0, 0) for member in members)
+    assert first_output.read_bytes() == second_output.read_bytes()
+
+
 def test_build_patch_zip_rejects_source_archive_hash_mismatch(tmp_path: Path) -> None:
     """An unreviewed source archive is rejected before package creation."""
     source_zip = tmp_path / "Harmony-Fat.2.4.2.0.zip"
@@ -189,6 +227,55 @@ def test_inner_sha256sums_match_every_packaged_member(tmp_path: Path, monkeypatc
         for relative_name, digest in checksums.items():
             member_bytes = archive.read(f"{ARCHIVE_ROOT}/{relative_name}")
             assert digest == _sha256_bytes(member_bytes)
+
+
+def test_download_wraps_incomplete_read_and_removes_partial_file(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """Interrupted HTTP bodies fail cleanly without preserving partial bytes."""
+
+    class PartialThenBrokenResponse:
+        def __init__(self) -> None:
+            self.read_count = 0
+
+        def __enter__(self) -> Self:
+            return self
+
+        def __exit__(self, *_args: object) -> None:
+            return None
+
+        def read(self, _size: int) -> bytes:
+            self.read_count += 1
+            if self.read_count == 1:
+                return b"partial archive bytes"
+            partial = b"truncated"
+            raise http.client.IncompleteRead(partial, 100)
+
+    monkeypatch.setattr(
+        build_harmony_patch.urllib.request,
+        "urlopen",
+        lambda *_args, **_kwargs: PartialThenBrokenResponse(),
+    )
+    destination = tmp_path / "Harmony-Fat.2.4.2.0.zip"
+
+    with pytest.raises(
+        build_harmony_patch.HarmonyPatchBuildError,
+        match="cannot download official Harmony archive",
+    ) as error:
+        build_harmony_patch._download_official_archive(destination)  # noqa: SLF001
+
+    assert isinstance(error.value.__cause__, http.client.HTTPException)
+    assert not destination.exists()
+
+    output_zip = tmp_path / "patch-output.zip"
+    assert build_harmony_patch.main(["--output", str(output_zip)]) == 1
+    captured = capsys.readouterr()
+    assert "error: cannot download official Harmony archive" in captured.err
+    assert "Traceback" not in captured.err
+    assert not output_zip.exists()
+    assert not output_zip.with_name(f"{output_zip.name}.sha256").exists()
 
 
 def test_notice_distinguishes_mod_zip_from_opt_in_patch_zip() -> None:
