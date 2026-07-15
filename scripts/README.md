@@ -351,7 +351,9 @@ python scripts/sync_mod.py --dry-run
 `dist/release-assets/vX.Y.Z/QudJP-vX.Y.Z.zip` から Steam Workshop 用の staging directory と
 `steamcmd` 用 VDF を生成します。Workshop item ID や title などの公開
 metadata は `steam/workshop_metadata.json`、Workshop description は
-`steam/workshop_description.ja.txt` を source of truth にします。Workshop
+`steam/workshop_description.en.txt` を既定の英語版、
+`steam/workshop_description.ja.txt` を日本語ローカライズ版の
+source of truth にします。Workshop
 changenote は `scripts/release_notes.py render` で
 `docs/release-notes/unreleased/*.md` から下書きを生成し、必要に応じて
 `git log --oneline <previous-tag>..HEAD` と

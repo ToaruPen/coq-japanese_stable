@@ -8,7 +8,9 @@ upload.
 
 When asked to update the Steam Workshop item, do this first:
 
-1. Read this file, `steam/workshop_metadata.json`, and
+1. Read this file, `steam/workshop_metadata.json`,
+   `steam/workshop_description.en.txt`,
+   `steam/workshop_description.ja.txt`, and
    `steam/changenote_template.txt`.
 2. Confirm the target Workshop item is `3718988020`.
 3. Establish what "current changes" means before choosing the release version.
@@ -91,7 +93,8 @@ Public Workshop metadata:
 | Steam app ID | `333640` |
 | Workshop item ID | `3718988020` |
 | Metadata source | `steam/workshop_metadata.json` |
-| Description source | `steam/workshop_description.ja.txt` |
+| Default English description | `steam/workshop_description.en.txt` |
+| Localized Japanese description | `steam/workshop_description.ja.txt` |
 | Changenote template | `steam/changenote_template.txt` |
 | GitHub Release ZIP | `QudJP-vX.Y.Z.zip` |
 | GitHub Release checksum | `QudJP-vX.Y.Z.zip.sha256` |
@@ -311,6 +314,15 @@ sequence `\n`; Steam will show that text verbatim in Change Notes. After
 publishing, verify the rendered Workshop page and changelog in the target
 locale, for example `?l=japanese`, because Steam stores localized Change Notes
 separately.
+
+The generated VDF updates Steam's default English description from
+`steam/workshop_description.en.txt`. Steam stores the localized Japanese
+description separately, so update it from
+`steam/workshop_description.ja.txt` in the Workshop item editor whenever the
+description changes. Verify both `?l=english` and `?l=japanese` after
+publishing. Do not point `steam/workshop_metadata.json` at the Japanese file;
+doing so overwrites the default English description during the next steamcmd
+upload.
 
 Steam's KeyValues parser can reject escaped double quotes inside long
 description or changenote fields. Keep Workshop text free of literal `"`

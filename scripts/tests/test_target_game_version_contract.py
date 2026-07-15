@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import re
 from pathlib import Path
 
@@ -28,6 +29,9 @@ CURRENT_VERSION_SURFACES = {
     ),
     "steam/workshop_description.ja.txt": re.compile(
         r"Caves of Qud (?P<version>\d+\.\d+\.\d+) 対応"
+    ),
+    "steam/workshop_description.en.txt": re.compile(
+        r"Compatible with Caves of Qud (?P<version>\d+\.\d+\.\d+)"
     ),
     "docs/RULES.md": re.compile(
         r"IDs must match game version `(?P<version>\d+\.\d+\.\d+)`"
@@ -65,6 +69,16 @@ def test_current_version_surfaces_match_readme_target() -> None:
             )
 
     assert not mismatches, "Current target-game version drift:\n" + "\n".join(mismatches)
+
+
+def test_workshop_default_description_is_english() -> None:
+    """The default steamcmd upload must not overwrite English with Japanese text."""
+    metadata = json.loads(_read("steam/workshop_metadata.json"))
+
+    assert metadata["description_file"] == "workshop_description.en.txt"
+    description = _read("steam/workshop_description.en.txt")
+    assert "Overview" in description
+    assert "概要" not in description
 
 
 def test_reference_stub_version_matches_l2g_game_assembly_contract() -> None:

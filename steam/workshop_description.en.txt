@@ -1,0 +1,64 @@
+Caves of Qud Japanese Mod
+
+Note: Nearly all of the Japanese translations from the original English text were generated using generative AI. They have been reviewed, but contextual misunderstandings, mistranslations, and unusual wording are still likely. If you find any issues, please let us know. Official localization work has also begun, so this project may be discontinued in the near future.
+
+Overview
+This is an unofficial, fan-made mod for playing Caves of Qud in Japanese. It translates the UI, conversations, ability and mutation descriptions, pop-ups, message logs, and some procedurally generated text into Japanese. It also includes a CJK font for displaying Japanese text.
+
+Supported Version
+
+  * Compatible with Caves of Qud 1.0.5
+
+Main Features
+
+  * Japanese translations for dialogue
+  * Japanese translations for UI elements, including menus, options, character creation, and ability screens
+  * Japanese translations for pop-ups, message logs, the journal, death screens, and more
+  * Japanese translations for some procedurally generated text, historical text, and descriptions
+  * A bundled CJK font for displaying Japanese text
+
+Existing Saves
+
+The mod should generally work with existing saves. However, we recommend backing up any important save data before enabling it. Previously generated text already stored in a save, as well as some dynamic text, may remain in English.
+
+Installation
+
+  * Subscribe to this Workshop item.
+  * Enable Caves of Qud Japanese Mod in the in-game Mod Manager.
+  * Restart the game. That is all!
+
+Notes for Apple Silicon Macs
+
+  * When Caves of Qud is launched natively on an Apple Silicon Mac, such as an M1, M2, M3, or M4 model, the game's `0Harmony.dll` may cause Harmony patches to fail with `mprotect returned EACCES`. If this happens, this mod's UI translations may not take effect.
+  * QudJP recommends launching the game through Rosetta 2. QudJP does not automatically bundle or replace `0Harmony.dll`.
+  * This mod includes a launcher wrapper named `Launch CavesOfQud (Rosetta).command`. You can launch it by double-clicking the file in the Steam Workshop download folder.
+  * With the default Steam library location on macOS, the file is normally located at `~/Library/Application Support/Steam/steamapps/workshop/content/333640/3718988020/Launch CavesOfQud (Rosetta).command`. If you use another Steam library, look for `steamapps/workshop/content/333640/3718988020/` within that library.
+  * The wrapper first looks for the game in the default Steam library and in the Steam library containing the wrapper's Workshop folder. If it still cannot find the game, it displays a dialog asking you to select `CoQ.app`. Select `CoQ.app` from the Caves of Qud folder in your Steam library.
+  * Launching the game normally through Steam does not apply the wrapper's settings. If the translations do not work on Apple Silicon, launch the game through the wrapper each time.
+  * If Rosetta 2 is not installed, the wrapper displays an installation confirmation. Follow the prompt; no manual Terminal commands are required.
+  * Advanced direct-launch example: `arch -x86_64 $HOME/Library/Application\ Support/Steam/steamapps/common/Caves\ of\ Qud/CoQ.app/Contents/MacOS/CoQ`
+  * As an advanced alternative, our testing confirmed that replacing the game's `0Harmony.dll` with Harmony 2.4.2 allows the game to run natively on Apple Silicon. For normal use, we recommend the Rosetta launch method described above.
+  * This mod also includes `Install Native Apple Silicon Harmony.command`, which replaces the DLL only when you explicitly run it, and `Restore Game Harmony.command`, which restores the original DLL. These helpers first look for Caves of Qud based on their own location. If they cannot find it, they display a dialog asking you to select `0Harmony.dll`.
+  * To replace the DLL manually, close CoQ, extract `net48/0Harmony.dll` from `Harmony-Fat.2.4.2.0.zip` at https://github.com/pardeike/Harmony/releases/tag/v2.4.2.0, back up `~/Library/Application Support/Steam/steamapps/common/Caves of Qud/CoQ.app/Contents/Resources/Data/Managed/0Harmony.dll`, and then replace it with the extracted file. Steam file verification, reinstallation, or a game update may restore the original DLL.
+
+Reports and Contributions
+
+This project is available on GitHub. If you encounter a problem, please post it in this mod's comment section or report it as a GitHub Issue. When opening an Issue, including your Player.log would be very helpful.
+
+  * GitHub: https://github.com/ToaruPen/coq-japanese_stable
+  * macOS Player.log: ~/Library/Logs/Freehold Games/CavesOfQud/Player.log
+  * Windows Player.log: %USERPROFILE%\AppData\LocalLow\Freehold Games\CavesOfQud\Player.log
+
+Contributions are welcome!
+
+Important Notes
+  * This is not an official Japanese localization by Freehold Games.
+  * Game updates may break some translated displays or patches.
+  * Some untranslated text, layout issues, and unnatural translations may remain.
+
+Known and Currently Observed Issues
+
+  * Procedurally generated content in general
+  * The character generation screen
+  * Misaligned color tags applied to text in the message log
+  * Other minor UI issues and gaps that have not yet been identified
