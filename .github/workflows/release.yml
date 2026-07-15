@@ -94,6 +94,9 @@ jobs:
       - name: Build release ZIP
         run: python scripts/build_release.py
 
+      - name: Build Harmony patch ZIP
+        run: uv run python scripts/build_harmony_patch.py
+
       - name: Validate release ZIP identity
         shell: bash
         run: |
@@ -112,6 +115,9 @@ jobs:
           release_zip="dist/QudJP-v${version}.zip"
           checksum_file="${release_zip}.sha256"
           checksum="$(cut -d ' ' -f1 "$checksum_file")"
+          harmony_zip="dist/QudJP-Harmony-2.4.2-Windows.zip"
+          harmony_checksum_file="${harmony_zip}.sha256"
+          harmony_checksum="$(cut -d ' ' -f1 "$harmony_checksum_file")"
 
           python scripts/release_notes.py extract-changelog \
             --version "$version" \
@@ -128,6 +134,12 @@ jobs:
             echo "- ZIP SHA256: \`${checksum}\`"
             echo "- Workflow run: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
             echo
+            echo "## Optional Harmony 2.4.2 Windows Patch"
+            echo
+            echo "- ZIP: \`QudJP-Harmony-2.4.2-Windows.zip\`"
+            echo "- Harmony ZIP SHA256: \`${harmony_checksum}\`"
+            echo "- This standalone patch is optional and is not included in the normal QudJP mod ZIP."
+            echo
             echo "This draft GitHub Release contains the verified ZIP intended for the manual Steam Workshop upload."
           } > dist/github-release-notes.md
 
@@ -138,6 +150,8 @@ jobs:
           path: |
             dist/QudJP-v${{ steps.identity.outputs.version }}.zip
             dist/QudJP-v${{ steps.identity.outputs.version }}.zip.sha256
+            dist/QudJP-Harmony-2.4.2-Windows.zip
+            dist/QudJP-Harmony-2.4.2-Windows.zip.sha256
             dist/github-release-notes.md
 
   draft-github-release:
@@ -163,6 +177,8 @@ jobs:
           gh release create "v${version}" \
             "dist/QudJP-v${version}.zip" \
             "dist/QudJP-v${version}.zip.sha256" \
+            "dist/QudJP-Harmony-2.4.2-Windows.zip" \
+            "dist/QudJP-Harmony-2.4.2-Windows.zip.sha256" \
             --draft \
             --verify-tag \
             --latest \

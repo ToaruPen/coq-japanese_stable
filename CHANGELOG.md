@@ -10,6 +10,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+## [0.5.02] - 2026-07-15
+
+### Added
+
+- Windows 向けに、Harmony 2.4.2 へ更新し元に戻せる任意導入パッケージを GitHub Release へ追加しました。通常の QudJP 導入ではゲーム本体の DLL を自動変更しません。
+
+### Changed
+
+- Caves of Qud 1.0.5 に対応しました。
+
+### Fixed
+
+- セーブデータの情報と、古いセーブデータを開く際に後から表示される確認画面が、Caves of Qud 1.0.5 でも日本語で表示されるよう修正しました。
+- 選択後に処理が続く確認画面や取引画面で、日本語表示と操作が正しく機能するよう修正しました。
+- 派閥名と、自動生成される会話・履歴・メッセージなどに英語が残る箇所を修正しました。
+
+---
+
 ## [0.5.01] - 2026-06-11
 
 ### Fixed
@@ -434,7 +452,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
-[Unreleased]: https://github.com/ToaruPen/coq-japanese_stable/compare/v0.5.01...HEAD
+[Unreleased]: https://github.com/ToaruPen/coq-japanese_stable/compare/v0.5.02...HEAD
+[0.5.02]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.5.02
 [0.5.01]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.5.01
 [0.5.00]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.5.00
 [0.4.10]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.4.10

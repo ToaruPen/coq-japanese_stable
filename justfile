@@ -135,6 +135,10 @@ render-release-notes version git_hash date:
 build-release:
   {{python}} scripts/build_release.py
 
+# Build the standalone verified Harmony 2.4.2 Windows patch ZIP.
+build-harmony-patch:
+  {{python}} scripts/build_harmony_patch.py
+
 # Spot-check required files in a release ZIP.
 release-zip-check release_zip="":
   #!/usr/bin/env bash

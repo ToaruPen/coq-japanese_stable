@@ -45,8 +45,13 @@ QudJP uses [Harmony](https://github.com/pardeike/Harmony) at runtime for
 method patching.
 
 - License: MIT
-- Runtime: loaded from the Caves of Qud installation — **not bundled** with
-  QudJP.
+- Normal release: the normal QudJP mod ZIP does not bundle `0Harmony.dll`.
+  At runtime, QudJP normally loads Harmony from the Caves of Qud installation.
+- Optional standalone release asset: the standalone opt-in Windows Harmony
+  2.4.2 patch ZIP bundles `0Harmony.dll` from the official Harmony Fat archive,
+  together with the Harmony license and notices for embedded dependencies.
+  It is separate from the normal QudJP mod ZIP and changes the game installation
+  only when the player explicitly runs its installer.
 - Local development / tests: `Lib.Harmony` NuGet is referenced in
   `Mods/QudJP/Assemblies/QudJP.csproj` as a conditional fallback
   (`PackageReference Version="2.2.2"`, only active when the game's
