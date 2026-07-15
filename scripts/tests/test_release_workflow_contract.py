@@ -11,6 +11,12 @@ def _workflow_text() -> str:
     return (_REPO_ROOT / ".github" / "workflows" / "release.yml").read_text(encoding="utf-8")
 
 
+def _step_block(workflow: str, step_name: str, next_step_name: str) -> str:
+    start = workflow.index(f"      - name: {step_name}\n")
+    end = workflow.index(f"      - name: {next_step_name}\n", start)
+    return workflow[start:end]
+
+
 def test_release_workflow_runs_only_for_release_tags() -> None:
     """Release publishing is triggered by vX.Y.Z tags, not branch pushes or PRs."""
     workflow = _workflow_text()
@@ -47,6 +53,19 @@ def test_release_workflow_installs_python_test_tooling() -> None:
     assert workflow.index("npm ci") < workflow.index(node_bin_path_step)
     assert workflow.index(node_bin_path_step) < workflow.index("pytest scripts/tests/")
     assert workflow.index("npm ci") < workflow.index("pytest scripts/tests/")
+
+
+def test_release_workflow_disables_external_analyzers_only_for_test_artifact_build() -> None:
+    """Release test artifacts match CI without weakening the production build."""
+    workflow = _workflow_text()
+    production_build = _step_block(workflow, "Build QudJP", "Build QudJP.Tests")
+    test_artifact_build = _step_block(workflow, "Build QudJP.Tests", "Test QudJP")
+
+    assert "-p:RunAnalyzers" not in production_build
+    assert "-p:RunAnalyzersDuringBuild" not in production_build
+    assert "dotnet build Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj" in test_artifact_build
+    assert "-p:RunAnalyzers=false" in test_artifact_build
+    assert "-p:RunAnalyzersDuringBuild=false" in test_artifact_build
 
 
 def test_release_workflow_creates_draft_github_release_without_steam_upload() -> None:

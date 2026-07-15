@@ -73,7 +73,10 @@ jobs:
         run: dotnet build Mods/QudJP/Assemblies/QudJP.csproj --configuration Release
 
       - name: Build QudJP.Tests
-        run: dotnet build Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj --configuration Release
+        run: |
+          dotnet build Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj --configuration Release \
+          -p:RunAnalyzers=false \
+          -p:RunAnalyzersDuringBuild=false
 
       - name: Test QudJP
         run: dotnet test Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj --configuration Release --no-build
