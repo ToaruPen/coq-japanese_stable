@@ -19,7 +19,8 @@ Harmony 2.4.2 への更新を希望する場合にだけ、同梱の
    0Harmony.dll.qudjp-backup-before-2.4.2 としてバックアップされます。
    既存のバックアップを上書きする用途ではありません。
 4. 同梱 payload/net48/0Harmony.dll の SHA-256 も検証されます。
-   SHA256SUMS.txt と一致しない場合は使用を中止し、公式配布元から取得し直してください。
+   SHA256SUMS.txt と一致しない場合は使用を中止し、QudJP v0.5.02 の GitHub Release
+   から更新パッチ ZIP を再取得してください。
 
 元に戻す方法
 ------------
