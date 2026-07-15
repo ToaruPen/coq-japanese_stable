@@ -11,7 +11,7 @@ $SupportedGameSha256 = '0de0118c8f1d4408de389ca33b46d2ff7778f3a8541b430cae729ec9
 $PayloadSha256 = '77e6901ecc606aec66c2a972782a3779e4f50c037d2d165eb7ececdd4d8f794d'
 $BackupName = '0Harmony.dll.qudjp-backup-before-2.4.2'
 $GameDllSuffix = 'Caves of Qud\CoQ_Data\Managed\0Harmony.dll'
-$MutationMutexName = 'Local\QudJP-Harmony-2.4.2-Mutation'
+$MutationLockName = '.qudjp-harmony-2.4.2.lock'
 
 function Get-FileSha256 {
     param([string]$Path)
@@ -171,34 +171,34 @@ function Test-DirectoryWritable {
     }
 }
 
-function Enter-MutationMutex {
-    $mutex = [System.Threading.Mutex]::new($false, $MutationMutexName)
-    try {
+function Enter-MutationLock {
+    param([string]$TargetPath)
+
+    $targetDirectory = Split-Path -Parent $TargetPath
+    $lockPath = Join-Path $targetDirectory $MutationLockName
+    $stopwatch = [Diagnostics.Stopwatch]::StartNew()
+    while ($true) {
+        if ($stopwatch.Elapsed.TotalSeconds -ge 30) {
+            throw '別の QudJP Harmony 更新処理が実行中です。完了後にもう一度実行してください。'
+        }
         try {
-            if (-not $mutex.WaitOne([TimeSpan]::FromSeconds(30))) {
-                throw '別の QudJP Harmony 更新処理が実行中です。完了後にもう一度実行してください。'
-            }
+            return [IO.File]::Open(
+                $lockPath,
+                [IO.FileMode]::OpenOrCreate,
+                [IO.FileAccess]::ReadWrite,
+                [IO.FileShare]::None
+            )
         }
-        catch [Threading.AbandonedMutexException] {
-            # 放棄された mutex はこのプロセスが取得済みなので、安全性検査を続ける。
+        catch [IO.IOException] {
+            Start-Sleep -Milliseconds 200
         }
-        return $mutex
-    }
-    catch {
-        $mutex.Dispose()
-        throw
     }
 }
 
-function Exit-MutationMutex {
-    param([System.Threading.Mutex]$Mutex)
+function Exit-MutationLock {
+    param([IO.FileStream]$LockStream)
 
-    try {
-        $Mutex.ReleaseMutex()
-    }
-    finally {
-        $Mutex.Dispose()
-    }
+    $LockStream.Dispose()
 }
 
 function Request-LiteralConfirmation {
@@ -220,8 +220,10 @@ function Copy-VerifiedOriginalBackup {
         [string]$BackupPath
     )
 
+    $backupDirectory = Split-Path -Parent $BackupPath
+    $temporaryPath = Join-Path $backupDirectory ('.0Harmony.dll.qudjp-backup-{0}.tmp' -f [guid]::NewGuid().ToString('N'))
     $sourceStream = $null
-    $backupStream = $null
+    $temporaryStream = $null
     try {
         $sourceStream = [IO.File]::Open(
             $TargetPath,
@@ -229,17 +231,24 @@ function Copy-VerifiedOriginalBackup {
             [IO.FileAccess]::Read,
             [IO.FileShare]::None
         )
+        $temporaryStream = [IO.File]::Open(
+            $temporaryPath,
+            [IO.FileMode]::CreateNew,
+            [IO.FileAccess]::Write,
+            [IO.FileShare]::None
+        )
+        $sourceStream.CopyTo($temporaryStream)
+        $temporaryStream.Flush($true)
+        $temporaryStream.Dispose()
+        $temporaryStream = $null
+        $sourceStream.Dispose()
+        $sourceStream = $null
+
+        Assert-FileHash -Path $temporaryPath -ExpectedHash $SupportedGameSha256 -Description '一時バックアップ'
         try {
-            $backupStream = [IO.File]::Open(
-                $BackupPath,
-                [IO.FileMode]::CreateNew,
-                [IO.FileAccess]::Write,
-                [IO.FileShare]::None
-            )
+            [IO.File]::Move($temporaryPath, $BackupPath)
         }
         catch [IO.IOException] {
-            $sourceStream.Dispose()
-            $sourceStream = $null
             if (-not (Test-Path -LiteralPath $BackupPath -PathType Leaf)) {
                 throw
             }
@@ -248,20 +257,20 @@ function Copy-VerifiedOriginalBackup {
             return
         }
 
-        $sourceStream.CopyTo($backupStream)
-        $backupStream.Flush()
+        Assert-FileHash -Path $BackupPath -ExpectedHash $SupportedGameSha256 -Description '作成した QudJP バックアップ'
+        Write-Host "ゲーム同梱 Harmony をバックアップしました: $BackupPath"
     }
     finally {
-        if ($null -ne $backupStream) {
-            $backupStream.Dispose()
+        if ($null -ne $temporaryStream) {
+            $temporaryStream.Dispose()
         }
         if ($null -ne $sourceStream) {
             $sourceStream.Dispose()
         }
+        if (Test-Path -LiteralPath $temporaryPath) {
+            Remove-Item -LiteralPath $temporaryPath -Force -ErrorAction SilentlyContinue
+        }
     }
-
-    Assert-FileHash -Path $BackupPath -ExpectedHash $SupportedGameSha256 -Description '作成した QudJP バックアップ'
-    Write-Host "ゲーム同梱 Harmony をバックアップしました: $BackupPath"
 }
 
 function Replace-WithVerifiedFile {
@@ -302,18 +311,31 @@ function Install-Harmony {
         [string]$PayloadPath
     )
 
+    $backupPath = Join-Path (Split-Path -Parent $ResolvedTarget) $BackupName
     $currentHash = Get-FileSha256 -Path $ResolvedTarget
     if ($currentHash -eq $PayloadSha256) {
-        Write-Host 'Harmony 2.4.2 はすでに導入済みです。変更は不要です。'
-        return
+        $stateLock = Enter-MutationLock -TargetPath $ResolvedTarget
+        try {
+            Assert-FileHash -Path $ResolvedTarget -ExpectedHash $PayloadSha256 -Description '現在の Harmony 2.4.2'
+            try {
+                Assert-FileHash -Path $backupPath -ExpectedHash $SupportedGameSha256 -Description '復元用 QudJP バックアップ'
+            }
+            catch {
+                throw "Harmony 2.4.2 は導入されていますが、確認済みの復元用バックアップがありません。Steam の「インストール済みファイルの整合性を確認」でゲーム同梱 Harmony に戻してから、この更新パッチをもう一度実行してください。`n詳細: $($_.Exception.Message)"
+            }
+            Write-Host 'Harmony 2.4.2 はすでに導入済みで、復元用バックアップも確認できました。変更は不要です。'
+            return
+        }
+        finally {
+            Exit-MutationLock -LockStream $stateLock
+        }
     }
     if ($currentHash -ne $SupportedGameSha256) {
         throw "ゲーム本体の 0Harmony.dll が Caves of Qud 1.0.5 の確認済みファイルではありません。処理を中止します。`nSHA-256: $currentHash"
     }
 
-    $backupPath = Join-Path (Split-Path -Parent $ResolvedTarget) $BackupName
     Request-LiteralConfirmation -ExpectedLiteral 'INSTALL' -Message "Harmony 2.4.2 に更新します。`n対象: $ResolvedTarget`nバックアップ: $backupPath"
-    $mutationMutex = Enter-MutationMutex
+    $mutationLock = Enter-MutationLock -TargetPath $ResolvedTarget
     try {
         Assert-FileHash -Path $ResolvedTarget -ExpectedHash $SupportedGameSha256 -Description '更新直前のゲーム Harmony'
         Assert-CoQNotRunning
@@ -334,7 +356,7 @@ function Install-Harmony {
         }
     }
     finally {
-        Exit-MutationMutex -Mutex $mutationMutex
+        Exit-MutationLock -LockStream $mutationLock
     }
     Write-Host 'Harmony 2.4.2 への更新が完了しました。バックアップは削除せず保管してください。'
 }
@@ -349,7 +371,7 @@ function Restore-GameHarmony {
     Assert-FileHash -Path $ResolvedTarget -ExpectedHash $PayloadSha256 -Description '現在の Harmony 2.4.2'
     Assert-FileHash -Path $backupPath -ExpectedHash $SupportedGameSha256 -Description '復元用 QudJP バックアップ'
     Request-LiteralConfirmation -ExpectedLiteral 'RESTORE' -Message "ゲーム同梱 Harmony に戻します。`n対象: $ResolvedTarget`n復元元: $backupPath"
-    $mutationMutex = Enter-MutationMutex
+    $mutationLock = Enter-MutationLock -TargetPath $ResolvedTarget
     try {
         Assert-FileHash -Path $ResolvedTarget -ExpectedHash $PayloadSha256 -Description '復元直前の Harmony 2.4.2'
         Assert-FileHash -Path $backupPath -ExpectedHash $SupportedGameSha256 -Description '復元直前の QudJP バックアップ'
@@ -371,7 +393,7 @@ function Restore-GameHarmony {
         }
     }
     finally {
-        Exit-MutationMutex -Mutex $mutationMutex
+        Exit-MutationLock -LockStream $mutationLock
     }
     Write-Host 'ゲーム同梱 Harmony の復元が完了しました。バックアップは削除せず保管しています。'
 }

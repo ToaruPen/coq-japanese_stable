@@ -170,64 +170,100 @@ def test_install_requires_literal_confirmation_and_validates_before_mutation() -
     )
 
 
-def test_install_is_idempotent_and_never_overwrites_a_backup() -> None:
-    """A verified 2.4.2 target succeeds as-is, while backup creation is atomic."""
+def test_install_fast_path_requires_a_verified_restorable_backup() -> None:
+    """Installed payload is success only while the known original can be restored."""
     script = _text(_UPDATER)
     install = _function_text(script, "Install-Harmony")
+
+    _assert_in_order(
+        install,
+        "$backupPath = Join-Path",
+        "if ($currentHash -eq $PayloadSha256)",
+        "Enter-MutationLock -TargetPath $ResolvedTarget",
+        "Assert-FileHash -Path $ResolvedTarget -ExpectedHash $PayloadSha256",
+        "Assert-FileHash -Path $backupPath -ExpectedHash $SupportedGameSha256",
+        "Steam",
+        "インストール済みファイルの整合性を確認",
+        "return",
+    )
+
+
+def test_install_publishes_only_a_closed_verified_temporary_backup() -> None:
+    """The final backup name is populated only by a no-overwrite atomic move."""
+    script = _text(_UPDATER)
     backup = _function_text(script, "Copy-VerifiedOriginalBackup")
 
-    _assert_in_order(install, "if ($currentHash -eq $PayloadSha256)", "return", "$SupportedGameSha256")
+    assert "Split-Path -Parent $BackupPath" in backup
+    assert "Join-Path $backupDirectory" in backup
+    assert "[guid]::NewGuid()" in backup
     assert "[IO.FileMode]::CreateNew" in backup
     assert "[IO.FileShare]::None" in backup
     assert ".CopyTo(" in backup
+    assert ".Flush(" in backup
     assert "catch [IO.IOException]" in backup
     _assert_in_order(
         backup,
+        "$temporaryPath = Join-Path $backupDirectory",
         "[IO.FileMode]::CreateNew",
+        ".CopyTo(",
+        ".Flush(",
+        ".Dispose()",
+        "Assert-FileHash -Path $temporaryPath -ExpectedHash $SupportedGameSha256",
+        "[IO.File]::Move($temporaryPath, $BackupPath)",
         "catch [IO.IOException]",
         "Test-Path -LiteralPath $BackupPath",
-        "Assert-FileHash",
+        "Assert-FileHash -Path $BackupPath -ExpectedHash $SupportedGameSha256",
+        "finally",
+        "Remove-Item -LiteralPath $temporaryPath",
     )
     assert "Copy-Item" not in backup
     assert "Remove-Item -LiteralPath $BackupPath" not in script
     assert "Move-Item" not in backup
 
 
-def test_mutation_window_uses_a_named_mutex_and_rechecks_the_game() -> None:
-    """Both operations serialize mutation and recheck CoQ after confirmation."""
+def test_mutation_window_uses_a_cross_session_target_directory_lock() -> None:
+    """Both operations hold one exclusive Managed-directory lock file."""
     script = _text(_UPDATER)
-    enter_mutex = _function_text(script, "Enter-MutationMutex")
-    exit_mutex = _function_text(script, "Exit-MutationMutex")
+    enter_lock = _function_text(script, "Enter-MutationLock")
+    exit_lock = _function_text(script, "Exit-MutationLock")
     install = _function_text(script, "Install-Harmony")
     restore = _function_text(script, "Restore-GameHarmony")
 
-    assert "$MutationMutexName" in script
-    assert "System.Threading.Mutex" in enter_mutex
-    assert "$MutationMutexName" in enter_mutex
-    assert ".WaitOne(" in enter_mutex
-    assert ".ReleaseMutex()" in exit_mutex
-    assert ".Dispose()" in exit_mutex
+    assert "Local\\" not in script
+    assert "System.Threading.Mutex" not in script
+    assert "$MutationLockName" in script
+    assert "Split-Path -Parent $TargetPath" in enter_lock
+    assert "Join-Path $targetDirectory $MutationLockName" in enter_lock
+    assert "[IO.FileMode]::OpenOrCreate" in enter_lock
+    assert "[IO.FileAccess]::ReadWrite" in enter_lock
+    assert "[IO.FileShare]::None" in enter_lock
+    assert "TotalSeconds -ge 30" in enter_lock
+    assert "Start-Sleep" in enter_lock
+    assert ".Dispose()" in exit_lock
+    assert "Remove-Item -LiteralPath $lockPath" not in script
     _assert_in_order(
         install,
         "Request-LiteralConfirmation -ExpectedLiteral 'INSTALL'",
-        "Enter-MutationMutex",
+        "Enter-MutationLock -TargetPath $ResolvedTarget",
         "Assert-FileHash -Path $ResolvedTarget -ExpectedHash $SupportedGameSha256",
         "Assert-CoQNotRunning",
         "Copy-VerifiedOriginalBackup",
         "Replace-WithVerifiedFile",
+        "Exit-MutationLock",
     )
     _assert_in_order(
         restore,
         "Request-LiteralConfirmation -ExpectedLiteral 'RESTORE'",
-        "Enter-MutationMutex",
+        "Enter-MutationLock -TargetPath $ResolvedTarget",
         "Assert-FileHash -Path $ResolvedTarget -ExpectedHash $PayloadSha256",
         "Assert-FileHash -Path $backupPath -ExpectedHash $SupportedGameSha256",
         "Assert-CoQNotRunning",
         "Replace-WithVerifiedFile",
+        "Exit-MutationLock",
     )
     for mutation in (install, restore):
         assert "finally" in mutation
-        assert "Exit-MutationMutex" in mutation
+        assert "Exit-MutationLock" in mutation
 
 
 def test_install_uses_verified_sibling_temp_and_rolls_back_on_failure() -> None:
