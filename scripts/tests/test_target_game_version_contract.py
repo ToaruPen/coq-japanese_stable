@@ -61,6 +61,28 @@ WORKSHOP_DESCRIPTION_LANGUAGE_CONTRACTS = {
         "Caves of Qud 1.0.5 対応",
     ),
 }
+WORKSHOP_DESCRIPTION_ORDERED_SECTIONS = {
+    "steam/workshop_description.en.txt": (
+        "[h1]Overview[/h1]",
+        "[h2]Main Features[/h2]",
+        "[h1]Installation[/h1]",
+        "[h2]Existing Saves[/h2]",
+        "[h1]Apple Silicon Macs[/h1]",
+        "[h1]Reports and Contributions[/h1]",
+        "[h1]Important Notes[/h1]",
+        "[h2]Known Issues[/h2]",
+    ),
+    "steam/workshop_description.ja.txt": (
+        "[h1]概要[/h1]",
+        "[h2]主な内容[/h2]",
+        "[h1]導入方法[/h1]",
+        "[h2]既存セーブ[/h2]",
+        "[h1]Apple Silicon Mac[/h1]",
+        "[h1]問題報告・Contribution[/h1]",
+        "[h1]注意事項[/h1]",
+        "[h2]既知の問題[/h2]",
+    ),
+}
 STEAM_BBCODE_ALLOWED_TAGS = frozenset(
     {"*", "b", "code", "h1", "h2", "hr", "list", "olist", "url"}
 )
@@ -70,6 +92,11 @@ STEAM_BBCODE_TOKEN_PATTERN = re.compile(
 )
 STEAM_BRACKET_TOKEN_PATTERN = re.compile(r"\[[^\r\n]*?\]")
 MARKDOWN_STAR_BULLET_PATTERN = re.compile(r"^[ \t]*\*(?:[ \t]+|$)", flags=re.MULTILINE)
+EXTERNAL_URL_PATTERN = re.compile(r"https?://[^\s\[\]]+", flags=re.IGNORECASE)
+STEAM_URL_OPEN_TAG_PATTERN = re.compile(
+    r"\[url=https?://[^\[\]\r\n]+\]",
+    flags=re.IGNORECASE,
+)
 
 
 def _read(path: str) -> str:
@@ -176,6 +203,25 @@ def _assert_balanced_steam_bbcode(description: str, *, source: str) -> None:
     assert not findings, f"{source} contains invalid Steam BBCode:\n" + "\n".join(findings)
 
 
+def _assert_markers_in_order(
+    description: str,
+    markers: tuple[str, ...],
+    *,
+    source: str,
+) -> None:
+    cursor = 0
+    for marker in markers:
+        marker_index = description.find(marker, cursor)
+        assert marker_index >= 0, f"{source}: missing or out-of-order section {marker!r}"
+        cursor = marker_index + len(marker)
+
+
+def _assert_no_naked_external_urls(description: str, *, source: str) -> None:
+    description_without_link_targets = STEAM_URL_OPEN_TAG_PATTERN.sub("[url]", description)
+    naked_urls = EXTERNAL_URL_PATTERN.findall(description_without_link_targets)
+    assert not naked_urls, f"{source}: naked external URL(s): {naked_urls}"
+
+
 @pytest.mark.parametrize(
     "description",
     [
@@ -191,6 +237,25 @@ def test_steam_bbcode_contract_rejects_malformed_bracket_syntax(description: str
     """Bracket-like syntax must be canonical BBCode rather than ignored text."""
     with pytest.raises(AssertionError, match="invalid Steam BBCode"):
         _assert_balanced_steam_bbcode(description, source="test description")
+
+
+def test_workshop_description_contract_rejects_out_of_order_sections() -> None:
+    """Required localized sections must keep their documented order."""
+    with pytest.raises(AssertionError, match="missing or out-of-order section"):
+        _assert_markers_in_order(
+            "[h1]Installation[/h1]\n[h1]Overview[/h1]",
+            ("[h1]Overview[/h1]", "[h1]Installation[/h1]"),
+            source="test description",
+        )
+
+
+def test_workshop_description_contract_rejects_naked_external_urls() -> None:
+    """External URLs must use Steam's linked URL form."""
+    with pytest.raises(AssertionError, match="naked external URL"):
+        _assert_no_naked_external_urls(
+            "See HTTPS://example.com or [url=https://example.org]this link[/url].",
+            source="test description",
+        )
 
 
 def test_current_version_surfaces_match_readme_target() -> None:
@@ -228,6 +293,12 @@ def test_workshop_descriptions_use_balanced_steam_bbcode() -> None:
         description = _read(path)
 
         _assert_balanced_steam_bbcode(description, source=path)
+        _assert_markers_in_order(
+            description,
+            WORKSHOP_DESCRIPTION_ORDERED_SECTIONS[path],
+            source=path,
+        )
+        _assert_no_naked_external_urls(description, source=path)
         assert "[h1]Caves of Qud Japanese Mod[/h1]" in description, (
             f"{path}: missing Workshop title heading"
         )
