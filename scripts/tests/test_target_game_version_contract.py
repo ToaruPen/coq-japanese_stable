@@ -63,6 +63,10 @@ WORKSHOP_DESCRIPTION_LANGUAGE_CONTRACTS = {
 }
 WORKSHOP_DESCRIPTION_ORDERED_SECTIONS = {
     "steam/workshop_description.en.txt": (
+        "[h1]Caves of Qud Japanese Mod[/h1]",
+        "[b]Compatible with Caves of Qud 1.0.5[/b]",
+        "Nearly all Japanese translations in this mod were generated using generative AI "
+        "and then reviewed.",
         "[h1]Overview[/h1]",
         "[h2]Main Features[/h2]",
         "[h1]Installation[/h1]",
@@ -73,6 +77,9 @@ WORKSHOP_DESCRIPTION_ORDERED_SECTIONS = {
         "[h2]Known Issues[/h2]",
     ),
     "steam/workshop_description.ja.txt": (
+        "[h1]Caves of Qud Japanese Mod[/h1]",
+        "[b]Caves of Qud 1.0.5 対応[/b]",
+        "原文からの日本語訳のほぼすべてを生成 AI で作成し、その後に内容を確認しています。",
         "[h1]概要[/h1]",
         "[h2]主な内容[/h2]",
         "[h1]導入方法[/h1]",
@@ -243,8 +250,18 @@ def test_workshop_description_contract_rejects_out_of_order_sections() -> None:
     """Required localized sections must keep their documented order."""
     with pytest.raises(AssertionError, match="missing or out-of-order section"):
         _assert_markers_in_order(
-            "[h1]Installation[/h1]\n[h1]Overview[/h1]",
-            ("[h1]Overview[/h1]", "[h1]Installation[/h1]"),
+            "[h1]Overview[/h1]\n"
+            "[h1]Caves of Qud Japanese Mod[/h1]\n"
+            "[b]Compatible with Caves of Qud 1.0.5[/b]\n"
+            "Nearly all Japanese translations in this mod were generated using generative AI "
+            "and then reviewed.",
+            (
+                "[h1]Caves of Qud Japanese Mod[/h1]",
+                "[b]Compatible with Caves of Qud 1.0.5[/b]",
+                "Nearly all Japanese translations in this mod were generated using generative AI "
+                "and then reviewed.",
+                "[h1]Overview[/h1]",
+            ),
             source="test description",
         )
 
