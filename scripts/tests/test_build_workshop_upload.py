@@ -128,6 +128,28 @@ def test_render_vdf_contains_absolute_content_preview_and_changenote(tmp_path: P
     assert '"description" "Caves of Qud 日本語化"' in vdf
 
 
+def test_checked_in_default_description_renders_bbcode_with_literal_newlines(tmp_path: Path) -> None:
+    """The checked-in English BBCode keeps literal line breaks in rendered VDF."""
+    metadata_path = Path(__file__).resolve().parents[2] / "steam" / "workshop_metadata.json"
+    metadata = load_metadata(metadata_path)
+    assert metadata.description_file is not None
+    description = metadata.description_file.read_text(encoding="utf-8")
+
+    vdf = render_vdf(
+        metadata,
+        content_folder=tmp_path / "QudJP",
+        preview_file=tmp_path / "QudJP" / "preview.png",
+        changenote="説明文の書式を更新しました。",
+        description=description,
+    )
+
+    expected_description_field = f'  "description" "{vdf_escape(description)}"\n'
+    assert expected_description_field in vdf
+    assert "[h1]Overview[/h1]\n" in vdf
+    assert "[olist]\n[*]Subscribe" in vdf
+    assert r"[h1]Overview[/h1]\n" not in vdf
+
+
 def test_render_vdf_rejects_quotes_in_description_or_changenote(tmp_path: Path) -> None:
     """Steam KeyValues parsing is fragile with escaped quotes in long text fields."""
     content_folder = tmp_path / "QudJP"

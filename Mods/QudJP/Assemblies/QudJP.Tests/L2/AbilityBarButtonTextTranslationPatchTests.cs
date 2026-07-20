@@ -204,6 +204,7 @@ public sealed class AbilityBarButtonTextTranslationPatchTests
             Assert.Multiple(() =>
             {
                 Assert.That(sprint.Text.text, Is.EqualTo("&Cダッシュ {{K|[無効]}}"));
+                Assert.That(sprint.LastRequestedComponentType?.FullName, Is.EqualTo("Qud.UI.AbilityBarButton"));
                 Assert.That(
                     DynamicTextObservability.GetRouteFamilyHitCountForTests(
                         nameof(AbilityBarButtonTextTranslationPatch),
@@ -215,6 +216,20 @@ public sealed class AbilityBarButtonTextTranslationPatchTests
         {
             harmony.UnpatchAll(harmonyId);
         }
+    }
+
+    [Test]
+    public void DummyGameObjectGetComponent_RejectsUnrelatedComponentType()
+    {
+        var gameObject = new DummyAbilityBarButtonGameObject("Sprint");
+
+        var component = gameObject.GetComponent(typeof(string));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(component, Is.Null);
+            Assert.That(gameObject.LastRequestedComponentType, Is.EqualTo(typeof(string)));
+        });
     }
 
     [Test]

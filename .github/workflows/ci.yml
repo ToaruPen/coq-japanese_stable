@@ -69,6 +69,10 @@ jobs:
             grep -Eq '^(docs/static-producer-inventory\.json|scripts/(dotnet_tool_runner|extract_annals_patterns|roslyn_semantic_probe|scan_static_producer_inventory|static_producer_closure|text_construction_surface_policy)\.py|scripts/tests/(test_extract_annals_patterns\.py|test_parallel_dotnet_contract\.py|test_roslyn_extractor_smoke\.py|test_roslyn_semantic_probe\.py|test_roslyn_text_construction_inventory\.py|test_scan_static_producer_inventory\.py|test_static_producer_closure\.py|test_text_construction_surface_policy\.py|fixtures/(annals|roslyn_semantic_probe|static_producer_inventory)/))' changed-files.txt
           }
 
+          matches_ast_grep_inputs() {
+            grep -Eq '^(sgconfig\.yml|rules/.*\.ya?ml|rule-tests/.*\.ya?ml|Mods/QudJP/Assemblies/QudJP\.Tests/.*\.cs)$' changed-files.txt
+          }
+
           run_all=false
           qudjp_dotnet=false
           roslyn_tools=false
@@ -86,7 +90,7 @@ jobs:
           if [[ "$run_all" == true ]] || matches '^scripts/tools/' || matches_roslyn_python_tests || matches '^(pyproject\.toml|uv\.lock)$'; then
             roslyn_tools=true
           fi
-          if [[ "$run_all" == true ]] || matches '^(\.codex/hooks/|\.codex/hooks\.json|pyproject\.toml|uv\.lock|dotnet-tools\.json|package(-lock)?\.json|CHANGELOG\.md|Mods/QudJP/manifest\.json|docs/release-notes/)' || matches_python_scripts; then
+          if [[ "$run_all" == true ]] || matches '^(\.codex/hooks/|\.codex/hooks\.json|pyproject\.toml|uv\.lock|dotnet-tools\.json|package(-lock)?\.json|CHANGELOG\.md|Mods/QudJP/manifest\.json|docs/release-notes/)' || matches_python_scripts || matches_ast_grep_inputs; then
             python=true
           fi
           if [[ "$run_all" == true ]] || matches '^(Mods/QudJP/Localization/|scripts/(check_translation_tokens|check_glossary_consistency|validate_pattern_routes)\.py|scripts/(translation_token_duplicate_baseline|glossary_consistency_baseline)\.json|justfile$)'; then

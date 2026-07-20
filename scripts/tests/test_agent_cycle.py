@@ -53,21 +53,22 @@ def test_ast_grep_smoke_finds_static_producer_fixture() -> None:
 
 
 @pytest.mark.skipif(not _tool_available("ast-grep"), reason="ast-grep CLI not available")
-def test_ast_grep_check_reports_empty_rule_set_and_runs_smoke() -> None:
-    """An empty rule directory should be explicit, not a silent 0-test pass."""
+def test_ast_grep_check_runs_registered_rules_or_reports_empty_rule_set() -> None:
+    """The agent-cycle gate must run registered rules or report an empty rule set."""
     rule_files = [
         *list((REPO_ROOT / "rules").rglob("*.yml")),
         *list((REPO_ROOT / "rules").rglob("*.yaml")),
         *list((REPO_ROOT / "rule-tests").rglob("*.yml")),
         *list((REPO_ROOT / "rule-tests").rglob("*.yaml")),
     ]
-    if rule_files:
-        pytest.skip("project ast-grep rules are registered")
-
     completed = _run_agent_cycle("ast-grep-check")
 
     assert completed.returncode == 0, completed.stderr
-    assert "No project ast-grep rules registered" in completed.stdout
+    if rule_files:
+        assert "No project ast-grep rules registered" not in completed.stdout
+        assert "dictionary-override-must-be-nonparallel" in completed.stdout
+    else:
+        assert "No project ast-grep rules registered" in completed.stdout
     assert "Demo/StaticProducerCases.cs:25:" in completed.stdout
 
 

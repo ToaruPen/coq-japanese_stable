@@ -125,6 +125,127 @@
       "expectedTargets": [
         "XRL.UI.Loading|SetLoadingStatus|System.Void|System.String|System.Boolean"
       ]
+    },
+    {
+      "id": "binding.saves-api-read-save-json",
+      "route": "patch-binding",
+      "patch": "QudJP.Patches.SavesApiReadSaveJsonTranslationPatch",
+      "expectedTargets": [
+        "Qud.API.SavesAPI|ReadSaveJson|System.Threading.Tasks.Task`1[[Qud.API.SaveGameInfo]]|System.String|System.String"
+      ]
+    },
+    {
+      "id": "binding.old-save-continue-menu-popup",
+      "route": "patch-binding",
+      "patch": "QudJP.Patches.OldSaveContinueMenuPopupTranslationPatch",
+      "expectedTargets": [
+        "Qud.UI.MainMenu+<ContinueMenu>d__27|MoveNext|System.Void",
+        "Qud.UI.SaveManagement+<ContinueMenu>d__15|MoveNext|System.Void",
+        "XRL.Core.XRLCore+<SaveManagement>d__157|MoveNext|System.Void",
+        "XRL.XRLGame+<LoadGame>d__183|MoveNext|System.Void"
+      ]
+    },
+    {
+      "id": "binding.single-callsite-owner-popup",
+      "route": "patch-binding",
+      "patch": "QudJP.Patches.SingleCallsiteOwnerPopupTranslationPatch",
+      "expectedTargets": [
+        "XRL.CharacterBuilds.Qud.QudSpecificCharacterInitModule|handleBootEvent|System.Object|System.String|XRL.XRLGame|XRL.CharacterBuilds.EmbarkInfo|System.Object",
+        "XRL.PopulationManager|RollOneFrom|XRL.PopulationResult|System.String|System.Collections.Generic.Dictionary`2[[System.String],[System.String]]|System.String",
+        "XRL.PopulationManager|WishFindBlueprint|System.Void|System.String",
+        "XRL.PopulationManager|WishGenerate|System.Void|System.String",
+        "XRL.UI.Look|ShowLooker|XRL.World.Cell|System.Int32|System.Int32|System.Int32",
+        "XRL.World.Biomes.BiomeManager|DisplaySurfaceDistribution|System.Void|System.String",
+        "XRL.World.DynamicQuestRewardElement_GameObject|award|System.Void",
+        "XRL.World.GameObjectFactory|HandleBlueprintXML|System.Void|System.String",
+        "XRL.World.Parts.AnimatorSpray|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
+        "XRL.World.Parts.Container|AttemptOpen|System.Void|XRL.World.GameObject|XRL.World.IEvent",
+        "XRL.World.Parts.CursedCellSocket|HandleEvent|System.Boolean|XRL.World.CellChangedEvent",
+        "XRL.World.Parts.DecoyHologramEmitter|CreateHolograms|XRL.World.Parts.ActivePartStatus|XRL.World.GameObject",
+        "XRL.World.Parts.DestroyOnUnequip|HandleEvent|System.Boolean|XRL.World.BeginBeingUnequippedEvent",
+        "XRL.World.Parts.ElevatorSwitch|FireEvent|System.Boolean|XRL.World.Event",
+        "XRL.World.Parts.EngulfingDescends|FireEvent|System.Boolean|XRL.World.Event",
+        "XRL.World.Parts.FixitSpray|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
+        "XRL.World.Parts.Food|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
+        "XRL.World.Parts.GameUnique|OnCreated|System.Void|System.String",
+        "XRL.World.Parts.GenocideCurio|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
+        "XRL.World.Parts.GivesRep|HandleEvent|System.Boolean|XRL.World.BeforeDeathRemovalEvent",
+        "XRL.World.Parts.GritGateMainframeTerminal|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
+        "XRL.World.Parts.HindrenMysteryCriticalNPC|HandleEvent|System.Boolean|XRL.World.BeforeDeathRemovalEvent",
+        "XRL.World.Parts.IGrenade|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
+        "XRL.World.Parts.IModification|WishModify|System.Void|System.String",
+        "XRL.World.Parts.IZoneLandmark|WishCurrent|System.Void",
+        "XRL.World.Parts.KindrishProperties|ReturnAward|System.Boolean",
+        "XRL.World.Parts.LiquidFueledPowerPlant|HandleEvent|System.Boolean|XRL.World.EndTurnEvent",
+        "XRL.World.Parts.MagnetizedApplicator|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
+        "XRL.World.Parts.MakeFussOnTaken|MakeFuss|System.Void|XRL.World.GameObject",
+        "XRL.World.Parts.MarkovBook|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
+        "XRL.World.Parts.MumblesInfection|FireEvent|System.Boolean|XRL.World.Event",
+        "XRL.World.Parts.MutationPointsOnEat|FireEvent|System.Boolean|XRL.World.Event",
+        "XRL.World.Parts.Mutations|WishMutation|System.Void|System.String",
+        "XRL.World.Parts.NephalProperties|HandleEvent|System.Boolean|XRL.World.BeforeDeathRemovalEvent",
+        "XRL.World.Parts.NeutronFluxContainment|HandleEvent|System.Boolean|XRL.World.BeginTakeActionEvent",
+        "XRL.World.Parts.NeutronFluxContainment|HandleEvent|System.Boolean|XRL.World.NeutronFluxPourExplodesEvent",
+        "XRL.World.Parts.Physics|ProcessTargetedMove|System.Boolean|XRL.World.Cell|System.String|System.String|System.String|System.Nullable`1[[System.Int32]]|System.Boolean|System.Boolean|System.Boolean|System.Boolean|System.Boolean|System.Boolean|System.String|System.String|XRL.World.GameObject",
+        "XRL.World.Parts.PlayerMuralController|HandleEvent|System.Boolean|XRL.World.EndTurnEvent",
+        "XRL.World.Parts.Polygel|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
+        "XRL.World.Parts.RandomAltarBaetyl|HandleBaetylRewardWish|System.Boolean|System.String",
+        "XRL.World.Parts.RecoilOnDeath|HandleEvent|System.Boolean|XRL.World.BeforeDieEvent",
+        "XRL.World.Parts.Skill.Axe_Dismember|CastForceSuccess|System.Boolean|XRL.World.GameObject|XRL.World.Parts.Skill.Axe_Dismember|XRL.World.GameObject",
+        "XRL.World.Parts.Skill.Axe_Dismember|Cast|System.Boolean|XRL.World.GameObject|XRL.World.Parts.Skill.Axe_Dismember|XRL.World.GameObject",
+        "XRL.World.Parts.Skill.Axe_HookAndDrag|FireEvent|System.Boolean|XRL.World.Event",
+        "XRL.World.Parts.Skill.Cudgel_Slam|Cast|System.Boolean|XRL.World.GameObject|XRL.World.Parts.Skill.Cudgel_Slam|System.String|XRL.World.GameObject|System.Boolean|System.Int32|System.String",
+        "XRL.World.Parts.Skill.Cudgel_Slam|FireEvent|System.Boolean|XRL.World.Event",
+        "XRL.World.Parts.Skill.Persuasion_Proselytize|AttemptProselytization|System.Boolean",
+        "XRL.World.Parts.Skill.Persuasion_Proselytize|Proselytize|System.Boolean|XRL.World.MentalAttackEvent",
+        "XRL.World.Parts.Skill.Submersion|HandleEvent|System.Boolean|XRL.World.CommandEvent",
+        "XRL.World.Parts.Skill.Tactics_Charge|PerformCharge|System.Boolean",
+        "XRL.World.Parts.Skill.Tactics_DeathFromAbove|PerformDeathFromAbove|System.Boolean|XRL.World.GameObject|XRL.World.GameObject|System.String",
+        "XRL.World.Parts.Skill.Tactics_Juke|HandleEvent|System.Boolean|XRL.World.CommandEvent",
+        "XRL.World.Parts.Skill.Tinkering_Tinker1|FireEvent|System.Boolean|XRL.World.Event",
+        "XRL.World.Parts.Skill.Tinkering_Tinker1|Recharge|System.Boolean|XRL.World.GameObject|XRL.World.IEvent",
+        "XRL.World.Parts.Skill.Tinkering|LearnNewRecipe|System.Void|XRL.World.GameObject|System.Int32|System.Int32",
+        "XRL.World.Parts.SpaceTimeVortex|ApplyVortex|System.Boolean|XRL.World.GameObject",
+        "XRL.World.Parts.SpiralBorerCurio|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
+        "XRL.World.Parts.Spraybottle|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
+        "XRL.World.Parts.StairsDown|CheckPullDown|System.Boolean|XRL.World.GameObject",
+        "XRL.World.Parts.SummoningCurio|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
+        "XRL.World.Parts.ThinWorld|TransitToThinWorld|System.Void|XRL.World.GameObject|System.Boolean",
+        "XRL.World.Parts.Toolbox|HandleBonus|System.Boolean|XRL.World.GetTinkeringBonusEvent|System.Int32|System.Int32",
+        "XRL.World.Parts.TrainingBook|HandleEvent|System.Boolean|XRL.World.InventoryActionEvent",
+        "XRL.World.Parts.WaterRitualRecord|HandleEvent|System.Boolean|XRL.World.BeginConversationEvent",
+        "XRL.World.QuestManagers.SpreadPax|Finish|System.Void",
+        "XRL.World.Quests.AscensionSystem|BarathrumStartConversation|System.Void|XRL.World.GameObject",
+        "XRL.World.Reputation|SetFactionRank|System.Void|System.String|System.String|System.Boolean|System.Boolean",
+        "XRL.World.ZoneBuilders.FactionEncounters|HandleFactionEncounterWish|System.Boolean|System.Text.RegularExpressions.Match",
+        "XRL.World.ZoneParts.ScriptCallToArms|ShowWarning|System.Void",
+        "XRL.XRLGame+<LoadGame>d__183|MoveNext|System.Void"
+      ]
+    },
+    {
+      "id": "binding.popup-show",
+      "route": "patch-binding",
+      "patch": "QudJP.Patches.PopupShowTranslationPatch",
+      "expectedTargets": [
+        "XRL.UI.Popup|ShowAsync|System.Threading.Tasks.Task|System.String|System.Boolean|System.Boolean|System.Boolean|System.Boolean|System.Boolean",
+        "XRL.UI.Popup|ShowFail|System.Void|System.String|System.Boolean|System.Boolean|System.Boolean",
+        "XRL.UI.Popup|ShowKeybindAsync|System.Threading.Tasks.Task|System.String|System.Threading.CancellationToken",
+        "XRL.UI.Popup|ShowYesNoAsync|System.Threading.Tasks.Task`1[[XRL.UI.DialogResult]]|System.String",
+        "XRL.UI.Popup|ShowYesNoCancelAsync|System.Threading.Tasks.Task`1[[XRL.UI.DialogResult]]|System.String",
+        "XRL.UI.Popup|ShowYesNoCancel|XRL.UI.DialogResult|System.String|System.String|System.Boolean|XRL.UI.DialogResult",
+        "XRL.UI.Popup|ShowYesNo|XRL.UI.DialogResult|System.String|System.String|System.Boolean|XRL.UI.DialogResult|System.Action`1[[XRL.UI.DialogResult]]",
+        "XRL.UI.Popup|Show|System.Void|System.String|System.String|System.String|System.Boolean|System.Boolean|System.Boolean|System.Boolean|Genkit.Location2D"
+      ]
+    },
+    {
+      "id": "binding.trade-ui-popup",
+      "route": "patch-binding",
+      "patch": "QudJP.Patches.TradeUiPopupTranslationPatch",
+      "expectedTargets": [
+        "XRL.UI.Popup|ShowBlock|ConsoleLib.Console.Keys|System.String|System.String|System.String|System.Boolean|System.Boolean|System.Boolean|System.Boolean|Genkit.Location2D",
+        "XRL.UI.Popup|ShowYesNo|XRL.UI.DialogResult|System.String|System.String|System.Boolean|XRL.UI.DialogResult|System.Action`1[[XRL.UI.DialogResult]]",
+        "XRL.UI.Popup|Show|System.Void|System.String|System.String|System.String|System.Boolean|System.Boolean|System.Boolean|System.Boolean|Genkit.Location2D"
+      ]
     }
   ]
 }

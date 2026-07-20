@@ -89,6 +89,11 @@ public sealed partial class Issue201StatusScreensBatch2Tests
             ("items", "個"),
             ("lbs.", "ポンド"),
             ("Laser Rifle", "レーザーライフル"));
+        using var showNumberOfItemsOverride = StaticBooleanSettingOverride.ForResolvedType(
+            "XRL.UI.Options",
+            typeof(Options).FullName!,
+            "ShowNumberOfItems",
+            value: true);
 
         var harmonyId = CreateHarmonyId();
         var harmony = new Harmony(harmonyId);

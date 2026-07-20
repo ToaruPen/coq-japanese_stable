@@ -117,6 +117,33 @@ public sealed class CherubimSpawnerReplaceDescriptionPatchTests
         }
     }
 
+    [Test]
+    public void Prefix_DoesNotReenterOriginal_WhenGuardedNoSpaceReplacementThrows()
+    {
+        var harmonyId = CreateHarmonyId();
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: RequireMethod(typeof(DummyCherubimSpawnerTarget), nameof(DummyCherubimSpawnerTarget.ReplaceDescription)),
+                prefix: new HarmonyMethod(RequireMethod(typeof(CherubimSpawnerReplaceDescriptionPatch), nameof(CherubimSpawnerReplaceDescriptionPatch.Prefix))));
+
+            var gameObject = new DummyCherubimGameObjectWithThrowingDescriptionLookup();
+            gameObject.Render.DisplayName = "cherub";
+            gameObject.SetxTag("TextFragments", "Skin", "gleaming");
+
+            Assert.DoesNotThrow(() => DummyCherubimSpawnerTarget.ReplaceDescription(
+                gameObject,
+                "A *skin* *creatureType* with *features*.",
+                "wings"));
+            Assert.That(gameObject.CapturedDescriptionPart._Short, Is.EqualTo(string.Empty));
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
     private static string CreateHarmonyId()
     {
         return $"qudjp.tests.{Guid.NewGuid():N}";

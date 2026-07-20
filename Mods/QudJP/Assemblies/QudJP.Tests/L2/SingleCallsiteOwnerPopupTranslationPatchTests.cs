@@ -1,3 +1,6 @@
+using System.Reflection;
+using System.Runtime.CompilerServices;
+using HarmonyLib;
 using QudJP.Patches;
 using QudJP.Tests.DummyTargets;
 
@@ -8,6 +11,8 @@ namespace QudJP.Tests.L2;
 [NonParallelizable]
 public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
 {
+    private static TaskCompletionSource<bool> moveNextFinalized = CreateFinalizerSignal();
+
     [SetUp]
     public void SetUp()
     {
@@ -22,6 +27,8 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
             "verbs.ja.json"));
         DummyPopupShow.Reset();
         DummySingleCallsiteOwnerPopupTarget.StaticPopupMessageToShow = string.Empty;
+        DummyAsyncSingleCallsiteOwner.Reset();
+        ResetFinalizerSignal();
     }
 
     [TearDown]
@@ -38,6 +45,125 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
     {
         return Path.GetFullPath(
             Path.Combine(TestContext.CurrentContext.TestDirectory, "../../../../../Localization"));
+    }
+
+    [Test]
+    public async Task Patch_UsesLogicalLoadGameOwnerKey_OnlyInsideAsyncMoveNext()
+    {
+        await WithPatchedAsyncOwner(async () =>
+        {
+            DummyAsyncSingleCallsiteOwner.PopupMessageToTranslate = "No saved game exists. (Saves/slot1)";
+
+            AssertSingleCallsiteScopeInactive(DummyAsyncSingleCallsiteOwner.PopupMessageToTranslate);
+            var invocation = DummyAsyncSingleCallsiteOwner.LoadGame(
+                "Saves/slot1",
+                session: false,
+                showPopup: true,
+                gameState: null);
+
+            AssertSingleCallsiteScopeInactive(DummyAsyncSingleCallsiteOwner.PopupMessageToTranslate);
+
+            ResetFinalizerSignal();
+            DummyAsyncSingleCallsiteOwner.ContinueOwner();
+            await invocation.ConfigureAwait(false);
+            await WaitForMoveNextToReturn().ConfigureAwait(false);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(DummyAsyncSingleCallsiteOwner.TranslationClaimed, Is.True);
+                Assert.That(
+                    DummyAsyncSingleCallsiteOwner.TranslatedPopupMessage,
+                    Is.EqualTo("セーブデータが存在しない。（Saves/slot1）"));
+                Assert.That(HitCount("XrlGameMissingSave"), Is.EqualTo(1));
+            });
+            AssertSingleCallsiteScopeInactive(DummyAsyncSingleCallsiteOwner.PopupMessageToTranslate);
+        }).ConfigureAwait(false);
+    }
+
+    [Test]
+    public async Task Patch_CleansUpLogicalLoadGameOwnerKey_WhenAsyncMoveNextThrows()
+    {
+        await WithPatchedAsyncOwner(async () =>
+        {
+            DummyAsyncSingleCallsiteOwner.ThrowAfterAwait = true;
+            var invocation = DummyAsyncSingleCallsiteOwner.LoadGame(
+                "Saves/slot1",
+                session: false,
+                showPopup: true,
+                gameState: null);
+
+            AssertSingleCallsiteScopeInactive("No saved game exists. (Saves/slot1)");
+
+            ResetFinalizerSignal();
+            DummyAsyncSingleCallsiteOwner.ContinueOwner();
+            await Assert.ThatAsync(
+                async () => await invocation.ConfigureAwait(false),
+                Throws.TypeOf<InvalidOperationException>()).ConfigureAwait(false);
+            await WaitForMoveNextToReturn().ConfigureAwait(false);
+            AssertSingleCallsiteScopeInactive("No saved game exists. (Saves/slot1)");
+        }).ConfigureAwait(false);
+    }
+
+    [Test]
+    public void Prefix_RestoresOuterLogicalOwnerKey_AfterNestedAsyncMoveNext()
+    {
+        var outerMoveNext = ResolveDummyMoveNext(
+            nameof(DummyAsyncSingleCallsiteOwner.OuterOwner),
+            "XRL.World.Parts.DecoyHologramEmitter|CreateHolograms");
+        var loadGameMoveNext = ResolveDummyMoveNext(
+            nameof(DummyAsyncSingleCallsiteOwner.LoadGame),
+            "XRL.XRLGame|LoadGame");
+
+        SingleCallsiteOwnerPopupTranslationPatch.Prefix(outerMoveNext);
+        try
+        {
+            SingleCallsiteOwnerPopupTranslationPatch.Prefix(loadGameMoveNext);
+            try
+            {
+                Assert.That(
+                    SingleCallsiteOwnerPopupTranslationPatch.TryTranslatePopupMessage(
+                        "No saved game exists. (Saves/nested)",
+                        nameof(PopupShowTranslationPatch),
+                        "SingleCallsiteOwnerPopup",
+                        out var nestedTranslation),
+                    Is.True);
+                Assert.That(nestedTranslation, Is.EqualTo("セーブデータが存在しない。（Saves/nested）"));
+            }
+            finally
+            {
+                _ = SingleCallsiteOwnerPopupTranslationPatch.Finalizer(null);
+            }
+
+            Assert.That(
+                SingleCallsiteOwnerPopupTranslationPatch.TryTranslatePopupMessage(
+                    "That is out of range (3 squares)",
+                    nameof(PopupShowTranslationPatch),
+                    "SingleCallsiteOwnerPopup",
+                    out var outerTranslation),
+                Is.True);
+            Assert.That(outerTranslation, Is.EqualTo("範囲外だ（3マス）。"));
+        }
+        finally
+        {
+            _ = SingleCallsiteOwnerPopupTranslationPatch.Finalizer(null);
+        }
+
+        AssertSingleCallsiteScopeInactive("No saved game exists. (Saves/slot1)");
+    }
+
+    [Test]
+    public void ResolveAsyncMoveNext_IsIdempotentUnderConcurrentPreflight()
+    {
+        var targets = new MethodBase?[32];
+
+        Parallel.For(
+            0,
+            targets.Length,
+            index => targets[index] = ResolveDummyMoveNext(
+                nameof(DummyAsyncSingleCallsiteOwner.LoadGame),
+                "XRL.XRLGame|LoadGame"));
+
+        Assert.That(targets, Has.All.SameAs(targets[0]));
     }
 
     [TestCase(
@@ -1557,6 +1683,141 @@ public sealed class SingleCallsiteOwnerPopupTranslationPatchTests
     private static int HitCount(string detail)
     {
         return OwnerPopupRouteTestHarness.RouteHitCount(typeof(SingleCallsiteOwnerPopupTranslationPatch), detail);
+    }
+
+    private static async Task WithPatchedAsyncOwner(Func<Task> action)
+    {
+        var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";
+        var harmony = new Harmony(harmonyId);
+        try
+        {
+            harmony.Patch(
+                original: ResolveDummyMoveNext(
+                    nameof(DummyAsyncSingleCallsiteOwner.LoadGame),
+                    "XRL.XRLGame|LoadGame"),
+                prefix: new HarmonyMethod(OwnerPopupRouteTestHarness.RequireMethod(
+                    typeof(SingleCallsiteOwnerPopupTranslationPatch),
+                    nameof(SingleCallsiteOwnerPopupTranslationPatch.Prefix),
+                    typeof(MethodBase))),
+                finalizer: new HarmonyMethod(OwnerPopupRouteTestHarness.RequireMethod(
+                    typeof(SingleCallsiteOwnerPopupTranslationPatchTests),
+                    nameof(ObserveSingleCallsiteFinalizer),
+                    typeof(Exception))));
+
+            await action().ConfigureAwait(false);
+        }
+        finally
+        {
+            harmony.UnpatchAll(harmonyId);
+        }
+    }
+
+    private static MethodInfo ResolveDummyMoveNext(string methodName, string ownerKey)
+    {
+        var logicalMethod = OwnerPopupRouteTestHarness.RequireMethod(
+            typeof(DummyAsyncSingleCallsiteOwner),
+            methodName);
+        return SingleCallsiteOwnerPopupTranslationPatch.ResolveAsyncMoveNext(logicalMethod, ownerKey)
+               ?? throw new InvalidOperationException($"Async MoveNext not found: {logicalMethod.Name}");
+    }
+
+    private static void AssertSingleCallsiteScopeInactive(string source)
+    {
+        Assert.That(
+            SingleCallsiteOwnerPopupTranslationPatch.TryTranslatePopupMessage(
+                source,
+                nameof(PopupShowTranslationPatch),
+                "SingleCallsiteOwnerPopup",
+                out var translated),
+            Is.False);
+        Assert.That(translated, Is.EqualTo(source));
+    }
+
+    private static Task WaitForMoveNextToReturn()
+    {
+        // AsyncTaskMethodBuilder may resume the Task awaiter inline before Harmony's Finalizer runs.
+        // This signal is completed only after the production Finalizer has unwound that invocation.
+        return moveNextFinalized.Task.WaitAsync(TimeSpan.FromSeconds(5));
+    }
+
+    private static Exception? ObserveSingleCallsiteFinalizer(Exception? __exception)
+    {
+        var result = SingleCallsiteOwnerPopupTranslationPatch.Finalizer(__exception);
+        _ = moveNextFinalized.TrySetResult(true);
+        return result;
+    }
+
+    private static void ResetFinalizerSignal()
+    {
+        moveNextFinalized = CreateFinalizerSignal();
+    }
+
+    private static TaskCompletionSource<bool> CreateFinalizerSignal()
+    {
+        return new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+    }
+
+    private static class DummyAsyncSingleCallsiteOwner
+    {
+        private static TaskCompletionSource<bool> ownerGate = CreateOwnerGate();
+
+        public static string PopupMessageToTranslate { get; set; } = string.Empty;
+
+        public static string? TranslatedPopupMessage { get; private set; }
+
+        public static bool TranslationClaimed { get; private set; }
+
+        public static bool ThrowAfterAwait { get; set; }
+
+        public static void Reset()
+        {
+            ownerGate = CreateOwnerGate();
+            PopupMessageToTranslate = string.Empty;
+            TranslatedPopupMessage = null;
+            TranslationClaimed = false;
+            ThrowAfterAwait = false;
+        }
+
+        public static void ContinueOwner()
+        {
+            ownerGate.SetResult(true);
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public static async Task LoadGame(
+            string path,
+            bool session,
+            bool showPopup,
+            Dictionary<string, object>? gameState)
+        {
+            _ = path;
+            _ = session;
+            _ = showPopup;
+            _ = gameState;
+            await ownerGate.Task.ConfigureAwait(false);
+            if (ThrowAfterAwait)
+            {
+                throw new InvalidOperationException("Dummy LoadGame failed after suspension.");
+            }
+
+            TranslationClaimed = SingleCallsiteOwnerPopupTranslationPatch.TryTranslatePopupMessage(
+                PopupMessageToTranslate,
+                nameof(PopupShowTranslationPatch),
+                "SingleCallsiteOwnerPopup",
+                out var translated);
+            TranslatedPopupMessage = translated;
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public static async Task OuterOwner()
+        {
+            await ownerGate.Task.ConfigureAwait(false);
+        }
+
+        private static TaskCompletionSource<bool> CreateOwnerGate()
+        {
+            return new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        }
     }
 
     public enum PopupMethod

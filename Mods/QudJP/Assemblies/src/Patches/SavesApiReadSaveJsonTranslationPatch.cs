@@ -3,6 +3,8 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
 using HarmonyLib;
 
 namespace QudJP.Patches;
@@ -37,22 +39,65 @@ public static class SavesApiReadSaveJsonTranslationPatch
         return method;
     }
 
-    public static void Postfix(object? __result)
+    public static void Postfix(ref Task<Qud.API.SaveGameInfo> __result)
     {
         try
         {
-            if (__result is null)
-            {
-                return;
-            }
-
-            TranslateStringMember(__result, "Description", "Description", TranslateDescription);
-            TranslateStringMember(__result, "Info", "Info", TranslateInfo);
-            TranslateStringMember(__result, "Size", TemplateKey, TranslateSize);
+            __result = AdaptCompletion(__result, TranslateResult);
         }
         catch (Exception ex)
         {
-            Trace.TraceError("QudJP: SavesApiReadSaveJsonTranslationPatch.Postfix failed: {0}", ex);
+            TraceTransformFailure(ex);
+        }
+    }
+
+    internal static Task<T> AdaptCompletion<T>(Task<T> task, Action<T> transform)
+    {
+        return task.ContinueWith(
+            completedTask =>
+            {
+                if (completedTask.Status == TaskStatus.RanToCompletion)
+                {
+                    try
+                    {
+                        transform(completedTask.GetAwaiter().GetResult());
+                    }
+                    catch (Exception ex)
+                    {
+                        TraceTransformFailure(ex);
+                    }
+                }
+
+                return completedTask;
+            },
+            CancellationToken.None,
+            TaskContinuationOptions.ExecuteSynchronously,
+            TaskScheduler.Default).Unwrap();
+    }
+
+    internal static void TranslateResult(object? result)
+    {
+        if (result is null)
+        {
+            return;
+        }
+
+        TranslateStringMember(result, "Description", "Description", TranslateDescription);
+        TranslateStringMember(result, "Info", "Info", TranslateInfo);
+        TranslateStringMember(result, "Size", TemplateKey, TranslateSize);
+    }
+
+    private static void TraceTransformFailure(Exception exception)
+    {
+        try
+        {
+            Trace.TraceError(
+                "QudJP: SavesApiReadSaveJsonTranslationPatch completion transform failed: {0}",
+                exception);
+        }
+        catch (Exception)
+        {
+            // Diagnostic logging must not turn a healthy game task into a faulted task.
         }
     }
 

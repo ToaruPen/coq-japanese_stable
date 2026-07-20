@@ -11,6 +11,12 @@ def _workflow_text() -> str:
     return (_REPO_ROOT / ".github" / "workflows" / "release.yml").read_text(encoding="utf-8")
 
 
+def _step_block(workflow: str, step_name: str, next_step_name: str) -> str:
+    start = workflow.index(f"      - name: {step_name}\n")
+    end = workflow.index(f"      - name: {next_step_name}\n", start)
+    return workflow[start:end]
+
+
 def test_release_workflow_runs_only_for_release_tags() -> None:
     """Release publishing is triggered by vX.Y.Z tags, not branch pushes or PRs."""
     workflow = _workflow_text()
@@ -49,6 +55,19 @@ def test_release_workflow_installs_python_test_tooling() -> None:
     assert workflow.index("npm ci") < workflow.index("pytest scripts/tests/")
 
 
+def test_release_workflow_disables_external_analyzers_only_for_test_artifact_build() -> None:
+    """Release test artifacts match CI without weakening the production build."""
+    workflow = _workflow_text()
+    production_build = _step_block(workflow, "Build QudJP", "Build QudJP.Tests")
+    test_artifact_build = _step_block(workflow, "Build QudJP.Tests", "Test QudJP")
+
+    assert "-p:RunAnalyzers" not in production_build
+    assert "-p:RunAnalyzersDuringBuild" not in production_build
+    assert "dotnet build Mods/QudJP/Assemblies/QudJP.Tests/QudJP.Tests.csproj" in test_artifact_build
+    assert "-p:RunAnalyzers=false" in test_artifact_build
+    assert "-p:RunAnalyzersDuringBuild=false" in test_artifact_build
+
+
 def test_release_workflow_creates_draft_github_release_without_steam_upload() -> None:
     """GitHub Release artifact creation stays separate from Steam Workshop upload."""
     workflow = _workflow_text()
@@ -60,3 +79,25 @@ def test_release_workflow_creates_draft_github_release_without_steam_upload() ->
     assert "--latest=false" not in workflow
     assert "contents: write" in workflow
     assert "workshop_build_item" not in workflow
+
+
+def test_release_workflow_builds_and_publishes_harmony_patch_assets() -> None:
+    """Tag releases attach the standalone Harmony ZIP and checksum everywhere."""
+    workflow = _workflow_text()
+    harmony_zip = "QudJP-Harmony-2.4.2-Windows.zip"
+    harmony_sidecar = f"{harmony_zip}.sha256"
+
+    harmony_build_command = "uv run python scripts/build_harmony_patch.py"
+    upload_start = workflow.index("      - name: Upload release artifact")
+    release_start = workflow.index("      - name: Create draft GitHub Release")
+    upload_block = workflow[upload_start:release_start]
+    release_block = workflow[release_start:]
+
+    assert harmony_build_command in workflow
+    assert workflow.index("python scripts/build_release.py") < workflow.index(harmony_build_command)
+    for block in (upload_block, release_block):
+        assert f"dist/{harmony_zip}" in block
+        assert f"dist/{harmony_sidecar}" in block
+    assert "## Optional Harmony 2.4.2 Windows Patch" in workflow
+    assert f"ZIP: \\`{harmony_zip}\\`" in workflow
+    assert "Harmony ZIP SHA256:" in workflow
