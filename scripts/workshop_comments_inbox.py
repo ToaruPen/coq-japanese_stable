@@ -25,6 +25,11 @@ _STEAM_COMMENTS_URL = "https://steamcommunity.com/comment/PublishedFile_Public/r
 _STEAM_DETAILS_URL = "https://api.steampowered.com/ISteamRemoteStorage/GetPublishedFileDetails/v1/"
 _TRUNCATION_NOTE = "[truncated]"
 _HTTP_OK = 200
+_STEAM_USER_AGENT = (
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+    "AppleWebKit/537.36 (KHTML, like Gecko) "
+    "Chrome/126.0.0.0 Safari/537.36"
+)
 _STEAMID64_ACCOUNT_ID_BASE = 76_561_197_960_265_728
 _DISCUSSION_THREAD_PATH_PARTS = 5
 _DEFAULT_STATE_DIR = Path(".coq-japanese_workshop/state")
@@ -1076,7 +1081,8 @@ def _make_urllib_transport(*, timeout_seconds: int, max_response_bytes: int = 2_
         raise ValueError(msg)
 
     def _transport(method: str, url: str, body: bytes | None, headers: dict[str, str]) -> HttpResponse:
-        request = Request(url, data=body, headers=headers, method=method)  # noqa: S310
+        request_headers = {"User-Agent": _STEAM_USER_AGENT, **headers}
+        request = Request(url, data=body, headers=request_headers, method=method)  # noqa: S310
         try:
             with urlopen(request, timeout=timeout_seconds) as response:  # noqa: S310
                 response_headers = dict(response.headers.items())

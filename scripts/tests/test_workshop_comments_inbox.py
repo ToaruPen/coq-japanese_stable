@@ -5,14 +5,19 @@ from __future__ import annotations
 import json
 import sqlite3
 from pathlib import Path
+from typing import TYPE_CHECKING, Self
 
 import pytest
+
+if TYPE_CHECKING:
+    from urllib.request import Request
 
 from scripts.workshop_comments_inbox import (
     CollectionOptions,
     HttpResponse,
     WorkshopComment,
     WorkshopInboxStore,
+    _make_urllib_transport,
     build_steam_comments_url,
     build_steam_discussion_thread_url,
     collect_workshop_comments,
@@ -197,6 +202,42 @@ def test_sanitize_untrusted_text_neutralizes_markdown_html_and_mentions() -> Non
     assert "](" not in sanitized
     assert "@maintainer" not in sanitized
     assert "@\u200bmaintainer" in sanitized
+
+
+def test_urllib_transport_sends_browser_like_user_agent(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Steam discussion pages reject Python's default urllib user agent."""
+    captured: dict[str, str] = {}
+
+    class _FakeResponse:
+        status = 200
+
+        def __init__(self) -> None:
+            self.headers: dict[str, str] = {}
+
+        def __enter__(self) -> Self:
+            return self
+
+        def __exit__(self, *args: object) -> None:
+            return None
+
+        def read(self, size: int) -> bytes:
+            del size
+            return b"ok"
+
+    def fake_urlopen(request: Request, *, timeout: int) -> _FakeResponse:
+        del timeout
+        user_agent = request.get_header("User-agent")
+        assert user_agent is not None
+        captured["user_agent"] = user_agent
+        return _FakeResponse()
+
+    monkeypatch.setattr("scripts.workshop_comments_inbox.urlopen", fake_urlopen)
+
+    transport = _make_urllib_transport(timeout_seconds=20)
+    response = transport("GET", "https://steamcommunity.com/example", None, {})
+
+    assert response.status_code == 200
+    assert captured["user_agent"].startswith("Mozilla/5.0 ")
 
 
 def test_open_workshop_inbox_creates_schema_and_append_only_triggers(tmp_path: Path) -> None:
