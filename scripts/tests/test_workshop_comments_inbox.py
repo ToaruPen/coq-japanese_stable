@@ -13,6 +13,7 @@ if TYPE_CHECKING:
     from urllib.request import Request
 
 from scripts.workshop_comments_inbox import (
+    _STEAM_USER_AGENT,
     CollectionOptions,
     HttpResponse,
     WorkshopComment,
@@ -234,10 +235,15 @@ def test_urllib_transport_sends_browser_like_user_agent(monkeypatch: pytest.Monk
     monkeypatch.setattr("scripts.workshop_comments_inbox.urlopen", fake_urlopen)
 
     transport = _make_urllib_transport(timeout_seconds=20)
-    response = transport("GET", "https://steamcommunity.com/example", None, {})
+    response = transport(
+        "GET",
+        "https://steamcommunity.com/example",
+        None,
+        {"User-Agent": "Python-urllib/3.14"},
+    )
 
     assert response.status_code == 200
-    assert captured["user_agent"].startswith("Mozilla/5.0 ")
+    assert captured["user_agent"] == _STEAM_USER_AGENT
 
 
 def test_open_workshop_inbox_creates_schema_and_append_only_triggers(tmp_path: Path) -> None:

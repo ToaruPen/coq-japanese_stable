@@ -1081,7 +1081,7 @@ def _make_urllib_transport(*, timeout_seconds: int, max_response_bytes: int = 2_
         raise ValueError(msg)
 
     def _transport(method: str, url: str, body: bytes | None, headers: dict[str, str]) -> HttpResponse:
-        request_headers = {"User-Agent": _STEAM_USER_AGENT, **headers}
+        request_headers = {**headers, "User-Agent": _STEAM_USER_AGENT}
         request = Request(url, data=body, headers=request_headers, method=method)  # noqa: S310
         try:
             with urlopen(request, timeout=timeout_seconds) as response:  # noqa: S310
