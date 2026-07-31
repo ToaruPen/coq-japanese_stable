@@ -19,6 +19,9 @@ ignore = [
   "D104",   # Missing docstring in public package
   "COM812", # Trailing comma (conflicts with formatter)
   "ISC001", # Implicit string concatenation (conflicts with formatter)
+  "CPY001", # Copyright headers are not required for the existing scripts.
+  "ISC004", # Preview implicit-concatenation check is not enabled project-wide.
+  "RUF100", # Preserve reviewed, file-local noqa annotations across Ruff versions.
 ]
 
 [tool.ruff.lint.mccabe]
