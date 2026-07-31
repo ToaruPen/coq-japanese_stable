@@ -6,6 +6,7 @@ import argparse
 import gzip
 import hashlib
 import html
+import io
 import json
 import os
 import re
@@ -32,7 +33,7 @@ _DEFAULT_USER_AGENT = (
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
     "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
 )
-_DEFAULT_ACCEPT_ENCODING = "br, gzip, deflate"
+_DEFAULT_ACCEPT_ENCODING = "gzip"
 _DEFAULT_STATE_DIR = Path(".coq-japanese_workshop/state")
 _DEFAULT_DB_NAME = "workshop-inbox.sqlite3"
 _COLLECTOR_VERSION = "local-sqlite-v1"
@@ -1099,7 +1100,12 @@ def _make_urllib_transport(*, timeout_seconds: int, max_response_bytes: int = 2_
             status_code = int(error.code)
             response_body = error.read(max_response_bytes + 1)
         if response_headers.get("Content-Encoding", "").lower() == "gzip":
-            response_body = gzip.decompress(response_body)
+            with gzip.GzipFile(fileobj=io.BytesIO(response_body)) as compressed:
+                response_body = compressed.read(max_response_bytes + 1)
+            _require_bounded_response(
+                HttpResponse(status_code=status_code, body=response_body, headers=response_headers),
+                max_response_bytes=max_response_bytes,
+            )
         return HttpResponse(status_code=status_code, body=response_body, headers=response_headers)
 
     return _transport

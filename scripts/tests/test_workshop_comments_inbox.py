@@ -143,8 +143,38 @@ def test_urllib_transport_requests_supported_encoding_and_decodes_gzip(
 
     response = transport("GET", "https://steamcommunity.com/", None, {})
 
-    assert captured == {"accept": "*/*", "accept_encoding": "br, gzip, deflate"}
+    assert captured == {"accept": "*/*", "accept_encoding": "gzip"}
     assert response.body == b"decoded"
+
+
+def test_urllib_transport_rejects_gzip_body_exceeding_response_limit(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Compressed responses are bounded after decompression as well as before it."""
+
+    class _FakeResponse:
+        status = 200
+        headers: ClassVar[dict[str, str]] = {"Content-Encoding": "gzip"}
+
+        def __enter__(self) -> Self:
+            return self
+
+        def __exit__(self, *args: object) -> None:
+            del args
+
+        def read(self, size: int) -> bytes:
+            del size
+            return gzip.compress(b"too-large")
+
+    def fake_urlopen(request: object, *, timeout: int) -> _FakeResponse:
+        del request, timeout
+        return _FakeResponse()
+
+    monkeypatch.setattr(workshop_inbox, "urlopen", fake_urlopen)
+    transport = workshop_inbox._make_urllib_transport(timeout_seconds=20, max_response_bytes=8)  # noqa: SLF001
+
+    with pytest.raises(ValueError, match="HTTP response exceeded max response bytes"):
+        transport("GET", "https://steamcommunity.com/", None, {})
 
 
 def test_build_steam_comments_url_uses_fixed_endpoint() -> None:
