@@ -3,8 +3,10 @@
 from __future__ import annotations
 
 import argparse
+import gzip
 import hashlib
 import html
+import io
 import json
 import os
 import re
@@ -27,6 +29,11 @@ _TRUNCATION_NOTE = "[truncated]"
 _HTTP_OK = 200
 _STEAMID64_ACCOUNT_ID_BASE = 76_561_197_960_265_728
 _DISCUSSION_THREAD_PATH_PARTS = 5
+_DEFAULT_USER_AGENT = (
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+    "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+)
+_DEFAULT_ACCEPT_ENCODING = "gzip"
 _DEFAULT_STATE_DIR = Path(".coq-japanese_workshop/state")
 _DEFAULT_DB_NAME = "workshop-inbox.sqlite3"
 _COLLECTOR_VERSION = "local-sqlite-v1"
@@ -1076,7 +1083,13 @@ def _make_urllib_transport(*, timeout_seconds: int, max_response_bytes: int = 2_
         raise ValueError(msg)
 
     def _transport(method: str, url: str, body: bytes | None, headers: dict[str, str]) -> HttpResponse:
-        request = Request(url, data=body, headers=headers, method=method)  # noqa: S310
+        request_headers = {
+            "User-Agent": _DEFAULT_USER_AGENT,
+            "Accept": "*/*",
+            "Accept-Encoding": _DEFAULT_ACCEPT_ENCODING,
+            **headers,
+        }
+        request = Request(url, data=body, headers=request_headers, method=method)  # noqa: S310
         try:
             with urlopen(request, timeout=timeout_seconds) as response:  # noqa: S310
                 response_headers = dict(response.headers.items())
@@ -1086,6 +1099,13 @@ def _make_urllib_transport(*, timeout_seconds: int, max_response_bytes: int = 2_
             response_headers = dict(error.headers.items())
             status_code = int(error.code)
             response_body = error.read(max_response_bytes + 1)
+        if response_headers.get("Content-Encoding", "").lower() == "gzip":
+            with gzip.GzipFile(fileobj=io.BytesIO(response_body)) as compressed:
+                response_body = compressed.read(max_response_bytes + 1)
+            _require_bounded_response(
+                HttpResponse(status_code=status_code, body=response_body, headers=response_headers),
+                max_response_bytes=max_response_bytes,
+            )
         return HttpResponse(status_code=status_code, body=response_body, headers=response_headers)
 
     return _transport

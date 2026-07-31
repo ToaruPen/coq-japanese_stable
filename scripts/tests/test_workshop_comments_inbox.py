@@ -2,12 +2,15 @@
 
 from __future__ import annotations
 
+import gzip
 import json
 import sqlite3
 from pathlib import Path
+from typing import ClassVar, Self
 
 import pytest
 
+import scripts.workshop_comments_inbox as workshop_inbox
 from scripts.workshop_comments_inbox import (
     CollectionOptions,
     HttpResponse,
@@ -74,6 +77,104 @@ def test_validate_numeric_id_accepts_digits_only() -> None:
 
     with pytest.raises(ValueError, match="creator"):
         validate_numeric_id("7656119/evil", field_name="creator")
+
+
+def test_urllib_transport_uses_browser_like_user_agent(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Steam public endpoints receive a stable browser-like User-Agent."""
+    captured: dict[str, str] = {}
+
+    class _FakeResponse:
+        def __init__(self) -> None:
+            self.status = 200
+            self.headers: dict[str, str] = {}
+
+        def __enter__(self) -> Self:
+            return self
+
+        def __exit__(self, *args: object) -> None:
+            del args
+
+        def read(self, size: int) -> bytes:
+            del size
+            return b"ok"
+
+    def fake_urlopen(request: object, *, timeout: int) -> _FakeResponse:
+        del timeout
+        captured["user_agent"] = request.headers["User-agent"]  # type: ignore[attr-defined]
+        return _FakeResponse()
+
+    monkeypatch.setattr(workshop_inbox, "urlopen", fake_urlopen)
+    transport = workshop_inbox._make_urllib_transport(timeout_seconds=20)  # noqa: SLF001
+
+    response = transport("GET", "https://steamcommunity.com/", None, {})
+
+    assert response.status_code == 200
+    assert captured["user_agent"].startswith("Mozilla/5.0")
+
+
+def test_urllib_transport_requests_supported_encoding_and_decodes_gzip(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Steam's public HTML endpoint requires browser-like compression negotiation."""
+    captured: dict[str, str] = {}
+
+    class _FakeResponse:
+        status = 200
+        headers: ClassVar[dict[str, str]] = {"Content-Encoding": "gzip"}
+
+        def __enter__(self) -> Self:
+            return self
+
+        def __exit__(self, *args: object) -> None:
+            del args
+
+        def read(self, size: int) -> bytes:
+            del size
+            return gzip.compress(b"decoded")
+
+    def fake_urlopen(request: object, *, timeout: int) -> _FakeResponse:
+        del timeout
+        captured["accept"] = request.get_header("Accept")  # type: ignore[attr-defined]
+        captured["accept_encoding"] = request.get_header("Accept-encoding")  # type: ignore[attr-defined]
+        return _FakeResponse()
+
+    monkeypatch.setattr(workshop_inbox, "urlopen", fake_urlopen)
+    transport = workshop_inbox._make_urllib_transport(timeout_seconds=20)  # noqa: SLF001
+
+    response = transport("GET", "https://steamcommunity.com/", None, {})
+
+    assert captured == {"accept": "*/*", "accept_encoding": "gzip"}
+    assert response.body == b"decoded"
+
+
+def test_urllib_transport_rejects_gzip_body_exceeding_response_limit(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Compressed responses are bounded after decompression as well as before it."""
+
+    class _FakeResponse:
+        status = 200
+        headers: ClassVar[dict[str, str]] = {"Content-Encoding": "gzip"}
+
+        def __enter__(self) -> Self:
+            return self
+
+        def __exit__(self, *args: object) -> None:
+            del args
+
+        def read(self, size: int) -> bytes:
+            del size
+            return gzip.compress(b"too-large")
+
+    def fake_urlopen(request: object, *, timeout: int) -> _FakeResponse:
+        del request, timeout
+        return _FakeResponse()
+
+    monkeypatch.setattr(workshop_inbox, "urlopen", fake_urlopen)
+    transport = workshop_inbox._make_urllib_transport(timeout_seconds=20, max_response_bytes=8)  # noqa: SLF001
+
+    with pytest.raises(ValueError, match="HTTP response exceeded max response bytes"):
+        transport("GET", "https://steamcommunity.com/", None, {})
 
 
 def test_build_steam_comments_url_uses_fixed_endpoint() -> None:
