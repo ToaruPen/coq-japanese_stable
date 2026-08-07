@@ -101,6 +101,7 @@ def test_urllib_transport_uses_browser_like_user_agent(monkeypatch: pytest.Monke
     def fake_urlopen(request: object, *, timeout: int) -> _FakeResponse:
         del timeout
         captured["user_agent"] = request.headers["User-agent"]  # type: ignore[attr-defined]
+        captured["accept_language"] = request.headers["Accept-language"]  # type: ignore[attr-defined]
         return _FakeResponse()
 
     monkeypatch.setattr(workshop_inbox, "urlopen", fake_urlopen)
@@ -110,6 +111,7 @@ def test_urllib_transport_uses_browser_like_user_agent(monkeypatch: pytest.Monke
 
     assert response.status_code == 200
     assert captured["user_agent"].startswith("Mozilla/5.0")
+    assert captured["accept_language"] == "ja,en-US;q=0.9,en;q=0.8"
 
 
 def test_urllib_transport_requests_supported_encoding_and_decodes_gzip(

@@ -1087,6 +1087,7 @@ def _make_urllib_transport(*, timeout_seconds: int, max_response_bytes: int = 2_
             "User-Agent": _DEFAULT_USER_AGENT,
             "Accept": "*/*",
             "Accept-Encoding": _DEFAULT_ACCEPT_ENCODING,
+            "Accept-Language": "ja,en-US;q=0.9,en;q=0.8",
             **headers,
         }
         request = Request(url, data=body, headers=request_headers, method=method)  # noqa: S310
