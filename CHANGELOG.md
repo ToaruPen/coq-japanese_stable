@@ -10,6 +10,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+## [0.5.03] - 2026-08-14
+
+### Fixed
+
+- ホログラム投影機で生成されるバラサラム、アーコン、リベカ、レシェフの会話・外見・説明が失われ、進行不能になる問題を修正しました。
+
+---
+
 ## [0.5.02] - 2026-07-15
 
 ### Added
@@ -452,7 +460,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
-[Unreleased]: https://github.com/ToaruPen/coq-japanese_stable/compare/v0.5.02...HEAD
+[Unreleased]: https://github.com/ToaruPen/coq-japanese_stable/compare/v0.5.03...HEAD
+[0.5.03]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.5.03
 [0.5.02]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.5.02
 [0.5.01]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.5.01
 [0.5.00]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.5.00
