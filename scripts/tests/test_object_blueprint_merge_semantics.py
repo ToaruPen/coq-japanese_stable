@@ -37,17 +37,24 @@ def test_trium_hologram_overlays_merge_conversation_blueprints() -> None:
         "Rebekah Hologram",
         "Resheph Hologram",
     }
-    holograms = {
-        obj.get("Name"): obj
+    holograms = [
+        obj
         for obj in root.findall("object")
         if obj.get("Name") in expected_names
-    }
-    missing_merge = sorted(
-        name for name, obj in holograms.items() if obj.get("Load") != "Merge"
-    )
+    ]
 
-    assert set(holograms) == expected_names
-    assert missing_merge == []
+    assert len(holograms) == len(expected_names)
+    assert {obj.get("Name") for obj in holograms} == expected_names
+    for hologram in holograms:
+        assert hologram.get("Inherits") == "BaseTriumHologram"
+        assert hologram.get("Load") == "Merge"
+        assert hologram.get("Replace") is None
+
+        children = list(hologram)
+        assert len(children) == 1
+        assert children[0].tag == "part"
+        assert children[0].get("Name") == "Render"
+        assert children[0].get("DisplayName")
 
 
 def test_refract_light_verb_attributes_remain_message_frame_tokens() -> None:
