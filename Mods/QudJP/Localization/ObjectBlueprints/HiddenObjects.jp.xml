@@ -1299,16 +1299,16 @@
     <tag Name="BaseObject" Value="*noinherit" />
     <tag Name="ExcludeFromDynamicEncounters" />
   </object>
-  <object Name="Barathrum Hologram" Inherits="BaseTriumHologram" Replace="true">
+  <object Name="Barathrum Hologram" Inherits="BaseTriumHologram" Load="Merge">
     <part Name="Render" DisplayName="ホログラムのバラサラム（老）" />
   </object>
-  <object Name="Archon Hologram" Inherits="BaseTriumHologram" Replace="true">
+  <object Name="Archon Hologram" Inherits="BaseTriumHologram" Load="Merge">
     <part Name="Render" DisplayName="ホログラムのアーコン" />
   </object>
-  <object Name="Rebekah Hologram" Inherits="BaseTriumHologram" Replace="true">
+  <object Name="Rebekah Hologram" Inherits="BaseTriumHologram" Load="Merge">
     <part Name="Render" DisplayName="ホログラムのリベカ" />
   </object>
-  <object Name="Resheph Hologram" Inherits="BaseTriumHologram" Replace="true">
+  <object Name="Resheph Hologram" Inherits="BaseTriumHologram" Load="Merge">
     <part Name="Render" DisplayName="ホログラムのレシェフ" />
   </object>
   <object Name="BaseArkCore" Inherits="MountedFurniture" Replace="true">
