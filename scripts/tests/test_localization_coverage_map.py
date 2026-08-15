@@ -20,6 +20,13 @@ def test_localization_coverage_map_is_valid_and_complete() -> None:
     assert errors == []
 
 
+def test_localization_coverage_map_targets_current_game_version() -> None:
+    """The executable coverage map must describe the current supported game version."""
+    document = load_map(MAP_PATH)
+
+    assert document["game_version"] == "1.0.5"
+
+
 def test_localization_coverage_map_defines_true_untranslated_zero_closeout() -> None:
     """The map must define what evidence is required before claiming zero untranslated text."""
     document = load_map(MAP_PATH)
@@ -37,7 +44,7 @@ def test_localization_coverage_map_reports_invalid_true_zero_definition_fields(t
     """Coverage-map validation must report malformed true-zero metadata without crashing."""
     document: dict[str, object] = {
         "schema_version": "1.0",
-        "game_version": "1.0.4",
+        "game_version": "1.0.5",
         "true_untranslated_zero_definition": {
             "required_proofs": "runtime evidence",
             "disallowed_proofs": [1],

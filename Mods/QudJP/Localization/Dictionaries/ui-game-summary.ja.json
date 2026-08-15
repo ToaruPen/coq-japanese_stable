@@ -78,6 +78,11 @@
       "key": "There was an error saving: {0}",
       "context": "QudJP.GameSummary.TombstonePopup",
       "text": "保存中にエラーが発生しました: {0}"
+    },
+    {
+      "key": "There was an error {0} saving: {1}",
+      "context": "QudJP.GameSummary.TombstonePopup",
+      "text": "保存中にエラー（{0}）が発生しました: {1}"
     }
   ]
 }

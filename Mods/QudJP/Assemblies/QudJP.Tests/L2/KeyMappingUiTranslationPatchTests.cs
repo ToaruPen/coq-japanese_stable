@@ -207,7 +207,7 @@ public sealed class KeyMappingUiTranslationPatchTests
     }
 
     [TestCase("")]
-    [TestCase("Are you sure you want to override your keymap with the default?")]
+    [TestCase("Are you sure you want to override your bindings with the default?")]
     [TestCase("Would you like to save your changes?")]
     public void Show_DoesNotClaimFixedOrEmptyPrompts_WhenOwnerPatched(string source)
     {
@@ -229,7 +229,7 @@ public sealed class KeyMappingUiTranslationPatchTests
     }
 
     [TestCase("")]
-    [TestCase("Are you sure you want to override your keymap with the default?")]
+    [TestCase("Are you sure you want to override your bindings with the default?")]
     public void HandleMenuOption_DoesNotClaimFixedOrEmptyAsyncPrompts_WhenOwnerPatched(string source)
     {
         AssertKeybindsMenuOptionAsyncPopup(

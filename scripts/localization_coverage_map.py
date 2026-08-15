@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Final, NotRequired, TypedDict, cast
 
 SCHEMA_VERSION: Final = "1.0"
-GAME_VERSION: Final = "1.0.4"
+GAME_VERSION: Final = "1.0.5"
 MAP_PATH: Final = Path("docs/localization-coverage-map.json")
 
 REQUIRED_STATUSES: Final = {

@@ -304,6 +304,7 @@ public static class CookingRuntimeTranslationPatch
             "An abrading force cuts the surfaces of your torso until you feel polished and perfectly smooth." => "研磨する力が胴体の表面を削り、やがて磨き上げられたように完全になめらかになった。",
             "A quartet of prisms shatter out of you and grow. Each quinfurcates at the tip into five finger prisms." => "4つのプリズムが体を突き破って成長し、それぞれの先端が5本の指のプリズムへと五分岐した。",
             "You gained the mutation {{C|Crystallinity}}!" => "変異{{C|結晶性}}を得た！",
+            "You gained the mutation {{w|Bilge Sphincter}}!" => "変異{{w|ビルジスフィンクター}}を得た！",
             "Feelers rip through your scalp and shudder with curiosity." => "触角が頭皮を裂いて生え、好奇心に震えた。",
             "Your arms shrink into your torso." => "腕が胴体の中へ縮み込んだ。",
             "A bilge hose painted with mucus undulates out of your lower body. It spews the amniotic broth of its birth from its sputtering mouth." => "粘液にまみれた排水ホースのようなものが下半身からうねり出て、ぱちぱち鳴る口から生まれた時の羊水めいた汁を吐き散らした。",

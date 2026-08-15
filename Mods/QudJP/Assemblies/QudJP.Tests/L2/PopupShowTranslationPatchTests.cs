@@ -370,6 +370,18 @@ public sealed class PopupShowTranslationPatchTests
     [TestCase(
         "You have no devices that use energy cells.",
         "エネルギーセルを使う装置を持っていない。")]
+    [TestCase(
+        "Are you sure you want to override your bindings with the default?",
+        "キー設定を既定に上書きしますか？")]
+    [TestCase(
+        "An error has occurred, would you like to try again?",
+        "エラーが発生しました。もう一度試しますか？")]
+    [TestCase(
+        "An error has occurred, would you like to retry?",
+        "エラーが発生しました。再試行しますか？")]
+    [TestCase(
+        "An error occurred while posting to the leaderbaord, would you like to try again?",
+        "リーダーボードへの投稿中にエラーが発生しました。もう一度試しますか？")]
     public void Prefix_TranslatesReviewedResidualFixedPopups_FromRepositoryDictionary(
         string source,
         string expected)

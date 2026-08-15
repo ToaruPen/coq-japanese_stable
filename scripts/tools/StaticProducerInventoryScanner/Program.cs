@@ -135,7 +135,7 @@ internal static class InventoryWriter
 internal static class StaticProducerScanner
 {
     private const string SchemaVersion = "1.0";
-    private const string GameVersion = "1.0.4";
+    private const string GameVersion = "1.0.5";
     internal static readonly CSharpParseOptions ParseOptions =
         CSharpParseOptions.Default.WithLanguageVersion(LanguageVersion.Preview);
 
@@ -1118,6 +1118,11 @@ internal static class StaticProducerScanner
     private static bool IsDebugCallsite(InvocationCandidate invocation)
     {
         var basename = Path.GetFileName(invocation.File);
+        if (invocation.Context.MemberName.StartsWith("Debug", StringComparison.Ordinal))
+        {
+            return true;
+        }
+
         if (DebugExactPaths.Contains(invocation.File) || invocation.File.StartsWith("XRL.Wish/", StringComparison.Ordinal))
         {
             return true;

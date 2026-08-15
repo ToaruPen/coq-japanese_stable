@@ -1182,10 +1182,7 @@ def _sunder_mind_owner_callsites() -> tuple[CoveredOwnerCallsites, ...]:
 def _axe_dismember_owner_callsites() -> tuple[CoveredOwnerCallsites, ...]:
     return (
         CoveredOwnerCallsites(
-            family_id=(
-                "XRL.World.Parts.Skill/Axe_Dismember.cs::"
-                "XRL.World.Parts.Skill.Axe_Dismember.Cast"
-            ),
+            family_id=("XRL.World.Parts.Skill/Axe_Dismember.cs::XRL.World.Parts.Skill.Axe_Dismember.Cast"),
             lines=(250,),
             inventory_statuses=("needs_family_review",),
             evidence_files=(
@@ -1233,10 +1230,7 @@ def _axe_dismember_owner_callsites() -> tuple[CoveredOwnerCallsites, ...]:
 def _cudgel_smash_up_owner_callsites() -> tuple[CoveredOwnerCallsites, ...]:
     return (
         CoveredOwnerCallsites(
-            family_id=(
-                "XRL.World.Parts.Skill/Cudgel_SmashUp.cs::"
-                "XRL.World.Parts.Skill.Cudgel_SmashUp.FireEvent"
-            ),
+            family_id=("XRL.World.Parts.Skill/Cudgel_SmashUp.cs::XRL.World.Parts.Skill.Cudgel_SmashUp.FireEvent"),
             lines=(95,),
             inventory_statuses=("needs_family_review",),
             evidence_files=(
@@ -1283,10 +1277,7 @@ def _cudgel_smash_up_owner_callsites() -> tuple[CoveredOwnerCallsites, ...]:
 def _submersion_owner_callsites() -> tuple[CoveredOwnerCallsites, ...]:
     return (
         CoveredOwnerCallsites(
-            family_id=(
-                "XRL.World.Parts.Skill/Submersion.cs::"
-                "XRL.World.Parts.Skill.Submersion.HandleEvent"
-            ),
+            family_id=("XRL.World.Parts.Skill/Submersion.cs::XRL.World.Parts.Skill.Submersion.HandleEvent"),
             lines=(62,),
             inventory_statuses=("needs_family_review",),
             evidence_files=(
@@ -1334,10 +1325,7 @@ def _submersion_owner_callsites() -> tuple[CoveredOwnerCallsites, ...]:
 def _tinkering_tinker1_recharge_owner_callsites() -> tuple[CoveredOwnerCallsites, ...]:
     return (
         CoveredOwnerCallsites(
-            family_id=(
-                "XRL.World.Parts.Skill/Tinkering_Tinker1.cs::"
-                "XRL.World.Parts.Skill.Tinkering_Tinker1.Recharge"
-            ),
+            family_id=("XRL.World.Parts.Skill/Tinkering_Tinker1.cs::XRL.World.Parts.Skill.Tinkering_Tinker1.Recharge"),
             lines=(80, 92),
             inventory_statuses=("needs_family_review",),
             evidence_files=(
@@ -1522,10 +1510,7 @@ def _imodification_wish_modify_owner_callsites() -> tuple[CoveredOwnerCallsites,
 def _neutron_flux_containment_owner_callsites() -> tuple[CoveredOwnerCallsites, ...]:
     return (
         CoveredOwnerCallsites(
-            family_id=(
-                "XRL.World.Parts/NeutronFluxContainment.cs::"
-                "XRL.World.Parts.NeutronFluxContainment.HandleEvent"
-            ),
+            family_id=("XRL.World.Parts/NeutronFluxContainment.cs::XRL.World.Parts.NeutronFluxContainment.HandleEvent"),
             lines=(63, 91),
             inventory_statuses=("needs_family_review",),
             evidence_files=(
@@ -1781,6 +1766,7 @@ def _cooking_runtime_families() -> tuple[CoveredOwnerFamily, ...]:
             "CookingRuntime_LeavesEmptyMessagesUnchanged_WhenOwnerPatched",
         ),
     )
+
     def resolution(declaring_type: str, member_name: str) -> EvidenceFile:
         return EvidenceFile(
             "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
@@ -1818,42 +1804,46 @@ def _cooking_runtime_families() -> tuple[CoveredOwnerFamily, ...]:
     runtime_queue_family_ids = (
         "XRL.World.Effects/ProceduralCookingEffectWithTrigger.cs::XRL.World.Effects.ProceduralCookingEffectWithTrigger.Trigger",
     )
-    return tuple(
-        CoveredOwnerFamily(
-            family_id=family_id,
-            inventory_statuses=("owner_patch_required",),
-            evidence_files=(
-                patch,
-                pipeline_popup,
-                tests,
-                resolution(*owner_parts(family_id)),
-            ),
+    return (
+        tuple(
+            CoveredOwnerFamily(
+                family_id=family_id,
+                inventory_statuses=("owner_patch_required",),
+                evidence_files=(
+                    patch,
+                    pipeline_popup,
+                    tests,
+                    resolution(*owner_parts(family_id)),
+                ),
+            )
+            for family_id in popup_family_ids
         )
-        for family_id in popup_family_ids
-    ) + tuple(
-        CoveredOwnerFamily(
-            family_id=family_id,
-            inventory_statuses=("owner_patch_required",),
-            evidence_files=(
-                patch,
-                pipeline_queue,
-                tests,
-                resolution(*owner_parts(family_id)),
-            ),
+        + tuple(
+            CoveredOwnerFamily(
+                family_id=family_id,
+                inventory_statuses=("owner_patch_required",),
+                evidence_files=(
+                    patch,
+                    pipeline_queue,
+                    tests,
+                    resolution(*owner_parts(family_id)),
+                ),
+            )
+            for family_id in queue_family_ids
         )
-        for family_id in queue_family_ids
-    ) + tuple(
-        CoveredOwnerFamily(
-            family_id=family_id,
-            inventory_statuses=("runtime_required",),
-            evidence_files=(
-                patch,
-                pipeline_queue,
-                tests,
-                resolution(*owner_parts(family_id)),
-            ),
+        + tuple(
+            CoveredOwnerFamily(
+                family_id=family_id,
+                inventory_statuses=("runtime_required",),
+                evidence_files=(
+                    patch,
+                    pipeline_queue,
+                    tests,
+                    resolution(*owner_parts(family_id)),
+                ),
+            )
+            for family_id in runtime_queue_family_ids
         )
-        for family_id in runtime_queue_family_ids
     )
 
 
@@ -2369,15 +2359,11 @@ def _conversation_reward_popup_families() -> tuple[CoveredOwnerFamily, ...]:
                 ),
                 EvidenceFile(
                     "Mods/QudJP/Localization/MessageFrames/verbs.ja.json",
-                    (
-                        "some insightful commentary on (.+)",
-                    ),
+                    ("some insightful commentary on (.+)",),
                 ),
                 EvidenceFile(
                     "Mods/QudJP/Localization/Dictionaries/messages.ja.json",
-                    (
-                        "^You gain (\\\\{\\\\{C\\\\|\\\\d+\\\\}\\\\}|\\\\d+) XP[.!]?$",
-                    ),
+                    ("^You gain (\\\\{\\\\{C\\\\|\\\\d+\\\\}\\\\}|\\\\d+) XP[.!]?$",),
                 ),
             ),
         ),
@@ -2494,9 +2480,7 @@ def _conversation_reward_popup_callsites() -> tuple[CoveredOwnerCallsites, ...]:
                 ),
                 EvidenceFile(
                     "Mods/QudJP/Localization/Dictionaries/messages.ja.json",
-                    (
-                        "^You gain (\\\\{\\\\{C\\\\|\\\\d+\\\\}\\\\}|\\\\d+) XP[.!]?$",
-                    ),
+                    ("^You gain (\\\\{\\\\{C\\\\|\\\\d+\\\\}\\\\}|\\\\d+) XP[.!]?$",),
                 ),
                 EvidenceFile(
                     "Mods/QudJP/Localization/Dictionaries/ui-popup.ja.json",
@@ -2507,14 +2491,15 @@ def _conversation_reward_popup_callsites() -> tuple[CoveredOwnerCallsites, ...]:
     )
 
 
-def _game_summary_tombstone_popup_families() -> tuple[CoveredOwnerFamily, ...]:
+def _game_summary_tombstone_popup_evidence() -> tuple[EvidenceFile, ...]:
     patch = EvidenceFile(
         "Mods/QudJP/Assemblies/src/Patches/GameSummaryTombstonePopupTranslationPatch.cs",
         (
             "GameSummaryTombstonePopupTranslationPatch",
             "TryTranslatePopupMessage",
             "SavedPattern",
-            "ErrorPattern",
+            "ClassicErrorPattern",
+            "ModernErrorPattern",
         ),
     )
     pipeline = EvidenceFile(
@@ -2535,6 +2520,7 @@ def _game_summary_tombstone_popup_families() -> tuple[CoveredOwnerFamily, ...]:
             "nameof(DummyGameSummaryTombstoneProducer.ClassicShow)",
             "墓碑ファイルを保存しました",
             "保存中にエラーが発生しました",
+            "保存中にエラー（AccessDenied）が発生しました",  # noqa: RUF001
         ),
     )
     dictionary = EvidenceFile(
@@ -2542,6 +2528,7 @@ def _game_summary_tombstone_popup_families() -> tuple[CoveredOwnerFamily, ...]:
         (
             "Your tombstone file was saved:\\n\\n{0}",
             "There was an error saving: {0}",
+            "There was an error {0} saving: {1}",
             "QudJP.GameSummary.TombstonePopup",
         ),
     )
@@ -2554,16 +2541,84 @@ def _game_summary_tombstone_popup_families() -> tuple[CoveredOwnerFamily, ...]:
         ),
     )
 
+    return (patch, pipeline, tests, dictionary, l2g)
+
+
+def _game_summary_tombstone_popup_families() -> tuple[CoveredOwnerFamily, ...]:
     return (
-        CoveredOwnerFamily(
-            family_id="Qud.UI/GameSummaryScreen.cs::Qud.UI.GameSummaryScreen.SaveTombstone",
-            inventory_statuses=("owner_patch_required",),
-            evidence_files=(patch, pipeline, tests, dictionary, l2g),
-        ),
         CoveredOwnerFamily(
             family_id="XRL.UI/GameSummaryUI.cs::XRL.UI.GameSummaryUI.Show",
             inventory_statuses=("owner_patch_required",),
-            evidence_files=(patch, pipeline, tests, dictionary, l2g),
+            evidence_files=_game_summary_tombstone_popup_evidence(),
+        ),
+    )
+
+
+def _game_summary_tombstone_popup_callsites() -> tuple[CoveredOwnerCallsites, ...]:
+    return (
+        CoveredOwnerCallsites(
+            family_id="Qud.UI/GameSummaryScreen.cs::Qud.UI.GameSummaryScreen.SaveTombstone",
+            lines=(218, 222),
+            inventory_statuses=("needs_family_review",),
+            evidence_files=_game_summary_tombstone_popup_evidence(),
+        ),
+    )
+
+
+def _code_compressor_popup_family() -> tuple[CoveredOwnerFamily, ...]:
+    return (
+        CoveredOwnerFamily(
+            family_id=("XRL.CharacterBuilds/CodeCompressor.cs::XRL.CharacterBuilds.CodeCompressor.loadCode"),
+            inventory_statuses=("owner_patch_required",),
+            evidence_files=(
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/CodeCompressorTranslationPatch.cs",
+                    (
+                        "CodeCompressorTranslationPatch",
+                        "RequiredModMissingPattern",
+                        "TryTranslatePopupMessage",
+                        "XRL.CharacterBuilds.CodeCompressor",
+                        "loadCode",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs",
+                    ("CodeCompressorTranslationPatch.TryTranslatePopupMessage",),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2/CodeCompressorTranslationPatchTests.cs",
+                    (
+                        "LoadCode_TranslatesRequiredModError_WhenOwnerPatched",
+                        "LoadCode_TranslatesRequiredModError_WithEmptyModName",
+                        "LoadCode_StripsDirectMarkerWithoutRecordingTransform",
+                        "LoadCode_DoesNotTranslatePopupOnlyTraffic_WhenOwnerAbsent",
+                        "LoadCode_FailsOpenWhenDictionaryIsMissing",
+                        "LoadCode_FailsOpenWhenTranslatedTemplateHasInvalidPlaceholder",
+                        "LoadCode_LeavesUnsupportedTextUnchanged",
+                        "Error decoding build code - Required Mod",
+                        "ビルドコードのデコードエラー",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Localization/Dictionaries/ui-chargen.ja.json",
+                    ('Error decoding build code - Required Mod \\"{0}\\" not found.',),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                    (
+                        "typeof(CodeCompressorTranslationPatch)",
+                        "XRL.CharacterBuilds.CodeCompressor|loadCode|System.Void|System.String|System.Collections.Generic.List`1[[XRL.CharacterBuilds.AbstractEmbarkBuilderModule]]|System.Boolean",
+                    ),
+                ),
+                EvidenceFile(
+                    "Mods/QudJP/QudTest/fixtures/bindings-smoke.json",
+                    (
+                        "binding.code-compressor-required-mod-popup",
+                        "QudJP.Patches.CodeCompressorTranslationPatch",
+                        "XRL.CharacterBuilds.CodeCompressor|loadCode|System.Void|System.String|System.Collections.Generic.List`1[[XRL.CharacterBuilds.AbstractEmbarkBuilderModule]]|System.Boolean",
+                    ),
+                ),
+            ),
         ),
     )
 
@@ -3225,25 +3280,25 @@ def _campfire_nostrums_owner_callsites() -> tuple[CoveredOwnerCallsites, ...]:
     return (
         CoveredOwnerCallsites(
             family_id="XRL.World.Parts/Campfire.cs::XRL.World.Parts.Campfire.NostrumsStopBleeding",
-            lines=(1589, 1593, 1606, 1615, 1635, 1647),
+            lines=(1593, 1597, 1610, 1619, 1639, 1651),
             inventory_statuses=("needs_family_review",),
             evidence_files=evidence_files,
         ),
         CoveredOwnerCallsites(
             family_id="XRL.World.Parts/Campfire.cs::XRL.World.Parts.Campfire.NostrumsTreatPoison",
-            lines=(1685, 1695, 1700, 1707, 1712, 1730, 1739, 1748),
+            lines=(1689, 1699, 1704, 1711, 1716, 1734, 1743, 1752),
             inventory_statuses=("needs_family_review",),
             evidence_files=evidence_files,
         ),
         CoveredOwnerCallsites(
             family_id="XRL.World.Parts/Campfire.cs::XRL.World.Parts.Campfire.NostrumsTreatIllness",
-            lines=(1785, 1795, 1799, 1805, 1817),
+            lines=(1789, 1799, 1803, 1809, 1821),
             inventory_statuses=("needs_family_review",),
             evidence_files=evidence_files,
         ),
         CoveredOwnerCallsites(
             family_id="XRL.World.Parts/Campfire.cs::XRL.World.Parts.Campfire.NostrumsTreatDiseaseOnset",
-            lines=(1870, 1876, 1886, 1890, 1895, 1902, 1907, 1919),
+            lines=(1874, 1880, 1890, 1894, 1899, 1906, 1911, 1923),
             inventory_statuses=("needs_family_review",),
             evidence_files=evidence_files,
         ),
@@ -3254,7 +3309,7 @@ def _physics_handle_event_object_entering_cell_callsites() -> tuple[CoveredOwner
     return (
         CoveredOwnerCallsites(
             family_id="XRL.World.Parts/Physics.cs::XRL.World.Parts.Physics.HandleEvent",
-            lines=(2582, 2593, 2598),
+            lines=(2520, 2531, 2536),
             inventory_statuses=("needs_family_review",),
             evidence_files=(
                 EvidenceFile(
@@ -3307,7 +3362,7 @@ def _physics_process_take_damage_owner_callsites() -> tuple[CoveredOwnerCallsite
     return (
         CoveredOwnerCallsites(
             family_id="XRL.World.Parts/Physics.cs::XRL.World.Parts.Physics.ProcessTakeDamage",
-            lines=(3795, 3811),
+            lines=(3678, 3694),
             inventory_statuses=("runtime_required",),
             evidence_files=(
                 EvidenceFile(
@@ -3359,7 +3414,7 @@ def _physics_handle_event_inventory_action_popup_callsites() -> tuple[CoveredOwn
     return (
         CoveredOwnerCallsites(
             family_id="XRL.World.Parts/Physics.cs::XRL.World.Parts.Physics.HandleEvent",
-            lines=(2754, 2773, 2786),
+            lines=(2683, 2702, 2715),
             inventory_statuses=("needs_family_review",),
             evidence_files=(
                 EvidenceFile(
@@ -3623,7 +3678,7 @@ def _campfire_cook_from_ingredients_owner_callsites() -> tuple[CoveredOwnerCalls
     return (
         CoveredOwnerCallsites(
             family_id="XRL.World.Parts/Campfire.cs::XRL.World.Parts.Campfire.CookFromIngredients",
-            lines=(1030, 1059),
+            lines=(1034, 1063),
             inventory_statuses=("needs_family_review",),
             evidence_files=(
                 EvidenceFile(
@@ -4830,8 +4885,7 @@ def _tonic_applicator_families() -> tuple[CoveredOwnerFamily, ...]:
         ),
         CoveredOwnerFamily(
             family_id=(
-                "XRL.World.Parts/SphynxSalt_Tonic_Applicator.cs::"
-                "XRL.World.Parts.SphynxSalt_Tonic_Applicator.FireEvent"
+                "XRL.World.Parts/SphynxSalt_Tonic_Applicator.cs::XRL.World.Parts.SphynxSalt_Tonic_Applicator.FireEvent"
             ),
             inventory_statuses=("owner_patch_required",),
             evidence_files=evidence_files,
@@ -5351,8 +5405,7 @@ def _monochrome_onset_families() -> tuple[CoveredOwnerFamily, ...]:
         ),
         CoveredOwnerFamily(
             family_id=(
-                "XRL.World.Parts/MonochromePoisonOnDamage.cs::"
-                "XRL.World.Parts.MonochromePoisonOnDamage.FireEvent"
+                "XRL.World.Parts/MonochromePoisonOnDamage.cs::XRL.World.Parts.MonochromePoisonOnDamage.FireEvent"
             ),
             inventory_statuses=("owner_patch_required",),
             evidence_files=(
@@ -6653,13 +6706,13 @@ def _code_redemption_owner_callsites() -> tuple[CoveredOwnerCallsites, ...]:
     return (
         CoveredOwnerCallsites(
             family_id="CodeRedemptionManager.cs::CodeRedemptionManager.redeemNoProgress",
-            lines=(54,),
+            lines=(55,),
             inventory_statuses=("needs_family_review",),
             evidence_files=evidence_files,
         ),
         CoveredOwnerCallsites(
             family_id="CodeRedemptionManager.cs::CodeRedemptionManager.redeem",
-            lines=(113,),
+            lines=(121,),
             inventory_statuses=("needs_family_review",),
             evidence_files=evidence_files,
         ),
@@ -6760,10 +6813,7 @@ def _single_fixed_queue_owner_callsites() -> tuple[CoveredOwnerCallsites, ...]:
             ),
         ),
         CoveredOwnerCallsites(
-            family_id=(
-                "XRL.World.Parts.Skill/Snapjaw_Howl.cs::"
-                "XRL.World.Parts.Skill.Snapjaw_Howl.FireEvent"
-            ),
+            family_id=("XRL.World.Parts.Skill/Snapjaw_Howl.cs::XRL.World.Parts.Skill.Snapjaw_Howl.FireEvent"),
             lines=(81,),
             inventory_statuses=("needs_family_review",),
             evidence_files=(
@@ -7451,8 +7501,7 @@ def _single_callsite_owner_popup_families() -> tuple[CoveredOwnerFamily, ...]:
     return (
         CoveredOwnerFamily(
             family_id=(
-                "XRL.World.Quests/AscensionSystem.cs::"
-                "XRL.World.Quests.AscensionSystem.BarathrumStartConversation"
+                "XRL.World.Quests/AscensionSystem.cs::XRL.World.Quests.AscensionSystem.BarathrumStartConversation"
             ),
             inventory_statuses=("owner_patch_required",),
             evidence_files=(
@@ -7959,8 +8008,7 @@ def _single_callsite_owner_popup_families() -> tuple[CoveredOwnerFamily, ...]:
         ),
         CoveredOwnerFamily(
             family_id=(
-                "XRL.World.Parts/HindrenMysteryCriticalNPC.cs::"
-                "XRL.World.Parts.HindrenMysteryCriticalNPC.HandleEvent"
+                "XRL.World.Parts/HindrenMysteryCriticalNPC.cs::XRL.World.Parts.HindrenMysteryCriticalNPC.HandleEvent"
             ),
             inventory_statuses=("owner_patch_required",),
             evidence_files=(
@@ -8234,10 +8282,7 @@ def _single_callsite_owner_popup_families() -> tuple[CoveredOwnerFamily, ...]:
             ),
         ),
         CoveredOwnerFamily(
-            family_id=(
-                "XRL.World.Parts/MutationPointsOnEat.cs::"
-                "XRL.World.Parts.MutationPointsOnEat.FireEvent"
-            ),
+            family_id=("XRL.World.Parts/MutationPointsOnEat.cs::XRL.World.Parts.MutationPointsOnEat.FireEvent"),
             inventory_statuses=("owner_patch_required",),
             evidence_files=(
                 EvidenceFile(
@@ -8514,10 +8559,7 @@ def _single_callsite_owner_popup_families() -> tuple[CoveredOwnerFamily, ...]:
             ),
         ),
         CoveredOwnerFamily(
-            family_id=(
-                "XRL.World.Parts/WaterRitualRecord.cs::"
-                "XRL.World.Parts.WaterRitualRecord.HandleEvent"
-            ),
+            family_id=("XRL.World.Parts/WaterRitualRecord.cs::XRL.World.Parts.WaterRitualRecord.HandleEvent"),
             inventory_statuses=("owner_patch_required",),
             evidence_files=(
                 EvidenceFile(
@@ -8601,10 +8643,7 @@ def _single_callsite_owner_popup_families() -> tuple[CoveredOwnerFamily, ...]:
             ),
         ),
         CoveredOwnerFamily(
-            family_id=(
-                "XRL.World.Parts/PlayerMuralController.cs::"
-                "XRL.World.Parts.PlayerMuralController.HandleEvent"
-            ),
+            family_id=("XRL.World.Parts/PlayerMuralController.cs::XRL.World.Parts.PlayerMuralController.HandleEvent"),
             inventory_statuses=("needs_family_review",),
             evidence_files=(
                 EvidenceFile(
@@ -8651,11 +8690,11 @@ def _giant_clam_shloop_hitch_callsites() -> tuple[CoveredOwnerCallsites, ...]:
     evidence_by_method = {
         "TeleportToClamWorld": (
             143,
-            "XRL.World.Parts.GiantClamProperties|TeleportToClamWorld|System.Void|XRL.World.GameObject"
+            "XRL.World.Parts.GiantClamProperties|TeleportToClamWorld|System.Void|XRL.World.GameObject",
         ),
         "TeleportFromClamWorld": (
             180,
-            "XRL.World.Parts.GiantClamProperties|TeleportFromClamWorld|System.Void|XRL.World.GameObject"
+            "XRL.World.Parts.GiantClamProperties|TeleportFromClamWorld|System.Void|XRL.World.GameObject",
         ),
     }
     callsites: list[CoveredOwnerCallsites] = []
@@ -8663,8 +8702,7 @@ def _giant_clam_shloop_hitch_callsites() -> tuple[CoveredOwnerCallsites, ...]:
         callsites.append(
             CoveredOwnerCallsites(
                 family_id=(
-                    "XRL.World.Parts/GiantClamProperties.cs::"
-                    f"XRL.World.Parts.GiantClamProperties.{method_name}"
+                    f"XRL.World.Parts/GiantClamProperties.cs::XRL.World.Parts.GiantClamProperties.{method_name}"
                 ),
                 lines=(line,),
                 inventory_statuses=("needs_family_review",),
@@ -9379,8 +9417,7 @@ def _system_static_message_families() -> tuple[CoveredOwnerFamily, ...]:
         ),
         CoveredOwnerFamily(
             family_id=(
-                "XRL.World.Parts.Mutation/HeightenedAgility.cs::"
-                "XRL.World.Parts.Mutation.HeightenedAgility.FireEvent"
+                "XRL.World.Parts.Mutation/HeightenedAgility.cs::XRL.World.Parts.Mutation.HeightenedAgility.FireEvent"
             ),
             inventory_statuses=("owner_patch_required",),
             evidence_files=(
@@ -9398,10 +9435,7 @@ def _system_static_message_families() -> tuple[CoveredOwnerFamily, ...]:
             ),
         ),
         CoveredOwnerFamily(
-            family_id=(
-                "XRL.World.Parts.Mutation/Metamorphosis.cs::"
-                "XRL.World.Parts.Mutation.Metamorphosis.FireEvent"
-            ),
+            family_id=("XRL.World.Parts.Mutation/Metamorphosis.cs::XRL.World.Parts.Mutation.Metamorphosis.FireEvent"),
             inventory_statuses=("owner_patch_required",),
             evidence_files=(
                 patch,
@@ -9418,10 +9452,7 @@ def _system_static_message_families() -> tuple[CoveredOwnerFamily, ...]:
             ),
         ),
         CoveredOwnerFamily(
-            family_id=(
-                "XRL.World.Parts.Mutation/SpacetimeVortex.cs::"
-                "XRL.World.Parts.Mutation.SpacetimeVortex.Vortex"
-            ),
+            family_id=("XRL.World.Parts.Mutation/SpacetimeVortex.cs::XRL.World.Parts.Mutation.SpacetimeVortex.Vortex"),
             inventory_statuses=("owner_patch_required",),
             evidence_files=(
                 patch,
@@ -9438,10 +9469,7 @@ def _system_static_message_families() -> tuple[CoveredOwnerFamily, ...]:
             ),
         ),
         CoveredOwnerFamily(
-            family_id=(
-                "XRL.World.Parts.Mutation/QuantumJitters.cs::"
-                "XRL.World.Parts.Mutation.QuantumJitters.Sunder"
-            ),
+            family_id=("XRL.World.Parts.Mutation/QuantumJitters.cs::XRL.World.Parts.Mutation.QuantumJitters.Sunder"),
             inventory_statuses=("owner_patch_required",),
             evidence_files=(
                 patch,
@@ -9861,8 +9889,7 @@ def _closure_only_popup_owner_families() -> tuple[CoveredOwnerFamily, ...]:
         ),
         CoveredOwnerFamily(
             family_id=(
-                "XRL.World.Parts/DeployableInfrastructure.cs::"
-                "XRL.World.Parts.DeployableInfrastructure.AttemptDeploy"
+                "XRL.World.Parts/DeployableInfrastructure.cs::XRL.World.Parts.DeployableInfrastructure.AttemptDeploy"
             ),
             inventory_statuses=("owner_patch_required",),
             evidence_files=(
@@ -9980,8 +10007,7 @@ def _closure_only_popup_owner_families() -> tuple[CoveredOwnerFamily, ...]:
         ),
         CoveredOwnerFamily(
             family_id=(
-                "XRL.World.Parts/SupplyableIntegratedHost.cs::"
-                "XRL.World.Parts.SupplyableIntegratedHost.AttemptSupply"
+                "XRL.World.Parts/SupplyableIntegratedHost.cs::XRL.World.Parts.SupplyableIntegratedHost.AttemptSupply"
             ),
             inventory_statuses=("owner_patch_required",),
             evidence_files=(
@@ -10374,18 +10400,12 @@ def _mutation_absorption_healing_families() -> tuple[CoveredOwnerFamily, ...]:
     )
     return (
         CoveredOwnerFamily(
-            family_id=(
-                "XRL.World.Parts.Mutation/ColdAbsorption.cs::"
-                "XRL.World.Parts.Mutation.ColdAbsorption.FireEvent"
-            ),
+            family_id=("XRL.World.Parts.Mutation/ColdAbsorption.cs::XRL.World.Parts.Mutation.ColdAbsorption.FireEvent"),
             inventory_statuses=("owner_patch_required",),
             evidence_files=(patch, pipeline, tests, target_tests),
         ),
         CoveredOwnerFamily(
-            family_id=(
-                "XRL.World.Parts.Mutation/HeatAbsorption.cs::"
-                "XRL.World.Parts.Mutation.HeatAbsorption.FireEvent"
-            ),
+            family_id=("XRL.World.Parts.Mutation/HeatAbsorption.cs::XRL.World.Parts.Mutation.HeatAbsorption.FireEvent"),
             inventory_statuses=("owner_patch_required",),
             evidence_files=(patch, pipeline, tests, target_tests),
         ),
@@ -10433,8 +10453,7 @@ def _on_eat_reward_message_families() -> tuple[CoveredOwnerFamily, ...]:
         ),
         CoveredOwnerFamily(
             family_id=(
-                "XRL.World.Parts/RefreshAllCooldownsOnEat.cs::"
-                "XRL.World.Parts.RefreshAllCooldownsOnEat.FireEvent"
+                "XRL.World.Parts/RefreshAllCooldownsOnEat.cs::XRL.World.Parts.RefreshAllCooldownsOnEat.FireEvent"
             ),
             inventory_statuses=("owner_patch_required",),
             evidence_files=(patch, pipeline, tests, target_tests),
@@ -10701,7 +10720,7 @@ def _pick_target_show_picker_callsites() -> tuple[CoveredOwnerCallsites, ...]:
     return (
         CoveredOwnerCallsites(
             family_id="XRL.UI/PickTarget.cs::XRL.UI.PickTarget.ShowPicker",
-            lines=(850,),
+            lines=(969,),
             inventory_statuses=("needs_family_review",),
             evidence_files=(
                 EvidenceFile(
@@ -11925,19 +11944,13 @@ def _generated_success_popup_callsites() -> tuple[CoveredOwnerCallsites, ...]:
     )
     return (
         CoveredOwnerCallsites(
-            family_id=(
-                "XRL.World.Parts/TattooGun.cs::"
-                "XRL.World.Parts.TattooGun.AttemptTattoo"
-            ),
+            family_id=("XRL.World.Parts/TattooGun.cs::XRL.World.Parts.TattooGun.AttemptTattoo"),
             lines=(203, 208),
             inventory_statuses=("needs_family_review",),
             evidence_files=(tattoo_patch, popup_pipeline, tattoo_tests, target_tests),
         ),
         CoveredOwnerCallsites(
-            family_id=(
-                "XRL.World.Effects/BrainBrineCurse.cs::"
-                "XRL.World.Effects.BrainBrineCurse.GainChoice"
-            ),
+            family_id=("XRL.World.Effects/BrainBrineCurse.cs::XRL.World.Effects.BrainBrineCurse.GainChoice"),
             lines=(64, 96, 109),
             inventory_statuses=("needs_family_review",),
             evidence_files=(brain_brine_patch, popup_pipeline, brain_brine_tests, target_tests),
@@ -12046,7 +12059,7 @@ def _liquid_volume_handle_event_owner_callsites() -> tuple[CoveredOwnerCallsites
     return (
         CoveredOwnerCallsites(
             family_id="XRL.World.Parts/LiquidVolume.cs::XRL.World.Parts.LiquidVolume.HandleEvent",
-            lines=(3149, 3159, 3295, 3301, 3326, 3385, 3468, 3475, 3559),
+            lines=(3147, 3157, 3293, 3299, 3324, 3383, 3466, 3473, 3557),
             inventory_statuses=("needs_family_review",),
             evidence_files=(patch, fragments, popup_pipeline, queue_pipeline, tests, target_tests),
         ),
@@ -12110,7 +12123,7 @@ def _action_manager_run_segment_owner_callsites() -> tuple[CoveredOwnerCallsites
     return (
         CoveredOwnerCallsites(
             family_id="XRL.Core/ActionManager.cs::XRL.Core.ActionManager.RunSegment",
-            lines=(1002, 1157, 1315, 1325, 1520, 1539, 1551, 1570, 1603),
+            lines=(957, 984, 1122, 1132, 1327, 1346, 1358, 1377, 1410),
             inventory_statuses=("needs_family_review",),
             evidence_files=(patch, popup_pipeline, queue_pipeline, tests, target_tests),
         ),
@@ -12157,7 +12170,7 @@ def _metrics_manager_log_error_owner_callsites() -> tuple[CoveredOwnerCallsites,
     return (
         CoveredOwnerCallsites(
             family_id="MetricsManager.cs::MetricsManager.LogError",
-            lines=(372, 394, 427),
+            lines=(376, 398, 431),
             inventory_statuses=("needs_family_review",),
             evidence_files=(patch, popup_pipeline, tests, target_tests),
         ),
@@ -12273,10 +12286,7 @@ def _single_callsite_owner_queue_families() -> tuple[CoveredOwnerFamily, ...]:
 def _long_blades_core_owner_callsites() -> tuple[CoveredOwnerCallsites, ...]:
     return (
         CoveredOwnerCallsites(
-            family_id=(
-                "XRL.World.Parts/LongBladesCore.cs::"
-                "XRL.World.Parts.LongBladesCore.FireEvent"
-            ),
+            family_id=("XRL.World.Parts/LongBladesCore.cs::XRL.World.Parts.LongBladesCore.FireEvent"),
             lines=(341, 443, 475, 488, 492, 550, 587, 591, 628, 632, 656, 660, 739),
             inventory_statuses=("needs_family_review",),
             evidence_files=(
@@ -12327,7 +12337,7 @@ def _xrl_core_player_turn_owner_callsites() -> tuple[CoveredOwnerCallsites, ...]
     return (
         CoveredOwnerCallsites(
             family_id="XRL.Core/XRLCore.cs::XRL.Core.XRLCore.PlayerTurn",
-            lines=(699, 722, 1489, 1869, 1984, 1988, 1999, 2003, 2149, 2153),
+            lines=(727, 750, 1577, 1964, 2079, 2083, 2094, 2098, 2244, 2248),
             inventory_statuses=("needs_family_review",),
             evidence_files=(
                 EvidenceFile(
@@ -12397,25 +12407,25 @@ def _issue_576_runtime_deferred_callsites() -> tuple[DeferredRuntimeCallsites, .
     return (
         DeferredRuntimeCallsites(
             family_id="XRL.World.Parts/Campfire.cs::XRL.World.Parts.Campfire.CookPresetMeal",
-            lines=(738,),
+            lines=(739,),
             reason="HistorySpice cooking ate text is generated at runtime.",
             evidence_files=(report, tests),
         ),
         DeferredRuntimeCallsites(
             family_id="XRL.World.Parts/Campfire.cs::XRL.World.Parts.Campfire.CookFromIngredients",
-            lines=(1012, 1017, 1023, 1039, 1044, 1050, 1068, 1075, 1082),
+            lines=(1016, 1021, 1027, 1043, 1048, 1054, 1072, 1079, 1086),
             reason="DescribeMeal and HistorySpice cooking ate text depend on runtime ingredient and spice expansion.",
             evidence_files=(report, tests),
         ),
         DeferredRuntimeCallsites(
             family_id="XRL.World.Parts/Campfire.cs::XRL.World.Parts.Campfire.CookFromRecipe",
-            lines=(1221, 1228),
+            lines=(1225, 1232),
             reason="HistorySpice cooking ate text is generated at runtime.",
             evidence_files=(report, tests),
         ),
         DeferredRuntimeCallsites(
             family_id="XRL.Core/XRLCore.cs::XRL.Core.XRLCore.PlayerTurn",
-            lines=(945, 1057, 1335, 1780),
+            lines=(973, 1115, 1423, 1875),
             reason="PlayerTurn popup text depends on runtime ability, game state, zone, or control binding values.",
             evidence_files=(report, tests),
         ),
@@ -12427,19 +12437,19 @@ def _issue_576_runtime_deferred_callsites() -> tuple[DeferredRuntimeCallsites, .
         ),
         DeferredRuntimeCallsites(
             family_id="XRL.World.Parts/Physics.cs::XRL.World.Parts.Physics.HandleEvent",
-            lines=(2589, 2847),
+            lines=(2527, 2776),
             reason="Physics block/debug messages are supplied by runtime object tags, properties, or debug internals.",
             evidence_files=(report, tests),
         ),
         DeferredRuntimeCallsites(
             family_id="XRL.World.Parts/Physics.cs::XRL.World.Parts.Physics.ProcessTakeDamage",
-            lines=(3780,),
+            lines=(3663,),
             reason="NoDamageMessage is a pass-through from upstream owners, not a Physics-composed damage frame.",
             evidence_files=(report, tests),
         ),
         DeferredRuntimeCallsites(
             family_id="XRL.World.Parts/Physics.cs::XRL.World.Parts.Physics.ProcessTargetedMove",
-            lines=(3912,),
+            lines=(3795,),
             reason="NoTeleport failure popup is supplied by a runtime target-cell object property or tag.",
             evidence_files=(report, tests),
         ),
@@ -12454,8 +12464,7 @@ def _issue_576_runtime_deferred_callsites() -> tuple[DeferredRuntimeCallsites, .
         ),
         DeferredRuntimeCallsites(
             family_id=(
-                "XRL.World.Parts/ConversationScript.cs::"
-                "XRL.World.Parts.ConversationScript.IsMentalConversationPossible"
+                "XRL.World.Parts/ConversationScript.cs::XRL.World.Parts.ConversationScript.IsMentalConversationPossible"
             ),
             lines=(363, 381),
             reason="Conversation mental failure text is supplied by runtime event failure-message variables.",
@@ -12508,7 +12517,7 @@ def _issue_576_runtime_deferred_callsites() -> tuple[DeferredRuntimeCallsites, .
         ),
         DeferredRuntimeCallsites(
             family_id="XRL.UI/Popup.cs::XRL.UI.Popup.AskStringAsync",
-            lines=(1395,),
+            lines=(1402,),
             reason="AskStringAsync color picker uses a covered fixed title plus runtime input preview content.",
             evidence_files=(report, tests),
         ),
@@ -12526,7 +12535,7 @@ def _issue_576_runtime_deferred_callsites() -> tuple[DeferredRuntimeCallsites, .
         ),
         DeferredRuntimeCallsites(
             family_id="XRL.World.Parts/LiquidVolume.cs::XRL.World.Parts.LiquidVolume.HandleEvent",
-            lines=(3192, 3227, 3538),
+            lines=(3190, 3225, 3536),
             reason="Liquid interaction detail text is assembled in runtime string builders.",
             evidence_files=(report, tests),
         ),
@@ -12610,19 +12619,19 @@ def _issue_576_runtime_deferred_callsites() -> tuple[DeferredRuntimeCallsites, .
         ),
         DeferredRuntimeCallsites(
             family_id="XRL.World/ZoneManager.cs::XRL.World.ZoneManager.SetActiveZone",
-            lines=(1889, 1912),
+            lines=(1924, 1947),
             reason="Active-zone display messages are composed from runtime zone names and entry messages.",
             evidence_files=(report, tests),
         ),
         DeferredRuntimeCallsites(
             family_id="MetricsManager.cs::MetricsManager.LogException",
-            lines=(563,),
+            lines=(567,),
             reason="Exception popup body is assembled from runtime exception and metric context.",
             evidence_files=(report, tests),
         ),
         DeferredRuntimeCallsites(
             family_id="XRL.Core/Scores.cs::XRL.Core.Scores.Show",
-            lines=(265,),
+            lines=(267,),
             reason="High-score details popup displays runtime score detail text.",
             evidence_files=(report, tests),
         ),
@@ -12664,7 +12673,7 @@ def _issue_576_runtime_deferred_callsites() -> tuple[DeferredRuntimeCallsites, .
         ),
         DeferredRuntimeCallsites(
             family_id="XRL.World.Parts/Examiner.cs::XRL.World.Parts.Examiner.ResultCriticalFailure",
-            lines=(951,),
+            lines=(912,),
             reason="Critical examination failure popup is selected from runtime examination state.",
             evidence_files=(report, tests),
         ),
@@ -12682,7 +12691,7 @@ def _issue_576_runtime_deferred_callsites() -> tuple[DeferredRuntimeCallsites, .
         ),
         DeferredRuntimeCallsites(
             family_id="XRL.World.Parts/Mutations.cs::XRL.World.Parts.Mutations.WishMutation",
-            lines=(976,),
+            lines=(1001,),
             reason="Wish mutation failure popup is composed from runtime wish arguments.",
             evidence_files=(report, tests),
         ),
@@ -12718,7 +12727,7 @@ def _issue_576_runtime_deferred_callsites() -> tuple[DeferredRuntimeCallsites, .
         ),
         DeferredRuntimeCallsites(
             family_id="XRL.World/GameObjectFactory.cs::XRL.World.GameObjectFactory.HandleBlueprintXML",
-            lines=(1761,),
+            lines=(1759,),
             reason="Blueprint XML popup displays runtime blueprint XML content.",
             evidence_files=(report, tests),
         ),
@@ -12730,7 +12739,7 @@ def _issue_576_runtime_deferred_callsites() -> tuple[DeferredRuntimeCallsites, .
         ),
         DeferredRuntimeCallsites(
             family_id="XRL/XRLGame.cs::XRL.XRLGame.LoadGame",
-            lines=(1916,),
+            lines=(1939,),
             reason="Load-game failure popup displays runtime exception/failure message text.",
             evidence_files=(report, tests),
         ),
@@ -13114,9 +13123,7 @@ COVERED_OWNER_FAMILIES: Final = (
             ),
             EvidenceFile(
                 "Mods/QudJP/Localization/Dictionaries/messages.ja.json",
-                (
-                    "^You pass by (?:a |an |the )?(.+?)[.!]?$",
-                ),
+                ("^You pass by (?:a |an |the )?(.+?)[.!]?$",),
             ),
         ),
     ),
@@ -14878,10 +14885,7 @@ COVERED_OWNER_FAMILIES: Final = (
         ),
     ),
     CoveredOwnerCallsites(
-        family_id=(
-            "XRL.World.Capabilities/ItemNaming.cs::"
-            "XRL.World.Capabilities.ItemNaming.NameItem"
-        ),
+        family_id=("XRL.World.Capabilities/ItemNaming.cs::XRL.World.Capabilities.ItemNaming.NameItem"),
         lines=(544,),
         inventory_statuses=("needs_family_review",),
         evidence_files=(
@@ -15033,6 +15037,7 @@ COVERED_OWNER_FAMILIES: Final = (
     *_map_reveal_popup_family(),
     *_conversation_reward_popup_families(),
     *_game_summary_tombstone_popup_families(),
+    *_code_compressor_popup_family(),
     *_powered_floating_popup_family(),
     *_conversation_check_lost_popup_family(),
     *_conversation_take_item_popup_family(),
@@ -15075,6 +15080,7 @@ COVERED_OWNER_FAMILIES: Final = (
 )
 COVERED_OWNER_FAMILY_IDS: Final = frozenset(family.family_id for family in COVERED_OWNER_FAMILIES)
 COVERED_OWNER_CALLSITES: Final = (
+    *_game_summary_tombstone_popup_callsites(),
     *_sifrah_pure_owner_popup_callsites(),
     *_giant_clam_shloop_hitch_callsites(),
     *_conversation_reward_popup_callsites(),
@@ -15111,10 +15117,7 @@ COVERED_OWNER_CALLSITES: Final = (
     *_long_blades_core_owner_callsites(),
     *_xrl_core_player_turn_owner_callsites(),
     CoveredOwnerCallsites(
-        family_id=(
-            "XRL.World.Parts.Mutation/Carapace.cs::"
-            "XRL.World.Parts.Mutation.Carapace.Loosen"
-        ),
+        family_id=("XRL.World.Parts.Mutation/Carapace.cs::XRL.World.Parts.Mutation.Carapace.Loosen"),
         lines=(217, 226),
         inventory_statuses=("needs_family_review",),
         evidence_files=(
@@ -15251,11 +15254,8 @@ COVERED_OWNER_CALLSITES: Final = (
         ),
     ),
     CoveredOwnerCallsites(
-        family_id=(
-            "XRL.World.Parts/Physics.cs::"
-            "XRL.World.Parts.Physics.ProcessTargetedMove"
-        ),
-        lines=(3938,),
+        family_id=("XRL.World.Parts/Physics.cs::XRL.World.Parts.Physics.ProcessTargetedMove"),
+        lines=(3821,),
         inventory_statuses=("needs_family_review",),
         evidence_files=(
             EvidenceFile(
@@ -15302,11 +15302,8 @@ COVERED_OWNER_CALLSITES: Final = (
             ),
         ),
     ),
-        CoveredOwnerCallsites(
-            family_id=(
-                "XRL.World.Effects/RealityStabilized.cs::"
-                "XRL.World.Effects.RealityStabilized.FailedToContest"
-            ),
+    CoveredOwnerCallsites(
+        family_id=("XRL.World.Effects/RealityStabilized.cs::XRL.World.Effects.RealityStabilized.FailedToContest"),
         lines=(477, 489, 493),
         inventory_statuses=("needs_family_review",),
         evidence_files=(
@@ -15356,10 +15353,7 @@ COVERED_OWNER_CALLSITES: Final = (
         ),
     ),
     CoveredOwnerCallsites(
-        family_id=(
-            "XRL.World.Parts.Mutation/MassMind.cs::"
-            "XRL.World.Parts.Mutation.MassMind.FireEvent"
-        ),
+        family_id=("XRL.World.Parts.Mutation/MassMind.cs::XRL.World.Parts.Mutation.MassMind.FireEvent"),
         lines=(84, 96, 110),
         inventory_statuses=("needs_family_review",),
         evidence_files=(
@@ -15402,10 +15396,7 @@ COVERED_OWNER_CALLSITES: Final = (
         ),
     ),
     CoveredOwnerCallsites(
-        family_id=(
-            "XRL.World.Parts.Mutation/Telekinesis.cs::"
-            "XRL.World.Parts.Mutation.Telekinesis.HandleEvent"
-        ),
+        family_id=("XRL.World.Parts.Mutation/Telekinesis.cs::XRL.World.Parts.Mutation.Telekinesis.HandleEvent"),
         lines=(194, 266),
         inventory_statuses=("needs_family_review",),
         evidence_files=(
@@ -15448,10 +15439,7 @@ COVERED_OWNER_CALLSITES: Final = (
         ),
     ),
     CoveredOwnerCallsites(
-        family_id=(
-            "XRL.World/ReverseEngineeringSifrah.cs::"
-            "XRL.World.ReverseEngineeringSifrah.Finish"
-        ),
+        family_id=("XRL.World/ReverseEngineeringSifrah.cs::XRL.World.ReverseEngineeringSifrah.Finish"),
         lines=(202,),
         inventory_statuses=("needs_family_review",),
         evidence_files=(
@@ -15490,10 +15478,7 @@ COVERED_OWNER_CALLSITES: Final = (
         ),
     ),
     CoveredOwnerCallsites(
-        family_id=(
-            "XRL.World.Parts/EngulfingDescends.cs::"
-            "XRL.World.Parts.EngulfingDescends.FireEvent"
-        ),
+        family_id=("XRL.World.Parts/EngulfingDescends.cs::XRL.World.Parts.EngulfingDescends.FireEvent"),
         lines=(48,),
         inventory_statuses=("needs_family_review",),
         evidence_files=(
@@ -15533,10 +15518,7 @@ COVERED_OWNER_CALLSITES: Final = (
         ),
     ),
     CoveredOwnerCallsites(
-        family_id=(
-            "XRL.World.Parts/SummoningCurio.cs::"
-            "XRL.World.Parts.SummoningCurio.HandleEvent"
-        ),
+        family_id=("XRL.World.Parts/SummoningCurio.cs::XRL.World.Parts.SummoningCurio.HandleEvent"),
         lines=(75,),
         inventory_statuses=("needs_family_review",),
         evidence_files=(
@@ -15576,10 +15558,7 @@ COVERED_OWNER_CALLSITES: Final = (
         ),
     ),
     CoveredOwnerCallsites(
-        family_id=(
-            "XRL.World.Parts/SpaceTimeVortex.cs::"
-            "XRL.World.Parts.SpaceTimeVortex.ApplyVortex"
-        ),
+        family_id=("XRL.World.Parts/SpaceTimeVortex.cs::XRL.World.Parts.SpaceTimeVortex.ApplyVortex"),
         lines=(430,),
         inventory_statuses=("needs_family_review",),
         evidence_files=(
@@ -15619,10 +15598,7 @@ COVERED_OWNER_CALLSITES: Final = (
         ),
     ),
     CoveredOwnerCallsites(
-        family_id=(
-            "XRL.World.Parts/StairsDown.cs::"
-            "XRL.World.Parts.StairsDown.CheckPullDown"
-        ),
+        family_id=("XRL.World.Parts/StairsDown.cs::XRL.World.Parts.StairsDown.CheckPullDown"),
         lines=(372,),
         inventory_statuses=("needs_family_review",),
         evidence_files=(
@@ -15662,11 +15638,8 @@ COVERED_OWNER_CALLSITES: Final = (
         ),
     ),
     CoveredOwnerCallsites(
-        family_id=(
-            "XRL.World.ZoneParts/ScriptCallToArms.cs::"
-            "XRL.World.ZoneParts.ScriptCallToArms.ShowWarning"
-        ),
-        lines=(547,),
+        family_id=("XRL.World.ZoneParts/ScriptCallToArms.cs::XRL.World.ZoneParts.ScriptCallToArms.ShowWarning"),
+        lines=(546,),
         inventory_statuses=("needs_family_review",),
         evidence_files=(
             EvidenceFile(
@@ -15705,10 +15678,7 @@ COVERED_OWNER_CALLSITES: Final = (
         ),
     ),
     CoveredOwnerCallsites(
-        family_id=(
-            "XRL.World.Parts/Food.cs::"
-            "XRL.World.Parts.Food.HandleEvent"
-        ),
+        family_id=("XRL.World.Parts/Food.cs::XRL.World.Parts.Food.HandleEvent"),
         lines=(197,),
         inventory_statuses=("needs_family_review",),
         evidence_files=(
@@ -15750,10 +15720,7 @@ COVERED_OWNER_CALLSITES: Final = (
         ),
     ),
     CoveredOwnerCallsites(
-        family_id=(
-            "XRL.World.Parts/FixitSpray.cs::"
-            "XRL.World.Parts.FixitSpray.HandleEvent"
-        ),
+        family_id=("XRL.World.Parts/FixitSpray.cs::XRL.World.Parts.FixitSpray.HandleEvent"),
         lines=(59, 66, 81),
         inventory_statuses=("needs_family_review",),
         evidence_files=(
@@ -15797,10 +15764,7 @@ COVERED_OWNER_CALLSITES: Final = (
         ),
     ),
     CoveredOwnerCallsites(
-        family_id=(
-            "XRL.World.Parts/AnimatorSpray.cs::"
-            "XRL.World.Parts.AnimatorSpray.HandleEvent"
-        ),
+        family_id=("XRL.World.Parts/AnimatorSpray.cs::XRL.World.Parts.AnimatorSpray.HandleEvent"),
         lines=(46, 88),
         inventory_statuses=("needs_family_review",),
         evidence_files=(
@@ -15843,10 +15807,7 @@ COVERED_OWNER_CALLSITES: Final = (
         ),
     ),
     CoveredOwnerCallsites(
-        family_id=(
-            "XRL.World.Parts/FactionDeed.cs::"
-            "XRL.World.Parts.FactionDeed.HandleEvent"
-        ),
+        family_id=("XRL.World.Parts/FactionDeed.cs::XRL.World.Parts.FactionDeed.HandleEvent"),
         lines=(72, 77, 83, 142),
         inventory_statuses=("needs_family_review",),
         evidence_files=(
@@ -15895,10 +15856,7 @@ COVERED_OWNER_CALLSITES: Final = (
         ),
     ),
     CoveredOwnerCallsites(
-        family_id=(
-            "XRL.World.Parts/EelSpawn.cs::"
-            "XRL.World.Parts.EelSpawn.HandleEvent"
-        ),
+        family_id=("XRL.World.Parts/EelSpawn.cs::XRL.World.Parts.EelSpawn.HandleEvent"),
         lines=(57, 64, 71),
         inventory_statuses=("needs_family_review",),
         evidence_files=(
@@ -15952,10 +15910,7 @@ COVERED_OWNER_CALLSITES: Final = (
         ),
     ),
     CoveredOwnerCallsites(
-        family_id=(
-            "XRL.World.Parts/TeleporterPair.cs::"
-            "XRL.World.Parts.TeleporterPair.AttemptTeleport"
-        ),
+        family_id=("XRL.World.Parts/TeleporterPair.cs::XRL.World.Parts.TeleporterPair.AttemptTeleport"),
         lines=(201,),
         inventory_statuses=("needs_family_review",),
         evidence_files=(
@@ -15998,10 +15953,7 @@ COVERED_OWNER_CALLSITES: Final = (
         ),
     ),
     CoveredOwnerCallsites(
-        family_id=(
-            "XRL.World.Parts/ITeleporter.cs::"
-            "XRL.World.Parts.ITeleporter.AttemptTeleport"
-        ),
+        family_id=("XRL.World.Parts/ITeleporter.cs::XRL.World.Parts.ITeleporter.AttemptTeleport"),
         lines=(243, 247, 252, 266, 276, 279, 282, 287, 291, 311),
         inventory_statuses=("needs_family_review",),
         evidence_files=(
@@ -16050,10 +16002,7 @@ COVERED_OWNER_CALLSITES: Final = (
         ),
     ),
     CoveredOwnerCallsites(
-        family_id=(
-            "XRL.World.Parts.Skill/ShortBlades_Hobble.cs::"
-            "XRL.World.Parts.Skill.ShortBlades_Hobble.FireEvent"
-        ),
+        family_id=("XRL.World.Parts.Skill/ShortBlades_Hobble.cs::XRL.World.Parts.Skill.ShortBlades_Hobble.FireEvent"),
         lines=(77, 81, 117),
         inventory_statuses=("needs_family_review",),
         evidence_files=(
@@ -16108,10 +16057,7 @@ COVERED_OWNER_CALLSITES: Final = (
         ),
     ),
     CoveredOwnerCallsites(
-        family_id=(
-            "XRL.World.Parts.Skill/ShortBlades_Shank.cs::"
-            "XRL.World.Parts.Skill.ShortBlades_Shank.Cast"
-        ),
+        family_id=("XRL.World.Parts.Skill/ShortBlades_Shank.cs::XRL.World.Parts.Skill.ShortBlades_Shank.Cast"),
         lines=(85, 93),
         inventory_statuses=("needs_family_review",),
         evidence_files=(
@@ -16163,10 +16109,9 @@ COVERED_OWNER_CALLSITES: Final = (
     ),
     CoveredOwnerCallsites(
         family_id=(
-            "XRL.World.Parts/DecoyHologramEmitter.cs::"
-            "XRL.World.Parts.DecoyHologramEmitter.ActivateHologramBracelet"
+            "XRL.World.Parts/DecoyHologramEmitter.cs::XRL.World.Parts.DecoyHologramEmitter.ActivateHologramBracelet"
         ),
-        lines=(411, 418, 421),
+        lines=(412, 419, 422),
         inventory_statuses=("needs_family_review",),
         evidence_files=(
             EvidenceFile(
@@ -16211,10 +16156,7 @@ COVERED_OWNER_CALLSITES: Final = (
         ),
     ),
     CoveredOwnerCallsites(
-        family_id=(
-            "XRL.World.Parts/FabricateFromSelf.cs::"
-            "XRL.World.Parts.FabricateFromSelf.Activate"
-        ),
+        family_id=("XRL.World.Parts/FabricateFromSelf.cs::XRL.World.Parts.FabricateFromSelf.Activate"),
         lines=(321,),
         inventory_statuses=("needs_family_review",),
         evidence_files=(
@@ -16257,10 +16199,7 @@ COVERED_OWNER_CALLSITES: Final = (
         ),
     ),
     CoveredOwnerCallsites(
-        family_id=(
-            "XRL.World.Parts/Leveler.cs::"
-            "XRL.World.Parts.Leveler.RapidAdvancement"
-        ),
+        family_id=("XRL.World.Parts/Leveler.cs::XRL.World.Parts.Leveler.RapidAdvancement"),
         lines=(325, 342, 352),
         inventory_statuses=("needs_family_review",),
         evidence_files=(
@@ -16304,10 +16243,7 @@ COVERED_OWNER_CALLSITES: Final = (
         ),
     ),
     CoveredOwnerCallsites(
-        family_id=(
-            "XRL.World.Parts/AnimateObject.cs::"
-            "XRL.World.Parts.AnimateObject.HandleEvent"
-        ),
+        family_id=("XRL.World.Parts/AnimateObject.cs::XRL.World.Parts.AnimateObject.HandleEvent"),
         lines=(79, 88),
         inventory_statuses=("needs_family_review",),
         evidence_files=(
@@ -16351,10 +16287,7 @@ COVERED_OWNER_CALLSITES: Final = (
         ),
     ),
     CoveredOwnerCallsites(
-        family_id=(
-            "XRL.World.Parts/RandomAltarBaetyl.cs::"
-            "XRL.World.Parts.RandomAltarBaetyl.BaetylWantsSacrifice"
-        ),
+        family_id=("XRL.World.Parts/RandomAltarBaetyl.cs::XRL.World.Parts.RandomAltarBaetyl.BaetylWantsSacrifice"),
         lines=(800,),
         inventory_statuses=("needs_family_review",),
         evidence_files=(
@@ -16397,10 +16330,7 @@ COVERED_OWNER_CALLSITES: Final = (
         ),
     ),
     CoveredOwnerCallsites(
-        family_id=(
-            "XRL.World.Parts/VehicleSeat.cs::"
-            "XRL.World.Parts.VehicleSeat.AttemptPilot"
-        ),
+        family_id=("XRL.World.Parts/VehicleSeat.cs::XRL.World.Parts.VehicleSeat.AttemptPilot"),
         lines=(55, 66),
         inventory_statuses=("needs_family_review",),
         evidence_files=(
@@ -16441,10 +16371,7 @@ COVERED_OWNER_CALLSITES: Final = (
         ),
     ),
     CoveredOwnerCallsites(
-        family_id=(
-            "XRL.World.Parts/Stomach.cs::"
-            "XRL.World.Parts.Stomach.FireEvent"
-        ),
+        family_id=("XRL.World.Parts/Stomach.cs::XRL.World.Parts.Stomach.FireEvent"),
         lines=(488, 512),
         inventory_statuses=("needs_family_review",),
         evidence_files=(
@@ -16488,8 +16415,7 @@ COVERED_OWNER_CALLSITES: Final = (
     ),
     CoveredOwnerCallsites(
         family_id=(
-            "XRL.World.Capabilities/Firefighting.cs::"
-            "XRL.World.Capabilities.Firefighting.AttemptFirefightingCore"
+            "XRL.World.Capabilities/Firefighting.cs::XRL.World.Capabilities.Firefighting.AttemptFirefightingCore"
         ),
         lines=(80,),
         inventory_statuses=("needs_family_review",),
@@ -16531,10 +16457,7 @@ COVERED_OWNER_CALLSITES: Final = (
         ),
     ),
     CoveredOwnerCallsites(
-        family_id=(
-            "XRL.World.Parts/TinkerItem.cs::"
-            "XRL.World.Parts.TinkerItem.HandleEvent"
-        ),
+        family_id=("XRL.World.Parts/TinkerItem.cs::XRL.World.Parts.TinkerItem.HandleEvent"),
         lines=(343, 348, 365, 372),
         inventory_statuses=("needs_family_review",),
         evidence_files=(
@@ -16582,10 +16505,7 @@ COVERED_OWNER_CALLSITES: Final = (
         ),
     ),
     CoveredOwnerCallsites(
-        family_id=(
-            "XRL.UI/KeyMappingUI.cs::"
-            "XRL.UI.KeyMappingUI.Show"
-        ),
+        family_id=("XRL.UI/KeyMappingUI.cs::XRL.UI.KeyMappingUI.Show"),
         lines=(315, 318),
         inventory_statuses=("needs_family_review",),
         evidence_files=(
@@ -16614,7 +16534,7 @@ COVERED_OWNER_CALLSITES: Final = (
                     "Show_DoesNotClaimFixedOrEmptyPrompts_WhenOwnerPatched",
                     "Can not remove the last binding for",
                     "Are you sure you want to clear this binding for",
-                    "Are you sure you want to override your keymap with the default?",
+                    "Are you sure you want to override your bindings with the default?",
                     "Would you like to save your changes?",
                 ),
             ),
@@ -16629,11 +16549,8 @@ COVERED_OWNER_CALLSITES: Final = (
         ),
     ),
     CoveredOwnerCallsites(
-        family_id=(
-            "Qud.UI/KeybindsScreen.cs::"
-            "Qud.UI.KeybindsScreen.HandleMenuOption"
-        ),
-        lines=(303, 306),
+        family_id=("Qud.UI/KeybindsScreen.cs::Qud.UI.KeybindsScreen.HandleMenuOption"),
+        lines=(306, 309),
         inventory_statuses=("needs_family_review",),
         evidence_files=(
             EvidenceFile(
@@ -16660,7 +16577,7 @@ COVERED_OWNER_CALLSITES: Final = (
                     "HandleMenuOption_DoesNotClaimFixedOrEmptyAsyncPrompts_WhenOwnerPatched",
                     "Can not remove the last binding for {{C|Fire}}.",
                     "Are you sure you want to clear the binding for {{C|Ctrl+F}}?",
-                    "Are you sure you want to override your keymap with the default?",
+                    "Are you sure you want to override your bindings with the default?",
                 ),
             ),
             EvidenceFile(
@@ -16713,10 +16630,7 @@ COVERED_OWNER_CALLSITES: Final = (
         ),
     ),
     CoveredOwnerCallsites(
-        family_id=(
-            "XRL.World.Capabilities/PsychicGlimmer.cs::"
-            "XRL.World.Capabilities.PsychicGlimmer.Update"
-        ),
+        family_id=("XRL.World.Capabilities/PsychicGlimmer.cs::XRL.World.Capabilities.PsychicGlimmer.Update"),
         lines=(30, 44, 58),
         inventory_statuses=("needs_family_review",),
         evidence_files=(
@@ -16759,10 +16673,7 @@ COVERED_OWNER_CALLSITES: Final = (
         ),
     ),
     CoveredOwnerCallsites(
-        family_id=(
-            "XRL.World.Effects/GlotrotOnset.cs::"
-            "XRL.World.Effects.GlotrotOnset.FireEvent"
-        ),
+        family_id=("XRL.World.Effects/GlotrotOnset.cs::XRL.World.Effects.GlotrotOnset.FireEvent"),
         lines=(112, 122, 131),
         inventory_statuses=("needs_family_review",),
         evidence_files=(
@@ -16800,10 +16711,7 @@ COVERED_OWNER_CALLSITES: Final = (
         ),
     ),
     CoveredOwnerCallsites(
-        family_id=(
-            "XRL.World.Effects/Ironshank.cs::"
-            "XRL.World.Effects.Ironshank.FireEvent"
-        ),
+        family_id=("XRL.World.Effects/Ironshank.cs::XRL.World.Effects.Ironshank.FireEvent"),
         lines=(160,),
         inventory_statuses=("needs_family_review",),
         evidence_files=(
@@ -16841,10 +16749,7 @@ COVERED_OWNER_CALLSITES: Final = (
         ),
     ),
     CoveredOwnerCallsites(
-        family_id=(
-            "XRL.World.Parts/Examiner.cs::"
-            "XRL.World.Parts.Examiner.HandleEvent"
-        ),
+        family_id=("XRL.World.Parts/Examiner.cs::XRL.World.Parts.Examiner.HandleEvent"),
         lines=(405, 428, 433),
         inventory_statuses=("needs_family_review",),
         evidence_files=(
@@ -16885,11 +16790,8 @@ COVERED_OWNER_CALLSITES: Final = (
         ),
     ),
     CoveredOwnerCallsites(
-        family_id=(
-            "XRL.World.Parts/Examiner.cs::"
-            "XRL.World.Parts.Examiner.ResultCriticalFailure"
-        ),
-        lines=(960,),
+        family_id=("XRL.World.Parts/Examiner.cs::XRL.World.Parts.Examiner.ResultCriticalFailure"),
+        lines=(921,),
         inventory_statuses=("needs_family_review",),
         evidence_files=(
             EvidenceFile(
@@ -16927,10 +16829,7 @@ COVERED_OWNER_CALLSITES: Final = (
         ),
     ),
     CoveredOwnerCallsites(
-        family_id=(
-            "XRL.World/SocialSifrahTokenGift.cs::"
-            "XRL.World.SocialSifrahTokenGift.CheckTokenUse"
-        ),
+        family_id=("XRL.World/SocialSifrahTokenGift.cs::XRL.World.SocialSifrahTokenGift.CheckTokenUse"),
         lines=(120, 124),
         inventory_statuses=("needs_family_review",),
         evidence_files=(
@@ -16971,10 +16870,7 @@ COVERED_OWNER_CALLSITES: Final = (
         ),
     ),
     CoveredOwnerCallsites(
-        family_id=(
-            "XRL.World/SocialSifrahTokenItem.cs::"
-            "XRL.World.SocialSifrahTokenItem.CheckTokenUse"
-        ),
+        family_id=("XRL.World/SocialSifrahTokenItem.cs::XRL.World.SocialSifrahTokenItem.CheckTokenUse"),
         lines=(115, 119),
         inventory_statuses=("needs_family_review",),
         evidence_files=(
@@ -17016,7 +16912,7 @@ COVERED_OWNER_CALLSITES: Final = (
     ),
     CoveredOwnerCallsites(
         family_id="XRL.Core/XRLCore.cs::XRL.Core.XRLCore.SaveManagement",
-        lines=(3962,),
+        lines=(3987,),
         inventory_statuses=("needs_family_review",),
         evidence_files=(
             EvidenceFile(
@@ -17054,10 +16950,7 @@ COVERED_OWNER_CALLSITES: Final = (
         ),
     ),
     CoveredOwnerCallsites(
-        family_id=(
-            "XRL.World.Biomes/BiomeManager.cs::"
-            "XRL.World.Biomes.BiomeManager.DisplaySurfaceDistribution"
-        ),
+        family_id=("XRL.World.Biomes/BiomeManager.cs::XRL.World.Biomes.BiomeManager.DisplaySurfaceDistribution"),
         lines=(129,),
         inventory_statuses=("owner_patch_required",),
         evidence_files=(
@@ -17097,10 +16990,7 @@ COVERED_OWNER_CALLSITES: Final = (
         ),
     ),
     CoveredOwnerCallsites(
-        family_id=(
-            "XRL.World.Parts/CursedCellSocket.cs::"
-            "XRL.World.Parts.CursedCellSocket.HandleEvent"
-        ),
+        family_id=("XRL.World.Parts/CursedCellSocket.cs::XRL.World.Parts.CursedCellSocket.HandleEvent"),
         lines=(58,),
         inventory_statuses=("needs_family_review",),
         evidence_files=(
@@ -17140,10 +17030,7 @@ COVERED_OWNER_CALLSITES: Final = (
         ),
     ),
     CoveredOwnerCallsites(
-        family_id=(
-            "XRL.World.Parts/DestroyOnUnequip.cs::"
-            "XRL.World.Parts.DestroyOnUnequip.HandleEvent"
-        ),
+        family_id=("XRL.World.Parts/DestroyOnUnequip.cs::XRL.World.Parts.DestroyOnUnequip.HandleEvent"),
         lines=(48,),
         inventory_statuses=("needs_family_review",),
         evidence_files=(
@@ -17183,10 +17070,7 @@ COVERED_OWNER_CALLSITES: Final = (
         ),
     ),
     CoveredOwnerCallsites(
-        family_id=(
-            "XRL.World.Parts/MagnetizedApplicator.cs::"
-            "XRL.World.Parts.MagnetizedApplicator.HandleEvent"
-        ),
+        family_id=("XRL.World.Parts/MagnetizedApplicator.cs::XRL.World.Parts.MagnetizedApplicator.HandleEvent"),
         lines=(67,),
         inventory_statuses=("needs_family_review",),
         evidence_files=(
@@ -17228,7 +17112,7 @@ COVERED_OWNER_CALLSITES: Final = (
     ),
     CoveredOwnerCallsites(
         family_id="XRL.World.Parts/Mutations.cs::XRL.World.Parts.Mutations.WishMutation",
-        lines=(924,),
+        lines=(949,),
         inventory_statuses=("needs_family_review",),
         evidence_files=(
             EvidenceFile(
@@ -17268,10 +17152,7 @@ COVERED_OWNER_CALLSITES: Final = (
         ),
     ),
     CoveredOwnerCallsites(
-        family_id=(
-            "XRL.World.Parts/NephalProperties.cs::"
-            "XRL.World.Parts.NephalProperties.HandleEvent"
-        ),
+        family_id=("XRL.World.Parts/NephalProperties.cs::XRL.World.Parts.NephalProperties.HandleEvent"),
         lines=(173,),
         inventory_statuses=("needs_family_review",),
         evidence_files=(
@@ -17354,11 +17235,8 @@ COVERED_OWNER_CALLSITES: Final = (
         ),
     ),
     CoveredOwnerCallsites(
-        family_id=(
-            "XRL.World/GameObjectFactory.cs::"
-            "XRL.World.GameObjectFactory.HandleBlueprintXML"
-        ),
-        lines=(1757,),
+        family_id=("XRL.World/GameObjectFactory.cs::XRL.World.GameObjectFactory.HandleBlueprintXML"),
+        lines=(1755,),
         inventory_statuses=("needs_family_review",),
         evidence_files=(
             EvidenceFile(
@@ -17398,7 +17276,7 @@ COVERED_OWNER_CALLSITES: Final = (
     ),
     CoveredOwnerCallsites(
         family_id="XRL/XRLGame.cs::XRL.XRLGame.LoadGame",
-        lines=(1667,),
+        lines=(1693,),
         inventory_statuses=("needs_family_review",),
         evidence_files=(
             EvidenceFile(
@@ -17440,7 +17318,7 @@ COVERED_OWNER_CALLSITES: Final = (
     ),
     CoveredOwnerCallsites(
         family_id="XRL.Core/Scores.cs::XRL.Core.Scores.Show",
-        lines=(267,),
+        lines=(269,),
         inventory_statuses=("needs_family_review",),
         evidence_files=(
             EvidenceFile(
@@ -17604,7 +17482,7 @@ COVERED_OWNER_CALLSITES: Final = (
     ),
     CoveredOwnerCallsites(
         family_id="XRL.World.Parts/TerrainTravel.cs::XRL.World.Parts.TerrainTravel.HandleLeavingCell",
-        lines=(186, 216, 258),
+        lines=(186, 216, 257),
         inventory_statuses=("needs_family_review",),
         evidence_files=(
             EvidenceFile(
@@ -17966,7 +17844,7 @@ COVERED_OWNER_CALLSITES: Final = (
     ),
     CoveredOwnerCallsites(
         family_id="XRL.World/ZoneManager.cs::XRL.World.ZoneManager.SetActiveZone",
-        lines=(1885,),
+        lines=(1920,),
         inventory_statuses=("needs_family_review",),
         evidence_files=(
             EvidenceFile(
@@ -18007,7 +17885,7 @@ COVERED_OWNER_CALLSITES: Final = (
     ),
     CoveredOwnerCallsites(
         family_id="XRL.World/ZoneManager.cs::XRL.World.ZoneManager.GenerateZone",
-        lines=(3286, 3570),
+        lines=(3321, 3605),
         inventory_statuses=("needs_family_review",),
         evidence_files=(
             EvidenceFile(
@@ -18067,26 +17945,18 @@ COVERED_OWNER_CALLSITES: Final = (
     ),
 )
 COVERED_OWNER_CALLSITE_KEYS: Final = frozenset(
-    (covered.family_id, line)
-    for covered in COVERED_OWNER_CALLSITES
-    for line in covered.lines
+    (covered.family_id, line) for covered in COVERED_OWNER_CALLSITES for line in covered.lines
 )
 DEFERRED_RUNTIME_CALLSITES: Final = _issue_576_runtime_deferred_callsites()
 DEFERRED_RUNTIME_CALLSITE_KEYS: Final = frozenset(
-    (deferred.family_id, line)
-    for deferred in DEFERRED_RUNTIME_CALLSITES
-    for line in deferred.lines
+    (deferred.family_id, line) for deferred in DEFERRED_RUNTIME_CALLSITES for line in deferred.lines
 )
 CYBERNETICS_BUTCHER_PATTERN_FILE: Final = "XRL.World.Parts/CyberneticsButcherableCybernetic.cs::"
 CYBERNETICS_BUTCHER_PATTERN_MEMBER: Final = "XRL.World.Parts.CyberneticsButcherableCybernetic.AttemptButcher"
-CYBERNETICS_BUTCHER_PATTERN_FAMILY_ID: Final = (
-    f"{CYBERNETICS_BUTCHER_PATTERN_FILE}{CYBERNETICS_BUTCHER_PATTERN_MEMBER}"
-)
+CYBERNETICS_BUTCHER_PATTERN_FAMILY_ID: Final = f"{CYBERNETICS_BUTCHER_PATTERN_FILE}{CYBERNETICS_BUTCHER_PATTERN_MEMBER}"
 HOLOGRAPHIC_VISAGE_PATTERN_FILE: Final = "XRL.World.Parts/CyberneticsHolographicVisage.cs::"
 HOLOGRAPHIC_VISAGE_PATTERN_MEMBER: Final = "XRL.World.Parts.CyberneticsHolographicVisage.SelectVisage"
-HOLOGRAPHIC_VISAGE_PATTERN_FAMILY_ID: Final = (
-    f"{HOLOGRAPHIC_VISAGE_PATTERN_FILE}{HOLOGRAPHIC_VISAGE_PATTERN_MEMBER}"
-)
+HOLOGRAPHIC_VISAGE_PATTERN_FAMILY_ID: Final = f"{HOLOGRAPHIC_VISAGE_PATTERN_FILE}{HOLOGRAPHIC_VISAGE_PATTERN_MEMBER}"
 TINKERING_MINE_EXCEPTIONAL_SUCCESS_PATTERN_FILE: Final = "XRL.World.Parts/Tinkering_Mine.cs::"
 TINKERING_MINE_EXCEPTIONAL_SUCCESS_PATTERN_MEMBER: Final = (
     "XRL.World.Parts.Tinkering_Mine.DisarmingResultExceptionalSuccess"
@@ -18207,7 +18077,7 @@ MESSAGE_PATTERN_COVERED_CALLSITES: Final = (
     ),
     CoveredMessagePatternCallsites(
         "XRL.World.Parts/DecoyHologramEmitter.cs::XRL.World.Parts.DecoyHologramEmitter.DestroyHolograms",
-        (438, 450),
+        (439, 451),
         (),
     ),
     CoveredMessagePatternCallsites(
@@ -18242,7 +18112,7 @@ MESSAGE_PATTERN_COVERED_CALLSITES: Final = (
     ),
     CoveredMessagePatternCallsites(
         "XRL.World.Parts/GeomagneticDisc.cs::XRL.World.Parts.GeomagneticDisc.FireEvent",
-        (202,),
+        (201,),
         (),
     ),
     CoveredMessagePatternCallsites(
@@ -18272,7 +18142,7 @@ MESSAGE_PATTERN_COVERED_CALLSITES: Final = (
     ),
     CoveredMessagePatternCallsites(
         "XRL.World.Parts/MagazineAmmoLoader.cs::XRL.World.Parts.MagazineAmmoLoader.Load",
-        (613,),
+        (604,),
         (),
     ),
     CoveredMessagePatternCallsites(
@@ -18350,7 +18220,7 @@ MESSAGE_PATTERN_COVERED_CALLSITES: Final = (
     ),
     CoveredMessagePatternCallsites(
         "XRL.World.Parts/Mutations.cs::XRL.World.Parts.Mutations.AddChimericBodyPart",
-        (562,),
+        (587,),
         (),
     ),
     CoveredMessagePatternCallsites(
@@ -18375,17 +18245,17 @@ MESSAGE_PATTERN_COVERED_CALLSITES: Final = (
     ),
     CoveredMessagePatternCallsites(
         "XRL.World.Parts/Tinkering_Mine.cs::XRL.World.Parts.Tinkering_Mine.DisarmingResultSuccess",
-        (820,),
+        (811,),
         (),
     ),
     CoveredMessagePatternCallsites(
         TINKERING_MINE_EXCEPTIONAL_SUCCESS_PATTERN_FAMILY_ID,
-        (834,),
+        (825,),
         (),
     ),
     CoveredMessagePatternCallsites(
         "XRL.World.Parts/Tinkering_Mine.cs::XRL.World.Parts.Tinkering_Mine.DisarmingResultPartialSuccess",
-        (843,),
+        (834,),
         (),
     ),
     CoveredMessagePatternCallsites(
@@ -18395,14 +18265,12 @@ MESSAGE_PATTERN_COVERED_CALLSITES: Final = (
     ),
     CoveredMessagePatternCallsites(
         "XRL.World.Parts/ShevaStarshipControl.cs::XRL.World.Parts.ShevaStarshipControl.CheckTimer",
-        (142,),
+        (152,),
         (),
     ),
 )
 MESSAGE_PATTERN_COVERED_CALLSITE_KEYS: Final = frozenset(
-    (covered.family_id, line)
-    for covered in MESSAGE_PATTERN_COVERED_CALLSITES
-    for line in covered.lines
+    (covered.family_id, line) for covered in MESSAGE_PATTERN_COVERED_CALLSITES for line in covered.lines
 )
 MESSAGE_CANDIDATE_ROUTE_COVERED_CALLSITES: Final = (
     CoveredMessageCandidateRouteCallsites(
@@ -18472,7 +18340,7 @@ MESSAGE_CANDIDATE_ROUTE_COVERED_CALLSITES: Final = (
     ),
     CoveredMessageCandidateRouteCallsites(
         "XRL.World.Parts/Campfire.cs::XRL.World.Parts.Campfire.Extinguish",
-        (1936,),
+        (1940,),
         "existing_does_verb_route_coverage",
         "existing DoesVerb route",
         "current verbs.ja.json frames and DoesVerb tests cover this generated sentence",
@@ -18556,6 +18424,33 @@ MESSAGE_CANDIDATE_ROUTE_COVERED_CALLSITES: Final = (
             ),
         ),
     ),
+    CoveredMessageCandidateRouteCallsites(
+        (
+            "XRL.World.Effects/CookingDomainSpecial_UnitSlogTransform.cs::"
+            "XRL.World.Effects.CookingDomainSpecial_UnitSlogTransform.ApplyTo"
+        ),
+        (50,),
+        "existing_owner_route_coverage",
+        "existing owner route",
+        "the cooking owner patch translates the reviewed Bilge Sphincter mutation notification",
+        (
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/src/Patches/CookingRuntimeTranslationPatch.cs",
+                ("You gained the mutation {{w|Bilge Sphincter}}!",),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2/CookingRuntimeTranslationPatchTests.cs",
+                (
+                    "You gained the mutation {{w|Bilge Sphincter}}!",
+                    "変異{{w|ビルジスフィンクター}}を得た！",  # noqa: RUF001
+                ),
+            ),
+            EvidenceFile(
+                "Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs",
+                ("XRL.World.Effects.CookingDomainSpecial_UnitSlogTransform|ApplyTo|System.Void|XRL.World.GameObject",),
+            ),
+        ),
+    ),
 )
 MESSAGE_CANDIDATE_ROUTE_COVERED_CALLSITE_DETAILS: Final = {
     (covered.family_id, line): covered
@@ -18593,11 +18488,7 @@ def family_closure_status(family: FamilyPayload) -> str:
 
 def owner_action_queue(inventory: InventoryPayload) -> list[FamilyPayload]:
     """Return producer families that still need owner-route implementation work."""
-    return [
-        family
-        for family in inventory["families"]
-        if _family_has_owner_action_remaining(inventory, family)
-    ]
+    return [family for family in inventory["families"] if _family_has_owner_action_remaining(inventory, family)]
 
 
 def owner_action_queue_entries(inventory: InventoryPayload) -> list[OwnerActionQueueEntry]:

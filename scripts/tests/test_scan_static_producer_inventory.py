@@ -133,7 +133,7 @@ def test_cli_writes_deterministic_inventory_without_absolute_source_root(tmp_pat
     assert output_a.read_text(encoding="utf-8") == output_b.read_text(encoding="utf-8")
     payload = cast("dict[str, object]", json.loads(output_a.read_text(encoding="utf-8")))
     assert payload["schema_version"] == "1.0"
-    assert payload["game_version"] == "1.0.4"
+    assert payload["game_version"] == "1.0.5"
     assert payload["target_surfaces"] == ["EmitMessage", "Popup.Show*", "AddPlayerMessage"]
     assert "source_root" not in payload
 
@@ -283,6 +283,14 @@ def test_closure_overrides_cover_wrappers_debug_and_marker_gated_paths() -> None
 
     wish = _callsite(payload, "XRL.Wish/WishCommand.cs", 'ParentObject.EmitMessage("Wish debug text")')
     assert wish["closure_status"] == "debug_ignore"
+
+    achievement_wish = _callsite(
+        payload,
+        "AchievementManager.cs",
+        'AddPlayerMessage("All Achievements Already Unlocked")',
+    )
+    assert achievement_wish["member_name"] == "DebugUnlockAnyAchievement"
+    assert achievement_wish["closure_status"] == "debug_ignore"
 
     population_owner = _callsite(payload, "XRL/PopulationManager.cs", 'AddPlayerMessage("Population owner text")')
     assert population_owner["closure_status"] == "owner_patch_required"

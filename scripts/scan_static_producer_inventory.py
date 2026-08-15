@@ -18,7 +18,7 @@ if str(REPO_ROOT) not in sys.path:
 from scripts.dotnet_tool_runner import DotnetToolError, run_cached_tool_project  # noqa: E402
 
 SCHEMA_VERSION: Final = "1.0"
-GAME_VERSION: Final = "1.0.4"
+GAME_VERSION: Final = "1.0.5"
 DEFAULT_SOURCE_ROOT: Final = Path("~/dev/coq-decompiled_stable").expanduser()
 TARGET_SURFACES: Final = ["EmitMessage", "Popup.Show*", "AddPlayerMessage"]
 ROSLYN_SCANNER_TIMEOUT_SECONDS: Final = 600

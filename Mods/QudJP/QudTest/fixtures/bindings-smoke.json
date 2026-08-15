@@ -111,6 +111,22 @@
       ]
     },
     {
+      "id": "binding.steam-scores-row-status",
+      "route": "patch-binding",
+      "patch": "QudJP.Patches.SteamScoresRowTranslationPatch",
+      "expectedTargets": [
+        "SteamScoresRow|setData|System.Void|XRL.UI.Framework.FrameworkDataElement"
+      ]
+    },
+    {
+      "id": "binding.code-compressor-required-mod-popup",
+      "route": "patch-binding",
+      "patch": "QudJP.Patches.CodeCompressorTranslationPatch",
+      "expectedTargets": [
+        "XRL.CharacterBuilds.CodeCompressor|loadCode|System.Void|System.String|System.Collections.Generic.List`1[[XRL.CharacterBuilds.AbstractEmbarkBuilderModule]]|System.Boolean"
+      ]
+    },
+    {
       "id": "binding.conversation-pronoun-exchange",
       "route": "patch-binding",
       "patch": "QudJP.Patches.ConversationPronounExchangeTranslationPatch",
