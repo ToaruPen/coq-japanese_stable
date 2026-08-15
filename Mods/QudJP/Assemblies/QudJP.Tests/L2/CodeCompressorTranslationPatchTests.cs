@@ -39,7 +39,7 @@ public sealed class CodeCompressorTranslationPatchTests
 
         WithPatchedOwner(() =>
         {
-            new DummyCodeCompressorTarget { PopupMessageToShow = source }.loadCode();
+            InvokeDummyLoadCode(source);
 
             Assert.Multiple(() =>
             {
@@ -58,7 +58,7 @@ public sealed class CodeCompressorTranslationPatchTests
 
         WithPatchedOwner(() =>
         {
-            new DummyCodeCompressorTarget { PopupMessageToShow = source }.loadCode();
+            InvokeDummyLoadCode(source);
 
             Assert.Multiple(() =>
             {
@@ -77,10 +77,7 @@ public sealed class CodeCompressorTranslationPatchTests
 
         WithPatchedOwner(() =>
         {
-            new DummyCodeCompressorTarget
-            {
-                PopupMessageToShow = MessageFrameTranslator.MarkDirectTranslation(translated),
-            }.loadCode();
+            InvokeDummyLoadCode(MessageFrameTranslator.MarkDirectTranslation(translated));
 
             Assert.Multiple(() =>
             {
@@ -99,7 +96,7 @@ public sealed class CodeCompressorTranslationPatchTests
             dictionaryJson: null,
             () => WithPatchedOwner(() =>
             {
-                new DummyCodeCompressorTarget { PopupMessageToShow = source }.loadCode();
+                InvokeDummyLoadCode(source);
 
                 Assert.Multiple(() =>
                 {
@@ -128,7 +125,7 @@ public sealed class CodeCompressorTranslationPatchTests
             """,
             () => WithPatchedOwner(() =>
             {
-                new DummyCodeCompressorTarget { PopupMessageToShow = source }.loadCode();
+                InvokeDummyLoadCode(source);
 
                 Assert.Multiple(() =>
                 {
@@ -159,7 +156,7 @@ public sealed class CodeCompressorTranslationPatchTests
     {
         WithPatchedOwner(() =>
         {
-            new DummyCodeCompressorTarget { PopupMessageToShow = source }.loadCode();
+            InvokeDummyLoadCode(source);
 
             Assert.Multiple(() =>
             {
@@ -169,12 +166,38 @@ public sealed class CodeCompressorTranslationPatchTests
         });
     }
 
+    [Test]
+    public void DummyTarget_MatchesRuntimeParameterShape()
+    {
+        var parameterTypes = RequireOwnerMethod()
+            .GetParameters()
+            .Select(parameter => parameter.ParameterType)
+            .ToArray();
+
+        Assert.That(
+            parameterTypes,
+            Is.EqualTo(new[]
+            {
+                typeof(string),
+                typeof(List<XRL.CharacterBuilds.AbstractEmbarkBuilderModule>),
+                typeof(bool),
+            }));
+    }
+
     private static void WithPatchedOwner(Action action)
     {
         OwnerPopupRouteTestHarness.WithPatchedPopupOwner(
             typeof(CodeCompressorTranslationPatch),
             RequireOwnerMethod(),
             action);
+    }
+
+    private static void InvokeDummyLoadCode(string source)
+    {
+        DummyCodeCompressorTarget.loadCode(
+            source,
+            new List<XRL.CharacterBuilds.AbstractEmbarkBuilderModule>(),
+            silent: false);
     }
 
     private static MethodInfo RequireOwnerMethod()

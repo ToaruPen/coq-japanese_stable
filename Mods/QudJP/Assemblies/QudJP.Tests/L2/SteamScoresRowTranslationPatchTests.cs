@@ -97,6 +97,41 @@ public sealed class SteamScoresRowTranslationPatchTests
         });
     }
 
+    [TestCase(false)]
+    [TestCase(true)]
+    public void SetData_StripsDirectMarkerForRendering_ThenRestoresMarkedModel(
+        bool throwAfterRender)
+    {
+        const string visible = "{{R|翻訳済みのスコア状態です。}}";
+        var source = MessageFrameTranslator.DirectTranslationMarker + visible;
+
+        WithPatch(() =>
+        {
+            var data = CreateHighScoresDataElement(source);
+            var row = new DummySteamScoresRowTarget { ThrowAfterRender = throwAfterRender };
+
+            if (throwAfterRender)
+            {
+                Assert.That(() => row.setData(data), Throws.TypeOf<InvalidOperationException>());
+            }
+            else
+            {
+                row.setData(data);
+            }
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(row.RenderedMessage, Is.EqualTo(visible));
+                Assert.That(GetMessage(data), Is.EqualTo(source));
+                Assert.That(
+                    DynamicTextObservability.GetRouteFamilyHitCountForTests(
+                        nameof(SteamScoresRowTranslationPatch),
+                        "SteamScoresRow.StatusMessage"),
+                    Is.Zero);
+            });
+        });
+    }
+
     [Test]
     public void Prefix_LeavesDifferentDataElementTypeUnchanged()
     {
@@ -178,6 +213,21 @@ public sealed class SteamScoresRowTranslationPatchTests
             });
     }
 
+    [Test]
+    public void DummyTarget_MatchesRuntimeParameterShape()
+    {
+        var parameterTypes = RequireMethod(
+                typeof(DummySteamScoresRowTarget),
+                nameof(DummySteamScoresRowTarget.setData))
+            .GetParameters()
+            .Select(parameter => parameter.ParameterType)
+            .ToArray();
+
+        Assert.That(
+            parameterTypes,
+            Is.EqualTo(new[] { typeof(XRL.UI.Framework.FrameworkDataElement) }));
+    }
+
     private static void WithPatch(Action action)
     {
         var harmonyId = $"qudjp.tests.{Guid.NewGuid():N}";
@@ -226,12 +276,13 @@ public sealed class SteamScoresRowTranslationPatchTests
         }
     }
 
-    private static object CreateHighScoresDataElement(string source)
+    private static XRL.UI.Framework.FrameworkDataElement CreateHighScoresDataElement(string source)
     {
         var dataType = AccessTools.TypeByName("Qud.UI.HighScoresDataElement")
                        ?? (dynamicHighScoresDataElementType ??= CreateDynamicHighScoresDataElementType());
-        var data = Activator.CreateInstance(dataType)
-                   ?? throw new InvalidOperationException("Could not create the high-scores data test value.");
+        var data = Activator.CreateInstance(dataType) as XRL.UI.Framework.FrameworkDataElement
+                   ?? throw new InvalidOperationException(
+                       "Could not create a FrameworkDataElement-compatible high-scores test value.");
         RequireMessageField(data).SetValue(data, source);
         return data;
     }
@@ -254,7 +305,8 @@ public sealed class SteamScoresRowTranslationPatchTests
         var module = assembly.DefineDynamicModule(assemblyName.Name!);
         var type = module.DefineType(
             "Qud.UI.HighScoresDataElement",
-            TypeAttributes.Public | TypeAttributes.Class | TypeAttributes.Sealed);
+            TypeAttributes.Public | TypeAttributes.Class | TypeAttributes.Sealed,
+            typeof(XRL.UI.Framework.FrameworkDataElement));
         _ = type.DefineField("message", typeof(string), FieldAttributes.Public);
         return type.CreateType()
                ?? throw new InvalidOperationException("Could not create the high-scores data test type.");

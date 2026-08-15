@@ -1,14 +1,17 @@
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using XRL.CharacterBuilds;
 
 namespace QudJP.Tests.DummyTargets;
 
-internal sealed class DummyCodeCompressorTarget
+internal static class DummyCodeCompressorTarget
 {
-    public string PopupMessageToShow { get; set; } = string.Empty;
-
     [MethodImpl(MethodImplOptions.NoInlining)]
-    public void loadCode()
+    public static void loadCode(
+        string code,
+        List<AbstractEmbarkBuilderModule> modules,
+        bool silent)
     {
-        DummyPopupShow.ShowAsync(PopupMessageToShow).GetAwaiter().GetResult();
+        DummyPopupShow.ShowAsync(code).GetAwaiter().GetResult();
     }
 }

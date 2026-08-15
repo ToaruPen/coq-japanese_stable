@@ -240,7 +240,7 @@ just test-l2
 
 - `SteamScoresRow.setData(XRL.UI.Framework.FrameworkDataElement)` を target にする。
 - Prefix で `HighScoresDataElement.message` の固定 leaf だけを `ui-scores.ja.json` から context-only lookup し、Finalizer で元 message を復元して model state を変更し続けない。
-- nested/reentrant state は Harmony `__state` で呼び出し単位に保持し、例外を抑制しない。
+- nested/reentrant state は Harmony `__state` で呼び出し単位に保持する。Prefix の翻訳・reflection 失敗は捕捉して `Trace.TraceError` に記録し、元の英語 message へ fail-open する。Finalizer は `__state` がある場合だけ元の model 値の復元を試み、復元失敗も記録して、元の `setData` 例外をそのまま返す。翻訳・復元例外は伝播させず、renderer 自身の例外は抑制しない。
 - retry popup は fixed leaf policy に従って `ui-scores.ja.json` に置き、generic Popup producer の exact lookup を使う。stack trace を捕捉する broad pattern は追加しない。
 
 ### Step 4: L2G target と closure evidence を追加する
@@ -388,10 +388,33 @@ git diff --check
 ### Step 1: 新識別子・新リテラルの所有先を確認する
 
 ```bash
-rg -n 'SteamScoresRowTranslationPatch|CodeCompressorRequiredModPopupTranslationPatch|Bilge Sphincter|override your bindings|Required Mod|There was an error .* saving:' Mods/QudJP scripts docs
+diff -u \
+  <(printf '%s\n' \
+    Mods/QudJP/Assemblies/QudJP.Tests/L2/CodeCompressorTranslationPatchTests.cs \
+    Mods/QudJP/Assemblies/QudJP.Tests/L2/CookingRuntimeTranslationPatchTests.cs \
+    Mods/QudJP/Assemblies/QudJP.Tests/L2/GameSummaryTombstonePopupTranslationPatchTests.cs \
+    Mods/QudJP/Assemblies/QudJP.Tests/L2/KeyMappingUiTranslationPatchTests.cs \
+    Mods/QudJP/Assemblies/QudJP.Tests/L2/PopupShowTranslationPatchTests.cs \
+    Mods/QudJP/Assemblies/QudJP.Tests/L2/SteamScoresRowTranslationPatchTests.cs \
+    Mods/QudJP/Assemblies/QudJP.Tests/L2G/TargetMethodResolutionTests.cs \
+    Mods/QudJP/Assemblies/src/Patches/CodeCompressorTranslationPatch.cs \
+    Mods/QudJP/Assemblies/src/Patches/CookingRuntimeTranslationPatch.cs \
+    Mods/QudJP/Assemblies/src/Patches/GameSummaryTombstonePopupTranslationPatch.cs \
+    Mods/QudJP/Assemblies/src/Patches/PopupShowSemanticPipeline.cs \
+    Mods/QudJP/Assemblies/src/Patches/SteamScoresRowTranslationPatch.cs \
+    Mods/QudJP/Localization/Dictionaries/mutation-descriptions.ja.json \
+    Mods/QudJP/Localization/Dictionaries/mutation-ranktext.ja.json \
+    Mods/QudJP/Localization/Dictionaries/ui-chargen.ja.json \
+    Mods/QudJP/Localization/Dictionaries/ui-game-summary.ja.json \
+    Mods/QudJP/Localization/Dictionaries/ui-options.ja.json \
+    Mods/QudJP/Localization/HiddenMutations.jp.xml \
+    Mods/QudJP/Localization/ObjectBlueprints/Creatures.jp.xml \
+    Mods/QudJP/QudTest/fixtures/bindings-smoke.json \
+    scripts/static_producer_closure.py) \
+  <(rg -l 'SteamScoresRowTranslationPatch|CodeCompressorTranslationPatch|Bilge Sphincter|override your bindings|Required Mod|There was an error .* saving:' Mods/QudJP scripts | sort)
 ```
 
-意図した patch/helper/test/dictionary/evidence 以外への重複がないことを確認する。
+命令が差分なしで終了し、意図した patch/helper/test/dictionary/evidence 以外への重複がないことを確認する。
 
 ### Step 2: generated artifact の再現性を確認する
 

@@ -179,7 +179,7 @@ internal sealed class DummySteamScoresRowTarget
     public bool ThrowAfterRender { get; set; }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
-    public void setData(object data)
+    public void setData(XRL.UI.Framework.FrameworkDataElement data)
     {
         RenderedMessage = data.GetType().GetField("message")?.GetValue(data) as string;
         if (ThrowAfterRender)

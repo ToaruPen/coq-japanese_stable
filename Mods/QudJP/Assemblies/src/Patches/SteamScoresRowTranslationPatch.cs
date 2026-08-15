@@ -58,8 +58,19 @@ public static class SteamScoresRowTranslationPatch
 
             var messageField = AccessTools.Field(__0.GetType(), "message");
             if (messageField?.FieldType != typeof(string)
-                || messageField.GetValue(__0) is not string source
-                || !ReviewedStatusMessages.Contains(source))
+                || messageField.GetValue(__0) is not string source)
+            {
+                return;
+            }
+
+            if (MessageFrameTranslator.TryStripDirectTranslationMarker(source, out var markedText))
+            {
+                __state = new RowTranslationState(__0, messageField, source);
+                messageField.SetValue(__0, markedText);
+                return;
+            }
+
+            if (!ReviewedStatusMessages.Contains(source))
             {
                 return;
             }
@@ -73,9 +84,9 @@ public static class SteamScoresRowTranslationPatch
                 return;
             }
 
+            DynamicTextObservability.RecordTransform(Context, Family, source, translated);
             __state = new RowTranslationState(__0, messageField, source);
             messageField.SetValue(__0, translated);
-            DynamicTextObservability.RecordTransform(Context, Family, source, translated);
         }
         catch (Exception ex)
         {
