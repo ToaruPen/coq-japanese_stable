@@ -10,7 +10,7 @@
 
 ---
 
-### Task 1: Quest-step gameplay contract validator
+## Task 1: Quest-step gameplay contract validator
 
 **Files:**
 - Create: `scripts/validate_quest_step_contract.py`
@@ -32,7 +32,7 @@
 
   Run `uv run pytest -q scripts/tests/test_validate_quest_step_contract.py` and `uv run ruff check scripts/validate_quest_step_contract.py scripts/tests/test_validate_quest_step_contract.py`.
 
-### Task 2: Synchronize the shipped 1.0.5 quest-step contract
+## Task 2: Synchronize the shipped 1.0.5 quest-step contract
 
 **Files:**
 - Modify: `scripts/tests/test_quest_identity_contract.py`
@@ -59,7 +59,7 @@
 
   Run the focused identity test, the validator against the stable 1.0.5 Base XML, `xmllint --noout Mods/QudJP/Localization/Quests.jp.xml`, and `just localization-check`.
 
-### Task 3: Make live parity part of the game-version gate
+## Task 3: Make live parity part of the game-version gate
 
 **Files:**
 - Modify: `justfile`
