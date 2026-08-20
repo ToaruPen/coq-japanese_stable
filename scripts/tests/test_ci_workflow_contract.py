@@ -99,6 +99,17 @@ def test_ci_python_lane_restores_repo_local_node_tools() -> None:
     assert "npm install -g @ast-grep/cli" not in python_job
 
 
+def test_ci_python_lane_installs_just_before_tests() -> None:
+    """Python tests that exercise Just recipes need the task runner on PATH."""
+    workflow = _workflow_text()
+    python_job = _job_block(workflow, "python", "localization")
+
+    assert "uses: extractions/setup-just@v3" in python_job
+    assert python_job.index("uses: extractions/setup-just@v3") < python_job.index(
+        "pytest scripts/tests/"
+    )
+
+
 def test_ci_python_lane_reports_slowest_test_durations() -> None:
     """CI logs should keep enough timing detail to diagnose future pytest slowdowns."""
     workflow = _workflow_text()

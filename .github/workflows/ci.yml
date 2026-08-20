@@ -279,6 +279,9 @@ jobs:
           cache: pip
           cache-dependency-path: pyproject.toml
 
+      - name: Install just
+        uses: extractions/setup-just@v3
+
       - name: Install Node tool dependencies
         run: npm ci
 
