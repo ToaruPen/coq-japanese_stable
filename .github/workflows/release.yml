@@ -39,6 +39,9 @@ jobs:
           cache: pip
           cache-dependency-path: pyproject.toml
 
+      - name: Setup Just
+        uses: extractions/setup-just@f8a3cce218d9f83db3a2ecd90e41ac3de6cdfd9b
+
       - name: Install Python tools
         run: pip install hypothesis pytest ruff uv
 
