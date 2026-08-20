@@ -10,6 +10,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+## [0.5.04] - 2026-08-20
+
+### Fixed
+
+- シックスデイ・スティルトへの巡礼報酬 1,500 XP など、クエスト手順の XP 報酬と任意手順の設定が日本語化時に失われる問題を修正しました。
+
+---
+
 ## [0.5.03] - 2026-08-14
 
 ### Fixed
@@ -460,7 +468,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
-[Unreleased]: https://github.com/ToaruPen/coq-japanese_stable/compare/v0.5.03...HEAD
+[Unreleased]: https://github.com/ToaruPen/coq-japanese_stable/compare/v0.5.04...HEAD
+[0.5.04]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.5.04
 [0.5.03]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.5.03
 [0.5.02]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.5.02
 [0.5.01]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.5.01
