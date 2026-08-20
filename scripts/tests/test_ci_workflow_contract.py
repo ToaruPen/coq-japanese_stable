@@ -8,6 +8,7 @@ from pathlib import Path
 from scripts.tests.test_validate_pattern_routes import _EXPECTED_MESSAGE_ROUTE_COUNTS
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
+_SETUP_JUST_ACTION = "uses: extractions/setup-just@f8a3cce218d9f83db3a2ecd90e41ac3de6cdfd9b"
 
 
 def _workflow_text() -> str:
@@ -97,6 +98,15 @@ def test_ci_python_lane_restores_repo_local_node_tools() -> None:
     assert python_job.index("npm ci") < python_job.index(node_bin_path_step)
     assert python_job.index(node_bin_path_step) < python_job.index("pytest scripts/tests/")
     assert "npm install -g @ast-grep/cli" not in python_job
+
+
+def test_ci_python_lane_installs_just_before_tests() -> None:
+    """Python tests that exercise Just recipes need the task runner on PATH."""
+    workflow = _workflow_text()
+    python_job = _job_block(workflow, "python", "localization")
+
+    assert _SETUP_JUST_ACTION in python_job
+    assert python_job.index(_SETUP_JUST_ACTION) < python_job.index("pytest scripts/tests/")
 
 
 def test_ci_python_lane_reports_slowest_test_durations() -> None:
@@ -189,7 +199,7 @@ def test_ci_installs_just_without_apt_update() -> None:
     """The justfile-only lane should avoid apt package-index overhead."""
     workflow = _workflow_text()
 
-    assert "uses: extractions/setup-just@v3" in workflow
+    assert workflow.count(_SETUP_JUST_ACTION) == 2
     assert "sudo apt-get update" not in workflow
 
 

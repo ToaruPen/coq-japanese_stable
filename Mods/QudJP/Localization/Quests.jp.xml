@@ -80,11 +80,11 @@
          HagiographCategory="CreatesSomething"
          Gospel="ジョッパのオアシスの外れにある工房で、＝name＝と＝player.possessive＝弟子アーギヴは、打楽器と灼熱のワイヤーの存在を喚起する装置を発明した。それを「ワイヤー・コンジット」と名付けた。">
 
-    <step ID="Find 200 Feet of Wire" Name="ワイヤー200フィートを見つける" XP="50">
+    <step ID="Find 200 Feet of Wire" Name="ワイヤー200フィートを見つける" XP="0">
       <text>ジョッパ東のラスト・ウェルでワイヤー200フィートを探す。</text>
     </step>
 
-    <step ID="Return to Argyve" Name="アーギヴへ戻る" XP="250">
+    <step ID="Return to Argyve" Name="アーギヴへ戻る" XP="500">
       <text>ワイヤーをアーギヴに届ける。</text>
     </step>
 
@@ -96,15 +96,15 @@
          HagiographCategory="SingsASong"
          Gospel="西のジャングルをさまよううち、＝name＝は秘儀を行うウルシーブの一族に出会った。＝player.t＝の円盤のような瞳のおかげで彼らは＝name＝を受け入れ、秘密を授けた。">
     
-    <step ID="Travel to Grit Gate" Name="グリット・ゲートへ向かう" XP="100">
+    <step ID="Travel to Grit Gate" Name="グリット・ゲートへ向かう" XP="500">
       <text>ジョッパ北東の廃墟の地下門、グリット・ゲートへ向かう。</text>
     </step>
 
-    <step ID="Locate the Barathrumite Enclave" Name="バラサラム派の隠れ家を見つける" XP="100">
+    <step ID="Locate the Barathrumite Enclave" Name="バラサラム派の隠れ家を見つける" XP="250">
       <text>グリット・ゲート内でバラサラム派の隠れ家を見つける。</text>
     </step>
 
-    <step ID="Speak with the Barathrumites" Name="バラサラム派と話す" XP="200">
+    <step ID="Speak with the Barathrumites" Name="バラサラム派と話す" XP="500">
       <text>バラサラム派にアーギヴの奇妙な信号について尋ねる。</text>
     </step>
 
@@ -116,15 +116,15 @@
          HagiographCategory="SingsASong"
          Gospel="西のジャングルをさまよううち、＝name＝は秘儀を行うウルシーブの一族に出会った。＝player.t＝の円盤のような瞳のおかげで彼らは＝name＝を受け入れ、秘密を授けた。">
     
-    <step ID="Travel to Grit Gate" Name="グリット・ゲートへ向かう" XP="100">
+    <step ID="Travel to Grit Gate" Name="グリット・ゲートへ向かう" XP="500">
       <text>西のジャングルにある廃墟の地下門、グリット・ゲートへ向かう。</text>
     </step>
 
-    <step ID="Locate the Barathrumite Enclave" Name="バラサラム派の隠れ家を見つける" XP="100">
+    <step ID="Locate the Barathrumite Enclave" Name="バラサラム派の隠れ家を見つける" XP="250">
       <text>グリット・ゲート内でバラサラム派の隠れ家を見つける。</text>
     </step>
 
-    <step ID="Speak with the Barathrumites" Name="バラサラム派と話す" XP="200">
+    <step ID="Speak with the Barathrumites" Name="バラサラム派と話す" XP="500">
       <text>バラサラム派に奇妙な信号について尋ねる。</text>
     </step>
 
@@ -136,19 +136,19 @@
          HagiographCategory="DoesSomethingRad"
          Gospel="西のジャングルをさまよううち、＝name＝は秘儀を行うウルシーブの一族に出会った。＝player.t＝が悪臭のスライムに覆われていたおかげで彼らは＝name＝を受け入れ、秘密を授けた。">
     
-    <step ID="Travel to Golgotha" Name="ゴルゴタへ向かう" XP="100">
+    <step ID="Travel to Golgotha" Name="ゴルゴタへ向かう" XP="250">
       <text>グリット・ゲート北の大洞窟ゴルゴタへ向かう。</text>
     </step>
 
-    <step ID="Find a Dysfunctional Waydroid" Name="故障したウェイドロイドを見つける" XP="200">
+    <step ID="Find a Dysfunctional Waydroid" Name="故障したウェイドロイドを見つける" XP="250">
       <text>ゴルゴタの廃墟で故障したウェイドロイドを見つける。</text>
     </step>
 
-    <step ID="Repair the Waydroid" Name="ウェイドロイドを修理する" XP="300">
+    <step ID="Repair the Waydroid" Name="ウェイドロイドを修理する" XP="250">
       <text>ウェイドロイドを修理する。</text>
     </step>
 
-    <step ID="Return to Grit Gate" Name="グリット・ゲートへ戻る" XP="600">
+    <step ID="Return to Grit Gate" Name="グリット・ゲートへ戻る" XP="1250">
       <text>ウェイドロイドを持ってグリット・ゲートに戻り、バラサラム派と話す。</text>
     </step>
 
@@ -160,19 +160,19 @@
          HagiographCategory="TalksToThing"
          Gospel="巨大な氷塊の中で、＝name＝はベテルと囁き誓いを交わし、メカニマス教団と友情を結んだ。">
     
-    <step ID="Get Q Girl's Instructions onto the Data Disk" Name="Qガールの指示をデータディスクに書き込む" XP="1000">
+    <step ID="Get Q Girl's Instructions onto the Data Disk" Name="Qガールの指示をデータディスクに書き込む" XP="250">
       <text>工房のQガールに話しかけ、ベテル用の指示をディスクにエンコードしてもらう。</text>
     </step>
 
-    <step ID="Locate the Mechanimist Compound at Bethesda Susa" Name="ベテスダ・スーサのメカニマス寺院を見つける" XP="1000">
+    <step ID="Locate the Mechanimist Compound at Bethesda Susa" Name="ベテスダ・スーサのメカニマス寺院を見つける" XP="2500">
       <text>北の大洞窟ベテスダ・スーサへ行き、メカニマス寺院を見つける。</text>
     </step>
 
-    <step ID="Decode the Signal" Name="信号を解読する" XP="1000">
+    <step ID="Decode the Signal" Name="信号を解読する" XP="4000">
       <text>メカニマス寺院に潜入し、ベテルと交信して信号を解読する。</text>
     </step>
 
-    <step ID="Return to Grit Gate" Name="グリット・ゲートへ戻る" XP="1000">
+    <step ID="Return to Grit Gate" Name="グリット・ゲートへ戻る" XP="6000">
       <text>グリット・ゲートに戻り、オソに報告する。</text>
     </step>
 
@@ -184,7 +184,7 @@
          HagiographCategory="Pilgrimage"
          Gospel="荒れた平原を越えて旅し、＝name＝は六日のスティルトの商人バザールと大聖堂に向かった。そこで＝player.subjective＝はメカニマスと親交を結び、聖なる井戸へ遺物を投じた。">
     
-    <step ID="Make a Pilgrimage to the Six Day Stilt" Name="六日のスティルトへ巡礼する" XP="0">
+    <step ID="Make a Pilgrimage to the Six Day Stilt" Name="六日のスティルトへ巡礼する" XP="1500">
       <text>大塩砂漠を越え、商人バザールとメカニマス大聖堂へ巡礼し、求道者に頼まれた小物を奉納する。</text>
     </step>
 
@@ -196,11 +196,11 @@
          HagiographCategory="AppointsSomeone"
          Gospel="＝year＝年、＝name＝は腐敗した行政官アスフォデルをオモンポーチの伯爵兼大臣に任命した。そこでその者は＝player.t＝の名のもとに &lt;spice.elements.entity$elements[random].practices.!random&gt; を義務付けた。">
     
-    <step ID="Travel to Omonporch" Name="オモンポーチへ向かう" XP="5000">
+    <step ID="Travel to Omonporch" Name="オモンポーチへ向かう" XP="1000">
       <text>北へ向かい、スピンドルが立つオモンポーチへ行く。</text>
     </step>
 
-    <step ID="Secure the Spindle" Name="スピンドルを確保する" XP="5000">
+    <step ID="Secure the Spindle" Name="スピンドルを確保する" XP="1000">
       <text>スピンドル麓の支配権を握る。</text>
     </step>
 
@@ -224,7 +224,7 @@
          Hagiograph="＝name＝はサンズとドーターズの大隊を巨大メインフレームに叩きつけ、周囲の寺院にガラスとガリウムの雨を降らせた。"
          HagiographCategory="DefendsSomething"
          Gospel="＝month＝月＝year＝年、＝name＝は血塗れのグリット・ゲートの戦いでプトゥス騎士団連合に決定的勝利を収めた。熱いガリウムと砕けたガラスで荒廃したため、グリット・ゲートはオソの墓場と呼ばれるようになった。">
-    <step ID="Prepare Defenses" Name="防備を整える" XP="0">
+    <step ID="Prepare Defenses" Name="防備を整える" XP="0" Optional="true">
       <text>プトゥス騎士団の攻撃に備えて、レーザー砲座・フォース・プロジェクターに電力を入れ、クロームリングをオーバークロックし、ロダニスYを起動する。</text>
     </step>
     <step ID="Defend Grit Gate" Name="グリット・ゲートを守る" XP="0">
@@ -233,7 +233,7 @@
   </quest>
 
   <quest Name="The Assessment">
-    <step ID="Speak to Otho" Name="オソと話す" XP="0">
+    <step ID="Speak to Otho" Name="オソと話す" XP="10000">
       <text>オソに話しかけ、攻撃による損害を査定する。</text>
     </step>
   </quest>
@@ -243,22 +243,22 @@
          Hagiograph="宇宙の虚空で、石工＝name＝は星煉瓦でコーラルの道を築き、聖なる言葉でキノコと語らった。"
          HagiographCategory="TalksToThing"
          Gospel="珊瑚と菌肉でできた異次元の大聖堂で、＝name＝はキノコ「パクス・クランク」と結婚し、真菌と関係を結んだ。">
-    <step ID="Get Q Girl's Blueprints for the Climber" Name="Qガールのクライマー設計図を入手する" XP="0">
+    <step ID="Get Q Girl's Blueprints for the Climber" Name="Qガールのクライマー設計図を入手する" XP="250">
       <text>クライマーの設計図を入手し、パクス・クランクに渡す。</text>
     </step>
-    <step ID="Seek the Heart of the Rainbow" Name="虹の心を探す" XP="0">
+    <step ID="Seek the Heart of the Rainbow" Name="虹の心を探す" XP="1500">
       <text>謎の第一部を解読する。</text>
     </step>
-    <step ID="Eat the God's Flesh" Name="神の肉を食べる" XP="0">
+    <step ID="Eat the God's Flesh" Name="神の肉を食べる" XP="1500">
       <text>謎の第二部を解読する。</text>
     </step>
-    <step ID="Follow the Coral Path" Name="コーラルの道をたどる" XP="0">
+    <step ID="Follow the Coral Path" Name="コーラルの道をたどる" XP="1500">
       <text>謎の第三部を解読する。</text>
     </step>
-    <step ID="Convince Pax Klanq to Construct the Climber" Name="パクス・クランクにクライマー製作を承諾させる" XP="0">
+    <step ID="Convince Pax Klanq to Construct the Climber" Name="パクス・クランクにクライマー製作を承諾させる" XP="1500">
       <text>パクス・クランクに、Qガールの設計でクライマーを作るよう同意させる。</text>
     </step>
-    <step ID="Return to Grit Gate" Name="グリット・ゲートへ戻る" XP="0">
+    <step ID="Return to Grit Gate" Name="グリット・ゲートへ戻る" XP="4000">
       <text>グリット・ゲートに戻り、バラサラムに報告する。</text>
     </step>
   </quest>
@@ -268,7 +268,7 @@
          Hagiograph="慈悲深き＝name＝は鹿人のパリアの頼みで牧草地の揉め事に首を突っ込んだ。スルタンは慈愛をもって統治する！"
          HagiographCategory="InvestigatesSomething"
          Gospel="&lt;spice.time.partsOfDay.!random&gt;、&lt;spice.commonPhrases.strange.!random.article&gt;空と牧草地の下で、ベイ・ラーのヒンドレンは地平線に大きな望遠鏡のような影を見た。それは＝name＝で、＝player.subjective＝が到着すると、ヒンドレンは＝player.objective＝のために記念碑を建て、以後「ルッキンググラス・ケンドレン」と呼んだ。">
-    <step ID="Investigate Bey Lah" Name="ベイ・ラーを調査する" XP="0">
+    <step ID="Investigate Bey Lah" Name="ベイ・ラーを調査する" XP="250">
       <text>秘密の村ベイ・ラーへ行き、問題を調査する。</text>
     </step>
   </quest>
@@ -278,13 +278,13 @@
          Hagiograph="忘れるな！ ＝name＝はパリアのエスキンドに使命から逃げるなと諭した。それ以来、彼女は『柔和なるエスキンド』と呼ばれた。"
          HagiographCategory="AdmonishesSomeone"
          Gospel="＝month＝月＝year＝年、＝name＝は嫌疑を受けたエスキンドに、ヒンドレンの家宝キンドリッシュの所在を巡って決闘を挑まれた。＝name＝は勝利し、エスキンドを諭してベイ・ラーへ戻らせた。">
-    <step ID="Find Eskhind" Name="エスキンドを見つける" XP="0">
+    <step ID="Find Eskhind" Name="エスキンドを見つける" XP="250">
       <text>エスキンドを見つけ、キンドリッシュを取り戻す。</text>
     </step>
-    <step ID="Speak to Warden Neelahind" Name="監視官ニーラヒンドと話す" XP="0">
+    <step ID="Speak to Warden Neelahind" Name="監視官ニーラヒンドと話す" XP="0" Optional="true">
       <text>エスキンドと親しかった監視官ニーラヒンドに話す。</text>
     </step>
-    <step ID="Deliver News of Eskhind" Name="エスキンドの消息を伝える" XP="0">
+    <step ID="Deliver News of Eskhind" Name="エスキンドの消息を伝える" XP="250">
       <text>ケーへエスキンドの消息を伝える。</text>
     </step>
   </quest>
@@ -295,10 +295,10 @@
          HagiographCategory="ReunitesLovers"
          Gospel="朽ちた切り株の中心で、＝name＝はエスキンドと監視官ニーラヒンドを結婚させ、ベイ・ラーのヒンドレンとの友情を固めた。"
     >
-    <step ID="Rescue an Imperiled Love" Name="危うい恋を救う" XP="0">
+    <step ID="Rescue an Imperiled Love" Name="危うい恋を救う" XP="250" Optional="true">
       <text>恋人たちの運命が固まる前に介入する。</text>
     </step>
-    <step ID="Return the Love Sonnet" Name="恋のソネットを返す" XP="0">
+    <step ID="Return the Love Sonnet" Name="恋のソネットを返す" XP="50">
       <text>しわくちゃの紙片を作者か意中の相手に渡す。</text>
     </step>
   </quest>
@@ -308,13 +308,13 @@
          Hagiograph="尊き救済者！ ＝name＝はベイ・ラーの鹿人が抱える問題に平和と繁栄をもたらした。"
          HagiographCategory="InvestigatesSomething"
          Gospel="盗賊とそれを助長する権力に抗し、＝name＝はベイ・ラーの村で調査を率いた。＝player.t＝の&lt;spice.elements.entity$elements[random].adjectives.!random&gt;機知のおかげで、監視官ニーラヒンドは正しく裁きを下せた。">
-    <step ID="Brief Warden Neelahind" Name="監視官ニーラヒンドに説明する" XP="0">
+    <step ID="Brief Warden Neelahind" Name="監視官ニーラヒンドに説明する" XP="250">
       <text>ベイ・ラーの監視官に、キンドリッシュ盗難の争点を伝える。</text>
     </step>
-    <step ID="Discover all the evidence" Name="すべての証拠を発見する" XP="0">
+    <step ID="Discover all the evidence" Name="すべての証拠を発見する" XP="250" Optional="true">
       <text>犯人に繋がる証拠をすべて見つける。</text>
     </step>
-    <step ID="Accuse the thief" Name="盗人を告発する" XP="0">
+    <step ID="Accuse the thief" Name="盗人を告発する" XP="1000">
       <text>証拠を持って監視官ニーラヒンドに報告し、盗んだ犯人を指摘する。</text>
     </step>
   </quest>
@@ -324,44 +324,44 @@
          Hagiograph="オモンポーチの喰らう者の墓所の奥深くで、＝name＝は秘儀を行うモパンゴの一族に出会った。その者はスルタンを仲間に迎え、＝player.objective＝に秘奥を授けた。"
          HagiographCategory="TalksToThing"
          Gospel="オモンポーチの喰らう者の墓所の奥深くで、＝name＝は秘儀を行うモパンゴの一族に出会った。その者は＝sultanTerm＝を仲間に迎え、＝player.objective＝に秘奥を授けた。">
-    <step ID="Visit the Mopango Settlement in the Tomb of the Eaters" Name="喰らう者の墓所のモパンゴ集落を訪ねる" XP="0">
+    <step ID="Visit the Mopango Settlement in the Tomb of the Eaters" Name="喰らう者の墓所のモパンゴ集落を訪ねる" XP="2000">
       <text>喰らう者の墓所の北西墓地にいる友好的なタレット、ビヴィラを見つけ、ゾソムが寄越したと伝える。</text>
     </step>
   </quest>
 
   <quest Name="Fraying Favorites">
-    <step ID="Talk to Lebah" Name="レバと話す" XP="0">
+    <step ID="Talk to Lebah" Name="レバと話す" XP="500">
       <text>レバに会い、忌まわしい装置との遭遇について聞く。</text>
     </step>
-    <step ID="Recover the Repulsive Device" Name="反発装置を取り戻す" XP="0">
+    <step ID="Recover the Repulsive Device" Name="反発装置を取り戻す" XP="4000">
       <text>フォーク地下墓地でk-ゴニノンを探し、反発装置を回収する。</text>
     </step>
-    <step ID="Speak with the Watchers" Name="監視者たちと話す" XP="0">
+    <step ID="Speak with the Watchers" Name="監視者たちと話す" XP="0" Optional="true">
       <text>モパンゴ監視者ダドゴム、ドヨバ、ギャミオ、ヨナに反発装置について尋ねる。</text>
     </step>
-    <step ID="Use the Repulsive Device" Name="反発装置を使う" XP="0">
+    <step ID="Use the Repulsive Device" Name="反発装置を使う" XP="4000">
       <text>反発装置をどう使うか決める。</text>
     </step>
   </quest>
 
   <quest Name="Tomb of the Eaters"
          Accomplishment="喰らう者の墓所から帰還し、スピンドルの磁場を停止させた。">
-    <step ID="Recover the Mark of Death" Name="死の印章を取り戻す" XP="0">
+    <step ID="Recover the Mark of Death" Name="死の印章を取り戻す" XP="2500">
       <text>喰らう者が死者に刻む失われた印章を取り戻す。</text>
     </step>
-    <step ID="Inscribe the Mark" Name="印章を刻む" XP="0">
+    <step ID="Inscribe the Mark" Name="印章を刻む" XP="2500">
       <text>その印を自分の体に刻む。</text>
     </step>
-    <step ID="Enter the Tomb of the Eaters" Name="喰らう者の墓所に入る" XP="0">
+    <step ID="Enter the Tomb of the Eaters" Name="喰らう者の墓所に入る" XP="2500">
       <text>封印された墓に入る方法を得る。</text>
     </step>
-    <step ID="Ascend the Tomb and Cross into Brightsheol" Name="墓所を登りブライトシェオルへ渡る" XP="0">
+    <step ID="Ascend the Tomb and Cross into Brightsheol" Name="墓所を登りブライトシェオルへ渡る" XP="2500">
       <text>墓を登り、レシェフの埋葬室を見つける。そこからブライトシェオルへ渡る方法を探す。</text>
     </step>
-    <step ID="Disable the Spindle's Magnetic Field" Name="スピンドルの磁場を停止させる" XP="0">
+    <step ID="Disable the Spindle's Magnetic Field" Name="スピンドルの磁場を停止させる" XP="2500">
       <text>スピンドルの制御装置にアクセスし、磁場を停止させる。</text>
     </step>
-    <step ID="Return to Grit Gate" Name="グリット・ゲートへ戻る" XP="0">
+    <step ID="Return to Grit Gate" Name="グリット・ゲートへ戻る" XP="7500">
       <text>グリット・ゲートに戻り、バラサラムに報告する。</text>
     </step>
   </quest>
@@ -389,16 +389,16 @@
          Hagiograph="美は引き算にあり！ 剪定者＝name＝は生命の樹をより美しく整えた。"
          HagiographCategory="DoesSomethingRad"
          Gospel="生命の樹の多くの意志に従い、＝name＝はトランジット岩をチャヴァの根の下にある発光するソフトへ運んだ。そこで＝player.subjective＝は秘儀を行い、地上へ戻って永遠に変わった。">
-    <step ID="Gather Tau's Chime" Name="タウのチャイムを集める" XP="0">
+    <step ID="Gather Tau's Chime" Name="タウのチャイムを集める" XP="2500">
       <text>ケテルにある彼女の枝から、タウのチャイムを回収する。</text>
     </step>
-    <step ID="Go to the Bottom of Taproot" Name="タップルートの底へ行く" XP="0">
+    <step ID="Go to the Bottom of Taproot" Name="タップルートの底へ行く" XP="5000">
       <text>チャヴァのタップルートを40層の底まで降りる。</text>
     </step>
-    <step ID="Reunite Tau with Her Chime" Name="タウとチャイムを再会させる" XP="0">
+    <step ID="Reunite Tau with Her Chime" Name="タウとチャイムを再会させる" XP="5000">
       <text>タップルートにチャイムを触れさせ、「それ以外」化の儀式を終える。</text>
     </step>
-    <step ID="Return to the Keter" Name="ケテルへ戻る" XP="0">
+    <step ID="Return to the Keter" Name="ケテルへ戻る" XP="15000">
       <text>ケテルへ戻り、ディヴラックと話す。</text>
     </step>
   </quest>
