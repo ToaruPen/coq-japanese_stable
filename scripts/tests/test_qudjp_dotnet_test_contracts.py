@@ -2,7 +2,11 @@
 
 from __future__ import annotations
 
+import os
 import re
+import shlex
+import shutil
+import subprocess
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -51,7 +55,12 @@ def test_game_version_gate_covers_current_and_game_free_contracts() -> None:
     csproj = QUDJP_CSPROJ.read_text(encoding="utf-8")
     pr_check = _recipe_block(justfile, "pr-check", "ci-dotnet")
     no_game = _recipe_block(justfile, "ci-dotnet-no-game", "target-game-version-check")
-    target_version = _recipe_block(justfile, "target-game-version-check", "game-version-check")
+    target_version = _recipe_block(
+        justfile, "target-game-version-check", "quest-step-contract-check"
+    )
+    quest_step_contract = _recipe_block(
+        justfile, "quest-step-contract-check", "game-version-check"
+    )
     game_version = _recipe_block(justfile, "game-version-check", "roslyn-build-annals")
 
     assert "<EnableDefaultCompileItems>false</EnableDefaultCompileItems>" in csproj
@@ -79,9 +88,31 @@ def test_game_version_gate_covers_current_and_game_free_contracts() -> None:
     assert no_game.count('dotnet test "$test_dll"') == 1
 
     assert "scripts/tests/test_target_game_version_contract.py" in target_version
+    assert (
+        'coq_base_quests := env_var_or_default("COQ_BASE_QUESTS", env_var("HOME") + '
+        '"/Games/CavesOfQud-stable-ref/CoQ.app/Contents/Resources/Data/StreamingAssets/'
+        'Base/Quests.xml")'
+        in justfile
+    )
+    assert (
+        "uv run python scripts/validate_quest_step_contract.py {{quote(coq_base_quests)}} "
+        "Mods/QudJP/Localization/Quests.jp.xml"
+        in quest_step_contract
+    )
+
+    executable_steps = [
+        line.strip()
+        for line in game_version.splitlines()
+        if line.startswith("  ") and not line.lstrip().startswith("#")
+    ]
+    assert executable_steps[:2] == [
+        "just target-game-version-check",
+        "just quest-step-contract-check",
+    ]
 
     expected_steps = (
         "just target-game-version-check",
+        "just quest-step-contract-check",
         (
             "uv run pytest scripts/tests/test_static_producer_closure.py::"
             "test_covered_owner_families_have_current_source_and_test_evidence -q"
@@ -94,6 +125,30 @@ def test_game_version_gate_covers_current_and_game_free_contracts() -> None:
     )
     positions = [game_version.index(step) for step in expected_steps]
     assert positions == sorted(positions)
+
+
+def test_quest_step_contract_recipe_shell_quotes_base_path_override(tmp_path: Path) -> None:
+    """The live Base XML override must preserve spaces and double quotes in one argument."""
+    base_quests = str(tmp_path / 'Caves Of "Qud"' / "Base Quests.xml")
+    just = shutil.which("just")
+    assert just is not None
+    result = subprocess.run(  # noqa: S603 -- intentionally probes shell quoting via just dry-run.
+        [just, "--dry-run", "quest-step-contract-check"],
+        cwd=REPO_ROOT,
+        env={**os.environ, "COQ_BASE_QUESTS": base_quests},
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+
+    assert shlex.split(result.stderr.strip()) == [
+        "uv",
+        "run",
+        "python",
+        "scripts/validate_quest_step_contract.py",
+        base_quests,
+        "Mods/QudJP/Localization/Quests.jp.xml",
+    ]
 
 
 def test_qudtest_headless_references_assembly_csharp_stub_without_game_dll() -> None:

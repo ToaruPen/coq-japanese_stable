@@ -1,6 +1,7 @@
 # QudJP task runner
 
 python := "uv run python"
+coq_base_quests := env_var_or_default("COQ_BASE_QUESTS", env_var("HOME") + "/Games/CavesOfQud-stable-ref/CoQ.app/Contents/Resources/Data/StreamingAssets/Base/Quests.xml")
 decompiled_root := env_var("HOME") + "/dev/coq-decompiled_stable"
 decompiled_annals_root := env_var("HOME") + "/dev/coq-decompiled_stable/XRL.Annals"
 dotnet_artifacts_root := env_var_or_default("QUDJP_DOTNET_ARTIFACTS_ROOT", ".artifacts/dotnet")
@@ -503,9 +504,14 @@ ci-dotnet-no-game:
 target-game-version-check:
   uv run pytest scripts/tests/test_target_game_version_contract.py -q
 
+# Compare localized quest-step gameplay fields with the live stable game assets.
+quest-step-contract-check:
+  uv run python scripts/validate_quest_step_contract.py {{quote(coq_base_quests)}} Mods/QudJP/Localization/Quests.jp.xml
+
 # Run the full compatibility baseline after refreshing the stable game and decompiled source.
 game-version-check:
   just target-game-version-check
+  just quest-step-contract-check
   uv run pytest scripts/tests/test_static_producer_closure.py::test_covered_owner_families_have_current_source_and_test_evidence -q
   just build
   just test-csharp
