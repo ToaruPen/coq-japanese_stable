@@ -5,6 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
+_SETUP_JUST_ACTION = "uses: extractions/setup-just@f8a3cce218d9f83db3a2ecd90e41ac3de6cdfd9b"
 
 
 def _workflow_text() -> str:
@@ -53,6 +54,14 @@ def test_release_workflow_installs_python_test_tooling() -> None:
     assert workflow.index("npm ci") < workflow.index(node_bin_path_step)
     assert workflow.index(node_bin_path_step) < workflow.index("pytest scripts/tests/")
     assert workflow.index("npm ci") < workflow.index("pytest scripts/tests/")
+
+
+def test_release_workflow_installs_just_before_python_tests() -> None:
+    """Release tests that exercise Just recipes need the pinned task runner on PATH."""
+    workflow = _workflow_text()
+
+    assert _SETUP_JUST_ACTION in workflow
+    assert workflow.index(_SETUP_JUST_ACTION) < workflow.index("pytest scripts/tests/")
 
 
 def test_release_workflow_disables_external_analyzers_only_for_test_artifact_build() -> None:
