@@ -199,8 +199,8 @@ internal static class WorldModsTextTranslator
     private static readonly Regex WeaponClassPattern = new Regex(
         "^Weapon Class: (?<weaponClass>.+)$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
-    private static readonly Regex OffhandAttackChancePattern = new Regex(
-        "^Offhand Attack Chance: (?<chance>\\d+)%$",
+    private static readonly Regex MeleeAttackChancePattern = new Regex(
+        "^(?<offhand>Offhand )?Attack Chance: (?<chance>\\d+)%$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex BlinkEscapePattern = new Regex(
         "^Whenever you're about to take avoidable damage, there's (?:a|an) (?<chance>\\d+)% chance you blink away instead\\.$",
@@ -356,7 +356,7 @@ internal static class WorldModsTextTranslator
             return true;
         }
 
-        if (TryTranslateOffhandAttackChanceTemplate(source, route, family, out translated))
+        if (TryTranslateMeleeAttackChanceTemplate(source, route, family, out translated))
         {
             return true;
         }
@@ -897,17 +897,17 @@ internal static class WorldModsTextTranslator
             out translated);
     }
 
-    private static bool TryTranslateOffhandAttackChanceTemplate(string source, string route, string family, out string translated)
+    private static bool TryTranslateMeleeAttackChanceTemplate(string source, string route, string family, out string translated)
     {
         var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
-        var match = OffhandAttackChancePattern.Match(stripped);
+        var match = MeleeAttackChancePattern.Match(stripped);
         if (!match.Success)
         {
             translated = source;
             return false;
         }
 
-        const string templateKey = "Offhand Attack Chance: {0}%";
+        var templateKey = match.Groups["offhand"].Success ? "Offhand Attack Chance: {0}%" : "Attack Chance: {0}%";
         var template = ScopedDictionaryLookup.TranslateExactOrLowerAsciiForContext(
             templateKey,
             MeleeWeaponShortDescriptionContext,

@@ -77,6 +77,72 @@ def test_empty_text_element_reports_warning(tmp_path: Path, capsys: pytest.Captu
     assert "Empty text in element 'text'" in captured.out
 
 
+@pytest.mark.parametrize(
+    "display_name",
+    [
+        "",
+        "{{G|}}",
+        "{{R|}}{{M|}}{{R|}}",
+    ],
+)
+def test_empty_visible_render_display_name_reports_warning(
+    display_name: str,
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """Visible blueprint names must retain payload after markup is removed."""
+    xml_path = tmp_path / "blueprints.xml"
+    _write_xml(
+        xml_path,
+        (
+            '<objects><object Name="Broken">'
+            f'<part Name="Render" DisplayName="{display_name}"/>'
+            "</object></objects>"
+        ),
+    )
+
+    result = main(["--strict", str(xml_path)])
+    captured = capsys.readouterr()
+
+    assert result == 1
+    assert "Visible Render.DisplayName has no displayable payload" in captured.out
+    assert "object[@Name='Broken']" in captured.out
+
+
+@pytest.mark.parametrize(
+    ("display_name", "extra_attributes"),
+    [
+        ("{{G|日本語}}", ""),
+        ("{{|*creature*}}", ""),
+        ("=creatureRegionNoun=", ""),
+        ("&amp;&amp;^^", ""),
+        ("{{G|}}", ' Visible="false"'),
+    ],
+)
+def test_render_display_name_with_payload_or_hidden_render_passes(
+    display_name: str,
+    extra_attributes: str,
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """Generated payloads, literal codes, and explicitly hidden renders remain valid."""
+    xml_path = tmp_path / "blueprints.xml"
+    _write_xml(
+        xml_path,
+        (
+            '<objects><object Name="Valid">'
+            f'<part Name="Render" DisplayName="{display_name}"{extra_attributes}/>'
+            "</object></objects>"
+        ),
+    )
+
+    result = main(["--strict", str(xml_path)])
+    captured = capsys.readouterr()
+
+    assert result == 0
+    assert "Visible Render.DisplayName has no displayable payload" not in captured.out
+
+
 def test_strict_mode_treats_warning_as_error(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
     """Strict mode returns non-zero when warnings are present."""
     xml_path = tmp_path / "strict.xml"

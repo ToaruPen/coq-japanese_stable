@@ -9861,10 +9861,10 @@
   </object>
 
 <object Name="SalthopperMandible" Inherits="MeleeWeapon" Replace="true">
-    <part Name="Render" DisplayName="{{G|}}" Tile="Items/sw_longblade_13.bmp" ColorString="&amp;Y" DetailColor="y" />
+    <part Name="Render" DisplayName="{{G|ソルトホッパーの大顎}}" Tile="Items/sw_longblade_13.bmp" ColorString="&amp;Y" DetailColor="y" />
     <part Name="MeleeWeapon" MaxStrengthBonus="4" BaseDamage="1d10" Skill="LongBlades" />
     <part Name="Commerce" Value="35" />
-    <part Name="Description" Short="" />
+    <part Name="Description" Short="白く晒されたキチンの鋸歯状の刃には、死んだソルトホッパーが最後に食べた獲物の血肉がまだこびりついている。" />
     <removepart Name="Metal" />
     <tag Name="Tier" Value="3" />
     <tag Name="SwingSound" Value="Sounds/Melee/longBlades/sfx_melee_longBlade_saltHopperMandible_swing" />
@@ -10119,9 +10119,9 @@
   </object>
 
 <object Name="TarBones" Inherits="Bones" Replace="true">
-    <part Name="Render" RenderLayer="5" DisplayName="{{K|}}" DetailColor="Y" TileColor="&amp;K" ColorString="&amp;Y" Tile="items/sw_splat1.bmp" />
-    <part Name="Description" Short="" />
-    <part Name="Food" Message="" />
+    <part Name="Render" RenderLayer="5" DisplayName="{{K|タールに覆われた骨}}" DetailColor="Y" TileColor="&amp;K" ColorString="&amp;Y" Tile="items/sw_splat1.bmp" />
+    <part Name="Description" Short="組織は成長するさなかに鉱化し、やがて生きものの樹から折れ落ちて、生命の遺物となった。その後、焦げた泥炭で煮込まれ、硬い粘塊へと変わった。" />
+    <part Name="Food" Message="あまりにもねっとりしすぎて、口に合わない。" />
     <property Name="StartInLiquid" Value="true" />
     <tag Name="NoSparkingQuest" />
     <removepart Name="RandomColors" />
@@ -10143,8 +10143,8 @@
   </object>
 
 <object Name="Bones" Inherits="Item" Replace="true">
-    <part Name="Render" DisplayName="{{Y|}}" ColorString="&amp;y" />
-    <part Name="Description" Short="" />
+    <part Name="Render" DisplayName="{{Y|骨}}" ColorString="&amp;y" />
+    <part Name="Description" Short="組織は成長するさなかに鉱化し、やがて生きものの樹から折れ落ちて、生命の遺物となった。" />
     <tag Name="DynamicObjectsTable:Corpses" />
     <tag Name="Gender" Value="plural" />
     <builder Name="RandomTile" Tiles="Items/sw_bones_1.bmp,Items/sw_bones_2.bmp,Items/sw_bones_3.bmp,Items/sw_bones_4.bmp,Items/sw_bones_5.bmp,Items/sw_bones_6.bmp,Items/sw_bones_7.bmp,Items/sw_bones_8.bmp" />
@@ -10154,31 +10154,31 @@
   </object>
 
 <object Name="ExileCorpse" Inherits="Corpse" Replace="true">
-    <part Name="Render" RenderLayer="6" DisplayName="{{Y|}}" ColorString="&amp;O" DetailColor="o" TileColor="&amp;O" />
+    <part Name="Render" RenderLayer="6" DisplayName="{{Y|人間の遺骸}}" ColorString="&amp;O" DetailColor="o" TileColor="&amp;O" />
     <tag Name="NoSparkingQuest" />
     <part Name="ExileCorpseLoot" />
-    <part Name="Food" Message="" />
+    <part Name="Food" Message="湿っぽく、陰鬱な味がする。" />
     <inventoryobject Blueprint="Godshroom Cap" Number="2" />
     <inventoryobject Blueprint="Scroll Bound by Kelp" Number="1" />
     <inventoryobject Blueprint="CyberneticsCreditWedge3" Number="1" />
-    <part Name="Description" Short="" />
+    <part Name="Description" Short="珊瑚樹脂の池から、まだ陽に白く晒されていない成人の人骨が突き出している。その遺骸を苗床に、異界のキノコの木立が芽吹いている。" />
     <tag Name="ExcludeFromDynamicEncounters" Value="*noinherit" />
     <tag Name="Gender" Value="plural" />
     <tag Name="NoClear" />
   </object>
 
 <object Name="JoppaCorpse" Inherits="Corpse" Replace="true">
-    <part Name="Render" RenderLayer="6" DisplayName="{{Y|}}" ColorString="&amp;r" TileColor="&amp;r" DetailColor="Y" />
+    <part Name="Render" RenderLayer="6" DisplayName="{{Y|人間の遺骸}}" ColorString="&amp;r" TileColor="&amp;r" DetailColor="Y" />
     <tag Name="NoSparkingQuest" />
-    <part Name="Description" Short="" />
+    <part Name="Description" Short="ブラインストークの茂みから、まだ陽に白く晒されていない成人の人骨が突き出している。" />
     <tag Name="ExcludeFromDynamicEncounters" Value="*noinherit" />
     <tag Name="Gender" Value="plural" />
   </object>
 
 <object Name="CaverCorpse" Inherits="Bones" Replace="true">
-    <part Name="Render" RenderLayer="6" DisplayName="{{Y|}}" Tile="items/sw_bones_4.bmp" ColorString="&amp;M" TileColor="&amp;M" />
+    <part Name="Render" RenderLayer="6" DisplayName="{{Y|古代の骨}}" Tile="items/sw_bones_4.bmp" ColorString="&amp;M" TileColor="&amp;M" />
     <part Name="CaverCorpseLoot" />
-    <part Name="Food" Message="" />
+    <part Name="Food" Message="薄い骨片が口の中でほろほろと崩れる。" />
     <tag Name="NoSparkingQuest" />
     <tag Name="ExcludeFromDynamicEncounters" />
   </object>
@@ -10508,8 +10508,8 @@
   </object>
 
 <object Name="FactionDeed" Inherits="Deed" Replace="true">
-    <part Name="Render" DisplayName="{{K|}}" ColorString="&amp;K" TileColor="&amp;Y" DetailColor="k" Tile="items/sw_unfurled_scroll1.bmp" RenderString="=" RenderLayer="5" />
-    <part Name="Description" Short="" />
+    <part Name="Render" DisplayName="{{K|クッド年代記}}のシュレーディンガー・ページ" ColorString="&amp;K" TileColor="&amp;Y" DetailColor="k" Tile="items/sw_unfurled_scroll1.bmp" RenderString="=" RenderLayer="5" />
+    <part Name="Description" Short="クッド年代記を誰が編み、いつ記録が始まったのかを知る学者はほとんどいない。だがクアンティヴィストたちは、自らの頁を正史の台帳と量子的にもつれさせ、自分たちを好意的に描いた記述を歴史へ差し込む術を編み出した。そのような頁がいくつか残っている。" />
     <part Name="FactionDeed" />
     <part Name="Commerce" Value="250" />
     <tag Name="AdjustWeaponScore" Value="-2" />
@@ -10539,43 +10539,43 @@
 <object Name="LuminousInfection" Inherits="FungalInfection" Replace="true">
     <part Name="Physics" Weight="3" />
     <part Name="Armor" WornOn="*" DV="0" AV="0" Cold="10" />
-    <part Name="Render" DisplayName="{{C|}}" Tile="Items/sw_glowcrust.bmp" ColorString="&amp;C" DetailColor="Y" />
+    <part Name="Render" DisplayName="{{C|グロウクラスト}}" Tile="Items/sw_glowcrust.bmp" ColorString="&amp;C" DetailColor="Y" />
     <part Name="LightSource" Lit="true" Radius="3" />
     <part Name="LuminousInfection" />
-    <part Name="Description" Short="" />
+    <part Name="Description" Short="霜を散らした小瘤が感染した皮膚を覆い、凍てつく霧がまとわりついている。菌の群体が表皮を地形改造し、雪を戴く山脈のミニチュアへと変えてしまった。" />
     <part Name="ItemElements" Elements="ice::5" />
   </object>
 
 <object Name="PuffInfection" Inherits="FungalInfection" Replace="true">
     <part Name="Physics" Weight="2" />
-    <part Name="Render" DisplayName="{{G|}}" Tile="Items/sw_ficklegill.bmp" ColorString="&amp;G" DetailColor="y" />
+    <part Name="Render" DisplayName="{{G|フィックル・ギル}}" Tile="Items/sw_ficklegill.bmp" ColorString="&amp;G" DetailColor="y" />
     <part Name="PuffInfection" ColorString="1" />
-    <part Name="Description" Short="" />
+    <part Name="Description" Short="条筋の走る皮膚でぴくつく肉質のひだから、微細な胞子の塵がひらひらと舞い落ちる。その内側にはさらに千もの胞子が閉じ込められ、揺すられて解き放たれるのを待っている。" />
   </object>
 
 <object Name="MumblesInfection" Inherits="FungalInfection" Replace="true">
     <part Name="Physics" Weight="2" />
-    <part Name="Render" DisplayName="{{R|}}{{M|}}{{R|}}" Tile="Items/sw_mumblemouth.bmp" ColorString="&amp;R" DetailColor="M" />
+    <part Name="Render" DisplayName="{{R|マンブ}}{{M|ル・マ}}{{R|ウス}}" Tile="Items/sw_mumblemouth.bmp" ColorString="&amp;R" DetailColor="M" />
     <part Name="MumblesInfection" Chance="5" />
-    <part Name="Description" Short="" />
+    <part Name="Description" Short="何十もの小さな口が感染した皮膚を敷き詰め、湿った唇をめいめい勝手にすぼめては、喘ぐようにたわごとを吐く。時おり、その不協和音が一つに調和し、意味の通る言葉となる。" />
     <part Name="ItemElements" Elements="chance::4" />
   </object>
 
 <object Name="WaxInfection" Inherits="FungalInfection" Replace="true">
     <part Name="Armor" WornOn="*" Elec="10" DV="0" Heat="-5" AV="0" />
     <part Name="Physics" Weight="6" />
-    <part Name="Render" DisplayName="{{Y|}}" Tile="Items/sw_waxflab.bmp" ColorString="&amp;Y" DetailColor="y" />
-    <part Name="Description" Short="" />
+    <part Name="Render" DisplayName="{{Y|ワックスフラブ}}" Tile="Items/sw_waxflab.bmp" ColorString="&amp;Y" DetailColor="y" />
+    <part Name="Description" Short="蝋を滴らせる菌が付属肢を透き通る殻に封じ込めている。体温で最内層が溶け、濃厚な蝋質の乳液が硬化した牢の内壁に打ち寄せる。" />
     <part Name="LiquidVolume" MaxVolume="4" StartVolume="0" InitialLiquid="wax-1000" />
     <part Name="LiquidProducer" Liquid="wax" WorksOnWearer="true" WorksOnSelf="false" VariableRate="50-100" ChanceSkipSameCell="50" PureOnFloor="true" />
   </object>
 
 <object Name="PaxInfection" Inherits="FungalInfection" Replace="true">
-    <part Name="Render" DisplayName="{{O|}}" Tile="Items/sw_klanq_infection.bmp" ColorString="&amp;O" DetailColor="C" />
+    <part Name="Render" DisplayName="{{O|クランク}}" Tile="Items/sw_klanq_infection.bmp" ColorString="&amp;O" DetailColor="C" />
     <part Name="Armor" WornOn="*" DV="0" AV="0" Intelligence="1" />
     <part Name="FungalInfection" Curable="false" />
     <part Name="PaxInfection" />
-    <part Name="Description" Short="" />
+    <part Name="Description" Short="異次元の菌肉から伸びる先細りの裂片が、素数列の拍子で中央の隆起を叩いている。内側では、胞子生命がぱふっと噴き出す支度をしている。" />
   </object>
 
 <object Name="Security Card" Inherits="Item" Replace="true">
@@ -10588,78 +10588,78 @@
   </object>
 
 <object Name="Red Security Card" Inherits="Security Card" Replace="true">
-    <part Name="Render" DisplayName="{{r|}}" ColorString="&amp;r" />
+    <part Name="Render" DisplayName="{{r|労働者用セキュリティカード}}" ColorString="&amp;r" />
     <part Name="Commerce" Value="100" />
   </object>
 
 <object Name="Yellow Security Card" Inherits="Security Card" Replace="true">
-    <part Name="Render" DisplayName="{{W|黄色のセキュリティカード}}" ColorString="&amp;W" />
+    <part Name="Render" DisplayName="{{W|保守用セキュリティカード}}" ColorString="&amp;W" />
     <part Name="Commerce" Value="200" />
   </object>
 
 <object Name="Green Security Card" Inherits="Security Card" Replace="true">
-    <part Name="Render" DisplayName="{{G|}}" ColorString="&amp;G" />
+    <part Name="Render" DisplayName="{{G|緊急サービス用セキュリティカード}}" ColorString="&amp;G" />
     <part Name="Commerce" Value="300" />
   </object>
 
 <object Name="Blue Security Card" Inherits="Security Card" Replace="true">
-    <part Name="Render" DisplayName="{{B|}}" ColorString="&amp;B" />
+    <part Name="Render" DisplayName="{{B|法執行機関用セキュリティカード}}" ColorString="&amp;B" />
     <part Name="Commerce" Value="400" />
   </object>
 
 <object Name="Purple Security Card" Inherits="Security Card" Replace="true">
-    <part Name="Render" DisplayName="{{M|}}" ColorString="&amp;M" />
+    <part Name="Render" DisplayName="{{M|軍用セキュリティカード}}" ColorString="&amp;M" />
     <part Name="Commerce" Value="500" />
   </object>
 
 <object Name="Copper Trollking Key" Inherits="Security Card" Replace="true">
-    <part Name="Render" DisplayName="{{w|}}" RenderString="-" ColorString="&amp;w" Occluding="false" RenderIfDark="true" Tile="Items/sw_key.bmp" />
+    <part Name="Render" DisplayName="{{w|青銅}}の鍵" RenderString="-" ColorString="&amp;w" Occluding="false" RenderIfDark="true" Tile="Items/sw_key.bmp" />
     <part Name="Commerce" Value="50" />
     <stat Name="AV" Value="25" />
     <stat Name="Hitpoints" Value="300" />
-    <part Name="Description" Short="" />
+    <part Name="Description" Short="磨き上げた青銅の軸に切り欠きが刻まれ、ふさわしい錠を解く時を待っている。" />
     <tag Name="NoSparkingQuest" />
   </object>
 
 <object Name="Silver Trollking Key" Inherits="Security Card" Replace="true">
-    <part Name="Render" DisplayName="{{silvery|}}" RenderString="-" ColorString="&amp;Y" Occluding="false" RenderIfDark="true" Tile="Items/sw_key.bmp" />
+    <part Name="Render" DisplayName="{{silvery|銀}}の鍵" RenderString="-" ColorString="&amp;Y" Occluding="false" RenderIfDark="true" Tile="Items/sw_key.bmp" />
     <part Name="Commerce" Value="100" />
     <stat Name="AV" Value="25" />
     <stat Name="Hitpoints" Value="300" />
-    <part Name="Description" Short="" />
+    <part Name="Description" Short="明るく輝く銀の軸に切り欠きが刻まれ、ふさわしい錠を解く時を待っている。" />
     <tag Name="NoSparkingQuest" />
   </object>
 
 <object Name="Gold Trollking Key" Inherits="Security Card" Replace="true">
-    <part Name="Render" DisplayName="{{W|金のトロル王の鍵}}" RenderString="-" ColorString="&amp;W" Occluding="false" RenderIfDark="true" Tile="Items/sw_key.bmp" />
+    <part Name="Render" DisplayName="{{W|金}}の鍵" RenderString="-" ColorString="&amp;W" Occluding="false" RenderIfDark="true" Tile="Items/sw_key.bmp" />
     <part Name="Commerce" Value="200" />
     <stat Name="AV" Value="25" />
     <stat Name="Hitpoints" Value="300" />
-    <part Name="Description" Short="" />
+    <part Name="Description" Short="燃えるような金色の銅の軸に切り欠きが刻まれ、ふさわしい錠を解く時を待っている。" />
     <tag Name="NoSparkingQuest" />
   </object>
 
 <object Name="BarathrumKey" Inherits="Security Card" Replace="true">
-    <part Name="Render" DisplayName="{{c|}}" ColorString="&amp;C" Tile="Items/sw_key.bmp" />
+    <part Name="Render" DisplayName="{{c|クローム}}の鍵" ColorString="&amp;C" Tile="Items/sw_key.bmp" />
     <part Name="Commerce" Value="50" />
     <stat Name="AV" Value="25" />
     <stat Name="Hitpoints" Value="300" />
-    <part Name="Description" Short="" />
+    <part Name="Description" Short="磨き上げたクロームの軸に切り欠きが刻まれ、ふさわしい錠を解く時を待っている。" />
     <tag Name="NoSparkingQuest" />
     <tag Name="ExcludeFromDynamicEncounters" Value="*noinherit" />
   </object>
 
 <object Name="GritGateGridKey" Inherits="Security Card" Replace="true">
-    <part Name="Render" DisplayName="{{c|}}" ColorString="&amp;C" />
+    <part Name="Render" DisplayName="{{c|クローム}}のセキュリティカード" ColorString="&amp;C" />
     <part Name="Commerce" Value="50" />
-    <part Name="Description" Short="" />
+    <part Name="Description" Short="符号化された金属紙の短冊で、錠機構に差し込むと一部の扉を開けられる。" />
     <tag Name="NoSparkingQuest" />
     <tag Name="ExcludeFromDynamicEncounters" Value="*noinherit" />
   </object>
 
 <object Name="CrystalKey" Inherits="Security Card" Replace="true">
-    <part Name="Render" DisplayName="{{m|}}" ColorString="&amp;m" DetailColor="y" Tile="Items/sw_key.bmp" />
-    <part Name="Description" Short="" />
+    <part Name="Render" DisplayName="{{m|水晶}}の鍵" ColorString="&amp;m" DetailColor="y" Tile="Items/sw_key.bmp" />
+    <part Name="Description" Short="水晶の歯状の欠けは、秘密の鍵の噛み合わせとなる切り込みだ。" />
     <part Name="Commerce" Value="50" />
     <stat Name="AV" Value="25" />
     <stat Name="Hitpoints" Value="300" />

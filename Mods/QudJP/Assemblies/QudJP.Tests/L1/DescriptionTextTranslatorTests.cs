@@ -722,7 +722,7 @@ public sealed class DescriptionTextTranslatorTests
             ("Weight:", "重量："));
         WriteDictionary(
             "world-mods.ja.json",
-            ("Offhand Attack Chance: {0}%", "オフハンド命中率: {0}%"),
+            ("Offhand Attack Chance: {0}%", "オフハンド攻撃発生率: {0}%"),
             ("Cudgel (dazes on critical hit)", "棍棒（クリティカル時に朦朧付与）"));
         const string source =
             "拳大の巻貝が柔らかな螺旋にとぐろを巻き、煤で黒く燻され、硫黄の臭気を放つ。\n\n" +
@@ -743,7 +743,7 @@ public sealed class DescriptionTextTranslatorTests
                     "拳大の巻貝が柔らかな螺旋にとぐろを巻き、煤で黒く燻され、硫黄の臭気を放つ。\n\n" +
                     "筋力ボーナス上限: 3\n" +
                     "武器カテゴリ: 棍棒（クリティカル時に朦朧付与）\n" +
-                    "オフハンド命中率: 15%\n\n" +
+                    "オフハンド攻撃発生率: 15%\n\n" +
                     "重量： 2 lbs."));
             Assert.That(MessagePatternTranslator.GetMissingPatternHitCountForTests(source), Is.EqualTo(0));
             Assert.That(Translator.GetMissingKeyHitCountForTests("Strength"), Is.EqualTo(0));

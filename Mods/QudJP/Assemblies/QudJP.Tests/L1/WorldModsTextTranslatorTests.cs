@@ -312,8 +312,11 @@ public sealed class WorldModsTextTranslatorTests
         "{{rules|Co-Processor: When powered, this item grants bonus Intelligence and provides compute power to the local lattice.}}",
         "{{rules|共同処理装置: 通電中、知力にボーナスを与え、局所格子に演算力を供給する。}}")]
     [TestCase(
+        "Attack Chance: 15%",
+        "攻撃発生率: 15%")]
+    [TestCase(
         "Offhand Attack Chance: 15%",
-        "オフハンド命中率: 15%")]
+        "オフハンド攻撃発生率: 15%")]
     [TestCase(
         "Microserrated: This weapon has 15% chance to dismember opponents.",
         "微鋸歯: この武器は15%の確率で敵を切断する。")]
@@ -374,6 +377,28 @@ public sealed class WorldModsTextTranslatorTests
     public void TryTranslate_TranslatesDynamicWorldModsTemplates(string source, string expected)
     {
         WriteDynamicWorldModsDictionary();
+
+        var ok = WorldModsTextTranslator.TryTranslate(
+            source,
+            "DescriptionShortDescriptionPatch",
+            "Description.WorldMods",
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(translated, Is.EqualTo(expected));
+        });
+    }
+
+    [TestCase("Attack Chance: 15%", "攻撃発生率: 15%")]
+    [TestCase("Offhand Attack Chance: 15%", "オフハンド攻撃発生率: 15%")]
+    public void TryTranslate_RepositoryDictionary_TranslatesMeleeAttackOccurrenceChance(
+        string source,
+        string expected)
+    {
+        Translator.SetDictionaryDirectoryForTests(
+            Path.Combine(TestProjectPaths.GetRepositoryRoot(), "Mods", "QudJP", "Localization", "Dictionaries"));
 
         var ok = WorldModsTextTranslator.TryTranslate(
             source,
@@ -1096,7 +1121,8 @@ public sealed class WorldModsTextTranslatorTests
             ("Serrated: This weapon has {0}% chance to dismember opponents.", "鋸歯: この武器は{0}%の確率で敵を切断する。"),
             ("Feathered: This item grants the wearer {0} reputation with birds.", "羽飾り: 装着者に鳥類との評判{0}を与える。"),
             ("+{0} reputation with {1}", "{1}との評判{0:+#;-#}"),
-            ("Offhand Attack Chance: {0}%", "オフハンド命中率: {0}%"),
+            ("Attack Chance: {0}%", "攻撃発生率: {0}%"),
+            ("Offhand Attack Chance: {0}%", "オフハンド攻撃発生率: {0}%"),
             ("Scaled: This item grants the wearer {0} reputation with unshelled reptiles.", "鱗状の: 装着者に甲無し爬虫類との評判{0}を与える。"),
             ("Snail-Encrusted: This item is crawling with tiny snails and grants the wearer {0} reputation with mollusks.", "巻貝まみれ: 小さなカタツムリが這っており、装着者に軟体動物との評判{0}を与える。"),
             ("Issachari tribe", "イッサカリ族"),

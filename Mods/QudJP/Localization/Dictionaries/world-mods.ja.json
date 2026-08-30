@@ -656,22 +656,22 @@
     {
       "context": "XRL.World.Parts.MeleeWeapon.GetShortDescription",
       "key": "\n{{rules|Attack Chance: {0}%}}",
-      "text": "\n{{rules|命中率: {0}%}}"
+      "text": "\n{{rules|攻撃発生率: {0}%}}"
     },
     {
       "context": "XRL.World.Parts.MeleeWeapon.GetShortDescription",
       "key": "Attack Chance: {0}%",
-      "text": "命中率: {0}%"
+      "text": "攻撃発生率: {0}%"
     },
     {
       "context": "XRL.World.Parts.MeleeWeapon.GetShortDescription",
       "key": "\n{{rules|Offhand Attack Chance: {0}%}}",
-      "text": "\n{{rules|オフハンド命中率: {0}%}}"
+      "text": "\n{{rules|オフハンド攻撃発生率: {0}%}}"
     },
     {
       "context": "XRL.World.Parts.MeleeWeapon.GetShortDescription",
       "key": "Offhand Attack Chance: {0}%",
-      "text": "オフハンド命中率: {0}%"
+      "text": "オフハンド攻撃発生率: {0}%"
     },
     {
       "context": "XRL.World.Parts.MeleeWeapon.GetShortDescription",

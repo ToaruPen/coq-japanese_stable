@@ -146,7 +146,7 @@ public sealed class LookTooltipContentPatchTests
                 Is.EqualTo("{{rules|ビームスプリッタ装着: この武器は1射撃ごとに3方向へ拡散し、各射撃の貫通判定が-1される。}}"));
             Assert.That(
                 LookTooltipContentPatch.TranslateTooltipContent("\n{{rules|Offhand Attack Chance: 15%}}"),
-                Is.EqualTo("\n{{rules|オフハンド命中率: 15%}}"));
+                Is.EqualTo("\n{{rules|オフハンド攻撃発生率: 15%}}"));
         });
     }
 
