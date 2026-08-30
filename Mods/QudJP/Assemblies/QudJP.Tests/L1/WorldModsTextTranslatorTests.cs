@@ -393,6 +393,12 @@ public sealed class WorldModsTextTranslatorTests
 
     [TestCase("Attack Chance: 15%", "攻撃発生率: 15%")]
     [TestCase("Offhand Attack Chance: 15%", "オフハンド攻撃発生率: 15%")]
+    [TestCase("\n{{rules|Attack Chance: 15%}}", "\n{{rules|攻撃発生率: 15%}}")]
+    [TestCase("\n{{rules|Offhand Attack Chance: 15%}}", "\n{{rules|オフハンド攻撃発生率: 15%}}")]
+    [TestCase("Attack Chance: {{Y|15}}%", "攻撃発生率: {{Y|15}}%")]
+    [TestCase("Offhand Attack Chance: {{Y|15}}%", "オフハンド攻撃発生率: {{Y|15}}%")]
+    [TestCase("\x01" + "Attack Chance: 15%", "\x01" + "攻撃発生率: 15%")]
+    [TestCase("\x01" + "Offhand Attack Chance: 15%", "\x01" + "オフハンド攻撃発生率: 15%")]
     public void TryTranslate_RepositoryDictionary_TranslatesMeleeAttackOccurrenceChance(
         string source,
         string expected)
@@ -410,6 +416,27 @@ public sealed class WorldModsTextTranslatorTests
         {
             Assert.That(ok, Is.True);
             Assert.That(translated, Is.EqualTo(expected));
+        });
+    }
+
+    [TestCase("Attack Chance: unknown")]
+    [TestCase("Offhand Attack Chance: unknown")]
+    public void TryTranslate_RepositoryDictionary_PreservesUnsupportedMeleeAttackOccurrenceChance(
+        string source)
+    {
+        Translator.SetDictionaryDirectoryForTests(
+            Path.Combine(TestProjectPaths.GetRepositoryRoot(), "Mods", "QudJP", "Localization", "Dictionaries"));
+
+        var ok = WorldModsTextTranslator.TryTranslate(
+            source,
+            "DescriptionShortDescriptionPatch",
+            "Description.WorldMods",
+            out var translated);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.False);
+            Assert.That(translated, Is.EqualTo(source));
         });
     }
 
