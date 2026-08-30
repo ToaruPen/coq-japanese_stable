@@ -48,8 +48,8 @@ CURRENT_VERSION_SURFACES = {
         r'BuildMarker = "qud-(?P<version>\d+\.\d+\.\d+)-compat-v\d+"'
     ),
 }
-WORKSHOP_HARMONY_THREAD_URL = (
-    "https://steamcommunity.com/workshop/filedetails/discussion/3718988020/572669660098532087/"
+WORKSHOP_HARMONY_RELEASE_URL = (
+    "https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.5.02"
 )
 WORKSHOP_DESCRIPTION_LANGUAGE_CONTRACTS = {
     "steam/workshop_description.en.txt": (
@@ -72,6 +72,7 @@ WORKSHOP_DESCRIPTION_ORDERED_SECTIONS = {
         "[h1]Installation[/h1]",
         "[h2]Existing Saves[/h2]",
         "[h1]Apple Silicon Macs[/h1]",
+        "[h1]Windows Startup Delays and the Optional Harmony 2.4.2 Patch[/h1]",
         "[h1]Reports and Contributions[/h1]",
         "[h1]Important Notes[/h1]",
         "[h2]Known Issues[/h2]",
@@ -85,6 +86,7 @@ WORKSHOP_DESCRIPTION_ORDERED_SECTIONS = {
         "[h1]導入方法[/h1]",
         "[h2]既存セーブ[/h2]",
         "[h1]Apple Silicon Mac[/h1]",
+        "[h1]Windows の起動待ちと任意導入の Harmony 2.4.2 パッチ[/h1]",
         "[h1]問題報告・Contribution[/h1]",
         "[h1]注意事項[/h1]",
         "[h2]既知の問題[/h2]",
@@ -324,13 +326,22 @@ def test_workshop_descriptions_use_balanced_steam_bbcode() -> None:
         for required_tag in ("[list]", "[olist]", "[code]"):
             assert required_tag in description, f"{path}: missing required tag {required_tag}"
 
-        harmony_link = f"[url={WORKSHOP_HARMONY_THREAD_URL}]"
+        harmony_link = f"[url={WORKSHOP_HARMONY_RELEASE_URL}]"
         assert description.count(harmony_link) == 1, (
-            f"{path}: expected exactly one linked Harmony thread URL"
+            f"{path}: expected exactly one linked Harmony release URL"
         )
-        assert description.count(WORKSHOP_HARMONY_THREAD_URL) == 1, (
-            f"{path}: Harmony thread URL must not also appear naked"
+        assert description.count(WORKSHOP_HARMONY_RELEASE_URL) == 1, (
+            f"{path}: Harmony release URL must not also appear naked"
         )
+        for required_harmony_file in (
+            "QudJP-Harmony-2.4.2-Windows.zip",
+            "Install Harmony 2.4.2.cmd",
+            "Restore Game Harmony.cmd",
+            "Install Native Apple Silicon Harmony.command",
+        ):
+            assert required_harmony_file in description, (
+                f"{path}: missing Harmony package or recovery file {required_harmony_file!r}"
+            )
 
 
 def test_reference_stub_version_matches_l2g_game_assembly_contract() -> None:
