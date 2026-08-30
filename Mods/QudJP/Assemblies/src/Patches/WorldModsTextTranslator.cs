@@ -199,8 +199,11 @@ internal static class WorldModsTextTranslator
     private static readonly Regex WeaponClassPattern = new Regex(
         "^Weapon Class: (?<weaponClass>.+)$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
-    private static readonly Regex OffhandAttackChancePattern = new Regex(
-        "^Offhand Attack Chance: (?<chance>\\d+)%$",
+    private static readonly Regex MeleeAttackChancePattern = new Regex(
+        "^(?<offhand>Offhand )?Attack Chance: (?<chance>\\d+)%$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex MeleeAttackChanceRulesPattern = new Regex(
+        "^\\n\\{\\{rules\\|(?<offhand>Offhand )?Attack Chance: (?<chance>\\d+)%\\}\\}$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
     private static readonly Regex BlinkEscapePattern = new Regex(
         "^Whenever you're about to take avoidable damage, there's (?:a|an) (?<chance>\\d+)% chance you blink away instead\\.$",
@@ -356,7 +359,7 @@ internal static class WorldModsTextTranslator
             return true;
         }
 
-        if (TryTranslateOffhandAttackChanceTemplate(source, route, family, out translated))
+        if (TryTranslateMeleeAttackChanceTemplate(source, route, family, out translated))
         {
             return true;
         }
@@ -897,27 +900,32 @@ internal static class WorldModsTextTranslator
             out translated);
     }
 
-    private static bool TryTranslateOffhandAttackChanceTemplate(string source, string route, string family, out string translated)
+    private static bool TryTranslateMeleeAttackChanceTemplate(string source, string route, string family, out string translated)
     {
+        var rulesMatch = MeleeAttackChanceRulesPattern.Match(source);
+        if (rulesMatch.Success)
+        {
+            var rulesTemplateKey = "\n{{rules|" + GetMeleeAttackChanceTemplateKey(rulesMatch) + "}}";
+            var rulesTemplate = GetMeleeAttackChanceTemplate(rulesTemplateKey);
+            if (rulesTemplate is not null)
+            {
+                translated = rulesTemplate.Replace("{0}", rulesMatch.Groups["chance"].Value);
+                DynamicTextObservability.RecordTransform(route, family, source, translated);
+                return !string.Equals(source, translated, StringComparison.Ordinal);
+            }
+        }
+
         var (stripped, spans) = ColorAwareTranslationComposer.Strip(source);
-        var match = OffhandAttackChancePattern.Match(stripped);
+        var match = MeleeAttackChancePattern.Match(stripped);
         if (!match.Success)
         {
             translated = source;
             return false;
         }
 
-        const string templateKey = "Offhand Attack Chance: {0}%";
-        var template = ScopedDictionaryLookup.TranslateExactOrLowerAsciiForContext(
-            templateKey,
-            MeleeWeaponShortDescriptionContext,
-            WorldModsDictionaryFile);
-        if (string.IsNullOrEmpty(template) || string.Equals(template, templateKey, StringComparison.Ordinal))
-        {
-            template = ScopedDictionaryLookup.TranslateExactOrLowerAscii(templateKey, WorldModsDictionaryFile);
-        }
-
-        if (string.IsNullOrEmpty(template) || string.Equals(template, templateKey, StringComparison.Ordinal))
+        var templateKey = GetMeleeAttackChanceTemplateKey(match);
+        var template = GetMeleeAttackChanceTemplate(templateKey);
+        if (template is null)
         {
             translated = source;
             return false;
@@ -934,6 +942,29 @@ internal static class WorldModsTextTranslator
             template!,
             new[] { GetTranslatedCapture(match, contentSpans, "chance") },
             out translated);
+    }
+
+    private static string GetMeleeAttackChanceTemplateKey(Match match)
+    {
+        return match.Groups["offhand"].Success
+            ? "Offhand Attack Chance: {0}%"
+            : "Attack Chance: {0}%";
+    }
+
+    private static string? GetMeleeAttackChanceTemplate(string templateKey)
+    {
+        var template = ScopedDictionaryLookup.TranslateExactOrLowerAsciiForContext(
+            templateKey,
+            MeleeWeaponShortDescriptionContext,
+            WorldModsDictionaryFile);
+        if (string.IsNullOrEmpty(template) || string.Equals(template, templateKey, StringComparison.Ordinal))
+        {
+            template = ScopedDictionaryLookup.TranslateExactOrLowerAscii(templateKey, WorldModsDictionaryFile);
+        }
+
+        return string.IsNullOrEmpty(template) || string.Equals(template, templateKey, StringComparison.Ordinal)
+            ? null
+            : template;
     }
 
     private static bool TryTranslateStrengthBonusCapTemplate(string source, string route, string family, out string translated)

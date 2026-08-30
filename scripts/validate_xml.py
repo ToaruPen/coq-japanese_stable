@@ -36,7 +36,7 @@ branches, Worlds zone differentiation, etc.).
 """
 
 _BARE_QUD_SPAN = re.compile(r"\{\{[^|{}]+\}\}")
-_QUD_OPENER = re.compile(r"\{\{[^|}]+\|")
+_QUD_OPENER = re.compile(r"\{\{[^|}]*\|")
 _QUD_CLOSER = re.compile(r"\}\}")
 _LITERAL_AMPERSAND = re.compile(r"&&")
 _LITERAL_CARET = re.compile(r"\^\^")
@@ -54,6 +54,15 @@ _MARKUP_TOKEN_PATTERNS = (
     _HTML_COLOR_OPEN,
     _HTML_COLOR_CLOSE,
     _VARIABLE_TOKEN,
+)
+_DISPLAY_NAME_DECORATION_PATTERNS = (
+    _BARE_QUD_SPAN,
+    _QUD_OPENER,
+    _QUD_CLOSER,
+    _LEGACY_AMPERSAND_COLOR,
+    _LEGACY_CARET_COLOR,
+    _HTML_COLOR_OPEN,
+    _HTML_COLOR_CLOSE,
 )
 
 type _MarkupUnitKey = tuple[str, str]
@@ -266,6 +275,33 @@ def _find_empty_text_elements(root: ET.Element) -> list[str]:
         if element.text is None or element.text.strip() == "":
             warnings.append(f"Empty text in element {_format_element_descriptor(element)} at {record.keyed_path}")
 
+    return warnings
+
+
+def _has_displayable_name_payload(value: str) -> bool:
+    payload = value
+    for pattern in _DISPLAY_NAME_DECORATION_PATTERNS:
+        payload = pattern.sub("", payload)
+    return bool(payload.strip())
+
+
+def _find_empty_visible_render_display_names(root: ET.Element) -> list[str]:
+    if root.tag != "objects":
+        return []
+
+    warnings: list[str] = []
+    for record in _element_path_records(root):
+        element = record.element
+        if element.tag != "part" or element.get("Name") != "Render":
+            continue
+        display_name = element.get("DisplayName")
+        if display_name is None or element.get("Visible", "true").casefold() == "false":
+            continue
+        if not _has_displayable_name_payload(display_name):
+            warnings.append(
+                "Visible Render.DisplayName has no displayable payload "
+                f"at {record.keyed_path}"
+            )
     return warnings
 
 
@@ -704,6 +740,7 @@ def validate_xml_file(
 
     warnings.extend(_find_duplicate_siblings(root))
     warnings.extend(_find_empty_text_elements(root))
+    warnings.extend(_find_empty_visible_render_display_names(root))
     if source_root is not None:
         source_relative_path = _source_relative_path(path, validation_roots=validation_roots or [])
         if source_relative_path is not None:
