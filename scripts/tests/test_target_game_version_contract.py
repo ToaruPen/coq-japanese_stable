@@ -338,10 +338,20 @@ def test_workshop_descriptions_use_balanced_steam_bbcode() -> None:
             "Install Harmony 2.4.2.cmd",
             "Restore Game Harmony.cmd",
             "Install Native Apple Silicon Harmony.command",
+            "Restore Game Harmony.command",
         ):
             assert required_harmony_file in description, (
                 f"{path}: missing Harmony package or recovery file {required_harmony_file!r}"
             )
+
+
+def test_harmony_report_links_public_release_package() -> None:
+    """The current Harmony package guidance must not rely on the removed Steam item."""
+    report = _read("docs/reports/2026-08-04-windows-harmony-startup-delay.md")
+    release_link = f"[QudJP v0.5.02 GitHub Release]({WORKSHOP_HARMONY_RELEASE_URL})"
+
+    assert report.count(release_link) == 1
+    assert "`QudJP-Harmony-2.4.2-Windows.zip` と導入・復元手順" in report
 
 
 def test_reference_stub_version_matches_l2g_game_assembly_contract() -> None:
