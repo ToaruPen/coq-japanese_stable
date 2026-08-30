@@ -10,6 +10,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+## [0.5.06] - 2026-08-31
+
+### Changed
+
+- Windows 通常公開版で起動時に長く「応答なし」になる場合について、原因の見分け方と任意導入の Harmony 2.4.2 更新パッチの案内を Workshop 説明へ追加しました。
+
+### Fixed
+
+- 遺体、菌糸感染、セキュリティカード、鍵、ソルトホッパーの大顎など、複数のアイテムで日本語の名前・説明・使用時メッセージが空欄または英語になる問題を修正しました。
+- 近接武器の攻撃発生率を命中率と誤って表示していた箇所を、「攻撃確率」「オフハンド攻撃確率」に修正しました。
+
+---
+
 ## [0.5.05] - 2026-08-20
 
 ### Fixed
@@ -468,7 +481,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
-[Unreleased]: https://github.com/ToaruPen/coq-japanese_stable/compare/v0.5.05...HEAD
+[Unreleased]: https://github.com/ToaruPen/coq-japanese_stable/compare/v0.5.06...HEAD
+[0.5.06]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.5.06
 [0.5.05]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.5.05
 [0.5.03]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.5.03
 [0.5.02]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.5.02

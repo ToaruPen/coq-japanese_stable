@@ -59,9 +59,15 @@ If you use another Steam library, look for the same [b]steamapps/workshop/conten
 [*]If Rosetta 2 is missing, follow the installation prompt shown by the wrapper.
 [/list]
 
-[h2]Optional Native Harmony 2.4.2 Patch[/h2]
+[h1]Windows Startup Delays and the Optional Harmony 2.4.2 Patch[/h1]
 
-Advanced users who need native Apple Silicon launch can use the separately documented Harmony 2.4.2 patch. Installation, restoration, compatibility, and game-update precautions are maintained in the [url=https://steamcommunity.com/workshop/filedetails/discussion/3718988020/572669660098532087/]Harmony 2.4.2 distribution thread[/url].
+On the Caves of Qud 1.0.5 public branch for Windows, enabling QudJP may leave the game on a white or black screen and marked as not responding for an extended period. Player.log may appear to stop after this line:
+
+[code]StartupTiming/v1: phase=harmony.scan_patch_types[/code]
+
+This can be the patch-application delay caused by the game's bundled Harmony 2.2.2. First, wait about two minutes to see whether startup completes. If the game starts and you want to shorten the wait, the optional Harmony 2.4.2 update reduced this phase from approximately 72.6 seconds to 9.4 seconds in the existing Windows verification. If startup still does not complete after two minutes, treat it as a separate issue and share the full Player.log after removing usernames and local paths.
+
+QudJP does not automatically install or replace the game's 0Harmony.dll. The update is distributed separately from the normal mod and uses an explicit, reversible process that backs up the existing DLL. See the [url=https://steamcommunity.com/workshop/filedetails/discussion/3718988020/572669660098532087/]Harmony 2.4.2 distribution thread[/url] for Windows installation, restoration, Apple Silicon Mac usage, and version compatibility. It supports only the verified Caves of Qud 1.0.5 public build. Do not use it with beta branches or after an unknown game update.
 
 [h1]Reports and Contributions[/h1]
 
