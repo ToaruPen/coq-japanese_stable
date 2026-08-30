@@ -67,7 +67,7 @@ Caves of Qud 1.0.5 の通常公開版を Windows で使用すると、QudJP の�
 
 これはゲーム同梱の Harmony 2.2.2 によるパッチ適用待ちの可能性があります。まず 2 分ほど待ち、起動が完了するかを確認してください。起動は完了するものの待ち時間を短くしたい場合は、既存の Windows 検証で任意導入の Harmony 2.4.2 更新パッチにより、この処理が約 72.6 秒から 9.4 秒へ短縮されています。2 分待っても起動しない場合は別の問題として扱い、ユーザー名やローカルパスを伏せた Player.log 全体をご共有ください。
 
-QudJP はゲーム本体の 0Harmony.dll を自動では導入・上書きしません。更新パッチは通常の Mod とは別配布で、確認を求めてから既存 DLL をバックアップする可逆的な手順です。Windows での導入方法、元に戻す方法、Apple Silicon Mac での利用、対応バージョンは [url=https://steamcommunity.com/workshop/filedetails/discussion/3718988020/572669660098532087/]Harmony 2.4.2 配布スレッド[/url]を確認してください。Caves of Qud 1.0.5 の確認済み通常公開版だけが対象です。ベータ版やゲーム更新後の未確認バージョンには使用しないでください。
+QudJP はゲーム本体の 0Harmony.dll を自動では導入・上書きしません。Windows では [url=https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.5.02]QudJP v0.5.02 GitHub Release[/url] から [b]QudJP-Harmony-2.4.2-Windows.zip[/b] をダウンロードしてください。ゲームを終了して ZIP を展開し、[b]Install Harmony 2.4.2.cmd[/b] を実行します。元に戻す場合は、ゲームを終了して [b]Restore Game Harmony.cmd[/b] を実行します。Apple Silicon Mac でネイティブ ARM64 起動が必要な場合は、QudJP 同梱の [b]Install Native Apple Silicon Harmony.command[/b] と [b]Restore Game Harmony.command[/b] を使用できますが、通常は Rosetta 2 起動ツールを推奨します。これらは既存 DLL をバックアップする明示的で可逆的な手順で、Caves of Qud 1.0.5 の確認済み通常公開版だけが対象です。ベータ版やゲーム更新後の未確認バージョンには使用しないでください。
 
 [h1]問題報告・Contribution[/h1]
 

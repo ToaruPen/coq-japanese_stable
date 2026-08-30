@@ -85,5 +85,4 @@ https://steamcommunity.com/workshop/filedetails/discussion/3718988020/5726696600
 
 - [Harmony 2.4.2 配布設計](../superpowers/specs/2026-07-15-harmony-2.4.2-distribution-design.md)
 - [QudJP v0.5.02 Workshop リリース証拠](2026-07-16-workshop-v0.5.02.md)
-- [Harmony 2.4.2 配布スレッド](https://steamcommunity.com/workshop/filedetails/discussion/3718988020/572669660098532087/)
-- [QudJP v0.5.02 GitHub Release](https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.5.02)
+- [QudJP v0.5.02 GitHub Release](https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.5.02) — `QudJP-Harmony-2.4.2-Windows.zip` と導入・復元手順
