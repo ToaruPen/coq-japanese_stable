@@ -391,6 +391,8 @@ public static class UITextSkinTranslationPatch
     {
         translated = source;
         if (!string.Equals(context, nameof(UITextSkinTranslationPatch), StringComparison.Ordinal)
+            || ContainsCharacter(stripped, '\n')
+            || ContainsCharacter(stripped, '\r')
             || !LooksLikeKnownDisplayNameWithClause(stripped))
         {
             return false;
@@ -418,6 +420,8 @@ public static class UITextSkinTranslationPatch
     {
         translated = source;
         if (!string.Equals(context, nameof(UITextSkinTranslationPatch), StringComparison.Ordinal)
+            || ContainsCharacter(stripped, '\n')
+            || ContainsCharacter(stripped, '\r')
             || !LooksLikeMixedDisplayNameSinkText(source, stripped))
         {
             return false;

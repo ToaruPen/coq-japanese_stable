@@ -180,6 +180,105 @@ public sealed class UITextSkinTranslationPatchTests
         });
     }
 
+    [TestCase("\n")]
+    [TestCase("\r\n")]
+    [TestCase("\r")]
+    public void TranslatePreservingColors_LeavesMultilineWithClauseUnchanged(string lineBreak)
+    {
+        WriteContextDictionaryFile(
+            "ui-displayname-adjectives.ja.json",
+            ("beamsplitter", "GetDisplayName.Adjective", "ビームスプリッタ装着"),
+            ("beamsplitter", null, "ビームスプリッタ装着"));
+
+        var source = "アイゲンライフル with beamsplitter" + lineBreak + "要約の続き";
+
+        var translated = UITextSkinTranslationPatch.TranslatePreservingColors(
+            source,
+            nameof(UITextSkinTranslationPatch));
+
+        Assert.That(translated, Is.EqualTo(source));
+    }
+
+    [Test]
+    public void TranslatePreservingColors_LeavesColoredMultilineWithClauseAndMarkupUnchanged()
+    {
+        WriteContextDictionaryFile(
+            "ui-displayname-adjectives.ja.json",
+            ("beamsplitter", "GetDisplayName.Adjective", "ビームスプリッタ装着"),
+            ("beamsplitter", null, "ビームスプリッタ装着"));
+
+        var source = "アイゲンライフル with {{R-R-r-r-g-g-G-G-B-B-b-b sequence|beamsplitter}}\r\n{{W|要約の続き}}";
+
+        var translated = UITextSkinTranslationPatch.TranslatePreservingColors(
+            source,
+            nameof(UITextSkinTranslationPatch));
+
+        Assert.That(translated, Is.EqualTo(source));
+    }
+
+    [Test]
+    public void Prefix_StripsEmbeddedDirectMarkerAndLeavesMultilineWithClauseUnchanged()
+    {
+        WriteContextDictionaryFile(
+            "ui-displayname-adjectives.ja.json",
+            ("beamsplitter", "GetDisplayName.Adjective", "ビームスプリッタ装着"),
+            ("beamsplitter", null, "ビームスプリッタ装着"));
+
+        var source = "要約 \u0001アイゲンライフル with beamsplitter\n{{W|続き}}";
+        var expected = "要約 アイゲンライフル with beamsplitter\n{{W|続き}}";
+
+        UITextSkinTranslationPatch.Prefix(ref source);
+
+        Assert.That(source, Is.EqualTo(expected));
+    }
+
+    [TestCase("\n")]
+    [TestCase("\r\n")]
+    [TestCase("\r")]
+    public void TranslatePreservingColors_LeavesMultilineMixedRelicSequenceUnchanged(string lineBreak)
+    {
+        Directory.CreateDirectory(Path.Combine(tempDirectory, "Scoped"));
+        WriteContextDictionaryFile(
+            "Scoped/historyspice-common.ja.json",
+            ("analog", null, "アナログの"));
+
+        var source = "発見した {{Y-Y-Y-G-Y-Y-g-Y sequence|Chain of the Analog Sand}}" + lineBreak + "次の要約";
+
+        var translated = UITextSkinTranslationPatch.TranslatePreservingColors(
+            source,
+            nameof(UITextSkinTranslationPatch));
+
+        Assert.That(translated, Is.EqualTo(source));
+    }
+
+    [TestCase("\n")]
+    [TestCase("\r\n")]
+    [TestCase("\r")]
+    public void TranslatePreservingColors_StaysWithinBudgetForLongUnchangedMultilineDisplayName(string lineBreak)
+    {
+        WriteContextDictionaryFile(
+            "ui-displayname-adjectives.ja.json",
+            ("beamsplitter", "GetDisplayName.Adjective", "ビームスプリッタ装着"),
+            ("beamsplitter", null, "ビームスプリッタ装着"));
+
+        var source = BuildMultilineWithClauseSummary(180, lineBreak);
+        var warmup = BuildMultilineWithClauseSummary(1, lineBreak);
+        _ = UITextSkinTranslationPatch.TranslatePreservingColors(warmup, nameof(UITextSkinTranslationPatch));
+        _ = UITextSkinTranslationPatch.TranslatePreservingColors(warmup, nameof(UITextSkinTranslationPatch));
+
+        var before = GC.GetAllocatedBytesForCurrentThread();
+        var translated = UITextSkinTranslationPatch.TranslatePreservingColors(
+            source,
+            nameof(UITextSkinTranslationPatch));
+        var allocated = GC.GetAllocatedBytesForCurrentThread() - before;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(translated, Is.EqualTo(source));
+            Assert.That(allocated, Is.LessThan(source.Length * 250L + 250_000L));
+        });
+    }
+
     [TestCase("[Esc]")]
     [TestCase("[Space]")]
     [TestCase("[]")]
@@ -1281,5 +1380,20 @@ public sealed class UITextSkinTranslationPatchTests
             .Replace("\r", "\\r", StringComparison.Ordinal)
             .Replace("\n", "\\n", StringComparison.Ordinal)
             .Replace("\"", "\\\"", StringComparison.Ordinal);
+    }
+
+    private static string BuildMultilineWithClauseSummary(int lineCount, string lineBreak)
+    {
+        var builder = new StringBuilder();
+        builder.Append("発見した アイゲンライフル with {{R-R-r-r-g-g-G-G-B-B-b-b sequence|beamsplitter}}");
+        for (var index = 1; index < lineCount; index++)
+        {
+            builder.Append(lineBreak);
+            builder.Append("履歴 ");
+            builder.Append(index.ToString(System.Globalization.CultureInfo.InvariantCulture));
+            builder.Append(" の記録です。");
+        }
+
+        return builder.ToString();
     }
 }
