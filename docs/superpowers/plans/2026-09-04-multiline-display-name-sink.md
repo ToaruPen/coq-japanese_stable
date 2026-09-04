@@ -75,3 +75,7 @@ This was treated as an in-scope build defect, not surplus cleanup. The final pre
 ### Separately authorized report redaction
 
 The tracked-content secretlint scan found an account name and a local absolute path in `docs/reports/2026-06-11-workshop-v0.5.01.md`, unchanged from `origin/main`. Publication paused under the polishment stop condition. The user explicitly authorized anonymizing these two entries before creating the draft PR. Keep this documentation-only correction separate from the runtime fix; do not weaken secretlint rules or alter the recorded upload outcome.
+
+### PR review follow-up
+
+PR #844 requested explicit CRLF and standalone CR cases for the mixed relic sequence no-op control. Parameterize that existing LF control without changing its dictionary setup or assertion. This adds two executable cases (141 to 143); the 124 `Assert.That` sites and 33 `Assert.Multiple` grouping calls remain intact. The existing allocation regression remains the separate guard against expensive failed parsing. No production code changes are needed for this coverage extension.

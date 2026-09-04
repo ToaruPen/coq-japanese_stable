@@ -232,15 +232,17 @@ public sealed class UITextSkinTranslationPatchTests
         Assert.That(source, Is.EqualTo(expected));
     }
 
-    [Test]
-    public void TranslatePreservingColors_LeavesMultilineMixedRelicSequenceUnchanged()
+    [TestCase("\n")]
+    [TestCase("\r\n")]
+    [TestCase("\r")]
+    public void TranslatePreservingColors_LeavesMultilineMixedRelicSequenceUnchanged(string lineBreak)
     {
         Directory.CreateDirectory(Path.Combine(tempDirectory, "Scoped"));
         WriteContextDictionaryFile(
             "Scoped/historyspice-common.ja.json",
             ("analog", null, "アナログの"));
 
-        var source = "発見した {{Y-Y-Y-G-Y-Y-g-Y sequence|Chain of the Analog Sand}}\n次の要約";
+        var source = "発見した {{Y-Y-Y-G-Y-Y-g-Y sequence|Chain of the Analog Sand}}" + lineBreak + "次の要約";
 
         var translated = UITextSkinTranslationPatch.TranslatePreservingColors(
             source,
