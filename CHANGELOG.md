@@ -10,6 +10,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+## [0.5.07] - 2026-09-04
+
+### Fixed
+
+- 死亡サマリーなどの長い複数行テキストが、アイテム名として処理される場合の不要なメモリ消費を抑えました。死亡時の長時間停止については、報告環境での解消確認はまだできていません。
+
+---
+
 ## [0.5.06] - 2026-08-31
 
 ### Changed
@@ -481,7 +489,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
-[Unreleased]: https://github.com/ToaruPen/coq-japanese_stable/compare/v0.5.06...HEAD
+[Unreleased]: https://github.com/ToaruPen/coq-japanese_stable/compare/v0.5.07...HEAD
+[0.5.07]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.5.07
 [0.5.06]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.5.06
 [0.5.05]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.5.05
 [0.5.03]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.5.03
