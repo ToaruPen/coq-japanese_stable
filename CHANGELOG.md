@@ -10,6 +10,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+## [0.5.08] - 2026-09-06
+
+### Fixed
+
+- 旧バージョンで名前が空欄になったソルトホッパーの大顎、一部のセキュリティカードや鍵について、入手済みのアイテムも読み込み時に名前を復旧します。数量や改造状態は保持し、改名済みのアイテムは変更しません。
+
+---
+
 ## [0.5.07] - 2026-09-04
 
 ### Fixed
@@ -489,7 +497,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
-[Unreleased]: https://github.com/ToaruPen/coq-japanese_stable/compare/v0.5.07...HEAD
+[Unreleased]: https://github.com/ToaruPen/coq-japanese_stable/compare/v0.5.08...HEAD
+[0.5.08]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.5.08
 [0.5.07]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.5.07
 [0.5.06]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.5.06
 [0.5.05]: https://github.com/ToaruPen/coq-japanese_stable/releases/tag/v0.5.05
