@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "game_version": "1.0.4",
+  "game_version": "1.0.5",
   "description": "Executable coverage map for QudJP C# localization discovery, closure gates, and runtime verification boundaries.",
   "true_untranslated_zero_definition": {
     "statement": "QudJP can implement static and owner-route closure slices without fresh runtime evidence, but QudJP can claim true untranslated-zero only when every player-visible text surface is covered by an owner-route proof, closed by a tracked inventory gate, covered by asset validators for fixed data, or explicitly assigned to a runtime closeout gate.",
@@ -27,6 +27,7 @@
       "closure_evidence": [
         "docs/static-producer-inventory.json",
         "scripts/static_producer_closure.py",
+        "docs/reports/2026-08-15-qud-1.0.5-static-producer-reconciliation.md",
         "just static-producer-check",
         "just static-producer-owner-queue"
       ],
@@ -49,10 +50,11 @@
       "known_limits": [
         "Covers only EmitMessage, Popup.Show*, and AddPlayerMessage producer families.",
         "Current-repo owner coverage is represented by a separate closure overlay, not by the raw inventory alone.",
-        "The owner action queue is class-file based for this scanner scope; it does not cover SetText or display-name construction."
+        "The owner action queue is class-file based for this scanner scope; it does not cover SetText or display-name construction.",
+        "The reconciled 1.0.5 owner-action queue is zero, but runtime-required and out-of-scope surfaces still prevent a project-wide untranslated-zero claim."
       ],
       "next_actions": [
-        "Use just static-producer-owner-queue to choose the next decompiled C# source file and producer method.",
+        "Keep just static-producer-owner-queue at zero when refreshing the decompiled 1.0.5 source.",
         "Expand covered owner-family registry as owner patch tests land.",
         "Keep owner_action_queue as the implementation queue for this scanner scope."
       ]
@@ -273,7 +275,8 @@
       "closure_evidence": [
         "docs/reports/2026-05-03-issue-466-cooking-procedural-inventory.md",
         "Mods/QudJP/Assemblies/QudJP.Tests/L1/CookingEffectFragmentTranslatorTests.cs",
-        "Mods/QudJP/Assemblies/QudJP.Tests/L2/CookingEffectTranslationPatchTests.cs"
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/CookingEffectTranslationPatchTests.cs",
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/CookingRuntimeTranslationPatchTests.cs"
       ],
       "target_surfaces": [
         "GetDescription",
@@ -285,7 +288,8 @@
       "summary_artifact": "docs/reports/2026-05-03-issue-466-cooking-procedural-inventory.md",
       "tests": [
         "Mods/QudJP/Assemblies/QudJP.Tests/L1/CookingEffectFragmentTranslatorTests.cs",
-        "Mods/QudJP/Assemblies/QudJP.Tests/L2/CookingEffectTranslationPatchTests.cs"
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/CookingEffectTranslationPatchTests.cs",
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/CookingRuntimeTranslationPatchTests.cs"
       ],
       "commands": [
         "just test-l1",
@@ -470,19 +474,24 @@
       "closure_evidence": [
         "Mods/QudJP/Assemblies/QudJP.Tests/L1/ChargenStructuredTextTranslatorTests.cs",
         "Mods/QudJP/Assemblies/QudJP.Tests/L2/CharGenLocalizationPatchTests.cs",
-        "Mods/QudJP/Assemblies/QudJP.Tests/L2G/CharGenProducerTranslationPatchResolutionTests.cs"
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/CodeCompressorTranslationPatchTests.cs",
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2G/CharGenProducerTranslationPatchResolutionTests.cs",
+        "Mods/QudJP/QudTest/fixtures/bindings-smoke.json"
       ],
       "target_surfaces": [
         "CharGen",
         "ChargenStructuredText",
-        "ChargenAttributeDescription"
+        "ChargenAttributeDescription",
+        "CodeCompressor.loadCode"
       ],
       "tests": [
         "Mods/QudJP/Assemblies/QudJP.Tests/L1/ChargenStructuredTextTranslatorTests.cs",
         "Mods/QudJP/Assemblies/QudJP.Tests/L2/CharGenLocalizationPatchTests.cs",
         "Mods/QudJP/Assemblies/QudJP.Tests/L2/CharGenProducerTranslationPatchTests.cs",
         "Mods/QudJP/Assemblies/QudJP.Tests/L2/ChargenAttributeDescriptionTranslationPatchTests.cs",
-        "Mods/QudJP/Assemblies/QudJP.Tests/L2G/CharGenProducerTranslationPatchResolutionTests.cs"
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/CodeCompressorTranslationPatchTests.cs",
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2G/CharGenProducerTranslationPatchResolutionTests.cs",
+        "Mods/QudJP/QudTest/fixtures/bindings-smoke.json"
       ],
       "commands": [
         "just test-l1",
@@ -506,6 +515,9 @@
       "closure_evidence": [
         "Mods/QudJP/Assemblies/QudJP.Tests/L2/InventoryLineTranslationPatchTests.cs",
         "Mods/QudJP/Assemblies/QudJP.Tests/L2/OptionsLocalizationPatchTests.cs",
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/SteamScoresRowTranslationPatchTests.cs",
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/GameSummaryTombstonePopupTranslationPatchTests.cs",
+        "Mods/QudJP/QudTest/fixtures/bindings-smoke.json",
         "text-construction lane: screen_ui_direct_text"
       ],
       "target_surfaces": [
@@ -515,6 +527,8 @@
         "SkillsAndPowersLine",
         "FactionsLine",
         "Options",
+        "Scores",
+        "GameSummary",
         "BookScreen",
         "WorldMap"
       ],
@@ -525,6 +539,9 @@
         "Mods/QudJP/Assemblies/QudJP.Tests/L2/SkillsAndPowersLineTranslationPatchTests.cs",
         "Mods/QudJP/Assemblies/QudJP.Tests/L2/FactionsLineTranslationPatchTests.cs",
         "Mods/QudJP/Assemblies/QudJP.Tests/L2/OptionsLocalizationPatchTests.cs",
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/SteamScoresRowTranslationPatchTests.cs",
+        "Mods/QudJP/Assemblies/QudJP.Tests/L2/GameSummaryTombstonePopupTranslationPatchTests.cs",
+        "Mods/QudJP/QudTest/fixtures/bindings-smoke.json",
         "Mods/QudJP/Assemblies/QudJP.Tests/L2/BookScreenTranslationPatchTests.cs",
         "Mods/QudJP/Assemblies/QudJP.Tests/L2/WorldMapUiTranslationPatchTests.cs"
       ],
@@ -587,7 +604,8 @@
       "closure_evidence": [
         "just localization-check",
         "just translation-token-check",
-        "scripts/tests/test_json_placeholder_parity.py"
+        "scripts/tests/test_json_placeholder_parity.py",
+        "scripts/tests/test_options_localization_coverage.py"
       ],
       "target_surfaces": [
         "Localization XML",
@@ -601,12 +619,14 @@
         "scripts/tests/test_validate_xml.py",
         "scripts/tests/test_translation_tokens.py",
         "scripts/tests/test_json_placeholder_parity.py",
-        "scripts/tests/test_json_markup_parity.py"
+        "scripts/tests/test_json_markup_parity.py",
+        "scripts/tests/test_options_localization_coverage.py"
       ],
       "tests": [
         "Mods/QudJP/Assemblies/QudJP.Tests/L1/LocalizationCoverageTests.cs",
         "scripts/tests/test_diff_localization.py",
-        "scripts/tests/test_translation_tokens.py"
+        "scripts/tests/test_translation_tokens.py",
+        "scripts/tests/test_options_localization_coverage.py"
       ],
       "commands": [
         "just localization-check",

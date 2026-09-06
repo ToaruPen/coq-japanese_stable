@@ -13,12 +13,15 @@ namespace QudJP.Tests.L2;
 public sealed class GameSummaryTombstonePopupTranslationPatchTests
 {
     private const string SavedTemplate = "Your tombstone file was saved:\n\n{0}";
-    private const string ErrorTemplate = "There was an error saving: {0}";
+    private const string ClassicErrorTemplate = "There was an error saving: {0}";
+    private const string ModernErrorTemplate = "There was an error {0} saving: {1}";
     private const string TombstonePath = "/tmp/Qudman-5-13-2026-2-00 AM.txt";
     private const string SavedMessage = "Your tombstone file was saved:\n\n" + TombstonePath;
-    private const string ErrorMessage = "There was an error saving: " + TombstonePath;
+    private const string ClassicErrorMessage = "There was an error saving: " + TombstonePath;
+    private const string ModernErrorMessage = "There was an error AccessDenied saving: " + TombstonePath;
     private const string TranslatedSavedMessage = "墓碑ファイルを保存しました:\n\n" + TombstonePath;
-    private const string TranslatedErrorMessage = "保存中にエラーが発生しました: " + TombstonePath;
+    private const string TranslatedClassicErrorMessage = "保存中にエラーが発生しました: " + TombstonePath;
+    private const string TranslatedModernErrorMessage = "保存中にエラー（AccessDenied）が発生しました: " + TombstonePath;
 
     private static readonly UTF8Encoding Utf8WithoutBom = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
 
@@ -37,7 +40,8 @@ public sealed class GameSummaryTombstonePopupTranslationPatchTests
 
         WriteDictionary(
             (SavedTemplate, "墓碑ファイルを保存しました:\n\n{0}"),
-            (ErrorTemplate, "保存中にエラーが発生しました: {0}"));
+            (ClassicErrorTemplate, "保存中にエラーが発生しました: {0}"),
+            (ModernErrorTemplate, "保存中にエラー（{0}）が発生しました: {1}"));
     }
 
     [TearDown]
@@ -54,9 +58,9 @@ public sealed class GameSummaryTombstonePopupTranslationPatchTests
     }
 
     [TestCase(nameof(DummyGameSummaryTombstoneProducer.ModernSaveTombstone), SavedMessage, TranslatedSavedMessage, "GameSummaryTombstoneSaved")]
-    [TestCase(nameof(DummyGameSummaryTombstoneProducer.ModernSaveTombstone), ErrorMessage, TranslatedErrorMessage, "GameSummaryTombstoneError")]
+    [TestCase(nameof(DummyGameSummaryTombstoneProducer.ModernSaveTombstone), ModernErrorMessage, TranslatedModernErrorMessage, "GameSummaryTombstoneError")]
     [TestCase(nameof(DummyGameSummaryTombstoneProducer.ClassicShow), SavedMessage, TranslatedSavedMessage, "GameSummaryTombstoneSaved")]
-    [TestCase(nameof(DummyGameSummaryTombstoneProducer.ClassicShow), ErrorMessage, TranslatedErrorMessage, "GameSummaryTombstoneError")]
+    [TestCase(nameof(DummyGameSummaryTombstoneProducer.ClassicShow), ClassicErrorMessage, TranslatedClassicErrorMessage, "GameSummaryTombstoneError")]
     public void Patch_TranslatesTombstonePopup_WhenOwnerPatched(
         string methodName,
         string source,
@@ -143,7 +147,7 @@ public sealed class GameSummaryTombstonePopupTranslationPatchTests
     [Test]
     public void Patch_LeavesMatchedPopupUnchanged_WhenDictionaryEntryMissing()
     {
-        WriteDictionary((ErrorTemplate, "保存中にエラーが発生しました: {0}"));
+        WriteDictionary((ClassicErrorTemplate, "保存中にエラーが発生しました: {0}"));
 
         RunWithOwnerAndPopupPatches(
             nameof(DummyGameSummaryTombstoneProducer.ModernSaveTombstone),
@@ -225,7 +229,7 @@ public sealed class GameSummaryTombstonePopupTranslationPatchTests
             {
                 var innerTarget = new DummyGameSummaryTombstoneProducer
                 {
-                    PopupMessageToShow = ErrorMessage,
+                    PopupMessageToShow = ClassicErrorMessage,
                 };
                 var outerTarget = new DummyGameSummaryTombstoneProducer
                 {
@@ -236,7 +240,7 @@ public sealed class GameSummaryTombstonePopupTranslationPatchTests
 
                         Assert.Multiple(() =>
                         {
-                            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(TranslatedErrorMessage));
+                            Assert.That(DummyPopupShow.LastShowMessage, Is.EqualTo(TranslatedClassicErrorMessage));
                             Assert.That(GetErrorHitCount(), Is.EqualTo(1));
                             Assert.That(GetSavedHitCount(), Is.Zero);
                         });

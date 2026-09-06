@@ -648,6 +648,11 @@
       "key": "Your {{W|Ego}} score determines the potency of your ability to haggle with merchants, and your ability to dominate the wills of other living creatures.",
       "context": "Chargen.Attributes.HelpText",
       "text": "あなたの{{W|自我}}は、商人との値引き交渉力、および他の生物の意志を支配する能力を決定します。"
+    },
+    {
+      "key": "Error decoding build code - Required Mod \"{0}\" not found.",
+      "context": "XRL.CharacterBuilds.CodeCompressor.loadCode",
+      "text": "ビルドコードのデコードエラー: 必須Mod「{0}」が見つかりません。"
     }
   ]
 }

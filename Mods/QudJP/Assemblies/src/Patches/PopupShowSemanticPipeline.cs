@@ -106,6 +106,7 @@ internal static class PopupShowSemanticPipeline
         SupplyableIntegratedHostPopupTranslationPatch.TryTranslatePopupMessage,
         DataDiskLearnPopupTranslationPatch.TryTranslatePopupMessage,
         HighScoresDeletePopupTranslationPatch.TryTranslatePopupMessage,
+        CodeCompressorTranslationPatch.TryTranslatePopupMessage,
         CodeRedemptionPopupTranslationPatch.TryTranslatePopupMessage,
         GritGateTerminalKnowledgePopupTranslationPatch.TryTranslatePopupMessage,
         PickItemTakeAllPopupTranslationPatch.TryTranslatePopupMessage,

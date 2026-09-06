@@ -34,11 +34,7 @@ def test_covered_owner_registry_has_unique_family_ids() -> None:
 
 def test_covered_owner_callsite_registry_has_unique_line_keys() -> None:
     """Covered mixed-family callsite registry entries must be unique."""
-    expected_keys = [
-        (covered.family_id, line)
-        for covered in COVERED_OWNER_CALLSITES
-        for line in covered.lines
-    ]
+    expected_keys = [(covered.family_id, line) for covered in COVERED_OWNER_CALLSITES for line in covered.lines]
 
     assert len(expected_keys) == len(set(expected_keys))
     assert covered_callsite_keys() == frozenset(expected_keys)
@@ -46,11 +42,7 @@ def test_covered_owner_callsite_registry_has_unique_line_keys() -> None:
 
 def test_deferred_runtime_callsite_registry_has_unique_line_keys() -> None:
     """Runtime-required deferrals must be unique and visible."""
-    expected_keys = [
-        (deferred.family_id, line)
-        for deferred in DEFERRED_RUNTIME_CALLSITES
-        for line in deferred.lines
-    ]
+    expected_keys = [(deferred.family_id, line) for deferred in DEFERRED_RUNTIME_CALLSITES for line in deferred.lines]
 
     assert len(expected_keys) == len(set(expected_keys))
     assert deferred_runtime_callsite_keys() == frozenset(expected_keys)
@@ -60,8 +52,8 @@ def test_owner_covered_runtime_callsite_can_close_local_dataflow_shape() -> None
     """A scanner runtime row can be owner-covered when static local dataflow and tests prove the shape."""
     family_id = "XRL.World.Parts/Physics.cs::XRL.World.Parts.Physics.HandleEvent"
 
-    assert (family_id, 2582) in covered_callsite_keys()
-    assert (family_id, 2582) not in deferred_runtime_callsite_keys()
+    assert (family_id, 2520) in covered_callsite_keys()
+    assert (family_id, 2520) not in deferred_runtime_callsite_keys()
 
 
 def test_covered_owner_families_have_current_source_and_test_evidence() -> None:
@@ -73,6 +65,32 @@ def test_covered_owner_families_have_current_source_and_test_evidence() -> None:
     assert errors == []
 
 
+def test_game_summary_modern_mixed_family_is_closed_at_callsite_granularity() -> None:
+    """Modern 1.0.5 tombstone success and storage-result error popups share one mixed family."""
+    inventory = load_inventory(TRACKED_INVENTORY)
+    family_id = "Qud.UI/GameSummaryScreen.cs::Qud.UI.GameSummaryScreen.SaveTombstone"
+    raw_family = next(family for family in inventory["families"] if family["producer_family_id"] == family_id)
+    family_callsites = [callsite for callsite in inventory["callsites"] if callsite["producer_family_id"] == family_id]
+
+    assert raw_family["family_closure_status"] == "needs_family_review"
+    assert family_id not in covered_family_ids()
+    assert {(family_id, 218), (family_id, 222)} <= covered_callsite_keys()
+    assert {(callsite["line"], callsite["closure_status"]) for callsite in family_callsites} == {
+        (218, "owner_patch_required"),
+        (222, "runtime_required"),
+    }
+    assert family_id not in {family["producer_family_id"] for family in owner_action_queue(inventory)}
+
+
+def test_code_compressor_required_mod_popup_is_closed_by_owner_patch() -> None:
+    """The generated required-mod name stays producer-owned while the popup frame is localized."""
+    inventory = load_inventory(TRACKED_INVENTORY)
+    family_id = "XRL.CharacterBuilds/CodeCompressor.cs::XRL.CharacterBuilds.CodeCompressor.loadCode"
+
+    assert family_id in covered_family_ids()
+    assert family_id not in {family["producer_family_id"] for family in owner_action_queue(inventory)}
+
+
 def _declaring_type_from_family_id(family_id: str) -> str:
     return family_id.split("::", maxsplit=1)[1].rsplit(".", maxsplit=1)[0]
 
@@ -81,9 +99,7 @@ def _member_name_from_family_id(family_id: str) -> str:
     return family_id.rsplit(".", maxsplit=1)[1]
 
 
-def _is_owner_target_resolution_token(
-    token: str, *, declaring_type: str, member_name: str
-) -> bool:
+def _is_owner_target_resolution_token(token: str, *, declaring_type: str, member_name: str) -> bool:
     parts = token.split("|")
     return len(parts) >= 3 and parts[0] == declaring_type and parts[1] == member_name
 
@@ -115,19 +131,13 @@ def test_owner_patch_l2g_evidence_is_family_specific() -> None:
             continue
 
         for evidence in l2g_evidence_files:
-            normalized_tokens = [
-                _unquoted_token(token) for token in evidence.required_substrings
-            ]
+            normalized_tokens = [_unquoted_token(token) for token in evidence.required_substrings]
 
             has_full_target_token = any(
-                _is_owner_target_resolution_token(
-                    token, declaring_type=declaring_type, member_name=member_name
-                )
+                _is_owner_target_resolution_token(token, declaring_type=declaring_type, member_name=member_name)
                 for token in evidence.required_substrings
             )
-            has_declaring_type = any(
-                token == declaring_type for token in normalized_tokens
-            )
+            has_declaring_type = any(token == declaring_type for token in normalized_tokens)
             has_member_name = any(token == member_name for token in normalized_tokens)
 
             if not has_full_target_token and not (has_declaring_type and has_member_name):
@@ -166,10 +176,7 @@ def test_disassembly_end_runtime_family_is_closed_by_disassembly_start_patch() -
 
     assert raw_families[family_id]["family_closure_status"] == "runtime_required"
     assert family_closure_status(raw_families[family_id]) == COVERED_BY_OWNER_PATCH
-    assert family_id not in {
-        family["producer_family_id"]
-        for family in owner_action_queue(inventory)
-    }
+    assert family_id not in {family["producer_family_id"] for family in owner_action_queue(inventory)}
 
 
 def test_game_object_heal_owner_family_is_closed_by_current_owner_tests() -> None:
@@ -180,10 +187,7 @@ def test_game_object_heal_owner_family_is_closed_by_current_owner_tests() -> Non
 
     assert raw_families[family_id]["family_closure_status"] == "owner_patch_required"
     assert family_closure_status(raw_families[family_id]) == COVERED_BY_OWNER_PATCH
-    assert family_id not in {
-        family["producer_family_id"]
-        for family in owner_action_queue(inventory)
-    }
+    assert family_id not in {family["producer_family_id"] for family in owner_action_queue(inventory)}
 
 
 def test_power_switch_emit_families_are_closed_by_blueprint_template_coverage() -> None:
@@ -366,9 +370,7 @@ def test_conversation_script_popup_owner_callsites_are_split_from_fixed_and_runt
         assert family_id not in covered_family_ids()
         assert family_id not in queued_family_ids
 
-    assert "XRL.World.Parts/ConversationScript.cs" not in {
-        entry["source_file"] for entry in source_entries
-    }
+    assert "XRL.World.Parts/ConversationScript.cs" not in {entry["source_file"] for entry in source_entries}
 
 
 def test_terrain_travel_owner_callsites_are_split_from_runtime_and_fixed_popups() -> None:
@@ -395,9 +397,7 @@ def test_terrain_travel_owner_callsites_are_split_from_runtime_and_fixed_popups(
     )
     assert "XRL.World.Parts/TerrainTravel.cs::XRL.World.Parts.TerrainTravel.HandleEvent" not in queued_family_ids
     assert "XRL.World.Parts/TerrainTravel.cs::XRL.World.Parts.TerrainTravel.HandleLeavingCell" not in queued_family_ids
-    assert "XRL.World.Parts/TerrainTravel.cs" not in {
-        entry["source_file"] for entry in source_entries
-    }
+    assert "XRL.World.Parts/TerrainTravel.cs" not in {entry["source_file"] for entry in source_entries}
 
 
 def test_precognition_owner_queue_callsites_are_split_from_fixed_popups() -> None:
@@ -417,10 +417,7 @@ def test_precognition_owner_queue_callsites_are_split_from_fixed_popups() -> Non
         assert family_id not in covered_family_ids()
         assert family_id not in queued_family_ids
 
-    assert all(
-        entry["source_file"] != "XRL.World.Parts.Mutation/Precognition.cs"
-        for entry in source_entries
-    )
+    assert all(entry["source_file"] != "XRL.World.Parts.Mutation/Precognition.cs" for entry in source_entries)
 
 
 def test_wish_command_queue_families_are_closed_by_owner_patch() -> None:
@@ -505,11 +502,8 @@ def test_single_mixed_owner_callsites_are_split_from_fixed_and_runtime_siblings(
             "closed_lines": {372, 439},
             "queued": False,
         },
-        (
-            "XRL.World.ZoneParts/ScriptCallToArms.cs::"
-            "XRL.World.ZoneParts.ScriptCallToArms.ShowWarning"
-        ): {
-            "closed_lines": {547},
+        ("XRL.World.ZoneParts/ScriptCallToArms.cs::XRL.World.ZoneParts.ScriptCallToArms.ShowWarning"): {
+            "closed_lines": {546},
             "queued": False,
         },
     }
@@ -535,7 +529,7 @@ def test_keybinds_menu_option_popups_are_split_from_fixed_restore_prompt() -> No
     assert raw_families[family_id]["family_closure_status"] == "needs_family_review"
     assert family_closure_status(raw_families[family_id]) == "needs_family_review"
     assert family_id not in covered_family_ids()
-    assert {line for covered_family, line in callsite_keys if covered_family == family_id} == {303, 306}
+    assert {line for covered_family, line in callsite_keys if covered_family == family_id} == {306, 309}
     assert family_id not in queued_family_ids
 
 
@@ -553,13 +547,11 @@ def test_zone_manager_owner_callsites_are_split_from_runtime_and_fixed_popup_sha
         assert family_closure_status(raw_families[family_id]) == "needs_family_review"
         assert family_id not in covered_family_ids()
 
-    assert (set_active_zone_family_id, 1889) in deferred_runtime_callsite_keys()
-    assert (set_active_zone_family_id, 1912) in deferred_runtime_callsite_keys()
+    assert (set_active_zone_family_id, 1924) in deferred_runtime_callsite_keys()
+    assert (set_active_zone_family_id, 1947) in deferred_runtime_callsite_keys()
     assert set_active_zone_family_id not in queued_family_ids
     assert generate_zone_family_id not in queued_family_ids
-    assert {
-        line for covered_family, line in callsite_keys if covered_family == generate_zone_family_id
-    } == {3286, 3570}
+    assert {line for covered_family, line in callsite_keys if covered_family == generate_zone_family_id} == {3321, 3605}
 
 
 def test_additional_single_callsite_owner_popup_families_are_closed_by_owner_patch() -> None:
@@ -619,10 +611,7 @@ def test_remaining_pure_single_callsite_owner_popup_families_are_closed_by_owner
         "XRL.UI/Look.cs::XRL.UI.Look.ShowLooker",
         "XRL.World.Parts/MarkovBook.cs::XRL.World.Parts.MarkovBook.HandleEvent",
         "XRL.World.Parts/MumblesInfection.cs::XRL.World.Parts.MumblesInfection.FireEvent",
-        (
-            "XRL.World.Parts.Mutation/PhotosyntheticSkin.cs::"
-            "XRL.World.Parts.Mutation.PhotosyntheticSkin.HandleEvent"
-        ),
+        ("XRL.World.Parts.Mutation/PhotosyntheticSkin.cs::XRL.World.Parts.Mutation.PhotosyntheticSkin.HandleEvent"),
         "XRL.World.Parts/Toolbox.cs::XRL.World.Parts.Toolbox.HandleBonus",
     }
 
@@ -643,7 +632,7 @@ def test_xrlcore_old_save_popup_callsite_is_split_from_fixed_save_management_pop
     assert raw_families[family_id]["family_closure_status"] == "needs_family_review"
     assert family_closure_status(raw_families[family_id]) == "needs_family_review"
     assert family_id not in covered_family_ids()
-    assert (family_id, 3962) in covered_callsite_keys()
+    assert (family_id, 3987) in covered_callsite_keys()
     assert family_id not in queued_family_ids
 
     assert "XRL.Core/XRLCore.cs" not in {entry["source_file"] for entry in source_entries}
@@ -693,10 +682,7 @@ def test_reverse_engineering_sifrah_finish_callsite_is_split_from_critical_failu
     assert family_id not in covered_family_ids()
     assert (family_id, 202) in covered_callsite_keys()
     assert family_id not in queued_family_ids
-    assert not any(
-        entry["source_file"] == "XRL.World/ReverseEngineeringSifrah.cs"
-        for entry in source_entries
-    )
+    assert not any(entry["source_file"] == "XRL.World/ReverseEngineeringSifrah.cs" for entry in source_entries)
 
 
 def test_pick_target_show_picker_range_failure_is_split_from_fixed_visibility_popups() -> None:
@@ -705,24 +691,17 @@ def test_pick_target_show_picker_range_failure_is_split_from_fixed_visibility_po
     raw_families = {family["producer_family_id"]: family for family in inventory["families"]}
     queued_family_ids = {family["producer_family_id"] for family in owner_action_queue(inventory)}
     family_id = "XRL.UI/PickTarget.cs::XRL.UI.PickTarget.ShowPicker"
-    family_callsites = [
-        callsite
-        for callsite in inventory["callsites"]
-        if callsite["producer_family_id"] == family_id
-    ]
+    family_callsites = [callsite for callsite in inventory["callsites"] if callsite["producer_family_id"] == family_id]
 
     assert raw_families[family_id]["family_closure_status"] == "needs_family_review"
     assert family_closure_status(raw_families[family_id]) == "needs_family_review"
     assert family_id not in covered_family_ids()
-    assert (family_id, 850) in covered_callsite_keys()
+    assert (family_id, 969) in covered_callsite_keys()
     assert family_id not in queued_family_ids
-    assert {
-        (callsite["line"], callsite["closure_status"])
-        for callsite in family_callsites
-    } == {
-        (850, "owner_patch_required"),
-        (854, "messages_candidate"),
-        (858, "messages_candidate"),
+    assert {(callsite["line"], callsite["closure_status"]) for callsite in family_callsites} == {
+        (969, "owner_patch_required"),
+        (973, "messages_candidate"),
+        (977, "messages_candidate"),
     }
 
 
@@ -735,11 +714,7 @@ def test_give_resheph_secret_reward_popups_are_split_from_fixed_no_secret_popup(
         "XRL.World.Conversations.Parts/GiveReshephSecret.cs::"
         "XRL.World.Conversations.Parts.GiveReshephSecret.HandleEvent"
     )
-    family_callsites = [
-        callsite
-        for callsite in inventory["callsites"]
-        if callsite["producer_family_id"] == family_id
-    ]
+    family_callsites = [callsite for callsite in inventory["callsites"] if callsite["producer_family_id"] == family_id]
 
     assert raw_families[family_id]["family_closure_status"] == "needs_family_review"
     assert family_closure_status(raw_families[family_id]) == "needs_family_review"
@@ -747,10 +722,7 @@ def test_give_resheph_secret_reward_popups_are_split_from_fixed_no_secret_popup(
     assert (family_id, 54) in covered_callsite_keys()
     assert (family_id, 55) in covered_callsite_keys()
     assert family_id not in queued_family_ids
-    assert {
-        (callsite["line"], callsite["closure_status"])
-        for callsite in family_callsites
-    } == {
+    assert {(callsite["line"], callsite["closure_status"]) for callsite in family_callsites} == {
         (38, "messages_candidate"),
         (54, "owner_patch_required"),
         (55, "owner_patch_required"),
@@ -766,11 +738,7 @@ def test_water_ritual_random_mutation_incompatible_popup_is_split_from_fixed_and
         "XRL.World.Conversations.Parts/WaterRitualRandomMutation.cs::"
         "XRL.World.Conversations.Parts.WaterRitualRandomMutation.HandleEvent"
     )
-    family_callsites = [
-        callsite
-        for callsite in inventory["callsites"]
-        if callsite["producer_family_id"] == family_id
-    ]
+    family_callsites = [callsite for callsite in inventory["callsites"] if callsite["producer_family_id"] == family_id]
 
     assert raw_families[family_id]["family_closure_status"] == "needs_family_review"
     assert family_closure_status(raw_families[family_id]) == "needs_family_review"
@@ -778,10 +746,7 @@ def test_water_ritual_random_mutation_incompatible_popup_is_split_from_fixed_and
     assert (family_id, 92) in covered_callsite_keys()
     assert (family_id, 98) in deferred_runtime_callsite_keys()
     assert family_id not in queued_family_ids
-    assert {
-        (callsite["line"], callsite["closure_status"])
-        for callsite in family_callsites
-    } == {
+    assert {(callsite["line"], callsite["closure_status"]) for callsite in family_callsites} == {
         (88, "messages_candidate"),
         (92, "owner_patch_required"),
         (98, "runtime_required"),
@@ -794,23 +759,15 @@ def test_psychometry_owner_popups_are_split_from_fixed_continue_prompt() -> None
     raw_families = {family["producer_family_id"]: family for family in inventory["families"]}
     queued_family_ids = {family["producer_family_id"] for family in owner_action_queue(inventory)}
     family_id = "XRL.World.Parts.Mutation/Psychometry.cs::XRL.World.Parts.Mutation.Psychometry.HandleEvent"
-    family_callsites = [
-        callsite
-        for callsite in inventory["callsites"]
-        if callsite["producer_family_id"] == family_id
-    ]
+    family_callsites = [callsite for callsite in inventory["callsites"] if callsite["producer_family_id"] == family_id]
 
     assert raw_families[family_id]["family_closure_status"] == "needs_family_review"
     assert family_closure_status(raw_families[family_id]) == "needs_family_review"
     assert family_id not in covered_family_ids()
-    assert {
-        (family_id, line)
-        for line in (168, 172, 181, 185, 191, 206)
-    }.issubset(covered_callsite_keys())
+    assert {(family_id, line) for line in (168, 172, 181, 185, 191, 206)}.issubset(covered_callsite_keys())
     assert family_id not in queued_family_ids
     assert {
-        (callsite["line"], callsite["target_surface"], callsite["closure_status"])
-        for callsite in family_callsites
+        (callsite["line"], callsite["target_surface"], callsite["closure_status"]) for callsite in family_callsites
     } == {
         (60, "Popup.Show*", "messages_candidate"),
         (79, "Popup.Show*", "messages_candidate"),
@@ -829,11 +786,7 @@ def test_sunder_mind_tick_head_explosion_queue_is_split_from_fixed_popups() -> N
     raw_families = {family["producer_family_id"]: family for family in inventory["families"]}
     queued_family_ids = {family["producer_family_id"] for family in owner_action_queue(inventory)}
     family_id = "XRL.World.Parts.Mutation/SunderMind.cs::XRL.World.Parts.Mutation.SunderMind.Tick"
-    family_callsites = [
-        callsite
-        for callsite in inventory["callsites"]
-        if callsite["producer_family_id"] == family_id
-    ]
+    family_callsites = [callsite for callsite in inventory["callsites"] if callsite["producer_family_id"] == family_id]
 
     assert raw_families[family_id]["family_closure_status"] == "needs_family_review"
     assert family_closure_status(raw_families[family_id]) == "needs_family_review"
@@ -841,8 +794,7 @@ def test_sunder_mind_tick_head_explosion_queue_is_split_from_fixed_popups() -> N
     assert (family_id, 279) in covered_callsite_keys()
     assert family_id not in queued_family_ids
     assert {
-        (callsite["line"], callsite["target_surface"], callsite["closure_status"])
-        for callsite in family_callsites
+        (callsite["line"], callsite["target_surface"], callsite["closure_status"]) for callsite in family_callsites
     } == {
         (273, "Popup.Show*", "messages_candidate"),
         (274, "Popup.Show*", "messages_candidate"),
@@ -855,15 +807,8 @@ def test_axe_dismember_cast_self_confirmation_is_split_from_fixed_popups() -> No
     inventory = load_inventory(TRACKED_INVENTORY)
     raw_families = {family["producer_family_id"]: family for family in inventory["families"]}
     queued_family_ids = {family["producer_family_id"] for family in owner_action_queue(inventory)}
-    family_id = (
-        "XRL.World.Parts.Skill/Axe_Dismember.cs::"
-        "XRL.World.Parts.Skill.Axe_Dismember.Cast"
-    )
-    family_callsites = [
-        callsite
-        for callsite in inventory["callsites"]
-        if callsite["producer_family_id"] == family_id
-    ]
+    family_id = "XRL.World.Parts.Skill/Axe_Dismember.cs::XRL.World.Parts.Skill.Axe_Dismember.Cast"
+    family_callsites = [callsite for callsite in inventory["callsites"] if callsite["producer_family_id"] == family_id]
 
     assert raw_families[family_id]["family_closure_status"] == "needs_family_review"
     assert family_closure_status(raw_families[family_id]) == "needs_family_review"
@@ -871,8 +816,7 @@ def test_axe_dismember_cast_self_confirmation_is_split_from_fixed_popups() -> No
     assert (family_id, 250) in covered_callsite_keys()
     assert family_id not in queued_family_ids
     assert {
-        (callsite["line"], callsite["target_surface"], callsite["closure_status"])
-        for callsite in family_callsites
+        (callsite["line"], callsite["target_surface"], callsite["closure_status"]) for callsite in family_callsites
     } == {
         (237, "Popup.Show*", "messages_candidate"),
         (241, "Popup.Show*", "messages_candidate"),
@@ -885,15 +829,8 @@ def test_cudgel_smash_up_prepare_queue_is_split_from_fixed_popups() -> None:
     inventory = load_inventory(TRACKED_INVENTORY)
     raw_families = {family["producer_family_id"]: family for family in inventory["families"]}
     queued_family_ids = {family["producer_family_id"] for family in owner_action_queue(inventory)}
-    family_id = (
-        "XRL.World.Parts.Skill/Cudgel_SmashUp.cs::"
-        "XRL.World.Parts.Skill.Cudgel_SmashUp.FireEvent"
-    )
-    family_callsites = [
-        callsite
-        for callsite in inventory["callsites"]
-        if callsite["producer_family_id"] == family_id
-    ]
+    family_id = "XRL.World.Parts.Skill/Cudgel_SmashUp.cs::XRL.World.Parts.Skill.Cudgel_SmashUp.FireEvent"
+    family_callsites = [callsite for callsite in inventory["callsites"] if callsite["producer_family_id"] == family_id]
 
     assert raw_families[family_id]["family_closure_status"] == "needs_family_review"
     assert family_closure_status(raw_families[family_id]) == "needs_family_review"
@@ -901,8 +838,7 @@ def test_cudgel_smash_up_prepare_queue_is_split_from_fixed_popups() -> None:
     assert (family_id, 95) in covered_callsite_keys()
     assert family_id not in queued_family_ids
     assert {
-        (callsite["line"], callsite["target_surface"], callsite["closure_status"])
-        for callsite in family_callsites
+        (callsite["line"], callsite["target_surface"], callsite["closure_status"]) for callsite in family_callsites
     } == {
         (80, "Popup.Show*", "messages_candidate"),
         (89, "Popup.Show*", "messages_candidate"),
@@ -916,11 +852,7 @@ def test_submersion_too_shallow_popup_is_split_from_fixed_popups() -> None:
     raw_families = {family["producer_family_id"]: family for family in inventory["families"]}
     queued_family_ids = {family["producer_family_id"] for family in owner_action_queue(inventory)}
     family_id = "XRL.World.Parts.Skill/Submersion.cs::XRL.World.Parts.Skill.Submersion.HandleEvent"
-    family_callsites = [
-        callsite
-        for callsite in inventory["callsites"]
-        if callsite["producer_family_id"] == family_id
-    ]
+    family_callsites = [callsite for callsite in inventory["callsites"] if callsite["producer_family_id"] == family_id]
 
     assert raw_families[family_id]["family_closure_status"] == "needs_family_review"
     assert family_closure_status(raw_families[family_id]) == "needs_family_review"
@@ -928,8 +860,7 @@ def test_submersion_too_shallow_popup_is_split_from_fixed_popups() -> None:
     assert (family_id, 62) in covered_callsite_keys()
     assert family_id not in queued_family_ids
     assert {
-        (callsite["line"], callsite["target_surface"], callsite["closure_status"])
-        for callsite in family_callsites
+        (callsite["line"], callsite["target_surface"], callsite["closure_status"]) for callsite in family_callsites
     } == {
         (58, "Popup.Show*", "messages_candidate"),
         (62, "Popup.Show*", "owner_patch_required"),
@@ -942,15 +873,8 @@ def test_tinkering_tinker1_recharge_popups_are_split_from_fixed_popup() -> None:
     inventory = load_inventory(TRACKED_INVENTORY)
     raw_families = {family["producer_family_id"]: family for family in inventory["families"]}
     queued_family_ids = {family["producer_family_id"] for family in owner_action_queue(inventory)}
-    family_id = (
-        "XRL.World.Parts.Skill/Tinkering_Tinker1.cs::"
-        "XRL.World.Parts.Skill.Tinkering_Tinker1.Recharge"
-    )
-    family_callsites = [
-        callsite
-        for callsite in inventory["callsites"]
-        if callsite["producer_family_id"] == family_id
-    ]
+    family_id = "XRL.World.Parts.Skill/Tinkering_Tinker1.cs::XRL.World.Parts.Skill.Tinkering_Tinker1.Recharge"
+    family_callsites = [callsite for callsite in inventory["callsites"] if callsite["producer_family_id"] == family_id]
 
     assert raw_families[family_id]["family_closure_status"] == "needs_family_review"
     assert family_closure_status(raw_families[family_id]) == "needs_family_review"
@@ -959,8 +883,7 @@ def test_tinkering_tinker1_recharge_popups_are_split_from_fixed_popup() -> None:
     assert (family_id, 92) in covered_callsite_keys()
     assert family_id not in queued_family_ids
     assert {
-        (callsite["line"], callsite["target_surface"], callsite["closure_status"])
-        for callsite in family_callsites
+        (callsite["line"], callsite["target_surface"], callsite["closure_status"]) for callsite in family_callsites
     } == {
         (80, "Popup.Show*", "owner_patch_required"),
         (88, "Popup.Show*", "messages_candidate"),
@@ -974,11 +897,7 @@ def test_container_attempt_open_popups_are_split_from_fixed_popup() -> None:
     raw_families = {family["producer_family_id"]: family for family in inventory["families"]}
     queued_family_ids = {family["producer_family_id"] for family in owner_action_queue(inventory)}
     family_id = "XRL.World.Parts/Container.cs::XRL.World.Parts.Container.AttemptOpen"
-    family_callsites = [
-        callsite
-        for callsite in inventory["callsites"]
-        if callsite["producer_family_id"] == family_id
-    ]
+    family_callsites = [callsite for callsite in inventory["callsites"] if callsite["producer_family_id"] == family_id]
 
     assert raw_families[family_id]["family_closure_status"] == "needs_family_review"
     assert family_closure_status(raw_families[family_id]) == "needs_family_review"
@@ -987,8 +906,7 @@ def test_container_attempt_open_popups_are_split_from_fixed_popup() -> None:
     assert (family_id, 132) in covered_callsite_keys()
     assert family_id not in queued_family_ids
     assert {
-        (callsite["line"], callsite["target_surface"], callsite["closure_status"])
-        for callsite in family_callsites
+        (callsite["line"], callsite["target_surface"], callsite["closure_status"]) for callsite in family_callsites
     } == {
         (113, "Popup.Show*", "owner_patch_required"),
         (119, "Popup.Show*", "messages_candidate"),
@@ -1002,11 +920,7 @@ def test_elevator_switch_queue_message_is_split_from_fixed_popups() -> None:
     raw_families = {family["producer_family_id"]: family for family in inventory["families"]}
     queued_family_ids = {family["producer_family_id"] for family in owner_action_queue(inventory)}
     family_id = "XRL.World.Parts/ElevatorSwitch.cs::XRL.World.Parts.ElevatorSwitch.FireEvent"
-    family_callsites = [
-        callsite
-        for callsite in inventory["callsites"]
-        if callsite["producer_family_id"] == family_id
-    ]
+    family_callsites = [callsite for callsite in inventory["callsites"] if callsite["producer_family_id"] == family_id]
 
     assert raw_families[family_id]["family_closure_status"] == "needs_family_review"
     assert family_closure_status(raw_families[family_id]) == "needs_family_review"
@@ -1014,8 +928,7 @@ def test_elevator_switch_queue_message_is_split_from_fixed_popups() -> None:
     assert (family_id, 58) in covered_callsite_keys()
     assert family_id not in queued_family_ids
     assert {
-        (callsite["line"], callsite["target_surface"], callsite["closure_status"])
-        for callsite in family_callsites
+        (callsite["line"], callsite["target_surface"], callsite["closure_status"]) for callsite in family_callsites
     } == {
         (49, "Popup.Show*", "messages_candidate"),
         (53, "Popup.Show*", "messages_candidate"),
@@ -1029,11 +942,7 @@ def test_imodification_wish_modify_popups_are_split_from_fixed_popup() -> None:
     raw_families = {family["producer_family_id"]: family for family in inventory["families"]}
     queued_family_ids = {family["producer_family_id"] for family in owner_action_queue(inventory)}
     family_id = "XRL.World.Parts/IModification.cs::XRL.World.Parts.IModification.WishModify"
-    family_callsites = [
-        callsite
-        for callsite in inventory["callsites"]
-        if callsite["producer_family_id"] == family_id
-    ]
+    family_callsites = [callsite for callsite in inventory["callsites"] if callsite["producer_family_id"] == family_id]
 
     assert raw_families[family_id]["family_closure_status"] == "needs_family_review"
     assert family_closure_status(raw_families[family_id]) == "needs_family_review"
@@ -1042,8 +951,7 @@ def test_imodification_wish_modify_popups_are_split_from_fixed_popup() -> None:
     assert (family_id, 260) in covered_callsite_keys()
     assert family_id not in queued_family_ids
     assert {
-        (callsite["line"], callsite["target_surface"], callsite["closure_status"])
-        for callsite in family_callsites
+        (callsite["line"], callsite["target_surface"], callsite["closure_status"]) for callsite in family_callsites
     } == {
         (248, "Popup.Show*", "messages_candidate"),
         (254, "Popup.Show*", "owner_patch_required"),
@@ -1056,15 +964,8 @@ def test_neutron_flux_containment_popups_are_split_from_runtime_warning() -> Non
     inventory = load_inventory(TRACKED_INVENTORY)
     raw_families = {family["producer_family_id"]: family for family in inventory["families"]}
     queued_family_ids = {family["producer_family_id"] for family in owner_action_queue(inventory)}
-    family_id = (
-        "XRL.World.Parts/NeutronFluxContainment.cs::"
-        "XRL.World.Parts.NeutronFluxContainment.HandleEvent"
-    )
-    family_callsites = [
-        callsite
-        for callsite in inventory["callsites"]
-        if callsite["producer_family_id"] == family_id
-    ]
+    family_id = "XRL.World.Parts/NeutronFluxContainment.cs::XRL.World.Parts.NeutronFluxContainment.HandleEvent"
+    family_callsites = [callsite for callsite in inventory["callsites"] if callsite["producer_family_id"] == family_id]
 
     assert raw_families[family_id]["family_closure_status"] == "needs_family_review"
     assert family_closure_status(raw_families[family_id]) == "needs_family_review"
@@ -1075,8 +976,7 @@ def test_neutron_flux_containment_popups_are_split_from_runtime_warning() -> Non
     assert (family_id, 99) in deferred_runtime_callsite_keys()
     assert family_id not in queued_family_ids
     assert {
-        (callsite["line"], callsite["target_surface"], callsite["closure_status"])
-        for callsite in family_callsites
+        (callsite["line"], callsite["target_surface"], callsite["closure_status"]) for callsite in family_callsites
     } == {
         (63, "Popup.Show*", "owner_patch_required"),
         (91, "Popup.Show*", "owner_patch_required"),
@@ -1090,11 +990,7 @@ def test_polygel_handle_event_popups_are_split_from_fixed_popup() -> None:
     raw_families = {family["producer_family_id"]: family for family in inventory["families"]}
     queued_family_ids = {family["producer_family_id"] for family in owner_action_queue(inventory)}
     family_id = "XRL.World.Parts/Polygel.cs::XRL.World.Parts.Polygel.HandleEvent"
-    family_callsites = [
-        callsite
-        for callsite in inventory["callsites"]
-        if callsite["producer_family_id"] == family_id
-    ]
+    family_callsites = [callsite for callsite in inventory["callsites"] if callsite["producer_family_id"] == family_id]
 
     assert raw_families[family_id]["family_closure_status"] == "needs_family_review"
     assert family_closure_status(raw_families[family_id]) == "needs_family_review"
@@ -1103,8 +999,7 @@ def test_polygel_handle_event_popups_are_split_from_fixed_popup() -> None:
     assert (family_id, 100) in covered_callsite_keys()
     assert family_id not in queued_family_ids
     assert {
-        (callsite["line"], callsite["target_surface"], callsite["closure_status"])
-        for callsite in family_callsites
+        (callsite["line"], callsite["target_surface"], callsite["closure_status"]) for callsite in family_callsites
     } == {
         (51, "Popup.Show*", "messages_candidate"),
         (83, "Popup.Show*", "owner_patch_required"),
@@ -1119,9 +1014,7 @@ def test_message_candidate_policy_entries_group_remaining_static_and_pattern_row
     decision_counts = Counter(entry["decision"] for entry in entries)
     choose_color_entry = next(entry for entry in entries if entry["literal_text"] == "Choose color")
     empty_entry = next(
-        entry
-        for entry in entries
-        if entry["source_file"] == "XRL.UI/Popup.cs" and entry["literal_text"] == ""
+        entry for entry in entries if entry["source_file"] == "XRL.UI/Popup.cs" and entry["literal_text"] == ""
     )
     chat_template_entry = next(
         entry
@@ -1129,18 +1022,16 @@ def test_message_candidate_policy_entries_group_remaining_static_and_pattern_row
         if entry["producer_family_id"] == "XRL.World.Parts/Chat.cs::XRL.World.Parts.Chat.PerformChat"
     )
 
-    assert len(entries) == 698
+    assert len(entries) == 703
     assert decision_counts == {
-        "existing_dictionary_coverage": 542,
+        "existing_dictionary_coverage": 546,
         "existing_message_pattern_coverage": 144,
         "existing_does_verb_route_coverage": 5,
-        "existing_owner_route_coverage": 2,
+        "existing_owner_route_coverage": 3,
         "reject_pseudo_leaf": 5,
     }
     assert choose_color_entry["decision"] == "existing_dictionary_coverage"
-    assert choose_color_entry["coverage_locations"] == [
-        "Mods/QudJP/Localization/Dictionaries/ui-popup.ja.json"
-    ]
+    assert choose_color_entry["coverage_locations"] == ["Mods/QudJP/Localization/Dictionaries/ui-popup.ja.json"]
     assert empty_entry["decision"] == "reject_pseudo_leaf"
     assert chat_template_entry["decision"] == "existing_does_verb_route_coverage"
 
@@ -1151,11 +1042,11 @@ def test_message_candidate_policy_text_summary_reports_group_counts() -> None:
 
     summary = format_message_candidate_policy_queue(inventory, repo_root=REPO_ROOT)
 
-    assert "message candidate policy queue: 698 text arguments" in summary
-    assert "existing_dictionary_coverage:542" in summary
+    assert "message candidate policy queue: 703 text arguments" in summary
+    assert "existing_dictionary_coverage:546" in summary
     assert "existing_message_pattern_coverage:144" in summary
     assert "existing_does_verb_route_coverage:5" in summary
-    assert "existing_owner_route_coverage:2" in summary
+    assert "existing_owner_route_coverage:3" in summary
     assert "reject_pseudo_leaf:5" in summary
 
 
@@ -1172,14 +1063,8 @@ def test_large_mixed_families_drop_out_of_owner_action_queue_after_runtime_defer
         "XRL.World.Parts/Inventory.cs::XRL.World.Parts.Inventory.FireEvent",
         "XRL.World.Parts/Physics.cs::XRL.World.Parts.Physics.HandleEvent",
         "XRL.World.Parts/Physics.cs::XRL.World.Parts.Physics.ProcessTargetedMove",
-        (
-            "XRL.World.Parts/ConversationScript.cs::"
-            "XRL.World.Parts.ConversationScript.IsPhysicalConversationPossible"
-        ),
-        (
-            "XRL.World.Parts/ConversationScript.cs::"
-            "XRL.World.Parts.ConversationScript.IsMentalConversationPossible"
-        ),
+        ("XRL.World.Parts/ConversationScript.cs::XRL.World.Parts.ConversationScript.IsPhysicalConversationPossible"),
+        ("XRL.World.Parts/ConversationScript.cs::XRL.World.Parts.ConversationScript.IsMentalConversationPossible"),
         "XRL.World.Parts/Crayons.cs::XRL.World.Parts.Crayons.HandleEvent",
         "XRL.World.Parts/Chat.cs::XRL.World.Parts.Chat.PerformChat",
         "XRL.World.Parts/ITeleporter.cs::XRL.World.Parts.ITeleporter.AttemptTeleport",

@@ -42,6 +42,7 @@
   <option ID="OptionDisableFullscreenColorEffects" DisplayText="フルスクリーンの色効果を無効化（色覚補助）" Category="アクセシビリティ" Type="Checkbox" Default="No"></option>
   <option ID="OptionAlphanumericBits" DisplayText="ビット表示を英数字に切り替える（色覚補助）" Category="アクセシビリティ" Type="Checkbox" Default="Yes"></option>
   <option ID="OptionDisableTextAnimationEffects" DisplayText="タイル系の点滅効果を無効化" Category="アクセシビリティ" Type="Checkbox" Default="No"></option>
+  <option ID="OptionDisableAllIdleTileAnimations" DisplayText="タイルの待機アニメーションをすべて無効化" Category="アクセシビリティ" Type="Checkbox" Default="No"></option>
   <option ID="OptionDisableTextWarpEffects" DisplayText="タイル系の画面ワープ効果を無効化" Category="アクセシビリティ" Type="Checkbox" Default="No"></option>
   <option ID="OptionDisableFullscreenWarpEffects" DisplayText="フルスクリーンのワープ効果を無効化" Category="アクセシビリティ" Type="Checkbox" Default="No"></option>
 
@@ -155,6 +156,12 @@
   <option ID="OptionAllowCSMods" Requires="OptionEnableMods==Yes" DisplayText="スクリプトModを許可（悪意あるコードに注意）" Category="Mod" Type="Checkbox" Default="No"></option>
   <option ID="OptionOutputModAssembly" Requires="OptionEnableMods==Yes,OptionAllowCSMods==Yes,OptionShowAdvancedOptions==Yes" DisplayText="コンパイル済み Mod アセンブリを保存" Category="Mod" Type="Checkbox" Default="Yes"></option>
   <option ID="OptionHarmonyDebug" Requires="OptionEnableMods==Yes,OptionAllowCSMods==Yes,OptionShowAdvancedOptions==Yes" DisplayText="Harmony デバッグ出力を有効化" Category="Mod" Type="Checkbox" Default="No"></option>
+  <option ID="OptionTextBuilderDebug" Requires="OptionEnableMods==Yes,OptionAllowCSMods==Yes,OptionShowAdvancedOptions==Yes" DisplayText="テキストビルダーのリーク解析を有効化" Category="Mod" Type="Checkbox" Default="No">
+    <helptext>
+      多くのテキストビルダーは、プールされたリソースを正しく解放するために、通常はusing文またはusing宣言で破棄する必要があります。
+      テキストビルダーの破棄を忘れるとエラーが出力されます。このオプションを有効にすると、そのエラーに破棄漏れの位置を示すスタックトレースが含まれます。
+    </helptext>
+  </option>
 
   <!-- Performance -->
   <option ID="OptionCheckMemory" Requires="OptionShowAdvancedOptions==Yes" DisplayText="メモリ使用量を監視し高負荷で警告" Category="パフォーマンス" Type="Checkbox" Default="Yes"></option>
@@ -162,6 +169,7 @@
   <option ID="OptionCollectEarly" Requires="OptionShowAdvancedOptions==Yes" DisplayText="ゾーンをキャッシュした後に即ガベージコレクト" Category="パフォーマンス" Type="Checkbox" Default="No"></option>
   <option ID="OptionDisableFloorTextureObjects" Requires="OptionShowAdvancedOptions==Yes" DisplayText="フロアテクスチャオブジェクトを生成しない" Category="パフォーマンス" Type="Checkbox" Default="No"></option>
   <option ID="OptionThrottleAnimation" Requires="OptionShowAdvancedOptions==Yes" DisplayText="低CPU環境向けにアニメーションを間引く" Category="パフォーマンス" Type="Checkbox" Default="No"></option>
+  <option ID="OptionDrawStepImmediately" Requires="OptionShowAdvancedOptions==Yes" DisplayText="移動直後にフレームを描画（低CPU環境向け）" Category="パフォーマンス" Type="Checkbox" Default="Yes"></option>
 
   <!-- App Settings -->
   <option ID="OptionShowAdvancedOptions" DisplayText="詳細オプションを表示" Category="アプリ設定" Type="Checkbox" Default="No"></option>
@@ -179,6 +187,7 @@
   <option ID="OptionAllowSaveLoad" Requires="OptionShowAdvancedOptions==Yes" DisplayText="セーブ/ロードを有効化" Category="デバッグ" Type="Checkbox" Default="No"></option>
   <option ID="OptionAllowReallydie" Requires="OptionShowAdvancedOptions==Yes" DisplayText="死亡時に確認ダイアログを出す" Category="デバッグ" Type="Checkbox" Default="No"></option>
   <option ID="OptionEnablePrereleaseContent" Requires="OptionShowAdvancedOptions==Yes" DisplayText="未完成・非サポートのコンテンツを有効化" Category="デバッグ" Type="Checkbox" Default="No" Restart="true"></option>
+  <option ID="OptionEnableSeed" Requires="OptionShowAdvancedOptions==Yes" DisplayText="ワールドシードを有効化（実験的）" Category="デバッグ" Type="Checkbox" Default="No"></option>
   <option ID="OptionDisableDefectLimit" Requires="OptionShowAdvancedOptions==Yes" DisplayText="クリーチャーに複数の欠陥を許可" Category="デバッグ" Type="Checkbox" Default="No"></option>
   <option ID="OptionStripUIColorText" Requires="OptionShowAdvancedOptions==Yes" DisplayText="UI テキストのカラータグを除去" Category="デバッグ" Type="Checkbox" Default="No"></option>
   <option ID="OptionEnableColorTextInput" Requires="OptionShowAdvancedOptions==Yes" DisplayText="テキスト入力用のカラー選択を有効化" Category="デバッグ" Type="Checkbox" Default="No"></option>
@@ -186,6 +195,12 @@
   <option ID="OptionShowQuickstart" Requires="OptionShowAdvancedOptions==Yes" DisplayText="キャラ作成中にクイックスタートを表示" Category="デバッグ" Type="Checkbox" Default="No"></option>
   <option ID="OptionDisablePlayerbrain" Requires="OptionShowAdvancedOptions==Yes" DisplayText="プレイヤー操作キャラの脳ハイジャックを無効化" Category="デバッグ" Type="Checkbox" Default="No"></option>
   <option ID="OptionDisableZoneCaching2" Requires="OptionShowAdvancedOptions==Yes" DisplayText="ゾーンキャッシュを無効化" Category="デバッグ" Type="Checkbox" Default="No"></option>
+  <option ID="OptionDisableZoneThawRestrict" Requires="OptionShowAdvancedOptions==Yes" DisplayText="ゾーン解凍の制限を無効化" Category="デバッグ" Type="Checkbox" Default="Yes">
+    <helptext>
+      現在のゲーム内での状態にかかわらず、データベースからゾーンの解凍を試みます。
+      たとえば、予知を巻き戻した後でも、その予知中に訪れたゾーンを解凍できます。
+    </helptext>
+  </option>
   <option ID="OptionDisableTryLimit" Requires="OptionShowAdvancedOptions==Yes" DisplayText="ゾーン生成の試行回数制限を無効化" Category="デバッグ" Type="Checkbox" Default="No"></option>
   <option ID="OptionEnableWishRegionNames" Requires="OptionShowAdvancedOptions==Yes" DisplayText="ウィッシュ用にゾーン名を事前生成" Category="デバッグ" Type="Checkbox" Default="No"></option>
   <option ID="OptionGivesRepShowsCurrentRep" Requires="OptionShowAdvancedOptions==Yes" DisplayText="観察時に派閥評判を表示" Category="デバッグ" Type="Checkbox" Default="No"></option>
@@ -218,6 +233,7 @@
   <option ID="OptionDrawFloodVis" Requires="OptionShowAdvancedOptions==Yes" DisplayText="視認性フラッドフィルを描画" Category="デバッグ" Type="Checkbox" Default="No"></option>
   <option ID="OptionDrawFloodAud" Requires="OptionShowAdvancedOptions==Yes" DisplayText="聴覚フラッドフィルを描画" Category="デバッグ" Type="Checkbox" Default="No"></option>
   <option ID="OptionDrawFloodOlf" Requires="OptionShowAdvancedOptions==Yes" DisplayText="嗅覚フラッドフィルを描画" Category="デバッグ" Type="Checkbox" Default="No"></option>
+  <option ID="OptionDrawFloodExplore" RequiresCapability="IsDesktop" Requires="OptionShowAdvancedOptions==Yes" DisplayText="自動探索のフラッドフィルを描画" Category="デバッグ" Type="Checkbox" Default="No"></option>
   <option ID="OptionDrawArcs" Requires="OptionShowAdvancedOptions==Yes" DisplayText="直近ラウンドの電撃アークを描画" Category="デバッグ" Type="Checkbox" Default="No"></option>
   <option ID="OptionWriteSoundsToLog" Requires="OptionShowAdvancedOptions==Yes" DisplayText="再生したサウンド名をログに記録" Category="デバッグ" Type="Checkbox" Default="No"></option>
   <option ID="OptionDisableSoundPreload" Requires="OptionShowAdvancedOptions==Yes" DisplayText="サウンドの事前読み込みを無効化" Category="デバッグ" Type="Checkbox" Default="Yes"></option>

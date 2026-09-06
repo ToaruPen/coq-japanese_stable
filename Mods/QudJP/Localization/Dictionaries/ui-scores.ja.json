@@ -79,6 +79,31 @@
       "key": "Unlocked ",
       "context": "Qud.UI.AchievementViewRow.Date.SetText",
       "text": "解除日: "
+    },
+    {
+      "key": "{{R|The game is currently running offline.}}",
+      "context": "SteamScoresRow.StatusMessage",
+      "text": "{{R|現在、ゲームはオフラインで動作しています。}}"
+    },
+    {
+      "key": "{{R|An error has occurred.}}",
+      "context": "SteamScoresRow.StatusMessage",
+      "text": "{{R|エラーが発生しました。}}"
+    },
+    {
+      "key": "An error has occurred, would you like to try again?",
+      "context": "Qud.UI.HighScoresScreen.FetchLeaderboard.Retry",
+      "text": "エラーが発生しました。もう一度試しますか？"
+    },
+    {
+      "key": "An error has occurred, would you like to retry?",
+      "context": "XRL.Core.Scores.Leaderboard.Retry",
+      "text": "エラーが発生しました。再試行しますか？"
+    },
+    {
+      "key": "An error occurred while posting to the leaderbaord, would you like to try again?",
+      "context": "XRL.Core.XRLCore.LeaderboardPost.Retry",
+      "text": "リーダーボードへの投稿中にエラーが発生しました。もう一度試しますか？"
     }
   ]
 }

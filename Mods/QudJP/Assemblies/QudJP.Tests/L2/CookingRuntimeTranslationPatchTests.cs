@@ -39,6 +39,7 @@ public sealed class CookingRuntimeTranslationPatchTests
 
     [TestCase("You feel an uncomfortable pressure across the length of your body.", "全身に不快な圧迫感を覚える。")]
     [TestCase("You gained the mutation {{C|Crystallinity}}!", "変異{{C|結晶性}}を得た！")]
+    [TestCase("You gained the mutation {{w|Bilge Sphincter}}!", "変異{{w|ビルジスフィンクター}}を得た！")]
     [TestCase("Feelers rip through your scalp and shudder with curiosity.", "触角が頭皮を裂いて生え、好奇心に震えた。")]
     [TestCase("Your genome has already undergone this transformation.", "あなたのゲノムはすでにこの変化を経ている。")]
     [TestCase("You bounce.", "あなたは跳ねた。")]

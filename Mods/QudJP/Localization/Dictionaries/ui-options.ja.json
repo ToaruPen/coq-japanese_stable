@@ -120,7 +120,7 @@
       "text": "変更内容を保存しますか？"
     },
     {
-      "key": "Are you sure you want to override your keymap with the default?",
+      "key": "Are you sure you want to override your bindings with the default?",
       "context": "Qud.UI.KeybindsScreen.RestoreDefaults.Confirm",
       "text": "キー設定を既定に上書きしますか？"
     },

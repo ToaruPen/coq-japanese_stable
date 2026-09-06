@@ -2747,6 +2747,14 @@ public sealed class TargetMethodResolutionTests
     {
         "XRL.Core.Scores|Show|XRL.XRLGame",
     })]
+    [TestCase(typeof(SteamScoresRowTranslationPatch), new[]
+    {
+        "SteamScoresRow|setData|System.Void|XRL.UI.Framework.FrameworkDataElement",
+    })]
+    [TestCase(typeof(CodeCompressorTranslationPatch), new[]
+    {
+        "XRL.CharacterBuilds.CodeCompressor|loadCode|System.Void|System.String|System.Collections.Generic.List`1[[XRL.CharacterBuilds.AbstractEmbarkBuilderModule]]|System.Boolean",
+    })]
     [TestCase(typeof(LongBladesCoreTranslationPatch), new[]
     {
         "XRL.World.Parts.LongBladesCore|FireEvent|System.Boolean|XRL.World.Event",

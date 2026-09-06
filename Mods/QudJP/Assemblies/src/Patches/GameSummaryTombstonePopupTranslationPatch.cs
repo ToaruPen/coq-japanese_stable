@@ -17,8 +17,12 @@ public static class GameSummaryTombstonePopupTranslationPatch
         "^Your tombstone file was saved:\\n\\n(?<path>[\\s\\S]+)$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
-    private static readonly Regex ErrorPattern = new(
+    private static readonly Regex ClassicErrorPattern = new(
         "^There was an error saving: (?<path>[\\s\\S]+)$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    private static readonly Regex ModernErrorPattern = new(
+        "^There was an error (?<result>.+?) saving: (?<path>[\\s\\S]+)$",
         RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
     [ThreadStatic]
@@ -102,7 +106,8 @@ public static class GameSummaryTombstonePopupTranslationPatch
                 family + ".GameSummaryTombstoneSaved",
                 SavedPattern,
                 "Your tombstone file was saved:\n\n{0}",
-                out translated))
+                out translated,
+                "path"))
         {
             return true;
         }
@@ -111,9 +116,23 @@ public static class GameSummaryTombstonePopupTranslationPatch
                 source,
                 route,
                 family + ".GameSummaryTombstoneError",
-                ErrorPattern,
+                ModernErrorPattern,
+                "There was an error {0} saving: {1}",
+                out translated,
+                "result",
+                "path"))
+        {
+            return true;
+        }
+
+        if (TryTranslateTemplate(
+                source,
+                route,
+                family + ".GameSummaryTombstoneError",
+                ClassicErrorPattern,
                 "There was an error saving: {0}",
-                out translated))
+                out translated,
+                "path"))
         {
             return true;
         }
@@ -128,7 +147,8 @@ public static class GameSummaryTombstonePopupTranslationPatch
         string family,
         Regex pattern,
         string key,
-        out string translated)
+        out string translated,
+        params string[] captureGroups)
     {
         var match = pattern.Match(source);
         if (!match.Success)
@@ -146,10 +166,16 @@ public static class GameSummaryTombstonePopupTranslationPatch
 
         try
         {
+            var arguments = new object[captureGroups.Length];
+            for (var index = 0; index < captureGroups.Length; index++)
+            {
+                arguments[index] = match.Groups[captureGroups[index]].Value;
+            }
+
             translated = string.Format(
                 CultureInfo.InvariantCulture,
                 template,
-                match.Groups["path"].Value);
+                arguments);
         }
         catch (FormatException ex)
         {

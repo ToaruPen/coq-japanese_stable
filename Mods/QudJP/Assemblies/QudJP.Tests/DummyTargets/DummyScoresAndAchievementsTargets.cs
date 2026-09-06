@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace QudJP.Tests.DummyTargets;
 
@@ -121,6 +122,7 @@ internal sealed class DummyAchievementViewRowTarget
 
     public bool OriginalExecuted { get; private set; }
 
+    [MethodImpl(MethodImplOptions.NoInlining)]
     public void setData(object data)
     {
         OriginalExecuted = true;
@@ -163,4 +165,26 @@ internal sealed class DummyAchievementInfo
 internal sealed class DummyHiddenAchievementData
 {
     public int Amount { get; set; }
+}
+
+internal sealed class DummyHighScoresDataElement
+{
+    public string? message;
+}
+
+internal sealed class DummySteamScoresRowTarget
+{
+    public string? RenderedMessage { get; private set; }
+
+    public bool ThrowAfterRender { get; set; }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public void setData(XRL.UI.Framework.FrameworkDataElement data)
+    {
+        RenderedMessage = data.GetType().GetField("message")?.GetValue(data) as string;
+        if (ThrowAfterRender)
+        {
+            throw new InvalidOperationException("dummy row render failed");
+        }
+    }
 }
